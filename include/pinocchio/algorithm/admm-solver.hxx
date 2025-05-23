@@ -287,6 +287,7 @@ namespace pinocchio
       z_ += s_; // Add De Saxé shift
     }
 
+    /*
     // Computing the convergence criterion of the initial guess
     primal_feasibility = 0; // always feasible because y is projected
 
@@ -342,6 +343,8 @@ namespace pinocchio
     }
     // We test convergence
     bool abs_prec_reached = this->absolute_residual < this->absolute_precision;
+    */
+    bool abs_prec_reached = false;
 
     if (!abs_prec_reached)
     { // the initial guess is not solution of the problem so we run the ADMM algorithm
