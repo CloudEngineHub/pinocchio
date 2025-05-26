@@ -404,6 +404,7 @@ namespace pinocchio
       // Compute errors
       auto & position_error = cdata.constraint_position_error;
       position_error.noalias() = cdata.c1Mc2.translation();
+      position_error.noalias() -= this->desired_constraint_offset;
       //      cdata.constraint_position_error = cdata.oMc1.inverse().translation();
 
       const auto vf1 = joint1_placement.actInv(data.v[this->joint1_id]);
@@ -412,6 +413,7 @@ namespace pinocchio
       auto & velocity_error = cdata.constraint_velocity_error;
       const Vector3 velocity_error_component1 = _1R2_ * vf2.linear() - vf1.linear();
       velocity_error.noalias() = velocity_error_component1 - vf1.angular().cross(position_error);
+      velocity_error.noalias() -= this->desired_constraint_velocity;
 
       const auto af1 = joint1_placement.actInv(data.a[this->joint1_id]);
       const auto af2 = joint2_placement.actInv(data.a[this->joint2_id]);
@@ -421,6 +423,7 @@ namespace pinocchio
       acceleration_error.noalias() -= af1.angular().cross(position_error);
       acceleration_error.noalias() += vf1.angular().cross(vf1.angular().cross(position_error));
       acceleration_error.noalias() -= 2 * vf1.angular().cross(velocity_error_component1);
+      acceleration_error.noalias() -= this->desired_constraint_acceleration;
 
       cdata.A1_world = this->getA1(cdata, WorldFrameTag());
       cdata.A2_world = this->getA2(cdata, WorldFrameTag());
