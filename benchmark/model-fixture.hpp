@@ -34,6 +34,7 @@ struct ExtraArgs
 /// ModelFixture::GlobalSetUp load a Model in ModelFixture::MODEL from the parsed ExtraArgs.
 struct ModelFixture : benchmark::Fixture
 {
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   void SetUp(benchmark::State &)
   {
     model = MODEL;
