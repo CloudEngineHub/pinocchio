@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2018-2021 CNRS
-// Copyright (c) 2018-2024 INRIA
+// Copyright (c) 2018-2025 INRIA
 //
 #include "pinocchio/bindings/python/algorithm/algorithms.hpp"
 #include "pinocchio/algorithm/kinematics-derivatives.hpp"
@@ -217,6 +217,40 @@ namespace pinocchio
         "Parameters:\n"
         "\tmodel: model of the kinematic tree\n"
         "\tdata: data related to the model\n",
+        mimic_not_supported_function<>(0));
+
+      bp::def(
+        "computeJointKinematicHessians",
+        &computeJointKinematicHessians<Scalar, Options, JointCollectionDefaultTpl>,
+        bp::args("model", "data"),
+        "Computes all the terms required to compute the second order derivatives of the placement "
+        "information, also know as the kinematic Hessian. This function assumes that the joint "
+        "Jacobians (a.k.a data.J) has been computed first. See also computeJointJacobians for such "
+        "a function.",
+        mimic_not_supported_function<>(0));
+
+      bp::def(
+        "computeJointKinematicHessians",
+        &computeJointKinematicHessians<Scalar, Options, JointCollectionDefaultTpl, VectorXs>,
+        bp::args("model", "data", "q"),
+        "Computes all the terms required to compute the second order derivatives of the placement "
+        "information, also know as the kinematic Hessian.",
+        mimic_not_supported_function<>(0));
+
+      typedef Eigen::Tensor<Scalar, 3, Options> Tensor3;
+
+      bp::def(
+        "getJointKinematicHessian",
+        (Tensor3(*)(
+          const context::Model &, const context::Data &, const JointIndex,
+          const ReferenceFrame))&getJointKinematicHessian<Scalar, Options, JointCollectionDefaultTpl>,
+        bp::args("model", "data", "joint_id", "reference_frame"),
+        "Retrieves the kinematic Hessian of a given joint according to the values aleardy computed "
+        "by computeJointKinematicHessians and stored in data.\n"
+        "While the kinematic Jacobian of a given joint frame corresponds to the first order "
+        "derivative of the placement variation with respect to \f$ q \f$, the kinematic Hessian "
+        "corresponds to the second order derivation of placement variation, which in turns also "
+        "corresponds to the first order derivative of the kinematic Jacobian.",
         mimic_not_supported_function<>(0));
     }
 
