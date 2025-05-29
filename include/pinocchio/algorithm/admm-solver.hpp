@@ -229,27 +229,18 @@ namespace pinocchio
 
       void reserve(const int max_it)
       {
-        dual_feasibility_admm.reserve(size_t(max_it));
-        dual_feasibility_constraint.reserve(size_t(max_it));
         rho.reserve(size_t(max_it));
       }
 
       void reset()
       {
         Base::SolverStats::reset();
-        dual_feasibility_admm.clear();
-        dual_feasibility_constraint.clear();
         rho.clear();
         cholesky_update_count = 0;
       }
 
       ///  \brief Number of Cholesky updates.
       int cholesky_update_count;
-
-      /// \brief ADMM dual feasibility
-      std::vector<Scalar> dual_feasibility_admm;
-      /// \brief ADMM dual feasibility
-      std::vector<Scalar> dual_feasibility_constraint;
 
       /// \brief History of rho values.
       std::vector<Scalar> rho;
@@ -292,27 +283,15 @@ namespace pinocchio
         static_cast<Eigen::DenseIndex>(math::max(2, math::min(lanczos_size, problem_dim))))
     , x_(VectorXs::Zero(problem_dim))
     , y_(VectorXs::Zero(problem_dim))
-    , x_bar_(VectorXs::Zero(problem_dim))
-    , y_bar_(VectorXs::Zero(problem_dim))
-    , x_bar_previous(VectorXs::Zero(problem_dim))
-    , y_bar_previous(VectorXs::Zero(problem_dim))
-    , z_bar_previous(VectorXs::Zero(problem_dim))
+    , x_previous_(VectorXs::Zero(problem_dim))
+    , y_previous_(VectorXs::Zero(problem_dim))
     , z_(VectorXs::Zero(problem_dim))
-    , z_constraint_(VectorXs::Zero(problem_dim))
-    , z_bar_(VectorXs::Zero(problem_dim))
+    , z_previous_(VectorXs::Zero(problem_dim))
     , s_(VectorXs::Zero(problem_dim))
-    , s_constraint_(VectorXs::Zero(problem_dim))
-    , s_bar_(VectorXs::Zero(problem_dim))
-    , preconditioner_(VectorXs::Ones(problem_dim))
-    , g_bar_(VectorXs::Zero(problem_dim))
-    , time_scaling_acc_to_constraints(VectorXs::Zero(problem_dim))
-    , time_scaling_constraints_to_pos(VectorXs::Zero(problem_dim))
-    , gs(VectorXs::Zero(problem_dim))
     , rhs(problem_dim)
+    , tmp(problem_dim)
     , primal_feasibility_vector(VectorXs::Zero(problem_dim))
-    , primal_feasibility_vector_bar(VectorXs::Zero(problem_dim))
     , dual_feasibility_vector(VectorXs::Zero(problem_dim))
-    , dual_feasibility_vector_bar(VectorXs::Zero(problem_dim))
     , stats()
     {
     }
@@ -583,56 +562,12 @@ namespace pinocchio
     /// \returns the dual solution of the problem
     const VectorXs & getDualSolution() const
     {
-      return z_constraint_;
+      return z_;
     }
     /// \returns the complementarity shift
     const VectorXs & getComplementarityShift() const
     {
-      return s_constraint_;
-    }
-
-    /// \returns the scaled primal solution of the problem
-    const VectorXs & getScaledPrimalSolution() const
-    {
-      return y_bar_;
-    }
-    /// \returns the scaled dual solution of the problem
-    const VectorXs & getScaledDualSolution() const
-    {
-      return z_bar_;
-    }
-    /// \returns the scaled complementarity shift
-    const VectorXs & getScaledComplementarityShift() const
-    {
-      return s_bar_;
-    }
-
-    /// \returns use the preconditioner to scale a primal quantity x.
-    /// Typically, it allows to get x_bar from x.
-    void scalePrimalSolution(const VectorXs & x, VectorXs & x_bar) const
-    {
-      preconditioner_.scale(x, x_bar);
-    }
-
-    /// \returns use the preconditioner to unscale a primal quantity x.
-    /// Typically, it allows to get x from x_bar.
-    void unscalePrimalSolution(const VectorXs & x_bar, VectorXs & x) const
-    {
-      preconditioner_.unscale(x_bar, x);
-    }
-
-    /// \returns use the preconditioner to scale a dual quantity z.
-    /// Typically, it allows to get z_bar from z.
-    void scaleDualSolution(const VectorXs & z, VectorXs & z_bar) const
-    {
-      preconditioner_.unscale(z, z_bar);
-    }
-
-    /// \returns use the preconditioner to unscale a dual quantity z.
-    /// Typically, it allows to get z from z_bar.
-    void unscaleDualSolution(const VectorXs & z_bar, VectorXs & z) const
-    {
-      preconditioner_.scale(z_bar, z);
+      return s_;
     }
 
   protected:
@@ -663,35 +598,13 @@ namespace pinocchio
     LanczosDecomposition lanczos_decomposition;
 
     /// \brief Primal variables (corresponds to the constraint impulses)
-    VectorXs x_, y_;
-    /// \brief Scaled primal variables (corresponds to the contact forces)
-    VectorXs x_bar_, y_bar_;
-    /// \brief Previous values of x_bar_, y_bar_ and z_bar_.
-    VectorXs x_bar_previous, y_bar_previous, z_bar_previous;
+    VectorXs x_, y_, x_previous_, y_previous_;
     /// \brief Dual variable of the ADMM (corresponds to the contact velocity or acceleration).
-    VectorXs z_;
-    VectorXs z_constraint_;
-    /// \brief Scaled dual variable of the ADMM (corresponds to the contact velocity or
-    /// acceleration).
-    VectorXs z_bar_;
+    VectorXs z_, z_previous_;
     /// \brief De Saxé shift
     VectorXs s_;
-    VectorXs s_constraint_;
-    /// \brief Scaled De Saxé shift
-    VectorXs s_bar_;
 
-    /// \brief the diagonal preconditioner of the problem
-    DiagonalPreconditioner preconditioner_;
-    /// \brief Preconditioned drift term
-    VectorXs g_bar_;
-
-    /// \brief Time scaling vector for constraints
-    VectorXs time_scaling_acc_to_constraints, time_scaling_constraints_to_pos;
-    /// \brief Vector g divided by time scaling (g / time_scaling_acc_to_constraints)
-    VectorXs gs;
-
-    VectorXs rhs, primal_feasibility_vector, primal_feasibility_vector_bar, dual_feasibility_vector,
-      dual_feasibility_vector_bar;
+    VectorXs rhs, tmp, primal_feasibility_vector, dual_feasibility_vector;
 
     int cholesky_update_count;
 
