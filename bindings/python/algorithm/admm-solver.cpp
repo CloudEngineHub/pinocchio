@@ -47,11 +47,12 @@ namespace pinocchio
       const boost::optional<RefConstVectorXs> dual_solution = boost::none,
       const bool solve_ncp = true,
       const ADMMUpdateRule admm_update_rule = ADMMUpdateRule::SPECTRAL,
+      const boost::optional<Scalar> rho0 = boost::none,
       const bool stat_record = false)
     {
       return solver.solve(
         delassus, g, constraint_models, dt, preconditioner, primal_solution, dual_solution,
-        solve_ncp, admm_update_rule, stat_record);
+        solve_ncp, admm_update_rule, rho0, stat_record);
     }
 
     template<typename DelassusDerived, typename ConstraintModel, typename ConstraintModelAllocator>
@@ -177,7 +178,7 @@ namespace pinocchio
             (bp::args("self", "delassus", "g", "constraint_models", "dt"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
-             bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL,
+             bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
              bp::arg("stat_record") = false),
             "Solve the constrained conic problem, starting from the optional initial guess.")
           .def(
@@ -187,7 +188,7 @@ namespace pinocchio
             (bp::args("self", "delassus", "g", "constraint_models", "dt"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
-             bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL,
+             bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
              bp::arg("stat_record") = false),
             "Solve the constrained conic problem, starting from the optional initial guess.")
           .def(
@@ -197,7 +198,7 @@ namespace pinocchio
             (bp::args("self", "delassus", "g", "constraint_models", "dt"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
-             bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL,
+             bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
              bp::arg("stat_record") = false),
             "Solve the constrained conic problem, starting from the optional initial guess.");
 #ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
@@ -212,7 +213,7 @@ namespace pinocchio
             (bp::args("self", "delassus", "g", "constraint_models", "dt"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
-             bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL,
+             bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
              bp::arg("stat_record") = false),
             "Solve the constrained conic problem, starting from the optional initial guess.");
         }
