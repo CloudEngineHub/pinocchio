@@ -424,7 +424,8 @@ namespace pinocchio
     /// \param[in] primal_guess Optional initial guess of the primal solution (constrained forces).
     /// \param[in] dual_guess Optinal Initial guess of the dual solution (constrained velocities).
     /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false)
-    /// \param[in] admm_update_rule update rule for ADMM (linear or spectral)
+    /// \param[in] admm_update_rule update rule for ADMM (constant, linear or spectral)
+    /// \param[in] rho0 Initial value of the rho parameter.
     /// \param[in] stat_record record solver metrics
     ///
     /// \returns True if the problem has converged.
@@ -444,6 +445,7 @@ namespace pinocchio
       const boost::optional<RefConstVectorXs> dual_guess = boost::none,
       const bool solve_ncp = true,
       const ADMMUpdateRule admm_update_rule = ADMMUpdateRule::SPECTRAL,
+      const boost::optional<Scalar> rho0 = boost::none,
       const bool stat_record = false);
 
     ///
@@ -457,7 +459,8 @@ namespace pinocchio
     /// \param[in] primal_guess Optional initial guess of the primal solution (constrained forces).
     /// \param[in] dual_guess Optinal Initial guess of the dual solution (constrained velocities).
     /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false)
-    /// \param[in] admm_update_rule update rule for ADMM (linear or spectral)
+    /// \param[in] admm_update_rule update rule for ADMM (constant, linear or spectral)
+    /// \param[in] rho0 Initial value of the rho parameter.
     /// \param[in] stat_record record solver metrics
     ///
     /// \returns True if the problem has converged.
@@ -476,6 +479,7 @@ namespace pinocchio
       const boost::optional<RefConstVectorXs> dual_guess = boost::none,
       const bool solve_ncp = true,
       const ADMMUpdateRule admm_update_rule = ADMMUpdateRule::SPECTRAL,
+      const boost::optional<Scalar> rho0 = boost::none,
       const bool stat_record = false)
     {
       typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
@@ -486,7 +490,7 @@ namespace pinocchio
 
       return solve(
         delassus, g, wrapped_constraint_models, dt, preconditioner, primal_guess, dual_guess,
-        solve_ncp, admm_update_rule, stat_record);
+        solve_ncp, admm_update_rule, rho0, stat_record);
     }
 
     ///

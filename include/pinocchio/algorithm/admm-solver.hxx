@@ -186,6 +186,7 @@ namespace pinocchio
     const boost::optional<RefConstVectorXs> dual_guess,
     const bool solve_ncp,
     const ADMMUpdateRule admm_update_rule,
+    const boost::optional<Scalar> rho0,
     const bool stat_record)
   {
     // Unused for now
@@ -367,16 +368,25 @@ namespace pinocchio
         }
         admm_update_rule_container.spectral_rule =
           ADMMSpectralUpdateRule(ratio_primal_dual, L, m, rho_power_factor);
-        rho = ADMMSpectralUpdateRule::computeRho(L, m, rho_power);
+        if (rho0)
+          rho = rho0.get();
+        else
+          rho = ADMMSpectralUpdateRule::computeRho(L, m, rho_power);
         break;
       }
       case (ADMMUpdateRule::LINEAR):
         admm_update_rule_container.linear_rule =
           ADMMLinearUpdateRule(ratio_primal_dual, linear_update_rule_factor);
-        rho = this->rho; // use the rho value stored in the solver.
+        if (rho0)
+          rho = rho0.get();
+        else
+          rho = this->rho; // use the rho value stored in the solver.
         break;
       case (ADMMUpdateRule::CONSTANT):
-        rho = this->rho; // use the rho value stored in the solver.
+        if (rho0)
+          rho = rho0.get();
+        else
+          rho = this->rho; // use the rho value stored in the solver.
         break;
       }
 
