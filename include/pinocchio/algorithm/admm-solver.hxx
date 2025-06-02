@@ -577,6 +577,14 @@ namespace pinocchio
         this->rho_power = ADMMSpectralUpdateRule::computeRhoPower(L, m, rho);
         this->rho = rho;
       }
+      else if (admm_update_rule == ADMMUpdateRule::LINEAR)
+      {
+        this->rho = rho;
+      }
+      else
+      {
+        this->rho = rho;
+      }
     }
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
 
