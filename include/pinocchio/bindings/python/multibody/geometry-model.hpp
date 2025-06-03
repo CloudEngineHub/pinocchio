@@ -1,15 +1,16 @@
 //
-// Copyright (c) 2015-2023 CNRS INRIA
+// Copyright (c) 2015-2020 CNRS
+// Copyright (c) 2018-2025 INRIA
 //
 
 #ifndef __pinocchio_python_geometry_model_hpp__
 #define __pinocchio_python_geometry_model_hpp__
 
 #include <eigenpy/memory.hpp>
+#include <eigenpy/copyable.hpp>
 
 #include "pinocchio/bindings/python/utils/address.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 
 #include "pinocchio/bindings/python/utils/pickle.hpp"
 #include "pinocchio/bindings/python/serialization/serializable.hpp"

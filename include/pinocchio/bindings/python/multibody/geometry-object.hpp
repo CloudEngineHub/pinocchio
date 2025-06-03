@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2017-2023 CNRS INRIA
+// Copyright (c) 2017-2023 CNRS INRIA, 2025 INRIA
 //
 
 #ifndef __pinocchio_python_geometry_object_hpp__
@@ -9,11 +9,10 @@
 #include <eigenpy/eigen-from-python.hpp>
 #include <eigenpy/eigen-to-python.hpp>
 #include <eigenpy/variant.hpp>
+#include <eigenpy/copyable.hpp>
+#include <eigenpy/deprecation-policy.hpp>
 
 #include "pinocchio/bindings/python/utils/address.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
-
-#include "pinocchio/bindings/python/utils/deprecation.hpp"
 #include "pinocchio/bindings/python/utils/pickle.hpp"
 #include "pinocchio/bindings/python/serialization/serializable.hpp"
 
@@ -28,6 +27,7 @@ namespace pinocchio
   namespace python
   {
     namespace bp = boost::python;
+    using eigenpy::CopyableVisitor;
 
     struct GeometryObjectPythonVisitor
     : public boost::python::def_visitor<GeometryObjectPythonVisitor>
@@ -72,7 +72,7 @@ namespace pinocchio
               "mesh_path", "mesh_scale", "override_material", "mesh_color",
               "mesh_texture_path"
               "mesh_material"),
-            "Deprecated. Full constructor of a GeometryObject.")[deprecated_function<>()])
+            "Deprecated. Full constructor of a GeometryObject.")[eigenpy::deprecated_function<>()])
           .def(bp::init<
                std::string, JointIndex, CollisionGeometryPtr, const SE3 &,
                bp::optional<
@@ -83,7 +83,7 @@ namespace pinocchio
               "mesh_scale", "override_material", "mesh_color", "mesh_texture_path",
               "mesh_material"),
             "Deprecated. Reduced constructor of a GeometryObject. This constructor does not "
-            "require to specify the parent frame index.")[deprecated_function<>()])
+            "require to specify the parent frame index.")[eigenpy::deprecated_function<>()])
           .def(bp::init<const GeometryObject &>(
             bp::args("self", "otherGeometryObject"), "Copy constructor"))
           .add_property(
