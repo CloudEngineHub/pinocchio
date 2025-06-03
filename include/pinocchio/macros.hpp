@@ -9,6 +9,9 @@
 #include <sstream>
 #include <boost/core/demangle.hpp>
 
+#include "pinocchio/deprecated.hpp"
+#include "pinocchio/warning.hpp"
+
 // On Windows, __cplusplus is not necessarily set to the C++ version being used.
 // See https://docs.microsoft.com/fr-fr/cpp/build/reference/zc-cplusplus?view=vs-2019 for further
 // information.
@@ -37,30 +40,16 @@
   #define PINOCCHIO_MAC_ARM64
 #endif
 
-#define PINOCCHIO_STRING_LITERAL(string) #string
 #define PINOCCHIO_NOEXCEPT noexcept
 
 // For more details, visit
 // https://stackoverflow.com/questions/171435/portability-of-warning-preprocessor-directive
 #if defined(__GNUC__) || defined(__clang__)
-  #define PINOCCHIO_PRAGMA(x) _Pragma(#x)
-  #define PINOCCHIO_PRAGMA_MESSAGE(the_message) PINOCCHIO_PRAGMA(GCC message #the_message)
-  #define PINOCCHIO_PRAGMA_WARNING(the_message) PINOCCHIO_PRAGMA(GCC warning #the_message)
-  #define PINOCCHIO_PRAGMA_DEPRECATED(the_message)                                                 \
-    PINOCCHIO_PRAGMA_WARNING(Deprecated : #the_message)
-  #define PINOCCHIO_PRAGMA_DEPRECATED_HEADER(old_header, new_header)                               \
-    PINOCCHIO_PRAGMA_WARNING(Deprecated header file : #old_header has been replaced                \
-                               by #new_header.\n Please use #new_header instead of #old_header.)
   #define PINOCCHIO_PRAGMA_DEPRECATED_HEADER_PINOCCHIO4(old_header, new_header)                    \
     PINOCCHIO_PRAGMA_WARNING(                                                                      \
       Deprecated header file with Pinocchio 4 : #old_header has been replaced                      \
         by #new_header.\n Please use #new_header instead of #old_header.)
 #else
-  #define PINOCCHIO_PRAGMA(x)
-  #define PINOCCHIO_PRAGMA_MESSAGE(the_message)
-  #define PINOCCHIO_PRAGMA_WARNING(the_message)
-  #define PINOCCHIO_PRAGMA_DEPRECATED(the_message)
-  #define PINOCCHIO_PRAGMA_DEPRECATED_HEADER(old_header, new_header)
   #define PINOCCHIO_PRAGMA_DEPRECATED_HEADER_PINOCCHIO4(old_header, new_header)
 #endif
 
@@ -314,7 +303,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
 #define _PINOCCHIO_CHECK_ARGUMENT_SIZE_2(size, expected_size)                                      \
   _PINOCCHIO_CHECK_ARGUMENT_SIZE_3(                                                                \
     size, expected_size,                                                                           \
-    PINOCCHIO_STRING_LITERAL(size) " is different from " PINOCCHIO_STRING_LITERAL(expected_size))
+    PINOCCHIO_WARN_STRINGISE(size) " is different from " PINOCCHIO_WARN_STRINGISE(expected_size))
 
 #define _PINOCCHIO_CHECK_ARGUMENT_SIZE_1
 
