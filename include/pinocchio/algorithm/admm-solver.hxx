@@ -234,6 +234,7 @@ namespace pinocchio
     // Set the initial damping of the delassus to proximal value
     rhs = VectorXs::Constant(this->problem_size, mu_prox);
     G.updateDamping(rhs);
+    cholesky_update_count++;
 
     // Initialization of the primal/dual variables.
     // If both primal and dual guesses are given, the solver uses both.
@@ -400,7 +401,7 @@ namespace pinocchio
       rhs = VectorXs::Constant(this->problem_size, prox_value);
       G.updateDamping(rhs);
       Scalar old_prox_value = prox_value;
-      cholesky_update_count = 1;
+      cholesky_update_count++;
 
       is_initialized = true;
 

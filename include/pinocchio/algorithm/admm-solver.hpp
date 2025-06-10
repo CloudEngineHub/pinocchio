@@ -292,6 +292,7 @@ namespace pinocchio
     , tmp(problem_dim)
     , primal_feasibility_vector(VectorXs::Zero(problem_dim))
     , dual_feasibility_vector(VectorXs::Zero(problem_dim))
+    , cholesky_update_count(0)
     , stats()
     {
     }
