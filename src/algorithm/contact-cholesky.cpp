@@ -60,7 +60,8 @@ namespace pinocchio
     context::Data &,
     const context::RigidConstraintModelVector &,
     context::RigidConstraintDataVector &,
-    const context::Scalar);
+    const context::Scalar,
+    const bool);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::solveInPlace<

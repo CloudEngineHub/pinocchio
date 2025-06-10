@@ -450,9 +450,12 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
       std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
-      const S1 mu = S1(0.))
+      const S1 mu = S1(0.),
+      const bool skip_update_damping = false)
     {
-      compute(model, data, contact_models, contact_datas, Vector::Constant(constraintDim(), mu));
+      compute(
+        model, data, contact_models, contact_datas, Vector::Constant(constraintDim(), mu),
+        skip_update_damping);
     }
 
     ///
@@ -489,9 +492,12 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & contact_models,
       std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & contact_datas,
-      const S1 mu = S1(0.))
+      const S1 mu = S1(0.),
+      const bool skip_update_damping = false)
     {
-      compute(model, data, contact_models, contact_datas, Vector::Constant(constraintDim(), mu));
+      compute(
+        model, data, contact_models, contact_datas, Vector::Constant(constraintDim(), mu),
+        skip_update_damping);
     }
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
@@ -529,7 +535,8 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
       std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
-      const Eigen::MatrixBase<VectorLike> & mus)
+      const Eigen::MatrixBase<VectorLike> & mus,
+      const bool skip_update_damping = false)
     {
       typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
       typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
@@ -543,7 +550,8 @@ namespace pinocchio
       WrappedConstraintDataVector wrapped_constraint_datas(
         contact_datas.begin(), contact_datas.end());
 
-      compute(model, data, wrapped_constraint_models, wrapped_constraint_datas, mus);
+      compute(
+        model, data, wrapped_constraint_models, wrapped_constraint_datas, mus, skip_update_damping);
     }
 
     ///
@@ -581,7 +589,8 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & contact_models,
       std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & contact_datas,
-      const Eigen::MatrixBase<VectorLike> & mus);
+      const Eigen::MatrixBase<VectorLike> & mus,
+      const bool skip_update_damping = false);
 
     ///
     /// \brief Update the compliance terms on the upper left block part of the KKT matrix. The

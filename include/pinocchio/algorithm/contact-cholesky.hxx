@@ -177,7 +177,8 @@ namespace pinocchio
     DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & contact_models,
     std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & contact_datas,
-    const Eigen::MatrixBase<VectorLike> & mus)
+    const Eigen::MatrixBase<VectorLike> & mus,
+    const bool skip_update_damping)
   {
     static_assert(
       std::is_base_of<ConstraintModelBase<ConstraintModel>, ConstraintModel>::value,
@@ -286,7 +287,8 @@ namespace pinocchio
     }
 
     // Setting numerical damping
-    updateDamping(mus);
+    if (!skip_update_damping)
+      updateDamping(mus);
   }
 
   template<typename Scalar, int Options>

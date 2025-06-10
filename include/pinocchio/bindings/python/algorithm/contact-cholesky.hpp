@@ -115,9 +115,9 @@ namespace pinocchio
             "compute",
             (void (*)(
               Self & self, const Model &, Data &, const RigidConstraintModelVector &,
-              RigidConstraintDataVector &, const Scalar))&compute,
+              RigidConstraintDataVector &, const Scalar, const bool))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("contact_models"),
-             bp::arg("contact_datas"), bp::arg("mu") = 0),
+             bp::arg("contact_datas"), bp::arg("mu") = 0, bp::arg("skip_update_damping") = false),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
             "related to the system mass matrix and the Jacobians of the contact patches contained "
             "in\n"
@@ -129,9 +129,9 @@ namespace pinocchio
             "compute",
             (void (*)(
               Self & self, const Model &, Data &, const RigidConstraintModelVector &,
-              RigidConstraintDataVector &, const Vector &))&compute,
+              RigidConstraintDataVector &, const Vector &, const bool))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("contact_models"),
-             bp::arg("contact_datas"), bp::arg("mus")),
+             bp::arg("contact_datas"), bp::arg("mus"), bp::arg("skip_update_damping") = false),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
             "related to the system mass matrix and the Jacobians of the contact patches contained "
             "in\n"
@@ -143,9 +143,10 @@ namespace pinocchio
             "compute",
             (void (*)(
               Self & self, const Model &, Data &, const ConstraintModelVector &,
-              ConstraintDataVector &, const Scalar))&compute,
+              ConstraintDataVector &, const Scalar, const bool))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
-             bp::arg("constraint_datas"), bp::arg("mu") = 0),
+             bp::arg("constraint_datas"), bp::arg("mu") = 0,
+             bp::arg("skip_update_damping") = false),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
             "related to the system mass matrix and the Jacobians of the contact patches contained "
             "in\n"
@@ -156,9 +157,9 @@ namespace pinocchio
             "compute",
             (void (*)(
               Self & self, const Model &, Data &, const ConstraintModelVector &,
-              ConstraintDataVector &, const Vector &))&compute,
+              ConstraintDataVector &, const Vector &, const bool))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
-             bp::arg("constraint_datas"), bp::arg("mus")),
+             bp::arg("constraint_datas"), bp::arg("mus"), bp::arg("skip_update_damping") = false),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
             "related to the system mass matrix and the Jacobians of the contact patches contained "
             "in\n"
@@ -331,9 +332,10 @@ namespace pinocchio
         Data & data,
         const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
         std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
-        const Scalar mu = static_cast<Scalar>(0))
+        const Scalar mu = static_cast<Scalar>(0),
+        const bool skip_update_damping = false)
       {
-        self.compute(model, data, contact_models, contact_datas, mu);
+        self.compute(model, data, contact_models, contact_datas, mu, skip_update_damping);
       }
 
       template<
@@ -347,9 +349,10 @@ namespace pinocchio
         Data & data,
         const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
         std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
-        const Vector & mus)
+        const Vector & mus,
+        const bool skip_update_damping = false)
       {
-        self.compute(model, data, contact_models, contact_datas, mus);
+        self.compute(model, data, contact_models, contact_datas, mus, skip_update_damping);
       }
     };
 
