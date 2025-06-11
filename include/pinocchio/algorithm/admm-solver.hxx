@@ -310,282 +310,265 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(y_.size(), problem_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(z_.size(), problem_size);
 
-    // Compute NCP criterion to check if ADMM needs to run
-    G.applyOnTheRight(y_, rhs);
-    rhs.noalias() += g - y_.cwiseProduct(G.getDamping());
-    if (solve_ncp)
+    // Setup ADMM update rules:
+    // Before running ADMM, we compute the largest and smallest eigenvalues of delassus in order
+    // to be able to use a spectral update rule for the proximal parameter (rho)
+    // TODO should we evaluate the eigenvalues of G or Gbar ?
+    Scalar L, m, rho;
+    ADMMUpdateRuleContainer admm_update_rule_container;
+    switch (admm_update_rule)
     {
-      internal::computeDeSaxeCorrection(constraint_models, rhs, tmp);
-      rhs += tmp;
-    }
-    internal::computeDualConeProjection(constraint_models, rhs, tmp);
-    rhs -= tmp;
-    Scalar dual_feasibility_ncp = rhs.template lpNorm<Eigen::Infinity>();
-    this->absolute_residual = dual_feasibility_ncp;
-    bool abs_prec_reached = (this->absolute_residual < this->absolute_precision);
-
-    if (!abs_prec_reached)
-    {
-      // Setup ADMM update rules:
-      // Before running ADMM, we compute the largest and smallest eigenvalues of delassus in order
-      // to be able to use a spectral update rule for the proximal parameter (rho)
-      // TODO should we evaluate the eigenvalues of G or Gbar ?
-      Scalar L, m, rho;
-      ADMMUpdateRuleContainer admm_update_rule_container;
-      switch (admm_update_rule)
+    case (ADMMUpdateRule::SPECTRAL): {
+      if (this->problem_size > 1)
       {
-      case (ADMMUpdateRule::SPECTRAL): {
-        if (this->problem_size > 1)
-        {
-          PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - lanczos");
-          m = mu_R + mu_prox;
-          this->lanczos_decomposition.compute(G);
-          L = ::pinocchio::computeLargestEigenvalue(this->lanczos_decomposition.Ts(), 1e-8);
+        PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - lanczos");
+        m = mu_R + mu_prox;
+        this->lanczos_decomposition.compute(G);
+        L = ::pinocchio::computeLargestEigenvalue(this->lanczos_decomposition.Ts(), 1e-8);
 #ifndef NDEBUG
-          const bool enforce_symmetry = true;
-          Eigen::MatrixXd delassus = G.matrix(enforce_symmetry);
-          Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(delassus);
-          Eigen::VectorXd eigvals = solver.eigenvalues();
-          // Scalar true_m = eigvals.minCoeff();
-          Scalar true_L = eigvals.maxCoeff();
-          PINOCCHIO_UNUSED_VARIABLE(true_L);
-            //          if (true_m > 0)
-            //          {
-            //            assert(
-            //              math::fabs((true_m - m) / math::max(true_m, m)) < 0.01
-            //              && "true_m and m are too far apart.");
-            //          }
-            // assert(
-            //   math::fabs((true_L - L) / math::max(true_L, L)) < 0.01
-            //   && "true_L and L are too far apart.");
+        const bool enforce_symmetry = true;
+        Eigen::MatrixXd delassus = G.matrix(enforce_symmetry);
+        Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(delassus);
+        Eigen::VectorXd eigvals = solver.eigenvalues();
+        // Scalar true_m = eigvals.minCoeff();
+        Scalar true_L = eigvals.maxCoeff();
+        PINOCCHIO_UNUSED_VARIABLE(true_L);
+          //          if (true_m > 0)
+          //          {
+          //            assert(
+          //              math::fabs((true_m - m) / math::max(true_m, m)) < 0.01
+          //              && "true_m and m are too far apart.");
+          //          }
+          // assert(
+          //   math::fabs((true_L - L) / math::max(true_L, L)) < 0.01
+          //   && "true_L and L are too far apart.");
 #endif // NDEBUG
-        }
-        else
-        {
-          // TODO adapt this with Gbar
-          typedef Eigen::Matrix<Scalar, 1, 1> Vector1;
-          const Vector1 Gvec = G * Vector1::Constant(1);
-          m = L = Gvec.coeff(0);
-        }
-        admm_update_rule_container.spectral_rule =
-          ADMMSpectralUpdateRule(ratio_primal_dual, L, m, rho_power_factor);
-        if (rho0)
-          rho = rho0.get();
-        else
-          rho = ADMMSpectralUpdateRule::computeRho(L, m, rho_power);
-        break;
-      }
-      case (ADMMUpdateRule::LINEAR):
-        admm_update_rule_container.linear_rule =
-          ADMMLinearUpdateRule(ratio_primal_dual, linear_update_rule_factor);
-        if (rho0)
-          rho = rho0.get();
-        else
-          rho = this->rho; // use the rho value stored in the solver.
-        break;
-      case (ADMMUpdateRule::CONSTANT):
-        if (rho0)
-          rho = rho0.get();
-        else
-          rho = this->rho; // use the rho value stored in the solver.
-        break;
-      }
-
-      // clamp the rho
-      rho = math::max(1e-8, rho);
-
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-
-      // Update the cholesky decomposition
-      Scalar prox_value = mu_prox + tau * rho;
-      rhs = VectorXs::Constant(this->problem_size, prox_value);
-      G.updateDamping(rhs);
-      Scalar old_prox_value = prox_value;
-      cholesky_update_count++;
-
-      is_initialized = true;
-
-      // End of Initialization phase
-      abs_prec_reached = false;
-      bool rel_prec_reached = false;
-
-      Scalar x_norm_inf = x_.template lpNorm<Eigen::Infinity>();
-      Scalar y_norm_inf = y_.template lpNorm<Eigen::Infinity>();
-      Scalar z_norm_inf = z_.template lpNorm<Eigen::Infinity>();
-      Scalar x_previous_norm_inf = x_norm_inf;
-      Scalar y_previous_norm_inf = y_norm_inf;
-      Scalar z_previous_norm_inf = z_norm_inf;
-      it = 1;
-      for (; it <= Base::max_it; ++it)
-      {
-
-        x_previous_ = x_;
-        y_previous_ = y_;
-        z_previous_ = z_;
-        complementarity = Scalar(0);
-
-        if (solve_ncp)
-        {
-          // s-update
-          internal::computeDeSaxeCorrection(constraint_models, z_, s_);
-        }
-
-        // x-update
-        rhs = -(g + s_ - (rho * tau) * y_ - mu_prox * x_ - z_);
-        {
-          PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop solveInPlace");
-          G.solveInPlace(rhs);
-        }
-        x_ = rhs;
-
-        // y-update
-        rhs -= z_ / (tau * rho);
-        {
-          PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop computeConeProjection");
-          internal::computeConeProjection(constraint_models, rhs, y_);
-        }
-
-        // z-update
-        z_ -= (tau * rho) * (x_ - y_);
-
-        // check termination criteria
-        primal_feasibility_vector = x_ - y_;
-
-        {
-          VectorXs & dx = rhs;
-          dx = x_ - x_previous_;
-          dx_norm = dx.template lpNorm<Eigen::Infinity>(); // check relative progress on x_bar
-          dual_feasibility_vector = mu_prox * dx;
-        }
-
-        {
-          VectorXs & dy = rhs;
-          dy = y_ - y_previous_;
-          dy_norm = dy.template lpNorm<Eigen::Infinity>(); // check relative progress on y_bar
-          dual_feasibility_vector += (tau * rho) * dy;
-        }
-
-        {
-          VectorXs & dz = rhs;
-          dz = z_ - z_previous_;
-          dz_norm = dz.template lpNorm<Eigen::Infinity>(); // check relative progress on z_bar
-        }
-
-        primal_feasibility = primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
-        dual_feasibility = dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
-        complementarity = internal::computeConicComplementarity(constraint_models, z_, y_);
-
-        if (stat_record)
-        {
-          G.applyOnTheRight(y_, rhs);
-          rhs += g - prox_value * y_;
-          if (solve_ncp)
-          {
-            internal::computeDeSaxeCorrection(constraint_models, rhs, tmp);
-            rhs += tmp;
-          }
-
-          internal::computeDualConeProjection(constraint_models, rhs, tmp);
-          rhs -= tmp;
-
-          Scalar dual_feasibility_ncp = rhs.template lpNorm<Eigen::Infinity>();
-
-          stats.primal_feasibility.push_back(primal_feasibility);
-          stats.dual_feasibility.push_back(dual_feasibility);
-          stats.dual_feasibility_ncp.push_back(dual_feasibility_ncp);
-          stats.complementarity.push_back(complementarity);
-          stats.rho.push_back(rho);
-        }
-
-        // Checking stopping residual
-        const Scalar x_norm_inf = x_.template lpNorm<Eigen::Infinity>();
-        const Scalar y_norm_inf = y_.template lpNorm<Eigen::Infinity>();
-        const Scalar z_norm_inf = z_.template lpNorm<Eigen::Infinity>();
-        if (
-          check_expression_if_real<Scalar, false>(complementarity <= this->absolute_precision)
-          && check_expression_if_real<Scalar, false>(
-            dual_feasibility <= this->absolute_precision
-                                  + this->relative_precision * math::max(g_norm_inf, z_norm_inf))
-          && check_expression_if_real<Scalar, false>(
-            primal_feasibility <= this->absolute_precision
-                                    + this->relative_precision * math::max(x_norm_inf, y_norm_inf)))
-          abs_prec_reached = true;
-        else
-          abs_prec_reached = false;
-        if (
-          check_expression_if_real<Scalar, false>(
-            dx_norm <= this->relative_precision * math::max(x_norm_inf, x_previous_norm_inf))
-          && check_expression_if_real<Scalar, false>(
-            dy_norm <= this->relative_precision * math::max(y_norm_inf, y_previous_norm_inf))
-          && check_expression_if_real<Scalar, false>(
-            dz_norm <= this->relative_precision * math::max(z_norm_inf, z_previous_norm_inf)))
-          rel_prec_reached = true;
-        else
-          rel_prec_reached = false;
-
-        if (abs_prec_reached || rel_prec_reached)
-          break;
-
-        // Apply rho according to the primal_dual_ratio
-        bool update_delassus_factorization = false;
-        switch (admm_update_rule)
-        {
-        case (ADMMUpdateRule::SPECTRAL):
-          update_delassus_factorization = admm_update_rule_container.spectral_rule.eval(
-            primal_feasibility, dual_feasibility, rho);
-          break;
-        case (ADMMUpdateRule::LINEAR):
-          update_delassus_factorization =
-            admm_update_rule_container.linear_rule.eval(primal_feasibility, dual_feasibility, rho);
-          break;
-        case (ADMMUpdateRule::CONSTANT):
-          break;
-        }
-
-        // clamp rho
-        rho = math::max(1e-8, rho);
-
-        // Account for potential update of rho
-        if (update_delassus_factorization)
-        {
-          prox_value = mu_prox + tau * rho;
-          if (old_prox_value != prox_value)
-          {
-            PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop updateDamping");
-            rhs = VectorXs::Constant(this->problem_size, prox_value);
-            G.updateDamping(rhs);
-            cholesky_update_count++;
-            old_prox_value = prox_value;
-          }
-        }
-
-        x_previous_norm_inf = x_norm_inf;
-        y_previous_norm_inf = y_norm_inf;
-        z_previous_norm_inf = z_norm_inf;
-      } // end ADMM main for loop
-
-      this->relative_residual = math::max(
-        dx_norm / math::max(x_norm_inf, x_previous_norm_inf),
-        dy_norm / math::max(y_norm_inf, y_previous_norm_inf));
-      this->relative_residual =
-        math::max(this->relative_residual, dz_norm / math::max(z_norm_inf, z_previous_norm_inf));
-      this->absolute_residual =
-        math::max(primal_feasibility, math::max(complementarity, dual_feasibility));
-
-      // Save values of spectral update rule
-      if (admm_update_rule == ADMMUpdateRule::SPECTRAL)
-      {
-        this->rho_power = ADMMSpectralUpdateRule::computeRhoPower(L, m, rho);
-        this->rho = rho;
-      }
-      else if (admm_update_rule == ADMMUpdateRule::LINEAR)
-      {
-        this->rho = rho;
       }
       else
       {
-        this->rho = rho;
+        // TODO adapt this with Gbar
+        typedef Eigen::Matrix<Scalar, 1, 1> Vector1;
+        const Vector1 Gvec = G * Vector1::Constant(1);
+        m = L = Gvec.coeff(0);
       }
+      admm_update_rule_container.spectral_rule =
+        ADMMSpectralUpdateRule(ratio_primal_dual, L, m, rho_power_factor);
+      if (rho0)
+        rho = rho0.get();
+      else
+        rho = ADMMSpectralUpdateRule::computeRho(L, m, rho_power);
+      break;
+    }
+    case (ADMMUpdateRule::LINEAR):
+      admm_update_rule_container.linear_rule =
+        ADMMLinearUpdateRule(ratio_primal_dual, linear_update_rule_factor);
+      if (rho0)
+        rho = rho0.get();
+      else
+        rho = this->rho; // use the rho value stored in the solver.
+      break;
+    case (ADMMUpdateRule::CONSTANT):
+      if (rho0)
+        rho = rho0.get();
+      else
+        rho = this->rho; // use the rho value stored in the solver.
+      break;
+    }
+
+    // clamp the rho
+    rho = math::max(1e-8, rho);
+
+    PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
+
+    // Update the cholesky decomposition
+    Scalar prox_value = mu_prox + tau * rho;
+    rhs = VectorXs::Constant(this->problem_size, prox_value);
+    G.updateDamping(rhs);
+    Scalar old_prox_value = prox_value;
+    cholesky_update_count++;
+
+    is_initialized = true;
+
+    // End of Initialization phase
+    bool abs_prec_reached = false;
+    bool rel_prec_reached = false;
+
+    Scalar x_norm_inf = x_.template lpNorm<Eigen::Infinity>();
+    Scalar y_norm_inf = y_.template lpNorm<Eigen::Infinity>();
+    Scalar z_norm_inf = z_.template lpNorm<Eigen::Infinity>();
+    Scalar x_previous_norm_inf = x_norm_inf;
+    Scalar y_previous_norm_inf = y_norm_inf;
+    Scalar z_previous_norm_inf = z_norm_inf;
+    it = 1;
+    for (; it <= Base::max_it; ++it)
+    {
+
+      x_previous_ = x_;
+      y_previous_ = y_;
+      z_previous_ = z_;
+      complementarity = Scalar(0);
+
+      if (solve_ncp)
+      {
+        // s-update
+        internal::computeDeSaxeCorrection(constraint_models, z_, s_);
+      }
+
+      // x-update
+      rhs = -(g + s_ - (rho * tau) * y_ - mu_prox * x_ - z_);
+      {
+        PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop solveInPlace");
+        G.solveInPlace(rhs);
+      }
+      x_ = rhs;
+
+      // y-update
+      rhs -= z_ / (tau * rho);
+      {
+        PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop computeConeProjection");
+        internal::computeConeProjection(constraint_models, rhs, y_);
+      }
+
+      // z-update
+      z_ -= (tau * rho) * (x_ - y_);
+
+      // check termination criteria
+      primal_feasibility_vector = x_ - y_;
+
+      {
+        VectorXs & dx = rhs;
+        dx = x_ - x_previous_;
+        dx_norm = dx.template lpNorm<Eigen::Infinity>(); // check relative progress on x_bar
+        dual_feasibility_vector = mu_prox * dx;
+      }
+
+      {
+        VectorXs & dy = rhs;
+        dy = y_ - y_previous_;
+        dy_norm = dy.template lpNorm<Eigen::Infinity>(); // check relative progress on y_bar
+        dual_feasibility_vector += (tau * rho) * dy;
+      }
+
+      {
+        VectorXs & dz = rhs;
+        dz = z_ - z_previous_;
+        dz_norm = dz.template lpNorm<Eigen::Infinity>(); // check relative progress on z_bar
+      }
+
+      primal_feasibility = primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
+      dual_feasibility = dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
+      complementarity = internal::computeConicComplementarity(constraint_models, z_, y_);
+
+      if (stat_record)
+      {
+        G.applyOnTheRight(y_, rhs);
+        rhs += g - prox_value * y_;
+        if (solve_ncp)
+        {
+          internal::computeDeSaxeCorrection(constraint_models, rhs, tmp);
+          rhs += tmp;
+        }
+
+        internal::computeDualConeProjection(constraint_models, rhs, tmp);
+        rhs -= tmp;
+
+        Scalar dual_feasibility_ncp = rhs.template lpNorm<Eigen::Infinity>();
+
+        stats.primal_feasibility.push_back(primal_feasibility);
+        stats.dual_feasibility.push_back(dual_feasibility);
+        stats.dual_feasibility_ncp.push_back(dual_feasibility_ncp);
+        stats.complementarity.push_back(complementarity);
+        stats.rho.push_back(rho);
+      }
+
+      // Checking stopping residual
+      const Scalar x_norm_inf = x_.template lpNorm<Eigen::Infinity>();
+      const Scalar y_norm_inf = y_.template lpNorm<Eigen::Infinity>();
+      const Scalar z_norm_inf = z_.template lpNorm<Eigen::Infinity>();
+      if (
+        check_expression_if_real<Scalar, false>(complementarity <= this->absolute_precision)
+        && check_expression_if_real<Scalar, false>(
+          dual_feasibility <= this->absolute_precision
+                                + this->relative_precision * math::max(g_norm_inf, z_norm_inf))
+        && check_expression_if_real<Scalar, false>(
+          primal_feasibility <= this->absolute_precision
+                                  + this->relative_precision * math::max(x_norm_inf, y_norm_inf)))
+        abs_prec_reached = true;
+      else
+        abs_prec_reached = false;
+      if (
+        check_expression_if_real<Scalar, false>(
+          dx_norm <= this->relative_precision * math::max(x_norm_inf, x_previous_norm_inf))
+        && check_expression_if_real<Scalar, false>(
+          dy_norm <= this->relative_precision * math::max(y_norm_inf, y_previous_norm_inf))
+        && check_expression_if_real<Scalar, false>(
+          dz_norm <= this->relative_precision * math::max(z_norm_inf, z_previous_norm_inf)))
+        rel_prec_reached = true;
+      else
+        rel_prec_reached = false;
+
+      if (abs_prec_reached || rel_prec_reached)
+        break;
+
+      // Apply rho according to the primal_dual_ratio
+      bool update_delassus_factorization = false;
+      switch (admm_update_rule)
+      {
+      case (ADMMUpdateRule::SPECTRAL):
+        update_delassus_factorization =
+          admm_update_rule_container.spectral_rule.eval(primal_feasibility, dual_feasibility, rho);
+        break;
+      case (ADMMUpdateRule::LINEAR):
+        update_delassus_factorization =
+          admm_update_rule_container.linear_rule.eval(primal_feasibility, dual_feasibility, rho);
+        break;
+      case (ADMMUpdateRule::CONSTANT):
+        break;
+      }
+
+      // clamp rho
+      rho = math::max(1e-8, rho);
+
+      // Account for potential update of rho
+      if (update_delassus_factorization)
+      {
+        prox_value = mu_prox + tau * rho;
+        if (old_prox_value != prox_value)
+        {
+          PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop updateDamping");
+          rhs = VectorXs::Constant(this->problem_size, prox_value);
+          G.updateDamping(rhs);
+          cholesky_update_count++;
+          old_prox_value = prox_value;
+        }
+      }
+
+      x_previous_norm_inf = x_norm_inf;
+      y_previous_norm_inf = y_norm_inf;
+      z_previous_norm_inf = z_norm_inf;
+    } // end ADMM main for loop
+
+    this->relative_residual = math::max(
+      dx_norm / math::max(x_norm_inf, x_previous_norm_inf),
+      dy_norm / math::max(y_norm_inf, y_previous_norm_inf));
+    this->relative_residual =
+      math::max(this->relative_residual, dz_norm / math::max(z_norm_inf, z_previous_norm_inf));
+    this->absolute_residual =
+      math::max(primal_feasibility, math::max(complementarity, dual_feasibility));
+
+    // Save values of spectral update rule
+    if (admm_update_rule == ADMMUpdateRule::SPECTRAL)
+    {
+      this->rho_power = ADMMSpectralUpdateRule::computeRhoPower(L, m, rho);
+      this->rho = rho;
+    }
+    else if (admm_update_rule == ADMMUpdateRule::LINEAR)
+    {
+      this->rho = rho;
+    }
+    else
+    {
+      this->rho = rho;
     }
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
 
