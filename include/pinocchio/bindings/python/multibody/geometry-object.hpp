@@ -254,6 +254,19 @@ namespace pinocchio
             .def_readwrite(
               "elasticity", &PhysicsMaterial::elasticity, "Elasticity of the material");
         }
+
+        if (!register_symbolic_link_to_registered_type<FrictionCoefficientMatrix>())
+        {
+          bp::class_<FrictionCoefficientMatrix>("FrictionCoefficientMatrix", bp::no_init)
+            .def(
+              "getFrictionFromMaterialPair",
+              &FrictionCoefficientMatrix::getFrictionFromMaterialPair,
+              bp::args("self", "type1", "type2"));
+
+          bp::def(
+            "getFrictionCoefficientMatrix", getFrictionCoefficientMatrix,
+            bp::return_value_policy<bp::reference_existing_object>());
+        }
       }
     };
 
