@@ -33,46 +33,24 @@ namespace pinocchio
   {
   };
 
-  template<
-    typename Scalar,
-    typename BlockType,
-    typename ForceType,
-    typename VelocityType,
-    typename DualToPosType,
-    typename TimeScalingType1,
-    typename TimeScalingType2>
+  template<typename Scalar, typename BlockType, typename ImpulseType, typename VelocityType>
   struct PGSConstraintProjectionStepVisitor
-  : visitors::ConstraintUnaryVisitorBase<PGSConstraintProjectionStepVisitor<
-      Scalar,
-      BlockType,
-      ForceType,
-      VelocityType,
-      DualToPosType,
-      TimeScalingType1,
-      TimeScalingType2>>
+  : visitors::ConstraintUnaryVisitorBase<
+      PGSConstraintProjectionStepVisitor<Scalar, BlockType, ImpulseType, VelocityType>>
   , PGSConstraintProjectionStepBase<Scalar>
   {
     typedef boost::fusion::vector<
       const Scalar,
       const BlockType &,
-      ForceType &,
+      ImpulseType &,
       VelocityType &,
-      DualToPosType &,
-      const TimeScalingType1 &,
-      const TimeScalingType2 &,
       Scalar &,
       Scalar &,
       Scalar &>
       ArgsType;
     typedef PGSConstraintProjectionStepBase<Scalar> Base;
-    typedef visitors::ConstraintUnaryVisitorBase<PGSConstraintProjectionStepVisitor<
-      Scalar,
-      BlockType,
-      ForceType,
-      VelocityType,
-      DualToPosType,
-      TimeScalingType1,
-      TimeScalingType2>>
+    typedef visitors::ConstraintUnaryVisitorBase<
+      PGSConstraintProjectionStepVisitor<Scalar, BlockType, ImpulseType, VelocityType>>
       VisitorBase;
 
     explicit PGSConstraintProjectionStepVisitor(const Scalar over_relax_value)
@@ -85,11 +63,8 @@ namespace pinocchio
       const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
       const Scalar over_relax_value,
       const Eigen::EigenBase<BlockType> & G_block,
-      ForceType & force,
+      ImpulseType & impulse,
       VelocityType & velocity,
-      DualToPosType & dual_to_pos,
-      const TimeScalingType1 & time_scaling_acc_to_constraints,
-      const TimeScalingType2 & time_scaling_constraints_to_pos,
       Scalar & complementarity,
       Scalar & primal_feasibility,
       Scalar & dual_feasibility)
@@ -99,10 +74,8 @@ namespace pinocchio
       PGSConstraintProjectionStep<ConstraintSet> step(
         over_relax_value,
         cmodel.derived().set()); // TODO(jcarpent): change cmodel.derived().set() -> cmodel.set()
-      step.project(G_block.derived(), force.const_cast_derived(), velocity.const_cast_derived());
-      dual_to_pos = velocity.array() * time_scaling_acc_to_constraints.array();
-      dual_to_pos.array() *= time_scaling_constraints_to_pos.array();
-      step.computeFeasibility(force, dual_to_pos);
+      step.project(G_block.derived(), impulse.const_cast_derived(), velocity.const_cast_derived());
+      step.computeFeasibility(impulse, velocity);
 
       complementarity = step.complementarity;
       dual_feasibility = step.dual_feasibility;
@@ -114,31 +87,23 @@ namespace pinocchio
     void run(
       const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
       const Eigen::EigenBase<BlockType> & G_block,
-      ForceType & force,
-      VelocityType & velocity,
-      DualToPosType & dual_to_pos,
-      const TimeScalingType1 & time_scaling_acc_to_constraints,
-      const TimeScalingType2 & time_scaling_constraints_to_pos)
+      ImpulseType & impulse,
+      VelocityType & velocity)
     {
       algo(
-        cmodel.derived(), this->over_relax_value, G_block.derived(), force, velocity, dual_to_pos,
-        time_scaling_acc_to_constraints, time_scaling_constraints_to_pos, this->complementarity,
-        this->primal_feasibility, this->dual_feasibility);
+        cmodel.derived(), this->over_relax_value, G_block.derived(), impulse, velocity,
+        this->complementarity, this->primal_feasibility, this->dual_feasibility);
     }
 
     template<int Options, template<typename S, int O> class ConstraintCollectionTpl>
     void run(
       const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       const Eigen::EigenBase<BlockType> & G_block,
-      ForceType & force,
-      VelocityType & velocity,
-      DualToPosType & dual_to_pos,
-      const TimeScalingType1 & time_scaling_acc_to_constraints,
-      const TimeScalingType2 & time_scaling_constraints_to_pos)
+      ImpulseType & impulse,
+      VelocityType & velocity)
     {
       ArgsType args(
-        this->over_relax_value, G_block.derived(), force, velocity, dual_to_pos,
-        time_scaling_acc_to_constraints, time_scaling_constraints_to_pos, this->complementarity,
+        this->over_relax_value, G_block.derived(), impulse, velocity, this->complementarity,
         this->primal_feasibility, this->dual_feasibility);
       this->run(cmodel.derived(), args);
     }
@@ -597,6 +562,7 @@ namespace pinocchio
     const bool stat_record)
 
   {
+    PINOCCHIO_UNUSED_VARIABLE(dt);
     const MatrixXs & G = delassus.undampedMatrix();
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       over_relax < Scalar(2) && over_relax > Scalar(0), "over_relax should lie in ]0,2[.")
@@ -614,12 +580,6 @@ namespace pinocchio
     }
 
     const size_t nc = constraint_models.size(); // num constraints
-
-    internal::getTimeScalingFromAccelerationToConstraints(
-      constraint_models, dt, time_scaling_acc_to_constraints);
-    internal::getTimeScalingFromConstraintsToPosition(
-      time_scaling_acc_to_constraints, dt, time_scaling_constraints_to_pos);
-    gs = g.array() / time_scaling_acc_to_constraints.array();
 
     int it = 1;
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
@@ -651,32 +611,22 @@ namespace pinocchio
         const Eigen::DenseIndex constraint_set_size = cmodel.activeSize();
 
         auto G_block = G.block(row_id, row_id, constraint_set_size, constraint_set_size);
-        auto force = x.segment(row_id, constraint_set_size);
+        auto impulse = x.segment(row_id, constraint_set_size);
 
         auto velocity = y.segment(row_id, constraint_set_size);
-        auto dual_to_pos = y_to_pos.segment(row_id, constraint_set_size);
-
-        auto time_scaling_acc_to_constraints_segment =
-          time_scaling_acc_to_constraints.segment(row_id, constraint_set_size);
-        auto time_scaling_constraints_to_pos_segment =
-          time_scaling_constraints_to_pos.segment(row_id, constraint_set_size);
 
         // Update dual variable
         velocity.noalias() = G.middleRows(row_id, constraint_set_size) * x;
-        velocity += gs.segment(row_id, constraint_set_size);
+        velocity += g.segment(row_id, constraint_set_size);
 
         typedef PGSConstraintProjectionStepVisitor<
-          Scalar, decltype(G_block), decltype(force), decltype(velocity), decltype(dual_to_pos),
-          decltype(time_scaling_acc_to_constraints_segment),
-          decltype(time_scaling_constraints_to_pos_segment)>
+          Scalar, decltype(G_block), decltype(impulse), decltype(velocity)>
           Step;
         Step step(over_relax);
-        step.run(
-          cmodel, G_block, force, velocity, dual_to_pos, time_scaling_acc_to_constraints_segment,
-          time_scaling_constraints_to_pos_segment);
+        step.run(cmodel, G_block, impulse, velocity);
         //        PGSConstraintProjectionStep<ConstraintSet> step(over_relax, set);
-        //        step.project(G_block, velocity, force);
-        //        step.computeFeasibility(velocity, force);
+        //        step.project(G_block, velocity, impulse);
+        //        step.computeFeasibility(velocity, impulse);
 
         // Update problem feasibility
         complementarity = math::max(complementarity, step.complementarity);
@@ -707,7 +657,7 @@ namespace pinocchio
       if (stat_record)
       {
         VectorXs tmp = G * x;
-        tmp += gs;
+        tmp += g;
         VectorXs rhs(tmp.size());
         if (solve_ncp)
         {
@@ -715,8 +665,6 @@ namespace pinocchio
           tmp += rhs;
         }
 
-        tmp.array() *=
-          time_scaling_acc_to_constraints.array(); // back to constraint formulation level
         rhs = tmp;
         internal::computeDualConeProjection(constraint_models, rhs, rhs);
         tmp -= rhs;
@@ -739,9 +687,6 @@ namespace pinocchio
 #endif // PINOCCHIO_WITH_HPP_FCL
 
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-
-    // Express the dual variable in the units of constraints
-    y.array() *= time_scaling_acc_to_constraints.array();
 
     this->absolute_residual = math::max(complementarity, dual_feasibility);
     this->relative_residual = proximal_metric;
