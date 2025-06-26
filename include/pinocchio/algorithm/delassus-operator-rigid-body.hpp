@@ -166,22 +166,28 @@ namespace pinocchio
       bool apply_on_the_right = true,
       bool solve_in_place = true);
 
-    DenseMatrix matrix(bool enforce_symmetry = false) const
+    template<typename MatrixType>
+    void matrix(const Eigen::MatrixBase<MatrixType> & res, bool enforce_symmetry = false) const
     {
-      DenseMatrix res(this->size(), this->size());
-
+      MatrixType & res_ = res.const_cast_derived();
       typedef Eigen::Map<VectorXs> MapVectorXs;
       MapVectorXs x = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, this->size(), 1));
 
       for (Eigen::DenseIndex i = 0; i < this->size(); ++i)
       {
         x = VectorXs::Unit(this->size(), i);
-        this->applyOnTheRight(x, res.col(i));
+        this->applyOnTheRight(x, res_.col(i));
       }
       if (enforce_symmetry)
       {
-        res = 0.5 * (res + res.transpose());
+        res_ = 0.5 * (res_ + res_.transpose());
       }
+    }
+
+    DenseMatrix matrix(bool enforce_symmetry = false) const
+    {
+      DenseMatrix res(this->size(), this->size());
+      matrix(enforce_symmetry, res);
       return res;
     }
 
