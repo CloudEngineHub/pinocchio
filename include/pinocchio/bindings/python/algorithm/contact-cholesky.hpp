@@ -117,7 +117,7 @@ namespace pinocchio
               Self & self, const Model &, Data &, const RigidConstraintModelVector &,
               RigidConstraintDataVector &, const Scalar, const bool))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("contact_models"),
-             bp::arg("contact_datas"), bp::arg("mu") = 0, bp::arg("skip_update_damping") = false),
+             bp::arg("contact_datas"), bp::arg("mu") = 0),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
             "related to the system mass matrix and the Jacobians of the contact patches contained "
             "in\n"
@@ -131,7 +131,7 @@ namespace pinocchio
               Self & self, const Model &, Data &, const RigidConstraintModelVector &,
               RigidConstraintDataVector &, const Vector &, const bool))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("contact_models"),
-             bp::arg("contact_datas"), bp::arg("mus"), bp::arg("skip_update_damping") = false),
+             bp::arg("contact_datas"), bp::arg("mus")),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
             "related to the system mass matrix and the Jacobians of the contact patches contained "
             "in\n"
@@ -145,8 +145,7 @@ namespace pinocchio
               Self & self, const Model &, Data &, const ConstraintModelVector &,
               ConstraintDataVector &, const Scalar, const bool))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
-             bp::arg("constraint_datas"), bp::arg("mu") = 0,
-             bp::arg("skip_update_damping") = false),
+             bp::arg("constraint_datas"), bp::arg("mu") = 0),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
             "related to the system mass matrix and the Jacobians of the contact patches contained "
             "in\n"
@@ -159,7 +158,7 @@ namespace pinocchio
               Self & self, const Model &, Data &, const ConstraintModelVector &,
               ConstraintDataVector &, const Vector &, const bool))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
-             bp::arg("constraint_datas"), bp::arg("mus"), bp::arg("skip_update_damping") = false),
+             bp::arg("constraint_datas"), bp::arg("mus")),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
             "related to the system mass matrix and the Jacobians of the contact patches contained "
             "in\n"
@@ -332,10 +331,9 @@ namespace pinocchio
         Data & data,
         const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
         std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
-        const Scalar mu = static_cast<Scalar>(0),
-        const bool skip_update_damping = false)
+        const Scalar mu = static_cast<Scalar>(0))
       {
-        self.compute(model, data, contact_models, contact_datas, mu, skip_update_damping);
+        self.compute(model, data, contact_models, contact_datas, mu);
       }
 
       template<
@@ -349,10 +347,9 @@ namespace pinocchio
         Data & data,
         const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
         std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
-        const Vector & mus,
-        const bool skip_update_damping = false)
+        const Vector & mus)
       {
-        self.compute(model, data, contact_models, contact_datas, mus, skip_update_damping);
+        self.compute(model, data, contact_models, contact_datas, mus);
       }
     };
 
