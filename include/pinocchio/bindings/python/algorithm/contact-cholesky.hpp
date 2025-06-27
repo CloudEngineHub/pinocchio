@@ -115,7 +115,7 @@ namespace pinocchio
             "compute",
             (void (*)(
               Self & self, const Model &, Data &, const RigidConstraintModelVector &,
-              RigidConstraintDataVector &, const Scalar, const bool))&compute,
+              RigidConstraintDataVector &, const Scalar))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("contact_models"),
              bp::arg("contact_datas"), bp::arg("mu") = 0),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
@@ -129,7 +129,7 @@ namespace pinocchio
             "compute",
             (void (*)(
               Self & self, const Model &, Data &, const RigidConstraintModelVector &,
-              RigidConstraintDataVector &, const Vector &, const bool))&compute,
+              RigidConstraintDataVector &, const Vector &))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("contact_models"),
              bp::arg("contact_datas"), bp::arg("mus")),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
@@ -143,7 +143,7 @@ namespace pinocchio
             "compute",
             (void (*)(
               Self & self, const Model &, Data &, const ConstraintModelVector &,
-              ConstraintDataVector &, const Scalar, const bool))&compute,
+              ConstraintDataVector &, const Scalar))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
              bp::arg("constraint_datas"), bp::arg("mu") = 0),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
@@ -156,7 +156,7 @@ namespace pinocchio
             "compute",
             (void (*)(
               Self & self, const Model &, Data &, const ConstraintModelVector &,
-              ConstraintDataVector &, const Vector &, const bool))&compute,
+              ConstraintDataVector &, const Vector &))&compute,
             (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
              bp::arg("constraint_datas"), bp::arg("mus")),
             "Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix\n"
