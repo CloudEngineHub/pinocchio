@@ -149,15 +149,22 @@ namespace pinocchio
       return delassus_matrix.cols();
     }
 
-    Matrix matrix(bool enforce_symmetry = false) const
+    template<typename MatrixType>
+    void matrix(const Eigen::MatrixBase<MatrixType> & mat, bool enforce_symmetry = false) const
     {
-      mat_tmp = delassus_matrix;
-      mat_tmp += damping.asDiagonal();
-      mat_tmp += compliance.asDiagonal();
+      MatrixType & mat_ = mat.const_cast_derived();
+      mat_ = delassus_matrix;
+      mat_ += damping.asDiagonal();
+      mat_ += compliance.asDiagonal();
       if (enforce_symmetry)
       {
-        enforceSymmetry(mat_tmp);
+        enforceSymmetry(mat_);
       }
+    }
+
+    Matrix matrix(bool enforce_symmetry = false) const
+    {
+      matrix(mat_tmp, enforce_symmetry);
       return mat_tmp;
     }
 
