@@ -418,15 +418,21 @@ namespace pinocchio
       rhs = -(g + s_ - (rho * tau) * y_ - mu_prox * x_ - z_);
       {
         PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop solveInPlace");
-        G.solveInPlace(rhs);
+        x_ = rhs;
+        G.solveInPlace(x_);
       }
-      x_ = rhs;
+      if (stat_record)
+      {
+        G.applyOnTheRight(x_, tmp);
+        Scalar linear_system_residual = (tmp - rhs).template lpNorm<Eigen::Infinity>();
+        stats.linear_system_residual.push_back(linear_system_residual);
+      }
 
       // y-update
-      rhs -= z_ / (tau * rho);
       {
         PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop computeConeProjection");
-        internal::computeConeProjection(constraint_models, rhs, y_);
+        tmp = x_ - z_ / (tau * rho);
+        internal::computeConeProjection(constraint_models, tmp, y_);
       }
 
       // z-update
@@ -436,23 +442,23 @@ namespace pinocchio
       primal_feasibility_vector = x_ - y_;
 
       {
-        VectorXs & dx = rhs;
+        VectorXs & dx = tmp;
         dx = x_ - x_previous_;
-        dx_norm = dx.template lpNorm<Eigen::Infinity>(); // check relative progress on x_bar
+        dx_norm = dx.template lpNorm<Eigen::Infinity>(); // check relative progress on x
         dual_feasibility_vector = mu_prox * dx;
       }
 
       {
-        VectorXs & dy = rhs;
+        VectorXs & dy = tmp;
         dy = y_ - y_previous_;
-        dy_norm = dy.template lpNorm<Eigen::Infinity>(); // check relative progress on y_bar
+        dy_norm = dy.template lpNorm<Eigen::Infinity>(); // check relative progress on y
         dual_feasibility_vector += (tau * rho) * dy;
       }
 
       {
-        VectorXs & dz = rhs;
+        VectorXs & dz = tmp;
         dz = z_ - z_previous_;
-        dz_norm = dz.template lpNorm<Eigen::Infinity>(); // check relative progress on z_bar
+        dz_norm = dz.template lpNorm<Eigen::Infinity>(); // check relative progress on z
       }
 
       primal_feasibility = primal_feasibility_vector.template lpNorm<Eigen::Infinity>();

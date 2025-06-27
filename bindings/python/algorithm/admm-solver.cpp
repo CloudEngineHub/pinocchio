@@ -389,6 +389,7 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, dual_feasibility_ncp, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, complementarity, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, rho, "")
+          .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, linear_system_residual, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(
             SolverStats, it, "Number of iterations performed by the algorithm.")
           .PINOCCHIO_ADD_PROPERTY_READONLY(

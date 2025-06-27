@@ -230,12 +230,14 @@ namespace pinocchio
       void reserve(const int max_it)
       {
         rho.reserve(size_t(max_it));
+        linear_system_residual.reserve(size_t(max_it));
       }
 
       void reset()
       {
         Base::SolverStats::reset();
         rho.clear();
+        linear_system_residual.clear();
         cholesky_update_count = 0;
       }
 
@@ -244,6 +246,9 @@ namespace pinocchio
 
       /// \brief History of rho values.
       std::vector<Scalar> rho;
+
+      /// \brief History of linear system residual.
+      std::vector<Scalar> linear_system_residual;
     };
 
     //
