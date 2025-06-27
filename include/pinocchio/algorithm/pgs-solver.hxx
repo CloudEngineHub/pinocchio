@@ -547,12 +547,13 @@ namespace pinocchio
 
   template<typename _Scalar>
   template<
+    typename MatrixType,
     typename VectorLike,
     template<typename T> class Holder,
     typename ConstraintModel,
     typename ConstraintModelAllocator>
   bool PGSContactSolverTpl<_Scalar>::solve(
-    const DelassusOperatorDense & delassus,
+    const Eigen::MatrixBase<MatrixType> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
     const Scalar dt,
@@ -563,9 +564,9 @@ namespace pinocchio
 
   {
     PINOCCHIO_UNUSED_VARIABLE(dt);
-    const MatrixXs & G = delassus.undampedMatrix();
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       over_relax < Scalar(2) && over_relax > Scalar(0), "over_relax should lie in ]0,2[.")
+    const MatrixType & G = delassus.derived();
     PINOCCHIO_CHECK_ARGUMENT_SIZE(g.size(), this->getProblemSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(G.rows(), this->getProblemSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(G.cols(), this->getProblemSize());
@@ -699,9 +700,13 @@ namespace pinocchio
   }
 
   template<typename _Scalar>
-  template<typename VectorLike, typename ConstraintModel, typename ConstraintModelAllocator>
+  template<
+    typename MatrixType,
+    typename VectorLike,
+    typename ConstraintModel,
+    typename ConstraintModelAllocator>
   bool PGSContactSolverTpl<_Scalar>::solve(
-    const DelassusOperatorDense & delassus,
+    const Eigen::MatrixBase<MatrixType> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const Scalar dt,
