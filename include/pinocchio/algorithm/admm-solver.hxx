@@ -198,8 +198,8 @@ namespace pinocchio
 
     typedef ADMMUpdateRuleContainerTpl<Scalar> ADMMUpdateRuleContainer;
 
-    typedef DelassusOperatorPreconditionedTpl<DelassusDerived, DiagonalPreconditioner>
-      DelassusOperatorPreconditioned;
+    // typedef DelassusOperatorPreconditionedTpl<DelassusDerived, DiagonalPreconditioner>
+    //   DelassusOperatorPreconditioned;
     DelassusDerived & G = _delassus.derived();
 
     const Scalar mu_R = G.getCompliance().minCoeff();
