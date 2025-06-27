@@ -374,9 +374,11 @@ namespace pinocchio
         rho = this->rho; // use the rho value stored in the solver.
       break;
     }
+    const Scalar rho_min = 1e-6;
+    const Scalar rho_max = 1e6;
 
     // clamp the rho
-    rho = math::max(1e-8, rho);
+    rho = math::max(math::min(rho, rho_max), rho_min);
 
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
 
@@ -533,7 +535,7 @@ namespace pinocchio
       }
 
       // clamp rho
-      rho = math::max(1e-8, rho);
+      rho = math::max(math::min(rho, rho_max), rho_min);
 
       // Account for potential update of rho
       if (update_delassus_factorization)
@@ -566,16 +568,8 @@ namespace pinocchio
     if (admm_update_rule == ADMMUpdateRule::SPECTRAL)
     {
       this->rho_power = ADMMSpectralUpdateRule::computeRhoPower(L, m, rho);
-      this->rho = rho;
     }
-    else if (admm_update_rule == ADMMUpdateRule::LINEAR)
-    {
-      this->rho = rho;
-    }
-    else
-    {
-      this->rho = rho;
-    }
+    this->rho = rho;
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
