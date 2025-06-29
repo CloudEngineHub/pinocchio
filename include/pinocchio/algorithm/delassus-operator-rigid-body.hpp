@@ -187,7 +187,7 @@ namespace pinocchio
     DenseMatrix matrix(bool enforce_symmetry = false) const
     {
       DenseMatrix res(this->size(), this->size());
-      matrix(enforce_symmetry, res);
+      matrix(res, enforce_symmetry);
       return res;
     }
 
