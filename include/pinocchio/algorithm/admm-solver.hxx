@@ -428,6 +428,10 @@ namespace pinocchio
         G.applyOnTheRight(x_, tmp);
         Scalar linear_system_residual = (tmp - rhs).template lpNorm<Eigen::Infinity>();
         stats.linear_system_residual.push_back(linear_system_residual);
+
+        G.solveInPlace(tmp);
+        Scalar linear_system_consistency = (tmp - x_).template lpNorm<Eigen::Infinity>();
+        stats.linear_system_consistency.push_back(linear_system_consistency);
       }
 
       // y-update
