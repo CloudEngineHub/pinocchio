@@ -637,44 +637,7 @@ namespace pinocchio
     }
 
     template<typename DelassusDerived>
-    Scalar computeDelassusLargestEigenvalue(const DelassusOperatorBase<DelassusDerived> & delassus)
-    {
-      const DelassusDerived G = delassus.derived();
-      Scalar L = Scalar(-1);
-      if (this->problem_size > 1)
-      {
-        PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - lanczos");
-        this->lanczos_decomposition.compute(G);
-        L = ::pinocchio::computeLargestEigenvalue(this->lanczos_decomposition.Ts(), 1e-8);
-#ifndef NDEBUG
-        const bool enforce_symmetry = true;
-        Eigen::MatrixXd delassus = G.matrix(enforce_symmetry);
-        Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(delassus);
-        Eigen::VectorXd eigvals = solver.eigenvalues();
-        Scalar true_L = eigvals.maxCoeff();
-        PINOCCHIO_UNUSED_VARIABLE(true_L);
-          //          if (true_m > 0)
-          //          {
-          //            assert(
-          //              math::fabs((true_m - m) / math::max(true_m, m)) < 0.01
-          //              && "true_m and m are too far apart.");
-          //          }
-          // assert(
-          //   math::fabs((true_L - L) / math::max(true_L, L)) < 0.01
-          //   && "true_L and L are too far apart.");
-#endif // NDEBUG
-      }
-      else
-      {
-        // TODO adapt this with Gbar
-        typedef Eigen::Matrix<Scalar, 1, 1> Vector1;
-        const Vector1 Gvec = G * Vector1::Constant(1);
-        L = Gvec.coeff(0);
-      }
-
-      assert(L > 0 && "L must be positive.");
-      return L;
-    }
+    Scalar computeDelassusLargestEigenvalue(const DelassusOperatorBase<DelassusDerived> & delassus);
 
   protected:
     bool is_initialized;
