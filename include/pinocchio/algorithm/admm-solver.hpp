@@ -585,6 +585,11 @@ namespace pinocchio
       return s_;
     }
 
+    bool isInitialized() const
+    {
+      return this->is_initialized;
+    }
+
   protected:
     bool is_initialized;
 
