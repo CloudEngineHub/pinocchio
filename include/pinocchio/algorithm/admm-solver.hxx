@@ -312,6 +312,7 @@ namespace pinocchio
 
     Scalar m = mu_R + mu_prox;
     Scalar L = Scalar(-1); // not yet computed
+    bool delassus_largest_eigenvalue_computed = false;
     Scalar rho;
     if (rho0)
     {
@@ -321,6 +322,7 @@ namespace pinocchio
     {
       // Compute rho with spectral rule
       L = computeDelassusLargestEigenvalue(G);
+      delassus_largest_eigenvalue_computed = true;
       rho = ADMMSpectralUpdateRule::computeRho(L, m, rho_power);
     }
 
@@ -331,10 +333,11 @@ namespace pinocchio
     switch (admm_update_rule)
     {
     case (ADMMUpdateRule::SPECTRAL): {
-      if (rho0 != boost::none)
+      if (!delassus_largest_eigenvalue_computed)
       {
         // L has not yet been computed, we compute it
         L = computeDelassusLargestEigenvalue(G);
+        delassus_largest_eigenvalue_computed = true;
       }
       admm_update_rule_container.spectral_rule =
         ADMMSpectralUpdateRule(ratio_primal_dual, L, m, rho_power_factor);
