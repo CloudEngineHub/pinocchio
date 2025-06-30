@@ -394,13 +394,13 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
          ++constraint_id, ++row_id)
     {
-      const auto product =
-        if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value) res.row(row_id).noalias() -=
+      const auto lazy_product_expression =
         -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
         * mat.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]);
-      else res.row(row_id).noalias() +=
-        -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
-        * mat.middxleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]);
+      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+        res.row(row_id).noalias() -= lazy_product_expression;
+      else
+        res.row(row_id).noalias() += lazy_product_expression;
     }
   }
 
@@ -434,16 +434,15 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
          ++constraint_id, ++row_id)
     {
+      const auto lazy_product_expression =
+        -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id]).transpose()
+        * mat.row(row_id);
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]).noalias() -=
-          -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
-             .transpose()
-          * mat.row(row_id);
+          lazy_product_expression;
       else
         res.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]).noalias() +=
-          -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
-             .transpose()
-          * mat.row(row_id);
+          lazy_product_expression;
     }
   }
 
