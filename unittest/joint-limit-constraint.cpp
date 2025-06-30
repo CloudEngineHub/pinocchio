@@ -323,7 +323,8 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
   JointLimitConstraintData constraint_data(constraint_model);
 
   const double eps_fd = 1e-8;
-  for (int i = 0; i < 1e4; ++i)
+  const int num_tests = 1e4;
+  for (int i = 0; i < num_tests; ++i)
   {
     const Eigen::VectorXd q0 = randomConfiguration(model, qmin, qmax);
     int active_size = 0;
@@ -387,7 +388,7 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
       }
       jacobian_matrix_fd.col(k) =
         (constraint_data_fd.constraint_residual - constraint_data.constraint_residual) / eps_fd;
-      BOOST_CHECK(jacobian_matrix.col(k).isApprox(jacobian_matrix_fd.col(k), math::sqrt(eps_fd)));
+      BOOST_CHECK((jacobian_matrix.col(k) - jacobian_matrix_fd.col(k)).isZero(math::sqrt(eps_fd)));
     }
 
     if (ok_to_check)
