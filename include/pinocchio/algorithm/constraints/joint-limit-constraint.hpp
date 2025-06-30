@@ -341,7 +341,7 @@ namespace pinocchio
       const ConstraintData & cdata,
       const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const;
-      
+
     /// \brief Returns the vector of the active indexes associated with a given row
     /// This vector is computed when calling the calc method.
     const VectorOfSize & getActiveSetIndexes() const
@@ -584,11 +584,13 @@ namespace pinocchio
     /// @brief nq size given the considered joints
     /// nq_reduce = SUM(j in activable_joints) j.nq
     int nq_reduce;
-    /// @brief maximum nv size off all atomic (even if there is some composite) in all
+    /// @brief maximum nv size of all atomic (even if there is some composite) in all
     /// activable_joints
     int nv_max_atom;
-    /// @brief number of lower bound limite activable and active
-    int lower_activable_size, lower_active_size;
+    /// @brief number of activable lower bound limits
+    int lower_activable_size;
+    /// @brief number of active lower bound limits activable
+    int lower_active_size;
 
     /// @brief Sparsity pattern for each considered joint. size nja
     VectorOfBooleanVector row_sparsity_pattern;

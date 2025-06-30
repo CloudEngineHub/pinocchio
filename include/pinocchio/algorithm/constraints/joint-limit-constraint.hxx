@@ -112,17 +112,17 @@ namespace pinocchio
         nq_reduce += nq;
 
         // Compute the sparsity pattern of the joint
-        const auto & jsupport = model.supports[joint_id];
+        const auto & joint_support = model.supports[joint_id];
         extended_support.clear();
-        for (size_t i = 1; i < jsupport.size() - 1; ++i)
+        for (size_t i = 1; i < joint_support.size() - 1; ++i)
         {
-          const JointIndex jsupport_id = jsupport[i];
-          const JointModel & jsupport = model.joints[jsupport_id];
-          const int jsupport_nv = jsupport.nv();
-          const int jsupport_idx_v = jsupport.idx_v();
-          for (int k = 0; k < jsupport_nv; ++k)
+          const JointIndex joint_support_id = joint_support[i];
+          const JointModel & joint_support = model.joints[joint_support_id];
+          const int joint_support_nv = joint_support.nv();
+          const int joint_support_idx_v = joint_support.idx_v();
+          for (int k = 0; k < joint_support_nv; ++k)
           {
-            const int extended_row_id = jsupport_idx_v + k;
+            const int extended_row_id = joint_support_idx_v + k;
             extended_support.push_back(extended_row_id);
           }
         }
@@ -141,7 +141,7 @@ namespace pinocchio
     int activable_size = lower_activable_size + upper_activable_size;
     PINOCCHIO_UNUSED_VARIABLE(activable_size);
 
-    // Recompose one vectors for all constraint with convention lower | upper
+    // Recompose one vectors for all constraint with the convention lower | upper
     activable_idx_rows.insert(
       activable_idx_rows.end(), activable_idx_rows_upper.begin(), activable_idx_rows_upper.end());
     activable_idx_qs_reduce.insert(
@@ -151,7 +151,7 @@ namespace pinocchio
       activable_idx_qs.end(), activable_idx_qs_upper.begin(), activable_idx_qs_upper.end());
     assert(size() == activable_size);
 
-    // Fill bound limit and margin for lower and upper constraint
+    // Fill bound limit and margin for lower and upper constraints
     // Another strategy could be to query the model again but it is not coherent with the existing
     // constructors.
     bound_position_limit = VectorXs::Zero(Eigen::DenseIndex(size()));
@@ -214,15 +214,13 @@ namespace pinocchio
     m_compliance = ComplianceVectorType::Zero(size());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
 
-    // Allocate the maximum size for the dynamic quantity
+    // Allocate the maximum size for the dynamic quantities
     lower_active_size = 0;
     active_set_indexes.reserve(r_size);
     active_idx_rows.reserve(r_size);
     active_idx_qs_reduce.reserve(r_size);
     active_nvs.reserve(r_size);
     active_idx_vs.reserve(r_size);
-    // active_compliance_storage.resize(size()) would allocate double size...
-    // active_compliance_storage.resize(0);  and we resize again
     active_compliance_storage.reserve(size());
     assert(activeSize() == lowerActiveSize() == upperActiveSize() == 0);
   }
@@ -258,7 +256,7 @@ namespace pinocchio
     // However it imply double referencing in all jacobian methods
     // And for one call of resize/calc, their can be multiple call to jacobian methods !
 
-    // Lower
+    // Lower bounds
     for (std::size_t i = 0; i < static_cast<std::size_t>(lowerSize()); i++)
     {
       const Eigen::DenseIndex ie = static_cast<Eigen::DenseIndex>(i);
@@ -274,7 +272,7 @@ namespace pinocchio
         lower_active_size += 1;
       }
     }
-    // Upper
+    // Upper bounds
     for (std::size_t i = static_cast<std::size_t>(lowerSize());
          i < static_cast<std::size_t>(size()); i++)
     {
@@ -299,12 +297,13 @@ namespace pinocchio
     active_compliance_storage.resize(active_size);
     for (int active_row_index = 0; active_row_index < active_size; active_row_index++)
     {
-      active_compliance[active_row_index] = m_compliance[static_cast<int>(
-        active_set_indexes[static_cast<std::size_t>(active_row_index)])];
+      const auto extended_index =
+        Eigen::DenseIndex(active_set_indexes[std::size_t(active_row_index)]);
+      active_compliance[active_row_index] = m_compliance[extended_index];
     }
 
     // Resize the constraint set so it corresponds to the active set.
-    m_set.resize(Eigen::DenseIndex(lowerActiveSize()), Eigen::DenseIndex(upperActiveSize()));
+    m_set.resize(lowerActiveSize(), upperActiveSize());
   }
 
   template<typename Scalar, int Options>
@@ -354,14 +353,14 @@ namespace pinocchio
       jacobian_matrix.cols(), model.nv,
       "The input/output Jacobian matrix does not have the right number of cols.");
 
+    const CompactTangentMap_t & CTM = cdata.compact_tangent_map;
     jacobian_matrix.setZero();
-    const CompactTangentMap_t & TMc = cdata.compact_tangent_map;
     Eigen::DenseIndex row_id = 0;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
          ++constraint_id, ++row_id)
     {
       jacobian_matrix.block(row_id, active_idx_vs[constraint_id], 1, active_nvs[constraint_id]) =
-        -TMc.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id]);
+        -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id]);
     }
   }
 
@@ -390,19 +389,18 @@ namespace pinocchio
     if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
-    const CompactTangentMap_t & TMc = cdata.compact_tangent_map;
+    const CompactTangentMap_t & CTM = cdata.compact_tangent_map;
     Eigen::DenseIndex row_id = 0;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
          ++constraint_id, ++row_id)
     {
-      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
-        res.row(row_id) -=
-          -TMc.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
-          * mat.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]);
-      else
-        res.row(row_id) +=
-          -TMc.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
-          * mat.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]);
+      const auto product =
+        if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value) res.row(row_id).noalias() -=
+        -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
+        * mat.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]);
+      else res.row(row_id).noalias() +=
+        -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
+        * mat.middxleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]);
     }
   }
 
@@ -431,19 +429,19 @@ namespace pinocchio
     if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
-    const CompactTangentMap_t & TMc = cdata.compact_tangent_map;
+    const CompactTangentMap_t & CTM = cdata.compact_tangent_map;
     Eigen::DenseIndex row_id = 0;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
          ++constraint_id, ++row_id)
     {
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
-        res.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]) -=
-          -TMc.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
+        res.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]).noalias() -=
+          -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
              .transpose()
           * mat.row(row_id);
       else
-        res.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]) +=
-          -TMc.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
+        res.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]).noalias() +=
+          -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
              .transpose()
           * mat.row(row_id);
     }
