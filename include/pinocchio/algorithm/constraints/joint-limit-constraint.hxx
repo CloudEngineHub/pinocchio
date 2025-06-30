@@ -74,7 +74,7 @@ namespace pinocchio
       const int idx_v = jmodel.idx_v();
       const int nq = jmodel.nq();
       const int nv = jmodel.nv();
-      const auto has_configuration_limit = jmodel.hasConfigurationLimit();
+      const auto & has_configuration_limit = jmodel.hasConfigurationLimit();
 
       bool is_joint_really_active = false;
       for (int j_qi = 0; j_qi < nq; ++j_qi)
