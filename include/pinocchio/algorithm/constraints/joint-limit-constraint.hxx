@@ -353,7 +353,7 @@ namespace pinocchio
       jacobian_matrix.cols(), model.nv,
       "The input/output Jacobian matrix does not have the right number of cols.");
 
-    const CompactTangentMap_t & CTM = cdata.compact_tangent_map;
+    const CompactTangentMap & CTM = cdata.compact_tangent_map;
     jacobian_matrix.setZero();
     Eigen::DenseIndex row_id = 0;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
@@ -389,7 +389,7 @@ namespace pinocchio
     if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
-    const CompactTangentMap_t & CTM = cdata.compact_tangent_map;
+    const CompactTangentMap & CTM = cdata.compact_tangent_map;
     Eigen::DenseIndex row_id = 0;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
          ++constraint_id, ++row_id)
@@ -429,7 +429,7 @@ namespace pinocchio
     if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
-    const CompactTangentMap_t & CTM = cdata.compact_tangent_map;
+    const CompactTangentMap & CTM = cdata.compact_tangent_map;
     Eigen::DenseIndex row_id = 0;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
          ++constraint_id, ++row_id)

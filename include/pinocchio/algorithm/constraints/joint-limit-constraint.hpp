@@ -142,7 +142,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef VectorXs VectorConstraintSize;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
-      CompactTangentMap_t;
+      CompactTangentMap;
 
     JointLimitConstraintModelTpl()
     : active_compliance(active_compliance_storage.map())
@@ -641,7 +641,7 @@ namespace pinocchio
     typedef JointLimitConstraintModelTpl<Scalar, Options> ConstraintModel;
 
     typedef typename ConstraintModel::VectorXs VectorXs;
-    typedef typename ConstraintModel::CompactTangentMap_t CompactTangentMap_t;
+    typedef typename ConstraintModel::CompactTangentMap CompactTangentMap;
     typedef typename ConstraintModel::EigenStorageVector EigenStorageVector;
     typedef typename ConstraintModel::Base::BooleanVector BooleanVector;
     typedef typename ConstraintModel::Base::EigenIndexVector EigenIndexVector;
@@ -662,7 +662,7 @@ namespace pinocchio
 
     explicit JointLimitConstraintDataTpl(const ConstraintModel & constraint_model)
     : compact_tangent_map(
-        CompactTangentMap_t::Zero(constraint_model.getNqReduce(), constraint_model.getNvMaxAtom()))
+        CompactTangentMap::Zero(constraint_model.getNqReduce(), constraint_model.getNvMaxAtom()))
     , activable_constraint_residual(constraint_model.size())
     , constraint_residual_storage(constraint_model.size())
     , constraint_residual(constraint_residual_storage.map())
@@ -698,7 +698,7 @@ namespace pinocchio
     }
 
     /// @brief Compact storage of the tangent map
-    CompactTangentMap_t compact_tangent_map;
+    CompactTangentMap compact_tangent_map;
 
     /// \brief Residual of all the activable constraints
     VectorXs activable_constraint_residual;
