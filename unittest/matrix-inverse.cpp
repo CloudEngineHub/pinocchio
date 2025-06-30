@@ -71,7 +71,6 @@ BOOST_AUTO_TEST_CASE(test_generated_inverse)
 template<int size>
 void test_matrix_inverse_on_dynamic_matrix_impl()
 {
-  std::cout << "size: " << size << std::endl;
   typedef DynamicMatrix Matrix;
   for (int i = 0; i < N; ++i)
   {
@@ -88,8 +87,14 @@ void test_matrix_inverse_on_dynamic_matrix_impl()
 
     Matrix res = Matrix::Zero(size, size);
     matrix_inversion(mat, res);
-    BOOST_CHECK((res * mat).isIdentity(1e-8));
-    BOOST_CHECK(mat.inverse().isApprox(res, 1e-8));
+
+    const double max_mat_value = mat.array().abs().maxCoeff();
+    const double max_res_value = res.array().abs().maxCoeff();
+    const double max_value = std::max(max_mat_value, max_res_value);
+    const double check_tol = max_value * 1e-12;
+
+    BOOST_CHECK((res * mat).isIdentity(check_tol));
+    BOOST_CHECK(mat.inverse().isApprox(res, check_tol));
 
     // Direct call to the method
     Matrix res2 = Matrix::Zero(size, size);
