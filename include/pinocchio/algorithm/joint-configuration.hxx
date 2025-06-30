@@ -688,7 +688,7 @@ namespace pinocchio
   void indexvInfo(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
-      joint_selection,
+      joint_ids,
     std::vector<int> & nvs,
     std::vector<int> & idx_vs)
   {
@@ -697,9 +697,9 @@ namespace pinocchio
 
     typename IndexvInfoStep::ArgsType args(nvs, idx_vs);
 
-    for (size_t i = 0; i < joint_selection.size(); ++i)
+    for (const auto joint_id : joint_ids)
     {
-      IndexvInfoStep::run(model.joints[joint_selection[i]], args);
+      IndexvInfoStep::run(model.joints[joint_id], args);
     }
   }
 

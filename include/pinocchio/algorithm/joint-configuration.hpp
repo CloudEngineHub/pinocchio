@@ -1331,11 +1331,11 @@ namespace pinocchio
 
   /**
    *
-   * @brief         Return two vector of size nq where for each, the idx_v and v associated to the
+   * @brief         Return two vector where for each, the idx_v and v associated to the
    * same atomic joint is given.
    *
    * @param[in]     model            Model of the kinematic tree.
-   * @param[in]     joint_selection  Joint to condider to compute the tangentMap
+   * @param[in]     joint_ids        Joint to condider to compute the tangentMap
    * @param[out]    nvs              For each id give the nv of the associated joint
    * @param[out]    idx_vs           For each id give the idx_v of the associated joint
    *
@@ -1347,7 +1347,7 @@ namespace pinocchio
   void indexvInfo(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
-      joint_selection,
+      joint_ids,
     std::vector<int> & nvs,
     std::vector<int> & idx_vs);
 
