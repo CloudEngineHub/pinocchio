@@ -359,8 +359,8 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
          ++constraint_id, ++row_id)
     {
-      jacobian_matrix.block(row_id, active_idx_vs[constraint_id], 1, active_nvs[constraint_id]) =
-        -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id]);
+      jacobian_matrix.row(row_id).segment(active_idx_vs[constraint_id], active_nvs[constraint_id]) =
+        -CTM.row(active_idx_qs_reduce[constraint_id]).head(active_nvs[constraint_id]);
     }
   }
 
@@ -395,7 +395,7 @@ namespace pinocchio
          ++constraint_id, ++row_id)
     {
       const auto lazy_product_expression =
-        -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id])
+        -CTM.row(active_idx_qs_reduce[constraint_id]).head(active_nvs[constraint_id])
         * mat.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]);
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(row_id).noalias() -= lazy_product_expression;
@@ -435,7 +435,7 @@ namespace pinocchio
          ++constraint_id, ++row_id)
     {
       const auto lazy_product_expression =
-        -CTM.block(active_idx_qs_reduce[constraint_id], 0, 1, active_nvs[constraint_id]).transpose()
+        -CTM.row(active_idx_qs_reduce[constraint_id]).head(active_nvs[constraint_id]).transpose()
         * mat.row(row_id);
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.middleRows(active_idx_vs[constraint_id], active_nvs[constraint_id]).noalias() -=
