@@ -295,7 +295,6 @@ namespace pinocchio
 
       cl.def(ContactSolverBasePythonVisitor<Solver>())
 
-        .def("setRho", &Solver::setRho, bp::args("self", "rho"), "Set the ADMM penalty value.")
         .def("getRho", &Solver::getRho, bp::arg("self"), "Get the ADMM penalty value.")
 
         .def(
