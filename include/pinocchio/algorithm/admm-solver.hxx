@@ -194,6 +194,7 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(preconditioner);
 
     typedef ADMMSpectralUpdateRuleTpl<Scalar> ADMMSpectralUpdateRule;
+    typedef ADMMOSQPUpdateRuleTpl<Scalar> ADMMOSQPUpdateRule;
     typedef ADMMLinearUpdateRuleTpl<Scalar> ADMMLinearUpdateRule;
 
     typedef ADMMUpdateRuleContainerTpl<Scalar> ADMMUpdateRuleContainer;
@@ -343,6 +344,9 @@ namespace pinocchio
         ADMMSpectralUpdateRule(ratio_primal_dual, L, m, rho_power_factor);
       break;
     }
+    case (ADMMUpdateRule::OSQP):
+      admm_update_rule_container.osqp_rule = ADMMOSQPUpdateRule(ratio_primal_dual, 1e-8);
+      break;
     case (ADMMUpdateRule::LINEAR):
       admm_update_rule_container.linear_rule =
         ADMMLinearUpdateRule(ratio_primal_dual, linear_update_rule_factor);
@@ -507,6 +511,10 @@ namespace pinocchio
         case (ADMMUpdateRule::SPECTRAL):
           update_delassus_factorization = admm_update_rule_container.spectral_rule.eval(
             primal_feasibility, dual_feasibility, rho);
+          break;
+        case (ADMMUpdateRule::OSQP):
+          update_delassus_factorization =
+            admm_update_rule_container.osqp_rule.eval(primal_feasibility, dual_feasibility, rho);
           break;
         case (ADMMUpdateRule::LINEAR):
           update_delassus_factorization =

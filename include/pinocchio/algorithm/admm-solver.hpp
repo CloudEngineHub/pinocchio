@@ -148,9 +148,43 @@ namespace pinocchio
     Scalar increase_factor, decrease_factor;
   };
 
+  template<typename _Scalar>
+  struct ADMMOSQPUpdateRuleTpl
+  {
+    typedef _Scalar Scalar;
+
+    ADMMOSQPUpdateRuleTpl(const Scalar ratio_primal_dual, const Scalar eps_reg)
+    : ratio_primal_dual(ratio_primal_dual)
+    , eps_reg(eps_reg)
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(
+        ratio_primal_dual > Scalar(0), "ratio_primal_dual should be positive.");
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(eps_reg > Scalar(0), "eps_reg should be positive.");
+    }
+
+    bool eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
+    {
+      bool rho_has_changed = false;
+      if (
+        primal_feasibility > this->ratio_primal_dual * dual_feasibility //
+        || dual_feasibility > this->ratio_primal_dual * primal_feasibility)
+      {
+        rho *= std::sqrt(primal_feasibility / (dual_feasibility + this->eps_reg));
+        rho_has_changed = true;
+      }
+
+      return rho_has_changed;
+    }
+
+  protected:
+    Scalar ratio_primal_dual;
+    Scalar eps_reg;
+  };
+
   enum class ADMMUpdateRule : char
   {
     SPECTRAL = 'S',
+    OSQP = 'O',
     LINEAR = 'L',
     CONSTANT = 'C',
   };
@@ -160,6 +194,7 @@ namespace pinocchio
     ADMMUpdateRuleContainerTpl()
     : dummy() {};
     ADMMSpectralUpdateRuleTpl<Scalar> spectral_rule;
+    ADMMOSQPUpdateRuleTpl<Scalar> osqp_rule;
     ADMMLinearUpdateRuleTpl<Scalar> linear_rule;
 
   protected:
