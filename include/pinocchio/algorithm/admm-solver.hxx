@@ -211,7 +211,7 @@ namespace pinocchio
 
     // First, we initialize some utils
     int it = 0;
-    cholesky_update_count = 0;
+    this->delassus_decomposition_update_count = 0;
 
     Scalar complementarity, dx_norm, dy_norm, dz_norm, //
       primal_feasibility, dual_feasibility;
@@ -234,7 +234,7 @@ namespace pinocchio
     // Set the initial damping of the delassus to proximal value
     rhs = VectorXs::Constant(this->problem_size, mu_prox);
     G.updateDamping(rhs);
-    cholesky_update_count++;
+    this->delassus_decomposition_update_count++;
 
     // Initialization of the primal/dual variables.
     // If both primal and dual guesses are given, the solver uses both.
@@ -382,12 +382,12 @@ namespace pinocchio
 
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
 
-    // Update the cholesky decomposition
+    // Update the decomposition of the Delassus
     Scalar prox_value = mu_prox + tau * rho;
     rhs = VectorXs::Constant(this->problem_size, prox_value);
     G.updateDamping(rhs);
     Scalar old_prox_value = prox_value;
-    cholesky_update_count++;
+    this->delassus_decomposition_update_count++;
 
     is_initialized = true;
 
@@ -522,36 +522,39 @@ namespace pinocchio
       if (abs_prec_reached || rel_prec_reached)
         break;
 
-      // Apply rho according to the primal_dual_ratio
-      bool update_delassus_factorization = false;
-      switch (admm_update_rule)
+      if (this->delassus_decomposition_update_count < this->max_delassus_decomposition_updates)
       {
-      case (ADMMUpdateRule::SPECTRAL):
-        update_delassus_factorization =
-          admm_update_rule_container.spectral_rule.eval(primal_feasibility, dual_feasibility, rho);
-        break;
-      case (ADMMUpdateRule::LINEAR):
-        update_delassus_factorization =
-          admm_update_rule_container.linear_rule.eval(primal_feasibility, dual_feasibility, rho);
-        break;
-      case (ADMMUpdateRule::CONSTANT):
-        break;
-      }
-
-      // clamp rho
-      rho = math::max(math::min(rho, rho_max), rho_min);
-
-      // Account for potential update of rho
-      if (update_delassus_factorization)
-      {
-        prox_value = mu_prox + tau * rho;
-        if (old_prox_value != prox_value)
+        // Apply rho according to the primal_dual_ratio
+        bool update_delassus_factorization = false;
+        switch (admm_update_rule)
         {
-          PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop updateDamping");
-          rhs = VectorXs::Constant(this->problem_size, prox_value);
-          G.updateDamping(rhs);
-          cholesky_update_count++;
-          old_prox_value = prox_value;
+        case (ADMMUpdateRule::SPECTRAL):
+          update_delassus_factorization = admm_update_rule_container.spectral_rule.eval(
+            primal_feasibility, dual_feasibility, rho);
+          break;
+        case (ADMMUpdateRule::LINEAR):
+          update_delassus_factorization =
+            admm_update_rule_container.linear_rule.eval(primal_feasibility, dual_feasibility, rho);
+          break;
+        case (ADMMUpdateRule::CONSTANT):
+          break;
+        }
+
+        // clamp rho
+        rho = math::max(math::min(rho, rho_max), rho_min);
+
+        // Account for potential update of rho
+        if (update_delassus_factorization)
+        {
+          prox_value = mu_prox + tau * rho;
+          if (old_prox_value != prox_value)
+          {
+            PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop updateDamping");
+            rhs = VectorXs::Constant(this->problem_size, prox_value);
+            G.updateDamping(rhs);
+            this->delassus_decomposition_update_count++;
+            old_prox_value = prox_value;
+          }
         }
       }
 
@@ -586,7 +589,7 @@ namespace pinocchio
     if (stat_record)
     {
       stats.it = it;
-      stats.cholesky_update_count = cholesky_update_count;
+      stats.delassus_decomposition_update_count = delassus_decomposition_update_count;
     }
 
     if (abs_prec_reached)

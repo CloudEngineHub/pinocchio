@@ -216,13 +216,13 @@ namespace pinocchio
     {
       ADMMSolverStats()
       : Base::SolverStats()
-      , cholesky_update_count(0)
+      , delassus_decomposition_update_count(0)
       {
       }
 
       explicit ADMMSolverStats(const int max_it)
       : Base::SolverStats(max_it)
-      , cholesky_update_count(0)
+      , delassus_decomposition_update_count(0)
       {
         reserve(max_it);
       }
@@ -240,11 +240,11 @@ namespace pinocchio
         rho.clear();
         linear_system_residual.clear();
         linear_system_consistency.clear();
-        cholesky_update_count = 0;
+        delassus_decomposition_update_count = 0;
       }
 
-      ///  \brief Number of Cholesky updates.
-      int cholesky_update_count;
+      ///  \brief Number of Delassus decomposition updates.
+      int delassus_decomposition_update_count;
 
       /// \brief History of rho values.
       std::vector<Scalar> rho;
@@ -278,7 +278,8 @@ namespace pinocchio
       Scalar rho_power_factor = Scalar(0.05),
       Scalar linear_update_rule_factor = Scalar(2),
       Scalar ratio_primal_dual = Scalar(10),
-      int lanczos_size = int(3))
+      int lanczos_size = int(3),
+      int max_delassus_decomposition_updates = std::numeric_limits<int>::infinity())
     : Base(problem_dim)
     , is_initialized(false)
     , mu_prox(mu_prox)
@@ -302,7 +303,8 @@ namespace pinocchio
     , tmp(problem_dim)
     , primal_feasibility_vector(VectorXs::Zero(problem_dim))
     , dual_feasibility_vector(VectorXs::Zero(problem_dim))
-    , cholesky_update_count(0)
+    , delassus_decomposition_update_count(0)
+    , max_delassus_decomposition_updates(max_delassus_decomposition_updates)
     , stats()
     {
     }
@@ -363,6 +365,20 @@ namespace pinocchio
       return tau;
     }
 
+    /// \brief Set the maximum number of decompositions of the Delassus.
+    void setMaxDelassusDecompositionUpdates(const int max_delassus_decomposition_updates)
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(
+        max_delassus_decomposition_updates >= int(0),
+        "max_delassus_decomposition_updates should be positive");
+      this->max_delassus_decomposition_updates = max_delassus_decomposition_updates;
+    }
+    /// \brief Get the maximum number of decompositions of the Delassus.
+    int getMaxDelassusDecompositionUpdates() const
+    {
+      return this->max_delassus_decomposition_updates;
+    }
+
     /// \brief Set the proximal value.
     void setProximalValue(const Scalar mu)
     {
@@ -387,10 +403,10 @@ namespace pinocchio
       return ratio_primal_dual;
     }
 
-    ///  \returns the number of updates of the Cholesky factorization due to rho updates.
-    int getCholeskyUpdateCount() const
+    ///  \returns the number of updates of the Delassus decomposition.
+    int getDelassusDecompositionUpdateCount() const
     {
-      return cholesky_update_count;
+      return this->delassus_decomposition_update_count;
     }
 
     /// \brief Sets the size of triangular matrix of Lanczos decomposition.
@@ -626,7 +642,8 @@ namespace pinocchio
 
     VectorXs rhs, tmp, primal_feasibility_vector, dual_feasibility_vector;
 
-    int cholesky_update_count;
+    int delassus_decomposition_update_count;
+    int max_delassus_decomposition_updates;
 
     ADMMSolverStats stats;
 

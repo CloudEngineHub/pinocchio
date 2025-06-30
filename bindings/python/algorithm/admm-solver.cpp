@@ -330,6 +330,14 @@ namespace pinocchio
           "getProximalValue", &Solver::getProximalValue, bp::arg("self"), "Get the proximal value.")
 
         .def(
+          "setMaxDelassusDecompositionUpdates", &Solver::setMaxDelassusDecompositionUpdates,
+          bp::args("self", "max_delassus_decomposition_updates"),
+          "Set the maximum number of updates of the delassus' decomposition.")
+        .def(
+          "getMaxDelassusDecompositionUpdates", &Solver::getMaxDelassusDecompositionUpdates,
+          bp::arg("self"), "Get the maximum number of decompositions of the delassus.")
+
+        .def(
           "setRatioPrimalDual", &Solver::setRatioPrimalDual, bp::args("self", "ratio_primal_dual"),
           "Set the primal/dual ratio.")
         .def(
@@ -353,8 +361,9 @@ namespace pinocchio
           "Get the Lanczos decomposition.", bp::return_internal_reference<>())
 
         .def(
-          "getCholeskyUpdateCount", &Solver::getCholeskyUpdateCount, bp::arg("self"),
-          "Returns the number of updates of the Cholesky factorization due to rho updates.")
+          "getDelassusDecompositionUpdateCount", &Solver::getDelassusDecompositionUpdateCount,
+          bp::arg("self"),
+          "Returns the number of updates of the Delassus decomposition due to rho updates.")
 
         //    .def("computeRho",&Solver::computeRho,bp::args("L","m","rho_power"),
         //         "Compute the penalty ADMM value from the current largest and lowest eigenvalues
@@ -394,8 +403,8 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY_READONLY(
             SolverStats, it, "Number of iterations performed by the algorithm.")
           .PINOCCHIO_ADD_PROPERTY_READONLY(
-            SolverStats, cholesky_update_count,
-            "Number of Cholesky updates performed by the algorithm.");
+            SolverStats, delassus_decomposition_update_count,
+            "Number of Delassus decomposition updates performed by the algorithm.");
       }
 
       {
