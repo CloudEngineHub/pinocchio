@@ -60,7 +60,6 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
   buildAllJointsModel(model);
 
   Data data(model);
-  const auto & parents_fromRow = data.parents_fromRow;
 
   const std::string ee_name = "translation_joint";
   const JointIndex ee_id = model.getJointId(ee_name);
@@ -87,7 +86,7 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
       for (int k = 0; k < nq; ++k)
       {
         const int index_q = idx_q + k;
-        if (has_configuration_limit[k])
+        if (has_configuration_limit[size_t(k)])
         {
           if (model.lowerPositionLimit[index_q] != -std::numeric_limits<double>::max())
             total_size++;
