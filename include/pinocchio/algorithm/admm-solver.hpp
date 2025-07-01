@@ -316,7 +316,8 @@ namespace pinocchio
       int lanczos_size = int(3),
       int max_delassus_decomposition_updates = std::numeric_limits<int>::infinity(),
       Scalar dual_momentum = Scalar(0),
-      Scalar rho_momentum = Scalar(0))
+      Scalar rho_momentum = Scalar(0),
+      Scalar rho_update_ratio = Scalar(0))
     : Base(problem_dim)
     , is_initialized(false)
     , mu_prox(mu_prox)
@@ -344,6 +345,7 @@ namespace pinocchio
     , max_delassus_decomposition_updates(max_delassus_decomposition_updates)
     , dual_momentum(dual_momentum)
     , rho_momentum(rho_momentum)
+    , rho_update_ratio(rho_update_ratio)
     , stats()
     {
     }
@@ -455,6 +457,19 @@ namespace pinocchio
     Scalar getDualMomentum() const
     {
       return this->dual_momentum;
+    }
+
+    /// \brief Set the rho update ratio.
+    /// The rho is only updated if the ratio between the current rho and the new one is bigger/lower
+    /// than a threshold ratio.
+    void setRhoUpdateRatio(const Scalar rho_update_ratio)
+    {
+      this->rho_update_ratio = rho_update_ratio;
+    }
+    /// \brief Get the rho update ratio.
+    Scalar getRhoUpdateRatio() const
+    {
+      return this->rho_update_ratio;
     }
 
     /// \brief Set the primal/dual ratio.
@@ -721,6 +736,10 @@ namespace pinocchio
     /// \brief Momentum of rho (rho = pow(rho, momentum) * pow(new_rho, 1 - momentum)).
     /// Value of 0 is no momentum.
     Scalar rho_momentum;
+
+    /// \brief The rho is only updated if the ratio between the current rho and the new one is
+    /// bigger/lower than a threshold ratio.
+    Scalar rho_update_ratio;
 
     ADMMSolverStats stats;
 

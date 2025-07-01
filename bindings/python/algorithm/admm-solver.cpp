@@ -295,7 +295,9 @@ namespace pinocchio
 
       cl.def(ContactSolverBasePythonVisitor<Solver>())
 
-        .def("reset", &Solver::reset, bp::arg("self"), "Reset the ADMM solver (num its, decomposition count, stats etc).")
+        .def(
+          "reset", &Solver::reset, bp::arg("self"),
+          "Reset the ADMM solver (num its, decomposition count, stats etc).")
 
         .def("getRho", &Solver::getRho, bp::arg("self"), "Get the ADMM penalty value.")
 
@@ -346,6 +348,15 @@ namespace pinocchio
         .def(
           "getDualMomentum", &Solver::getDualMomentum, bp::args("self"),
           "Get dual momentum (0 is no momentum).")
+
+        .def(
+          "setRhoUpdateRatio", &Solver::setRhoUpdateRatio, bp::args("self", "rho_update_ratio"),
+          "Set the rho update ratio. The rho is only updated if the ratio between the current rho "
+          "and the new one is bigger/lower than a threshold ratio.")
+        .def(
+          "getRhoUpdateRatio", &Solver::getRhoUpdateRatio, bp::args("self"),
+          "Get the rho update ratio. The rho is only updated if the ratio between the current rho "
+          "and the new one is bigger/lower than a threshold ratio.")
 
         .def(
           "setMaxDelassusDecompositionUpdates", &Solver::setMaxDelassusDecompositionUpdates,
