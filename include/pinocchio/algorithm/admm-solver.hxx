@@ -464,7 +464,8 @@ namespace pinocchio
       }
 
       // z-update
-      z_ -= (tau * rho) * (x_ - y_);
+      tmp = z_ - (tau * rho) * (x_ - y_);
+      z_.noalias() = this->dual_momentum * z_ + (Scalar(1) - this->dual_momentum) * tmp;
 
       // check termination criteria
       primal_feasibility_vector = x_ - y_;

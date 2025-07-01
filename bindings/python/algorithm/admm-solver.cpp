@@ -330,6 +330,13 @@ namespace pinocchio
           "getProximalValue", &Solver::getProximalValue, bp::arg("self"), "Get the proximal value.")
 
         .def(
+          "setDualMomentum", &Solver::setDualMomentum, bp::args("self", "dual_momentum"),
+          "Set dual momentum (0 is no momentum).")
+        .def(
+          "getDualMomentum", &Solver::getDualMomentum, bp::args("self"),
+          "Get dual momentum (0 is no momentum).")
+
+        .def(
           "setMaxDelassusDecompositionUpdates", &Solver::setMaxDelassusDecompositionUpdates,
           bp::args("self", "max_delassus_decomposition_updates"),
           "Set the maximum number of updates of the delassus' decomposition.")

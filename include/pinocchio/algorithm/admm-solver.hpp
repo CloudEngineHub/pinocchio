@@ -314,7 +314,8 @@ namespace pinocchio
       Scalar linear_update_rule_factor = Scalar(2),
       Scalar ratio_primal_dual = Scalar(10),
       int lanczos_size = int(3),
-      int max_delassus_decomposition_updates = std::numeric_limits<int>::infinity())
+      int max_delassus_decomposition_updates = std::numeric_limits<int>::infinity(),
+      Scalar dual_momentum = Scalar(0))
     : Base(problem_dim)
     , is_initialized(false)
     , mu_prox(mu_prox)
@@ -340,6 +341,7 @@ namespace pinocchio
     , dual_feasibility_vector(VectorXs::Zero(problem_dim))
     , delassus_decomposition_update_count(0)
     , max_delassus_decomposition_updates(max_delassus_decomposition_updates)
+    , dual_momentum(dual_momentum)
     , stats()
     {
     }
@@ -418,6 +420,17 @@ namespace pinocchio
     Scalar getProximalValue() const
     {
       return mu_prox;
+    }
+
+    /// \brief Set dual momentum.
+    void setDualMomentum(const Scalar dual_momentum)
+    {
+      this->dual_momentum = dual_momentum;
+    }
+    /// \brief Get dual momentum.
+    Scalar getDualMomentum() const
+    {
+      return this->dual_momentum;
     }
 
     /// \brief Set the primal/dual ratio.
@@ -662,6 +675,9 @@ namespace pinocchio
 
     ///  \brief Ratio primal/dual
     Scalar ratio_primal_dual;
+
+    /// \brief Momentum on the dual
+    Scalar dual_momentum;
 
     /// \brief Lanczos decomposition algorithm.
     LanczosDecomposition lanczos_decomposition;
