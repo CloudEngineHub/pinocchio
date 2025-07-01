@@ -684,19 +684,12 @@ namespace pinocchio
     /// \brief Update factor for the primal/dual update of rho.
     Scalar rho_power_factor;
 
-    /// \brief Momentum of rho (rho = pow(rho, momentum) * pow(new_rho, 1 - momentum)).
-    /// Value of 0 is no momentum.
-    Scalar rho_momentum;
-
     // Set of parameters associated with the Linear update rule
     /// \brief value of the increase/decrease factor
     Scalar linear_update_rule_factor;
 
     ///  \brief Ratio primal/dual
     Scalar ratio_primal_dual;
-
-    /// \brief Momentum on the dual
-    Scalar dual_momentum;
 
     /// \brief Lanczos decomposition algorithm.
     LanczosDecomposition lanczos_decomposition;
@@ -712,6 +705,13 @@ namespace pinocchio
 
     int delassus_decomposition_update_count;
     int max_delassus_decomposition_updates;
+
+    /// \brief Momentum on the dual
+    Scalar dual_momentum;
+
+    /// \brief Momentum of rho (rho = pow(rho, momentum) * pow(new_rho, 1 - momentum)).
+    /// Value of 0 is no momentum.
+    Scalar rho_momentum;
 
     ADMMSolverStats stats;
 
