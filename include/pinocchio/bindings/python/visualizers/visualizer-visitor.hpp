@@ -56,7 +56,8 @@ namespace pinocchio
           .def("loadViewerModel", &Visualizer::loadViewerModel, bp::arg("self"))
           .def("rebuildData", &Visualizer::rebuildData, bp::arg("self"))
           .def(
-            "display", +[](Visualizer & v, const ConstVectorRef & q) { v.display(q); },
+            "display",
+            +[](Visualizer & v, const boost::optional<ConstVectorRef> & q) { v.display(q); },
             (bp::arg("self"), bp::arg("q") = boost::none))
           .def("play", play_proxy2, (bp::arg("self"), "qs", "dt"))
           .def("setCameraTarget", &Visualizer::setCameraTarget, (bp::arg("self"), "target"))

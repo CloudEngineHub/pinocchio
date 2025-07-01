@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2022 INRIA
+// Copyright (c) 2022-2025 INRIA
 //
 
 #include <eigenpy/eigenpy.hpp>
@@ -70,6 +70,13 @@ namespace pinocchio
     void exposeBroadphaseCallbacks()
     {
       CollisionCallBackBaseWrapper::expose();
+
+      bp::class_<CollisionCallBackCollect, bp::bases<CollisionCallBackBase>>(
+        "CollisionCallBackCollect", bp::no_init)
+        .def(bp::init<const GeometryModel &, GeometryData &, bp::optional<int>>(
+          bp::args("self", "geometry_model", "geometry_data", "max_num_pairs"))
+               [bp::with_custodian_and_ward<1, 2>(), bp::with_custodian_and_ward<1, 3>()])
+        .def_readonly("pair_indexes", &CollisionCallBackCollect::pair_indexes);
 
       bp::class_<CollisionCallBackDefault, bp::bases<CollisionCallBackBase>>(
         "CollisionCallBackDefault", bp::no_init)
