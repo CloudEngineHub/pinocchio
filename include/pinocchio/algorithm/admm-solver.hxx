@@ -549,19 +549,20 @@ namespace pinocchio
       {
         // Apply rho according to the primal_dual_ratio
         bool update_delassus_factorization = false;
+        Scalar new_rho = rho;
         switch (admm_update_rule)
         {
         case (ADMMUpdateRule::SPECTRAL):
           update_delassus_factorization = admm_update_rule_container.spectral_rule.eval(
-            primal_feasibility, dual_feasibility, rho);
+            primal_feasibility, dual_feasibility, new_rho);
           break;
         case (ADMMUpdateRule::OSQP):
-          update_delassus_factorization =
-            admm_update_rule_container.osqp_rule.eval(primal_feasibility, dual_feasibility, rho);
+          update_delassus_factorization = admm_update_rule_container.osqp_rule.eval(
+            primal_feasibility, dual_feasibility, new_rho);
           break;
         case (ADMMUpdateRule::LINEAR):
-          update_delassus_factorization =
-            admm_update_rule_container.linear_rule.eval(primal_feasibility, dual_feasibility, rho);
+          update_delassus_factorization = admm_update_rule_container.linear_rule.eval(
+            primal_feasibility, dual_feasibility, new_rho);
           break;
         case (ADMMUpdateRule::CONSTANT):
           break;
@@ -569,6 +570,8 @@ namespace pinocchio
 
         // clamp rho
         rho = math::max(math::min(rho, rho_max), rho_min);
+        // Momentum on rho
+        rho = std::pow(rho, this->rho_momentum) * std::pow(new_rho, Scalar(1) - this->rho_momentum);
 
         // Account for potential update of rho
         if (update_delassus_factorization)

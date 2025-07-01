@@ -305,6 +305,15 @@ namespace pinocchio
           "Get the power associated to the ADMM spectral update rule.")
 
         .def(
+          "setRhoMomentum", &Solver::setRhoMomentum, bp::args("self", "rho_momentum"),
+          "Set rho momentum (rho = pow(rho, momentum) * pow(new_rho, 1 - momentum)). Value of 0 is "
+          "no momentum.")
+        .def(
+          "getRhoMomentum", &Solver::getRhoMomentum, bp::arg("self"),
+          "Get rho momentum (rho = pow(rho, momentum) * pow(new_rho, 1 - momentum)). Value of 0 is "
+          "no momentum.")
+
+        .def(
           "setRhoPowerFactor", &Solver::setRhoPowerFactor, bp::args("self", "rho_power_factor"),
           "Set the power factor associated to the ADMM spectral update rule.")
         .def(

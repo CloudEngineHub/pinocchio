@@ -315,7 +315,8 @@ namespace pinocchio
       Scalar ratio_primal_dual = Scalar(10),
       int lanczos_size = int(3),
       int max_delassus_decomposition_updates = std::numeric_limits<int>::infinity(),
-      Scalar dual_momentum = Scalar(0))
+      Scalar dual_momentum = Scalar(0),
+      Scalar rho_momentum = Scalar(0))
     : Base(problem_dim)
     , is_initialized(false)
     , mu_prox(mu_prox)
@@ -342,6 +343,7 @@ namespace pinocchio
     , delassus_decomposition_update_count(0)
     , max_delassus_decomposition_updates(max_delassus_decomposition_updates)
     , dual_momentum(dual_momentum)
+    , rho_momentum(rho_momentum)
     , stats()
     {
     }
@@ -373,6 +375,19 @@ namespace pinocchio
     Scalar getRhoPowerFactor() const
     {
       return rho_power_factor;
+    }
+
+    /// \brief Set rho momentum (rho = pow(rho, momentum) * pow(new_rho, 1 - momentum)).
+    /// Value of 0 is no momentum.
+    void setRhoMomentum(const Scalar rho_momentum)
+    {
+      this->rho_momentum = rho_momentum;
+    }
+    /// \brief Get rho momentum (rho = pow(rho, momentum) * pow(new_rho, 1 - momentum)).
+    /// Value of 0 is no momentum.
+    Scalar getRhoMomentum() const
+    {
+      return this->rho_momentum;
     }
 
     /// \brief Set the update factor of the Linear update rule
@@ -668,6 +683,10 @@ namespace pinocchio
     Scalar rho_power;
     /// \brief Update factor for the primal/dual update of rho.
     Scalar rho_power_factor;
+
+    /// \brief Momentum of rho (rho = pow(rho, momentum) * pow(new_rho, 1 - momentum)).
+    /// Value of 0 is no momentum.
+    Scalar rho_momentum;
 
     // Set of parameters associated with the Linear update rule
     /// \brief value of the increase/decrease factor
