@@ -348,6 +348,15 @@ namespace pinocchio
     {
     }
 
+    /// \brief Reset the solver.
+    void reset()
+    {
+      this->it = 0;
+      this->delassus_decomposition_update_count = 0;
+      this->stats.reset();
+      this->is_initialized = false;
+    }
+
     /// \brief Get the ADMM penalty value.
     Scalar getRho() const
     {

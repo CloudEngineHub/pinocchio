@@ -109,6 +109,8 @@ namespace pinocchio
           "getDualSolution", &Solver::getDualSolution, bp::arg("self"),
           "Returns the dual solution of the problem.", bp::return_internal_reference<>())
 
+        .def("reset", &Solver::reset, bp::arg("self"), "Reset the PGS solver (num its, stats etc).")
+
         .def("getStats", &Solver::getStats, bp::arg("self"), bp::return_internal_reference<>());
 
       //      typedef context::ConstraintModel::ConstraintModelVariant ConstraintModelVariant;

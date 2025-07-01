@@ -149,6 +149,13 @@ namespace pinocchio
         delassus.matrix(), g, constraint_models, dt, x_guess, over_relax, solve_ncp, stat_record);
     }
 
+    /// \brief Reset the solver.
+    void reset()
+    {
+      this->it = 0;
+      this->stats.reset();
+    }
+
     /// \returns the primal solution of the problem
     const VectorXs & getPrimalSolution() const
     {
