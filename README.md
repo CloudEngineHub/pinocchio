@@ -253,12 +253,15 @@ The currently active core developers of **Pinocchio** are:
 -   [Justin Carpentier](https://jcarpent.github.io) (Inria): main developer and manager of the project
 -   [Guilhem Saurel](https://www.laas.fr/fr/annuaire/gsaurel) (LAAS-CNRS): CI/CD, packaging
 -   [Etienne Arlaud](https://github.com/EtienneAr) (Inria): core developer
--   [Wilson Jallet](https://github.com/ManifoldFR) (LAAS-CNRS/Inria): extension of Python bindings, C++ visualization API
+-   [Wilson Jallet](https://github.com/ManifoldFR) (Inria): extension of Python bindings, C++ visualization API
 -   [Fabian Schramm](https://github.com/fabinsch) (Inria): core developper
 -   [Stéphane Caron](https://scaron.info) (Inria): core developper
 -   [Joris Vaillant](https://github.com/jorisv) (Inria): core developer and project manager
 -   [Megane Millan](https://github.com/MegMll) (Inria): core developer
 -   [Ajay Sathya](https://www.ajaysathya.com/) (Inria): core developer
+-   [Louis Montaut](https://lmontaut.github.io/) (Inria): core developer
+-   [Quentin Le Lidec](https://quentinll.github.io/) (NYU/ formely Inria): core developer
+-   [Yann de Mont-Marin](https://ymontmarin.github.io/) (Inria): core developer
 
 ## Credits
 
