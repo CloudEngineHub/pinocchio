@@ -423,7 +423,8 @@ namespace pinocchio
     Scalar y_previous_norm_inf = y_norm_inf;
     Scalar z_previous_norm_inf = z_norm_inf;
     it = 1;
-    for (; it <= Base::max_it; ++it)
+    int it_since_last_rho_update = 0;
+    for (; it <= Base::max_it; ++it, ++it_since_last_rho_update)
     {
 
       x_previous_ = x_;
@@ -544,7 +545,9 @@ namespace pinocchio
       if (abs_prec_reached || rel_prec_reached)
         break;
 
-      if (this->delassus_decomposition_update_count < this->max_delassus_decomposition_updates)
+      if (
+        this->delassus_decomposition_update_count < this->max_delassus_decomposition_updates
+        && it_since_last_rho_update >= this->rho_min_update_frequency)
       {
         // Apply rho according to the primal_dual_ratio
         bool update_delassus_factorization = false;
@@ -575,6 +578,7 @@ namespace pinocchio
         if (new_rho >= this->rho_update_ratio * rho || rho >= this->rho_update_ratio * new_rho)
         {
           rho = new_rho;
+          it_since_last_rho_update = 0;
         }
         else
         {

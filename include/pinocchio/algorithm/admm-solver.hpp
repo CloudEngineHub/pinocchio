@@ -317,7 +317,8 @@ namespace pinocchio
       int max_delassus_decomposition_updates = std::numeric_limits<int>::infinity(),
       Scalar dual_momentum = Scalar(0),
       Scalar rho_momentum = Scalar(0),
-      Scalar rho_update_ratio = Scalar(0))
+      Scalar rho_update_ratio = Scalar(0),
+      int rho_min_update_frequency = int(1))
     : Base(problem_dim)
     , is_initialized(false)
     , mu_prox(mu_prox)
@@ -346,6 +347,7 @@ namespace pinocchio
     , dual_momentum(dual_momentum)
     , rho_momentum(rho_momentum)
     , rho_update_ratio(rho_update_ratio)
+    , rho_min_update_frequency(rho_min_update_frequency)
     , stats()
     {
     }
@@ -470,6 +472,19 @@ namespace pinocchio
     Scalar getRhoUpdateRatio() const
     {
       return this->rho_update_ratio;
+    }
+
+    /// \brief Set the minimum rho update frequency.
+    /// \copydoc rho_min_update_frequency
+    void setRhoMinUpdateFrequency(const Scalar rho_min_update_frequency)
+    {
+      this->rho_min_update_frequency = rho_min_update_frequency;
+    }
+    /// \brief Get the minimum rho update frequency.
+    /// \copydoc rho_min_update_frequency
+    Scalar getRhoMinUpdateFrequency() const
+    {
+      return this->rho_min_update_frequency;
     }
 
     /// \brief Set the primal/dual ratio.
@@ -740,6 +755,10 @@ namespace pinocchio
     /// \brief The rho is only updated if the ratio between the current rho and the new one is
     /// bigger/lower than a threshold ratio.
     Scalar rho_update_ratio;
+
+    /// \brief Rho min update frequency: the solver has to wait at least rho_min_update_frequency
+    /// until it can trigger a new rho update.
+    Scalar rho_min_update_frequency;
 
     ADMMSolverStats stats;
 

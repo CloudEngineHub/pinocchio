@@ -359,6 +359,16 @@ namespace pinocchio
           "and the new one is bigger/lower than a threshold ratio.")
 
         .def(
+          "setRhoMinUpdateFrequency", &Solver::setRhoMinUpdateFrequency,
+          bp::args("self", "rho_min_update_frequency"),
+          "Set the minimum rho update frequency. Rho min update frequency: the solver has to wait "
+          "at least rho_min_update_frequency until it can trigger a new rho update.")
+        .def(
+          "getRhoMinUpdateFrequency", &Solver::getRhoMinUpdateFrequency, bp::args("self"),
+          "Get the minimum rho update frequency. Rho min update frequency: the solver has to wait "
+          "at least rho_min_update_frequency until it can trigger a new rho update.")
+
+        .def(
           "setMaxDelassusDecompositionUpdates", &Solver::setMaxDelassusDecompositionUpdates,
           bp::args("self", "max_delassus_decomposition_updates"),
           "Set the maximum number of updates of the delassus' decomposition.")
