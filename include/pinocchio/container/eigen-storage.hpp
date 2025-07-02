@@ -2,8 +2,8 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_container_storage_hpp__
-#define __pinocchio_container_storage_hpp__
+#ifndef __pinocchio_container_eigen_storage_hpp__
+#define __pinocchio_container_eigen_storage_hpp__
 
 #include "pinocchio/fwd.hpp"
 
@@ -299,4 +299,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_container_storage_hpp__
+#endif // ifndef __pinocchio_container_eigen_storage_hpp__

@@ -8,7 +8,7 @@
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/math/matrix-block.hpp"
 #include "pinocchio/math/triangular-matrix.hpp"
-#include "pinocchio/container/storage.hpp"
+#include "pinocchio/container/eigen-storage.hpp"
 
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include <functional>

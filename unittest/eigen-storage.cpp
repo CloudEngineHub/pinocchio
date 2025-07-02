@@ -2,7 +2,7 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include "pinocchio/container/storage.hpp"
+#include "pinocchio/container/eigen-storage.hpp"
 
 #include <iostream>
 #include <boost/test/unit_test.hpp>

@@ -7,7 +7,7 @@
 
 #include "pinocchio/serialization/eigen.hpp"
 
-#include "pinocchio/container/storage.hpp"
+#include "pinocchio/container/eigen-storage.hpp"
 
 namespace boost
 {

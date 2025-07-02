@@ -16,7 +16,7 @@
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/container/storage.hpp"
+#include "pinocchio/container/eigen-storage.hpp"
 
 namespace pinocchio
 {
