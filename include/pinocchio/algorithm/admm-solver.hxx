@@ -550,20 +550,18 @@ namespace pinocchio
         && it_since_last_rho_update >= this->rho_min_update_frequency)
       {
         // Apply rho according to the primal_dual_ratio
-        bool update_delassus_factorization = false;
         Scalar new_rho = rho;
         switch (admm_update_rule)
         {
         case (ADMMUpdateRule::SPECTRAL):
-          update_delassus_factorization = admm_update_rule_container.spectral_rule.eval(
+          admm_update_rule_container.spectral_rule.eval(
             primal_feasibility, dual_feasibility, new_rho);
           break;
         case (ADMMUpdateRule::OSQP):
-          update_delassus_factorization = admm_update_rule_container.osqp_rule.eval(
-            primal_feasibility, dual_feasibility, new_rho);
+          admm_update_rule_container.osqp_rule.eval(primal_feasibility, dual_feasibility, new_rho);
           break;
         case (ADMMUpdateRule::LINEAR):
-          update_delassus_factorization = admm_update_rule_container.linear_rule.eval(
+          admm_update_rule_container.linear_rule.eval(
             primal_feasibility, dual_feasibility, new_rho);
           break;
         case (ADMMUpdateRule::CONSTANT):
@@ -576,15 +574,17 @@ namespace pinocchio
 
         // clamp rho
         new_rho = math::max(math::min(new_rho, rho_max), rho_min);
-        if (new_rho >= this->rho_update_ratio * rho || rho >= this->rho_update_ratio * new_rho)
-        {
+
+        bool update_delassus_factorization = false;
+        if (new_rho == rho)
+        { // No change of rho, so need to redo a factorization
+          update_delassus_factorization = false;
+        }
+        else if (new_rho >= this->rho_update_ratio * rho || rho >= this->rho_update_ratio * new_rho)
+        { // sufficient change of the rho value
           rho = new_rho;
           it_since_last_rho_update = 0;
-        }
-        else
-        {
-          // we don't change the rho, hence we don't update the factorization
-          update_delassus_factorization = false;
+          update_delassus_factorization = true;
         }
 
         // Account for potential update of rho
