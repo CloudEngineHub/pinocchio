@@ -570,11 +570,12 @@ namespace pinocchio
           break;
         }
 
-        // clamp rho
-        new_rho = math::max(math::min(new_rho, rho_max), rho_min);
         // Momentum on rho
         new_rho =
           std::pow(rho, this->rho_momentum) * std::pow(new_rho, Scalar(1) - this->rho_momentum);
+
+        // clamp rho
+        new_rho = math::max(math::min(new_rho, rho_max), rho_min);
         if (new_rho >= this->rho_update_ratio * rho || rho >= this->rho_update_ratio * new_rho)
         {
           rho = new_rho;
