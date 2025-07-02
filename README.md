@@ -302,4 +302,4 @@ If you have participated in the development of **Pinocchio**, please add your na
 
 ## Acknowledgments
 
-The development of **Pinocchio** is actively supported by the [Gepetto team](http://projects.laas.fr/gepetto/) [@LAAS-CNRS](http://www.laas.fr) and the [Willow team](https://www.di.ens.fr/willow/) [@INRIA](http://www.inria.fr).
+The development of **Pinocchio** is actively led by the [Willow team](https://www.di.ens.fr/willow/) [@INRIA](http://www.inria.fr), with the support of the [Gepetto team](http://projects.laas.fr/gepetto/) [@LAAS-CNRS](http://www.laas.fr).
