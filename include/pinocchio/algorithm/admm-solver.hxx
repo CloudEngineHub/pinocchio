@@ -232,7 +232,6 @@ namespace pinocchio
     const bool stat_record)
   {
     // Unused for now
-    PINOCCHIO_UNUSED_VARIABLE(dual_guess);
     PINOCCHIO_UNUSED_VARIABLE(preconditioner);
 
     typedef ADMMSpectralUpdateRuleTpl<Scalar> ADMMSpectralUpdateRule;
