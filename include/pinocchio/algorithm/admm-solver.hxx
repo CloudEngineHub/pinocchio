@@ -568,11 +568,14 @@ namespace pinocchio
           break;
         }
 
-        // Momentum on rho
+        // clamp rho a second time
+        new_rho = math::max(math::min(new_rho, rho_max), rho_min);
+
+        // apply a momentum strategy on rho defined by:
         new_rho =
           std::pow(rho, this->rho_momentum) * std::pow(new_rho, Scalar(1) - this->rho_momentum);
 
-        // clamp rho
+        // clamp rho a second time in case the new values is outside the bounds
         new_rho = math::max(math::min(new_rho, rho_max), rho_min);
 
         bool update_delassus_factorization = false;
