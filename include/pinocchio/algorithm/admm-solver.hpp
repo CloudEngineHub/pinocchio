@@ -56,25 +56,20 @@ namespace pinocchio
       rho_increment = std::pow(cond, rho_power_factor);
     }
 
-    bool eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
+    void eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
     {
-      bool rho_has_changed = false;
       if (primal_feasibility > ratio_primal_dual * dual_feasibility)
       {
         rho *= rho_increment;
         //        rho *= math::pow(cond,rho_power_factor);
         //        rho_power += rho_power_factor;
-        rho_has_changed = true;
       }
       else if (dual_feasibility > ratio_primal_dual * primal_feasibility)
       {
         rho /= rho_increment;
         //        rho *= math::pow(cond,-rho_power_factor);
         //        rho_power -= rho_power_factor;
-        rho_has_changed = true;
       }
-
-      return rho_has_changed;
     }
 
     /// \brief Compute the penalty ADMM value from the current largest and lowest eigenvalues and
@@ -126,21 +121,16 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(factor > Scalar(1), "factor should be greater than one.");
     }
 
-    bool eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
+    void eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
     {
-      bool rho_has_changed = false;
       if (primal_feasibility > ratio_primal_dual * dual_feasibility)
       {
         rho *= increase_factor;
-        rho_has_changed = true;
       }
       else if (dual_feasibility > ratio_primal_dual * primal_feasibility)
       {
         rho /= decrease_factor;
-        rho_has_changed = true;
       }
-
-      return rho_has_changed;
     }
 
   protected:
@@ -162,18 +152,14 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(eps_reg > Scalar(0), "eps_reg should be positive.");
     }
 
-    bool eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
+    void eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
     {
-      bool rho_has_changed = false;
       if (
         primal_feasibility > this->ratio_primal_dual * dual_feasibility //
         || dual_feasibility > this->ratio_primal_dual * primal_feasibility)
       {
         rho *= std::sqrt(primal_feasibility / (dual_feasibility + this->eps_reg));
-        rho_has_changed = true;
       }
-
-      return rho_has_changed;
     }
 
   protected:
