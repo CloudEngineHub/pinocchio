@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2024-2025 INRIA
 //
 
 #ifndef __pinocchio_container_eigen_storage_hpp__
@@ -16,15 +16,11 @@ namespace pinocchio
   template<typename NewScalar, typename MatrixLike>
   struct CastType<NewScalar, EigenStorageTpl<MatrixLike>>
   {
-    enum
-    {
-      RowsAtCompileTime = MatrixLike::RowsAtCompileTime,
-      ColsAtCompileTime = MatrixLike::ColsAtCompileTime,
-      Options = MatrixLike::Options
-    };
+    typedef EigenStorageTpl<MatrixLike> EigenStorage;
+    typedef typename EigenStorage::PlainMatrixType PlainMatrixType;
 
-    typedef Eigen::Matrix<NewScalar, RowsAtCompileTime, ColsAtCompileTime, Options> NewVectorType;
-    typedef EigenStorageTpl<NewVectorType> type;
+    typedef typename PlainMatrixType::template CastXpr<NewScalar>::Type NewPlainMatrixType;
+    typedef EigenStorageTpl<NewPlainMatrixType> type;
   };
 
   template<typename MatrixLike>
