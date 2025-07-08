@@ -16,11 +16,12 @@ namespace pinocchio
   template<typename NewScalar, typename MatrixLike>
   struct CastType<NewScalar, EigenStorageTpl<MatrixLike>>
   {
-    typedef EigenStorageTpl<MatrixLike> EigenStorage;
-    typedef typename EigenStorage::PlainMatrixType PlainMatrixType;
+    typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike) PlainMatrixType;
 
     typedef typename PlainMatrixType::template CastXpr<NewScalar>::Type NewPlainMatrixType;
-    typedef EigenStorageTpl<NewPlainMatrixType> type;
+    typedef EigenStorageTpl<
+      typename std::remove_reference<typename std::remove_const<NewPlainMatrixType>::type>::type>
+      type;
   };
 
   template<typename MatrixLike>
