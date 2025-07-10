@@ -146,6 +146,7 @@ add_pinocchio_unit_test(double-entry-container HEADER_ONLY)
 add_pinocchio_unit_test(macros HEADER_ONLY)
 add_pinocchio_unit_test(reference HEADER_ONLY)
 add_pinocchio_unit_test(eigen-storage HEADER_ONLY)
+add_pinocchio_unit_test(matrix-stack HEADER_ONLY)
 
 # Math components
 add_pinocchio_unit_test(eigen-basic-op)
