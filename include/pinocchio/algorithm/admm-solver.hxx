@@ -464,6 +464,13 @@ namespace pinocchio
       z_previous_ = z_;
       complementarity = Scalar(0);
 
+      // y-update
+      {
+        PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop computeConeProjection");
+        tmp = x_ - z_ / (tau * rho);
+        internal::computeConeProjection(constraint_models, tmp, y_);
+      }
+
       if (solve_ncp)
       {
         // s-update
@@ -488,13 +495,6 @@ namespace pinocchio
         stats.linear_system_consistency.push_back(linear_system_consistency);
       }
 
-      // y-update
-      {
-        PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop computeConeProjection");
-        tmp = x_ - z_ / (tau * rho);
-        internal::computeConeProjection(constraint_models, tmp, y_);
-      }
-
       // z-update
       tmp = z_ - (tau * rho) * (x_ - y_);
       z_.noalias() = this->dual_momentum * z_ + (Scalar(1) - this->dual_momentum) * tmp;
@@ -506,14 +506,13 @@ namespace pinocchio
         VectorXs & dx = tmp;
         dx = x_ - x_previous_;
         dx_norm = dx.template lpNorm<Eigen::Infinity>(); // check relative progress on x
-        dual_feasibility_vector = (tau_prox * mu_prox) * dx;
+        dual_feasibility_vector = dx;
       }
 
       {
         VectorXs & dy = tmp;
         dy = y_ - y_previous_;
         dy_norm = dy.template lpNorm<Eigen::Infinity>(); // check relative progress on y
-        dual_feasibility_vector += (tau * rho) * dy;
       }
 
       {
@@ -524,6 +523,7 @@ namespace pinocchio
 
       primal_feasibility = primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
       dual_feasibility = dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
+      dual_feasibility = math::max((mu_prox * tau_prox) * dual_feasibility, (rho * tau) * dual_feasibility);
       complementarity = internal::computeConicComplementarity(constraint_models, z_, y_);
 
       if (stat_record)
