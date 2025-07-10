@@ -48,11 +48,13 @@ namespace pinocchio
       const bool solve_ncp = true,
       const ADMMUpdateRule admm_update_rule = ADMMUpdateRule::SPECTRAL,
       const boost::optional<Scalar> rho0 = boost::none,
+      const ADMMProximalRule admm_proximal_rule = ADMMProximalRule::MANUAL,
+      const boost::optional<Scalar> mu_prox0 = boost::none,
       const bool stat_record = false)
     {
       return solver.solve(
         delassus, g, constraint_models, dt, preconditioner, primal_solution, dual_solution,
-        solve_ncp, admm_update_rule, rho0, stat_record);
+        solve_ncp, admm_update_rule, rho0, admm_proximal_rule, mu_prox0, stat_record);
     }
 
     template<typename DelassusDerived, typename ConstraintModel, typename ConstraintModelAllocator>
@@ -169,6 +171,14 @@ namespace pinocchio
             // .export_values()
             ;
         }
+        if (!eigenpy::register_symbolic_link_to_registered_type<::pinocchio::ADMMProximalRule>())
+        {
+          bp::enum_<::pinocchio::ADMMProximalRule>("ADMMProximalRule")
+            .value("MANUAL", ::pinocchio::ADMMProximalRule::MANUAL)
+            .value("AUTOMATIC", ::pinocchio::ADMMProximalRule::AUTOMATIC)
+            // .export_values()
+            ;
+        }
 
         class_
           .def(
@@ -180,7 +190,8 @@ namespace pinocchio
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
-             bp::arg("stat_record") = false),
+             bp::arg("admm_proximal_rule") = ADMMProximalRule::MANUAL,
+             bp::arg("mu_prox0") = boost::none, bp::arg("stat_record") = false),
             "Solve the constrained conic problem, starting from the optional initial guess.")
           .def(
             "solve",
@@ -190,7 +201,8 @@ namespace pinocchio
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
-             bp::arg("stat_record") = false),
+             bp::arg("admm_proximal_rule") = ADMMProximalRule::MANUAL,
+             bp::arg("mu_prox0") = boost::none, bp::arg("stat_record") = false),
             "Solve the constrained conic problem, starting from the optional initial guess.")
           .def(
             "solve",
@@ -200,7 +212,8 @@ namespace pinocchio
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
-             bp::arg("stat_record") = false),
+             bp::arg("admm_proximal_rule") = ADMMProximalRule::MANUAL,
+             bp::arg("mu_prox0") = boost::none, bp::arg("stat_record") = false),
             "Solve the constrained conic problem, starting from the optional initial guess.");
 #ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
         {
@@ -337,8 +350,12 @@ namespace pinocchio
         .def("getTau", &Solver::getTau, bp::arg("self"), "Get the tau linear scaling factor.")
 
         .def(
-          "setProximalValue", &Solver::setProximalValue, bp::args("self", "mu"),
-          "Set the proximal value.")
+          "setProximalTau", &Solver::setProximalTau, bp::args("self", "tau_prox"),
+          "Set the tau linear proximal factor.")
+        .def(
+          "getProximalTau", &Solver::getProximalTau, bp::arg("self"),
+          "Get the tau linear proximal factor.")
+
         .def(
           "getProximalValue", &Solver::getProximalValue, bp::arg("self"), "Get the proximal value.")
 
@@ -437,6 +454,7 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, dual_feasibility_ncp, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, complementarity, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, rho, "")
+          .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, mu_prox, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, linear_system_residual, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, linear_system_consistency, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(

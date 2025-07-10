@@ -175,6 +175,17 @@ namespace pinocchio
     CONSTANT = 'C',
   };
 
+  /// \brief ADMM proximal policy.
+  /// MANUAL: mu_prox is constant and manually set. It is scaled by tau_prox
+  /// AUTOMATIC: mu_prox is always set to rho.
+  ///
+  /// \note mu_prox is always scaled by tau_prox.
+  enum class ADMMProximalRule : char
+  {
+    MANUAL = 'M',
+    AUTOMATIC = 'A',
+  };
+
   template<typename Scalar>
   union ADMMUpdateRuleContainerTpl {
     ADMMUpdateRuleContainerTpl()
@@ -251,6 +262,7 @@ namespace pinocchio
       void reserve(const int max_it)
       {
         rho.reserve(size_t(max_it));
+        mu_prox.reserve(size_t(max_it));
         linear_system_residual.reserve(size_t(max_it));
         linear_system_consistency.reserve(size_t(max_it));
       }
@@ -259,6 +271,7 @@ namespace pinocchio
       {
         Base::SolverStats::reset();
         rho.clear();
+        mu_prox.clear();
         linear_system_residual.clear();
         linear_system_consistency.clear();
         delassus_decomposition_update_count = 0;
@@ -269,6 +282,9 @@ namespace pinocchio
 
       /// \brief History of rho values.
       std::vector<Scalar> rho;
+
+      /// \brief History of mu_prox values.
+      std::vector<Scalar> mu_prox;
 
       /// \brief History of linear system residual.
       std::vector<Scalar> linear_system_residual;
@@ -293,7 +309,7 @@ namespace pinocchio
 
     explicit ADMMContactSolverTpl(
       int problem_dim,
-      Scalar mu_prox = Scalar(1e-6),
+      Scalar tau_prox = Scalar(1e-6),
       Scalar tau = Scalar(0.5),
       Scalar rho_power = Scalar(0.2),
       Scalar rho_power_factor = Scalar(0.05),
@@ -307,9 +323,10 @@ namespace pinocchio
       int rho_min_update_frequency = int(1))
     : Base(problem_dim)
     , is_initialized(false)
-    , mu_prox(mu_prox)
+    , tau_prox(tau_prox)
+    , mu_prox(Scalar(1e-6))
     , tau(tau)
-    , rho(10.)
+    , rho(Scalar(10))
     , rho_power(rho_power)
     , rho_power_factor(rho_power_factor)
     , linear_update_rule_factor(linear_update_rule_factor)
@@ -365,12 +382,14 @@ namespace pinocchio
     }
 
     /// \brief Set the power factor associated to the problem conditionning.
+    /// Only related to ADMMUpdateRule::SPECTRAL.
     void setRhoPowerFactor(const Scalar rho_power_factor)
     {
       this->rho_power_factor = rho_power_factor;
     }
     /// \brief Get the value of the increase/decrease factor associated to the problem
     /// conditionning.
+    /// Only related to ADMMUpdateRule::SPECTRAL.
     Scalar getRhoPowerFactor() const
     {
       return rho_power_factor;
@@ -390,11 +409,13 @@ namespace pinocchio
     }
 
     /// \brief Set the update factor of the Linear update rule
+    /// Only related to ADMMUpdateRule::LINEAR.
     void setLinearUpdateRuleFactor(const Scalar linear_update_rule_factor)
     {
       this->linear_update_rule_factor = linear_update_rule_factor;
     }
     /// \brief Get the value of the increase/decrease factor of the Linear update rule
+    /// Only related to ADMMUpdateRule::LINEAR.
     Scalar getLinearUpdateRuleFactor() const
     {
       return linear_update_rule_factor;
@@ -411,6 +432,23 @@ namespace pinocchio
       return tau;
     }
 
+    /// \brief Set the tau linear proximal scaling factor.
+    void setProximalTau(const Scalar tau_prox)
+    {
+      this->tau_prox = tau_prox;
+    }
+    /// \brief Get the tau linear proximal scaling factor.
+    Scalar getProximalTau() const
+    {
+      return this->tau_prox;
+    }
+
+    /// \brief Get the proximal value.
+    Scalar getProximalValue() const
+    {
+      return this->mu_prox;
+    }
+
     /// \brief Set the maximum number of decompositions of the Delassus.
     void setMaxDelassusDecompositionUpdates(const int max_delassus_decomposition_updates)
     {
@@ -423,17 +461,6 @@ namespace pinocchio
     int getMaxDelassusDecompositionUpdates() const
     {
       return this->max_delassus_decomposition_updates;
-    }
-
-    /// \brief Set the proximal value.
-    void setProximalValue(const Scalar mu)
-    {
-      this->mu_prox = mu;
-    }
-    /// \brief Get the proximal value.
-    Scalar getProximalValue() const
-    {
-      return mu_prox;
     }
 
     /// \brief Set dual momentum.
@@ -556,6 +583,8 @@ namespace pinocchio
       const bool solve_ncp = true,
       const ADMMUpdateRule admm_update_rule = ADMMUpdateRule::SPECTRAL,
       const boost::optional<Scalar> rho0 = boost::none,
+      const ADMMProximalRule admm_proximal_policy = ADMMProximalRule::MANUAL,
+      const boost::optional<Scalar> mu_prox0 = boost::none,
       const bool stat_record = false);
 
     ///
@@ -590,6 +619,8 @@ namespace pinocchio
       const bool solve_ncp = true,
       const ADMMUpdateRule admm_update_rule = ADMMUpdateRule::SPECTRAL,
       const boost::optional<Scalar> rho0 = boost::none,
+      const ADMMProximalRule admm_proximal_policy = ADMMProximalRule::MANUAL,
+      const boost::optional<Scalar> mu_prox0 = boost::none,
       const bool stat_record = false)
     {
       typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
@@ -600,7 +631,7 @@ namespace pinocchio
 
       return solve(
         delassus, g, wrapped_constraint_models, dt, preconditioner, primal_guess, dual_guess,
-        solve_ncp, admm_update_rule, rho0, stat_record);
+        solve_ncp, admm_update_rule, rho0, admm_proximal_policy, mu_prox0, stat_record);
     }
 
     ///
@@ -693,9 +724,14 @@ namespace pinocchio
     Scalar computeDelassusLargestEigenvalue(const DelassusOperatorBase<DelassusDerived> & delassus);
 
   protected:
+    /// \brief Default value of ADMM proximal term.
+    static constexpr Scalar mu_prox_default = 1e-6;
+
     bool is_initialized;
 
-    /// \brief proximal value
+    /// \brief Linear scaling of the ADMM proximal term.
+    Scalar tau_prox;
+    /// \brief Value of the ADMM proximal term.
     Scalar mu_prox;
 
     /// \brief Linear scaling of the ADMM penalty term

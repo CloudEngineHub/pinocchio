@@ -229,6 +229,8 @@ namespace pinocchio
     const bool solve_ncp,
     const ADMMUpdateRule admm_update_rule,
     const boost::optional<Scalar> rho0,
+    const ADMMProximalRule admm_proximal_policy,
+    const boost::optional<Scalar> mu_prox0,
     const bool stat_record)
   {
     // Unused for now
@@ -247,7 +249,8 @@ namespace pinocchio
     const Scalar mu_R = G.getCompliance().minCoeff();
     PINOCCHIO_CHECK_INPUT_ARGUMENT(dt >= Scalar(0), "dt should be positive.");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(tau <= Scalar(1) && tau > Scalar(0), "tau should lie in ]0,1].");
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(mu_prox >= 0, "mu_prox should be positive.");
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(
+      tau_prox <= Scalar(1) && tau_prox > Scalar(0), "tau_prox should lie in ]0,1].");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(mu_R >= Scalar(0), "R should be a positive vector.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(G.getCompliance().size(), problem_size);
 
@@ -352,7 +355,15 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(y_.size(), problem_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(z_.size(), problem_size);
 
-    Scalar m = mu_R + mu_prox;
+    Scalar m = mu_R;
+    if (mu_prox0)
+    {
+      m += mu_prox0.get();
+    }
+    else
+    {
+      m += mu_prox_default; // default
+    }
     Scalar L = Scalar(-1); // not yet computed
     bool delassus_largest_eigenvalue_computed = false;
     Scalar rho;
@@ -367,6 +378,7 @@ namespace pinocchio
       delassus_largest_eigenvalue_computed = true;
       rho = ADMMSpectralUpdateRule::computeRho(L, m, rho_power);
     }
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(rho >= 0, "rho should be positive.");
 
     // Setup ADMM update rules:
     // Before running ADMM, we compute the largest and smallest eigenvalues of delassus in order
@@ -401,10 +413,30 @@ namespace pinocchio
     // clamp the rho
     rho = math::max(math::min(rho, rho_max), rho_min);
 
+    // set mu_prox according to prox policy
+    switch (admm_proximal_policy)
+    {
+    case (ADMMProximalRule::MANUAL): {
+      if (mu_prox0)
+      {
+        this->mu_prox = mu_prox0.get();
+      }
+      else
+      {
+        this->mu_prox = mu_prox_default;
+      }
+      break;
+    }
+    case (ADMMProximalRule::AUTOMATIC):
+      this->mu_prox = rho;
+      break;
+    }
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(mu_prox >= 0, "mu_prox should be positive.");
+
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
 
     // Update the decomposition of the Delassus
-    Scalar prox_value = mu_prox + tau * rho;
+    Scalar prox_value = tau_prox * mu_prox + tau * rho;
     rhs = VectorXs::Constant(this->problem_size, prox_value);
     G.updateDamping(rhs);
     Scalar old_prox_value = prox_value;
@@ -439,7 +471,7 @@ namespace pinocchio
       }
 
       // x-update
-      rhs = -(g + s_ - (rho * tau) * y_ - mu_prox * x_ - z_);
+      rhs = -(g + s_ - (rho * tau) * y_ - (mu_prox * tau_prox) * x_ - z_);
       {
         PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop solveInPlace");
         x_ = rhs;
@@ -474,7 +506,7 @@ namespace pinocchio
         VectorXs & dx = tmp;
         dx = x_ - x_previous_;
         dx_norm = dx.template lpNorm<Eigen::Infinity>(); // check relative progress on x
-        dual_feasibility_vector = mu_prox * dx;
+        dual_feasibility_vector = (tau_prox * mu_prox) * dx;
       }
 
       {
@@ -514,6 +546,7 @@ namespace pinocchio
         stats.dual_feasibility_ncp.push_back(dual_feasibility_ncp);
         stats.complementarity.push_back(complementarity);
         stats.rho.push_back(rho);
+        stats.mu_prox.push_back(mu_prox);
       }
 
       // Checking stopping residual
@@ -586,6 +619,15 @@ namespace pinocchio
         else if (new_rho >= this->rho_update_ratio * rho || rho >= this->rho_update_ratio * new_rho)
         { // sufficient change of the rho value
           rho = new_rho;
+          switch (admm_proximal_policy)
+          {
+          case (ADMMProximalRule::MANUAL):
+            // don't update the mu_prox
+            break;
+          case (ADMMProximalRule::AUTOMATIC):
+            this->mu_prox = rho;
+            break;
+          }
           it_since_last_rho_update = 0;
           update_delassus_factorization = true;
         }
@@ -593,7 +635,7 @@ namespace pinocchio
         // Account for potential update of rho
         if (update_delassus_factorization)
         {
-          prox_value = mu_prox + tau * rho;
+          prox_value = tau_prox * mu_prox + tau * rho;
           if (old_prox_value != prox_value)
           {
             PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop updateDamping");
