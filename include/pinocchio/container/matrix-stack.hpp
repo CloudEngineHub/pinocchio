@@ -73,6 +73,38 @@ namespace pinocchio
       }
     }
 
+    ///
+    /// @brief Copy constructor. Creates a deep copy of *this.
+    /// @param other MatrixStackTpl to copy
+    ///
+    MatrixStackTpl(const MatrixStackTpl & other)
+    : offsets(other.offsets)
+    , data_ptr(nullptr)
+    {
+      data_ptr = MatrixStackTpl::malloc(other.memory_capacity);
+      memory_capacity = data_ptr != nullptr ? other.memory_capacity : 0;
+      if (data_ptr == nullptr)
+        return;
+
+      matrix_maps.reserve(other.matrix_maps.size());
+      for (std::size_t i = 0; i < other.matrix_maps.size(); ++i)
+      {
+        const auto offset_value = offsets[i];
+        const auto & other_matrix_map = other.matrix_maps[i];
+
+        void * aligned_data = inc_ptr(data_ptr, offset_value);
+        assert(
+          reinterpret_cast<std::size_t>(aligned_data) % Alignment == 0
+          && "aligned_data is not properly aligned.");
+
+        MapType aligned_map = MapType(
+          reinterpret_cast<Scalar *>(aligned_data), other_matrix_map.rows(),
+          other_matrix_map.cols());
+        aligned_map = other_matrix_map; // copy data
+        matrix_maps.push_back(aligned_map);
+      }
+    }
+
     void push_back(const Index rows, const Index cols)
     {
       void * next_data_ptr =
