@@ -77,6 +77,13 @@ BOOST_AUTO_TEST_CASE(matrix_stack_default)
 
     BOOST_CHECK(matrix_stack[0].isOnes(0));
     BOOST_CHECK(matrix_stack[1].isConstant(2, 0));
+
+    // operator==
+    BOOST_CHECK(matrix_stack == matrix_stack);
+
+    // Test copy constructor
+    MatrixXsStack matrix_stack_copy = matrix_stack;
+    BOOST_CHECK(matrix_stack_copy == matrix_stack);
   }
 
   { // case with memory allocation
