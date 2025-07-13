@@ -105,6 +105,16 @@ namespace pinocchio
       }
     }
 
+    /// @brief Equality comparison operator.
+    /// @param other MatrixStackTpl to compare with.
+    /// @returns true if the two underlying map are equal.
+    bool operator==(const MatrixStackTpl & other) const
+    {
+      if (this == &other)
+        return true;
+      return matrix_maps == other.matrix_maps;
+    }
+
     void push_back(const Index rows, const Index cols)
     {
       void * next_data_ptr =
