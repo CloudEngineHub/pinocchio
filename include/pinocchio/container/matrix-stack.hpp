@@ -75,9 +75,10 @@ namespace pinocchio
 
     void push_back(const Index rows, const Index cols)
     {
-      void * next_data_ptr = matrix_maps.size() == 0
-                               ? data_ptr
-                               : inc_ptr(matrix_maps.back().data(), raw_size(matrix_maps.back()));
+      void * next_data_ptr =
+        matrix_maps.size() == 0
+          ? data_ptr
+          : inc_ptr(matrix_maps.back().data(), raw_map_size(matrix_maps.back()));
       void * aligned_data =
         reinterpret_cast<std::size_t>(next_data_ptr) % Alignment == 0
           ? /* next_data_ptr is aligned */
@@ -89,11 +90,11 @@ namespace pinocchio
         reinterpret_cast<std::size_t>(aligned_data) % Alignment == 0
         && "aligned_data is not properly aligned.");
 
-      const std::size_t matrix_raw_size = std::size_t(rows * cols) * sizeof(Scalar);
+      const std::size_t matrix_raw_map_size = std::size_t(rows * cols) * sizeof(Scalar);
       const std::size_t loss_bits =
         (reinterpret_cast<std::size_t>(aligned_data)
          - reinterpret_cast<std::size_t>(next_data_ptr));
-      const std::size_t new_memory_chunck_size = matrix_raw_size + loss_bits;
+      const std::size_t new_memory_chunck_size = matrix_raw_map_size + loss_bits;
 
       const std::size_t current_memory_size =
         reinterpret_cast<std::size_t>(next_data_ptr) - reinterpret_cast<std::size_t>(data_ptr);
@@ -125,9 +126,10 @@ namespace pinocchio
             reinterpret_cast<Scalar *>(new_map_data_ptr), matrix_map.rows(), matrix_map.cols());
         }
 
-        void * next_data_ptr = matrix_maps.size() == 0
-                                 ? data_ptr
-                                 : inc_ptr(matrix_maps.back().data(), raw_size(matrix_maps.back()));
+        void * next_data_ptr =
+          matrix_maps.size() == 0
+            ? data_ptr
+            : inc_ptr(matrix_maps.back().data(), raw_map_size(matrix_maps.back()));
         aligned_data =
           reinterpret_cast<std::size_t>(next_data_ptr) % Alignment == 0
             ? /* next_data_ptr is aligned */
@@ -229,7 +231,7 @@ namespace pinocchio
       return reinterpret_cast<void *>(reinterpret_cast<std::size_t>(ptr) + inc_value);
     }
 
-    static std::size_t raw_size(const MapType & map)
+    static std::size_t raw_map_size(const MapType & map)
     {
       return sizeof(Scalar) * std::size_t(map.rows() * map.cols());
     }
