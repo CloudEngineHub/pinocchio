@@ -78,15 +78,29 @@ namespace pinocchio
     /// @param other MatrixStackTpl to copy
     ///
     MatrixStackTpl(const MatrixStackTpl & other)
-    : offsets(other.offsets)
-    , data_ptr(nullptr)
+    : data_ptr(nullptr)
     {
+      *this = other;
+    }
+
+    ///
+    /// @brief Copy operator
+    /// @param other MatrixStackTpl to copy
+    /// @returns a reference to this.
+    ///
+    MatrixStackTpl & operator=(const MatrixStackTpl & other)
+    {
+      free(data_ptr);
+
       data_ptr = MatrixStackTpl::malloc(other.memory_capacity);
+
       memory_capacity = data_ptr != nullptr ? other.memory_capacity : 0;
       if (data_ptr == nullptr)
-        return;
+        return *this;
 
+      matrix_maps.clear();
       matrix_maps.reserve(other.matrix_maps.size());
+      offsets = other.offsets;
       for (std::size_t i = 0; i < other.matrix_maps.size(); ++i)
       {
         const auto offset_value = offsets[i];
@@ -103,6 +117,8 @@ namespace pinocchio
         aligned_map = other_matrix_map; // copy data
         matrix_maps.push_back(aligned_map);
       }
+
+      return *this;
     }
 
     /// @brief Equality comparison operator.
