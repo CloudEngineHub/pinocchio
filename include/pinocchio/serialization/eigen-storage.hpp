@@ -36,14 +36,14 @@ namespace boost
       ar & make_nvp("rows", rows);
       ar & make_nvp("cols", cols);
 
-      typedef internal::EigenStorageAccessor<MatrixLike> Accessor;
-      Accessor & storage_ = static_cast<Accessor &>(storage);
-      ar & make_nvp("m_storage", storage_.m_storage);
-
       if (Archive::is_loading::value)
       {
         storage.resize(rows, cols); // reset internal map to point to storage
       }
+
+      typedef internal::EigenStorageAccessor<MatrixLike> Accessor;
+      Accessor & storage_ = static_cast<Accessor &>(storage);
+      ar & make_nvp("m_storage", storage_.m_storage);
     }
 
   } // namespace serialization
