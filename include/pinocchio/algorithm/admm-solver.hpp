@@ -478,7 +478,7 @@ namespace pinocchio
 
     explicit ADMMContactSolverTpl(
       int problem_dim,
-      Scalar tau_prox = Scalar(1e-6),
+      Scalar tau_prox = Scalar(1),
       Scalar tau = Scalar(0.5),
       Scalar rho_power = Scalar(0.2),
       Scalar rho_power_factor = Scalar(0.05),
