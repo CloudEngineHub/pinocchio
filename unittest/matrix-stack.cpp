@@ -84,6 +84,9 @@ BOOST_AUTO_TEST_CASE(matrix_stack_default)
     // Test copy constructor
     MatrixXsStack matrix_stack_copy = matrix_stack;
     BOOST_CHECK(matrix_stack_copy == matrix_stack);
+
+    matrix_stack_copy.push_back(1, 6);
+    BOOST_CHECK(matrix_stack_copy != matrix_stack);
   }
 
   { // case with memory allocation
