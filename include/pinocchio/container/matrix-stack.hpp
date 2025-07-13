@@ -50,7 +50,7 @@ namespace pinocchio
     /// \param[in] max_elt_size Maximal size of each matrices (rows() x cols()) if known at
     /// construction time. Default value to 0.
     ///
-    MatrixStackTpl(const std::size_t max_elts, const std::size_t max_elt_size = 0)
+    explicit MatrixStackTpl(const std::size_t max_elts, const std::size_t max_elt_size = 0)
     : offsets()
     , data_ptr(nullptr)
     , memory_capacity(0)
