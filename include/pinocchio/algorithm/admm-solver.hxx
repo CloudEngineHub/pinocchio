@@ -456,31 +456,67 @@ namespace pinocchio
     Scalar z_previous_norm_inf = z_norm_inf;
     it = 1;
     int it_since_last_rho_update = 0;
+
+    x_anderson_ = x_;
+    z_anderson_ = z_;
+    this->anderson_history.clear();
+    Scalar anderson_primal_feasibility;
+    Scalar anderson_previous_primal_feasibility = std::numeric_limits<Scalar>::max();
     for (; it <= Base::max_it; ++it, ++it_since_last_rho_update)
     {
 
-      x_previous_ = x_;
+      // store previous iterates
+      // note: when anderson capacity is < 2, x_anderson_ = x_
+      x_previous_ = x_anderson_;
       y_previous_ = y_;
-      z_previous_ = z_;
+      z_previous_ = z_anderson_;
       complementarity = Scalar(0);
 
-      // y-update
+      // y-update, using anderson iterate.
+      // If update is worse in terms of primal feas, it is rejected and the default
+      // ADMM iterates are used to compute the y-update.
       {
         PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop computeConeProjection");
-        tmp = x_ - z_ / (tau * rho);
+        tmp = x_anderson_ - z_anderson_ / (tau * rho);
         internal::computeConeProjection(constraint_models, tmp, y_);
+
+        anderson_primal_feasibility_vector = x_anderson_ - y_;
+        anderson_primal_feasibility =
+          anderson_primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
+
+        if (this->anderson_history.capacity() > 1 && it > 1)
+        {
+          if (
+            anderson_primal_feasibility >= anderson_previous_primal_feasibility //
+            && this->anderson_history.size() == this->anderson_history.capacity())
+          {
+            // Reject anderson iterate, accept default ADMM iterate instead.
+            // Reset anderson acceleration.
+            x_previous_ = x_;
+            z_previous_ = z_;
+            tmp = x_previous_ - z_previous_ / (tau * rho);
+            internal::computeConeProjection(constraint_models, tmp, y_);
+
+            this->anderson_history.clear();
+
+            anderson_primal_feasibility_vector = x_previous_ - y_;
+            anderson_primal_feasibility =
+              anderson_primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
+          }
+        }
       }
+      anderson_previous_primal_feasibility = anderson_primal_feasibility;
 
       if (solve_ncp)
       {
         // s-update
-        internal::computeDeSaxeCorrection(constraint_models, z_, s_);
+        internal::computeDeSaxeCorrection(constraint_models, z_previous_, s_);
       }
 
-      // x-update
-      rhs = -(g + s_ - (rho * tau) * y_ - (mu_prox * tau_prox) * x_ - z_);
+      // default (non-accelerated) x-update
       {
         PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop solveInPlace");
+        rhs = -(g + s_ - (rho * tau) * y_ - (mu_prox * tau_prox) * x_previous_ - z_previous_);
         x_ = rhs;
         G.solveInPlace(x_);
       }
@@ -495,9 +531,9 @@ namespace pinocchio
         stats.linear_system_consistency.push_back(linear_system_consistency);
       }
 
-      // z-update
-      tmp = z_ - (tau * rho) * (x_ - y_);
-      z_.noalias() = this->dual_momentum * z_ + (Scalar(1) - this->dual_momentum) * tmp;
+      // default (non-accelerated) z-update
+      tmp = z_previous_ - (tau * rho) * (x_ - y_);
+      z_.noalias() = this->dual_momentum * z_previous_ + (Scalar(1) - this->dual_momentum) * tmp;
 
       // check termination criteria
       primal_feasibility_vector = x_ - y_;
@@ -523,7 +559,7 @@ namespace pinocchio
 
       primal_feasibility = primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
       dual_feasibility = dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
-      dual_feasibility = math::max((mu_prox * tau_prox) * dual_feasibility, (rho * tau) * dual_feasibility);
+      dual_feasibility = math::max(mu_prox * tau_prox, rho * tau) * dual_feasibility;
       complementarity = internal::computeConicComplementarity(constraint_models, z_, y_);
 
       if (stat_record)
@@ -547,6 +583,7 @@ namespace pinocchio
         stats.complementarity.push_back(complementarity);
         stats.rho.push_back(rho);
         stats.mu_prox.push_back(mu_prox);
+        stats.anderson_size.push_back(this->anderson_history.size());
       }
 
       // Checking stopping residual
@@ -650,6 +687,26 @@ namespace pinocchio
       x_previous_norm_inf = x_norm_inf;
       y_previous_norm_inf = y_norm_inf;
       z_previous_norm_inf = z_norm_inf;
+
+      // Fit the anderson history to compute accelerated x and y iterates
+      if (this->anderson_history.capacity() > 0)
+      {
+        this->anderson_history.pushBack(x_, z_, z_ - z_previous_);
+      }
+
+      if (
+        this->anderson_history.capacity() == 0 //
+        || this->anderson_history.size() < this->anderson_history.capacity())
+      {
+        x_anderson_ = x_;
+        z_anderson_ = z_;
+      }
+      else
+      {
+        this->anderson_history.fit();
+        this->anderson_history.getAcceleratedIterates(x_anderson_, z_anderson_);
+      }
+
     } // end ADMM main for loop
 
     this->relative_residual = math::max(

@@ -204,6 +204,169 @@ namespace pinocchio
   };
 
   template<typename _Scalar>
+  struct AndersonHistoryTpl
+  {
+    typedef _Scalar Scalar;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
+
+    AndersonHistoryTpl(int problem_size, std::size_t capacity)
+    : details(problem_size, capacity)
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(capacity >= 0, "capacity needs to be positive");
+      this->reserve(problem_size, capacity);
+    }
+
+    /// \brief Reserve the capacity of the anderson history
+    void reserve(int new_problem_size, size_t new_capacity)
+    {
+      this->details.problem_size = new_problem_size;
+      this->details.capacity = new_capacity;
+      this->details.xs.resize(this->capacity(), VectorXs::Zero(this->problem_size()));
+      this->details.zs.resize(this->capacity(), VectorXs::Zero(this->problem_size()));
+      this->details.zdiffs.resize(this->capacity(), VectorXs::Zero(this->problem_size()));
+      this->details.weights.resize(math::max(0, int(this->capacity() - 1)));
+      this->details.M.resize(this->problem_size(), math::max(0, int(this->capacity() - 1)));
+      this->clear();
+    }
+
+    /// \brief Clear the anderson history.
+    void clear()
+    {
+      this->details.size = 0;
+      this->details.idx = 0;
+    }
+
+    /// \brief Get the current anderson history size.
+    std::size_t size() const
+    {
+      return this->details.size;
+    }
+
+    /// \brief Get the capacity of this anderson history.
+    std::size_t capacity() const
+    {
+      return this->details.capacity;
+    }
+
+    /// \brief Get the problem size which this anderson history fits.
+    int problem_size() const
+    {
+      return this->details.problem_size;
+    }
+
+    /// \brief Getter for the anderson weights
+    Eigen::VectorBlock<VectorXs> weights()
+    {
+      return this->details.weights.head(this->size() - 1);
+    }
+
+    /// \brief Const getter for the anderson weights
+    Eigen::VectorBlock<const VectorXs> weights() const
+    {
+      return this->details.weights.head(this->size() - 1);
+    }
+
+    /// \brief Push back default iterates into the anderson history.
+    template<typename VectorLikeX, typename VectorLikeZ, typename VectorLikeZDiff>
+    void pushBack(
+      const Eigen::MatrixBase<VectorLikeX> & x,
+      const Eigen::MatrixBase<VectorLikeZ> & z,
+      const Eigen::MatrixBase<VectorLikeZDiff> & zdiff)
+    {
+      if (this->size() > 0)
+      {
+        // cycle through the std::vector to maintain correct history
+        this->details.idx = (this->details.idx + 1) % this->capacity();
+      }
+      else
+      {
+        assert(this->details.idx == 0);
+      }
+
+      const std::size_t idx = this->details.idx;
+      this->details.xs[idx] = x;
+      this->details.zs[idx] = z;
+      this->details.zdiffs[idx] = zdiff;
+
+      // update anderson current history size
+      this->details.size = math::min(this->size() + 1, this->capacity());
+    }
+
+    /// \brief Fit the anderson history and store results in weights.
+    void fit()
+    {
+      if (this->size() < 2 || this->size() < this->capacity())
+        return;
+
+      const std::size_t idx = this->details.idx;
+      const auto & zdiffs = this->details.zdiffs;
+      auto M = this->details.M.leftCols(this->size() - 1);
+
+      for (std::size_t i = 0; i < this->size() - 1; ++i)
+      {
+        std::size_t i1 = (idx - i) % this->capacity();
+        std::size_t i2 = (idx - i - 1) % this->capacity();
+        M.col(int(i)) = zdiffs[i1] - zdiffs[i2];
+      }
+
+      // fit the anderson weights
+      this->weights() = M.colPivHouseholderQr().solve(zdiffs[idx]);
+    }
+
+    template<typename VectorLikeX, typename VectorLikeZ>
+    void getAcceleratedIterates(
+      const Eigen::MatrixBase<VectorLikeX> & x_, const Eigen::MatrixBase<VectorLikeZ> & z_) const
+    {
+      VectorLikeX & x = x_.const_cast_derived();
+      VectorLikeZ & z = z_.const_cast_derived();
+
+      const std::size_t idx = this->details.idx;
+      const auto & xs = this->details.xs;
+      const auto & zs = this->details.zs;
+
+      x = xs[idx];
+      z = zs[idx];
+
+      if (this->size() < 2 || this->size() < this->capacity())
+        return;
+
+      for (std::size_t i = 0; i < this->size() - 1; ++i)
+      {
+        const std::size_t i1 = (idx - i) % this->capacity();
+        const std::size_t i2 = (idx - i - 1) % this->capacity();
+        x -= this->weights().coeff(int(i)) * (xs[i1] - xs[i2]);
+        z -= this->weights().coeff(int(i)) * (zs[i1] - zs[i2]);
+      }
+    }
+
+    struct AndersonHistoryDetails
+    {
+      std::vector<VectorXs> xs;     // history of x (first primal variable)
+      std::vector<VectorXs> zs;     // history of z (dual variable)
+      std::vector<VectorXs> zdiffs; // history of dual residuals
+      VectorXs weights;             // weights of anderson acceleration, computed by `fit`
+      MatrixXs M;                   // matrix used to fit anderson acceleration weights
+      int problem_size;             // size of each history vector
+      std::size_t capacity;         // capacity of the history
+      std::size_t size;             // size of the history
+      std::size_t idx;              // index of most recent element in history
+
+      AndersonHistoryDetails(int problem_size, std::size_t capacity)
+      : problem_size(problem_size)
+      , capacity(capacity)
+      , size(0)
+      , idx(0)
+      {
+      }
+    };
+
+    /// \brief Internal details for anderson history.
+    /// An experienced external user should only read this data e.g. for debug purposes.
+    AndersonHistoryDetails details;
+  };
+
+  template<typename _Scalar>
   struct PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
     ADMMContactSolverTpl : ContactSolverBaseTpl<_Scalar>
   {
@@ -216,6 +379,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
     typedef LanczosDecompositionTpl<MatrixXs> LanczosDecomposition;
     typedef DiagonalPreconditionerTpl<VectorXs> DiagonalPreconditioner;
+    typedef AndersonHistoryTpl<Scalar> AndersonHistory;
 
     using Base::problem_size;
 
@@ -263,6 +427,7 @@ namespace pinocchio
       {
         rho.reserve(size_t(max_it));
         mu_prox.reserve(size_t(max_it));
+        anderson_size.reserve(size_t(max_it));
         linear_system_residual.reserve(size_t(max_it));
         linear_system_consistency.reserve(size_t(max_it));
       }
@@ -272,6 +437,7 @@ namespace pinocchio
         Base::SolverStats::reset();
         rho.clear();
         mu_prox.clear();
+        anderson_size.clear();
         linear_system_residual.clear();
         linear_system_consistency.clear();
         delassus_decomposition_update_count = 0;
@@ -285,6 +451,9 @@ namespace pinocchio
 
       /// \brief History of mu_prox values.
       std::vector<Scalar> mu_prox;
+
+      /// \brief History of anderson size.
+      std::vector<std::size_t> anderson_size;
 
       /// \brief History of linear system residual.
       std::vector<Scalar> linear_system_residual;
@@ -320,7 +489,8 @@ namespace pinocchio
       Scalar dual_momentum = Scalar(0),
       Scalar rho_momentum = Scalar(0),
       Scalar rho_update_ratio = Scalar(0),
-      int rho_min_update_frequency = int(1))
+      int rho_min_update_frequency = int(1),
+      std::size_t anderson_capacity = std::size_t(0))
     : Base(problem_dim)
     , is_initialized(false)
     , tau_prox(tau_prox)
@@ -335,15 +505,18 @@ namespace pinocchio
         static_cast<Eigen::DenseIndex>(math::max(2, problem_dim)),
         static_cast<Eigen::DenseIndex>(math::max(2, math::min(lanczos_size, problem_dim))))
     , x_(VectorXs::Zero(problem_dim))
+    , x_anderson_(VectorXs::Zero(problem_dim))
     , y_(VectorXs::Zero(problem_dim))
     , x_previous_(VectorXs::Zero(problem_dim))
     , y_previous_(VectorXs::Zero(problem_dim))
     , z_(VectorXs::Zero(problem_dim))
+    , z_anderson_(VectorXs::Zero(problem_dim))
     , z_previous_(VectorXs::Zero(problem_dim))
     , s_(VectorXs::Zero(problem_dim))
     , rhs(problem_dim)
     , tmp(problem_dim)
     , primal_feasibility_vector(VectorXs::Zero(problem_dim))
+    , anderson_primal_feasibility_vector(VectorXs::Zero(problem_dim))
     , dual_feasibility_vector(VectorXs::Zero(problem_dim))
     , delassus_decomposition_update_count(0)
     , max_delassus_decomposition_updates(max_delassus_decomposition_updates)
@@ -351,6 +524,7 @@ namespace pinocchio
     , rho_momentum(rho_momentum)
     , rho_update_ratio(rho_update_ratio)
     , rho_min_update_frequency(rho_min_update_frequency)
+    , anderson_history(problem_size, anderson_capacity)
     , stats()
     {
     }
@@ -543,6 +717,20 @@ namespace pinocchio
     const LanczosDecomposition & getLanczosDecomposition() const
     {
       return lanczos_decomposition;
+    }
+
+    /// \brief Get the capacity of the anderson history.
+    /// \copydoc anderson_history
+    std::size_t getAndersonHistoryCapacity() const
+    {
+      return this->anderson_history.capacity();
+    }
+    ///
+    /// \brief Set the capacity of the anderson history.
+    /// \copydoc anderson_history
+    void setAndersonHistoryCapacity(const std::size_t anderson_history_capacity)
+    {
+      return this->anderson_history.reserve(this->problem_size, anderson_history_capacity);
     }
 
     ADMMSolverStats & getStats()
@@ -756,13 +944,14 @@ namespace pinocchio
     LanczosDecomposition lanczos_decomposition;
 
     /// \brief Primal variables (corresponds to the constraint impulses)
-    VectorXs x_, y_, x_previous_, y_previous_;
+    VectorXs x_, x_anderson_, y_, x_previous_, y_previous_;
     /// \brief Dual variable of the ADMM (corresponds to the contact velocity or acceleration).
-    VectorXs z_, z_previous_;
+    VectorXs z_, z_anderson_, z_previous_;
     /// \brief De Saxé shift
     VectorXs s_;
 
-    VectorXs rhs, tmp, primal_feasibility_vector, dual_feasibility_vector;
+    VectorXs rhs, tmp, primal_feasibility_vector, anderson_primal_feasibility_vector,
+      dual_feasibility_vector;
 
     int delassus_decomposition_update_count;
     int max_delassus_decomposition_updates;
@@ -782,6 +971,13 @@ namespace pinocchio
     /// until it can trigger a new rho update.
     Scalar rho_min_update_frequency;
 
+    /// \brief Anderson acceleration history.
+    /// An anderson history of capacity <= 1 is inactive (it is the standard ADMM algorithm).
+    /// The anderson acceleration only triggers if the capacity (and the current anderson size) is
+    /// >= 2.
+    AndersonHistory anderson_history;
+
+    /// \brief Stats recorded by the solver if `solve` is called with `stat_record = true`.
     ADMMSolverStats stats;
 
 #ifdef PINOCCHIO_WITH_HPP_FCL

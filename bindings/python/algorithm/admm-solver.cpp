@@ -417,6 +417,18 @@ namespace pinocchio
           "Get the Lanczos decomposition.", bp::return_internal_reference<>())
 
         .def(
+          "setAndersonHistoryCapacity", &Solver::setAndersonHistoryCapacity,
+          bp::args("self", "anderson_capacity"),
+          "Set the capacity of the anderson history. An anderson history of capacity <= 1 is "
+          "inactive (it is the standard ADMM algorithm). The anderson acceleration only triggers "
+          "if the capacity (and the current anderson size) is >= 2.")
+        .def(
+          "getAndersonHistoryCapacity", &Solver::getAndersonHistoryCapacity, bp::arg("self"),
+          "Get the capacity of the anderson history. An anderson history of capacity <= 1 is "
+          "inactive (it is the standard ADMM algorithm). The anderson acceleration only triggers "
+          "if the capacity (and the current anderson size) is >= 2.")
+
+        .def(
           "getDelassusDecompositionUpdateCount", &Solver::getDelassusDecompositionUpdateCount,
           bp::arg("self"),
           "Returns the number of updates of the Delassus decomposition due to rho updates.")
@@ -455,6 +467,7 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, complementarity, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, rho, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, mu_prox, "")
+          .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, anderson_size, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, linear_system_residual, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(SolverStats, linear_system_consistency, "")
           .PINOCCHIO_ADD_PROPERTY_READONLY(
