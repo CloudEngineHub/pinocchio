@@ -22,7 +22,7 @@ namespace pinocchio
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(
       typename std::remove_reference<
         typename std::remove_const<NewPlainMatrixExpression>::type>::type) NewPlainMatrixType;
-    typedef EigenStorageTpl<NewPlainMatrixType> type;
+    typedef MatrixStackTpl<NewPlainMatrixType, Alignment> type;
   };
 
   template<typename MatrixLike, std::size_t _Alignment>
