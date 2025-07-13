@@ -98,6 +98,10 @@ namespace pinocchio
       if (data_ptr == nullptr)
         return *this;
 
+      // Copy raw data
+      std::memcpy(data_ptr, other.data_ptr, memory_capacity);
+
+      // Add aligned map
       matrix_maps.clear();
       matrix_maps.reserve(other.matrix_maps.size());
       offsets = other.offsets;
@@ -114,7 +118,7 @@ namespace pinocchio
         MapType aligned_map = MapType(
           reinterpret_cast<Scalar *>(aligned_data), other_matrix_map.rows(),
           other_matrix_map.cols());
-        aligned_map = other_matrix_map; // copy data
+        // aligned_map = other_matrix_map; // copy data
         matrix_maps.push_back(aligned_map);
       }
 
