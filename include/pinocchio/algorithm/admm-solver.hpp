@@ -269,7 +269,7 @@ namespace pinocchio
 
     /// \brief Push back default iterates into the anderson history.
     template<typename VectorLikeX, typename VectorLikeZ, typename VectorLikeZDiff>
-    void pushBack(
+    void push_back(
       const Eigen::MatrixBase<VectorLikeX> & x,
       const Eigen::MatrixBase<VectorLikeZ> & z,
       const Eigen::MatrixBase<VectorLikeZDiff> & zdiff)

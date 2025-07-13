@@ -691,7 +691,7 @@ namespace pinocchio
       // Fit the anderson history to compute accelerated x and y iterates
       if (this->anderson_history.capacity() > 0)
       {
-        this->anderson_history.pushBack(x_, z_, z_ - z_previous_);
+        this->anderson_history.push_back(x_, z_, z_ - z_previous_);
       }
 
       if (
