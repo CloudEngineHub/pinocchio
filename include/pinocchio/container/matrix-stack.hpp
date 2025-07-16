@@ -92,11 +92,22 @@ namespace pinocchio
     {
       free(m_data_ptr);
 
-      data_ptr = MatrixStackTpl::malloc(other.memory_capacity);
+      m_memory_capacity = other.m_matrix_maps.size() == 0
+                            ? 0
+                            : other.m_offsets.back() + raw_map_size(other.m_matrix_maps.back());
 
-      memory_capacity = data_ptr != nullptr ? other.memory_capacity : 0;
-      if (data_ptr == nullptr)
+      if (m_memory_capacity == 0)
+      {
+        m_data_ptr = nullptr;
         return *this;
+      }
+
+      m_data_ptr = MatrixStackTpl::malloc(m_memory_capacity);
+      if (m_data_ptr == nullptr)
+      {
+        m_memory_capacity = 0;
+        return *this;
+      }
 
       // Copy raw data
       std::memcpy(m_data_ptr, other.m_data_ptr, m_memory_capacity);
