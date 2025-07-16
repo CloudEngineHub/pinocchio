@@ -121,7 +121,7 @@ namespace pinocchio
         const auto offset_value = m_offsets[i];
         const auto & other_matrix_map = other.m_matrix_maps[i];
 
-        void * aligned_data = inc_ptr(m_data_ptr, offset_value);
+        void * aligned_data = incr_ptr(m_data_ptr, offset_value);
         assert(
           reinterpret_cast<std::size_t>(aligned_data) % Alignment == 0
           && "aligned_data is not properly aligned.");
@@ -201,7 +201,7 @@ namespace pinocchio
           auto & matrix_map = m_matrix_maps[i];
           const auto offset_value = m_offsets[i];
 
-          void * new_map_data_ptr = inc_ptr(m_data_ptr, offset_value);
+          void * new_map_data_ptr = incr_ptr(m_data_ptr, offset_value);
 
           new (&matrix_map) MapType(
             reinterpret_cast<Scalar *>(new_map_data_ptr), matrix_map.rows(), matrix_map.cols());
@@ -210,7 +210,7 @@ namespace pinocchio
         void * next_data_ptr =
           m_matrix_maps.size() == 0
             ? m_data_ptr
-            : inc_ptr(m_matrix_maps.back().data(), raw_map_size(m_matrix_maps.back()));
+            : incr_ptr(m_matrix_maps.back().data(), raw_map_size(m_matrix_maps.back()));
         aligned_data =
           reinterpret_cast<std::size_t>(next_data_ptr) % Alignment == 0
             ? /* next_data_ptr is aligned */
@@ -307,7 +307,7 @@ namespace pinocchio
       return Eigen::internal::handmade_aligned_realloc(ptr, new_size, old_size, alignment);
     }
 
-    static void * inc_ptr(void * ptr, std::size_t inc_value)
+    static void * incr_ptr(void * ptr, std::size_t inc_value)
     {
       return reinterpret_cast<void *>(reinterpret_cast<std::size_t>(ptr) + inc_value);
     }
