@@ -51,14 +51,14 @@ namespace pinocchio
     /// construction time. Default value to 0.
     ///
     explicit MatrixStackTpl(const std::size_t max_elts, const std::size_t max_elt_size = 0)
-    : offsets()
-    , data_ptr(nullptr)
-    , memory_capacity(0)
+    : m_offsets()
+    , m_data_ptr(nullptr)
+    , m_memory_capacity(0)
     {
       if (max_elts > 0)
       {
-        offsets.reserve(max_elts);
-        matrix_maps.reserve(max_elts);
+        m_offsets.reserve(max_elts);
+        m_matrix_maps.reserve(max_elts);
 
         // Allocate the full memory if max_elt_size is given
         if (max_elt_size > 0)
@@ -66,9 +66,9 @@ namespace pinocchio
           const std::size_t max_chunck_size = max_elt_size * sizeof(Scalar) + Alignment;
           const std::size_t max_total_size = max_elts * max_chunck_size;
 
-          data_ptr =
+          m_data_ptr =
             MatrixStackTpl::malloc(max_total_size); // the first element is for sure aligned
-          memory_capacity = data_ptr != nullptr ? max_total_size : 0;
+          m_memory_capacity = m_data_ptr != nullptr ? max_total_size : 0;
         }
       }
     }
@@ -78,7 +78,7 @@ namespace pinocchio
     /// @param other MatrixStackTpl to copy
     ///
     MatrixStackTpl(const MatrixStackTpl & other)
-    : data_ptr(nullptr)
+    : m_data_ptr(nullptr)
     {
       *this = other;
     }
@@ -90,7 +90,7 @@ namespace pinocchio
     ///
     MatrixStackTpl & operator=(const MatrixStackTpl & other)
     {
-      free(data_ptr);
+      free(m_data_ptr);
 
       data_ptr = MatrixStackTpl::malloc(other.memory_capacity);
 
@@ -99,18 +99,18 @@ namespace pinocchio
         return *this;
 
       // Copy raw data
-      std::memcpy(data_ptr, other.data_ptr, memory_capacity);
+      std::memcpy(m_data_ptr, other.m_data_ptr, m_memory_capacity);
 
       // Add aligned map
-      matrix_maps.clear();
-      matrix_maps.reserve(other.matrix_maps.size());
-      offsets = other.offsets;
-      for (std::size_t i = 0; i < other.matrix_maps.size(); ++i)
+      m_matrix_maps.clear();
+      m_matrix_maps.reserve(other.m_matrix_maps.size());
+      m_offsets = other.m_offsets;
+      for (std::size_t i = 0; i < other.m_matrix_maps.size(); ++i)
       {
-        const auto offset_value = offsets[i];
-        const auto & other_matrix_map = other.matrix_maps[i];
+        const auto offset_value = m_offsets[i];
+        const auto & other_matrix_map = other.m_matrix_maps[i];
 
-        void * aligned_data = inc_ptr(data_ptr, offset_value);
+        void * aligned_data = inc_ptr(m_data_ptr, offset_value);
         assert(
           reinterpret_cast<std::size_t>(aligned_data) % Alignment == 0
           && "aligned_data is not properly aligned.");
@@ -119,7 +119,7 @@ namespace pinocchio
           reinterpret_cast<Scalar *>(aligned_data), other_matrix_map.rows(),
           other_matrix_map.cols());
         // aligned_map = other_matrix_map; // copy data
-        matrix_maps.push_back(aligned_map);
+        m_matrix_maps.push_back(aligned_map);
       }
 
       return *this;
@@ -132,7 +132,7 @@ namespace pinocchio
     {
       if (this == &other)
         return true;
-      return matrix_maps == other.matrix_maps;
+      return m_matrix_maps == other.m_matrix_maps;
     }
 
     /// @brief Inequality comparison operator.
@@ -146,9 +146,9 @@ namespace pinocchio
     void push_back(const Index rows, const Index cols)
     {
       void * next_data_ptr =
-        matrix_maps.size() == 0
-          ? data_ptr
-          : inc_ptr(matrix_maps.back().data(), raw_map_size(matrix_maps.back()));
+        m_matrix_maps.size() == 0
+          ? m_data_ptr
+          : inc_ptr(m_matrix_maps.back().data(), raw_map_size(m_matrix_maps.back()));
       void * aligned_data =
         reinterpret_cast<std::size_t>(next_data_ptr) % Alignment == 0
           ? /* next_data_ptr is aligned */
@@ -167,39 +167,39 @@ namespace pinocchio
       const std::size_t new_memory_chunck_size = matrix_raw_map_size + loss_bits;
 
       const std::size_t current_memory_size =
-        reinterpret_cast<std::size_t>(next_data_ptr) - reinterpret_cast<std::size_t>(data_ptr);
-      if (current_memory_size + new_memory_chunck_size > memory_capacity)
+        reinterpret_cast<std::size_t>(next_data_ptr) - reinterpret_cast<std::size_t>(m_data_ptr);
+      if (current_memory_size + new_memory_chunck_size > m_memory_capacity)
       { // We need to proceed to a new allocation
         const std::size_t new_size =
           2 * (current_memory_size + new_memory_chunck_size); // we double the allocated chunck
 
-        if (data_ptr == nullptr)
+        if (m_data_ptr == nullptr)
         {
-          data_ptr = MatrixStackTpl::malloc(new_size);
+          m_data_ptr = MatrixStackTpl::malloc(new_size);
         }
         else
         {
-          data_ptr = MatrixStackTpl::realloc(data_ptr, new_size, memory_capacity);
+          m_data_ptr = MatrixStackTpl::realloc(m_data_ptr, new_size, m_memory_capacity);
         }
-        assert(data_ptr != nullptr);
-        memory_capacity = new_size;
+        assert(m_data_ptr != nullptr);
+        m_memory_capacity = new_size;
 
         // We need to realign all the existing Eigen maps
-        for (std::size_t i = 0; i < matrix_maps.size(); ++i)
+        for (std::size_t i = 0; i < m_matrix_maps.size(); ++i)
         {
-          auto & matrix_map = matrix_maps[i];
-          const auto offset_value = offsets[i];
+          auto & matrix_map = m_matrix_maps[i];
+          const auto offset_value = m_offsets[i];
 
-          void * new_map_data_ptr = inc_ptr(data_ptr, offset_value);
+          void * new_map_data_ptr = inc_ptr(m_data_ptr, offset_value);
 
           new (&matrix_map) MapType(
             reinterpret_cast<Scalar *>(new_map_data_ptr), matrix_map.rows(), matrix_map.cols());
         }
 
         void * next_data_ptr =
-          matrix_maps.size() == 0
-            ? data_ptr
-            : inc_ptr(matrix_maps.back().data(), raw_map_size(matrix_maps.back()));
+          m_matrix_maps.size() == 0
+            ? m_data_ptr
+            : inc_ptr(m_matrix_maps.back().data(), raw_map_size(m_matrix_maps.back()));
         aligned_data =
           reinterpret_cast<std::size_t>(next_data_ptr) % Alignment == 0
             ? /* next_data_ptr is aligned */
@@ -213,21 +213,21 @@ namespace pinocchio
       }
 
       MapType aligned_map = MapType(reinterpret_cast<Scalar *>(aligned_data), rows, cols);
-      matrix_maps.push_back(aligned_map);
+      m_matrix_maps.push_back(aligned_map);
 
-      offsets.push_back(
-        reinterpret_cast<std::size_t>(aligned_data) - reinterpret_cast<std::size_t>(data_ptr));
+      m_offsets.push_back(
+        reinterpret_cast<std::size_t>(aligned_data) - reinterpret_cast<std::size_t>(m_data_ptr));
     }
 
     /// \brief Returns a reference to the last element in the container.
     RefMapType back()
     {
-      return matrix_maps.back();
+      return m_matrix_maps.back();
     }
     /// \brief Returns a reference to the last element in the container.
     ConstRefMapType back() const
     {
-      return matrix_maps.back();
+      return m_matrix_maps.back();
     }
 
     ///  \brief Checks if the container has no elements.
@@ -235,45 +235,45 @@ namespace pinocchio
     ///  \returns true if the container is empty, false otherwise.
     bool empty() const
     {
-      return matrix_maps.empty();
+      return m_matrix_maps.empty();
     }
 
     std::size_t capacity() const
     {
-      return matrix_maps.capacity();
+      return m_matrix_maps.capacity();
     }
 
     /// \brief Returns a reference to the element at specified location pos.
     RefMapType operator[](const std::size_t pos)
     {
-      return matrix_maps[pos];
+      return m_matrix_maps[pos];
     }
     /// \brief Returns a reference to the element at specified location pos.
     ConstRefMapType operator[](const std::size_t pos) const
     {
-      return matrix_maps[pos];
+      return m_matrix_maps[pos];
     }
 
     /// \brief Returns the number of elements in the container.
     std::size_t size() const
     {
-      return matrix_maps.size();
+      return m_matrix_maps.size();
     }
 
     /// \brief Returns a pointer to the underlying array serving as element storage.
     void * data()
     {
-      return data_ptr;
+      return m_data_ptr;
     }
     /// \brief Returns a pointer to the underlying array serving as element storage.
     const void * data() const
     {
-      return data_ptr;
+      return m_data_ptr;
     }
 
     ~MatrixStackTpl()
     {
-      MatrixStackTpl::free(data_ptr);
+      MatrixStackTpl::free(m_data_ptr);
     }
 
   protected:
@@ -306,10 +306,10 @@ namespace pinocchio
       return sizeof(Scalar) * std::size_t(map.rows() * map.cols());
     }
 
-    std::vector<std::size_t> offsets;
-    std::vector<MapType> matrix_maps;
-    void * data_ptr;
-    std::size_t memory_capacity;
+    std::vector<std::size_t> m_offsets;
+    std::vector<MapType> m_matrix_maps;
+    void * m_data_ptr;
+    std::size_t m_memory_capacity;
   }; // struct MatrixStackTpl
 
 } // namespace pinocchio
