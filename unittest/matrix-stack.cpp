@@ -41,6 +41,17 @@ BOOST_AUTO_TEST_CASE(print_info)
   std::cout << "sizeof(void*): " << sizeof(void *) << std::endl;
 }
 
+BOOST_AUTO_TEST_CASE(matrix_stack_empty)
+{
+  MatrixXsStack matrix_stack(0);
+  BOOST_CHECK(matrix_stack.size() == 0);
+  BOOST_CHECK(matrix_stack.capacity() == 0);
+
+  MatrixXsStack matrix_stack_copy(matrix_stack);
+  BOOST_CHECK(matrix_stack_copy.size() == 0);
+  BOOST_CHECK(matrix_stack_copy.capacity() == 0);
+}
+
 BOOST_AUTO_TEST_CASE(matrix_stack_default)
 {
 
