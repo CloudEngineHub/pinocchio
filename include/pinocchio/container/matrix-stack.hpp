@@ -159,7 +159,7 @@ namespace pinocchio
       void * next_data_ptr =
         m_matrix_maps.size() == 0
           ? m_data_ptr
-          : inc_ptr(m_matrix_maps.back().data(), raw_map_size(m_matrix_maps.back()));
+          : incr_ptr(m_matrix_maps.back().data(), raw_map_size(m_matrix_maps.back()));
       void * aligned_data =
         reinterpret_cast<std::size_t>(next_data_ptr) % Alignment == 0
           ? /* next_data_ptr is aligned */
@@ -181,8 +181,8 @@ namespace pinocchio
         reinterpret_cast<std::size_t>(next_data_ptr) - reinterpret_cast<std::size_t>(m_data_ptr);
       if (current_memory_size + new_memory_chunck_size > m_memory_capacity)
       { // We need to proceed to a new allocation
-        const std::size_t new_size =
-          2 * (current_memory_size + new_memory_chunck_size); // we double the allocated chunck
+        const std::size_t new_size = 2 * (current_memory_size + new_memory_chunck_size)
+                                     + Alignment; // we double the allocated chunck
 
         if (m_data_ptr == nullptr)
         {
