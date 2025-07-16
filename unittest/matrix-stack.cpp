@@ -46,10 +46,12 @@ BOOST_AUTO_TEST_CASE(matrix_stack_empty)
   MatrixXsStack matrix_stack(0);
   BOOST_CHECK(matrix_stack.size() == 0);
   BOOST_CHECK(matrix_stack.capacity() == 0);
+  BOOST_CHECK(matrix_stack.data() == nullptr);
 
   MatrixXsStack matrix_stack_copy(matrix_stack);
   BOOST_CHECK(matrix_stack_copy.size() == 0);
   BOOST_CHECK(matrix_stack_copy.capacity() == 0);
+  BOOST_CHECK(matrix_stack_copy.data() == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE(matrix_stack_default)
