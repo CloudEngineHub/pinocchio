@@ -282,6 +282,12 @@ namespace pinocchio
       return m_data_ptr;
     }
 
+    void clear()
+    {
+      m_offsets.clear();
+      m_matrix_maps.clear();
+    }
+
     ~MatrixStackTpl()
     {
       MatrixStackTpl::free(m_data_ptr);
