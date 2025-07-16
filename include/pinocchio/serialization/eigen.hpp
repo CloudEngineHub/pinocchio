@@ -11,6 +11,7 @@
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/array.hpp>
+#include <stdexcept>
 
 // If hpp-fcl < 3.0.0 The GCC Eigen/Boost.Serialization workaround
 // is already defined.
@@ -175,12 +176,40 @@ namespace boost
     }
 
     template<class Archive, typename PlainObjectBase, int MapOptions, typename StrideType>
+    void save(
+      Archive & ar,
+      const ::Eigen::Map<PlainObjectBase, MapOptions, StrideType> & m,
+      const unsigned int version)
+    {
+      typedef ::Eigen::Map<PlainObjectBase, MapOptions, StrideType> MapType;
+      internal::Eigen::serialize_eigen_plain_object(ar, const_cast<MapType &>(m), version);
+    }
+
+    template<class Archive, typename PlainObjectBase, int MapOptions, typename StrideType>
+    void load(
+      Archive & ar,
+      ::Eigen::Map<PlainObjectBase, MapOptions, StrideType> & m,
+      const unsigned int /*version*/)
+    {
+      ::Eigen::DenseIndex rows(m.rows()), cols(m.cols());
+      if (PlainObjectBase::RowsAtCompileTime == ::Eigen::Dynamic)
+        ar >> BOOST_SERIALIZATION_NVP(rows);
+      if (PlainObjectBase::ColsAtCompileTime == ::Eigen::Dynamic)
+        ar >> BOOST_SERIALIZATION_NVP(cols);
+
+      if (rows != m.rows() || cols != m.cols())
+        throw_exception(std::logic_error("The map is of wrong size."));
+
+      ar >> make_nvp("data", make_array(m.data(), (size_t)m.size()));
+    }
+
+    template<class Archive, typename PlainObjectBase, int MapOptions, typename StrideType>
     void serialize(
       Archive & ar,
       ::Eigen::Map<PlainObjectBase, MapOptions, StrideType> & m,
       const unsigned int version)
     {
-      internal::Eigen::serialize_eigen_plain_object(ar, m, version);
+      split_free(ar, m, version);
     }
 
     template<
