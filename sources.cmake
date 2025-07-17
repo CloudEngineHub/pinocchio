@@ -302,6 +302,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/double-entry-container.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen-storage.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/matrix-stack.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/csv.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/fcl.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/force.hpp
