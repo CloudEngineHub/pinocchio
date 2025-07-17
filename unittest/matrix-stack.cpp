@@ -156,4 +156,23 @@ BOOST_AUTO_TEST_CASE(matrix_stack_default)
   }
 }
 
+BOOST_AUTO_TEST_CASE(matrix_stack_clear)
+{
+  MatrixXsStack matrix_stack(100);
+  matrix_stack.push_back(1, 1);
+  matrix_stack.push_back(1, 1);
+  matrix_stack.push_back(1, 1);
+  BOOST_CHECK(matrix_stack.size() == 3);
+  BOOST_CHECK(!matrix_stack.empty());
+
+  matrix_stack.clear();
+  BOOST_CHECK(matrix_stack.size() == 0);
+  BOOST_CHECK(matrix_stack.empty());
+
+  MatrixXsStack matrix_stack_copy = matrix_stack;
+  BOOST_CHECK(matrix_stack_copy.size() == 0);
+  BOOST_CHECK(matrix_stack_copy.empty());
+  BOOST_CHECK(matrix_stack_copy == matrix_stack);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
