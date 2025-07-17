@@ -259,7 +259,7 @@ namespace pinocchio
     /// \brief Whether the internal map points towards a valid data.
     bool isValid() const
     {
-      return data() != NULL;
+      return data() != nullptr;
     }
 
     template<typename OtherMatrixLike>
