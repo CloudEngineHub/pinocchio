@@ -298,6 +298,7 @@ namespace pinocchio
   protected:
     static void * malloc(std::size_t size, std::size_t alignment = Alignment)
     {
+      assert(size > 0 && "size should be greater than 0.");
       return Eigen::internal::handmade_aligned_malloc(size, alignment);
     }
 
