@@ -44,6 +44,11 @@ namespace pinocchio
     typedef const Eigen::Map<const PlainMatrixType, Alignment> ConstMapType;
     typedef ConstMapType & RefConstMapType;
 
+    typedef std::vector<MapType> MapVector;
+
+    typedef typename MapVector::iterator iterator;
+    typedef typename MapVector::const_iterator const_iterator;
+
     /// \brief Default constructor
     ///
     /// \param[in] max_elts Maximum number of matrices contained in the stack
@@ -290,6 +295,46 @@ namespace pinocchio
       m_matrix_maps.clear();
     }
 
+    iterator begin()
+    {
+      return m_matrix_maps.begin();
+    }
+
+    iterator end()
+    {
+      return m_matrix_maps.end();
+    }
+
+    const_iterator begin() const
+    {
+      return m_matrix_maps.begin();
+    }
+
+    const_iterator end() const
+    {
+      return m_matrix_maps.end();
+    }
+
+    iterator rbegin()
+    {
+      return m_matrix_maps.cbegin();
+    }
+
+    iterator rend()
+    {
+      return m_matrix_maps.cend();
+    }
+
+    const_iterator rbegin() const
+    {
+      return m_matrix_maps.cbegin();
+    }
+
+    const_iterator rend() const
+    {
+      return m_matrix_maps.cend();
+    }
+
     ~MatrixStackTpl()
     {
       MatrixStackTpl::free(m_data_ptr);
@@ -324,7 +369,7 @@ namespace pinocchio
     }
 
     std::vector<std::size_t> m_offsets;
-    std::vector<MapType> m_matrix_maps;
+    MapVector m_matrix_maps;
     void * m_data_ptr;
     std::size_t m_memory_capacity;
   }; // struct MatrixStackTpl
