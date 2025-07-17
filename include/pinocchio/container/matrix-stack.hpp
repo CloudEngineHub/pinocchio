@@ -63,8 +63,9 @@ namespace pinocchio
         // Allocate the full memory if max_elt_size is given
         if (max_elt_size > 0)
         {
-          const std::size_t max_chunck_size = max_elt_size * sizeof(Scalar) + Alignment;
-          const std::size_t max_total_size = max_elts * max_chunck_size;
+          const std::size_t max_chunck_size = max_elt_size * sizeof(Scalar);
+          const std::size_t max_total_size =
+            max_elts * max_chunck_size + (max_elt_size - 1) * Alignment;
 
           m_data_ptr =
             MatrixStackTpl::malloc(max_total_size); // the first element is for sure aligned
@@ -92,9 +93,10 @@ namespace pinocchio
     {
       free(m_data_ptr);
 
-      m_memory_capacity = other.m_matrix_maps.size() == 0
-                            ? 0
-                            : other.m_offsets.back() + raw_map_size(other.m_matrix_maps.back());
+      m_memory_capacity =
+        other.m_matrix_maps.size() == 0
+          ? 0
+          : other.m_offsets.back() + raw_map_size(other.m_matrix_maps.back()) + Alignment;
 
       if (m_memory_capacity == 0)
       {
@@ -181,8 +183,8 @@ namespace pinocchio
         reinterpret_cast<std::size_t>(next_data_ptr) - reinterpret_cast<std::size_t>(m_data_ptr);
       if (current_memory_size + new_memory_chunck_size > m_memory_capacity)
       { // We need to proceed to a new allocation
-        const std::size_t new_size = 2 * (current_memory_size + new_memory_chunck_size)
-                                     + Alignment; // we double the allocated chunck
+        const std::size_t new_size =
+          2 * (current_memory_size + new_memory_chunck_size); // we double the allocated chunck
 
         if (m_data_ptr == nullptr)
         {
@@ -296,10 +298,7 @@ namespace pinocchio
   protected:
     static void * malloc(std::size_t size, std::size_t alignment = Alignment)
     {
-      return Eigen::internal::handmade_aligned_malloc(
-        size - alignment, /* we can remove one alignment value already taken into account in
-                             max_total_size*/
-        alignment);
+      return Eigen::internal::handmade_aligned_malloc(size, alignment);
     }
 
     static void free(void * ptr)
