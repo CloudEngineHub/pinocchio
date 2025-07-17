@@ -335,6 +335,16 @@ namespace pinocchio
       return m_matrix_maps.cend();
     }
 
+    void apply(const std::function<void(MapType)> & func)
+    {
+      std::for_each(begin(), end(), func);
+    }
+
+    void apply(const std::function<void(const MapType)> & func) const
+    {
+      std::for_each(begin(), end(), func);
+    }
+
     ~MatrixStackTpl()
     {
       MatrixStackTpl::free(m_data_ptr);
