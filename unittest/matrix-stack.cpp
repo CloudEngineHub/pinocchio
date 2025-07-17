@@ -175,4 +175,22 @@ BOOST_AUTO_TEST_CASE(matrix_stack_clear)
   BOOST_CHECK(matrix_stack_copy == matrix_stack);
 }
 
+BOOST_AUTO_TEST_CASE(matrix_stack_apply)
+{
+  MatrixXsStack matrix_stack(100);
+  typedef MatrixXsStack::MapType MapType;
+  matrix_stack.push_back(1, 1);
+  matrix_stack.push_back(1, 1);
+  matrix_stack.push_back(1, 1);
+
+  matrix_stack.apply([](MapType v) { v.setOnes(); });
+  for (const auto & map : matrix_stack)
+  {
+    BOOST_CHECK(map.isOnes(0));
+  }
+
+  matrix_stack.apply([](MapType v) { v.fill(10.); });
+  as_const(matrix_stack).apply([](const MapType v) { BOOST_CHECK(v.isConstant(10., 0)); });
+}
+
 BOOST_AUTO_TEST_SUITE_END()
