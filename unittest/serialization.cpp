@@ -28,6 +28,7 @@
 
 #include "pinocchio/serialization/eigen-storage.hpp"
 #include "pinocchio/serialization/double-entry-container.hpp"
+#include "pinocchio/serialization/matrix-stack.hpp"
 
 #include "pinocchio/multibody/sample-models.hpp"
 
@@ -1214,6 +1215,29 @@ BOOST_AUTO_TEST_CASE(double_entry_container)
   }
 
   generic_test(container, TEST_SERIALIZATION_FOLDER "/Container", "double_entry_container");
+}
+
+template<typename MatrixLike, std::size_t Alignment>
+struct empty_contructor_algo<pinocchio::MatrixStackTpl<MatrixLike, Alignment>>
+{
+  typedef pinocchio::MatrixStackTpl<MatrixLike, Alignment> Self;
+  static Self * run()
+  {
+    return new Self(0);
+  }
+};
+
+BOOST_AUTO_TEST_CASE(matrix_stack)
+{
+  typedef pinocchio::MatrixStackTpl<Eigen::MatrixXd> MatrixStack;
+
+  MatrixStack matrix_stack(20);
+  matrix_stack.push_back(1, 1);
+  matrix_stack.back().fill(2.2);
+  matrix_stack.push_back(20, 20);
+  matrix_stack.back().setOnes();
+
+  generic_test(matrix_stack, TEST_SERIALIZATION_FOLDER "/Container", "matrix_stack");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
