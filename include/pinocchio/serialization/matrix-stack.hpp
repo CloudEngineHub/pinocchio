@@ -28,6 +28,7 @@ namespace boost
         using Base::free;
         using Base::incr_ptr;
         using Base::malloc;
+        using Base::raw_size;
       };
     } // namespace internal
 
@@ -45,24 +46,51 @@ namespace boost
 
       auto & offsets = matrix_stack_.m_offsets;
       auto & memory_capacity = matrix_stack_.m_memory_capacity;
-      // auto & matrix_maps = matrix_stack_.m_matrix_maps;
+      auto & matrix_maps = matrix_stack_.m_matrix_maps;
 
       if (Archive::is_loading::value)
         matrix_stack.clear();
 
-      std::size_t stack_size = matrix_stack.size();
-      ar & make_nvp("stack_size", stack_size);
+      // std::size_t stack_size = matrix_stack.size();
+      // ar & make_nvp("stack_size", stack_size);
+
+      std::size_t real_memory_capacity = 0;
+      ar & make_nvp("offsets", offsets);
       if (Archive::is_loading::value)
       {
-        for (std::size_t i = 0; i < stack_size; ++i)
+        ar & make_nvp("memory_capacity", real_memory_capacity);
+        memory_capacity = real_memory_capacity;
+      }
+      else
+      {
+        real_memory_capacity = matrix_stack_.raw_size();
+        ar & make_nvp("memory_capacity", real_memory_capacity);
+      }
+
+      auto & data_ptr = matrix_stack_.m_data_ptr;
+      if (Archive::is_loading::value)
+      {
+        Accessor::free(data_ptr);
+        data_ptr = Accessor::malloc(real_memory_capacity);
+        assert(data_ptr != nullptr);
+        assert(reinterpret_cast<std::size_t>(data_ptr) % Alignment == 0);
+      }
+      ar & make_nvp(
+        "data",
+        make_array<char>(
+          reinterpret_cast<char *>(data_ptr), real_memory_capacity)); // Raw copy of the data buffer
+
+      if (Archive::is_loading::value)
+      {
+        for (std::size_t i = 0; i < offsets.size(); ++i)
         {
-          // const auto offset = offsets[i];
+          const auto offset = offsets[i];
           Eigen::Index rows = -1, cols = -1;
           ar & make_nvp("rows", rows);
           ar & make_nvp("cols", cols);
-          matrix_stack.push_back(rows, cols);
-          auto & matrix_map = matrix_stack.back();
-          ar & make_nvp("map", matrix_map);
+          MapType matrix_map(
+            static_cast<Scalar *>(Accessor::incr_ptr(data_ptr, offset)), rows, cols);
+          matrix_maps.push_back(matrix_map);
         }
       }
       else // writting mode
@@ -73,8 +101,6 @@ namespace boost
           Eigen::Index rows = matrix_map.rows(), cols = matrix_map.cols();
           ar & make_nvp("rows", rows);
           ar & make_nvp("cols", cols);
-
-          ar & make_nvp("map", matrix_map);
         }
       }
     }
