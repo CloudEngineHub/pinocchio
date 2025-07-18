@@ -51,9 +51,6 @@ namespace boost
       if (Archive::is_loading::value)
         matrix_stack.clear();
 
-      // std::size_t stack_size = matrix_stack.size();
-      // ar & make_nvp("stack_size", stack_size);
-
       std::size_t real_memory_capacity = 0;
       ar & make_nvp("offsets", offsets);
       if (Archive::is_loading::value)
