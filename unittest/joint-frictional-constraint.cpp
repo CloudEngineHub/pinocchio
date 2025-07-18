@@ -186,12 +186,11 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
 
     const auto & jmodel = model.joints[joint_id];
     const auto jmodel_nv = jmodel.nv();
-    const auto jmodel_idx_v = jmodel.idx_v();
+    // const auto jmodel_idx_v = jmodel.idx_v();
 
     const auto diagonal_inertia_segment = diagonal_inertia.segment(row_id, jmodel_nv);
 
-    BOOST_CHECK(
-      diagonal_inertia_segment == data.joint_apparent_inertia.segment(jmodel_idx_v, jmodel_nv));
+    BOOST_CHECK(diagonal_inertia_segment == data.joint_apparent_inertia[joint_id].diagonal());
 
     row_id += jmodel_nv;
     //    std::cout << "----" << std::endl;
@@ -203,8 +202,16 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
   const Eigen::MatrixXd joint_space_constraint_inertia =
     jacobian_matrix.transpose() * diagonal_inertia.asDiagonal() * jacobian_matrix;
 
-  BOOST_CHECK(joint_space_constraint_inertia.isApprox(
-    Eigen::MatrixXd(data.joint_apparent_inertia.asDiagonal())));
+  for (const auto joint_id : active_joint_ids)
+  {
+    const auto & jmodel = model.joints[joint_id];
+    const auto jmodel_nv = jmodel.nv();
+    const auto jmodel_idx_v = jmodel.idx_v();
+
+    BOOST_CHECK(
+      joint_space_constraint_inertia.block(jmodel_idx_v, jmodel_idx_v, jmodel_nv, jmodel_nv)
+        .isApprox(data.joint_apparent_inertia[joint_id]));
+  }
 }
 
 BOOST_AUTO_TEST_CASE(check_maps)

@@ -112,7 +112,15 @@ namespace pinocchio
 
     if (solve_in_place)
     {
-      data_ref.joint_apparent_inertia = model_ref.armature;
+      for (JointIndex joint_id = 1; joint_id < JointIndex(model_ref.njoints); ++joint_id)
+      {
+        const auto joint_nv = model_ref.nvs[joint_id];
+        const auto joint_idx_v = model_ref.idx_vs[joint_id];
+
+        data_ref.joint_apparent_inertia[joint_id] =
+          model_ref.armature.segment(joint_idx_v, joint_nv).asDiagonal();
+      }
+
       data_ref.joint_cross_coupling.apply([](Matrix6 & v) { v.setZero(); });
 
       // Append constraint inertia to oYaba_augmented

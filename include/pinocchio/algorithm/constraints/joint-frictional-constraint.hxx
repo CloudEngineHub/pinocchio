@@ -192,20 +192,14 @@ namespace pinocchio
       diagonal_constraint_inertia.size(), activeSize(),
       "The diagonal_constraint_inertia is of wrong size.");
 
-    typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-    using Matrix6 = typename Data::Inertia::Matrix6;
-
     Eigen::DenseIndex row_id = 0;
-    Matrix6 SI;
     for (const JointIndex joint_id : active_joints)
     {
       const auto joint_nv = model.nvs[joint_id];
-      const auto joint_idx_v = model.idx_vs[joint_id];
       const auto joint_diagonal_constraint_inertia =
         diagonal_constraint_inertia.segment(row_id, joint_nv);
 
-      data.joint_apparent_inertia.segment(joint_idx_v, joint_nv) +=
-        joint_diagonal_constraint_inertia;
+      data.joint_apparent_inertia[joint_id].diagonal() += joint_diagonal_constraint_inertia;
 
       row_id += joint_nv;
     }
