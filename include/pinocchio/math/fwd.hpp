@@ -12,6 +12,8 @@
 #include <boost/math/constants/constants.hpp>
 #include <type_traits>
 
+#define PINOCCHIO_SQUARE(x) x * x
+
 namespace pinocchio
 {
 
