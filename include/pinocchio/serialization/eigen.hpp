@@ -11,6 +11,7 @@
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/array.hpp>
+#include <boost/throw_exception.hpp>
 #include <stdexcept>
 
 // If hpp-fcl < 3.0.0 The GCC Eigen/Boost.Serialization workaround
