@@ -373,6 +373,7 @@ namespace pinocchio
       return Eigen::internal::handmade_aligned_realloc(ptr, new_size, old_size, alignment);
 #else
       return Eigen::internal::handmade_aligned_realloc(ptr, new_size, old_size);
+      PINOCCHIO_UNUSED_VARIABLE(alignment);
 #endif
     }
 
