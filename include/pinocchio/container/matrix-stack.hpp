@@ -98,10 +98,7 @@ namespace pinocchio
     {
       free(m_data_ptr);
 
-      m_memory_capacity =
-        other.m_matrix_maps.size() == 0
-          ? 0
-          : other.m_offsets.back() + raw_map_size(other.m_matrix_maps.back()) + Alignment;
+      m_memory_capacity = other.raw_size();
 
       if (m_memory_capacity == 0)
       {
@@ -376,6 +373,13 @@ namespace pinocchio
     static std::size_t raw_map_size(const MapType & map)
     {
       return sizeof(Scalar) * std::size_t(map.rows() * map.cols());
+    }
+
+    std::size_t raw_size() const
+    {
+      return m_matrix_maps.size() == 0
+               ? 0
+               : m_offsets.back() + raw_map_size(m_matrix_maps.back()); // + Alignment;
     }
 
     std::vector<std::size_t> m_offsets;
