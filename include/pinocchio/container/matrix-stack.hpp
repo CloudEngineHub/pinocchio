@@ -369,7 +369,11 @@ namespace pinocchio
     static void * realloc(
       void * ptr, std::size_t new_size, std::size_t old_size, std::size_t alignment = Alignment)
     {
+#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
       return Eigen::internal::handmade_aligned_realloc(ptr, new_size, old_size, alignment);
+#else
+      return Eigen::internal::handmade_aligned_realloc(ptr, new_size, old_size);
+#endif
     }
 
     static void * incr_ptr(void * ptr, std::size_t inc_value)
