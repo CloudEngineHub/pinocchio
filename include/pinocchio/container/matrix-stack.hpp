@@ -50,6 +50,13 @@ namespace pinocchio
     typedef typename MapVector::const_iterator const_iterator;
 
     /// \brief Default constructor
+    MatrixStackTpl()
+    : m_data_ptr(nullptr)
+    , m_memory_capacity(0)
+    {
+    }
+
+    /// \brief Constructor
     ///
     /// \param[in] max_elts Maximum number of matrices contained in the stack
     /// \param[in] max_elt_size Maximal size of each matrices (rows() x cols()) if known at
