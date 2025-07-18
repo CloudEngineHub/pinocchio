@@ -19,6 +19,7 @@
 
 #include "pinocchio/container/aligned-vector.hpp"
 #include "pinocchio/container/double-entry-container.hpp"
+#include "pinocchio/container/matrix-stack.hpp"
 #include "pinocchio/algorithm/contact-cholesky.hpp"
 
 #include "pinocchio/serialization/serializable.hpp"
@@ -107,6 +108,8 @@ namespace pinocchio
 
     ///  \brief The type of Tensor for Kinematics and Dynamics second order derivatives
     typedef Tensor<Scalar, 3, Options> Tensor3x;
+
+    typedef MatrixStackTpl<MatrixXs> DynamicMatrixStack;
 
     // TODO Remove when API is stabilized
     PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
@@ -624,7 +627,7 @@ namespace pinocchio
 
     /// \brief Joint apparent inertia vector (related to model.armarture, joint-wise constraints,
     /// etc.)
-    VectorXs joint_apparent_inertia;
+    DynamicMatrixStack joint_apparent_inertia;
 
     ///
     /// \brief Default constructor of pinocchio::Data from a pinocchio::Model.

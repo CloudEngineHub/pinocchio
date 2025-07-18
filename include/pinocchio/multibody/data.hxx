@@ -169,7 +169,9 @@ namespace pinocchio
   , constraints_on_joint((std::size_t)model.njoints)
   , neighbour_links((std::size_t)model.njoints)
   , joint_cross_coupling(model.njoints, model.njoints)
-  , joint_apparent_inertia(VectorXs::Zero(model.nv))
+  , joint_apparent_inertia(
+      std::size_t(model.njoints),
+      std::size_t(PINOCCHIO_SQUARE(*std::max_element(model.nvs.begin(), model.nvs.end()))))
   {
     typedef typename Model::JointIndex JointIndex;
 
@@ -179,6 +181,9 @@ namespace pinocchio
     {
       typedef CreateJointData<Scalar, Options, JointCollectionTpl> Constructor;
       joints.push_back(Constructor::run(model.joints[i]));
+      const auto joint_nv = model.nvs[i];
+      joint_apparent_inertia.push_back(joint_nv, joint_nv);
+      joint_apparent_inertia.back().setZero();
     }
     joints_augmented = joints;
 

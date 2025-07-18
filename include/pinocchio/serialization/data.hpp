@@ -15,6 +15,7 @@
 #include "pinocchio/serialization/joints.hpp"
 #include "pinocchio/serialization/frame.hpp"
 #include "pinocchio/serialization/double-entry-container.hpp"
+#include "pinocchio/serialization/matrix-stack.hpp"
 
 #define PINOCCHIO_MAKE_DATA_NVP(ar, data, field_name) ar & make_nvp(#field_name, data.field_name)
 
