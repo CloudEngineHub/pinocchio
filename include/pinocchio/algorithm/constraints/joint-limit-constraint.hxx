@@ -24,14 +24,14 @@ namespace pinocchio
     const JointIndexVector & _activable_joints,
     const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
     const Eigen::MatrixBase<VectorUpperConfiguration> & ub,
-    const Eigen::MatrixBase<VectorMarginConfiguration> & marg)
+    const Eigen::MatrixBase<VectorMarginConfiguration> & margin)
   {
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef typename Model::JointModel JointModel;
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(lb.size(), model.nq);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(ub.size(), model.nq);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(marg.size(), model.nq);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(margin.size(), model.nq);
 
     // Check validity of _activable_joints input
     for (const JointIndex joint_id : _activable_joints)
@@ -161,8 +161,8 @@ namespace pinocchio
     {
       const auto activable_idx_q = activable_idx_qs[i];
       bound_position_limit[bound_row_id] = lb[activable_idx_q];
-      assert(marg[activable_idx_q] >= 0);
-      bound_position_margin[bound_row_id] = marg[activable_idx_q];
+      assert(margin[activable_idx_q] >= 0);
+      bound_position_margin[bound_row_id] = margin[activable_idx_q];
       bound_row_id++;
     }
     for (std::size_t i = static_cast<std::size_t>(lowerSize());
@@ -170,8 +170,8 @@ namespace pinocchio
     {
       const auto activable_idx_q = activable_idx_qs[i];
       bound_position_limit[bound_row_id] = ub[activable_idx_q];
-      assert(marg[activable_idx_q] >= 0);
-      bound_position_margin[bound_row_id] = marg[activable_idx_q];
+      assert(margin[activable_idx_q] >= 0);
+      bound_position_margin[bound_row_id] = margin[activable_idx_q];
       bound_row_id++;
     }
     assert(bound_row_id == static_cast<Eigen::DenseIndex>(size()));

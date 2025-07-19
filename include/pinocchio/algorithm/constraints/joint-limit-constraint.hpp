@@ -190,10 +190,10 @@ namespace pinocchio
       const JointIndexVector & _activable_joints,
       const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
       const Eigen::MatrixBase<VectorUpperConfiguration> & ub,
-      const Eigen::MatrixBase<VectorMarginConfiguration> & marg)
+      const Eigen::MatrixBase<VectorMarginConfiguration> & margin)
     : active_compliance(active_compliance_storage.map())
     {
-      init(model, _activable_joints, lb, ub, marg);
+      init(model, _activable_joints, lb, ub, margin);
     }
 
     /// \brief Cast operator
@@ -577,7 +577,7 @@ namespace pinocchio
       const JointIndexVector & _activable_joints,
       const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
       const Eigen::MatrixBase<VectorUpperConfiguration> & ub,
-      const Eigen::MatrixBase<VectorMarginConfiguration> & marg);
+      const Eigen::MatrixBase<VectorMarginConfiguration> & margin);
 
     /// @brief List of joints that are concerned by the constraint. size nja
     JointIndexVector activable_joints;
