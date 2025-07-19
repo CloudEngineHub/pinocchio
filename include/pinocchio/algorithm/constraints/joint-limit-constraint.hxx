@@ -39,7 +39,7 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         joint_id < model.joints.size(),
         "joint_id is larger than the total number of joints contained in the model.");
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(joint_id > 0, "joint_id is not valid.");
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(joint_id > 0, "joint_id should not be equal to zero.");
     }
 
     //    PINOCCHIO_CHECK_INPUT_ARGUMENT(
