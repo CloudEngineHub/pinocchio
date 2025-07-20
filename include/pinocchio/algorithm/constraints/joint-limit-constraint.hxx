@@ -135,11 +135,21 @@ namespace pinocchio
       }
     }
 
+    // Fill row_activable_sparsity_pattern from row_activable_indexes content
+    row_sparsity_pattern.resize(row_indexes.size(), BooleanVector::Zero(model.nv));
+    for (size_t joint_id = 0; joint_id < row_indexes.size(); ++joint_id)
+    {
+      auto & sparsity_pattern = row_sparsity_pattern[joint_id];
+      const auto & extended_support = row_indexes[joint_id];
+      for (const auto val : extended_support)
+        sparsity_pattern[val] = true;
+    }
+
     // Recover sizes of constraints
     lower_activable_size = static_cast<int>(activable_idx_rows_lower.size());
     int upper_activable_size = static_cast<int>(activable_idx_rows_upper.size());
     int activable_size = lower_activable_size + upper_activable_size;
-    PINOCCHIO_UNUSED_VARIABLE(activable_size);
+    PINOCCHIO_ONLY_USED_FOR_DEBUG(activable_size);
 
     // Recompose one vectors for all constraint with the convention lower | upper
     activable_idx_rows.insert(
@@ -182,6 +192,7 @@ namespace pinocchio
     reduce_nvs.reserve(static_cast<std::size_t>(nq_reduce));
     reduce_idx_vs.reserve(static_cast<std::size_t>(nq_reduce));
 
+    // Compute nv_max_atom, the maximal nv values for all activable joints
     pinocchio::indexvInfo(model, activable_joints, reduce_nvs, reduce_idx_vs);
     assert(nq_reduce == static_cast<int>(reduce_nvs.size()));
     assert(nq_reduce == static_cast<int>(reduce_idx_vs.size()));
@@ -200,16 +211,6 @@ namespace pinocchio
     }
     assert(r_size == activable_nvs.size());
     assert(r_size == activable_idx_vs.size());
-
-    // Fill row_activable_sparsity_pattern from row_activable_indexes content
-    row_sparsity_pattern.resize(row_indexes.size(), BooleanVector::Zero(model.nv));
-    for (size_t joint_id = 0; joint_id < row_indexes.size(); ++joint_id)
-    {
-      auto & sparsity_pattern = row_sparsity_pattern[joint_id];
-      const auto & extended_support = row_indexes[joint_id];
-      for (const auto val : extended_support)
-        sparsity_pattern[val] = true;
-    }
 
     m_compliance = ComplianceVectorType::Zero(size());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();

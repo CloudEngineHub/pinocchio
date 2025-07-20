@@ -579,7 +579,8 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorUpperConfiguration> & ub,
       const Eigen::MatrixBase<VectorMarginConfiguration> & margin);
 
-    /// @brief List of joints that are concerned by the constraint. size nja
+    /// @brief List of activable joints, i.e. joint can that can be indeed reach its bounds. size
+    /// nja
     JointIndexVector activable_joints;
     /// @brief nq size given the considered joints
     /// nq_reduce = SUM(j in activable_joints) j.nq
