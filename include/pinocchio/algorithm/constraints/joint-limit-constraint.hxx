@@ -5,9 +5,6 @@
 #ifndef __pinocchio_algorithm_constraints_joint_limit_constraint_hxx__
 #define __pinocchio_algorithm_constraints_joint_limit_constraint_hxx__
 
-#include <iostream>
-#include <algorithm>
-
 #include "pinocchio/multibody/joint/joint-basic-visitors.hpp"
 
 namespace pinocchio

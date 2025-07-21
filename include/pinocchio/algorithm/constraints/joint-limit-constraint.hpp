@@ -7,8 +7,6 @@
 
 #include "pinocchio/math/fwd.hpp"
 
-#include <boost/mpl/vector.hpp>
-
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/joint-limit-constraint-cone.hpp"
 #include "pinocchio/algorithm/constraints/jointwise-constraint-base.hpp"
