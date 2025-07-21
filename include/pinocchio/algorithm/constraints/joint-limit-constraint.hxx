@@ -221,7 +221,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<template<typename, int> class JointCollectionTpl>
-  void JointLimitConstraintModelTpl<Scalar, Options>::resize_impl(
+  void JointLimitConstraintModelTpl<Scalar, Options>::resize(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & /* model */,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     ConstraintData & cdata)
@@ -314,10 +314,12 @@ namespace pinocchio
     auto & activable_constraint_residual = cdata.activable_constraint_residual;
     auto & constraint_residual = cdata.constraint_residual;
 
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      constraint_residual.size(), this->activeSize(),
-      "The active constraint_residual size in constraint data is different from the constraint "
-      "model active size. You should probably use cmodel.resize(model, data, cdata) first.");
+    const_cast<JointLimitConstraintModelTpl &>(*this).resize(model, data, cdata);
+
+    assert(
+      constraint_residual.size() == this->activeSize()
+      && "The active constraint_residual size in constraint data is different from the constraint "
+         "model active size.");
 
     // Fill the constraint residual for all active constraints.
     for (std::size_t active_row_index = 0; active_row_index < active_size; active_row_index++)

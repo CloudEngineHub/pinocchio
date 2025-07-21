@@ -457,44 +457,6 @@ namespace pinocchio
     }
 
     /**
-     * @brief      ConstraintModelResizeVisitor fusion visitor
-     */
-    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    struct ConstraintModelResizeVisitor
-    : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelResizeVisitor<Scalar, Options, JointCollectionTpl>>
-    {
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef boost::fusion::vector<const Model &, const Data &> ArgsType;
-
-      template<typename ConstraintModel>
-      static void algo(
-        pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        const Data & data)
-      {
-        cmodel.resize(model, data, cdata.derived());
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl>
-    void resize(
-      ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
-    {
-      typedef ConstraintModelResizeVisitor<Scalar, Options, JointCollectionTpl> Algo;
-      Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data));
-    }
-
-    /**
      * @brief      ConstraintModelJacobianVisitor fusion visitor
      */
     template<

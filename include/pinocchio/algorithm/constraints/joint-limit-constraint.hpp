@@ -262,13 +262,6 @@ namespace pinocchio
       return static_cast<const BaseCommonParameters &>(*this);
     }
 
-    /// \brief Resize the constraint by computing the current active set.
-    template<template<typename, int> class JointCollectionTpl>
-    void resize_impl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata);
-
     /// \brief Compute the constraint residual for the active constraints. It assumes that the
     /// active set has been computed by calling `resize` beforehand.
     template<template<typename, int> class JointCollectionTpl>
@@ -276,6 +269,14 @@ namespace pinocchio
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       ConstraintData & cdata) const;
+
+    /// \brief Resize the constraint if needed at the current state given by data and store the
+    /// results in cdata.
+    template<template<typename, int> class JointCollectionTpl>
+    void resize(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      ConstraintData & cdata);
 
     /// \brief Returns the sparsity associated with a given row
     const BooleanVector & getRowActivableSparsityPattern(const Eigen::DenseIndex row_id) const
