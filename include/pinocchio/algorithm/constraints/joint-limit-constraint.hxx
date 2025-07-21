@@ -167,24 +167,20 @@ namespace pinocchio
     bound_position_limit = VectorXs::Zero(Eigen::DenseIndex(size()));
     bound_position_margin = VectorXs::Zero(Eigen::DenseIndex(size()));
     Eigen::DenseIndex bound_row_id = 0;
-    for (std::size_t i = 0; i < static_cast<std::size_t>(lowerSize()); i++)
+    for (bound_row_id = 0; bound_row_id < lowerSize(); ++bound_row_id)
     {
-      const auto activable_idx_q = activable_idx_qs[i];
+      const auto activable_idx_q = activable_idx_qs[size_t(bound_row_id)];
       bound_position_limit[bound_row_id] = lb[activable_idx_q];
       assert(margin[activable_idx_q] >= 0);
       bound_position_margin[bound_row_id] = margin[activable_idx_q];
-      bound_row_id++;
     }
-    for (std::size_t i = static_cast<std::size_t>(lowerSize());
-         i < static_cast<std::size_t>(size()); i++)
+    for (; bound_row_id < size(); ++bound_row_id)
     {
-      const auto activable_idx_q = activable_idx_qs[i];
+      const auto activable_idx_q = activable_idx_qs[size_t(bound_row_id)];
       bound_position_limit[bound_row_id] = ub[activable_idx_q];
       assert(margin[activable_idx_q] >= 0);
       bound_position_margin[bound_row_id] = margin[activable_idx_q];
-      bound_row_id++;
     }
-    assert(bound_row_id == static_cast<Eigen::DenseIndex>(size()));
 
     // Get nvs and idx_vs of all actibale joints to compute nv_max_atom
     // and activable_nvs, activable_idx_vs
