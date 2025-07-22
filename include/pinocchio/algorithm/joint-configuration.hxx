@@ -685,7 +685,7 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-  void indexvInfo(
+  void getTangentToConfigurationSparsitySegment(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
       joint_ids,
@@ -695,11 +695,11 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(nvs.size(), 0, "The nvs vector must be empty");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(idx_vs.size(), 0, "The idx_vs vector must empty");
 
-    typename IndexvInfoStep::ArgsType args(nvs, idx_vs);
+    typename getTangentToConfigurationSparsitySegmentStep::ArgsType args(nvs, idx_vs);
 
     for (const auto joint_id : joint_ids)
     {
-      IndexvInfoStep::run(model.joints[joint_id], args);
+      getTangentToConfigurationSparsitySegmentStep::run(model.joints[joint_id], args);
     }
   }
 

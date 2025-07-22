@@ -186,7 +186,8 @@ namespace pinocchio
     reduce_idx_vs.reserve(static_cast<std::size_t>(nq_reduce));
 
     // Compute nv_max_atom, the maximal nv values for all activable joints
-    pinocchio::indexvInfo(model, activable_joints, reduce_nvs, reduce_idx_vs);
+    pinocchio::getTangentToConfigurationSparsitySegment(
+      model, activable_joints, reduce_nvs, reduce_idx_vs);
     assert(nq_reduce == static_cast<int>(reduce_nvs.size()));
     assert(nq_reduce == static_cast<int>(reduce_idx_vs.size()));
     auto nv_max_atom_iter = std::max_element(reduce_nvs.begin(), reduce_nvs.end());

@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(tangent_map_test)
   std::vector<int> idx_vs;
   idx_vs.reserve(static_cast<size_t>(model.nq));
 
-  indexvInfo(model, joint_selection, nvs, idx_vs);
+  getTangentToConfigurationSparsitySegment(model, joint_selection, nvs, idx_vs);
   size_t k_s;
   for (Eigen::DenseIndex k = 0; k < model.nq; ++k)
   {

@@ -143,7 +143,7 @@ namespace pinocchio
       return res;
     }
 
-    bp::tuple indexvInfo_proxy(const context::Model & model)
+    bp::tuple getTangentToConfigurationSparsitySegment_proxy(const context::Model & model)
     {
       std::vector<int> nvs;
       std::vector<int> idx_vs;
@@ -155,7 +155,7 @@ namespace pinocchio
         joint_selection.push_back(i);
       }
 
-      indexvInfo(model, joint_selection, nvs, idx_vs);
+      getTangentToConfigurationSparsitySegment(model, joint_selection, nvs, idx_vs);
 
       return bp::make_tuple(nvs, idx_vs);
     }
@@ -289,7 +289,7 @@ namespace pinocchio
         "compactTangentMap", &compactTangentMap_proxy, bp::args("model", "q"),
         "Computes the tangent map in configuration q that map of a small variation express in the "
         "Lie algebra as a small variation in the parametric space. Store the result in a compact "
-        "manner that can be exploited using indexvInfo.\n\n"
+        "manner that can be exploited using getTangentToConfigurationSparsitySegment.\n\n"
         "Parameters:\n"
         "\tmodel: model of the kinematic tree\n"
         "\tq: the joint configuration vector (size model.nq)\n");
@@ -352,7 +352,8 @@ namespace pinocchio
         "\tmodel: model of the kinematic tree\n");
 
       bp::def(
-        "indexvInfo", indexvInfo_proxy, bp::args("model"),
+        "getTangentToConfigurationSparsitySegment", getTangentToConfigurationSparsitySegment_proxy,
+        bp::args("model"),
         "Returns two vectors of size model.nq that gives for each q_i, the associated idx_v and nv "
         "of the joint for which q_i is a configuration component.\n\n"
         "Parameters:\n"

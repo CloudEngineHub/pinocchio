@@ -99,7 +99,7 @@ class TestJointsAlgo(TestCase):
         TMq2 = pin.tangentMapTransposeProduct(model, q, q.reshape(model.nq, 1))
         self.assertApprox(TMq1, TMq2)
 
-        nvs, idx_vs = pin.indexvInfo(model)
+        nvs, idx_vs = pin.getTangentToConfigurationSparsitySegment(model)
         TMc = pin.compactTangentMap(model, q)
         TM_recons = np.zeros((model.nq, model.nv))
         for i in range(model.nq):

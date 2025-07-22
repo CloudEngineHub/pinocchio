@@ -406,7 +406,8 @@ namespace pinocchio
     const context::Model &,
     typename LieGroupMap::template operationProduct<context::Scalar, context::Options>::type &);
 
-  // indexvInfo is not explicitelly instantiated as it is only use in JointLimit
+  // getTangentToConfigurationSparsitySegment is not explicitelly instantiated as it is only use in
+  // JointLimit
 
 #ifndef PINOCCHIO_SKIP_CASADI_UNSUPPORTED
 

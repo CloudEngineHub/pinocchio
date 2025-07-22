@@ -1344,7 +1344,7 @@ namespace pinocchio
    *
    */
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-  void indexvInfo(
+  void getTangentToConfigurationSparsitySegment(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
       joint_ids,
