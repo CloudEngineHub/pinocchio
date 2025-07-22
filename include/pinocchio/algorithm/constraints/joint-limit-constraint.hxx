@@ -182,14 +182,14 @@ namespace pinocchio
     // Get nvs and idx_vs of all actibale joints to compute nv_max_atom
     // and activable_nvs, activable_idx_vs
     std::vector<int> reduce_nvs, reduce_idx_vs;
-    reduce_nvs.reserve(static_cast<std::size_t>(nq_reduce));
-    reduce_idx_vs.reserve(static_cast<std::size_t>(nq_reduce));
+    reduce_nvs.reserve(size_t(nq_reduce));
+    reduce_idx_vs.reserve(size_t(nq_reduce));
 
     // Compute nv_max_atom, the maximal nv values for all activable joints
     pinocchio::getTangentToConfigurationSparsitySegment(
       model, activable_joints, reduce_nvs, reduce_idx_vs);
-    assert(nq_reduce == static_cast<int>(reduce_nvs.size()));
-    assert(nq_reduce == static_cast<int>(reduce_idx_vs.size()));
+    assert(size_t(nq_reduce) == reduce_nvs.size());
+    assert(size_t(nq_reduce) == reduce_idx_vs.size());
     auto nv_max_atom_iter = std::max_element(reduce_nvs.begin(), reduce_nvs.end());
     nv_max_atom = nv_max_atom_iter != reduce_nvs.end() ? *nv_max_atom_iter : 1;
     assert(nv_max_atom <= MAX_JOINT_NV);
@@ -200,8 +200,8 @@ namespace pinocchio
     for (const auto activable_idx_q_reduce : activable_idx_qs_reduce)
     {
       std::size_t idx_query = static_cast<std::size_t>(activable_idx_q_reduce);
-      activable_nvs.push_back(static_cast<Eigen::DenseIndex>(reduce_nvs[idx_query]));
-      activable_idx_vs.push_back(static_cast<Eigen::DenseIndex>(reduce_idx_vs[idx_query]));
+      activable_nvs.push_back(reduce_nvs[idx_query]);
+      activable_idx_vs.push_back(reduce_idx_vs[idx_query]);
     }
     assert(r_size == activable_nvs.size());
     assert(r_size == activable_idx_vs.size());
