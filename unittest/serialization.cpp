@@ -769,7 +769,6 @@ BOOST_AUTO_TEST_CASE(test_delassus_operator_dense_serialization)
   {
     ConstraintModel & cmodel = constraint_models[i];
     ConstraintData & cdata = constraint_datas[i];
-    cmodel.resize(model, data, cdata);
     cmodel.calc(model, data, cdata);
   }
 
@@ -957,6 +956,7 @@ struct initConstraint<pinocchio::JointLimitConstraintModel>
       JointLimitAndFrictionConstraintModelInitializer<ConstraintModel>::run(model);
     cmodel.baumgarte_corrector_parameters().Kd = 1.0;
     cmodel.baumgarte_corrector_parameters().Kp = 3.14;
+
     return cmodel;
   }
 };
@@ -1081,7 +1081,6 @@ struct TestConstraintData
     typedef typename ConstraintData::ConstraintModel ConstraintModel;
     ConstraintModel cmodel = initConstraint<ConstraintModel>::run(model);
     ConstraintData cdata(cmodel);
-    cmodel.resize(model, data, cdata);
     cmodel.calc(model, data, cdata);
     test(cdata);
   }
@@ -1119,7 +1118,6 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
     JointLimitConstraintModel cmodel_ = initConstraint<JointLimitConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
-    cmodel.resize(model, data, cdata);
     cmodel.calc(model, data, cdata);
 
     cmodels.push_back(cmodel);
@@ -1133,7 +1131,6 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
       initConstraint<FrictionalJointConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
-    cmodel.resize(model, data, cdata);
     cmodel.calc(model, data, cdata);
 
     cmodels.push_back(cmodel);
@@ -1147,7 +1144,6 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
       initConstraint<FrictionalPointConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
-    cmodel.resize(model, data, cdata);
     cmodel.calc(model, data, cdata);
 
     cmodels.push_back(cmodel);
@@ -1161,7 +1157,6 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
       initConstraint<BilateralPointConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
-    cmodel.resize(model, data, cdata);
     cmodel.calc(model, data, cdata);
 
     cmodels.push_back(cmodel);
@@ -1174,7 +1169,6 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
     WeldConstraintModel cmodel_ = initConstraint<WeldConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
-    cmodel.resize(model, data, cdata);
     cmodel.calc(model, data, cdata);
 
     cmodels.push_back(cmodel);
