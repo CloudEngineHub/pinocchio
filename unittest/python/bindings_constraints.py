@@ -213,7 +213,6 @@ class TestJointsAlgo(TestCase):
         pin.computeContactPatches(geom_model, geom_data)
 
         jlc = pin.ConstraintModel(jlc_raw).extract()
-        jlc.resize(model, data, jlc.createData())
 
         frictional_points_list = []
         for col_pair, col_res, patch_res in zip(
@@ -474,7 +473,6 @@ class TestJointsAlgo(TestCase):
 
         cmodel = self.jlc
         cdata = cmodel.createData()
-        cmodel.resize(self.model, self.data, cdata)
         cmodel.calc(self.model, self.data, cdata)
         self.assertTrue(hasattr(cdata, "constraint_residual"))
 
