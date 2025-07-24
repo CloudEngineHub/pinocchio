@@ -85,9 +85,6 @@ namespace pinocchio
             bp::args("self", "model", "data", "constraint_data"),
             "Compute the constraint jacobian.")
           .def(
-            "resize", &resize, bp::args("self", "model", "data", "constraint_data"),
-            "Resize the constraint before evaluation.")
-          .def(
             "jacobianMatrixProduct", &jacobianMatrixProduct,
             bp::args("self", "model", "data", "constraint_data", "matrix"),
             "Forward chain rule: return product between the jacobian and a matrix.")
