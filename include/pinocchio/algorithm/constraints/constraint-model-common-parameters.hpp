@@ -8,8 +8,8 @@
 namespace pinocchio
 {
 
-  template<typename _BaumgarteVector>
-  struct BaumgarteCorrectorVectorParametersTpl;
+  // template<typename _BaumgarteVector>
+  // struct BaumgarteCorrectorVectorParametersTpl;
 
   template<typename _Scalar>
   struct BaumgarteCorrectorParametersTpl;
@@ -27,13 +27,14 @@ namespace pinocchio
     typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
     typedef typename traits<Derived>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Derived>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef typename traits<Derived>::BaumgarteVectorType BaumgarteVectorType;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParameters
-      BaumgarteCorrectorVectorParameters;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersRef
-      BaumgarteCorrectorVectorParametersRef;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersConstRef
-      BaumgarteCorrectorVectorParametersConstRef;
+
+    // typedef typename traits<Derived>::BaumgarteVectorType BaumgarteVectorType;
+    // typedef typename traits<Derived>::BaumgarteCorrectorVectorParameters
+    //   BaumgarteCorrectorVectorParameters;
+    // typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersRef
+    //   BaumgarteCorrectorVectorParametersRef;
+    // typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersConstRef
+    //   BaumgarteCorrectorVectorParametersConstRef;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     /// \brief Cast to NewScalar
