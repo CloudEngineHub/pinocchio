@@ -485,7 +485,7 @@ namespace pinocchio
       Scalar linear_update_rule_factor = Scalar(2),
       Scalar ratio_primal_dual = Scalar(10),
       int lanczos_size = int(3),
-      int max_delassus_decomposition_updates = std::numeric_limits<int>::infinity(),
+      int max_delassus_decomposition_updates = std::numeric_limits<int>::max(),
       Scalar dual_momentum = Scalar(0),
       Scalar rho_momentum = Scalar(0),
       Scalar rho_update_ratio = Scalar(0),
