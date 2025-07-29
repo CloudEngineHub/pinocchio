@@ -417,16 +417,19 @@ namespace pinocchio
           "Get the Lanczos decomposition.", bp::return_internal_reference<>())
 
         .def(
-          "setAndersonHistoryCapacity", &Solver::setAndersonHistoryCapacity,
+          "setAndersonAccelerationCapacity", &Solver::setAndersonAccelerationCapacity,
           bp::args("self", "anderson_capacity"),
-          "Set the capacity of the anderson history. An anderson history of capacity <= 1 is "
-          "inactive (it is the standard ADMM algorithm). The anderson acceleration only triggers "
-          "if the capacity (and the current anderson size) is >= 2.")
+          "Set the capacity of the Anderson acceleration. An Anderson acceleration of capacity <= "
+          "1 is "
+          "inactive (it is the standard ADMM algorithm). The Anderson acceleration only triggers "
+          "if the capacity (and the current Anderson size) is >= 2.")
         .def(
-          "getAndersonHistoryCapacity", &Solver::getAndersonHistoryCapacity, bp::arg("self"),
-          "Get the capacity of the anderson history. An anderson history of capacity <= 1 is "
-          "inactive (it is the standard ADMM algorithm). The anderson acceleration only triggers "
-          "if the capacity (and the current anderson size) is >= 2.")
+          "getAndersonAccelerationCapacity", &Solver::getAndersonAccelerationCapacity,
+          bp::arg("self"),
+          "Get the capacity of the Anderson acceleration. An Anderson acceleration of capacity <= "
+          "1 is "
+          "inactive (it is the standard ADMM algorithm). The Anderson acceleration only triggers "
+          "if the capacity (and the current Anderson size) is >= 2.")
 
         .def(
           "getDelassusDecompositionUpdateCount", &Solver::getDelassusDecompositionUpdateCount,

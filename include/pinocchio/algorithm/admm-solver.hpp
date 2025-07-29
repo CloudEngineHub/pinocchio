@@ -204,21 +204,21 @@ namespace pinocchio
   };
 
   template<typename _Scalar>
-  struct AndersonHistoryTpl
+  struct AndersonAccelerationTpl
   {
     typedef _Scalar Scalar;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
 
-    AndersonHistoryTpl(int problem_size, std::size_t capacity)
+    AndersonAccelerationTpl(int problem_size, std::size_t capacity)
     : details(problem_size, capacity)
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(capacity >= 0, "capacity needs to be positive");
       this->reserve(problem_size, capacity);
     }
 
-    /// \brief Reserve the capacity of the anderson history
-    void reserve(int new_problem_size, size_t new_capacity)
+    /// \brief Reserve the capacity of the Anderson acceleration
+    void reserve(int new_problem_size, std::size_t new_capacity)
     {
       this->details.problem_size = new_problem_size;
       this->details.capacity = new_capacity;
@@ -230,44 +230,44 @@ namespace pinocchio
       this->clear();
     }
 
-    /// \brief Clear the anderson history.
+    /// \brief Clear the Anderson acceleration.
     void clear()
     {
       this->details.size = 0;
       this->details.idx = 0;
     }
 
-    /// \brief Get the current anderson history size.
+    /// \brief Get the current Anderson acceleration size.
     std::size_t size() const
     {
       return this->details.size;
     }
 
-    /// \brief Get the capacity of this anderson history.
+    /// \brief Get the capacity of this Anderson acceleration.
     std::size_t capacity() const
     {
       return this->details.capacity;
     }
 
-    /// \brief Get the problem size which this anderson history fits.
+    /// \brief Get the problem size which this Anderson acceleration fits.
     int problem_size() const
     {
       return this->details.problem_size;
     }
 
-    /// \brief Getter for the anderson weights
+    /// \brief Getter for the Anderson weights
     Eigen::VectorBlock<VectorXs> weights()
     {
       return this->details.weights.head(this->size() - 1);
     }
 
-    /// \brief Const getter for the anderson weights
+    /// \brief Const getter for the Anderson weights
     Eigen::VectorBlock<const VectorXs> weights() const
     {
       return this->details.weights.head(this->size() - 1);
     }
 
-    /// \brief Push back default iterates into the anderson history.
+    /// \brief Push back default iterates into the Anderson acceleration.
     template<typename VectorLikeX, typename VectorLikeZ, typename VectorLikeZDiff>
     void push_back(
       const Eigen::MatrixBase<VectorLikeX> & x,
@@ -289,11 +289,11 @@ namespace pinocchio
       this->details.zs[idx] = z;
       this->details.zdiffs[idx] = zdiff;
 
-      // update anderson current history size
+      // update Anderson current history size
       this->details.size = math::min(this->size() + 1, this->capacity());
     }
 
-    /// \brief Fit the anderson history and store results in weights.
+    /// \brief Fit the Anderson acceleration and store results in weights.
     void fit()
     {
       if (this->size() < 2 || this->size() < this->capacity())
@@ -310,7 +310,7 @@ namespace pinocchio
         M.col(int(i)) = zdiffs[i1] - zdiffs[i2];
       }
 
-      // fit the anderson weights
+      // fit the Anderson weights
       this->weights() = M.colPivHouseholderQr().solve(zdiffs[idx]);
     }
 
@@ -340,19 +340,19 @@ namespace pinocchio
       }
     }
 
-    struct AndersonHistoryDetails
+    struct AndersonAccelerationData
     {
       std::vector<VectorXs> xs;     // history of x (first primal variable)
       std::vector<VectorXs> zs;     // history of z (dual variable)
       std::vector<VectorXs> zdiffs; // history of dual residuals
-      VectorXs weights;             // weights of anderson acceleration, computed by `fit`
-      MatrixXs M;                   // matrix used to fit anderson acceleration weights
+      VectorXs weights;             // weights of Anderson acceleration, computed by `fit`
+      MatrixXs M;                   // matrix used to fit Anderson acceleration weights
       int problem_size;             // size of each history vector
       std::size_t capacity;         // capacity of the history
       std::size_t size;             // size of the history
-      std::size_t idx;              // index of most recent element in history
+      std::size_t idx;              // index of the most recent element in history
 
-      AndersonHistoryDetails(int problem_size, std::size_t capacity)
+      AndersonAccelerationData(int problem_size, std::size_t capacity)
       : problem_size(problem_size)
       , capacity(capacity)
       , size(0)
@@ -361,9 +361,9 @@ namespace pinocchio
       }
     };
 
-    /// \brief Internal details for anderson history.
+    /// \brief Internal details for Anderson acceleration.
     /// An experienced external user should only read this data e.g. for debug purposes.
-    AndersonHistoryDetails details;
+    AndersonAccelerationData details;
   };
 
   template<typename _Scalar>
@@ -379,7 +379,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
     typedef LanczosDecompositionTpl<MatrixXs> LanczosDecomposition;
     typedef DiagonalPreconditionerTpl<VectorXs> DiagonalPreconditioner;
-    typedef AndersonHistoryTpl<Scalar> AndersonHistory;
+    typedef AndersonAccelerationTpl<Scalar> AndersonAcceleration;
 
     using Base::problem_size;
 
@@ -452,7 +452,7 @@ namespace pinocchio
       /// \brief History of mu_prox values.
       std::vector<Scalar> mu_prox;
 
-      /// \brief History of anderson size.
+      /// \brief History of Anderson size.
       std::vector<std::size_t> anderson_size;
 
       /// \brief History of linear system residual.
@@ -719,16 +719,16 @@ namespace pinocchio
       return lanczos_decomposition;
     }
 
-    /// \brief Get the capacity of the anderson history.
+    /// \brief Get the capacity of the Anderson acceleration.
     /// \copydoc anderson_history
-    std::size_t getAndersonHistoryCapacity() const
+    std::size_t getAndersonAccelerationCapacity() const
     {
       return this->anderson_history.capacity();
     }
     ///
-    /// \brief Set the capacity of the anderson history.
+    /// \brief Set the capacity of the Anderson acceleration.
     /// \copydoc anderson_history
-    void setAndersonHistoryCapacity(const std::size_t anderson_history_capacity)
+    void setAndersonAccelerationCapacity(const std::size_t anderson_history_capacity)
     {
       return this->anderson_history.reserve(this->problem_size, anderson_history_capacity);
     }
@@ -972,10 +972,10 @@ namespace pinocchio
     Scalar rho_min_update_frequency;
 
     /// \brief Anderson acceleration history.
-    /// An anderson history of capacity <= 1 is inactive (it is the standard ADMM algorithm).
-    /// The anderson acceleration only triggers if the capacity (and the current anderson size) is
+    /// An Anderson acceleration of capacity <= 1 is inactive (it is the standard ADMM algorithm).
+    /// The Anderson acceleration only triggers if the capacity (and the current Anderson size) is
     /// >= 2.
-    AndersonHistory anderson_history;
+    AndersonAcceleration anderson_history;
 
     /// \brief Stats recorded by the solver if `solve` is called with `stat_record = true`.
     ADMMSolverStats stats;

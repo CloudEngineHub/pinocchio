@@ -490,7 +490,7 @@ namespace pinocchio
       Scalar anderson_previous_primal_feasibility = std::numeric_limits<Scalar>::max();
       for (; it <= Base::max_it; ++it, ++it_since_last_rho_update)
       {
-        // Fit the anderson history to compute accelerated x and y iterates
+        // Fit the Anderson acceleration to compute accelerated x and y iterates
         if (it > 1)
         {
           if (this->anderson_history.capacity() > 0)
@@ -513,13 +513,13 @@ namespace pinocchio
         }
 
         // store previous iterates
-        // note: when anderson capacity is < 2, x_anderson_ = x_
+        // note: when Anderson capacity is < 2, x_anderson_ = x_
         x_previous_ = x_anderson_;
         y_previous_ = y_;
         z_previous_ = z_anderson_;
         complementarity = Scalar(0);
 
-        // y-update, using anderson iterate.
+        // y-update, using Anderson iterate.
         // If update is worse in terms of primal feas, it is rejected and the default
         // ADMM iterates are used to compute the y-update.
         {
@@ -537,8 +537,8 @@ namespace pinocchio
               anderson_primal_feasibility >= anderson_previous_primal_feasibility //
               && this->anderson_history.size() == this->anderson_history.capacity())
             {
-              // Reject anderson iterate, accept default ADMM iterate instead.
-              // Reset anderson acceleration.
+              // Reject Anderson iterate, accept default ADMM iterate instead.
+              // Reset Anderson acceleration.
               x_previous_ = x_;
               z_previous_ = z_;
               tmp = x_previous_ - z_previous_ / (tau * rho);
