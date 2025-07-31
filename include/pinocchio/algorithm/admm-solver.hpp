@@ -301,8 +301,9 @@ namespace pinocchio
 
       const std::size_t idx = this->details.idx;
       const auto & zdiffs = this->details.zdiffs;
-      auto M = this->details.M.leftCols(this->size() - 1);
 
+      // Fill the matrix M with the linear system
+      auto M = this->details.M.leftCols(this->size() - 1);
       for (std::size_t i = 0; i < this->size() - 1; ++i)
       {
         std::size_t i1 = (idx - i) % this->capacity();
