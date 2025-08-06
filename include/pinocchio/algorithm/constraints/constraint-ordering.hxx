@@ -75,21 +75,9 @@ namespace pinocchio
       }
     }
 
-    template<typename _Scalar, int _Options>
+    template<typename ConstraintModel>
     static void algo_step(
-      const FrictionalJointConstraintModelTpl<_Scalar, _Options> & cmodel,
-      const Model & model,
-      Data & data)
-    {
-      for (const JointIndex joint_id : cmodel.getActiveJoints())
-      {
-        data.constraints_supported_dim[joint_id] += model.nvs[joint_id];
-      }
-    }
-
-    template<typename _Scalar, int _Options>
-    static void algo_step(
-      const JointLimitConstraintModelTpl<_Scalar, _Options> & cmodel,
+      const JointWiseConstraintModelBase<ConstraintModel> & cmodel,
       const Model & model,
       Data & data)
     {
