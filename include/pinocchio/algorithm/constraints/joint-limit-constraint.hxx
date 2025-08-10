@@ -460,9 +460,34 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(model);
     PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(cdata);
-    PINOCCHIO_UNUSED_VARIABLE(diagonal_constraint_inertia);
     PINOCCHIO_UNUSED_VARIABLE(reference_frame);
-    // TODO(jcarpent)
+
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(
+      diagonal_constraint_inertia.size(), activeSize(),
+      "The diagonal_constraint_inertia is of wrong size.");
+
+    const auto & compact_tangent_map = cdata.compact_tangent_map;
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
+         ++constraint_id)
+    {
+      const Eigen::Index constraint_size = active_nvs[constraint_id];
+      const auto & constraint_damping_value =
+        diagonal_constraint_inertia.coeffRef(Eigen::DenseIndex(constraint_id));
+      const auto constraint_jacobian = -compact_tangent_map.row(active_idx_qs_reduce[constraint_id])
+                                          .head(active_nvs[constraint_id]);
+
+      const auto joint_id =
+        activable_joints[active_idx_rows[constraint_id]]; // joint index associated with the
+                                                          // constraint
+      assert(joint_id > 0 && joint_id < model.njoints && "joint_id value is incorrect.");
+
+      auto & support_joint_apparent_inertia = data.joint_apparent_inertia[joint_id];
+      assert(support_joint_apparent_inertia.rows() == constraint_size);
+      assert(support_joint_apparent_inertia.cols() == constraint_size);
+
+      support_joint_apparent_inertia.noalias() +=
+        constraint_damping_value * constraint_jacobian.transpose() * constraint_jacobian;
+    }
   }
 } // namespace pinocchio
 
