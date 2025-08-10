@@ -79,7 +79,7 @@ namespace pinocchio
         if (!has_configuration_limit[size_t(j_qi)])
           continue;
 
-        const int q_index = idx_q + j_qi;
+        const int q_index = idx_q + j_qi; // index in the plain joint configuration vector q
         const int q_reduce_index = nq_reduce + j_qi;
 
         if (!(lb[q_index] == -std::numeric_limits<Scalar>::max()
@@ -254,10 +254,10 @@ namespace pinocchio
     // Lower bounds
     for (std::size_t i = 0; i < static_cast<std::size_t>(lowerSize()); i++)
     {
-      const Eigen::DenseIndex ie = static_cast<Eigen::DenseIndex>(i);
+      const Eigen::DenseIndex i_ = static_cast<Eigen::DenseIndex>(i);
       const Eigen::DenseIndex idx_q = activable_idx_qs[i];
-      activable_constraint_residual[ie] = position_limit[ie] - data.q_in[idx_q];
-      if (activable_constraint_residual[ie] >= -position_margin[ie])
+      activable_constraint_residual[i_] = position_limit[i_] - data.q_in[idx_q];
+      if (activable_constraint_residual[i_] >= -position_margin[i_])
       {
         active_set_indexes.push_back(i);
         active_idx_rows.push_back(activable_idx_rows[i]);
@@ -271,10 +271,10 @@ namespace pinocchio
     for (std::size_t i = static_cast<std::size_t>(lowerSize());
          i < static_cast<std::size_t>(size()); i++)
     {
-      const Eigen::DenseIndex ie = static_cast<Eigen::DenseIndex>(i);
+      const Eigen::DenseIndex i_ = static_cast<Eigen::DenseIndex>(i);
       const Eigen::DenseIndex idx_q = activable_idx_qs[i];
-      activable_constraint_residual[ie] = position_limit[ie] - data.q_in[idx_q];
-      if (activable_constraint_residual[ie] <= position_margin[ie])
+      activable_constraint_residual[i_] = position_limit[i_] - data.q_in[idx_q];
+      if (activable_constraint_residual[i_] <= position_margin[i_])
       {
         active_set_indexes.push_back(i);
         active_idx_rows.push_back(activable_idx_rows[i]);
