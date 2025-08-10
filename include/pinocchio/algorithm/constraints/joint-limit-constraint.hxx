@@ -457,9 +457,8 @@ namespace pinocchio
     const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
     const ReferenceFrameTag<rf> reference_frame) const
   {
-    PINOCCHIO_UNUSED_VARIABLE(model);
+    PINOCCHIO_ONLY_USED_FOR_DEBUG(model);
     PINOCCHIO_UNUSED_VARIABLE(data);
-    PINOCCHIO_UNUSED_VARIABLE(cdata);
     PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
