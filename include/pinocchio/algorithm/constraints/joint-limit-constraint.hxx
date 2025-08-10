@@ -61,7 +61,9 @@ namespace pinocchio
     EigenIndexVector extended_support;
     extended_support.reserve(size_t(model.nv));
 
-    size_t idx_row = 0;
+    size_t idx_row =
+      0; // there is unique idx_row per joint. In this way, we can have a single row which defines
+         // the sparsity pattern associated with the joint, and stored in row_indexes
     nq_reduce = 0;
     for (const JointIndex joint_id : _activable_joints)
     {
