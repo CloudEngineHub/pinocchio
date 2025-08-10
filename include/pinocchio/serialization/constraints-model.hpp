@@ -121,13 +121,13 @@ namespace boost
         using Base::active_idx_vs;
         using Base::active_nvs;
         using Base::active_set_indexes;
-        using Base::bound_position_limit;
-        using Base::bound_position_margin;
         using Base::lower_activable_size;
         using Base::lower_active_size;
         using Base::m_set;
         using Base::nq_reduce;
         using Base::nv_max_atom;
+        using Base::position_limit;
+        using Base::position_margin;
         using Base::row_indexes;
         using Base::row_sparsity_pattern;
       };
@@ -156,8 +156,8 @@ namespace boost
       ar & make_nvp("lower_active_size", cmodel_.lower_active_size);
       ar & make_nvp("row_sparsity_pattern", cmodel_.row_sparsity_pattern);
       ar & make_nvp("row_indexes", cmodel_.row_indexes);
-      ar & make_nvp("bound_position_limit", cmodel_.bound_position_limit);
-      ar & make_nvp("bound_position_margin", cmodel_.bound_position_margin);
+      ar & make_nvp("position_limit", cmodel_.position_limit);
+      ar & make_nvp("position_margin", cmodel_.position_margin);
       ar & make_nvp("activable_idx_qs", cmodel_.activable_idx_qs);
       ar & make_nvp("active_set_indexes", cmodel_.active_set_indexes);
       ar & make_nvp("activable_idx_rows", cmodel_.activable_idx_rows);

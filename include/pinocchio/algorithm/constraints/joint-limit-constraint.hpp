@@ -210,8 +210,8 @@ namespace pinocchio
       res.lower_active_size = lower_active_size;
       res.row_sparsity_pattern = row_sparsity_pattern;
       res.row_indexes = row_indexes;
-      res.bound_position_limit = bound_position_limit.template cast<NewScalar>();
-      res.bound_position_margin = bound_position_margin.template cast<NewScalar>();
+      res.position_limit = position_limit.template cast<NewScalar>();
+      res.position_margin = position_margin.template cast<NewScalar>();
       res.activable_idx_qs = activable_idx_qs;
       res.active_set_indexes = active_set_indexes;
       res.activable_idx_rows = activable_idx_rows;
@@ -381,11 +381,11 @@ namespace pinocchio
 
     const VectorXs & getBoundPositionLimit() const
     {
-      return bound_position_limit;
+      return position_limit;
     }
     const VectorXs & getBoundPositionMargin() const
     {
-      return bound_position_margin;
+      return position_margin;
     }
 
     const EigenIndexVector & getActivableIdxQs() const
@@ -438,9 +438,8 @@ namespace pinocchio
              && lower_activable_size == other.lower_activable_size
              && lower_active_size == other.lower_active_size
              && row_sparsity_pattern == other.row_sparsity_pattern
-             && row_indexes == other.row_indexes
-             && bound_position_limit == other.bound_position_limit
-             && bound_position_margin == other.bound_position_margin
+             && row_indexes == other.row_indexes && position_limit == other.position_limit
+             && position_margin == other.position_margin
              && activable_idx_qs == other.activable_idx_qs
              && active_set_indexes == other.active_set_indexes
              && activable_idx_rows == other.activable_idx_rows
@@ -470,8 +469,8 @@ namespace pinocchio
         lower_active_size = other.lower_active_size;
         row_sparsity_pattern = other.row_sparsity_pattern;
         row_indexes = other.row_indexes;
-        bound_position_limit = other.bound_position_limit;
-        bound_position_margin = other.bound_position_margin;
+        position_limit = other.position_limit;
+        position_margin = other.position_margin;
         activable_idx_qs = other.activable_idx_qs;
         active_set_indexes = other.active_set_indexes;
         activable_idx_rows = other.activable_idx_rows;
@@ -597,9 +596,9 @@ namespace pinocchio
     VectofOfEigenIndexVector row_indexes;
 
     /// @brief Limit value of lower and upper bound in the constraint (size size()=lsize+usize)
-    VectorXs bound_position_limit;
+    VectorXs position_limit;
     /// @brief Margin value of lower and upper bound in the constraint (size size()=lsize+usize)
-    VectorXs bound_position_margin;
+    VectorXs position_margin;
 
     /// @brief give for each activable constraint the index in the configuration vector
     EigenIndexVector activable_idx_qs;

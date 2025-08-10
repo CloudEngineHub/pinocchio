@@ -161,22 +161,22 @@ namespace pinocchio
     // Fill bound limit and margin for lower and upper constraints
     // Another strategy could be to query the model again but it is not coherent with the existing
     // constructors.
-    bound_position_limit = VectorXs::Zero(Eigen::DenseIndex(size()));
-    bound_position_margin = VectorXs::Zero(Eigen::DenseIndex(size()));
+    position_limit = VectorXs::Zero(Eigen::DenseIndex(size()));
+    position_margin = VectorXs::Zero(Eigen::DenseIndex(size()));
     Eigen::DenseIndex bound_row_id = 0;
     for (bound_row_id = 0; bound_row_id < lowerSize(); ++bound_row_id)
     {
       const auto activable_idx_q = activable_idx_qs[size_t(bound_row_id)];
-      bound_position_limit[bound_row_id] = lb[activable_idx_q];
+      position_limit[bound_row_id] = lb[activable_idx_q];
       assert(margin[activable_idx_q] >= 0);
-      bound_position_margin[bound_row_id] = margin[activable_idx_q];
+      position_margin[bound_row_id] = margin[activable_idx_q];
     }
     for (; bound_row_id < size(); ++bound_row_id)
     {
       const auto activable_idx_q = activable_idx_qs[size_t(bound_row_id)];
-      bound_position_limit[bound_row_id] = ub[activable_idx_q];
+      position_limit[bound_row_id] = ub[activable_idx_q];
       assert(margin[activable_idx_q] >= 0);
-      bound_position_margin[bound_row_id] = margin[activable_idx_q];
+      position_margin[bound_row_id] = margin[activable_idx_q];
     }
 
     // Get nvs and idx_vs of all actibale joints to compute nv_max_atom
@@ -256,8 +256,8 @@ namespace pinocchio
     {
       const Eigen::DenseIndex ie = static_cast<Eigen::DenseIndex>(i);
       const Eigen::DenseIndex idx_q = activable_idx_qs[i];
-      activable_constraint_residual[ie] = bound_position_limit[ie] - data.q_in[idx_q];
-      if (activable_constraint_residual[ie] >= -bound_position_margin[ie])
+      activable_constraint_residual[ie] = position_limit[ie] - data.q_in[idx_q];
+      if (activable_constraint_residual[ie] >= -position_margin[ie])
       {
         active_set_indexes.push_back(i);
         active_idx_rows.push_back(activable_idx_rows[i]);
@@ -273,8 +273,8 @@ namespace pinocchio
     {
       const Eigen::DenseIndex ie = static_cast<Eigen::DenseIndex>(i);
       const Eigen::DenseIndex idx_q = activable_idx_qs[i];
-      activable_constraint_residual[ie] = bound_position_limit[ie] - data.q_in[idx_q];
-      if (activable_constraint_residual[ie] <= bound_position_margin[ie])
+      activable_constraint_residual[ie] = position_limit[ie] - data.q_in[idx_q];
+      if (activable_constraint_residual[ie] <= position_margin[ie])
       {
         active_set_indexes.push_back(i);
         active_idx_rows.push_back(activable_idx_rows[i]);
