@@ -601,7 +601,7 @@ namespace pinocchio
     /// @brief Margin value of lower and upper bound in the constraint (size size()=lsize+usize)
     VectorXs bound_position_margin;
 
-    /// @brief give for each activable constraint the qs in the configuration vector
+    /// @brief give for each activable constraint the index in the configuration vector
     EigenIndexVector activable_idx_qs;
 
     /// \brief Vector containing the indexes of the constraints in the active set.
@@ -611,7 +611,7 @@ namespace pinocchio
 
     /// @brief give for each active/activable constraint the row_id of sparsity pattern
     VectorOfSize activable_idx_rows, active_idx_rows;
-    /// @brief give for each active/activable constraint  of sparsity pattern
+    /// @brief give for each active/activable constraint of sparsity pattern
     EigenIndexVector activable_idx_qs_reduce, active_idx_qs_reduce;
     /// @brief For each dof, the associated nv and idx_v to exploit tangent map sparsity
     EigenIndexVector activable_nvs, active_nvs;
