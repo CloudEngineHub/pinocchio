@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Lie group methods `tangentMapProduct` and `tangentMapTransport` that apply `tangentMap` while exploiting sparsity.
 - Added model methods `tangentMap`, `tangentMapProduct` and `tangentMapTransport` that perform tangent map for the whole configuration space of the model.
 - Now all Lie group related algorithms (e.g. `dIntegrate`...) work seamlessly for models having some mimic joints.
-- Added joint methods `jointQrows`, `jointQcols` (resp. `jointQVblock`) that make selections of size `NQ` (resp. `NQ x NV`).
+- Added joint methods `jointQrows`, `jointQcols` (resp. `jointQVMap`) that make selections of size `NQ` (resp. `NQ x NV`).
 - Added joint method `lieGroup` that returns the Lie group instance associated to a joint. This allows performing some operations (e.g. `integrate`...) individually.
 - Added model method `lieGroup` that returns the Lie group instance associated to the model. It is a Cartesian product of multiple Lie groups. It allows combination of the model Lie group with other Lie groups.
 - Add Python example showcasing the candlewick visualizer

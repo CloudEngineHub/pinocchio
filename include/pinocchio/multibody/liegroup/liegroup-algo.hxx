@@ -383,9 +383,7 @@ namespace pinocchio
       typename LieGroupMap::template operation<JointModel>::type lgo;
       lgo.tangentMap(
         jmodel.jointConfigSelector(q.derived()),
-        jmodel.jointQVBlock(
-          PINOCCHIO_EIGEN_CONST_CAST(TangentMapMatrixType, TM), jmodel.idx_q(), jmodel.idx_v()),
-        op);
+        jmodel.jointQVMap(TM.const_cast_derived(), jmodel.idx_q(), jmodel.idx_v()), op);
     }
   };
 
@@ -421,9 +419,7 @@ namespace pinocchio
       typename LieGroupMap::template operation<JointModel>::type lgo;
       lgo.tangentMap(
         jmodel.jointConfigSelector(q.derived()),
-        jmodel.jointQVBlock(
-          PINOCCHIO_EIGEN_CONST_CAST(CompactSetTangentMapMatrixType, TMc), idx, 0),
-        SETTO);
+        jmodel.jointQVMap(TMc.const_cast_derived(), idx, 0), SETTO);
       idx += jmodel.nq();
     }
   };
