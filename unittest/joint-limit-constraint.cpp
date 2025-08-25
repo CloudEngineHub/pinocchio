@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2024-2025 INRIA
 //
 
 #include "utils/model-generator.hpp"
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 BOOST_AUTO_TEST_CASE(constraint_empty_constructor)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   const Data data(model);
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(constraint_empty_constructor)
 BOOST_AUTO_TEST_CASE(constraint_constructor_with_infinite_bounds)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   model.lowerPositionLimit.fill(-std::numeric_limits<double>::max());
   model.upperPositionLimit.fill(+std::numeric_limits<double>::max());
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(constraint_constructor_with_infinite_bounds)
 BOOST_AUTO_TEST_CASE(constraint_constructor)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Data data(model);
 
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
 BOOST_AUTO_TEST_CASE(cast)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   const Data data(model);
 
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(cast)
 BOOST_AUTO_TEST_CASE(constraint_jacobian)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Data data(model);
 
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
 BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   model.gravity.setZero();
   model.lowerPositionLimit.fill(0.);
@@ -289,7 +289,7 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
 BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   model.gravity.setZero();
   model.lowerPositionLimit.fill(0.);

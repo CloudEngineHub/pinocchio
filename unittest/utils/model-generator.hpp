@@ -32,7 +32,7 @@ namespace pinocchio
     model.appendBodyToJoint(idx, Y, SE3::Identity());
   }
 
-  void buildAllJointsModel(Model & model)
+  void buildModelWithAllJoints(Model & model)
   {
     addJointAndBody(
       model, JointModelFreeFlyer(), model.getJointId("universe"), SE3::Identity(), "freeflyer",

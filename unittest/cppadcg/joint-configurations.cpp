@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(test_joint_configuration_code_generation)
   typedef pinocchio::ModelTpl<Scalar> Model;
 
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
   Eigen::VectorXd q1 = Eigen::VectorXd::Random(model.nq);
   Eigen::VectorXd q2 = Eigen::VectorXd::Random(model.nq);
   normalize(model, q1);

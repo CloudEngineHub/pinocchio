@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 BOOST_AUTO_TEST_CASE(integration_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   std::vector<Eigen::VectorXd> qs(2);
   std::vector<Eigen::VectorXd> qdots(2);
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(integration_test)
 BOOST_AUTO_TEST_CASE(interpolate_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Eigen::VectorXd q0(randomConfiguration(
     model, -1 * Eigen::VectorXd::Ones(model.nq), Eigen::VectorXd::Ones(model.nq)));
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(interpolate_test)
 BOOST_AUTO_TEST_CASE(diff_integration_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   std::vector<Eigen::VectorXd> qs(3);
   std::vector<Eigen::VectorXd> vs(3);
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(diff_integration_test)
 BOOST_AUTO_TEST_CASE(tangent_map_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Eigen::VectorXd q(Eigen::VectorXd::Random(model.nq));
   normalize(model, q);
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(tangent_map_test)
 BOOST_AUTO_TEST_CASE(lie_group_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   typedef
     typename LieGroupMap::template operationProduct<typename Model::Scalar, Model::Options>::type
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(lie_group_test)
 BOOST_AUTO_TEST_CASE(lie_group_vs_algo_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   typedef
     typename LieGroupMap::template operationProduct<typename Model::Scalar, Model::Options>::type
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(lie_group_vs_algo_test)
 BOOST_AUTO_TEST_CASE(diff_difference_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   std::vector<Eigen::VectorXd> qs(2);
   std::vector<Eigen::VectorXd> vs(2);
@@ -281,7 +281,7 @@ BOOST_AUTO_TEST_CASE(diff_difference_test)
 BOOST_AUTO_TEST_CASE(diff_difference_vs_diff_integrate)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   std::vector<Eigen::VectorXd> qs(2);
   std::vector<Eigen::VectorXd> vs(2);
@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE(diff_difference_vs_diff_integrate)
 BOOST_AUTO_TEST_CASE(dIntegrate_assignementop_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   std::vector<Eigen::MatrixXd> results(3, Eigen::MatrixXd::Zero(model.nv, model.nv));
 
@@ -400,7 +400,7 @@ BOOST_AUTO_TEST_CASE(dIntegrate_assignementop_test)
 BOOST_AUTO_TEST_CASE(integrate_difference_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Eigen::VectorXd q0(randomConfiguration(
     model, -1 * Eigen::VectorXd::Ones(model.nq), Eigen::VectorXd::Ones(model.nq)));
@@ -420,7 +420,7 @@ BOOST_AUTO_TEST_CASE(integrate_difference_test)
 BOOST_AUTO_TEST_CASE(neutral_configuration_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Eigen::VectorXd expected(model.nq);
   expected << 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
@@ -433,7 +433,7 @@ BOOST_AUTO_TEST_CASE(neutral_configuration_test)
 BOOST_AUTO_TEST_CASE(distance_configuration_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Model::ConfigVectorType q0 = neutral(model);
   Model::ConfigVectorType q1(integrate(model, q0, Model::TangentVectorType::Ones(model.nv)));
@@ -447,7 +447,7 @@ BOOST_AUTO_TEST_CASE(distance_configuration_test)
 BOOST_AUTO_TEST_CASE(squared_distance_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Eigen::VectorXd q0(randomConfiguration(
     model, -1 * Eigen::VectorXd::Ones(model.nq), Eigen::VectorXd::Ones(model.nq)));
@@ -463,7 +463,7 @@ BOOST_AUTO_TEST_CASE(squared_distance_test)
 BOOST_AUTO_TEST_CASE(uniform_sampling_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   model.lowerPositionLimit = -1 * Eigen::VectorXd::Ones(model.nq);
   model.upperPositionLimit = Eigen::VectorXd::Ones(model.nq);
@@ -480,7 +480,7 @@ BOOST_AUTO_TEST_CASE(uniform_sampling_test)
 BOOST_AUTO_TEST_CASE(normalize_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Eigen::VectorXd q(Eigen::VectorXd::Ones(model.nq));
   pinocchio::normalize(model, q);
@@ -499,7 +499,7 @@ BOOST_AUTO_TEST_CASE(normalize_test)
 BOOST_AUTO_TEST_CASE(is_normalized_test)
 {
   Model model;
-  buildAllJointsModel(model);
+  buildModelWithAllJoints(model);
 
   Eigen::VectorXd q;
   q = Eigen::VectorXd::Ones(model.nq);
