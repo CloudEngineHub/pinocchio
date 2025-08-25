@@ -458,7 +458,6 @@ namespace pinocchio
     const ReferenceFrameTag<rf> reference_frame) const
   {
     PINOCCHIO_ONLY_USED_FOR_DEBUG(model);
-    PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
@@ -471,14 +470,15 @@ namespace pinocchio
     {
       const Eigen::Index constraint_size = active_nvs[constraint_id];
       const auto & constraint_damping_value =
-        diagonal_constraint_inertia.coeffRef(Eigen::DenseIndex(constraint_id));
+        diagonal_constraint_inertia[Eigen::DenseIndex(constraint_id)];
       const auto constraint_jacobian = -compact_tangent_map.row(active_idx_qs_reduce[constraint_id])
                                           .head(active_nvs[constraint_id]);
 
-      const auto joint_id =
+      const JointIndex joint_id =
         activable_joints[active_idx_rows[constraint_id]]; // joint index associated with the
                                                           // constraint
-      assert(joint_id > 0 && joint_id < model.njoints && "joint_id value is incorrect.");
+      assert(
+        joint_id > 0 && joint_id < JointIndex(model.njoints) && "joint_id value is incorrect.");
 
       auto & support_joint_apparent_inertia = data.joint_apparent_inertia[joint_id];
       assert(support_joint_apparent_inertia.rows() == constraint_size);
