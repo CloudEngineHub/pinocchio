@@ -208,7 +208,6 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
   Model model;
   buildModelWithAllJoints(model);
 
-  model.gravity.setZero();
   model.lowerPositionLimit.fill(0.);
   const Eigen::VectorXd qmin(Eigen::VectorXd::Zero(model.nq));
   const Eigen::VectorXd qmax(Eigen::VectorXd::Ones(model.nq));
@@ -291,7 +290,6 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
   Model model;
   buildModelWithAllJoints(model);
 
-  model.gravity.setZero();
   model.lowerPositionLimit.fill(0.);
   const Eigen::VectorXd qmin(Eigen::VectorXd::Zero(model.nq));
   const Eigen::VectorXd qmax(Eigen::VectorXd::Ones(model.nq));
