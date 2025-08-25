@@ -4,6 +4,7 @@
 
 #include "utils/model-generator.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
+#include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/constraints/joint-limit-constraint.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
@@ -390,6 +391,74 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
 
     if (ok_to_check)
       BOOST_CHECK(jacobian_matrix.isApprox(jacobian_matrix_fd, math::sqrt(eps_fd)));
+  }
+}
+
+BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
+{
+  Model model;
+  buildModelWithAllBoundedJoints(model);
+
+  model.lowerPositionLimit.fill(-1.);
+  model.upperPositionLimit.fill(+1.);
+
+  Model::IndexVector activable_joint_ids;
+  for (Model::JointIndex i = 1; i < (Model::JointIndex)model.njoints; ++i)
+  {
+    activable_joint_ids.push_back(i);
+
+    const auto & jmodel = model.joints[i];
+    const int nq = jmodel.nq();
+    const auto has_configuration_limit = jmodel.hasConfigurationLimit();
+    for (size_t k = 0; k < size_t(nq); ++k)
+    {
+      BOOST_CHECK(has_configuration_limit[k] == true);
+    }
+  }
+
+  JointLimitConstraintModel constraint_model(model, activable_joint_ids);
+  BOOST_CHECK(constraint_model.size() == 2 * model.nv);
+
+  for (const JointIndex joint_id : activable_joint_ids)
+  {
+    const auto & jmodel = model.joints[joint_id];
+    std::cout << "joint type: " << jmodel.shortname() << std::endl;
+  }
+
+  const Eigen::VectorXd q = model.lowerPositionLimit;
+
+  Data data(model);
+  JointLimitConstraintData constraint_data(constraint_model);
+  computeJointJacobians(model, data, q);
+
+  data.q_in = q;
+  constraint_model.calc(model, data, constraint_data);
+  BOOST_CHECK(constraint_model.activeSize() == model.nv);
+
+  const Eigen::VectorXd diagonal_inertia =
+    Eigen::VectorXd::Random(constraint_model.activeSize()).array().square();
+  constraint_model.appendCouplingConstraintInertias(
+    model, data, constraint_data, diagonal_inertia, WorldFrameTag());
+
+  Eigen::MatrixXd constraint_jacobian =
+    Eigen::MatrixXd::Zero(constraint_model.activeSize(), model.nv);
+  constraint_model.jacobian(model, data, constraint_data, constraint_jacobian);
+
+  std::cout << "diagonal_inertia: " << diagonal_inertia.transpose() << std::endl;
+  std::cout << "constraint_jacobian:\n" << constraint_jacobian << std::endl;
+
+  const Eigen::MatrixXd joint_space_constraint_inertia =
+    constraint_jacobian.transpose() * diagonal_inertia.asDiagonal() * constraint_jacobian;
+
+  for (const auto joint_id : activable_joint_ids)
+  {
+    const auto & jmodel = model.joints[joint_id];
+    const auto jmodel_nv = jmodel.nv();
+    const auto jmodel_idx_v = jmodel.idx_v();
+
+    BOOST_CHECK(
+      joint_space_constraint_inertia.block(jmodel_idx_v, jmodel_idx_v, jmodel_nv, jmodel_nv)
+        .isApprox(data.joint_apparent_inertia[joint_id]));
   }
 }
 
