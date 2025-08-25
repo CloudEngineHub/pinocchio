@@ -559,7 +559,7 @@ namespace pinocchio
   {
     tangentMap<
       LieGroupMap, Scalar, Options, JointCollectionTpl, ConfigVectorType, TangentMapMatrixType>(
-      model, q.derived(), PINOCCHIO_EIGEN_CONST_CAST(TangentMapMatrixType, TM), op);
+      model, q.derived(), TM.const_cast_derived(), op);
   }
 
   /**

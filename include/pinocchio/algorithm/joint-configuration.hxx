@@ -268,8 +268,7 @@ namespace pinocchio
     typedef typename Model::JointIndex JointIndex;
 
     typedef TangentMapStep<LieGroup_t, ConfigVectorType, TangentMapMatrixType> Algo;
-    typename Algo::ArgsType args(
-      q.derived(), PINOCCHIO_EIGEN_CONST_CAST(TangentMapMatrixType, TM), op);
+    typename Algo::ArgsType args(q.derived(), TM.const_cast_derived(), op);
     for (JointIndex i = 1; i < (JointIndex)model.njoints; ++i)
     {
       Algo::run(model.joints[i], args);
@@ -285,8 +284,7 @@ namespace pinocchio
     typename TangentMapMatrixType>
   void compactTangentMap(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
-      joint_selection,
+    const std::vector<JointIndex> & joint_selection,
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentMapMatrixType> & TMc)
   {
@@ -298,11 +296,11 @@ namespace pinocchio
     typedef CompactSetTangentMapStep<LieGroup_t, ConfigVectorType, TangentMapMatrixType> Algo;
 
     int idx = 0;
-    typename Algo::ArgsType args(
-      q.derived(), PINOCCHIO_EIGEN_CONST_CAST(TangentMapMatrixType, TMc), idx);
+    typename Algo::ArgsType args(q.derived(), TMc.const_cast_derived(), idx);
     for (size_t i = 0; i < joint_selection.size(); ++i)
     {
-      Algo::run(model.joints[joint_selection[i]], args);
+      const auto joint_id = joint_selection[i];
+      Algo::run(model.joints[joint_id], args);
     }
     assert(idx == TMc.rows());
   }
