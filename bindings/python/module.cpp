@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2015-2022 CNRS INRIA
+// Copyright (c) 2015-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 //
 
 #include "pinocchio/bindings/python/fwd.hpp"
@@ -43,6 +44,7 @@ BOOST_PYTHON_MODULE(PINOCCHIO_PYTHON_MODULE_NAME)
   eigenpy::OptionalConverter<Eigen::Ref<const context::VectorXs>, boost::optional>::registration();
   eigenpy::OptionalConverter<
     const Eigen::Ref<const context::VectorXs>, boost::optional>::registration();
+  eigenpy::OptionalConverter<context::Scalar, boost::optional>::registration();
 
 #if defined(PINOCCHIO_PYTHON_INTERFACE_MAIN_MODULE)
   eigenpy::StdContainerFromPythonList<std::vector<std::string>>::register_converter();
