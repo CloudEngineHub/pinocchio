@@ -305,7 +305,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Computes the tangentmap for a unit quaternion.
+    ///  \brief Computes the Tangent Map for a unit quaternion.
     ///
     /// \param[in] quat A unit quaternion representing the input rotation.
     /// \param[out] TM The resulting Jacobian of the log operator.

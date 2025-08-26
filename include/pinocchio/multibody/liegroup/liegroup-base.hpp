@@ -552,7 +552,7 @@ namespace pinocchio
      * @brief      Computes the left Tangent Mapping from the Lie algebra of the group to the
      * parametric space tangent space TqQ.
      *
-     * @details    The tangent mapping corresponds to the eucliean Jacobian of \f$ (\mathbf{q}
+     * @details    The tangent mapping corresponds to the Eucliean Jacobian of \f$ (\mathbf{q}
      * \oplus \mathbf{v}\f$ with respect to \f$ \mathbf{q}\f$ in \f$ 0\f$. In other words for any
      * vector $v$ in the Lie algebra we have \f$ TM(\mathbf{q}) v = lim_{\delta t \rightarrow 0}
      * \frac{\mathbf{q} \oplus (v\delta t) - \mathbf{q}}{\delta t}\f$
