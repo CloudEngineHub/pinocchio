@@ -428,7 +428,6 @@ BOOST_AUTO_TEST_CASE(neutral_configuration_test)
 
   Eigen::VectorXd neutral_config = neutral(model);
   BOOST_CHECK_MESSAGE(
-    neutral_config.isApprox(expected, 1e-12), "neutral configuration - wrong results");
     neutral_config.isApprox(expected, 0), "neutral configuration - wrong results");
 }
 
