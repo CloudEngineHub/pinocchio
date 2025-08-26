@@ -67,6 +67,15 @@ namespace pinocchio
     addJointAndBody(
       model, JointModelTranslation(), model.getJointId("sphericalZYX_joint"), SE3::Identity(),
       "translation", Inertia::Random());
+
+    JointModelComposite jmodel_composite;
+    jmodel_composite.addJoint(JointModelRZ());
+    jmodel_composite.addJoint(JointModelRY());
+    jmodel_composite.addJoint(JointModelRX());
+
+    addJointAndBody(
+      model, jmodel_composite, model.getJointId("translation_joint"), SE3::Identity(),
+      "composite_zyx", Inertia::Random());
   }
 
   void buildModelWithAllBoundedJoints(Model & model)
@@ -95,6 +104,15 @@ namespace pinocchio
     addJointAndBody(
       model, JointModelTranslation(), model.getJointId("sphericalZYX_joint"), SE3::Identity(),
       "translation", Inertia::Random());
+
+    JointModelComposite jmodel_composite;
+    jmodel_composite.addJoint(JointModelRZ());
+    jmodel_composite.addJoint(JointModelRY());
+    jmodel_composite.addJoint(JointModelRX());
+
+    addJointAndBody(
+      model, jmodel_composite, model.getJointId("translation_joint"), SE3::Identity(),
+      "composite_zyx", Inertia::Random());
   }
 
   void toFull(
