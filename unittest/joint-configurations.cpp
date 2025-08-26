@@ -423,11 +423,13 @@ BOOST_AUTO_TEST_CASE(neutral_configuration_test)
   buildModelWithAllJoints(model);
 
   Eigen::VectorXd expected(model.nq);
-  expected << 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+  expected << 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0;
 
   Eigen::VectorXd neutral_config = neutral(model);
   BOOST_CHECK_MESSAGE(
     neutral_config.isApprox(expected, 1e-12), "neutral configuration - wrong results");
+    neutral_config.isApprox(expected, 0), "neutral configuration - wrong results");
 }
 
 BOOST_AUTO_TEST_CASE(distance_configuration_test)
