@@ -25,9 +25,10 @@ namespace pinocchio
     typedef typename D::ConfigVector_t CV;
 
     idx = model.addJoint(
-      parent_id, jmodel, joint_placement, name + "_joint", TV::Zero(),
-      1e3 * (TV::Random() + TV::Constant(1)), 1e3 * (CV::Random() - CV::Constant(1)),
-      1e3 * (CV::Random() + CV::Constant(1)));
+      parent_id, jmodel, joint_placement, name + "_joint", TV::Zero(jmodel.nv()),
+      1e3 * (TV::Random(jmodel.nv()) + TV::Constant(jmodel.nv(), 1.)),
+      1e3 * (CV::Random(jmodel.nq()) - CV::Constant(jmodel.nq(), 1.)),
+      1e3 * (CV::Random(jmodel.nq()) + CV::Constant(jmodel.nq(), 1.)));
 
     model.appendBodyToJoint(idx, Y, SE3::Identity());
   }
