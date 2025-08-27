@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2018-2020 CNRS INRIA
+// Copyright (c) 2018-2020 CNRS
+// Copyright (c) 2018-2025 INRIA
 //
 
 #ifndef __pinocchio_multibody_liegroup_liegroup_algo_hxx__
@@ -25,8 +26,8 @@ namespace pinocchio
       static void
       run(const JointModelCompositeTpl<Scalar, Options, JointCollectionTpl> & jmodel, ArgsType args)
       {
-        for (size_t i = 0; i < jmodel.joints.size(); ++i)
-          Visitor::run(jmodel.joints[i], args);
+        for (const auto & joint : jmodel.joints)
+          Visitor::run(joint, args);
       }
     };
 
