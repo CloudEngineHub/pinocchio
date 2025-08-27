@@ -45,8 +45,7 @@ BOOST_AUTO_TEST_CASE(constraint_constructor_with_infinite_bounds)
 
   const Data data(model);
 
-  const std::string ee_name = "translation_joint";
-  const JointIndex ee_id = model.getJointId(ee_name);
+  const JointIndex ee_id = JointIndex(model.njoints) - 1;
 
   const Model::IndexVector & ee_support = model.supports[ee_id];
   const Model::IndexVector activable_joint_ids(ee_support.begin() + 1, ee_support.end());
@@ -62,8 +61,7 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
 
   Data data(model);
 
-  const std::string ee_name = "translation_joint";
-  const JointIndex ee_id = model.getJointId(ee_name);
+  const JointIndex ee_id = JointIndex(model.njoints) - 1;
 
   const Model::IndexVector & ee_support = model.supports[ee_id];
   const Model::IndexVector activable_joint_ids(ee_support.begin() + 1, ee_support.end());
@@ -135,8 +133,7 @@ BOOST_AUTO_TEST_CASE(cast)
 
   const Data data(model);
 
-  const std::string ee_name = "translation_joint";
-  const JointIndex ee_id = model.getJointId(ee_name);
+  const JointIndex ee_id = JointIndex(model.njoints) - 1;
 
   const Model::IndexVector & ee_support = model.supports[ee_id];
   const Model::IndexVector active_joint_ids(ee_support.begin() + 1, ee_support.end());
@@ -156,8 +153,7 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
 
   Data data(model);
 
-  const std::string ee_name = "translation_joint";
-  const JointIndex ee_id = model.getJointId(ee_name);
+  const JointIndex ee_id = JointIndex(model.njoints) - 1;
 
   const Model::IndexVector & ee_support = model.supports[ee_id];
   const Model::IndexVector activable_joint_ids(ee_support.begin() + 1, ee_support.end());
@@ -402,8 +398,11 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
   model.lowerPositionLimit.fill(-1.);
   model.upperPositionLimit.fill(+1.);
 
+  const JointIndex last_joint_id =
+    Model::JointIndex(model.njoints /*-1*/); // Currently, we dot yet consider JointComposite
+
   Model::IndexVector activable_joint_ids;
-  for (Model::JointIndex i = 1; i < (Model::JointIndex)model.njoints; ++i)
+  for (Model::JointIndex i = 1; i < last_joint_id; ++i)
   {
     activable_joint_ids.push_back(i);
 
