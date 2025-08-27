@@ -149,11 +149,9 @@ BOOST_AUTO_TEST_CASE(tangent_map_test)
   idx_vs.reserve(static_cast<size_t>(model.nq));
 
   getTangentToConfigurationSparsitySegment(model, joint_selection, nvs, idx_vs);
-  size_t k_s;
   for (Eigen::DenseIndex k = 0; k < model.nq; ++k)
   {
-    k_s = static_cast<size_t>(k);
-    TMs[3].block(k, idx_vs[k_s], 1, nvs[k_s]) = TMc.block(k, 0, 1, nvs[k_s]);
+    TMs[3].block(k, idx_vs[size_t(k)], 1, nvs[size_t(k)]) = TMc.block(k, 0, 1, nvs[size_t(k)]);
   }
 
   const double eps = 1e-8;
