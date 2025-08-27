@@ -295,14 +295,15 @@ namespace pinocchio
 
     typedef CompactSetTangentMapStep<LieGroup_t, ConfigVectorType, TangentMapMatrixType> Algo;
 
-    int idx = 0;
-    typename Algo::ArgsType args(q.derived(), TMc.const_cast_derived(), idx);
+    int idx_q = 0, idx_v = 0;
+    typename Algo::ArgsType args(q.derived(), TMc.const_cast_derived(), idx_q, idx_v);
     for (size_t i = 0; i < joint_selection.size(); ++i)
     {
+      idx_v = 0; // reset to 0. Used for composite joints.
       const auto joint_id = joint_selection[i];
       Algo::run(model.joints[joint_id], args);
     }
-    assert(idx == TMc.rows());
+    assert(idx_q == TMc.rows());
   }
 
   template<
