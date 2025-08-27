@@ -1108,7 +1108,6 @@ namespace pinocchio
     }
   };
 
-  PINOCCHIO_DETAILS_DISPATCH_JOINT_COMPOSITE_2(getTangentToConfigurationSparsitySegmentStepAlgo);
   PINOCCHIO_DETAILS_CANCEL_JOINT_MIMIC_2(getTangentToConfigurationSparsitySegmentStepAlgo);
 
 } // namespace pinocchio
