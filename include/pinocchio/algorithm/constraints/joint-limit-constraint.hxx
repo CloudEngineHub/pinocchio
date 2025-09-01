@@ -468,7 +468,6 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
          ++constraint_id)
     {
-      const Eigen::Index constraint_size = active_nvs[constraint_id];
       const auto & constraint_damping_value =
         diagonal_constraint_inertia[Eigen::DenseIndex(constraint_id)];
       const auto constraint_jacobian = -compact_tangent_map.row(active_idx_qs_reduce[constraint_id])
@@ -481,6 +480,8 @@ namespace pinocchio
         joint_id > 0 && joint_id < JointIndex(model.njoints) && "joint_id value is incorrect.");
 
       auto & support_joint_apparent_inertia = data.joint_apparent_inertia[joint_id];
+      const Eigen::Index constraint_size = active_nvs[constraint_id];
+      PINOCCHIO_ONLY_USED_FOR_DEBUG(constraint_size);
       assert(support_joint_apparent_inertia.rows() == constraint_size);
       assert(support_joint_apparent_inertia.cols() == constraint_size);
 
