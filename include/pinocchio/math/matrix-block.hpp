@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2019-2024 INRIA
+// Copyright (c) 2019-2025 INRIA
 //
 
 #ifndef __pinocchio_math_matrix_block_hpp__
@@ -9,126 +9,118 @@
 
 namespace pinocchio
 {
-  template<int NV>
-  struct SizeDepType
+
+  template<int trows, int tcols = 1>
+  struct SizeDepType;
+
+  template<int tsize>
+  struct SizeDepType<tsize, 1>
   {
     template<class Mat>
     struct SegmentReturn
     {
-      typedef typename Mat::template FixedSegmentReturnType<NV>::Type Type;
-      typedef typename Mat::template ConstFixedSegmentReturnType<NV>::Type ConstType;
+      typedef typename Mat::template FixedSegmentReturnType<tsize>::Type Type;
+      typedef typename Mat::template ConstFixedSegmentReturnType<tsize>::Type ConstType;
     };
 
     template<typename D>
-    static typename SegmentReturn<D>::ConstType segment(
-      const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size = NV)
+    static typename SegmentReturn<D>::ConstType
+    segment(const Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size = tsize)
     {
       PINOCCHIO_UNUSED_VARIABLE(size);
-      return mat.template segment<NV>(start);
+      return mat.template segment<tsize>(start);
     }
 
     template<typename D>
-    static typename SegmentReturn<D>::Type segment(
-      Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size = NV)
+    static typename SegmentReturn<D>::Type
+    segment(Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size = tsize)
     {
       PINOCCHIO_UNUSED_VARIABLE(size);
-      return mat.template segment<NV>(start);
+      return mat.template segment<tsize>(start);
     }
 
     template<class Mat>
     struct ColsReturn
     {
-      typedef typename Mat::template NColsBlockXpr<NV>::Type Type;
-      typedef typename Mat::template ConstNColsBlockXpr<NV>::Type ConstType;
+      typedef typename Mat::template NColsBlockXpr<tsize>::Type Type;
+      typedef typename Mat::template ConstNColsBlockXpr<tsize>::Type ConstType;
     };
 
     template<typename D>
-    static typename ColsReturn<D>::ConstType middleCols(
-      const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size = NV)
+    static typename ColsReturn<D>::ConstType
+    middleCols(const Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size = tsize)
     {
       PINOCCHIO_UNUSED_VARIABLE(size);
-      return mat.template middleCols<NV>(start);
+      return mat.template middleCols<tsize>(start);
     }
 
     template<typename D>
-    static typename ColsReturn<D>::Type middleCols(
-      Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size = NV)
+    static typename ColsReturn<D>::Type
+    middleCols(Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size = tsize)
     {
       PINOCCHIO_UNUSED_VARIABLE(size);
-      return mat.template middleCols<NV>(start);
+      return mat.template middleCols<tsize>(start);
     }
 
     template<class Mat>
     struct RowsReturn
     {
-      typedef typename Mat::template NRowsBlockXpr<NV>::Type Type;
-      typedef typename Mat::template ConstNRowsBlockXpr<NV>::Type ConstType;
+      typedef typename Mat::template NRowsBlockXpr<tsize>::Type Type;
+      typedef typename Mat::template ConstNRowsBlockXpr<tsize>::Type ConstType;
     };
 
     template<typename D>
-    static typename RowsReturn<D>::ConstType middleRows(
-      const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size = NV)
+    static typename RowsReturn<D>::ConstType
+    middleRows(const Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size = tsize)
     {
       PINOCCHIO_UNUSED_VARIABLE(size);
-      return mat.template middleRows<NV>(start);
+      return mat.template middleRows<tsize>(start);
     }
 
     template<typename D>
-    static typename RowsReturn<D>::Type middleRows(
-      Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size = NV)
+    static typename RowsReturn<D>::Type
+    middleRows(Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size = tsize)
     {
       PINOCCHIO_UNUSED_VARIABLE(size);
-      return mat.template middleRows<NV>(start);
+      return mat.template middleRows<tsize>(start);
     }
 
     template<class Mat>
     struct BlockReturn
     {
-      typedef Eigen::Block<Mat, NV, NV> Type;
-      typedef const Eigen::Block<const Mat, NV, NV> ConstType;
+      typedef Eigen::Block<Mat, tsize, 1> Type;
+      typedef const Eigen::Block<const Mat, tsize, 1> ConstType;
     };
 
     template<typename D>
     static typename BlockReturn<D>::ConstType block(
       const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index row_id,
-      typename Eigen::DenseBase<D>::Index col_id,
-      typename Eigen::DenseBase<D>::Index row_size_block = NV,
-      typename Eigen::DenseBase<D>::Index col_size_block = NV)
+      Eigen::Index row_id,
+      Eigen::Index col_id,
+      Eigen::Index row_size_block = tsize,
+      Eigen::Index col_size_block = 1)
     {
       PINOCCHIO_UNUSED_VARIABLE(row_size_block);
       PINOCCHIO_UNUSED_VARIABLE(col_size_block);
-      return mat.template block<NV, NV>(row_id, col_id);
+      return mat.template block<tsize, 1>(row_id, col_id);
     }
 
     template<typename D>
     static typename BlockReturn<D>::Type block(
       Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index row_id,
-      typename Eigen::DenseBase<D>::Index col_id,
-      typename Eigen::DenseBase<D>::Index row_size_block = NV,
-      typename Eigen::DenseBase<D>::Index col_size_block = NV)
+      Eigen::Index row_id,
+      Eigen::Index col_id,
+      Eigen::Index row_size_block = tsize,
+      Eigen::Index col_size_block = 1)
     {
       PINOCCHIO_UNUSED_VARIABLE(row_size_block);
       PINOCCHIO_UNUSED_VARIABLE(col_size_block);
-      return mat.template block<NV, NV>(row_id, col_id);
+      return mat.template block<tsize, 1>(row_id, col_id);
     }
   };
 
   template<>
-  struct SizeDepType<Eigen::Dynamic>
+  struct SizeDepType<Eigen::Dynamic, 1>
   {
     template<class Mat>
     struct SegmentReturn
@@ -138,19 +130,15 @@ namespace pinocchio
     };
 
     template<typename D>
-    static typename SegmentReturn<D>::ConstType segment(
-      const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size)
+    static typename SegmentReturn<D>::ConstType
+    segment(const Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size)
     {
       return mat.segment(start, size);
     }
 
     template<typename D>
-    static typename SegmentReturn<D>::Type segment(
-      Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size)
+    static typename SegmentReturn<D>::Type
+    segment(Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size)
     {
       return mat.segment(start, size);
     }
@@ -163,19 +151,15 @@ namespace pinocchio
     };
 
     template<typename D>
-    static typename ColsReturn<D>::ConstType middleCols(
-      const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size)
+    static typename ColsReturn<D>::ConstType
+    middleCols(const Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size)
     {
       return mat.middleCols(start, size);
     }
 
     template<typename D>
-    static typename ColsReturn<D>::Type middleCols(
-      Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size)
+    static typename ColsReturn<D>::Type
+    middleCols(Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size)
     {
       return mat.middleCols(start, size);
     }
@@ -188,19 +172,15 @@ namespace pinocchio
     };
 
     template<typename D>
-    static typename RowsReturn<D>::ConstType middleRows(
-      const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size)
+    static typename RowsReturn<D>::ConstType
+    middleRows(const Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size)
     {
       return mat.middleRows(start, size);
     }
 
     template<typename D>
-    static typename RowsReturn<D>::Type middleRows(
-      Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index start,
-      typename Eigen::DenseBase<D>::Index size)
+    static typename RowsReturn<D>::Type
+    middleRows(Eigen::MatrixBase<D> & mat, Eigen::Index start, Eigen::Index size)
     {
       return mat.middleRows(start, size);
     }
@@ -215,10 +195,10 @@ namespace pinocchio
     template<typename D>
     static typename BlockReturn<D>::ConstType block(
       const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index row_id,
-      typename Eigen::DenseBase<D>::Index col_id,
-      typename Eigen::DenseBase<D>::Index row_size_block,
-      typename Eigen::DenseBase<D>::Index col_size_block)
+      Eigen::Index row_id,
+      Eigen::Index col_id,
+      Eigen::Index row_size_block,
+      Eigen::Index col_size_block)
     {
       return mat.block(row_id, col_id, row_size_block, col_size_block);
     }
@@ -226,54 +206,54 @@ namespace pinocchio
     template<typename D>
     static typename BlockReturn<D>::Type block(
       Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index row_id,
-      typename Eigen::DenseBase<D>::Index col_id,
-      typename Eigen::DenseBase<D>::Index row_size_block,
-      typename Eigen::DenseBase<D>::Index col_size_block)
+      Eigen::Index row_id,
+      Eigen::Index col_id,
+      Eigen::Index row_size_block,
+      Eigen::Index col_size_block)
     {
       return mat.block(row_id, col_id, row_size_block, col_size_block);
     }
   };
 
-  template<int NQ, int NV>
-  struct DoubleSizeDepType
+  template<int trows, int tcols>
+  struct SizeDepType
   {
     template<class Mat>
     struct BlockReturn
     {
-      typedef Eigen::Block<Mat, NQ, NV> Type;
-      typedef const Eigen::Block<const Mat, NQ, NV> ConstType;
+      typedef Eigen::Block<Mat, trows, tcols> Type;
+      typedef const Eigen::Block<const Mat, trows, tcols> ConstType;
     };
 
     template<typename D>
     static typename BlockReturn<D>::ConstType block(
       const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index row_id,
-      typename Eigen::DenseBase<D>::Index col_id,
-      typename Eigen::DenseBase<D>::Index row_size_block = NQ,
-      typename Eigen::DenseBase<D>::Index col_size_block = NV)
+      Eigen::Index row_id,
+      Eigen::Index col_id,
+      Eigen::Index row_size_block = trows,
+      Eigen::Index col_size_block = tcols)
     {
       PINOCCHIO_UNUSED_VARIABLE(row_size_block);
       PINOCCHIO_UNUSED_VARIABLE(col_size_block);
-      return mat.template block<NQ, NV>(row_id, col_id);
+      return mat.template block<trows, tcols>(row_id, col_id);
     }
 
     template<typename D>
     static typename BlockReturn<D>::Type block(
       Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index row_id,
-      typename Eigen::DenseBase<D>::Index col_id,
-      typename Eigen::DenseBase<D>::Index row_size_block = NQ,
-      typename Eigen::DenseBase<D>::Index col_size_block = NV)
+      Eigen::Index row_id,
+      Eigen::Index col_id,
+      Eigen::Index row_size_block = trows,
+      Eigen::Index col_size_block = tcols)
     {
       PINOCCHIO_UNUSED_VARIABLE(row_size_block);
       PINOCCHIO_UNUSED_VARIABLE(col_size_block);
-      return mat.template block<NQ, NV>(row_id, col_id);
+      return mat.template block<trows, tcols>(row_id, col_id);
     }
   };
 
   template<>
-  struct DoubleSizeDepType<Eigen::Dynamic, Eigen::Dynamic>
+  struct SizeDepType<Eigen::Dynamic, Eigen::Dynamic>
   {
     template<class Mat>
     struct BlockReturn
@@ -285,10 +265,10 @@ namespace pinocchio
     template<typename D>
     static typename BlockReturn<D>::ConstType block(
       const Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index row_id,
-      typename Eigen::DenseBase<D>::Index col_id,
-      typename Eigen::DenseBase<D>::Index row_size_block,
-      typename Eigen::DenseBase<D>::Index col_size_block)
+      Eigen::Index row_id,
+      Eigen::Index col_id,
+      Eigen::Index row_size_block,
+      Eigen::Index col_size_block)
     {
       return mat.block(row_id, col_id, row_size_block, col_size_block);
     }
@@ -296,10 +276,10 @@ namespace pinocchio
     template<typename D>
     static typename BlockReturn<D>::Type block(
       Eigen::MatrixBase<D> & mat,
-      typename Eigen::DenseBase<D>::Index row_id,
-      typename Eigen::DenseBase<D>::Index col_id,
-      typename Eigen::DenseBase<D>::Index row_size_block,
-      typename Eigen::DenseBase<D>::Index col_size_block)
+      Eigen::Index row_id,
+      Eigen::Index col_id,
+      Eigen::Index row_size_block,
+      Eigen::Index col_size_block)
     {
       return mat.block(row_id, col_id, row_size_block, col_size_block);
     }
