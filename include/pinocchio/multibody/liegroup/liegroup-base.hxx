@@ -290,7 +290,7 @@ namespace pinocchio
     const AssignmentOperatorType op) const
   {
     EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Config_t, ConfigVector_t);
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(TangentMap_t, TangentMapMatrix_t);
+    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(TangentMap_t, TangentMapMatrix_t);
     derived().tangentMap_impl(q.derived(), TM.const_cast_derived(), op);
   }
 
