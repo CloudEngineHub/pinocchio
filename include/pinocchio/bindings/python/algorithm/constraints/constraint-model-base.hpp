@@ -5,7 +5,6 @@
 #ifndef __pinocchio_python_algorithm_constraints_model_base_hpp__
 #define __pinocchio_python_algorithm_constraints_model_base_hpp__
 
-#include <iostream>
 #include <boost/python.hpp>
 #include <eigenpy/exception.hpp>
 #include <eigenpy/eigen-to-python.hpp>
