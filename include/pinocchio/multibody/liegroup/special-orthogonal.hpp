@@ -246,9 +246,10 @@ namespace pinocchio
     template<class Config_t, class TangentMap_t>
     static void tangentMap_impl(
       const Eigen::MatrixBase<Config_t> & q,
-      Eigen::MatrixBase<TangentMap_t> & TM,
+      const Eigen::MatrixBase<TangentMap_t> & TM_,
       const AssignmentOperatorType op)
     {
+      auto & TM = TM_.const_cast_derived();
       switch (op)
       {
       case SETTO:
