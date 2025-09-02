@@ -541,61 +541,61 @@ namespace pinocchio
     /// matrix Mat
     // Const access
     template<typename D>
-    typename SizeDepType<NV>::template BlockReturn<D>::ConstType
+    typename SizeDepType<NV, NV>::template BlockReturn<D>::ConstType
     jointBlock(const Eigen::MatrixBase<D> & Mat) const
     {
       return derived().jointBlock_impl(Mat.derived());
     }
 
     template<typename D>
-    typename SizeDepType<NVExtended>::template BlockReturn<D>::ConstType
+    typename SizeDepType<NVExtended, NVExtended>::template BlockReturn<D>::ConstType
     jointExtendedModelBlock(const Eigen::MatrixBase<D> & Mat) const
     {
       return derived().jointExtendedModelBlock_impl(Mat.derived());
     }
 
     template<typename D>
-    typename SizeDepType<NV>::template BlockReturn<D>::ConstType
+    typename SizeDepType<NV, NV>::template BlockReturn<D>::ConstType
     jointBlock_impl(const Eigen::MatrixBase<D> & Mat) const
     {
-      return SizeDepType<NV>::block(Mat.derived(), idx_v(), idx_v(), nv(), nv());
+      return SizeDepType<NV, NV>::block(Mat.derived(), idx_v(), idx_v(), nv(), nv());
     }
 
     template<typename D>
-    typename SizeDepType<NVExtended>::template BlockReturn<D>::ConstType
+    typename SizeDepType<NVExtended, NVExtended>::template BlockReturn<D>::ConstType
     jointExtendedModelBlock_impl(const Eigen::MatrixBase<D> & Mat) const
     {
-      return SizeDepType<NVExtended>::block(
+      return SizeDepType<NVExtended, NVExtended>::block(
         Mat.derived(), idx_vExtended(), idx_vExtended(), nvExtended(), nvExtended());
     }
 
     // Non-const access
     template<typename D>
-    typename SizeDepType<NV>::template BlockReturn<D>::Type
+    typename SizeDepType<NV, NV>::template BlockReturn<D>::Type
     jointBlock(Eigen::MatrixBase<D> & Mat) const
     {
       return derived().jointBlock_impl(Mat.derived());
     }
 
     template<typename D>
-    typename SizeDepType<NVExtended>::template BlockReturn<D>::Type
+    typename SizeDepType<NVExtended, NVExtended>::template BlockReturn<D>::Type
     jointExtendedModelBlock(Eigen::MatrixBase<D> & Mat) const
     {
       return derived().jointExtendedModelBlock_impl(Mat.derived());
     }
 
     template<typename D>
-    typename SizeDepType<NV>::template BlockReturn<D>::Type
+    typename SizeDepType<NV, NV>::template BlockReturn<D>::Type
     jointBlock_impl(Eigen::MatrixBase<D> & Mat) const
     {
-      return SizeDepType<NV>::block(Mat.derived(), idx_v(), idx_v(), nv(), nv());
+      return SizeDepType<NV, NV>::block(Mat.derived(), idx_v(), idx_v(), nv(), nv());
     }
 
     template<typename D>
-    typename SizeDepType<NVExtended>::template BlockReturn<D>::Type
+    typename SizeDepType<NVExtended, NVExtended>::template BlockReturn<D>::Type
     jointExtendedModelBlock_impl(Eigen::MatrixBase<D> & Mat) const
     {
-      return SizeDepType<NVExtended>::block(
+      return SizeDepType<NVExtended, NVExtended>::block(
         Mat.derived(), idx_vExtended(), idx_vExtended(), nvExtended(), nvExtended());
     }
 
@@ -664,32 +664,32 @@ namespace pinocchio
     /// matrix Mat
     // Const access
     template<typename D>
-    typename DoubleSizeDepType<NQ, NV>::template BlockReturn<D>::ConstType
+    typename SizeDepType<NQ, NV>::template BlockReturn<D>::ConstType
     jointQVMap(const Eigen::MatrixBase<D> & Mat, int idx_q_a, int idx_v_a) const
     {
       return derived().jointQVMap_impl(Mat.derived(), idx_q_a, idx_v_a);
     }
 
     template<typename D>
-    typename DoubleSizeDepType<NQ, NV>::template BlockReturn<D>::ConstType
+    typename SizeDepType<NQ, NV>::template BlockReturn<D>::ConstType
     jointQVMap_impl(const Eigen::MatrixBase<D> & Mat, int idx_q_a, int idx_v_a) const
     {
-      return DoubleSizeDepType<NQ, NV>::block(Mat.derived(), idx_q_a, idx_v_a, nq(), nv());
+      return SizeDepType<NQ, NV>::block(Mat.derived(), idx_q_a, idx_v_a, nq(), nv());
     }
 
     // Non-const access
     template<typename D>
-    typename DoubleSizeDepType<NQ, NV>::template BlockReturn<D>::Type
+    typename SizeDepType<NQ, NV>::template BlockReturn<D>::Type
     jointQVMap(Eigen::MatrixBase<D> & Mat, int idx_q_a, int idx_v_a) const
     {
       return derived().jointQVMap_impl(Mat.derived(), idx_q_a, idx_v_a);
     }
 
     template<typename D>
-    typename DoubleSizeDepType<NQ, NV>::template BlockReturn<D>::Type
+    typename SizeDepType<NQ, NV>::template BlockReturn<D>::Type
     jointQVMap_impl(Eigen::MatrixBase<D> & Mat, int idx_q_a, int idx_v_a) const
     {
-      return DoubleSizeDepType<NQ, NV>::block(Mat.derived(), idx_q_a, idx_v_a, nq(), nv());
+      return SizeDepType<NQ, NV>::block(Mat.derived(), idx_q_a, idx_v_a, nq(), nv());
     }
 
   protected:
