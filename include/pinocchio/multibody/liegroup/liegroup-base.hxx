@@ -291,7 +291,7 @@ namespace pinocchio
   {
     EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Config_t, ConfigVector_t);
     EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(TangentMap_t, TangentMapMatrix_t);
-    derived().tangentMap_impl(q.derived(), PINOCCHIO_EIGEN_CONST_CAST(TangentMap_t, TM), op);
+    derived().tangentMap_impl(q.derived(), TM.const_cast_derived(), op);
   }
 
   template<class Derived>
@@ -306,8 +306,7 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(Min.rows(), nv());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(Mout.rows(), nq());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(Min.cols(), Mout.cols());
-    derived().tangentMapProduct_impl(
-      q.derived(), Min.derived(), PINOCCHIO_EIGEN_CONST_CAST(MatrixOut_t, Mout), op);
+    derived().tangentMapProduct_impl(q.derived(), Min.derived(), Mout.const_cast_derived(), op);
   }
 
   template<class Derived>
@@ -323,7 +322,7 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(Mout.rows(), nv());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(Min.cols(), Mout.cols());
     derived().tangentMapTransposeProduct_impl(
-      q.derived(), Min.derived(), PINOCCHIO_EIGEN_CONST_CAST(MatrixOut_t, Mout), op);
+      q.derived(), Min.derived(), Mout.const_cast_derived(), op);
   }
 
   /**
