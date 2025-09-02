@@ -678,7 +678,7 @@ namespace pinocchio
     Index nv_(nv()), nq_(nq());
     PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
     PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
-    // When tangent map map is sparse, this must be overwritten
+    // When tangent map is sparse, this must be overwritten
     TangentMapMatrix_t TM(nq_, nv_);
     tangentMap(q, TM);
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
@@ -707,7 +707,7 @@ namespace pinocchio
     Index nv_(nv()), nq_(nq());
     PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
     PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
-    // When tangent map map is sparse, this must be overwritten
+    // When tangent map is sparse, this must be overwritten
     TangentMapMatrix_t TM(nq_, nv_);
     tangentMap(q, TM);
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
