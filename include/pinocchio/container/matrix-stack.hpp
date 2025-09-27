@@ -6,11 +6,12 @@
 #define __pinocchio_container_matrix_stack_hpp__
 
 #include "pinocchio/fwd.hpp"
+#include <cstddef>
 
 namespace pinocchio
 {
 
-  template<typename MatrixLike, std::size_t Alignment = EIGEN_DEFAULT_ALIGN_BYTES>
+  template<typename MatrixLike, std::size_t Alignment = alignof(std::max_align_t)>
   struct MatrixStackTpl;
 
   template<typename NewScalar, typename MatrixLike, std::size_t Alignment>
