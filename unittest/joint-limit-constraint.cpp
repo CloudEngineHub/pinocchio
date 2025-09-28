@@ -398,8 +398,7 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
   model.lowerPositionLimit.fill(-1.);
   model.upperPositionLimit.fill(+1.);
 
-  const JointIndex last_joint_id =
-    Model::JointIndex(model.njoints /*-1*/); // Currently, we dot yet consider JointComposite
+  const JointIndex last_joint_id = Model::JointIndex(model.njoints /*-1*/);
 
   Model::IndexVector activable_joint_ids;
   for (Model::JointIndex i = 1; i < last_joint_id; ++i)
