@@ -460,4 +460,105 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
   }
 }
 
+BOOST_AUTO_TEST_CASE(check_maps)
+{
+  Model model;
+  buildModelWithAllBoundedJoints(model);
+
+  model.lowerPositionLimit.fill(-1.);
+  model.upperPositionLimit.fill(+1.);
+
+  const JointIndex last_joint_id = Model::JointIndex(model.njoints /*-1*/);
+
+  Model::IndexVector activable_joint_ids;
+  for (Model::JointIndex i = 1; i < last_joint_id; ++i)
+  {
+    activable_joint_ids.push_back(i);
+
+    const auto & jmodel = model.joints[i];
+    const int nq = jmodel.nq();
+    const auto has_configuration_limit = jmodel.hasConfigurationLimit();
+    for (size_t k = 0; k < size_t(nq); ++k)
+    {
+      BOOST_CHECK(has_configuration_limit[k] == true);
+    }
+  }
+
+  JointLimitConstraintModel constraint_model(model, activable_joint_ids);
+  BOOST_CHECK(constraint_model.size() == 2 * model.nv);
+
+  for (const JointIndex joint_id : activable_joint_ids)
+  {
+    const auto & jmodel = model.joints[joint_id];
+    std::cout << "joint type: " << jmodel.shortname() << std::endl;
+  }
+
+  const Eigen::VectorXd q = model.lowerPositionLimit;
+
+  Data data(model);
+  JointLimitConstraintData constraint_data(constraint_model);
+
+  data.q_in = q;
+  computeJointJacobians(model, data, q);
+  constraint_model.calc(model, data, constraint_data);
+  BOOST_CHECK(constraint_model.activeSize() == model.nv);
+
+  // Use a second constraint model and associated data to compute the Jacobian
+  Data data_ref(model);
+  JointLimitConstraintModel constraint_model_ref(model, activable_joint_ids);
+  BOOST_CHECK(constraint_model_ref.size() == 2 * model.nv);
+  JointLimitConstraintData constraint_data_ref(constraint_model_ref);
+
+  data_ref.q_in = q;
+  computeJointJacobians(model, data_ref, q);
+  constraint_model_ref.calc(model, data_ref, constraint_data_ref);
+  BOOST_CHECK(constraint_model_ref.activeSize() == model.nv);
+
+  const auto constraint_jacobian_ref =
+    constraint_model.jacobian(model, data_ref, constraint_data_ref);
+
+  // Test mapConstraintForcesToJointTorques
+  {
+    const Eigen::VectorXd constraint_forces =
+      Eigen::VectorXd::Random(constraint_model.activeSize());
+
+    Eigen::VectorXd joint_torques_ref = Eigen::VectorXd::Zero(model.nv);
+    joint_torques_ref = constraint_jacobian_ref.transpose() * constraint_forces;
+
+    Eigen::VectorXd joint_torques_ref2 = Eigen::VectorXd::Zero(model.nv);
+    constraint_model.jacobianTransposeMatrixProduct(
+      model, data_ref, constraint_data_ref, constraint_forces, joint_torques_ref2, SetTo());
+
+    Eigen::VectorXd joint_torques = Eigen::VectorXd::Zero(model.nv);
+    constraint_model.mapConstraintForceToJointTorques(
+      model, data_ref, constraint_data, constraint_forces, joint_torques);
+
+    BOOST_CHECK(joint_torques.isApprox(joint_torques_ref));
+    BOOST_CHECK(joint_torques.isApprox(joint_torques_ref2));
+    // std::cout << "joint_torques: " << joint_torques.transpose() << std::endl;
+    // std::cout << "joint_torques_ref: " << joint_torques_ref.transpose() << std::endl;
+    // std::cout << "joint_torques_ref2: " << joint_torques_ref2.transpose() << std::endl;
+  }
+
+  // // Test mapJointMotionsToConstraintMotions
+  // {
+  //   const Eigen::VectorXd joint_motions = Eigen::VectorXd::Random(model.nv);
+
+  //   Eigen::VectorXd constraint_motions_ref =
+  //   Eigen::VectorXd::Zero(constraint_model.activeSize()); constraint_motions_ref =
+  //   constraint_jacobian_ref * joint_motions;
+
+  //   Eigen::VectorXd constraint_motions_ref2 =
+  //   Eigen::VectorXd::Zero(constraint_model.activeSize()); constraint_model.jacobianMatrixProduct(
+  //     model, data_ref, constraint_data_ref, joint_motions, constraint_motions_ref2, SetTo());
+
+  //   Eigen::VectorXd constraint_motions = -Eigen::VectorXd::Ones(constraint_model.activeSize());
+  //   constraint_model.mapJointMotionsToConstraintMotion(
+  //     model, data_ref, constraint_data, joint_motions, constraint_motions);
+
+  //   BOOST_CHECK(constraint_motions.isApprox(constraint_motions_ref));
+  //   BOOST_CHECK(constraint_motions.isApprox(constraint_motions_ref2));
+  // }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
