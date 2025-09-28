@@ -521,6 +521,39 @@ namespace pinocchio
         constraint_jacobian.transpose() * constraint_forces.row(Eigen::DenseIndex(constraint_id));
     }
   }
+
+  template<typename Scalar, int Options>
+  template<
+    template<typename, int> class JointCollectionTpl,
+    typename JointMotionsLike,
+    typename ConstraintMotionsLike>
+  void JointLimitConstraintModelTpl<Scalar, Options>::mapJointMotionsToConstraintMotion(
+    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ConstraintData & cdata,
+    const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
+    const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions_) const
+  {
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions_.rows(), activeSize());
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_motions.rows(), model.nv);
+    PINOCCHIO_UNUSED_VARIABLE(data);
+
+    auto & constraint_motions = constraint_motions_.const_cast_derived();
+    constraint_motions.setZero();
+
+    const auto & compact_tangent_map = cdata.compact_tangent_map;
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
+         ++constraint_id)
+    {
+      const Eigen::Index constraint_size = active_nvs[constraint_id];
+      const auto constraint_jacobian =
+        -compact_tangent_map.row(active_idx_qs_reduce[constraint_id]).head(constraint_size);
+
+      constraint_motions.row(Eigen::DenseIndex(constraint_id)).noalias() +=
+        constraint_jacobian
+        * joint_motions.middleRows(active_idx_vs[constraint_id], constraint_size);
+    }
+  }
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_constraints_joint_limit_constraint_hxx__

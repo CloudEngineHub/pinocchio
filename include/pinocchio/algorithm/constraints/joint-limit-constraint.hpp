@@ -353,6 +353,18 @@ namespace pinocchio
       const Eigen::MatrixBase<ConstraintForcesLike> & constraint_forces,
       const Eigen::MatrixBase<JointTorquesLike> & joint_torques) const;
 
+    /// \copydoc Base::mapJointMotionsToConstraintMotions
+    template<
+      template<typename, int> class JointCollectionTpl,
+      typename JointMotionsLike,
+      typename ConstraintMotionsLike>
+    void mapJointMotionsToConstraintMotion(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
+      const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions) const;
+
     /// \brief Returns the vector of the active indexes associated with a given row
     /// This vector is computed when calling the calc method.
     const VectorOfSize & getActiveSetIndexes() const
