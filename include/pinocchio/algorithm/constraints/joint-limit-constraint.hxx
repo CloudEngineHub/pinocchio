@@ -505,9 +505,9 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), activeSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_torques_.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
-    PINOCCHIO_UNUSED_VARIABLE(cdata);
 
     auto & joint_torques = joint_torques_.const_cast_derived();
+    joint_torques.setZero();
 
     const auto & compact_tangent_map = cdata.compact_tangent_map;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize());
