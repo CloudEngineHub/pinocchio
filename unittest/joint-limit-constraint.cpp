@@ -540,25 +540,27 @@ BOOST_AUTO_TEST_CASE(check_maps)
     // std::cout << "joint_torques_ref2: " << joint_torques_ref2.transpose() << std::endl;
   }
 
-  // // Test mapJointMotionsToConstraintMotions
-  // {
-  //   const Eigen::VectorXd joint_motions = Eigen::VectorXd::Random(model.nv);
+  // Test mapJointMotionsToConstraintMotions
+  {
+    const Eigen::VectorXd joint_motions = Eigen::VectorXd::Random(model.nv);
 
-  //   Eigen::VectorXd constraint_motions_ref =
-  //   Eigen::VectorXd::Zero(constraint_model.activeSize()); constraint_motions_ref =
-  //   constraint_jacobian_ref * joint_motions;
+    Eigen::VectorXd constraint_motions_ref = Eigen::VectorXd::Zero(constraint_model.activeSize());
+    constraint_motions_ref = constraint_jacobian_ref * joint_motions;
 
-  //   Eigen::VectorXd constraint_motions_ref2 =
-  //   Eigen::VectorXd::Zero(constraint_model.activeSize()); constraint_model.jacobianMatrixProduct(
-  //     model, data_ref, constraint_data_ref, joint_motions, constraint_motions_ref2, SetTo());
+    Eigen::VectorXd constraint_motions_ref2 = Eigen::VectorXd::Zero(constraint_model.activeSize());
+    constraint_model.jacobianMatrixProduct(
+      model, data_ref, constraint_data_ref, joint_motions, constraint_motions_ref2, SetTo());
 
-  //   Eigen::VectorXd constraint_motions = -Eigen::VectorXd::Ones(constraint_model.activeSize());
-  //   constraint_model.mapJointMotionsToConstraintMotion(
-  //     model, data_ref, constraint_data, joint_motions, constraint_motions);
+    Eigen::VectorXd constraint_motions = -Eigen::VectorXd::Ones(constraint_model.activeSize());
+    constraint_model.mapJointMotionsToConstraintMotion(
+      model, data_ref, constraint_data, joint_motions, constraint_motions);
 
-  //   BOOST_CHECK(constraint_motions.isApprox(constraint_motions_ref));
-  //   BOOST_CHECK(constraint_motions.isApprox(constraint_motions_ref2));
-  // }
+    BOOST_CHECK(constraint_motions.isApprox(constraint_motions_ref));
+    BOOST_CHECK(constraint_motions.isApprox(constraint_motions_ref2));
+    std::cout << "constraint_motions: " << constraint_motions.transpose() << std::endl;
+    std::cout << "constraint_motions_ref: " << constraint_motions_ref.transpose() << std::endl;
+    std::cout << "constraint_motions_ref2: " << constraint_motions_ref2.transpose() << std::endl;
+  }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
