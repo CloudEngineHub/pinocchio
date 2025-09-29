@@ -191,7 +191,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
       throw exception_type(message);                                                               \
     }
   #if defined(PINOCCHIO_ASSERT_ON_EXCEPTION)
-    #define PINOCCHIO_THROW_IF(condition, exception_type, message) assert(!condition);
+    #define PINOCCHIO_THROW_IF(condition, exception_type, message) assert(!bool(condition));
   #else
     #define PINOCCHIO_THROW_IF(condition, exception_type, message)                                 \
       if (condition)                                                                               \
@@ -210,7 +210,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
       throw exception(ss.str());                                                                   \
     }
   #if defined(PINOCCHIO_ASSERT_ON_EXCEPTION)
-    #define PINOCCHIO_THROW_PRETTY_IF(condition, exception_type, message) assert(!condition);
+    #define PINOCCHIO_THROW_PRETTY_IF(condition, exception_type, message) assert(!bool(condition));
   #else
     #define PINOCCHIO_THROW_PRETTY_IF(condition, exception_type, message)                          \
       if (condition)                                                                               \
