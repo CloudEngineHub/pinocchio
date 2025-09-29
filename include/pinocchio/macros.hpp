@@ -244,7 +244,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
     std::ostringstream oss;                                                                        \
     oss << "wrong argument size: expected " << expected_size << ", got " << size << std::endl;     \
     oss << "hint: " << message << std::endl;                                                       \
-    PINOCCHIO_THROW(std::invalid_argument, oss.str());                                             \
+    PINOCCHIO_THROW_PRETTY_IF(true, std::invalid_argument, oss.str());                             \
   }
 
 #define _PINOCCHIO_CHECK_ARGUMENT_SIZE_2(size, expected_size)                                      \
@@ -267,7 +267,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
     std::ostringstream oss;                                                                        \
     oss << "wrong matrix size: expected (" << mat1.rows() << ", " << mat1.cols() << "), got ("     \
         << mat2.rows() << ", " << mat2.cols() << ")" << std::endl;                                 \
-    PINOCCHIO_THROW_PRETTY(std::invalid_argument, oss.str());                                      \
+    PINOCCHIO_THROW_PRETTY_IF(true, std::invalid_argument, oss.str());                             \
   }
 
 /// \brief Macro to check whether a given matrix is square
@@ -277,7 +277,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
     std::ostringstream oss;                                                                        \
     oss << "the matrix is not square: expected (" << mat.rows() << " == " << mat.cols()            \
         << "), got (" << mat.rows() << " != " << mat.cols() << ")" << std::endl;                   \
-    PINOCCHIO_THROW_PRETTY(std::invalid_argument, oss.str());                                      \
+    PINOCCHIO_THROW_PRETTY_IF(true, std::invalid_argument, oss.str());                             \
   }
 
 PINOCCHIO_COMPILER_DIAGNOSTIC_POP
