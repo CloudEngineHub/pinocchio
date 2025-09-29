@@ -30,6 +30,7 @@ namespace pinocchio
       ConstraintFormulationLevel::VELOCITY_LEVEL;
     static constexpr bool has_baumgarte_corrector = true;
     static constexpr bool has_baumgarte_corrector_vector = true;
+    static constexpr bool constant_size = true;
 
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType

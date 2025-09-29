@@ -34,6 +34,7 @@ namespace pinocchio
     {
       Options = traits<Derived>::Options
     };
+    static constexpr bool constant_size = traits<Derived>::constant_size;
 
     typedef ModelEntity<Derived> Base;
 

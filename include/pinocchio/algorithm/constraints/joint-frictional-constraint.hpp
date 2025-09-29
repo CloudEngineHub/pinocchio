@@ -35,6 +35,7 @@ namespace pinocchio
       ConstraintFormulationLevel::VELOCITY_LEVEL;
     static constexpr bool has_baumgarte_corrector = false;
     static constexpr bool has_baumgarte_corrector_vector = false;
+    static constexpr bool constant_size = true;
 
     typedef FrictionalJointConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef FrictionalJointConstraintDataTpl<Scalar, Options> ConstraintData;

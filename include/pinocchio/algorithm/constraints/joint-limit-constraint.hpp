@@ -38,6 +38,7 @@ namespace pinocchio
       ConstraintFormulationLevel::POSITION_LEVEL;
     static constexpr bool has_baumgarte_corrector = true;
     static constexpr bool has_baumgarte_corrector_vector = false;
+    static constexpr bool constant_size = true;
 
     typedef JointLimitConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef JointLimitConstraintDataTpl<Scalar, Options> ConstraintData;
