@@ -159,6 +159,7 @@ endif(APPLE)
 option(GENERATE_PYTHON_STUBS "Generate the Python stubs associated to the Python library" OFF)
 
 option(INITIALIZE_WITH_NAN "Initialize Eigen entries with NaN" OFF)
+option(ASSERT_ON_EXCEPTION "Turns Pinocchio excpetions into asserts for debug purposes" OFF)
 option(CHECK_RUNTIME_MALLOC "Check if some memory allocations are performed at runtime" OFF)
 
 option(ENABLE_TEMPLATE_INSTANTIATION "Template instantiation of the main library" ON)

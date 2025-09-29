@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015-2023 CNRS INRIA
+# Copyright (c) 2015-2025 CNRS INRIA
 # Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 #
 # ----------------------------------------------------
@@ -19,6 +19,10 @@ target_compile_definitions(${PROJECT_NAME}_headers INTERFACE BOOST_MPL_LIMIT_LIS
 
 if(INITIALIZE_WITH_NAN)
   target_compile_definitions(${PROJECT_NAME}_headers INTERFACE EIGEN_INITIALIZE_MATRICES_BY_NAN)
+endif()
+
+if(ASSERT_ON_EXCEPTION)
+  target_compile_definitions(${PROJECT_NAME}_headers INTERFACE PINOCCHIO_ASSERT_ON_EXCEPTION)
 endif()
 
 if(CHECK_RUNTIME_MALLOC)
