@@ -190,11 +190,15 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
     {                                                                                              \
       throw exception_type(message);                                                               \
     }
-  #define PINOCCHIO_THROW_IF(condition, exception_type, message)                                   \
-    if (condition)                                                                                 \
-    {                                                                                              \
-      PINOCCHIO_THROW(exception_type, message);                                                    \
-    }
+  #if defined(PINOCCHIO_ASSERT_ON_EXCEPTION)
+    #define PINOCCHIO_THROW_IF(condition, exception_type, message) assert(!condition);
+  #else
+    #define PINOCCHIO_THROW_IF(condition, exception_type, message)                                 \
+      if (condition)                                                                               \
+      {                                                                                            \
+        PINOCCHIO_THROW(exception_type, message);                                                  \
+      }
+  #endif
 
   #define PINOCCHIO_THROW_PRETTY(exception, message)                                               \
     {                                                                                              \
@@ -205,11 +209,15 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
       ss << "message:\n" << message << "\n";                                                       \
       throw exception(ss.str());                                                                   \
     }
-  #define PINOCCHIO_THROW_PRETTY_IF(condition, exception_type, message)                            \
-    if (condition)                                                                                 \
-    {                                                                                              \
-      PINOCCHIO_THROW_PRETTY(exception_type, message);                                             \
-    }
+  #if defined(PINOCCHIO_ASSERT_ON_EXCEPTION)
+    #define PINOCCHIO_THROW_PRETTY_IF(condition, exception_type, message) assert(!condition);
+  #else
+    #define PINOCCHIO_THROW_PRETTY_IF(condition, exception_type, message)                          \
+      if (condition)                                                                               \
+      {                                                                                            \
+        PINOCCHIO_THROW_PRETTY(exception_type, message);                                           \
+      }
+  #endif
 #else
   #define PINOCCHIO_THROW(exception_type, message)
   #define PINOCCHIO_THROW_IF(condition, exception_type, message)
