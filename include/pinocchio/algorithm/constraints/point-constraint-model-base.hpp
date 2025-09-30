@@ -966,7 +966,7 @@ namespace pinocchio
         constraint_motion.const_cast_derived().setZero();
     }
 
-    static int size()
+    static constexpr int size()
     {
       return 3;
     }
