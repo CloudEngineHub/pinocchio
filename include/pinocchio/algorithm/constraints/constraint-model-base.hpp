@@ -317,6 +317,11 @@ namespace pinocchio
       }
     }
 
+    int maxSize() const
+    {
+      return derived().maxSize();
+    }
+
     int activeSize() const
     {
       return derived().activeSize();
