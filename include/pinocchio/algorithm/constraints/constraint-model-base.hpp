@@ -317,6 +317,18 @@ namespace pinocchio
       }
     }
 
+    int size(const ConstraintData & constraint_data) const
+    {
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return size();
+      }
+      else
+      {
+        return size(constraint_data);
+      }
+    }
+
     int maxSize() const
     {
       return derived().maxSize();
