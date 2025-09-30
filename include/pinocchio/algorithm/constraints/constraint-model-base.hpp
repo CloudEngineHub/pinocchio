@@ -308,7 +308,7 @@ namespace pinocchio
     {
       if constexpr (traits<Derived>::constant_size)
       {
-        return maxSize();
+        return derived().size();
       }
       else
       {
