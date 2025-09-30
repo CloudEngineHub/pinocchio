@@ -306,7 +306,15 @@ namespace pinocchio
 
     int size() const
     {
-      return derived().size();
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return maxSize();
+      }
+      else
+      {
+        static_assert(
+          traits<Derived>::constant_size, "size() disabled for this non constant constraints");
+      }
     }
 
     int activeSize() const
