@@ -32,8 +32,6 @@ struct TestBoxTpl
   , data(model)
   , constraint_models(constraint_models)
   , v_next(Eigen::VectorXd::Zero(model.nv))
-  , admm_solver(
-      int(getTotalConstraintSize(constraint_models))) // Initialize solver with constraint size
   {
     for (const auto & cm : constraint_models)
     {
@@ -77,6 +75,7 @@ struct TestBoxTpl
     const Eigen::VectorXd g = constraint_jacobian * v_free;
 
     // Configure the member ADMM solver
+    ADMMContactSolverTpl<double> admm_solver(int(getTotalConstraintSize(constraint_models)));
     admm_solver.setMaxIterations(10000);
     admm_solver.setAbsolutePrecision(1e-10);
     admm_solver.setRelativePrecision(1e-12);
@@ -143,7 +142,6 @@ struct TestBoxTpl
   Eigen::VectorXd primal_solution, dual_solution, dual_solution_sparse;
   bool has_converged;
   int n_iter;
-  ADMMContactSolverTpl<double> admm_solver; // Store solver as member to preserve stats
 };
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
