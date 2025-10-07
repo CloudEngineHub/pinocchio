@@ -16,6 +16,7 @@
 #include "pinocchio/utils/timer.hpp"
 #include "pinocchio/spatial/classic-acceleration.hpp"
 #include "pinocchio/algorithm/constraints/weld-constraint.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 
 // Helpers
 #include "constraints/jacobians-checker.hpp"
@@ -593,12 +594,13 @@ BOOST_AUTO_TEST_CASE(cholesky)
   }
 
   const double mu = 1e-10;
-  ContactCholeskyDecomposition cholesky(model, constraint_models);
+  calc(model, data, constraint_models, constraint_datas);
+  ContactCholeskyDecomposition cholesky(model, data, constraint_models, constraint_datas);
   cholesky.compute(model, data, constraint_models, constraint_datas, mu);
 
   crba(model, data_ref, q, Convention::WORLD);
   make_symmetric(data_ref.M);
-  const auto total_size = getTotalConstraintSize(constraint_models);
+  const auto total_size = getTotalConstraintActiveSize(constraint_models, constraint_datas);
   Eigen::MatrixXd J_constraints(total_size, model.nv);
   J_constraints.setZero();
   getConstraintsJacobian(model, data_ref, constraint_models, constraint_datas, J_constraints);
