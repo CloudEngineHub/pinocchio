@@ -175,8 +175,10 @@ namespace pinocchio
     , damping(damping_storage.map())
     {
       PINOCCHIO_UNUSED_VARIABLE(data);
-      const auto & wrapped_constraint_models = make_held_vector(constraint_models);
-      const auto & wrapped_constraint_datas = make_held_vector(constraint_datas);
+      const auto & wrapped_constraint_models =
+        make_held_vector<std::reference_wrapper>(constraint_models);
+      const auto & wrapped_constraint_datas =
+        make_held_vector<std::reference_wrapper>(constraint_datas);
       resize(model, wrapped_constraint_models, wrapped_constraint_datas);
     }
 
