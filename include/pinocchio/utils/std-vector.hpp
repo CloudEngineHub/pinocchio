@@ -117,10 +117,10 @@ namespace pinocchio
    * Typical use case: producing a vector of `std::reference_wrapper<T>` or
    * other holder objects for easy element access or reference semantics.
    *
-   * @tparam T         The element type stored in the input vector.
-   * @tparam Allocator The allocator type used by the input vector.
    * @tparam Holder    A class template that accepts a single template parameter
    *                   (for example, `std::reference_wrapper` or a custom holder template).
+   * @tparam T         The element type stored in the input vector.
+   * @tparam Allocator The allocator type used by the input vector.
    * @param vec        Reference to the vector containing elements of type `T`.
    *
    * @return A new vector of type `std::vector<Holder<T>>`, where each element
@@ -133,7 +133,7 @@ namespace pinocchio
    *
    * @see std::reference_wrapper
    */
-  template<typename T, typename Allocator, template<typename H> class Holder>
+  template<template<typename H> class Holder, typename T, typename Allocator>
   std::vector<Holder<T>> make_held_vector(std::vector<T, Allocator> & vec)
   {
     typedef std::vector<Holder<T>> WrappedTVector;
@@ -150,10 +150,10 @@ namespace pinocchio
    * Typical use case: producing a vector of `std::reference_wrapper<const T>` or
    * another lightweight holder type from a vector of const elements.
    *
-   * @tparam T         The element type stored (const-qualified) in the input vector.
-   * @tparam Allocator The allocator type used by the input vector.
    * @tparam Holder    A class template that accepts a single type parameter
    *                   (e.g., `std::reference_wrapper` or a custom holder template).
+   * @tparam T         The element type stored (const-qualified) in the input vector.
+   * @tparam Allocator The allocator type used by the input vector.
    * @param vec        The input vector containing elements of type `const T`.
    *
    * @return A new vector of type `std::vector<Holder<const T>>`, where each element
@@ -166,8 +166,8 @@ namespace pinocchio
    *
    * @see std::reference_wrapper
    */
-  template<typename T, typename Allocator, template<typename H> class Holder>
-  std::vector<Holder<const T>> make_held_vector(const std::vector<const T, Allocator> & vec)
+  template<template<typename H> class Holder, typename T, typename Allocator>
+  std::vector<Holder<const T>> make_held_vector(const std::vector<T, Allocator> & vec)
   {
     typedef std::vector<Holder<const T>> WrappedTVector;
     return WrappedTVector(vec.cbegin(), vec.cend());
