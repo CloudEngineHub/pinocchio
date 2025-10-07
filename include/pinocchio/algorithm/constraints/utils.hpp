@@ -32,14 +32,14 @@ namespace pinocchio
    *       which ensures that the output vector has a compatible allocator with the input vector.
    */
   template<typename ConstraintModel, class ConstraintModelAllocator>
-    typename internal::template std_vector_with_same_allocator
-    < std::vector<ConstraintModel, ConstraintModelAllocator>::template type<
-      typename ConstraintModel::ConstraintData>
+  typename internal::template std_vector_with_same_allocator<
+    std::vector<ConstraintModel, ConstraintModelAllocator>>::
+    template type<typename ConstraintModel::ConstraintData>
     createData(const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
-    typedef typename internal::template std_vector_with_same_allocator
-      < std::vector<ConstraintModel, ConstraintModelAllocator>::template type<
-        typename ConstraintModel::ConstraintData>
+    typedef typename internal::template std_vector_with_same_allocator<
+      std::vector<ConstraintModel, ConstraintModelAllocator>>::
+      template type<typename ConstraintModel::ConstraintData>
         ReturnType;
 
     ReturnType constraint_datas;
