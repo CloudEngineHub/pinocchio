@@ -13,6 +13,32 @@ namespace pinocchio
 {
   namespace internal
   {
+    /**
+     * @brief Helper trait for reusing the allocator type of a given `std::vector`‑like type.
+     *
+     * This trait extracts the allocator template template‑parameter from a type `V`
+     * (typically a `std::vector<...>`) and exposes a nested alias template `type`
+     * that can be used to rebind the allocator to a different element type.
+     *
+     * Internally it relies on another trait,
+     * `extract_template_template_parameter`, to retrieve the allocator’s
+     * template template‑parameter so that it can be applied as
+     * `Allocator<T>` for an arbitrary element type `T`.
+     *
+     * Example:
+     * @code
+     *   using VecDouble = std::vector<double, std::allocator<double>>;
+     *   using Extractor = std_vector_extract_allocator_type<VecDouble>;
+     *
+     *   // Get the allocator type suitable for 'int'
+     *   using AllocForInt = Extractor::type<int>;
+     *   std::vector<int, AllocForInt> intVec;
+     * @endcode
+     *
+     * @tparam V The vector‑like type from which to extract the allocator.
+     *
+     * @see extract_template_template_parameter
+     */
     template<typename V>
     struct std_vector_extract_allocator_type
     {
@@ -21,6 +47,34 @@ namespace pinocchio
         typename extract_template_template_parameter<typename V::allocator_type>::template type<T>;
     };
 
+    /**
+     * @brief Helper trait for creating `std::vector` types that reuse the allocator of another
+     * vector.
+     *
+     * This metafunction extracts the allocator type from an existing vector-like type `V`
+     * and defines nested aliases to build new `std::vector` specializations using the same
+     * allocator but possibly with a different element type.
+     *
+     * The typical purpose is to ensure allocator consistency when generating vectors of
+     * related element types (e.g., converting a `std::vector<double>` into a
+     * `std::vector<int>` that uses the same allocator configuration).
+     *
+     * Example:
+     * @code
+     *   using VecDouble = std::vector<double, std::allocator<double>>;
+     *   using VectorAllocatorAdapter = std_vector_with_same_allocator<VecDouble>;
+     *
+     *   // Defines a std::vector<int, std::allocator<int>>
+     *   using VecInt = VectorAllocatorAdapter::type<int>;
+     *
+     *   // Alternatively, the allocator alone:
+     *   using AllocForInt = VectorAllocatorAdapter::allocator_type<int>;
+     * @endcode
+     *
+     * @tparam V  The existing vector-like type whose allocator type should be reused.
+     *
+     * @see std_vector_extract_allocator_type
+     */
     template<typename V>
     struct std_vector_with_same_allocator
     {
@@ -33,6 +87,20 @@ namespace pinocchio
 
   } // namespace internal
 
+  /**
+   * @brief Applies a given function to each element in a std::vector.
+   *
+   * This function uses `std::for_each` to apply the provided function
+   * to each element in the input vector.
+   *
+   * @tparam T The type of elements stored in the vector.
+   * @tparam Allocator The allocator used by the vector.
+   * @tparam Func The type of the function to be applied.
+   *
+   * @param vector The vector whose elements the function will be applied to.
+   * @param func The function to apply to each element. It should accept a single argument of type
+   * `T&`.
+   */
   template<typename T, typename Allocator, class Func>
   void apply_for_each(std::vector<T, Allocator> & vector, const Func & func)
   {
