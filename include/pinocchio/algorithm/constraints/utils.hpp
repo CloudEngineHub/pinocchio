@@ -6,6 +6,7 @@
 #define __pinocchio_algorithm_constraints_utils_hpp__
 
 #include "pinocchio/utils/std-vector.hpp"
+#include "pinocchio/utils/reference.hpp"
 
 namespace pinocchio
 {
@@ -49,6 +50,29 @@ namespace pinocchio
       constraint_datas.push_back(cm.createData());
 
     return constraint_datas;
+  }
+
+  template<
+    typename Scalar,
+    int Options,
+    template<typename, int> class JointCollectionTpl,
+    typename ConstraintModel,
+    class ConstraintModelAllocator,
+    typename ConstraintData,
+    class ConstraintDataAllocator>
+  void calc(
+    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
+  {
+    for (size_t k = 0; k < constraint_models.size(); ++k)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[k]);
+      auto & cdata = helper::get_ref(constraint_datas[k]);
+
+      cmodel.calc(model, data, cdata);
+    }
   }
 
 } // namespace pinocchio
