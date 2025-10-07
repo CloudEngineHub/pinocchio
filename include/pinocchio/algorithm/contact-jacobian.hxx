@@ -62,7 +62,8 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_models.size(), constraint_datas.size());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
 
-    const Eigen::DenseIndex constraint_size = getTotalConstraintActiveSize(constraint_models);
+    const Eigen::DenseIndex constraint_size =
+      getTotalConstraintActiveSize(constraint_models, constraint_datas);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), constraint_size);
 
     for (auto & force : joint_forces)
@@ -72,8 +73,8 @@ namespace pinocchio
     for (size_t ee_id = 0; ee_id < constraint_models.size(); ++ee_id)
     {
       const ConstraintModel & cmodel = constraint_models[ee_id];
-      const auto constraint_size = cmodel.activeSize();
       const ConstraintData & cdata = constraint_datas[ee_id];
+      const auto constraint_size = cmodel.activeSize(cdata);
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
       cmodel.mapConstraintForceToJointForces(
@@ -123,8 +124,8 @@ namespace pinocchio
     for (size_t ee_id = 0; ee_id < constraint_models.size(); ++ee_id)
     {
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
-      const auto constraint_size = cmodel.activeSize();
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
+      const auto constraint_size = cmodel.activeSize(cdata);
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
       cmodel.mapConstraintForceToJointSpace(
@@ -166,7 +167,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
-      const auto constraint_size = cmodel.activeSize();
+      const auto constraint_size = cmodel.activeSize(cdata);
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);
       cmodel.mapJointMotionsToConstraintMotion(
@@ -212,7 +213,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
-      const auto constraint_size = cmodel.activeSize();
+      const auto constraint_size = cmodel.activeSize(cdata);
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);
       cmodel.mapJointSpaceToConstraintMotion(
@@ -242,7 +243,7 @@ namespace pinocchio
     auto & constraint_data = constraint_data_.derived();
 
     assert(model.check(data) && "data is not consistent with model.");
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_model.activeSize());
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_model.activeSize(constraint_data));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.cols(), model.nv);
 
     constraint_model.calc(model, data, constraint_data);
@@ -254,11 +255,11 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     template<typename T> class Holder,
-    typename DynamicMatrixLike,
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
-    class ConstraintDataAllocator>
+    class ConstraintDataAllocator,
+    typename DynamicMatrixLike>
   void getConstraintsJacobian(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
@@ -269,23 +270,25 @@ namespace pinocchio
     typedef ConstraintModel ContraintModel;
     typedef ConstraintData ContraintData;
 
-    const Eigen::DenseIndex constraint_size = getTotalConstraintActiveSize(constraint_models);
+    const Eigen::DenseIndex constraint_size =
+      getTotalConstraintActiveSize(constraint_models, constraint_datas);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.cols(), model.nv);
 
     assert(model.check(data) && "data is not consistent with model.");
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
 
-    DynamicMatrixLike & J = J_.const_cast_derived();
+    auto & J = J_.const_cast_derived();
     Eigen::DenseIndex row_id = 0;
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const ContraintModel & cmodel = constraint_models[k];
       ContraintData & cdata = constraint_datas[k];
 
-      getConstraintJacobian(model, data, cmodel, cdata, J.middleRows(row_id, cmodel.activeSize()));
+      const auto active_size = cmodel.activeSize(cdata);
+      getConstraintJacobian(model, data, cmodel, cdata, J.middleRows(row_id, active_size));
 
-      row_id += cmodel.size();
+      row_id += active_size;
     }
   }
 
@@ -410,7 +413,7 @@ namespace pinocchio
     {
       const ConstraintModel & cmodel = constraint_models[constraint_id];
       const ConstraintData & cdata = constraint_datas[constraint_id];
-      const auto constraint_size = cmodel.activeSize();
+      const auto constraint_size = cmodel.activeSize(cdata);
 
       const auto rhs_block = rhs.middleRows(row_id, constraint_size);
       cmodel.jacobianTransposeMatrixProduct(model, data, cdata, rhs_block, res, AddTo());

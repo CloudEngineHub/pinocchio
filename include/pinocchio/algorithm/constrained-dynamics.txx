@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2022 INRIA
+// Copyright (c) 2022-2025 INRIA
 //
 
 #ifndef __pinocchio_algorithm_constrained_dynamics_txx__
@@ -13,10 +13,15 @@ namespace pinocchio
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void initConstraintDynamics<
     context::Scalar,
     context::Options,
-    RigidConstraintModel,
     JointCollectionDefaultTpl,
-    typename context::RigidConstraintModelVector::allocator_type>(
-    const context::Model &, context::Data &, const context::RigidConstraintModelVector &);
+    RigidConstraintModel,
+    typename context::RigidConstraintModelVector::allocator_type,
+    RigidConstraintData,
+    typename context::RigidConstraintDataVector::allocator_type>(
+    const context::Model &,
+    context::Data &,
+    const context::RigidConstraintModelVector &,
+    const context::RigidConstraintDataVector &);
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::VectorXs &
   constraintDynamics<

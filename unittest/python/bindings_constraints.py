@@ -315,18 +315,18 @@ class TestJointsAlgo(TestCase):
             for i in range(gcm.activeSize()):
                 self.assertTrue(
                     np.all(
-                        np.where(gcm.getRowActiveSparsityPattern(i))[0]
-                        == np.array(gcm.getRowActiveIndexes(i))
+                        np.where(gcm.getActiveRowSparsityPattern(i))[0]
+                        == np.array(gcm.getActiveRowIndexes(i))
                     )
                 )
                 self.assertTrue(
                     np.all(
-                        np.where(gcm.getRowActivableSparsityPattern(i))[0]
+                        np.where(gcm.getRowSparsityPattern(i))[0]
                         == np.array(gcm.getRowActivableIndexes(i))
                     )
                 )
                 self.assertTrue(
-                    set(gcm.getRowActiveIndexes(i))
+                    set(gcm.getActiveRowIndexes(i))
                     <= set(gcm.getRowActivableIndexes(i))
                     <= ref_set
                 )

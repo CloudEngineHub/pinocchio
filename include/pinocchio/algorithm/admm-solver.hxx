@@ -143,21 +143,30 @@ namespace pinocchio
     template<typename T> class Holder,
     typename ConstraintModel,
     typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator,
     typename VectorLikeIn>
   typename ConstraintModel::Scalar computeZeroInitialGuessMaxConstraintViolation(
     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
+    const std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
     const Eigen::DenseBase<VectorLikeIn> & drift)
   {
     PINOCCHIO_TRACY_ZONE_SCOPED_N("computeZeroInitialGuessMaxConstraintViolation");
+    assert(
+      constraint_models.size() == constraint_datas.size()
+      && "Both std::vector should be of equal size.");
+
     Eigen::DenseIndex cindex = 0;
 
     using SegmentType = typename VectorLikeIn::ConstSegmentReturnType;
     using Scalar = typename ConstraintModel::Scalar;
 
     Scalar max_violation = Scalar(0);
-    for (const ConstraintModel & cmodel : constraint_models)
+    for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const auto csize = cmodel.activeSize();
+      const auto & cmodel = constraint_models[k];
+      const auto & cdata = constraint_datas[k];
+      const auto csize = cmodel.activeSize(cdata);
 
       SegmentType drift_segment = drift.segment(cindex, csize);
       typedef ZeroInitialGuessMaxConstraintViolationVisitor<SegmentType, Scalar> Algo;

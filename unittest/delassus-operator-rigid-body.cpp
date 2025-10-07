@@ -22,6 +22,8 @@
 #include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/proximal.hpp"
 
+#include "utils/model-generator.hpp"
+
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
@@ -845,6 +847,15 @@ void test_apply_on_the_right(
   Data & data = data_ref;
   const ConstraintModelVector & constraint_models = constraint_models_ref;
 
+  int size = 0, active_size = 0;
+  for (const auto & constraint_model : constraint_models)
+  {
+    size += constraint_model.size();
+    active_size += constraint_model.activeSize();
+  }
+
+  BOOST_CHECK(size <= active_size);
+
   Data data_gt(model), data_aba(model);
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
@@ -1052,6 +1063,88 @@ BOOST_AUTO_TEST_CASE(general_test_joint_frictional_constraint)
     test_solve_in_place(
       model_ref, data_ref, constraint_models_ref, constraint_datas_ref, q_neutral, damping_value);
   }
+}
+
+BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
+{
+  typedef JointLimitConstraintModelTpl<double> ConstraintModel;
+  typedef DelassusOperatorRigidBodySystemsTpl<
+    double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
+    DelassusOperatorRigidBodyReferenceWrapper;
+  typedef DelassusOperatorRigidBodyReferenceWrapper::CustomData CustomData;
+  typedef
+    typename DelassusOperatorRigidBodyReferenceWrapper::ConstraintModelVector ConstraintModelVector;
+  typedef
+    typename DelassusOperatorRigidBodyReferenceWrapper::ConstraintDataVector ConstraintDataVector;
+
+  Model model;
+  std::reference_wrapper<Model> model_ref = model;
+
+  buildModels::humanoidRandom(model, true);
+  model.lowerPositionLimit.tail(model.nq - 7).fill(-1.);
+  model.upperPositionLimit.tail(model.nq - 7).fill(+1.);
+
+  const Eigen::VectorXd q_neutral = neutral(model);
+  const Eigen::VectorXd v = Eigen::VectorXd::Random(model.nv);
+  const Eigen::VectorXd tau = Eigen::VectorXd::Random(model.nv);
+
+  Data data(model), data_gt(model), data_aba(model);
+  std::reference_wrapper<Data> data_ref = data;
+
+  ConstraintModelVector constraint_models;
+  ConstraintDataVector constraint_datas;
+
+  const JointIndex last_joint_id = Model::JointIndex(model.njoints);
+
+  Model::IndexVector activable_joint_ids;
+  for (Model::JointIndex i = 2 /* skip free_flyer*/; i < last_joint_id; ++i)
+  {
+    activable_joint_ids.push_back(i);
+
+    const auto & jmodel = model.joints[i];
+    const int nq = jmodel.nq();
+    const auto has_configuration_limit = jmodel.hasConfigurationLimit();
+    for (size_t k = 0; k < size_t(nq); ++k)
+    {
+      BOOST_CHECK(has_configuration_limit[k] == true);
+    }
+  }
+
+  {
+    ConstraintModel constraint_model(model, activable_joint_ids);
+    BOOST_CHECK(constraint_model.size() == 2 * (model.nv - 6));
+
+    constraint_models.push_back(constraint_model);
+    constraint_datas.push_back(constraint_model.createData());
+  }
+  auto & constraint_model = constraint_models.back();
+  auto & constraint_data = constraint_datas.back();
+
+  const Eigen::VectorXd q = model.lowerPositionLimit;
+  data.q_in = q;
+
+  constraint_model.calc(model, data, constraint_data);
+  BOOST_CHECK(constraint_model.activeSize() == model.nv - 6);
+  std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
+  std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;
+
+  const double damping_value = 1e-4;
+
+  const double mu_inv = damping_value;
+  const double mu = 1. / mu_inv;
+
+  // Test operator *
+  {
+    test_apply_on_the_right(
+      model_ref, data_ref, constraint_models_ref, constraint_datas_ref, q_neutral, damping_value);
+  } // End: Test operator *
+
+  // // Test solveInPlace
+  // {
+  //   test_solve_in_place(
+  //     model_ref, data_ref, constraint_models_ref, constraint_datas_ref, q_neutral,
+  //     damping_value);
+  // }
 }
 
 BOOST_AUTO_TEST_CASE(general_test_constraint_generic)

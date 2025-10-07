@@ -105,7 +105,7 @@ namespace pinocchio
       ConstraintData & cdata) const
     {
       typedef typename traits<Derived>::JacobianMatrixType ReturnType;
-      ReturnType res = ReturnType::Zero(activeSize(), model.nv);
+      ReturnType res = ReturnType::Zero(activeSize(cdata), model.nv);
 
       jacobian(model, data, cdata, res);
 
@@ -266,16 +266,24 @@ namespace pinocchio
     }
 
     /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowActivableSparsityPattern(const Eigen::Index row_id) const
+    const BooleanVector & getRowSparsityPattern(const Eigen::Index row_id) const
     {
-      return derived().getRowActivableSparsityPattern(row_id);
+      return derived().getRowSparsityPattern(row_id);
     }
 
     /// \brief Returns the colwise sparsity associated with a given row of the active set of
-    /// cosntraints
-    const BooleanVector & getRowActiveSparsityPattern(const Eigen::Index row_id) const
+    /// the constraints
+    const BooleanVector & getActiveRowSparsityPattern(
+      const ConstraintData & constraint_data, const Eigen::Index row_id) const
     {
-      return derived().getRowActiveSparsityPattern(row_id);
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return getRowSparsityPattern(row_id);
+      }
+      else
+      {
+        return derived().getActiveRowSparsityPattern(constraint_data, row_id);
+      }
     }
 
     /// \brief Returns the vector of the activable indexes associated with a given row
@@ -285,23 +293,46 @@ namespace pinocchio
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getRowActiveIndexes(const Eigen::DenseIndex row_id) const
+    const EigenIndexVector & getActiveRowIndexes(
+      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      return derived().getRowActiveIndexes(row_id);
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return getRowActivableIndexes(row_id);
+      }
+      else
+      {
+        return derived().getActiveRowIndexes(constraint_data, row_id);
+      }
     }
 
     /// \brief Returns the active compliance internally stored in the constraint and corresponding
     /// to the active set contained in cdata
-    ActiveComplianceVectorTypeConstRef getActiveCompliance() const
+    ActiveComplianceVectorTypeConstRef
+    getActiveCompliance(const ConstraintData & constraint_data) const
     {
-      return derived().getActiveCompliance_impl();
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return derived().compliance();
+      }
+      else
+      {
+        return derived().getActivecompliance(constraint_data);
+      }
     }
 
     /// \brief Returns the active compliance internally stored in the constraint and corresponding
     /// to the active set contained in cdata
-    ActiveComplianceVectorTypeRef getActiveCompliance()
+    ActiveComplianceVectorTypeRef getActiveCompliance(ConstraintData & constraint_data) const
     {
-      return derived().getActiveCompliance_impl();
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return derived().compliance();
+      }
+      else
+      {
+        return derived().getActivecompliance(constraint_data);
+      }
     }
 
     int size() const
@@ -317,7 +348,7 @@ namespace pinocchio
       }
     }
 
-    int size(const ConstraintData & constraint_data) const
+    int activeSize(const ConstraintData & constraint_data) const
     {
       if constexpr (traits<Derived>::constant_size)
       {
@@ -325,18 +356,8 @@ namespace pinocchio
       }
       else
       {
-        return size(constraint_data);
+        return derived().activeSize(constraint_data);
       }
-    }
-
-    int maxSize() const
-    {
-      return derived().maxSize();
-    }
-
-    int activeSize() const
-    {
-      return derived().activeSize();
     }
 
     ConstraintSet & set()
@@ -363,17 +384,17 @@ namespace pinocchio
         model, data, cdata, diagonal_constraint_inertia.derived(), reference_frame);
     }
 
-    /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeConstRef compliance() const
-    {
-      return derived().compliance_impl();
-    }
+    // /// \brief Returns the compliance internally stored in the constraint model
+    // ComplianceVectorTypeConstRef compliance() const
+    // {
+    //   return derived().compliance();
+    // }
 
-    /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeRef compliance()
-    {
-      return derived().compliance_impl();
-    }
+    // /// \brief Returns the compliance internally stored in the constraint model
+    // ComplianceVectorTypeRef compliance()
+    // {
+    //   return derived().compliance();
+    // }
 
     // CHOICE: right now we use the scalar Baumgarte
     // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model

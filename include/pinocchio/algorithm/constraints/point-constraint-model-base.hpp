@@ -299,16 +299,10 @@ namespace pinocchio
     }
 
     /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowActivableSparsityPattern(const Eigen::DenseIndex row_id) const
+    const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return colwise_sparsity;
-    }
-
-    /// \brief Returns the sparsity associated with a given row
-    const BooleanVector & getRowActiveSparsityPattern(const Eigen::DenseIndex row_id) const
-    {
-      return getRowActivableSparsityPattern(row_id);
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
@@ -316,24 +310,6 @@ namespace pinocchio
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return colwise_span_indexes;
-    }
-
-    /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getRowActiveIndexes(const Eigen::DenseIndex row_id) const
-    {
-      return getRowActivableIndexes(row_id);
-    }
-
-    /// \brief Returns the compliance internally stored in the constraint model
-    ActiveComplianceVectorTypeConstRef getActiveCompliance_impl() const
-    {
-      return this->compliance();
-    }
-
-    /// \brief Returns the compliance internally stored in the constraint model
-    ActiveComplianceVectorTypeRef getActiveCompliance_impl()
-    {
-      return this->compliance();
     }
 
     ///
@@ -943,7 +919,7 @@ namespace pinocchio
       ReferenceFrameTag<rf> reference_frame) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_accelerations.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motion.rows(), activeSize());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motion.rows(), activeSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
@@ -969,11 +945,6 @@ namespace pinocchio
     static constexpr int size()
     {
       return 3;
-    }
-
-    static int activeSize()
-    {
-      return size();
     }
 
     /// \returns An expression of *this with the Scalar type casted to NewScalar.

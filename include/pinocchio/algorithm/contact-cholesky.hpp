@@ -9,6 +9,7 @@
 #include "pinocchio/math/matrix-block.hpp"
 #include "pinocchio/math/triangular-matrix.hpp"
 #include "pinocchio/container/eigen-storage.hpp"
+#include "pinocchio/utils/std-vector.hpp"
 
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include <functional>
@@ -138,16 +139,19 @@ namespace pinocchio
       // TODO Remove when API is stabilized
       PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
       PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-      std::vector<ConstraintModel> empty_contact_models;
+      std::vector<ConstraintModel> empty_constraint_models;
+      std::vector<ConstraintData> empty_constraint_datas;
       PINOCCHIO_COMPILER_DIAGNOSTIC_POP
-      resize(model, empty_contact_models);
+      resize(model, empty_constraint_models, empty_constraint_datas);
     }
 
     ///
     /// \brief Constructor from a model and a collection of RigidConstraintModel objects.
     ///
     /// \param[in] model Model of the kinematic tree
+    /// \param[in] model Data associated with the kinematic tree
     /// \param[in] constraint_models Vector of ConstraintModels
+    /// \param[in] constraint_datas Vector of constraint datas
     /// information
     ///
     template<
@@ -155,10 +159,14 @@ namespace pinocchio
       int O1,
       template<typename, int> class JointCollectionTpl,
       class ConstraintModel,
-      class ConstraintAllocator>
+      class ConstraintModelAllocator,
+      class ConstraintData,
+      class ConstraintDataAllocator>
     ContactCholeskyDecompositionTpl(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      const std::vector<ConstraintModel, ConstraintAllocator> & constraint_models)
+      const DataTpl<S1, O1, JointCollectionTpl> & data,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
     : D(D_storage.map())
     , Dinv(Dinv_storage.map())
     , U(U_storage.map())
@@ -166,31 +174,35 @@ namespace pinocchio
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
     {
-      typedef std::reference_wrapper<const ConstraintModel> WrappedType;
-      typedef std::vector<WrappedType> WrappedTypeVector;
-
-      WrappedTypeVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-      resize(model, wrapped_constraint_models);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      const auto & wrapped_constraint_models = make_held_vector(constraint_models);
+      const auto & wrapped_constraint_datas = make_held_vector(constraint_datas);
+      resize(model, wrapped_constraint_models, wrapped_constraint_datas);
     }
 
     ///
     /// \brief Constructor from a model and a collection of RigidConstraintModel objects.
     ///
     /// \param[in] model Model of the kinematic tree
-    /// \param[in] contact_models Vector of RigidConstraintModel references containing the contact
-    /// information
+    /// \param[in] constraint_models Vector of RigidConstraintModel references containing the
+    /// contact information
     ///
     template<
       typename S1,
       int O1,
       template<typename, int> class JointCollectionTpl,
       template<typename T> class Holder,
-      class ConstraintAllocator>
+      class ConstraintModel,
+      class ConstraintModelAllocator,
+      class ConstraintData,
+      class ConstraintDataAllocator>
     ContactCholeskyDecompositionTpl(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      const std::vector<Holder<const ConstraintModel>, ConstraintAllocator> &
-        wrapped_constraint_models)
+      const DataTpl<S1, O1, JointCollectionTpl> & data,
+      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
+        wrapped_constraint_models,
+      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> &
+        wrapped_constraint_datas)
     : D(D_storage.map())
     , Dinv(Dinv_storage.map())
     , U(U_storage.map())
@@ -198,7 +210,8 @@ namespace pinocchio
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
     {
-      resize(model, wrapped_constraint_models);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      resize(model, wrapped_constraint_models, wrapped_constraint_datas);
     }
 
     ///
@@ -239,54 +252,64 @@ namespace pinocchio
     ///  \brief Internal memory allocation.
     ///
     /// \param[in] model Model of the kinematic tree
-    /// \param[in] contact_models Vector of ConstraintModel
+    /// \param[in] constraint_models Vector of ConstraintModel
     ///
     template<
       typename S1,
       int O1,
       template<typename, int> class JointCollectionTpl,
       class ConstraintModel,
-      class ConstraintAllocator>
+      class ConstraintModelAllocator,
+      class ConstraintData,
+      class ConstraintDataAllocator>
     void resize(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      const std::vector<ConstraintModel, ConstraintAllocator> & contact_models)
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
     {
       typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
       typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelTypeVector;
 
-      WrappedConstraintModelTypeVector wrapped_contact_models(
-        contact_models.cbegin(), contact_models.cend());
+      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
+      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataTypeVector;
 
-      resize(model, wrapped_contact_models);
+      WrappedConstraintModelTypeVector wrapped_constraint_models(
+        constraint_models.cbegin(), constraint_models.cend());
+      WrappedConstraintDataTypeVector wrapped_constraint_datas(
+        constraint_datas.cbegin(), constraint_datas.cend());
+
+      resize(model, wrapped_constraint_models, wrapped_constraint_datas);
     }
 
     ///
     ///  \brief Internal memory allocation.
     ///
     /// \param[in] model Model of the kinematic tree
-    /// \param[in] contact_models Vector of ConstraintModel
-    /// \param[in] contact_datas Vector of ConstraintData
+    /// \param[in] constraint_models Vector of ConstraintModel
+    /// \param[in] constraint_datas Vector of ConstraintData
     ///
     template<
       typename S1,
       int O1,
       template<typename, int> class JointCollectionTpl,
       class ConstraintModel,
-      class ConstraintAllocator,
+      class ConstraintModelAllocator,
       class ConstraintData,
       class ConstraintDataAllocator>
     PINOCCHIO_DEPRECATED void allocate(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      const std::vector<ConstraintModel, ConstraintAllocator> & contact_models)
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
     {
-      resize(model, contact_models);
+      resize(model, constraint_models, constraint_datas);
     }
 
     ///
     ///  \brief Internal memory allocation.
     ///
     /// \param[in] model Model of the kinematic tree
-    /// \param[in] contact_models Vector of ConstraintModel
+    /// \param[in] constraint_models Vector of constraint models
+    /// \param[in] constraint_datas Vector of constraint datas
     ///
     template<
       typename S1,
@@ -294,10 +317,14 @@ namespace pinocchio
       template<typename, int> class JointCollectionTpl,
       template<typename T> class Holder,
       class ConstraintModel,
-      class ConstraintAllocator>
+      class ConstraintModelAllocator,
+      class ConstraintData,
+      class ConstraintDataAllocator>
     void resize(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      const std::vector<Holder<const ConstraintModel>, ConstraintAllocator> & contact_models);
+      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
+        constraint_models,
+      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas);
 
     ///
     /// \brief Returns the Inverse of the Operational Space Inertia Matrix resulting from the
@@ -417,15 +444,15 @@ namespace pinocchio
     ///
     /// \brief Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix
     ///        related to the system mass matrix and the Jacobians of the contact patches contained
-    ///        in the vector of RigidConstraintModel named contact_models.
+    ///        in the vector of RigidConstraintModel named constraint_models.
     ///
     /// \param[in] model Model of the dynamical system
     /// \param[in] data Data related to model containing the computed mass matrix and the Jacobian
     /// of the kinematic tree
-    /// \param[in] contact_models Vector containing the contact models (which
+    /// \param[in] constraint_models Vector containing the contact models (which
     /// frame is in contact and the type of contact: ponctual, 6D rigid, etc.)
-    /// \param[in,out] contact_datas Vector containing the contact data related to the
-    /// contact_models.
+    /// \param[in,out] constraint_datas Vector containing the contact data related to the
+    /// constraint_models.
     /// \param[in] mu Positive regularization factor allowing to enforce the definite property of
     /// the KKT matrix.
     ///
@@ -448,25 +475,26 @@ namespace pinocchio
     void compute(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       DataTpl<S1, O1, JointCollectionTpl> & data,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
-      std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const S1 mu = S1(0.))
     {
-      compute(model, data, contact_models, contact_datas, Vector::Constant(constraintDim(), mu));
+      compute(
+        model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu));
     }
 
     ///
     /// \brief Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix
     ///        related to the system mass matrix and the Jacobians of the contact patches contained
-    ///        in the vector of ConstraintModel named contact_models.
+    ///        in the vector of ConstraintModel named constraint_models.
     ///
     /// \param[in] model Model of the dynamical system
     /// \param[in] data Data related to model containing the computed mass matrix and the Jacobian
     /// of the kinematic tree
-    /// \param[in] contact_models Vector containing the contact models (which
+    /// \param[in] constraint_models Vector containing the contact models (which
     /// frame is in contact and the type of contact: ponctual, 6D rigid, etc.)
-    /// \param[in,out] contact_datas Vector containing the contact data related to the
-    /// contact_models.
+    /// \param[in,out] constraint_datas Vector containing the contact data related to the
+    /// constraint_models.
     /// \param[in] mu Positive regularization factor allowing to enforce the definite property of
     /// the KKT matrix.
     ///
@@ -487,26 +515,28 @@ namespace pinocchio
     void compute(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       DataTpl<S1, O1, JointCollectionTpl> & data,
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & contact_models,
-      std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & contact_datas,
+      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
+        constraint_models,
+      std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
       const S1 mu = S1(0.))
     {
-      compute(model, data, contact_models, contact_datas, Vector::Constant(constraintDim(), mu));
+      compute(
+        model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu));
     }
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix
     ///        related to the system mass matrix and the Jacobians of the contact patches contained
-    ///        in the vector of ConstraintModel named contact_models.
+    ///        in the vector of ConstraintModel named constraint_models.
     ///
     /// \param[in] model Model of the dynamical system
     /// \param[in] data Data related to model containing the computed mass matrix and the Jacobian
     /// of the kinematic tree
-    /// \param[in] contact_models Vector containing the contact models (which
+    /// \param[in] constraint_models Vector containing the contact models (which
     /// frame is in contact and the type of contact: ponctual, 6D rigid, etc.)
-    /// \param[in,out] contact_datas Vector containing the contact data related to the
-    /// contact_models.
+    /// \param[in,out] constraint_datas Vector containing the contact data related to the
+    /// constraint_models.
     /// \param[in] mu Positive regularization factor allowing to enforce the definite property of
     /// the KKT matrix.
     ///
@@ -527,21 +557,21 @@ namespace pinocchio
     void compute(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       DataTpl<S1, O1, JointCollectionTpl> & data,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
-      std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Eigen::MatrixBase<VectorLike> & mus)
     {
       typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
       typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
 
       WrappedConstraintModelVector wrapped_constraint_models(
-        contact_models.cbegin(), contact_models.cend());
+        constraint_models.cbegin(), constraint_models.cend());
 
       typedef std::reference_wrapper<ConstraintData> WrappedConstraintDataType;
       typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
 
       WrappedConstraintDataVector wrapped_constraint_datas(
-        contact_datas.begin(), contact_datas.end());
+        constraint_datas.begin(), constraint_datas.end());
 
       compute(model, data, wrapped_constraint_models, wrapped_constraint_datas, mus);
     }
@@ -549,15 +579,15 @@ namespace pinocchio
     ///
     /// \brief Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix
     ///        related to the system mass matrix and the Jacobians of the contact patches contained
-    ///        in the vector of onstraintModel named contact_models.
+    ///        in the vector of onstraintModel named constraint_models.
     ///
     /// \param[in] model Model of the dynamical system
     /// \param[in] data Data related to model containing the computed mass matrix and the Jacobian
     /// of the kinematic tree
-    /// \param[in] contact_models Vector containing the contact models (which
+    /// \param[in] constraint_models Vector containing the contact models (which
     /// frame is in contact and the type of contact: ponctual, 6D rigid, etc.)
-    /// \param[in,out] contact_datas Vector containing the contact data related to the
-    /// contact_models.
+    /// \param[in,out] constraint_datas Vector containing the contact data related to the
+    /// constraint_models.
     /// \param[in] mu Positive regularization factor allowing to enforce the definite property of
     /// the KKT matrix.
     ///
@@ -579,8 +609,9 @@ namespace pinocchio
     void compute(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       DataTpl<S1, O1, JointCollectionTpl> & data,
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & contact_models,
-      std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & contact_datas,
+      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
+        constraint_models,
+      std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
       const Eigen::MatrixBase<VectorLike> & mus);
 
     ///

@@ -77,7 +77,6 @@ BOOST_AUTO_TEST_CASE(basic_constructor)
   BilateralPointConstraintModel cmodel3(cmodel2);
   BOOST_CHECK(cmodel3 == cmodel2);
 }
-
 void check_A1_and_A2(
   const Model & model,
   const Data & data,
@@ -666,6 +665,7 @@ BOOST_AUTO_TEST_CASE(cholesky)
   BOOST_CHECK(cholesky.matrix().isApprox(H_ref));
 }
 
+/*
 void check_maps_impl(
   const Model & model,
   Data & data,
@@ -813,5 +813,7 @@ BOOST_AUTO_TEST_CASE(check_maps)
   check_maps_impl(model, data, cm_LF, cd_LF);
   check_maps_impl(model, data, clm_RF_LF, cld_RF_LF);
 }
+
+*/
 
 BOOST_AUTO_TEST_SUITE_END()

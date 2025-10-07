@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(cdata), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -663,8 +663,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -697,8 +697,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);

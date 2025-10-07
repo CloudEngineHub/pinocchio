@@ -172,11 +172,7 @@ namespace pinocchio
     {
       return int(active_dofs.size());
     }
-
-    int activeSize() const
-    {
-      return size();
-    }
+    using Base::activeSize;
 
     Base & base()
     {
@@ -272,16 +268,10 @@ namespace pinocchio
       AssignmentOperatorTag<op> aot = SetTo()) const;
 
     /// \brief Returns the sparsity associated with a given row
-    const BooleanVector & getRowActivableSparsityPattern(const Eigen::DenseIndex row_id) const
+    const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return row_sparsity_pattern[size_t(row_id)];
-    }
-
-    /// \brief Returns the sparsity associated with a given row
-    const BooleanVector & getRowActiveSparsityPattern(const Eigen::DenseIndex row_id) const
-    {
-      return getRowActivableSparsityPattern(row_id);
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
@@ -289,25 +279,6 @@ namespace pinocchio
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return row_active_indexes[size_t(row_id)];
-    }
-    // row_active_indexes[size_t(row_id)]
-
-    /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getRowActiveIndexes(const Eigen::DenseIndex row_id) const
-    {
-      return getRowActivableIndexes(row_id);
-    }
-
-    /// \brief Returns the compliance internally stored in the constraint model
-    ActiveComplianceVectorTypeConstRef getActiveCompliance_impl() const
-    {
-      return this->compliance();
-    }
-
-    /// \brief Returns the compliance internally stored in the constraint model
-    ActiveComplianceVectorTypeRef getActiveCompliance_impl()
-    {
-      return this->compliance();
     }
 
     /// \brief Returns the vector of active joints

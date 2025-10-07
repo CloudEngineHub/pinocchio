@@ -75,7 +75,7 @@ namespace pinocchio
       ConstraintFormulationLevel::VELOCITY_LEVEL;
     static constexpr bool has_baumgarte_corrector = true;
     static constexpr bool has_baumgarte_corrector_vector = true;
-    static constexpr bool constant_size = false;
+    static constexpr bool constant_size = true; // constant size at compile time
 
     typedef RigidConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef RigidConstraintDataTpl<Scalar, Options> ConstraintData;
@@ -402,47 +402,29 @@ namespace pinocchio
     }
 
     /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowActivableSparsityPattern(const Eigen::DenseIndex row_id) const
+    const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return colwise_sparsity;
     }
 
-    /// \brief Returns the sparsity associated with a given row
-    const BooleanVector & getRowActiveSparsityPattern(const Eigen::DenseIndex row_id) const
-    {
-      return getRowActivableSparsityPattern(row_id);
-    }
-
     /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getRowActiveIndexes(const Eigen::DenseIndex row_id) const
+    const EigenIndexVector & getRowActivableIndexes(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return colwise_span_indexes;
     }
 
     /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeConstRef compliance_impl() const
+    ComplianceVectorTypeConstRef compliance() const
     {
       return m_compliance;
     }
 
     /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeRef compliance_impl()
+    ComplianceVectorTypeRef compliance()
     {
       return m_compliance;
-    }
-
-    /// \brief Returns the compliance internally stored in the constraint model
-    ActiveComplianceVectorTypeConstRef getActiveCompliance_impl() const
-    {
-      return this->compliance();
-    }
-
-    /// \brief Returns the compliance internally stored in the constraint model
-    ActiveComplianceVectorTypeRef getActiveCompliance_impl()
-    {
-      return this->compliance();
     }
 
     /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
@@ -957,11 +939,7 @@ namespace pinocchio
       }
       return -1;
     }
-
-    int activeSize() const
-    {
-      return size();
-    }
+    using Base::activeSize;
 
     /// \returns An expression of *this with the Scalar type casted to NewScalar.
     template<typename NewScalar>
@@ -1089,16 +1067,23 @@ namespace pinocchio
 
   ///
   /// \brief Computes the sum of the active sizes of the constraints contained in the input
-  /// `contact_models` vector.
-  template<template<typename T> class Holder, class ConstraintModel, class ConstraintModelAllocator>
+  /// `constraint_models` vector.
+  template<
+    template<typename T> class Holder,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator>
   Eigen::DenseIndex getTotalConstraintActiveSize(
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models)
+    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
+    const std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas)
   {
     Eigen::DenseIndex total_size = 0;
-    for (const auto & wrapper : constraint_models)
+    for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const ConstraintModel & constraint_model = wrapper;
-      total_size += constraint_model.activeSize();
+      const ConstraintModel & constraint_model = constraint_models[k];
+      const ConstraintData & constraint_data = constraint_datas[k];
+      total_size += constraint_model.activeSize(constraint_data);
     }
 
     return total_size;
@@ -1106,23 +1091,33 @@ namespace pinocchio
 
   ///
   /// \brief Computes the sum of the active sizes of the constraints contained in the input
-  /// `contact_models` vector.
-  template<class ConstraintModel, class ConstraintModelAllocator>
+  /// `constraint_models` vector.
+  template<
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator>
   Eigen::DenseIndex getTotalConstraintActiveSize(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models)
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
     typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
     typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
 
     WrappedConstraintModelVector wrapped_constraint_models(
-      contact_models.cbegin(), contact_models.cend());
+      constraint_models.cbegin(), constraint_models.cend());
 
-    return getTotalConstraintActiveSize(wrapped_constraint_models);
+    typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
+    typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
+
+    WrappedConstraintDataVector wrapped_constraint_datas(
+      constraint_datas.cbegin(), constraint_datas.cend());
+    return getTotalConstraintActiveSize(wrapped_constraint_models, wrapped_constraint_datas);
   }
 
   ///
   /// \brief Computes the sum of the sizes of the constraints contained in the input
-  /// `contact_models` vector.
+  /// `constraint_models` vector.
   template<template<typename T> class Holder, class ConstraintModel, class ConstraintModelAllocator>
   Eigen::DenseIndex getTotalConstraintSize(
     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models)
@@ -1139,16 +1134,16 @@ namespace pinocchio
 
   ///
   /// \brief Computes the sum of the sizes of the constraints contained in the input
-  /// `contact_models` vector.
+  /// `constraint_models` vector.
   template<class ConstraintModel, class ConstraintModelAllocator>
   Eigen::DenseIndex getTotalConstraintSize(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models)
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
     typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
     typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
 
     WrappedConstraintModelVector wrapped_constraint_models(
-      contact_models.cbegin(), contact_models.cend());
+      constraint_models.cbegin(), constraint_models.cend());
 
     return getTotalConstraintSize(wrapped_constraint_models);
   }
@@ -1266,7 +1261,7 @@ namespace pinocchio
     {
     }
 
-    explicit RigidConstraintDataTpl(const ContactModel & contact_model)
+    explicit RigidConstraintDataTpl(const ContactModel & constraint_model)
     : contact_force(Force::Zero())
     , oMc1(SE3::Identity())
     , oMc2(SE3::Identity())
@@ -1281,21 +1276,21 @@ namespace pinocchio
     , contact1_acceleration_drift(Motion::Zero())
     , contact2_acceleration_drift(Motion::Zero())
     , contact_acceleration_deviation(Motion::Zero())
-    , extended_motion_propagators_joint1(contact_model.depth_joint1, Matrix6::Zero())
-    , lambdas_joint1(contact_model.depth_joint1, Matrix6::Zero())
-    , extended_motion_propagators_joint2(contact_model.depth_joint2, Matrix6::Zero())
-    , dv1_dq(Matrix6x::Zero(6, contact_model.nv))
-    , da1_dq(Matrix6x::Zero(6, contact_model.nv))
-    , da1_dv(Matrix6x::Zero(6, contact_model.nv))
-    , da1_da(Matrix6x::Zero(6, contact_model.nv))
-    , dv2_dq(Matrix6x::Zero(6, contact_model.nv))
-    , da2_dq(Matrix6x::Zero(6, contact_model.nv))
-    , da2_dv(Matrix6x::Zero(6, contact_model.nv))
-    , da2_da(Matrix6x::Zero(6, contact_model.nv))
-    , dvc_dq(MatrixX::Zero(contact_model.size(), contact_model.nv))
-    , dac_dq(MatrixX::Zero(contact_model.size(), contact_model.nv))
-    , dac_dv(MatrixX::Zero(contact_model.size(), contact_model.nv))
-    , dac_da(MatrixX::Zero(contact_model.size(), contact_model.nv))
+    , extended_motion_propagators_joint1(constraint_model.depth_joint1, Matrix6::Zero())
+    , lambdas_joint1(constraint_model.depth_joint1, Matrix6::Zero())
+    , extended_motion_propagators_joint2(constraint_model.depth_joint2, Matrix6::Zero())
+    , dv1_dq(Matrix6x::Zero(6, constraint_model.nv))
+    , da1_dq(Matrix6x::Zero(6, constraint_model.nv))
+    , da1_dv(Matrix6x::Zero(6, constraint_model.nv))
+    , da1_da(Matrix6x::Zero(6, constraint_model.nv))
+    , dv2_dq(Matrix6x::Zero(6, constraint_model.nv))
+    , da2_dq(Matrix6x::Zero(6, constraint_model.nv))
+    , da2_dv(Matrix6x::Zero(6, constraint_model.nv))
+    , da2_da(Matrix6x::Zero(6, constraint_model.nv))
+    , dvc_dq(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
+    , dac_dq(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
+    , dac_dv(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
+    , dac_da(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
     {
     }
 

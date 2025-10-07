@@ -22,15 +22,18 @@ namespace pinocchio
   template<
     typename Scalar,
     int Options,
-    class ConstraintModel,
     template<typename, int> class JointCollectionTpl,
-    class Allocator>
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator>
   inline void initConstraintDynamics(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, Allocator> & contact_models)
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    data.contact_chol.resize(model, contact_models);
+    data.contact_chol.resize(model, constraint_models, constraint_datas);
     data.primal_dual_contact_solution.resize(data.contact_chol.size());
     data.primal_rhs_contact.resize(data.contact_chol.constraintDim());
 
@@ -198,7 +201,7 @@ namespace pinocchio
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & tau,
     const std::vector<RigidConstraintModelTpl<Scalar, Options>, ConstraintModelAllocator> &
-      contact_models,
+      constraint_models,
     std::vector<RigidConstraintDataTpl<Scalar, Options>, ConstraintDataAllocator> & contact_datas,
     ProximalSettingsTpl<Scalar> & settings)
   {
@@ -221,12 +224,12 @@ namespace pinocchio
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       check_expression_if_real<Scalar>(settings.mu >= Scalar(0)), "mu has to be positive");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      contact_models.size(), contact_datas.size(),
+      constraint_models.size(), contact_datas.size(),
       "The contact models and data do not have the same vector size.");
 
     // Check that all the frames are related to LOCAL or LOCAL_WORLD_ALIGNED reference frames
-    for (typename VectorRigidConstraintModel::const_iterator cm_it = contact_models.begin();
-         cm_it != contact_models.end(); ++cm_it)
+    for (typename VectorRigidConstraintModel::const_iterator cm_it = constraint_models.begin();
+         cm_it != constraint_models.end(); ++cm_it)
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         cm_it->reference_frame != WORLD, "Contact model with name " + cm_it->name
@@ -277,7 +280,7 @@ namespace pinocchio
 
     // Computes the Cholesky decomposition
     const Scalar mu = settings.mu;
-    contact_chol.compute(model, data, contact_models, contact_datas, mu);
+    contact_chol.compute(model, data, constraint_models, contact_datas, mu);
 
     primal_dual_contact_solution.tail(model.nv) = tau - data.nle;
 
@@ -288,9 +291,9 @@ namespace pinocchio
     typename Motion::Vector3 coriolis_centrifugal_acc2_local;
 
     Eigen::DenseIndex current_row_id = 0;
-    for (size_t contact_id = 0; contact_id < contact_models.size(); ++contact_id)
+    for (size_t contact_id = 0; contact_id < constraint_models.size(); ++contact_id)
     {
-      const RigidConstraintModel & contact_model = contact_models[contact_id];
+      const RigidConstraintModel & contact_model = constraint_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
       const int contact_dim = contact_model.size();
 
@@ -488,9 +491,9 @@ namespace pinocchio
 
     // Retrieve the contact forces
     Eigen::DenseIndex current_row_sol_id = 0;
-    for (size_t contact_id = 0; contact_id < contact_models.size(); ++contact_id)
+    for (size_t contact_id = 0; contact_id < constraint_models.size(); ++contact_id)
     {
-      const RigidConstraintModel & contact_model = contact_models[contact_id];
+      const RigidConstraintModel & contact_model = constraint_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
       typename RigidConstraintData::Force & fext = contact_data.contact_force;
       const int contact_dim = contact_model.size();
@@ -751,7 +754,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & tau,
-    const std::vector<RigidConstraintModelTpl<Scalar, Options>, ModelAllocator> & contact_models,
+    const std::vector<RigidConstraintModelTpl<Scalar, Options>, ModelAllocator> & constraint_models,
     std::vector<RigidConstraintDataTpl<Scalar, Options>, DataAllocator> & contact_data,
     ProximalSettingsTpl<Scalar> & settings)
   {
@@ -766,7 +769,8 @@ namespace pinocchio
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       check_expression_if_real<Scalar>(settings.mu >= Scalar(0)), "mu has to be positive");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      contact_models.size(), contact_data.size(), "contact models and data size are not the same");
+      constraint_models.size(), contact_data.size(),
+      "contact models and data size are not the same");
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
@@ -789,9 +793,9 @@ namespace pinocchio
       data.of_augmented[i].setZero();
     }
 
-    for (size_t k = 0; k < contact_models.size(); ++k)
+    for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const RigidConstraintModel & cmodel = contact_models[k];
+      const RigidConstraintModel & cmodel = constraint_models[k];
       RigidConstraintData & cdata = contact_data[k];
 
       const typename Model::JointIndex joint1_id = cmodel.joint1_id;
@@ -858,7 +862,7 @@ namespace pinocchio
 
     settings.iter = 0;
     bool optimal_solution_found = false;
-    if (contact_models.size() == 0)
+    if (constraint_models.size() == 0)
     {
       return data.ddq;
     }
@@ -869,9 +873,9 @@ namespace pinocchio
     {
       // Compute contact acceleration errors and max contact errors, aka primal_infeasibility
       primal_infeasibility = Scalar(0);
-      for (size_t contact_id = 0; contact_id < contact_models.size(); ++contact_id)
+      for (size_t contact_id = 0; contact_id < constraint_models.size(); ++contact_id)
       {
-        const RigidConstraintModel & cmodel = contact_models[contact_id];
+        const RigidConstraintModel & cmodel = constraint_models[contact_id];
         RigidConstraintData & cdata = contact_data[contact_id];
 
         const typename Model::JointIndex & joint1_id = cmodel.joint1_id;
@@ -909,9 +913,9 @@ namespace pinocchio
       }
 
       // Update contact forces
-      for (size_t contact_id = 0; contact_id < contact_models.size(); ++contact_id)
+      for (size_t contact_id = 0; contact_id < constraint_models.size(); ++contact_id)
       {
-        const RigidConstraintModel & cmodel = contact_models[contact_id];
+        const RigidConstraintModel & cmodel = constraint_models[contact_id];
         RigidConstraintData & cdata = contact_data[contact_id];
 
         const typename Model::JointIndex & joint1_id = cmodel.joint1_id;
@@ -980,7 +984,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & tau,
-    const std::vector<RigidConstraintModelTpl<Scalar, Options>, ModelAllocator> & contact_models,
+    const std::vector<RigidConstraintModelTpl<Scalar, Options>, ModelAllocator> & constraint_models,
     std::vector<RigidConstraintDataTpl<Scalar, Options>, DataAllocator> & contact_data,
     ProximalSettingsTpl<Scalar> & settings)
   {
@@ -998,7 +1002,8 @@ namespace pinocchio
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       check_expression_if_real<Scalar>(settings.mu >= Scalar(0)), "mu has to be positive");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      contact_models.size(), contact_data.size(), "contact models and data size are not the same");
+      constraint_models.size(), contact_data.size(),
+      "contact models and data size are not the same");
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
@@ -1025,9 +1030,9 @@ namespace pinocchio
     }
 
     // Update the inertia matrix of the constrained links
-    for (size_t k = 0; k < contact_models.size(); ++k)
+    for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const RigidConstraintModel & cmodel = contact_models[k];
+      const RigidConstraintModel & cmodel = constraint_models[k];
       RigidConstraintData & cdata = contact_data[k];
 
       const typename Model::JointIndex joint1_id = cmodel.joint1_id;
@@ -1122,9 +1127,9 @@ namespace pinocchio
       }
 
       // Check convergence
-      for (size_t k = 0; k < contact_models.size(); ++k)
+      for (size_t k = 0; k < constraint_models.size(); ++k)
       {
-        const RigidConstraintModel & cmodel = contact_models[k];
+        const RigidConstraintModel & cmodel = constraint_models[k];
         RigidConstraintData & cdata = contact_data[k];
 
         const typename Model::JointIndex joint1_id = cmodel.joint1_id;

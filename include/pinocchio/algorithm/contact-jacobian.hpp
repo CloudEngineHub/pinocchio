@@ -146,11 +146,11 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     template<typename T> class Holder,
-    typename DynamicMatrixLike,
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
-    class ConstraintDataAllocator>
+    class ConstraintDataAllocator,
+    typename DynamicMatrixLike>
   void getConstraintsJacobian(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,

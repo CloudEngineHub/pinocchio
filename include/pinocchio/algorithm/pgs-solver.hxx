@@ -551,11 +551,14 @@ namespace pinocchio
     typename VectorLike,
     template<typename T> class Holder,
     typename ConstraintModel,
-    typename ConstraintModelAllocator>
+    typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator>
   bool PGSContactSolverTpl<_Scalar>::solve(
     const Eigen::MatrixBase<MatrixType> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
+    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
     const Scalar dt,
     const boost::optional<RefConstVectorXs> x_guess,
     const Scalar over_relax,
@@ -609,16 +612,17 @@ namespace pinocchio
       for (size_t constraint_id = 0; constraint_id < nc; ++constraint_id)
       {
         const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const Eigen::DenseIndex constraint_set_size = cmodel.activeSize();
+        const ConstraintData & cdata = constraint_datas[constraint_id];
+        const Eigen::DenseIndex constraint_size = cmodel.activeSize(data);
 
-        auto G_block = G.block(row_id, row_id, constraint_set_size, constraint_set_size);
-        auto impulse = x.segment(row_id, constraint_set_size);
+        auto G_block = G.block(row_id, row_id, constraint_size, constraint_size);
+        auto impulse = x.segment(row_id, constraint_size);
 
-        auto velocity = y.segment(row_id, constraint_set_size);
+        auto velocity = y.segment(row_id, constraint_size);
 
         // Update dual variable
-        velocity.noalias() = G.middleRows(row_id, constraint_set_size) * x;
-        velocity += g.segment(row_id, constraint_set_size);
+        velocity.noalias() = G.middleRows(row_id, constraint_size) * x;
+        velocity += g.segment(row_id, constraint_size);
 
         typedef PGSConstraintProjectionStepVisitor<
           Scalar, decltype(G_block), decltype(impulse), decltype(velocity)>

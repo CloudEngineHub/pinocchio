@@ -69,10 +69,14 @@ namespace pinocchio
               }),
             "Compliance of the constraint.")
           .def(
-            "size", +[](const Self & self) -> int { return self.size(); }, "Constraint size.")
+            "size", +[](const Self & self) -> int { return self.size(); }, bp::arg("self"),
+            "Constraint size.")
           .def(
-            "activeSize", +[](const Self & self) -> int { return self.activeSize(); },
-            "Constraint active size.")
+            "activeSize",
+            +[](const Self & self, const ConstraintData & cdata) -> int {
+              return self.activeSize(cdata);
+            },
+            bp::args("self", "constraint_data"), "Constraint active size.")
           .def(
             "calc", &calc, bp::args("self", "model", "data", "constraint_data"),
             "Evaluate the constraint values at the current state given by data and store the "
@@ -92,11 +96,11 @@ namespace pinocchio
             bp::args("self", "model", "data", "constraint_data", "matrix"),
             "Backward chain rule: return product between the jacobian transpose and a matrix.")
           .def(
-            "getRowActivableSparsityPattern", &Self::getRowActivableSparsityPattern,
-            bp::args("self", "row_id"), bp::return_value_policy<bp::copy_const_reference>(),
+            "getRowSparsityPattern", &Self::getRowSparsityPattern, bp::args("self", "row_id"),
+            bp::return_value_policy<bp::copy_const_reference>(),
             "Colwise sparsity associated with a given row.")
           .def(
-            "getRowActiveSparsityPattern", &Self::getRowActiveSparsityPattern,
+            "getActiveRowSparsityPattern", &Self::getActiveRowSparsityPattern,
             bp::args("self", "row_id"), bp::return_value_policy<bp::copy_const_reference>(),
             "Active colwise sparsity associated with a given row.")
           .def(
@@ -104,13 +108,16 @@ namespace pinocchio
             bp::return_value_policy<bp::copy_const_reference>(),
             "Vector of the activable indexes associated with a given row.")
           .def(
-            "getRowActiveIndexes", &Self::getRowActiveIndexes, bp::args("self", "row_id"),
+            "getActiveRowIndexes", &Self::getActiveRowIndexes,
+            bp::args("self", "constraint_data", "row_id"),
             bp::return_value_policy<bp::copy_const_reference>(),
             "Vector of the active indexes associated with a given row.")
           .def(
-            "getActiveCompliance", bp::make_function(+[](const Self & self) -> context::VectorXs {
-              return self.getActiveCompliance();
-            }),
+            "getActiveCompliance",
+            bp::make_function(
+              +[](const Self & self, const ConstraintData & cdata) -> context::VectorXs {
+                return self.getActiveCompliance(cdata);
+              }),
             "Vector of the active compliance internally stored in the constraint.")
 #ifndef PINOCCHIO_PYTHON_SKIP_COMPARISON_OPERATIONS
           .def(bp::self == bp::self)
@@ -192,7 +199,8 @@ namespace pinocchio
         const ConstraintData & constraint_data,
         const context::MatrixXs & matrix)
       {
-        context::MatrixXs res = context::MatrixXs::Zero(self.activeSize(), matrix.cols());
+        context::MatrixXs res =
+          context::MatrixXs::Zero(self.activeSize(constraint_data), matrix.cols());
         self.jacobianMatrixProduct(model, data, constraint_data, matrix, res);
         return res;
       }

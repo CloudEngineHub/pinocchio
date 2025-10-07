@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2023-2024 INRIA
+// Copyright (c) 2023-2025 INRIA
 //
 
 #ifndef __pinocchio_algorithm_constraint_data_base_hpp__
@@ -18,6 +18,12 @@ namespace pinocchio
   {
     typedef typename traits<Derived>::Scalar Scalar;
     typedef typename traits<Derived>::ConstraintModel ConstraintModel;
+
+    typedef
+      typename traits<ConstraintModel>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
+    typedef typename traits<ConstraintModel>::ActiveComplianceVectorTypeConstRef
+      ActiveComplianceVectorTypeConstRef;
+
     typedef DataEntity<Derived> Base;
 
     Derived & derived()
@@ -44,7 +50,8 @@ namespace pinocchio
       os << shortname() << endl;
     }
 
-    friend std::ostream & operator<<(std::ostream & os, const ConstraintDataBase<Derived> & constraint)
+    friend std::ostream &
+    operator<<(std::ostream & os, const ConstraintDataBase<Derived> & constraint)
     {
       constraint.disp(os);
       return os;

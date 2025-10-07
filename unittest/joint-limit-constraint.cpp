@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
     data.q_in = q0;
     constraint_model.resize(model, data, constraint_data);
     constraint_model.calc(model, data, constraint_data);
-    BOOST_CHECK((int)active_size == constraint_model.activeSize());
+    BOOST_CHECK((int)active_size == constraint_model.activeSize(constraint_data));
     BOOST_CHECK((int)active_size == constraint_data.constraint_residual.size());
     BOOST_CHECK(constraint_data.constraint_residual.isApprox(residual));
     BOOST_CHECK(constraint_data.activable_constraint_residual.isApprox(activable_residual));
@@ -501,7 +501,7 @@ BOOST_AUTO_TEST_CASE(check_maps)
   data.q_in = q;
   computeJointJacobians(model, data, q);
   constraint_model.calc(model, data, constraint_data);
-  BOOST_CHECK(constraint_model.activeSize() == model.nv);
+  BOOST_CHECK(constraint_model.activeSize(constraint_data) == model.nv);
 
   // Use a second constraint model and associated data to compute the Jacobian
   Data data_ref(model);
@@ -512,7 +512,7 @@ BOOST_AUTO_TEST_CASE(check_maps)
   data_ref.q_in = q;
   computeJointJacobians(model, data_ref, q);
   constraint_model_ref.calc(model, data_ref, constraint_data_ref);
-  BOOST_CHECK(constraint_model_ref.activeSize() == model.nv);
+  BOOST_CHECK(constraint_model_ref.activeSize(constraint_data_ref) == model.nv);
 
   const auto constraint_jacobian_ref =
     constraint_model.jacobian(model, data_ref, constraint_data_ref);
@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE(check_maps)
   // Test mapConstraintForcesToJointTorques
   {
     const Eigen::VectorXd constraint_forces =
-      Eigen::VectorXd::Random(constraint_model.activeSize());
+      Eigen::VectorXd::Random(constraint_model.activeSize(constraint_data));
 
     Eigen::VectorXd joint_torques_ref = Eigen::VectorXd::Zero(model.nv);
     joint_torques_ref = constraint_jacobian_ref.transpose() * constraint_forces;
@@ -544,14 +544,17 @@ BOOST_AUTO_TEST_CASE(check_maps)
   {
     const Eigen::VectorXd joint_motions = Eigen::VectorXd::Random(model.nv);
 
-    Eigen::VectorXd constraint_motions_ref = Eigen::VectorXd::Zero(constraint_model.activeSize());
+    Eigen::VectorXd constraint_motions_ref =
+      Eigen::VectorXd::Zero(constraint_model.activeSize(constraint_data));
     constraint_motions_ref = constraint_jacobian_ref * joint_motions;
 
-    Eigen::VectorXd constraint_motions_ref2 = Eigen::VectorXd::Zero(constraint_model.activeSize());
+    Eigen::VectorXd constraint_motions_ref2 =
+      Eigen::VectorXd::Zero(constraint_model.activeSize(constraint_data));
     constraint_model.jacobianMatrixProduct(
       model, data_ref, constraint_data_ref, joint_motions, constraint_motions_ref2, SetTo());
 
-    Eigen::VectorXd constraint_motions = -Eigen::VectorXd::Ones(constraint_model.activeSize());
+    Eigen::VectorXd constraint_motions =
+      -Eigen::VectorXd::Ones(constraint_model.activeSize(constraint_data));
     constraint_model.mapJointMotionsToConstraintMotion(
       model, data_ref, constraint_data, joint_motions, constraint_motions);
 

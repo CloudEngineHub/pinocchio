@@ -169,33 +169,35 @@ namespace pinocchio
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getRowActiveIndexes(const Eigen::DenseIndex row_id) const
+    const EigenIndexVector & getActiveRowIndexes(
+      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      return ::pinocchio::visitors::getRowActiveIndexes(*this, row_id);
+      return ::pinocchio::visitors::getActiveRowIndexes(*this, constraint_data, row_id);
     }
 
     /// \brief Returns the sparsity pattern associated with a given row
-    const BooleanVector & getRowActivableSparsityPattern(const Eigen::DenseIndex row_id) const
+    const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
     {
-      return ::pinocchio::visitors::getRowActivableSparsityPattern(*this, row_id);
+      return ::pinocchio::visitors::getRowSparsityPattern(*this, row_id);
     }
 
     /// \brief Returns the sparsity pattern associated with a given row
-    const BooleanVector & getRowActiveSparsityPattern(const Eigen::DenseIndex row_id) const
+    const BooleanVector & getActiveRowSparsityPattern(
+      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      return ::pinocchio::visitors::getRowActiveSparsityPattern(*this, row_id);
+      return ::pinocchio::visitors::getActiveRowSparsityPattern(*this, constraint_data, row_id);
     }
 
     /// \brief Returns the compliance associated to the current active set
-    ActiveComplianceVectorTypeConstRef getActiveCompliance_impl() const
+    ActiveComplianceVectorTypeConstRef getActivecompliance(const ConstraintData & cdata) const
     {
-      return ::pinocchio::visitors::getActiveCompliance(*this);
+      return ::pinocchio::visitors::getActiveCompliance(*this, cdata);
     }
 
     /// \brief Returns the compliance associated to the current active set
-    ActiveComplianceVectorTypeRef getActiveCompliance_impl()
+    ActiveComplianceVectorTypeRef getActivecompliance(ConstraintData & cdata) const
     {
-      return ::pinocchio::visitors::getActiveCompliance(*this);
+      return ::pinocchio::visitors::getActiveCompliance(*this, cdata);
     }
 
     /// \brief Runs the underlying jacobian multiplication with a matrix.
@@ -337,13 +339,13 @@ namespace pinocchio
     }
 
     /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeConstRef compliance_impl() const
+    ComplianceVectorTypeConstRef compliance() const
     {
       return ::pinocchio::visitors::compliance(*this);
     }
 
     /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeRef compliance_impl()
+    ComplianceVectorTypeRef compliance()
     {
       return ::pinocchio::visitors::compliance(*this);
     }
@@ -380,9 +382,9 @@ namespace pinocchio
     }
 
     /// \brief Returns the size of the active constraints
-    int activeSize() const
+    int activeSize(const ConstraintData & constraint_data) const
     {
-      return ::pinocchio::visitors::activeSize(*this);
+      return ::pinocchio::visitors::activeSize(*this, constraint_data);
     }
 
     boost::blank & set()

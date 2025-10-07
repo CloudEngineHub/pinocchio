@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
   const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
 
   FrictionalJointConstraintModel constraint(model, active_joint_ids);
-  //  FrictionalJointConstraintData constraint_data = constraint.createData();
+  FrictionalJointConstraintData constraint_data = constraint.createData();
 
   // Check size
   {
@@ -69,9 +69,9 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
     {
       const Eigen::DenseIndex dof_id = active_dofs[row_id];
       const BooleanVector & row_sparsity_pattern =
-        constraint.getRowActivableSparsityPattern(Eigen::DenseIndex(row_id));
+        constraint.getRowSparsityPattern(Eigen::DenseIndex(row_id));
       const EigenIndexVector & row_active_indexes =
-        constraint.getRowActiveIndexes(Eigen::DenseIndex(row_id));
+        constraint.getActiveRowIndexes(constraint_data, Eigen::DenseIndex(row_id));
 
       // Check that the rest of the indexes greater than dof_id are not active.
       BOOST_CHECK((row_sparsity_pattern.tail(model.nv - 1 - dof_id).array() == false).all());
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE(check_maps)
   // Test mapConstraintForcesToJointTorques
   {
     const Eigen::VectorXd constraint_forces =
-      Eigen::VectorXd::Random(constraint_model.activeSize());
+      Eigen::VectorXd::Random(constraint_model.activeSize(constraint_data));
 
     Eigen::VectorXd joint_torques_ref = Eigen::VectorXd::Zero(model.nv);
     joint_torques_ref = constraint_jacobian_ref.transpose() * constraint_forces;
@@ -266,14 +266,17 @@ BOOST_AUTO_TEST_CASE(check_maps)
   {
     const Eigen::VectorXd joint_motions = Eigen::VectorXd::Random(model.nv);
 
-    Eigen::VectorXd constraint_motions_ref = Eigen::VectorXd::Zero(constraint_model.activeSize());
+    Eigen::VectorXd constraint_motions_ref =
+      Eigen::VectorXd::Zero(constraint_model.activeSize(constraint_data));
     constraint_motions_ref = constraint_jacobian_ref * joint_motions;
 
-    Eigen::VectorXd constraint_motions_ref2 = Eigen::VectorXd::Zero(constraint_model.activeSize());
+    Eigen::VectorXd constraint_motions_ref2 =
+      Eigen::VectorXd::Zero(constraint_model.activeSize(constraint_data));
     constraint_model.jacobianMatrixProduct(
       model, data_ref, constraint_data_ref, joint_motions, constraint_motions_ref2, SetTo());
 
-    Eigen::VectorXd constraint_motions = -Eigen::VectorXd::Ones(constraint_model.activeSize());
+    Eigen::VectorXd constraint_motions =
+      -Eigen::VectorXd::Ones(constraint_model.activeSize(constraint_data));
     constraint_model.mapJointMotionsToConstraintMotion(
       model, data_ref, constraint_data, joint_motions, constraint_motions);
 

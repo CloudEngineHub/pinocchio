@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2022 INRIA
+// Copyright (c) 2022-2025 INRIA
 //
 
 #include "pinocchio/spatial/fwd.hpp"
@@ -14,10 +14,15 @@ namespace pinocchio
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void initConstraintDynamics<
     context::Scalar,
     context::Options,
-    RigidConstraintModel,
     JointCollectionDefaultTpl,
-    typename context::RigidConstraintModelVector::allocator_type>(
-    const context::Model &, context::Data &, const context::RigidConstraintModelVector &);
+    RigidConstraintModel,
+    typename context::RigidConstraintModelVector::allocator_type,
+    RigidConstraintData,
+    typename context::RigidConstraintDataVector::allocator_type>(
+    const context::Model &,
+    context::Data &,
+    const context::RigidConstraintModelVector &,
+    const context::RigidConstraintDataVector &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI const context::VectorXs &
   constraintDynamics<

@@ -30,8 +30,12 @@ namespace pinocchio
     context::Options,
     JointCollectionDefaultTpl,
     context::RigidConstraintModel,
-    typename context::RigidConstraintModelVector::allocator_type>(
-    const context::Model &, const context::RigidConstraintModelVector &);
+    typename context::RigidConstraintModelVector::allocator_type,
+    context::RigidConstraintData,
+    typename context::RigidConstraintDataVector::allocator_type>(
+    const context::Model &,
+    const context::RigidConstraintModelVector &,
+    const context::RigidConstraintDataVector &);
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
