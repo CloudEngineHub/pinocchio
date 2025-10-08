@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_empty)
   data_ref.M.triangularView<Eigen::StrictlyLower>() =
     data_ref.M.transpose().triangularView<Eigen::StrictlyLower>();
 
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   impulseDynamics(model, data, q, v, contact_models, contact_datas, r_coeff, prox_settings);
 
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
       .isZero());
   BOOST_CHECK((J_ref * data_ref.dq_after + r_coeff * J_ref * v).isZero());
 
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   impulseDynamics(model, data, q, v, contact_models, contact_datas, r_coeff, prox_settings);
   BOOST_CHECK((J_ref * data.dq_after + r_coeff * J_ref * v).isZero());
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
       .isZero());
   BOOST_CHECK((J_ref * data_ref.dq_after + r_coeff * J_ref * v).isZero());
 
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   impulseDynamics(model, data, q, v, contact_models, contact_datas, r_coeff, prox_settings);
   BOOST_CHECK((J_ref * data.dq_after + r_coeff * J_ref * v).isZero());
   data.M.triangularView<Eigen::StrictlyLower>() =

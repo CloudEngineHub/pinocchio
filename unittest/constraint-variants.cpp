@@ -89,12 +89,12 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
   // Test getActiveRowIndexes
   {
     ConstraintData constraint_data(rcm.createData());
-    rcm.cacl(model, data, constraint_data);
+    rcm.calc(model, data, rcd);
     for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.size(); ++row_id)
     {
       BOOST_CHECK(
         constraint_model.getActiveRowIndexes(constraint_data, row_id)
-        == rcm.getActiveRowIndexes(constraint_data, row_id));
+        == rcm.getActiveRowIndexes(rcd, row_id));
     }
   }
 

@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_6D_unconstrained)
   ProximalSettings prox_settings_ref(1e-14, mu0, 1);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);

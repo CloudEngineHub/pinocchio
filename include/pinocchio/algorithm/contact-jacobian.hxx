@@ -110,7 +110,8 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_torques_.size(), model.nv);
 
-    const Eigen::DenseIndex constraint_size = getTotalConstraintActiveSize(constraint_models);
+    const Eigen::DenseIndex constraint_size =
+      getTotalConstraintActiveSize(constraint_models, constraint_datas);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), constraint_size);
 
     auto & joint_torques = joint_torques_.const_cast_derived();
@@ -159,7 +160,8 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_motions.size(), size_t(model.njoints));
 
     auto & constraint_motions = constraint_motions_.const_cast_derived();
-    const Eigen::DenseIndex constraint_size = getTotalConstraintActiveSize(constraint_models);
+    const Eigen::DenseIndex constraint_size =
+      getTotalConstraintActiveSize(constraint_models, constraint_datas);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), constraint_size);
 
     Eigen::Index row_id = 0;
@@ -205,7 +207,7 @@ namespace pinocchio
 
     auto & constraint_motions = constraint_motions_.const_cast_derived();
     const Eigen::DenseIndex constraint_active_size =
-      getTotalConstraintActiveSize(constraint_models);
+      getTotalConstraintActiveSize(constraint_models, constraint_datas);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), constraint_active_size);
 
     Eigen::Index row_id = 0;
@@ -400,7 +402,8 @@ namespace pinocchio
     const Eigen::MatrixBase<ResultMatrixType> & res_)
   {
 
-    const Eigen::DenseIndex constraint_size = getTotalConstraintActiveSize(constraint_models);
+    const Eigen::DenseIndex constraint_size =
+      getTotalConstraintActiveSize(constraint_models, constraint_datas);
     ResultMatrixType & res = res_.const_cast_derived();
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(rhs.rows(), constraint_size);

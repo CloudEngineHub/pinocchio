@@ -551,7 +551,7 @@ namespace pinocchio
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
         const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const ConstraintData & cdata = ConstraintDataAllocator[constraint_id];
+        const ConstraintData & cdata = constraint_datas[constraint_id];
         const auto active_size = cmodel.activeSize(cdata);
 
         SegmentType1 velocity_segment = velocities.segment(index, active_size);

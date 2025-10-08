@@ -521,7 +521,7 @@ namespace pinocchio
 
       virtual void buildMap()
       {
-        pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models);
+        pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
         // Integrate q + v_int = q_int
         pinocchio::integrate(ad_model, q_ad, v_int_ad, q_int_ad);
         // Run contact dynamics with new q_int
@@ -724,7 +724,7 @@ namespace pinocchio
 
       virtual void buildMap()
       {
-        pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models);
+        pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
         pinocchio::constraintDynamics(
           ad_model, ad_data, q_ad, v_ad, tau_ad, ad_contact_models, ad_contact_datas);
         pinocchio::computeConstraintDynamicsDerivatives(

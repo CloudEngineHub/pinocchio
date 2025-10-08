@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(closed_loop_constraint_6D_LOCAL)
 
   BOOST_CHECK((J_ref * data_ref.ddq + rhs_ref).isZero());
 
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   constraintDynamics(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 
   BOOST_CHECK((J_ref * data.ddq + rhs_ref).isZero());

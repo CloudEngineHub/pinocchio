@@ -109,8 +109,10 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
 
   // Check projection on force sets
   {
-    const Eigen::DenseIndex nb_lower_active_dofs = Eigen::DenseIndex(constraint.lowerActiveSize());
-    const Eigen::DenseIndex nb_upper_active_dofs = Eigen::DenseIndex(constraint.upperActiveSize());
+    const Eigen::DenseIndex nb_lower_active_dofs =
+      Eigen::DenseIndex(constraint.lowerActiveSize(constraint_data));
+    const Eigen::DenseIndex nb_upper_active_dofs =
+      Eigen::DenseIndex(constraint.upperActiveSize(constraint_data));
 
     const Eigen::DenseIndex total_active_dofs = nb_lower_active_dofs + nb_upper_active_dofs;
 
@@ -174,11 +176,11 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
     constraint_model.resize(model, data, constraint_data);
     constraint_model.calc(model, data, constraint_data);
 
-    Eigen::MatrixXd jacobian_matrix(constraint_model.activeSize(), model.nv);
+    Eigen::MatrixXd jacobian_matrix(constraint_model.activeSize(constraint_data), model.nv);
     constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
     Data data_fd(model);
     JointLimitConstraintData constraint_data_fd(constraint_model);
-    Eigen::MatrixXd jacobian_matrix_fd(constraint_model.activeSize(), model.nv);
+    Eigen::MatrixXd jacobian_matrix_fd(constraint_model.activeSize(constraint_data), model.nv);
 
     for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
     {
@@ -278,7 +280,7 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
     BOOST_CHECK((int)active_size == constraint_data.constraint_residual.size());
     BOOST_CHECK(constraint_data.constraint_residual.isApprox(residual));
     BOOST_CHECK(constraint_data.activable_constraint_residual.isApprox(activable_residual));
-    BOOST_CHECK(active_indexes == constraint_model.getActiveSetIndexes());
+    BOOST_CHECK(active_indexes == constraint_model.getActiveSetIndexes(constraint_data));
   }
 }
 
@@ -353,16 +355,17 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
     constraint_model.resize(model, data, constraint_data);
     constraint_model.calc(model, data, constraint_data);
 
-    std::vector<std::size_t> active_set_indexes = constraint_model.getActiveSetIndexes();
-    BOOST_CHECK(active_size == constraint_model.activeSize());
+    std::vector<std::size_t> active_set_indexes =
+      constraint_model.getActiveSetIndexes(constraint_data);
+    BOOST_CHECK(active_size == constraint_model.activeSize(constraint_data));
     BOOST_CHECK(active_size == constraint_data.constraint_residual.size());
 
-    Eigen::MatrixXd jacobian_matrix(constraint_model.activeSize(), model.nv);
+    Eigen::MatrixXd jacobian_matrix(constraint_model.activeSize(constraint_data), model.nv);
     constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
 
     Data data_fd(model);
     JointLimitConstraintData constraint_data_fd(constraint_model);
-    Eigen::MatrixXd jacobian_matrix_fd(constraint_model.activeSize(), model.nv);
+    Eigen::MatrixXd jacobian_matrix_fd(constraint_model.activeSize(constraint_data), model.nv);
 
     bool ok_to_check = true;
     for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
@@ -373,7 +376,8 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
       data_fd.q_in = q_plus;
       constraint_model.resize(model, data_fd, constraint_data_fd);
       constraint_model.calc(model, data_fd, constraint_data_fd);
-      bool same_active_set = active_set_indexes == constraint_model.getActiveSetIndexes();
+      bool same_active_set =
+        active_set_indexes == constraint_model.getActiveSetIndexes(constraint_data_fd);
       // if the active set is identical we can check the jacobian
       if (!same_active_set)
       {
@@ -431,15 +435,15 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
 
   data.q_in = q;
   constraint_model.calc(model, data, constraint_data);
-  BOOST_CHECK(constraint_model.activeSize() == model.nv);
+  BOOST_CHECK(constraint_model.activeSize(constraint_data) == model.nv);
 
   const Eigen::VectorXd diagonal_inertia =
-    Eigen::VectorXd::Random(constraint_model.activeSize()).array().square();
+    Eigen::VectorXd::Random(constraint_model.activeSize(constraint_data)).array().square();
   constraint_model.appendCouplingConstraintInertias(
     model, data, constraint_data, diagonal_inertia, WorldFrameTag());
 
   Eigen::MatrixXd constraint_jacobian =
-    Eigen::MatrixXd::Zero(constraint_model.activeSize(), model.nv);
+    Eigen::MatrixXd::Zero(constraint_model.activeSize(constraint_data), model.nv);
   constraint_model.jacobian(model, data, constraint_data, constraint_jacobian);
 
   std::cout << "diagonal_inertia: " << diagonal_inertia.transpose() << std::endl;

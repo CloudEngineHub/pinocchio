@@ -773,7 +773,7 @@ namespace pinocchio
         ad_contact_datas.push_back(ADContactData(ad_contact_models[k]));
       }
 
-      pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models);
+      pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
       Base::build_jacobian = false;
     }
 
@@ -959,7 +959,7 @@ namespace pinocchio
       {
         ad_contact_datas.push_back(ADContactData(ad_contact_models[k]));
       }
-      pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models);
+      pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
     }
 
     virtual ~CodeGenConstraintDynamics()

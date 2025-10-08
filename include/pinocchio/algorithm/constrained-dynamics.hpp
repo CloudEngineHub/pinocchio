@@ -29,15 +29,17 @@ namespace pinocchio
   template<
     typename Scalar,
     int Options,
+    template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename, int>
-    class JointCollectionTpl,
-    class Allocator>
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator>
   PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
   inline void initConstraintDynamics(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, Allocator> & contact_models);
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas);
 
   ///
   /// \brief Computes the forward dynamics with contact constraints according to a given list of
@@ -81,8 +83,7 @@ namespace pinocchio
   template<
     typename Scalar,
     int Options,
-    template<typename, int>
-    class JointCollectionTpl,
+    template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
     typename TangentVectorType1,
     typename TangentVectorType2,
@@ -139,8 +140,7 @@ namespace pinocchio
   template<
     typename Scalar,
     int Options,
-    template<typename, int>
-    class JointCollectionTpl,
+    template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
     typename TangentVectorType1,
     typename TangentVectorType2,
@@ -165,8 +165,7 @@ namespace pinocchio
   template<
     typename Scalar,
     int Options,
-    template<typename, int>
-    class JointCollectionTpl,
+    template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
     typename TangentVectorType1,
     typename TangentVectorType2,

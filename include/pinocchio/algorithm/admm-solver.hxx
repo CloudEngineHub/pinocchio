@@ -226,11 +226,14 @@ namespace pinocchio
     typename VectorLike,
     template<typename T> class Holder,
     typename ConstraintModel,
-    typename ConstraintModelAllocator>
+    typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator>
   bool ADMMContactSolverTpl<_Scalar>::solve(
     DelassusOperatorBase<DelassusDerived> & _delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
+    const std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
     const Scalar dt,
     const boost::optional<RefConstVectorXs> preconditioner,
     const boost::optional<RefConstVectorXs> primal_guess,
@@ -315,23 +318,23 @@ namespace pinocchio
         if (solve_ncp)
         {
           // Add De Saxé shift
-          internal::computeDeSaxeCorrection(constraint_models, z_, s_);
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_, s_);
           z_ += s_;
         }
         x_ = primal_guess.get();
-        internal::computeConeProjection(constraint_models, x_, y_);
+        internal::computeConeProjection(constraint_models, constraint_datas, x_, y_);
       }
       else
       {
         // Warm-start dual variable using primal guess
         x_ = primal_guess.get();
-        internal::computeConeProjection(constraint_models, x_, y_);
+        internal::computeConeProjection(constraint_models, constraint_datas, x_, y_);
         G.applyOnTheRight(y_, z_);
         z_.noalias() += g - y_.cwiseProduct(G.getDamping());
         if (solve_ncp)
         {
           // Add De Saxé shift
-          internal::computeDeSaxeCorrection(constraint_models, z_, s_);
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_, s_);
           z_ += s_;
         }
       }
@@ -344,12 +347,12 @@ namespace pinocchio
         z_ = dual_guess.get();
         if (solve_ncp)
         {
-          internal::computeDeSaxeCorrection(constraint_models, z_, s_);
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_, s_);
           z_ += s_;
         }
         x_ = z_ - g - s_;
         G.solveInPlace(x_);
-        internal::computeConeProjection(constraint_models, x_, y_);
+        internal::computeConeProjection(constraint_models, constraint_datas, x_, y_);
         // y_.setZero();
       }
       else
@@ -359,7 +362,7 @@ namespace pinocchio
         z_ = g;
         if (solve_ncp)
         {
-          internal::computeDeSaxeCorrection(constraint_models, z_, s_);
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_, s_);
           z_ += s_;
         }
       }

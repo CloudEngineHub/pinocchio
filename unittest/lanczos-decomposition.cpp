@@ -10,6 +10,7 @@
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/diagonal-preconditioner.hpp"
 #include "pinocchio/algorithm/delassus-operator-preconditioned.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 
 #include <boost/variant.hpp> // to avoid C99 warnings
 
@@ -190,7 +191,6 @@ BOOST_AUTO_TEST_CASE(test_delassus_cube)
   typedef LanczosDecompositionTpl<Eigen::MatrixXd> LanczosDecomposition;
   ::pinocchio::Model model;
   typedef FrictionalPointConstraintModel ConstraintModel;
-  typedef typename ConstraintModel::ConstraintData ConstraintData;
   std::vector<ConstraintModel> constraint_models;
 
   const double box_mass = 10;
@@ -205,12 +205,10 @@ BOOST_AUTO_TEST_CASE(test_delassus_cube)
   Eigen::VectorXd q0 = neutral(model);
 
   crba(model, data, q0, Convention::WORLD);
-  ContactCholeskyDecomposition chol(model, constraint_models);
-  std::vector<ConstraintData> constraint_datas;
-  for (const auto & cm : constraint_models)
-  {
-    constraint_datas.push_back(cm.createData());
-  }
+  auto constraint_datas = createData(constraint_models);
+  calc(model, data, constraint_models, constraint_datas);
+
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix(true);
@@ -262,7 +260,6 @@ BOOST_AUTO_TEST_CASE(test_delassus_light_cube)
   typedef LanczosDecompositionTpl<Eigen::MatrixXd> LanczosDecomposition;
   ::pinocchio::Model model;
   typedef FrictionalPointConstraintModel ConstraintModel;
-  typedef typename ConstraintModel::ConstraintData ConstraintData;
   std::vector<ConstraintModel> constraint_models;
 
   const double box_mass = 1e-3;
@@ -277,12 +274,10 @@ BOOST_AUTO_TEST_CASE(test_delassus_light_cube)
   Eigen::VectorXd q0 = neutral(model);
 
   crba(model, data, q0, Convention::WORLD);
-  ContactCholeskyDecomposition chol(model, constraint_models);
-  std::vector<ConstraintData> constraint_datas;
-  for (const auto & cm : constraint_models)
-  {
-    constraint_datas.push_back(cm.createData());
-  }
+  auto constraint_datas = createData(constraint_models);
+
+  calc(model, data, constraint_models, constraint_datas);
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix(true);

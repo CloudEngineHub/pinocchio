@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_derivatives_no_contact)
 
   const double r_coeff = 0.5;
 
-  initConstraintDynamics(model, data, empty_contact_models);
+  initConstraintDynamics(model, data, empty_contact_models, empty_contact_data);
   impulseDynamics(
     model, data, q, v, empty_contact_models, empty_contact_data, r_coeff, prox_settings);
 
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_derivatives)
   ProximalSettings prox_settings(1e-12, mu0, 1);
   const double r_coeff = 0.5;
 
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_data);
   impulseDynamics(model, data, q, v, contact_models, contact_data, r_coeff, prox_settings);
   computeImpulseDynamicsDerivatives(
     model, data, contact_models, contact_data, r_coeff, prox_settings);
