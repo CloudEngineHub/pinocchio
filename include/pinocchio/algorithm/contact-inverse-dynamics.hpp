@@ -45,8 +45,10 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef FrictionalPointConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef FrictionalPointConstraintDataTpl<Scalar, Options> ConstraintData;
 
-    const Eigen::Index problem_size = getTotalConstraintActiveSize(constraint_models);
+    const Eigen::Index problem_size =
+      getTotalConstraintActiveSize(constraint_models, constraint_datas);
     const std::size_t n_constraints = constraint_models.size();
     VectorXs R(problem_size);
     Eigen::Index constraint_index = 0;
@@ -161,12 +163,15 @@ namespace pinocchio
     typename Scalar,
     int Options,
     class ConstraintModelAllocator,
+    class ConstraintDataAllocator,
     typename VectorLikeC,
     typename VectorLikeResult>
   bool computeInverseDynamicsConstraintForces(
     const std::vector<
       FrictionalPointConstraintModelTpl<Scalar, Options>,
       ConstraintModelAllocator> & constraint_models,
+    const std::vector<FrictionalPointConstraintDataTpl<Scalar, Options>, ConstraintDataAllocator> &
+      constraint_datas,
     const Eigen::MatrixBase<VectorLikeC> & c_ref,
     const Eigen::MatrixBase<VectorLikeResult> & lambda_sol,
     ProximalSettingsTpl<Scalar> & settings,
@@ -179,9 +184,16 @@ namespace pinocchio
     WrappedConstraintModelVector wrapped_constraint_models(
       constraint_models.cbegin(), constraint_models.cend());
 
+    typedef FrictionalPointConstraintDataTpl<Scalar, Options> ConstraintData;
+    typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
+    typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
+
+    WrappedConstraintDataVector wrapped_constraint_datas(
+      constraint_datas.cbegin(), constraint_datas.cend());
+
     return computeInverseDynamicsConstraintForces(
-      wrapped_constraint_models, c_ref.derived(), lambda_sol.const_cast_derived(), settings,
-      solve_ncp);
+      wrapped_constraint_models, wrapped_constraint_datas, c_ref.derived(),
+      lambda_sol.const_cast_derived(), settings, solve_ncp);
   }
 
   ///

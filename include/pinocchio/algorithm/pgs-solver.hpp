@@ -54,12 +54,15 @@ namespace pinocchio
       typename VectorLike,
       template<typename T> class Holder,
       typename ConstraintModel,
-      typename ConstraintModelAllocator>
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     bool solve(
       const Eigen::MatrixBase<MatrixType> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
         constraint_models,
+      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const boost::optional<RefConstVectorXs> x_guess = boost::none,
       const Scalar over_relax = Scalar(1),
@@ -81,11 +84,14 @@ namespace pinocchio
       typename MatrixType,
       typename VectorLike,
       typename ConstraintModel,
-      typename ConstraintModelAllocator>
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     bool solve(
       const Eigen::MatrixBase<MatrixType> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const boost::optional<RefConstVectorXs> x_guess = boost::none,
       const Scalar over_relax = Scalar(1),
@@ -107,12 +113,15 @@ namespace pinocchio
       typename VectorLike,
       template<typename T> class Holder,
       typename ConstraintModel,
-      typename ConstraintModelAllocator>
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     bool solve(
       const DelassusOperatorDense & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
         constraint_models,
+      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const boost::optional<RefConstVectorXs> x_guess = boost::none,
       const Scalar over_relax = Scalar(1),
@@ -120,7 +129,8 @@ namespace pinocchio
       const bool stat_record = false)
     {
       return solve(
-        delassus.matrix(), g, constraint_models, dt, x_guess, over_relax, solve_ncp, stat_record);
+        delassus.matrix(), g, constraint_models, constraint_datas, dt, x_guess, over_relax,
+        solve_ncp, stat_record);
     }
 
     ///
@@ -134,11 +144,17 @@ namespace pinocchio
     /// \param[in] over_relax Over relaxation value
     ///
     /// \returns True if the problem has converged.
-    template<typename VectorLike, typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename VectorLike,
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     bool solve(
       const DelassusOperatorDense & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const boost::optional<RefConstVectorXs> x_guess = boost::none,
       const Scalar over_relax = Scalar(1),
@@ -146,7 +162,8 @@ namespace pinocchio
       const bool stat_record = false)
     {
       return solve(
-        delassus.matrix(), g, constraint_models, dt, x_guess, over_relax, solve_ncp, stat_record);
+        delassus.matrix(), g, constraint_models, constraint_datas, dt, x_guess, over_relax,
+        solve_ncp, stat_record);
     }
 
     /// \brief Reset the solver.

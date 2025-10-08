@@ -613,7 +613,7 @@ namespace pinocchio
       {
         const ConstraintModel & cmodel = constraint_models[constraint_id];
         const ConstraintData & cdata = constraint_datas[constraint_id];
-        const Eigen::DenseIndex constraint_size = cmodel.activeSize(data);
+        const Eigen::DenseIndex constraint_size = cmodel.activeSize(cdata);
 
         auto G_block = G.block(row_id, row_id, constraint_size, constraint_size);
         auto impulse = x.segment(row_id, constraint_size);
@@ -639,7 +639,7 @@ namespace pinocchio
         primal_feasibility = math::max(primal_feasibility, step.primal_feasibility);
 
         // Update row id for the next constraint
-        row_id += constraint_set_size;
+        row_id += constraint_size;
       }
 
       // Checking stopping residual
@@ -666,12 +666,12 @@ namespace pinocchio
         VectorXs rhs(tmp.size());
         if (solve_ncp)
         {
-          internal::computeDeSaxeCorrection(constraint_models, tmp, rhs);
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, tmp, rhs);
           tmp += rhs;
         }
 
         rhs = tmp;
-        internal::computeDualConeProjection(constraint_models, rhs, rhs);
+        internal::computeDualConeProjection(constraint_models, constraint_datas, rhs, rhs);
         tmp -= rhs;
         Scalar dual_feasibility_ncp = tmp.template lpNorm<Eigen::Infinity>();
         stats.dual_feasibility_ncp.push_back(dual_feasibility_ncp);
@@ -708,11 +708,14 @@ namespace pinocchio
     typename MatrixType,
     typename VectorLike,
     typename ConstraintModel,
-    typename ConstraintModelAllocator>
+    typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator>
   bool PGSContactSolverTpl<_Scalar>::solve(
     const Eigen::MatrixBase<MatrixType> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Scalar dt,
     const boost::optional<RefConstVectorXs> x_guess,
     const Scalar over_relax,
@@ -722,12 +725,17 @@ namespace pinocchio
   {
     typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
     typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
+    typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
+    typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
 
     WrappedConstraintModelVector wrapped_constraint_models(
       constraint_models.cbegin(), constraint_models.cend());
+    WrappedConstraintDataVector wrapped_constraint_datas(
+      constraint_datas.cbegin(), constraint_datas.cend());
 
     return solve(
-      delassus, g, wrapped_constraint_models, dt, x_guess, over_relax, solve_ncp, stat_record);
+      delassus, g, wrapped_constraint_models, wrapped_constraint_datas, dt, x_guess, over_relax,
+      solve_ncp, stat_record);
   }
 } // namespace pinocchio
 

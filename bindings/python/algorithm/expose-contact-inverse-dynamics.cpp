@@ -23,11 +23,12 @@ namespace pinocchio
     static bp::tuple computeInverseDynamicsConstraintForces_wrapper(
       const VectorXs & c_ref,
       const context::FrictionalPointConstraintModelVector & contact_models,
+      const context::FrictionalPointConstraintDataVector & contact_datas,
       const boost::optional<VectorXs> & lambda_guess,
       ProximalSettingsTpl<Scalar> & settings,
       bool solve_ncp)
     {
-      const Eigen::Index problem_size = getTotalConstraintActiveSize(contact_models);
+      const Eigen::Index problem_size = getTotalConstraintActiveSize(contact_models, contact_datas);
       VectorXs lambda_sol(problem_size);
       if (lambda_guess)
         lambda_sol = lambda_guess.get();
@@ -35,7 +36,7 @@ namespace pinocchio
         lambda_sol.setZero();
 
       const bool has_converged = computeInverseDynamicsConstraintForces(
-        contact_models, c_ref, lambda_sol, settings, solve_ncp);
+        contact_models, contact_datas, c_ref, lambda_sol, settings, solve_ncp);
       return bp::make_tuple(has_converged, bp::object(lambda_sol));
     }
 
@@ -64,8 +65,8 @@ namespace pinocchio
 #ifndef PINOCCHIO_PYTHON_SKIP_ALGORITHM_CONSTRAINED_DYNAMICS
       bp::def(
         "computeInverseDynamicsConstraintForces", computeInverseDynamicsConstraintForces_wrapper,
-        (bp::args("contact_models", "c_ref"), bp::arg("lambda_guess") = boost::none,
-         bp::arg("settings"), bp::arg("solve_ncp") = true),
+        (bp::args("c_ref", "contact_models", "contact_datas"),
+         bp::arg("lambda_guess") = boost::none, bp::arg("settings"), bp::arg("solve_ncp") = true),
         "Computes the inverse dynamics with frictional contacts. Returns a tuple containing "
         "(has_converged, lambda_sol).\n\n"
         "Parameters:\n"

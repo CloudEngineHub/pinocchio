@@ -35,12 +35,18 @@ namespace pinocchio
 
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
 
-    template<typename DelassusDerived, typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename DelassusDerived,
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     static bool solve_wrapper(
       Solver & solver,
       DelassusDerived & delassus,
       const VectorXs & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const boost::optional<RefConstVectorXs> preconditioner = boost::none,
       const boost::optional<RefConstVectorXs> primal_solution = boost::none,
@@ -53,29 +59,42 @@ namespace pinocchio
       const bool stat_record = false)
     {
       return solver.solve(
-        delassus, g, constraint_models, dt, preconditioner, primal_solution, dual_solution,
-        solve_ncp, admm_update_rule, rho0, admm_proximal_rule, mu_prox0, stat_record);
+        delassus, g, constraint_models, constraint_datas, dt, preconditioner, primal_solution,
+        dual_solution, solve_ncp, admm_update_rule, rho0, admm_proximal_rule, mu_prox0,
+        stat_record);
     }
 
-    template<typename DelassusDerived, typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename DelassusDerived,
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     static bool solve_wrapper2(
       Solver & solver,
       DelassusDerived & delassus,
       const VectorXs & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const VectorXs & primal_guess,
       const bool solve_ncp = true)
     {
-      return solver.solve(delassus, g, constraint_models, dt, primal_guess, solve_ncp);
+      return solver.solve(
+        delassus, g, constraint_models, constraint_datas, dt, primal_guess, solve_ncp);
     }
 #endif
 
 #ifndef PINOCCHIO_PYTHON_SKIP_CASADI_UNSUPPORTED
 
-    template<typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     static context::VectorXs computeConeProjection_wrapper(
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const VectorXs & forces)
     {
       context::VectorXs res(forces.size());
@@ -86,13 +105,25 @@ namespace pinocchio
       WrappedConstraintModelVector wrapped_constraint_models(
         constraint_models.cbegin(), constraint_models.cend());
 
-      ::pinocchio::internal::computeConeProjection(wrapped_constraint_models, forces, res);
+      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
+      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
+
+      WrappedConstraintDataVector wrapped_constraint_datas(
+        constraint_datas.cbegin(), constraint_datas.cend());
+
+      ::pinocchio::internal::computeConeProjection(
+        wrapped_constraint_models, wrapped_constraint_datas, forces, res);
       return res;
     }
 
-    template<typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     static context::VectorXs computeDualConeProjection_wrapper(
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const VectorXs & velocities)
     {
       context::VectorXs res(velocities.size());
@@ -103,7 +134,14 @@ namespace pinocchio
       WrappedConstraintModelVector wrapped_constraint_models(
         constraint_models.cbegin(), constraint_models.cend());
 
-      ::pinocchio::internal::computeDualConeProjection(wrapped_constraint_models, velocities, res);
+      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
+      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
+
+      WrappedConstraintDataVector wrapped_constraint_datas(
+        constraint_datas.cbegin(), constraint_datas.cend());
+
+      ::pinocchio::internal::computeDualConeProjection(
+        wrapped_constraint_models, wrapped_constraint_datas, velocities, res);
       return res;
     }
 
@@ -115,18 +153,29 @@ namespace pinocchio
       return ::pinocchio::internal::computePrimalFeasibility(constraint_models, forces);
     }
 
-    template<typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     static context::Scalar computeReprojectionError_wrapper(
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const VectorXs & forces,
       const VectorXs & velocities)
     {
-      return ::pinocchio::internal::computeReprojectionError(constraint_models, forces, velocities);
+      return ::pinocchio::internal::computeReprojectionError(
+        constraint_models, constraint_datas, forces, velocities);
     }
 
-    template<typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     static context::VectorXs computeDeSaxeCorrection_wrapper(
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const VectorXs & velocities)
     {
       context::VectorXs res(velocities.size());
@@ -136,7 +185,14 @@ namespace pinocchio
       WrappedConstraintModelVector wrapped_constraint_models(
         constraint_models.cbegin(), constraint_models.cend());
 
-      ::pinocchio::internal::computeDeSaxeCorrection(wrapped_constraint_models, velocities, res);
+      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
+      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
+
+      WrappedConstraintDataVector wrapped_constraint_datas(
+        constraint_datas.cbegin(), constraint_datas.cend());
+
+      ::pinocchio::internal::computeDeSaxeCorrection(
+        wrapped_constraint_models, wrapped_constraint_datas, velocities, res);
       return res;
     }
 #endif // PINOCCHIO_PYTHON_SKIP_CASADI_UNSUPPORTED
@@ -158,8 +214,11 @@ namespace pinocchio
       template<typename ConstraintModel>
       void run(ConstraintModelBase<ConstraintModel> * ptr = 0)
       {
+        using ConstraintData = typename traits<ConstraintModel>::ConstraintData;
+
         PINOCCHIO_UNUSED_VARIABLE(ptr);
         typedef Eigen::aligned_allocator<ConstraintModel> ConstraintModelAllocator;
+        typedef Eigen::aligned_allocator<ConstraintData> ConstraintDataAllocator;
 
         if (!eigenpy::register_symbolic_link_to_registered_type<::pinocchio::ADMMUpdateRule>())
         {
@@ -185,8 +244,8 @@ namespace pinocchio
             "solve",
             solve_wrapper<
               ContactCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
-              ConstraintModelAllocator>,
-            (bp::args("self", "delassus", "g", "constraint_models", "dt"),
+              ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
+            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
@@ -196,8 +255,9 @@ namespace pinocchio
           .def(
             "solve",
             solve_wrapper<
-              context::DelassusOperatorDense, ConstraintModel, ConstraintModelAllocator>,
-            (bp::args("self", "delassus", "g", "constraint_models", "dt"),
+              context::DelassusOperatorDense, ConstraintModel, ConstraintModelAllocator,
+              ConstraintData, ConstraintDataAllocator>,
+            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
@@ -207,8 +267,9 @@ namespace pinocchio
           .def(
             "solve",
             solve_wrapper<
-              context::DelassusOperatorSparse, ConstraintModel, ConstraintModelAllocator>,
-            (bp::args("self", "delassus", "g", "constraint_models", "dt"),
+              context::DelassusOperatorSparse, ConstraintModel, ConstraintModelAllocator,
+              ConstraintData, ConstraintDataAllocator>,
+            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
@@ -235,15 +296,17 @@ namespace pinocchio
 
         bp::def(
           "computeConeProjection",
-          computeConeProjection_wrapper<ConstraintModel, ConstraintModelAllocator>,
-          bp::args("constraint_models", "forces"),
+          computeConeProjection_wrapper<
+            ConstraintModel, ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
+          bp::args("constraint_models", "constraint_datas", "forces"),
           "Project a vector on the cartesian product of the constraint set associated with each "
           "constraint model.");
 
         bp::def(
           "computeDualConeProjection",
-          computeDualConeProjection_wrapper<ConstraintModel, ConstraintModelAllocator>,
-          bp::args("constraint_models", "velocities"),
+          computeDualConeProjection_wrapper<
+            ConstraintModel, ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
+          bp::args("constraint_models", "constraint_datas", "velocities"),
           "Project a vector on the cartesian product of dual cones.");
 
         // TODO(jcarpent): restore these two next signatures
@@ -259,8 +322,9 @@ namespace pinocchio
 
         bp::def(
           "computeDeSaxeCorrection",
-          computeDeSaxeCorrection_wrapper<ConstraintModel, ConstraintModelAllocator>,
-          bp::args("constraint_models", "velocities"),
+          computeDeSaxeCorrection_wrapper<
+            ConstraintModel, ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
+          bp::args("constraint_models", "constraint_datas", "velocities"),
           "Compute the complementarity shift associated to the De Saxé function.");
       }
       //

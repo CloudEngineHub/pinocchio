@@ -597,11 +597,15 @@ namespace pinocchio
       typename VectorLike,
       template<typename T> class Holder,
       typename ConstraintModel,
-      typename ConstraintAllocator>
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     bool solve(
       DelassusOperatorBase<DelassusDerived> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<Holder<const ConstraintModel>, ConstraintAllocator> & constraint_models,
+      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
+        constraint_models,
+      const std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const boost::optional<RefConstVectorXs> preconditioner = boost::none,
       const boost::optional<RefConstVectorXs> primal_guess = boost::none,
@@ -633,11 +637,14 @@ namespace pinocchio
       typename DelassusDerived,
       typename VectorLike,
       typename ConstraintModel,
-      typename ConstraintAllocator>
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     bool solve(
       DelassusOperatorBase<DelassusDerived> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<ConstraintModel, ConstraintAllocator> & constraint_models,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const boost::optional<RefConstVectorXs> preconditioner = boost::none,
       const boost::optional<RefConstVectorXs> primal_guess = boost::none,
@@ -655,9 +662,16 @@ namespace pinocchio
       WrappedConstraintModelVector wrapped_constraint_models(
         constraint_models.cbegin(), constraint_models.cend());
 
+      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
+      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
+
+      WrappedConstraintDataVector wrapped_constraint_datas(
+        constraint_datas.cbegin(), constraint_datas.cend());
+
       return solve(
-        delassus, g, wrapped_constraint_models, dt, preconditioner, primal_guess, dual_guess,
-        solve_ncp, admm_update_rule, rho0, admm_proximal_policy, mu_prox0, stat_record);
+        delassus, g, wrapped_constraint_models, wrapped_constraint_datas, dt, preconditioner,
+        primal_guess, dual_guess, solve_ncp, admm_update_rule, rho0, admm_proximal_policy, mu_prox0,
+        stat_record);
     }
 
     ///
@@ -676,19 +690,23 @@ namespace pinocchio
       typename VectorLike,
       template<typename T> class Holder,
       typename ConstraintModel,
-      typename ConstraintAllocator,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator,
       typename VectorLikeOut>
     bool solve(
       DelassusOperatorBase<DelassusDerived> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<Holder<const ConstraintModel>, ConstraintAllocator> & constraint_models,
+      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
+        constraint_models,
+      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const Eigen::DenseBase<VectorLikeOut> & primal_guess,
       const bool solve_ncp = true)
     {
       return solve(
-        delassus.derived(), g.derived(), constraint_models, dt, boost::none, primal_guess.derived(),
-        boost::none, solve_ncp);
+        delassus.derived(), g.derived(), constraint_models, constraint_datas, dt, boost::none,
+        primal_guess.derived(), boost::none, solve_ncp);
     }
 
     ///
@@ -706,12 +724,15 @@ namespace pinocchio
       typename DelassusDerived,
       typename VectorLike,
       typename ConstraintModel,
-      typename ConstraintAllocator,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator,
       typename VectorLikeOut>
     bool solve(
       DelassusOperatorBase<DelassusDerived> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<ConstraintModel, ConstraintAllocator> & constraint_models,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const Eigen::DenseBase<VectorLikeOut> & primal_guess,
       const bool solve_ncp = true)
@@ -722,7 +743,15 @@ namespace pinocchio
       WrappedConstraintModelVector wrapped_constraint_models(
         constraint_models.cbegin(), constraint_models.cend());
 
-      return solve(delassus, g, wrapped_constraint_models, dt, primal_guess, solve_ncp);
+      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
+      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
+
+      WrappedConstraintDataVector wrapped_constraint_datas(
+        constraint_datas.cbegin(), constraint_datas.cend());
+
+      return solve(
+        delassus, g, wrapped_constraint_models, wrapped_constraint_datas, dt, primal_guess,
+        solve_ncp);
     }
 
     /// \returns the primal solution of the problem

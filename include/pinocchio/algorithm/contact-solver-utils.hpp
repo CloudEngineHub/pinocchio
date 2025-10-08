@@ -92,7 +92,7 @@ namespace pinocchio
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
         const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const ConstraintModel & cdata = constraint_datas[constraint_id];
+        const ConstraintData & cdata = constraint_datas[constraint_id];
         const auto active_size = cmodel.activeSize(cdata);
         SegmentType1 force_segment = x.derived().segment(index, active_size);
         SegmentType2 res = x_proj.segment(index, active_size);

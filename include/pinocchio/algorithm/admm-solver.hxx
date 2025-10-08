@@ -385,14 +385,15 @@ namespace pinocchio
     rhs += g - y_.cwiseProduct(G.getDamping());
     if (solve_ncp)
     {
-      internal::computeDeSaxeCorrection(constraint_models, rhs, s_);
+      internal::computeDeSaxeCorrection(constraint_models, constraint_datas, rhs, s_);
       rhs += s_;
     }
-    internal::computeDualConeProjection(constraint_models, rhs, tmp);
+    internal::computeDualConeProjection(constraint_models, constraint_datas, rhs, tmp);
     tmp -= rhs;
     dual_feasibility = tmp.template lpNorm<Eigen::Infinity>();
     // -- complementarity
-    complementarity = internal::computeConicComplementarity(constraint_models, rhs, y_);
+    complementarity =
+      internal::computeConicComplementarity(constraint_models, constraint_datas, rhs, y_);
 
     bool abs_prec_reached = false;
     bool rel_prec_reached = false;
@@ -537,7 +538,7 @@ namespace pinocchio
         {
           PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop computeConeProjection");
           tmp = x_anderson_ - z_anderson_ / (tau * rho);
-          internal::computeConeProjection(constraint_models, tmp, y_);
+          internal::computeConeProjection(constraint_models, constraint_datas, tmp, y_);
 
           anderson_primal_feasibility_vector = x_anderson_ - y_;
           anderson_primal_feasibility =
@@ -554,7 +555,7 @@ namespace pinocchio
               x_previous_ = x_;
               z_previous_ = z_;
               tmp = x_previous_ - z_previous_ / (tau * rho);
-              internal::computeConeProjection(constraint_models, tmp, y_);
+              internal::computeConeProjection(constraint_models, constraint_datas, tmp, y_);
 
               this->anderson_history.clear();
 
@@ -619,7 +620,8 @@ namespace pinocchio
         primal_feasibility = primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
         dual_feasibility = dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
         dual_feasibility = math::max(mu_prox * tau_prox, rho * tau) * dual_feasibility;
-        complementarity = internal::computeConicComplementarity(constraint_models, z_, y_);
+        complementarity =
+          internal::computeConicComplementarity(constraint_models, constraint_datas, z_, y_);
 
         if (stat_record)
         {
@@ -627,11 +629,11 @@ namespace pinocchio
           rhs += g - prox_value * y_;
           if (solve_ncp)
           {
-            internal::computeDeSaxeCorrection(constraint_models, rhs, tmp);
+            internal::computeDeSaxeCorrection(constraint_models, constraint_datas, rhs, tmp);
             rhs += tmp;
           }
 
-          internal::computeDualConeProjection(constraint_models, rhs, tmp);
+          internal::computeDualConeProjection(constraint_models, constraint_datas, rhs, tmp);
           rhs -= tmp;
 
           Scalar dual_feasibility_ncp = rhs.template lpNorm<Eigen::Infinity>();

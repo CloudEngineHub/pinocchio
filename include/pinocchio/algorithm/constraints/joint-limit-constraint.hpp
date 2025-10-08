@@ -391,7 +391,7 @@ namespace pinocchio
     }
     int upperActiveSize(const ConstraintData & constraint_data) const
     {
-      return activeSize(constraint_data) - lowerActiveactiveSize(constraint_data);
+      return activeSize(constraint_data) - lowerActiveSize(constraint_data);
     }
 
     const VectorXs & getBoundPositionLimit() const
