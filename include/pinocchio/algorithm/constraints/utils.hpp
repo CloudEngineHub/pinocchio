@@ -52,6 +52,38 @@ namespace pinocchio
     return constraint_datas;
   }
 
+  /**
+   * @brief Evaluate all the constraint models given a Pinocchio model and data.
+   *
+   * This function iterates through the provided list of constraint models
+   * and calls their respective `calc` methods using the given model and data.
+   * The computation results for each constraint model are stored in the
+   * corresponding constraint data objects.
+   *
+   * @tparam Scalar Type of the scalar values (typically double or float).
+   * @tparam Options Template options passed to Pinocchio's ModelTpl and DataTpl.
+   * @tparam JointCollectionTpl The joint collection type defining the set of joints supported by
+   * the model.
+   * @tparam ConstraintModel Type of each constraint model contained in the @p constraint_models
+   * vector.
+   * @tparam ConstraintModelAllocator Allocator type for the @p constraint_models vector.
+   * @tparam ConstraintData Type of each constraint data object contained in the @p constraint_datas
+   * vector.
+   * @tparam ConstraintDataAllocator Allocator type for the @p constraint_datas vector.
+   *
+   * @param[in] model The Pinocchio model structure.
+   * @param[in] data The Pinocchio data structure associated with the model.
+   * @param[in] constraint_models A vector of constraint model objects describing the constraints to
+   * be evaluated.
+   * @param[out] constraint_datas A vector of constraint data objects where each corresponding
+   * constraint model’s results are stored.
+   *
+   * @note The size of @p constraint_models and @p constraint_datas must match.
+   * @warning This function assumes that each constraint model and its corresponding data object
+   * refer to the same type of constraint.
+   *
+   * @sa ConstraintModelTpl::calc, ConstraintDataTpl
+   */
   template<
     typename Scalar,
     int Options,
