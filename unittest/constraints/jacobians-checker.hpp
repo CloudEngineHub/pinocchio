@@ -17,7 +17,7 @@ namespace pinocchio
     const ConstraintModelBase<ConstraintModelDerived> & cmodel,
     ConstraintDataBase<ConstraintDataDerived> & cdata)
   {
-    Data::MatrixXs J_ref = Data::MatrixXs::Zero(cmodel.size(), model.nv);
+    Data::MatrixXs J_ref = Data::MatrixXs::Zero(cmodel.activeSize(cdata), model.nv);
     getConstraintJacobian(model, data, cmodel, cdata, J_ref);
 
     // Check Jacobian matrix product
@@ -31,9 +31,9 @@ namespace pinocchio
     for (int k = 0; k < num_tests; ++k)
     {
       const Data::MatrixXs mat = Data::MatrixXs::Random(model.nv, m);
-      Data::MatrixXs res(cmodel.size(), m);
+      Data::MatrixXs res(cmodel.activeSize(cdata), m);
 
-      const Data::MatrixXs mat_transpose = Data::MatrixXs::Random(cmodel.size(), m);
+      const Data::MatrixXs mat_transpose = Data::MatrixXs::Random(cmodel.activeSize(cdata), m);
       Data::MatrixXs res_transpose(model.nv, m);
 
       // Set to

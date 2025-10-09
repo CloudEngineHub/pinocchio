@@ -241,8 +241,8 @@ namespace pinocchio
     const Eigen::MatrixBase<JacobianMatrixLike> & J_)
   {
     JacobianMatrixLike & J = J_.const_cast_derived();
-    const auto & constraint_model = constraint_model_.derived();
-    auto & constraint_data = constraint_data_.derived();
+    const ConstraintModel & constraint_model = constraint_model_.derived();
+    ConstraintData & constraint_data = constraint_data_.derived();
 
     assert(model.check(data) && "data is not consistent with model.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_model.activeSize(constraint_data));

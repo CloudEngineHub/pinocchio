@@ -11,11 +11,14 @@
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 
-template<typename Scalar>
-struct BaumgarteCorrectorParametersTpl;
-
 namespace pinocchio
 {
+
+  template<typename Scalar>
+  struct BaumgarteCorrectorParametersTpl;
+
+  template<typename ConstraintDataDerived>
+  struct ConstraintDataBase;
 
   enum struct ConstraintFormulationLevel
   {
@@ -348,7 +351,8 @@ namespace pinocchio
       }
     }
 
-    int activeSize(const ConstraintData & constraint_data) const
+    template<typename ConstraintDataDerived>
+    int activeSize(const ConstraintDataBase<ConstraintDataDerived> & constraint_data) const
     {
       if constexpr (traits<Derived>::constant_size)
       {
@@ -356,7 +360,7 @@ namespace pinocchio
       }
       else
       {
-        return derived().activeSize(constraint_data);
+        return derived().activeSize(constraint_data.derived());
       }
     }
 

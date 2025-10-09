@@ -286,7 +286,7 @@ namespace pinocchio
     }
 
     // Resize the constraint residual/compliance storage to the active set size.
-    const int active_size = size(cdata);
+    const int active_size = activeSize(cdata);
     cdata.constraint_residual_storage.resize(active_size);
 
     // Update the active compliance
@@ -299,7 +299,7 @@ namespace pinocchio
     }
 
     // Resize the constraint set so it corresponds to the active set.
-    m_set.resize(lowersize(cdata), uppersize(cdata));
+    m_set.resize(lowerActiveSize(cdata), upperActiveSize(cdata));
   }
 
   template<typename Scalar, int Options>
@@ -312,21 +312,21 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(model);
     PINOCCHIO_UNUSED_VARIABLE(data);
 
-    const std::size_t active_size = static_cast<std::size_t>(this->size(cdata));
     auto & activable_constraint_residual = cdata.activable_constraint_residual;
     auto & constraint_residual = cdata.constraint_residual;
 
-    resize(model, data, cdata);
+    const_cast<JointLimitConstraintModelTpl &>(*this).resize(model, data, cdata);
+    const std::size_t active_size = static_cast<std::size_t>(this->activeSize(cdata));
 
     assert(
-      constraint_residual.size() == this->size(cdata)
+      constraint_residual.size() == active_size
       && "The active constraint_residual size in constraint data is different from the constraint "
          "model active size.");
 
     // Fill the constraint residual for all active constraints.
     for (std::size_t active_row_index = 0; active_row_index < active_size; active_row_index++)
     {
-      constraint_residual[int(cdata.active_row_index)] =
+      constraint_residual[int(active_row_index)] =
         activable_constraint_residual[int(cdata.active_set_indexes[active_row_index])];
     }
 
@@ -345,7 +345,7 @@ namespace pinocchio
     JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      jacobian_matrix.rows(), this->size(cdata),
+      jacobian_matrix.rows(), this->activeSize(cdata),
       "The input/output Jacobian matrix does not have the right number of rows.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       jacobian_matrix.cols(), model.nv,
@@ -354,7 +354,7 @@ namespace pinocchio
     const CompactTangentMap & CTM = cdata.compact_tangent_map;
     jacobian_matrix.setZero();
     Eigen::DenseIndex row_id = 0;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(size(cdata));
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
     {
       jacobian_matrix.row(row_id).segment(
@@ -381,7 +381,7 @@ namespace pinocchio
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), size(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), activeSize(cdata));
     PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(aot);
 
@@ -390,7 +390,7 @@ namespace pinocchio
 
     const CompactTangentMap & CTM = cdata.compact_tangent_map;
     Eigen::DenseIndex row_id = 0;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(size(cdata));
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
     {
       const auto lazy_product_expression =
@@ -419,7 +419,7 @@ namespace pinocchio
   {
     OutputMatrix & res = _res.const_cast_derived();
 
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), size(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), activeSize(cdata));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), mat.cols());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
@@ -430,7 +430,7 @@ namespace pinocchio
 
     const CompactTangentMap & CTM = cdata.compact_tangent_map;
     Eigen::DenseIndex row_id = 0;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(size(cdata));
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
     {
       const auto lazy_product_expression = -CTM.row(cdata.active_idx_qs_reduce[constraint_id])
@@ -462,19 +462,18 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      diagonal_constraint_inertia.size(), size(cdata),
+      diagonal_constraint_inertia.size(), activeSize(cdata),
       "The diagonal_constraint_inertia is of wrong size.");
 
     const auto & compact_tangent_map = cdata.compact_tangent_map;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(size(cdata));
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
     {
       const Eigen::Index constraint_size = cdata.active_nvs[constraint_id];
       const auto & constraint_damping_value =
         diagonal_constraint_inertia[Eigen::DenseIndex(constraint_id)];
       const auto constraint_jacobian =
-        -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id])
-           .head(cdata.constraint_size);
+        -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
 
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -504,7 +503,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConstraintForcesLike> & constraint_forces,
     const Eigen::MatrixBase<JointTorquesLike> & joint_torques_) const
   {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), size(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), activeSize(cdata));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_torques_.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
 
@@ -512,13 +511,12 @@ namespace pinocchio
     joint_torques.setZero();
 
     const auto & compact_tangent_map = cdata.compact_tangent_map;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(size(cdata));
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
     {
       const Eigen::Index constraint_size = cdata.active_nvs[constraint_id];
       const auto constraint_jacobian =
-        -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id])
-           .head(cdata.constraint_size);
+        -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
 
       joint_torques.middleRows(cdata.active_idx_vs[constraint_id], constraint_size).noalias() +=
         constraint_jacobian.transpose() * constraint_forces.row(Eigen::DenseIndex(constraint_id));
@@ -537,7 +535,7 @@ namespace pinocchio
     const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
     const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions_) const
   {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions_.rows(), size(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions_.rows(), activeSize(cdata));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_motions.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
 
@@ -545,13 +543,12 @@ namespace pinocchio
     constraint_motions.setZero();
 
     const auto & compact_tangent_map = cdata.compact_tangent_map;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(size(cdata));
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
     {
       const Eigen::Index constraint_size = cdata.active_nvs[constraint_id];
       const auto constraint_jacobian =
-        -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id])
-           .head(cdata.constraint_size);
+        -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
 
       constraint_motions.row(Eigen::DenseIndex(constraint_id)).noalias() +=
         constraint_jacobian

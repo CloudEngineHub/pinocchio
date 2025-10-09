@@ -113,6 +113,9 @@ namespace pinocchio
     typedef ConstraintModelCommonParameters<JointLimitConstraintModelTpl> BaseCommonParameters;
 
     template<typename NewScalar, int NewOptions>
+    friend struct JointLimitConstraintDataTpl;
+
+    template<typename NewScalar, int NewOptions>
     friend struct JointLimitConstraintModelTpl;
 
     static const ConstraintFormulationLevel constraint_formulation_level =
@@ -634,6 +637,9 @@ namespace pinocchio
     typedef ConstraintDataBase<JointLimitConstraintDataTpl> Base;
     typedef std::vector<JointIndex> JointIndexVector;
 
+    template<typename NewScalar, int NewOptions>
+    friend struct JointLimitConstraintModelTpl;
+
     typedef JointLimitConstraintModelTpl<Scalar, Options> ConstraintModel;
 
     typedef typename ConstraintModel::VectorXs VectorXs;
@@ -678,7 +684,9 @@ namespace pinocchio
       active_nvs.reserve(max_size);
       active_idx_vs.reserve(max_size);
       active_compliance_storage.reserve(max_size);
-      assert(constraint_model.size(*this) == lowerActiveSize(*this) == upperActiveSize(*this) == 0);
+      assert(
+        constraint_model.activeSize(*this) == constraint_model.lowerActiveSize(*this)
+        == constraint_model.upperActiveSize(*this) == 0);
 
       constraint_residual_storage.resize(0);
     }
@@ -738,8 +746,6 @@ namespace pinocchio
     /// \brief Residual of the active constraints
     EigenStorageVector constraint_residual_storage;
     typename EigenStorageVector::RefMapType constraint_residual;
-
-    friend struct JointLimitConstraintModelTpl<Scalar, Options>;
 
   protected:
     /// @brief number of active lower bound limits activable
