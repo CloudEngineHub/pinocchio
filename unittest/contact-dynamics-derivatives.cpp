@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2022 CNRS INRIA
+// Copyright (c) 2020-2025 INRIA
 //
 
 #include <iostream>
@@ -12,6 +12,7 @@
 #include "pinocchio/algorithm/aba-derivatives.hpp"
 #include "pinocchio/algorithm/kinematics-derivatives.hpp"
 #include "pinocchio/algorithm/frames-derivatives.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
 #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
@@ -58,7 +59,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_constraint_dynamics_derivatives_no_contact)
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, empty_constraint_models);
+  initConstraintDynamics(model, data, empty_constraint_models, empty_constraint_data);
   constraintDynamics(
     model, data, q, v, tau, empty_constraint_models, empty_constraint_data, prox_settings);
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -137,7 +138,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_constraint_dynamics_derivatives)
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   data.M.triangularView<Eigen::StrictlyLower>() =
     data.M.transpose().triangularView<Eigen::StrictlyLower>();
@@ -326,14 +327,15 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_fd)
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const Data::TangentVectorType a = data.ddq;
   computeConstraintDynamicsDerivatives(
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -464,7 +466,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
 
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
   constraint_datas = createData(constraint_models);
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_datas);
   const Eigen::VectorXd ddq0 =
     constraintDynamics(model, data, q, v, tau, constraint_models, constraint_datas, prox_settings);
 
@@ -526,7 +528,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
 
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
   constraint_datas_fd = createData(constraint_models);
-  initConstraintDynamics(model, data_fd, constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   Data::Matrix6x dacc_corrector_RF_dq_fd(6, model.nv);
   Data::Matrix3x dacc_corrector_LF_dq_fd(3, model.nv);
@@ -649,7 +651,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd)
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const Data::TangentVectorType a = data.ddq;
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -658,7 +660,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd)
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -768,7 +771,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd_prox)
   const double mu0 = 1e-4;
   ProximalSettings prox_settings(1e-12, mu0, 20);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   VectorXd a_res =
     constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   BOOST_CHECK(prox_settings.iter > 1 && prox_settings.iter <= prox_settings.max_iter);
@@ -780,7 +783,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd_prox)
 
   ProximalSettings prox_settings_fd(1e-12, mu0, 20);
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -900,7 +904,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_loop_closure_3D_
   const double mu0 = 1e-4;
   ProximalSettings prox_settings(1e-12, mu0, 20);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   VectorXd a_res =
     constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   BOOST_CHECK(prox_settings.iter > 1 && prox_settings.iter <= prox_settings.max_iter);
@@ -912,7 +916,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_loop_closure_3D_
 
   ProximalSettings prox_settings_fd(1e-12, mu0, 20);
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -1036,7 +1041,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const Data::TangentVectorType a = data.ddq;
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -1045,7 +1050,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -1187,7 +1193,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 100);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   const VectorXd ddq0 =
     constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   BOOST_CHECK(
@@ -1231,7 +1237,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
   MatrixXd dconstraint_acceleration_error_dq_fd(6, model.nv);
   dconstraint_acceleration_error_dq_fd.setZero();
 
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
   for (int k = 0; k < model.nv; ++k)
   {
     v_eps[k] += alpha;
@@ -1368,7 +1375,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 100);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   const VectorXd ddq0 =
     constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const VectorXd lambda0 = data.lambda_c;
@@ -1388,7 +1395,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
   BOOST_CHECK(constraint_acceleration_error.isApprox(a_error.toVector() - data.dac_da * ddq0));
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   VectorXd v_eps(VectorXd::Zero(model.nv));
   VectorXd q_plus(model.nq);
@@ -1548,7 +1556,7 @@ BOOST_AUTO_TEST_CASE(
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const Data::TangentVectorType a = data.ddq;
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -1557,7 +1565,8 @@ BOOST_AUTO_TEST_CASE(
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -1675,7 +1684,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const Data::TangentVectorType a = data.ddq;
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -1684,7 +1693,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -1804,7 +1814,7 @@ BOOST_AUTO_TEST_CASE(
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const Data::TangentVectorType a = data.ddq;
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -1813,7 +1823,8 @@ BOOST_AUTO_TEST_CASE(
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -1924,7 +1935,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_6D
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
 
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -1933,7 +1944,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_6D
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -2041,7 +2053,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_3D
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
 
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -2050,7 +2062,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_3D
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -2181,7 +2194,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const Data::TangentVectorType a = data.ddq;
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -2190,7 +2203,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
 
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
@@ -2360,7 +2374,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const Data::TangentVectorType a = data.ddq;
   data.M.triangularView<Eigen::StrictlyLower>() =
@@ -2369,7 +2383,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
     model, data, constraint_models, constraint_data, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
   const VectorXd ddq0 = constraintDynamics(
     model, data_fd, q, v, tau, constraint_models, constraint_data, prox_settings);
   const VectorXd lambda0 = data_fd.lambda_c;
@@ -2491,7 +2506,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_dirty_data)
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data_dirty, constraint_models);
+  initConstraintDynamics(model, data_dirty, constraint_models, constraint_data);
   constraintDynamics(
     model, data_dirty, q, v, tau, constraint_models, constraint_data, prox_settings);
   computeConstraintDynamicsDerivatives(
@@ -2508,7 +2523,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_dirty_data)
 
   // Test with fresh data
   Data data_fresh(model);
-  initConstraintDynamics(model, data_fresh, constraint_models);
+  initConstraintDynamics(model, data_fresh, constraint_models, constraint_data);
   constraintDynamics(
     model, data_fresh, q, v, tau, constraint_models, constraint_data, prox_settings);
   computeConstraintDynamicsDerivatives(
@@ -2554,7 +2569,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_cassie_proximal)
 
   Data data(model), data_fd(model);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   for (int k = 0; k < (int)constraint_models.size(); ++k)
   {
     constraint_datas.push_back(RigidConstraintData(constraint_models[(pinocchio::JointIndex)k]));
@@ -2564,14 +2579,15 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_cassie_proximal)
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_dim += constraint_models[k].size();
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_datas, prox_settings);
   data.M.triangularView<Eigen::StrictlyLower>() =
     data.M.transpose().triangularView<Eigen::StrictlyLower>();
   computeConstraintDynamicsDerivatives(
     model, data, constraint_models, constraint_datas, prox_settings);
 
-  initConstraintDynamics(model, data_fd, constraint_models);
+  auto constraint_datas_fd = createData(constraint_models);
+  initConstraintDynamics(model, data_fd, constraint_models, constraint_datas_fd);
   MatrixXd ddq_partial_dq_fd(model.nv, model.nv);
   ddq_partial_dq_fd.setZero();
   MatrixXd ddq_partial_dv_fd(model.nv, model.nv);
@@ -2601,7 +2617,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_cassie_proximal)
     v_eps[k] += alpha;
     q_plus = integrate(model, q, v_eps);
     ddq_plus = constraintDynamics(
-      model, data_fd, q_plus, v, tau, constraint_models, constraint_datas, prox_settings);
+      model, data_fd, q_plus, v, tau, constraint_models, constraint_datas_fd, prox_settings);
     ddq_partial_dq_fd.col(k) = (ddq_plus - ddq0) / alpha;
     lambda_partial_dq_fd.col(k) = (data_fd.lambda_c - lambda0) / alpha;
     v_eps[k] = 0.;

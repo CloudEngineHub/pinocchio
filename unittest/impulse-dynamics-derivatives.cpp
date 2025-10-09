@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
   ProximalSettings prox_settings(1e-12, mu0, 1);
   const double r_coeff = 0.5;
 
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_data);
   impulseDynamics(model, data, q, v, contact_models, contact_data, r_coeff, prox_settings);
   computeImpulseDynamicsDerivatives(
     model, data, contact_models, contact_data, r_coeff, prox_settings);
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_WORLD_ALIGNED_fd)
 
   // Contact models and data
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_data;
+  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_data, contact_data_fd;
 
   RigidConstraintModel ci_LF(CONTACT_6D, model, LF_id, SE3::Random(), LOCAL_WORLD_ALIGNED);
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, SE3::Random(), LOCAL_WORLD_ALIGNED);
@@ -301,13 +301,14 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_WORLD_ALIGNED_fd)
   ProximalSettings prox_settings(1e-12, mu0, 1);
   const double r_coeff = 0.5;
 
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_data);
   impulseDynamics(model, data, q, v, contact_models, contact_data, r_coeff, prox_settings);
   computeImpulseDynamicsDerivatives(
     model, data, contact_models, contact_data, r_coeff, prox_settings);
 
   // Data_fd
-  initConstraintDynamics(model, data_fd, contact_models);
+  contact_data_fd = contact_data; // copy
+  initConstraintDynamics(model, data_fd, contact_models, contact_data_fd);
 
   MatrixXd dqafter_partial_dq_fd(model.nv, model.nv);
   dqafter_partial_dq_fd.setZero();

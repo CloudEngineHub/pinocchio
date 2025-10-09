@@ -946,6 +946,7 @@ namespace pinocchio
     {
       return 3;
     }
+    using Base::activeSize;
 
     /// \returns An expression of *this with the Scalar type casted to NewScalar.
     template<typename NewScalar, typename OtherDerived>

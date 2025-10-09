@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_empty)
   Eigen::MatrixXd KKT_matrix_ref = Eigen::MatrixXd::Zero(model.nv, model.nv);
   KKT_matrix_ref.bottomRightCorner(model.nv, model.nv) = data_ref.M;
 
-  initConstraintDynamics(model, data, empty_contact_models);
+  initConstraintDynamics(model, data, empty_contact_models, empty_contact_datas);
   constraintDynamics(
     model, data, q, v, tau, empty_contact_models, empty_contact_datas, prox_settings);
 
@@ -236,26 +236,26 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_double_init)
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  initConstraintDynamics(model, data1, contact_models_empty);
+  initConstraintDynamics(model, data1, contact_models_empty, contact_datas_empty);
   BOOST_CHECK(data1.contact_chol.size() == (model.nv + 0));
   constraintDynamics(
     model, data1, q, v, tau, contact_models_empty, contact_datas_empty, prox_settings);
   BOOST_CHECK(!hasNaN(data1.ddq));
 
-  initConstraintDynamics(model, data1, contact_models_6D);
+  initConstraintDynamics(model, data1, contact_models_6D, contact_datas_6D);
   BOOST_CHECK(data1.contact_chol.size() == (model.nv + 1 * 6));
   constraintDynamics(model, data1, q, v, tau, contact_models_6D, contact_datas_6D, prox_settings);
   BOOST_CHECK(!hasNaN(data1.ddq));
 
-  initConstraintDynamics(model, data1, contact_models_6D6D);
+  initConstraintDynamics(model, data1, contact_models_6D6D, contact_datas_6D6D);
   BOOST_CHECK(data1.contact_chol.size() == (model.nv + 2 * 6));
   constraintDynamics(
     model, data1, q, v, tau, contact_models_6D6D, contact_datas_6D6D, prox_settings);
   BOOST_CHECK(!hasNaN(data1.ddq));
 
-  initConstraintDynamics(model, data2, contact_models_6D6D);
-  initConstraintDynamics(model, data2, contact_models_6D);
-  initConstraintDynamics(model, data2, contact_models_empty);
+  initConstraintDynamics(model, data2, contact_models_6D6D, contact_datas_6D6D);
+  initConstraintDynamics(model, data2, contact_models_6D, contact_datas_6D);
+  initConstraintDynamics(model, data2, contact_models_empty, contact_datas_empty);
 }
 
 BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL)
@@ -338,7 +338,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL)
   BOOST_CHECK((J_ref * data_ref.ddq + rhs_ref).isZero());
 
   ProximalSettings prox_settings(1e-12, mu0, 1);
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   constraintDynamics(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
   BOOST_CHECK((J_ref * data.ddq + rhs_ref).isZero());
 
@@ -466,7 +466,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_3D)
   forwardKinematics(model, data_ref, q, v, data_ref.ddq);
 
   ProximalSettings prox_settings(1e-12, mu0, 1);
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   constraintDynamics(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 
   // Check that the decomposition is correct
@@ -637,7 +637,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   forwardKinematics(model, data_ref, q, v, data_ref.ddq);
 
   ProximalSettings prox_settings(1e-12, mu0, 1);
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   constraintDynamics(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 
   // Check that the decomposition is correct
@@ -816,7 +816,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   forwardKinematics(model, data_ref, q, v, 0 * data_ref.ddq);
 
   ProximalSettings prox_settings(1e-12, mu0, 1);
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   constraintDynamics(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 
   std::cout << "acc_1 ref:\n" << acc_1 << std::endl;
@@ -1029,7 +1029,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
 
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
   contact_datas = createData(contact_models);
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   constraintDynamics(model, data, q, v, tau, contact_models, contact_datas);
 
   BOOST_CHECK(contact_datas[0].oMc1.isApprox(data.oMi[ci_RF.joint1_id] * ci_RF.joint1_placement));
@@ -1162,7 +1162,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_3D)
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
   contact_datas = createData(contact_models);
   ProximalSettings prox_settings(1e-12, mu, 1);
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   constraintDynamics(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 
   Eigen::VectorXd contact_placement_error_prev(contact_models.size() * 6);
@@ -1362,7 +1362,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   forwardKinematics(model, data_ref, q, v, 0 * data_ref.ddq);
 
   ProximalSettings prox_settings(1e-12, 0, 1);
-  initConstraintDynamics(model, data, contact_models);
+  initConstraintDynamics(model, data, contact_models, contact_datas);
   constraintDynamics(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 
   const Data::ContactCholeskyDecomposition & contact_chol = data.contact_chol;
