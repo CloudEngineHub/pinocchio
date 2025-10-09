@@ -340,15 +340,7 @@ namespace pinocchio
 
     int size() const
     {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return derived().size();
-      }
-      else
-      {
-        static_assert(
-          traits<Derived>::constant_size, "size() disabled for this non constant constraints");
-      }
+      return derived().size();
     }
 
     template<typename ConstraintDataDerived>
