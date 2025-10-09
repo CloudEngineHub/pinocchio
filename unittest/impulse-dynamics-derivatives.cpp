@@ -9,6 +9,7 @@
 #include "pinocchio/algorithm/rnea-derivatives.hpp"
 #include "pinocchio/algorithm/impulse-dynamics.hpp"
 #include "pinocchio/algorithm/impulse-dynamics-derivatives.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 
@@ -196,6 +197,7 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
     model, data, contact_models, contact_data, r_coeff, prox_settings);
 
   // Data_fd
+  auto constraint_datas_fd = createData(constraint_models);
   initConstraintDynamics(model, data_fd, contact_models);
 
   MatrixXd dqafter_partial_dq_fd(model.nv, model.nv);

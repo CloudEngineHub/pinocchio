@@ -91,6 +91,8 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
   FrictionalPointConstraintModelVector constraint_models;
 
   init(model, constraint_models);
+  auto constraint_datas = createData(constraint_models);
+
   const double mu_prox = 1e-4;
   VectorXd q = randomConfiguration(model);
   VectorXd v = VectorXd::Random(model.nv);
@@ -123,7 +125,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     const Eigen::VectorXd x_positive = abs(Eigen::VectorXd::Random(constraint_dim));
     const Eigen::VectorXd x_in_cone = Eigen::VectorXd::Zero(constraint_dim);
 
-    computeConeProjection(constraint_models, x_positive, x_in_cone);
+    computeConeProjection(constraint_models, constraint_datas, x_positive, x_in_cone);
 
     const Eigen::VectorXd constraint_velocity_ref = -(R.asDiagonal() * x_in_cone).eval();
     const Eigen::VectorXd sigma_ref = (constraint_velocity_ref + R.asDiagonal() * x_in_cone);
@@ -132,18 +134,19 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     Eigen::VectorXd x_sol = Eigen::VectorXd::Zero(constraint_dim);
 
     bool has_converged = computeInverseDynamicsConstraintForces(
-      constraint_models, constraint_velocity_ref, x_sol, prox_settings, /*solve_ncp = */ false);
+      constraint_models, constraint_datas, constraint_velocity_ref, x_sol, prox_settings,
+      /*solve_ncp = */ false);
     BOOST_CHECK(has_converged);
 
     Eigen::VectorXd sigma = constraint_velocity_ref + R.asDiagonal() * x_sol;
 
     Eigen::VectorXd sigma_correction(sigma);
-    computeDeSaxeCorrection(constraint_models, sigma, sigma_correction);
+    computeDeSaxeCorrection(constraint_models, constraint_datas, sigma, sigma_correction);
     sigma += sigma_correction;
 
     BOOST_CHECK(sigma.isZero(1e-8));
     Eigen::VectorXd sigma_projected(sigma);
-    computeDualConeProjection(constraint_models, sigma, sigma_projected);
+    computeDualConeProjection(constraint_models, constraint_datas, sigma, sigma_projected);
     BOOST_CHECK((sigma_projected - sigma).lpNorm<Eigen::Infinity>() <= 1e-10);
   }
 
@@ -157,20 +160,21 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     }
 
     ProximalSettings prox_settings(1e-12, 1e-12, mu_prox, 200);
+    auto constraint_datas = createData(constraint_models);
 
     const Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Random(constraint_dim);
     Eigen::VectorXd constraint_velocity_projected(constraint_velocity);
     computeDualConeProjection(
-      constraint_models, constraint_velocity, constraint_velocity_projected);
+      constraint_models, constraint_datas, constraint_velocity, constraint_velocity_projected);
 
     Eigen::VectorXd x_sol = Eigen::VectorXd::Zero(constraint_dim);
     bool has_converged = computeInverseDynamicsConstraintForces(
-      constraint_models, constraint_velocity_projected, x_sol, prox_settings,
+      constraint_models, constraint_datas, constraint_velocity_projected, x_sol, prox_settings,
       /*solve_ncp = */ false);
     BOOST_CHECK(has_converged);
 
     Eigen::VectorXd x_sol_projected(x_sol);
-    computeConeProjection(constraint_models, x_sol, x_sol_projected);
+    computeConeProjection(constraint_models, constraint_datas, x_sol, x_sol_projected);
     BOOST_CHECK((x_sol_projected - x_sol).lpNorm<Eigen::Infinity>() <= 1e-10);
 
     BOOST_CHECK(std::abs(constraint_velocity_projected.dot(x_sol)) <= 1e-10);

@@ -93,6 +93,7 @@ namespace pinocchio
       {
         const ConstraintModel & cmodel = constraint_models[constraint_id];
         const ConstraintData & cdata = constraint_datas[constraint_id];
+
         const auto active_size = cmodel.activeSize(cdata);
         SegmentType1 force_segment = x.derived().segment(index, active_size);
         SegmentType2 res = x_proj.segment(index, active_size);
@@ -118,17 +119,8 @@ namespace pinocchio
       const Eigen::DenseBase<VectorLikeIn> & x,
       const Eigen::DenseBase<VectorLikeOut> & x_proj)
     {
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-
-      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-      WrappedConstraintDataVector wrapped_constraint_datas(
-        constraint_datas.cbegin(), constraint_datas.cend());
+      auto wrapped_constraint_models = make_held_vector<std::reference_wrapper>(constraint_models);
+      auto wrapped_constraint_datas = make_held_vector<std::reference_wrapper>(constraint_datas);
 
       computeConeProjection(
         wrapped_constraint_models, wrapped_constraint_datas, x.derived(),
@@ -674,21 +666,24 @@ namespace pinocchio
     template<
       typename ConstraintModel,
       typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator,
       typename VectorLikeIn,
       typename VectorLikeOut>
     void computeDeSaxeCorrection(
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Eigen::DenseBase<VectorLikeIn> & velocities,
       const Eigen::DenseBase<VectorLikeOut> & correction)
     {
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
+      const auto & wrapped_constraint_models =
+        make_held_vector<std::reference_wrapper>(constraint_models);
+      const auto & wrapped_constraint_datas =
+        make_held_vector<std::reference_wrapper>(constraint_datas);
 
       computeDeSaxeCorrection(
-        wrapped_constraint_models, velocities.derived(), correction.const_cast_derived());
+        wrapped_constraint_models, wrapped_constraint_datas, velocities.derived(),
+        correction.const_cast_derived());
     }
 
     template<typename ConstraintSet, typename ConstraintAllocator, typename VectorLikeIn>
