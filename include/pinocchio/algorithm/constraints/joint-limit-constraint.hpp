@@ -683,7 +683,7 @@ namespace pinocchio
       active_idx_qs_reduce.reserve(max_size);
       active_nvs.reserve(max_size);
       active_idx_vs.reserve(max_size);
-      active_compliance_storage.reserve(max_size);
+      active_compliance_storage.reserve(int(max_size));
       assert(
         constraint_model.activeSize(*this) == constraint_model.lowerActiveSize(*this)
         == constraint_model.upperActiveSize(*this) == 0);
