@@ -846,19 +846,25 @@ void test_apply_on_the_right(
   const Model & model = model_ref;
   Data & data = data_ref;
   const ConstraintModelVector & constraint_models = constraint_models_ref;
+  const ConstraintDataVector & constraint_datas = constraint_datas_ref;
 
   int size = 0, active_size = 0;
-  for (const auto & constraint_model : constraint_models)
+  for (size_t k = 0; k < constraint_models.size(); ++k)
   {
+    const auto & constraint_model = constraint_models[k];
+    const auto & constraint_data = constraint_datas[k];
     size += constraint_model.size();
-    active_size += constraint_model.activeSize();
+    active_size += constraint_model.activeSize(constraint_data);
   }
 
-  BOOST_CHECK(size <= active_size);
+  BOOST_CHECK(active_size <= size);
 
   Data data_gt(model), data_aba(model);
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
+
+  BOOST_CHECK(delassus_operator.size() == active_size);
+
   delassus_operator.updateDamping(damping_value);
   delassus_operator.updateCompliance(0);
   delassus_operator.compute(q_neutral);
@@ -1124,7 +1130,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
   data.q_in = q;
 
   constraint_model.calc(model, data, constraint_data);
-  BOOST_CHECK(constraint_model.activeSize() == model.nv - 6);
+  BOOST_CHECK(constraint_model.activeSize(constraint_data) == model.nv - 6);
   std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
   std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;
 
