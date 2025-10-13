@@ -129,7 +129,7 @@ namespace pinocchio
    * @sa ConstraintModelTpl::size
    */
   template<typename ConstraintModel, class ConstraintModelAllocator>
-  static Eigen::DenseIndex
+  Eigen::DenseIndex
   size(const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
     Eigen::DenseIndex size = 0;
@@ -175,7 +175,7 @@ namespace pinocchio
     class ConstraintModelAllocator,
     typename ConstraintData,
     class ConstraintDataAllocator>
-  static Eigen::DenseIndex activeSize(
+  Eigen::DenseIndex activeSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
