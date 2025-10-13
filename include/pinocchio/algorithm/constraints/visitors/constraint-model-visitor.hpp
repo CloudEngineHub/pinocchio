@@ -1244,8 +1244,10 @@ namespace pinocchio
      * @brief      ConstraintModelActiveComplianceVisitor visitor
      */
     template<typename ReturnType>
-    struct ConstraintModelActiveComplianceVisitor
-    : ConstraintUnaryVisitorBase<ConstraintModelActiveComplianceVisitor<ReturnType>, ReturnType>
+    struct ConstraintModelActiveComplianceConstVisitor
+    : ConstraintUnaryVisitorBase<
+        ConstraintModelActiveComplianceConstVisitor<ReturnType>,
+        ReturnType>
     {
       typedef NoArg ArgsType;
 
@@ -1253,13 +1255,6 @@ namespace pinocchio
       static ReturnType algo(
         const ::pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
         const typename ConstraintModel::ConstraintData & cdata)
-      {
-        return cmodel.getActiveCompliance(cdata);
-      }
-      template<typename ConstraintModel>
-      static ReturnType algo(
-        const ConstraintModelBase<ConstraintModel> & cmodel,
-        typename ConstraintModel::ConstraintData & cdata)
       {
         return cmodel.getActiveCompliance(cdata);
       }
@@ -1277,9 +1272,24 @@ namespace pinocchio
     {
       typedef typename traits<ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::
         ComplianceVectorTypeConstRef ReturnType;
-      typedef ConstraintModelActiveComplianceVisitor<ReturnType> Algo;
+      typedef ConstraintModelActiveComplianceConstVisitor<ReturnType> Algo;
       return Algo::run(cmodel, cdata);
     }
+
+    template<typename ReturnType>
+    struct ConstraintModelActiveComplianceVisitor
+    : ConstraintUnaryVisitorBase<ConstraintModelActiveComplianceVisitor<ReturnType>, ReturnType>
+    {
+      typedef NoArg ArgsType;
+
+      template<typename ConstraintModel>
+      static ReturnType algo(
+        const ::pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        typename ConstraintModel::ConstraintData & cdata)
+      {
+        return cmodel.getActiveCompliance(cdata);
+      }
+    };
 
     template<
       typename Scalar,
@@ -1287,12 +1297,14 @@ namespace pinocchio
       template<typename S, int O> class ConstraintCollectionTpl>
     typename traits<
       ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::ComplianceVectorTypeRef
-    getActiveCompliance(ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
+    getActiveCompliance(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
     {
       typedef typename traits<ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::
         ComplianceVectorTypeRef ReturnType;
       typedef ConstraintModelActiveComplianceVisitor<ReturnType> Algo;
-      return Algo::run(cmodel);
+      return Algo::run(cmodel, cdata);
     }
 
     /// \brief BaumgarteCorrectorVectorParametersGetter - default behavior for false for
