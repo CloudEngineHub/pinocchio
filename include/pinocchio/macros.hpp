@@ -65,6 +65,8 @@
 // This macro can be used to prevent from macro expansion, similarly to EIGEN_NOT_A_MACRO
 #define PINOCCHIO_NOT_A_MACRO
 
+#define PINOCCHIO_GET_TYPE_NAME(type) typeid(type).name()
+
 namespace pinocchio
 {
   namespace helper
