@@ -43,9 +43,14 @@ BOOST_AUTO_TEST_CASE(test_get_ref)
   {
     const double const_v = 10;
     BOOST_CHECK(&const_v == &get_ref(const_v));
+    double non_const_v = const_v;
+    BOOST_CHECK(&non_const_v == &get_ref(non_const_v));
 
     std::reference_wrapper<const double> const_v_ref = const_v;
     BOOST_CHECK(&const_v == &get_ref(const_v_ref));
+
+    const std::reference_wrapper<double> const_ref_wrapper_v = non_const_v;
+    BOOST_CHECK(&non_const_v == &get_ref(const_ref_wrapper_v));
 
     std::shared_ptr<const double> const_v_ptr = std::make_shared<const double>(const_v);
     BOOST_CHECK(const_v_ptr.get() != &get_ref(const_v_ref));
