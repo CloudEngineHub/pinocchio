@@ -107,6 +107,89 @@ namespace pinocchio
     }
   }
 
+  /**
+   * @brief Compute the total size of a set of constraint models.
+   *
+   * This function iterates through a vector of constraint models and
+   * accumulates their individual sizes (as returned by each constraint
+   * model’s `size()` method). The result corresponds to the total
+   * dimension of the constraint space represented by all the constraint
+   * models in the container.
+   *
+   * @tparam ConstraintModel Type of each constraint model contained in the vector.
+   * @tparam ConstraintModelAllocator Allocator type used for the vector of constraint models.
+   *
+   * @param[in] constraint_models Vector of constraint model objects whose total dimension is to be
+   * computed.
+   *
+   * @return The total size (dimension) obtained by summing the sizes of each constraint model.
+   *
+   * @note Each element of @p constraint_models must implement a `size()` method returning its own
+   * dimension.
+   * @sa ConstraintModelTpl::size
+   */
+  template<typename ConstraintModel, class ConstraintModelAllocator>
+  static Eigen::DenseIndex
+  size(const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
+  {
+    Eigen::DenseIndex size = 0;
+    for (const ConstraintModel & cm : constraint_models)
+    {
+      const auto & cmodel = helper::get_ref(cm);
+      size += cmodel.size();
+    }
+
+    return size;
+  }
+
+  /**
+   * @brief Compute the total active size of a set of constraint models.
+   *
+   * This function iterates through a list of constraint models together
+   * with their corresponding constraint data and accumulates the number
+   * of active constraint sizes. For each pair of constraint model and
+   * data, it calls `ConstraintModel::activeSize(const ConstraintData &)`
+   * to determine the number of currently active constraints, then sums
+   * these values over all constraints in the input vectors.
+   *
+   * @tparam ConstraintModel Type of each constraint model contained in the vector.
+   * @tparam ConstraintModelAllocator Allocator type used for the vector of constraint models.
+   * @tparam ConstraintData Type of each constraint data object contained in the vector.
+   * @tparam ConstraintDataAllocator Allocator type used for the vector of constraint data.
+   *
+   * @param[in] constraint_models Vector of constraint model objects.
+   * @param[in] constraint_datas Vector of constraint data objects corresponding
+   *            to each element of @p constraint_models.
+   *
+   * @return The total active size (dimension) obtained by summing the active sizes
+   *         of all individual constraint models.
+   *
+   * @note The size of @p constraint_models and @p constraint_datas must be identical.
+   * @warning This function assumes that each constraint model and its associated data
+   *          object correspond to the same type of constraint.
+   *
+   * @sa ConstraintModelTpl::activeSize
+   */
+  template<
+    typename ConstraintModel,
+    class ConstraintModelAllocator,
+    typename ConstraintData,
+    class ConstraintDataAllocator>
+  static Eigen::DenseIndex activeSize(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
+  {
+    Eigen::DenseIndex active_size = 0;
+    for (std::size_t i = 0; i < constraint_models.size(); ++i)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cdata = helper::get_ref(constraint_datas[i]);
+      active_size += cmodel.activeSize(cdata);
+    }
+
+    return active_size;
+  }
+
 } // namespace pinocchio
 
 #endif // __pinocchio_algorithm_constraints_utils_hpp__
