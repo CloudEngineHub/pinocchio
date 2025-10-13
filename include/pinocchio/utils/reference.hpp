@@ -73,6 +73,17 @@ namespace pinocchio
     {
       typedef typename remove_ref<T>::type type;
 
+      static T & get_ref(std::reference_wrapper<T> & ref)
+      {
+        return ref.get();
+      }
+    };
+
+    template<typename T>
+    struct remove_ref<const std::reference_wrapper<T>> : remove_ref<std::reference_wrapper<T>>
+    {
+      typedef typename remove_ref<T>::type type;
+
       static T & get_ref(const std::reference_wrapper<T> & ref)
       {
         return ref.get();
