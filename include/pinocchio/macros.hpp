@@ -65,6 +65,28 @@
 // This macro can be used to prevent from macro expansion, similarly to EIGEN_NOT_A_MACRO
 #define PINOCCHIO_NOT_A_MACRO
 
+/**
+ * @brief Return the runtime type name of a given C++ type.
+ *
+ * This macro expands to a call to `typeid(type).name()`, providing
+ * the compiler‑generated (implementation‑specific) name of the type
+ * @p type. It is typically used for logging, debugging, or diagnostic
+ * messages where the demangled type name can help identify the type of
+ * a template parameter or runtime object.
+ *
+ * @param type The C++ type whose runtime name is to be retrieved.
+ *
+ * @return A C‑string representing the (possibly mangled) name of @p type.
+ *
+ * @note The exact format of the returned string is compiler‑dependent and
+ *       may be mangled. To obtain a human‑readable name, additional
+ *       demangling may be required (e.g., using `abi::__cxa_demangle` on GCC/Clang).
+ *
+ * @warning This macro uses `typeid`, which requires RTTI (Run‑Time Type Information)
+ *          to be enabled in the compilation settings.
+ *
+ * @sa typeid, abi::__cxa_demangle
+ */
 #define PINOCCHIO_GET_TYPE_NAME(type) typeid(type).name()
 
 namespace pinocchio
