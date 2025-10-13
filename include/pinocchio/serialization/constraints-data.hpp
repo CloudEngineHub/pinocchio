@@ -26,6 +26,25 @@ namespace boost
       PINOCCHIO_UNUSED_VARIABLE(version);
     }
 
+    namespace internal
+    {
+      template<typename Scalar, int Options>
+      struct JointLimitConstraintDataAccessor
+      : public ::pinocchio::JointLimitConstraintDataTpl<Scalar, Options>
+      {
+        typedef ::pinocchio::JointLimitConstraintDataTpl<Scalar, Options> Base;
+
+        using Base::active_compliance;
+        using Base::active_compliance_storage;
+        using Base::active_idx_qs_reduce;
+        using Base::active_idx_rows;
+        using Base::active_idx_vs;
+        using Base::active_nvs;
+        using Base::active_set_indexes;
+        using Base::lower_active_size;
+      };
+    } // namespace internal
+
     template<typename Archive, typename Scalar, int Options>
     void serialize(
       Archive & ar,
@@ -36,13 +55,29 @@ namespace boost
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
 
+      // Public members
       ar & make_nvp("compact_tangent_map", cdata.compact_tangent_map);
       ar & make_nvp("activable_constraint_residual", cdata.activable_constraint_residual);
       ar & make_nvp("constraint_residual_storage", cdata.constraint_residual_storage);
-
       if (Archive::is_loading::value)
       {
         cdata.constraint_residual = cdata.constraint_residual_storage.map();
+      }
+
+      // Protected members
+      typedef internal::JointLimitConstraintDataAccessor<Scalar, Options> Accessor;
+      auto & cdata_ = reinterpret_cast<Accessor &>(cdata);
+      ar & make_nvp("lower_active_size", cdata_.lower_active_size);
+      ar & make_nvp("active_set_indexes", cdata_.active_set_indexes);
+      ar & make_nvp("active_idx_rows", cdata_.active_idx_rows);
+      ar & make_nvp("active_idx_qs_reduce", cdata_.active_idx_qs_reduce);
+      ar & make_nvp("active_nvs", cdata_.active_nvs);
+      ar & make_nvp("active_idx_vs", cdata_.active_idx_vs);
+      ar & make_nvp("active_compliance_storage", cdata_.active_compliance_storage);
+
+      if (Archive::is_loading::value)
+      {
+        cdata_.active_compliance = cdata_.active_compliance_storage.map();
       }
     }
 

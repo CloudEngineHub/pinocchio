@@ -108,21 +108,14 @@ namespace boost
       : public ::pinocchio::JointLimitConstraintModelTpl<Scalar, Options>
       {
         typedef ::pinocchio::JointLimitConstraintModelTpl<Scalar, Options> Base;
+
         using Base::activable_idx_qs;
         using Base::activable_idx_qs_reduce;
         using Base::activable_idx_rows;
         using Base::activable_idx_vs;
         using Base::activable_joints;
         using Base::activable_nvs;
-        using Base::active_compliance;
-        using Base::active_compliance_storage;
-        using Base::active_idx_qs_reduce;
-        using Base::active_idx_rows;
-        using Base::active_idx_vs;
-        using Base::active_nvs;
-        using Base::active_set_indexes;
         using Base::lower_activable_size;
-        using Base::lower_active_size;
         using Base::m_set;
         using Base::nq_reduce;
         using Base::nv_max_atom;
@@ -148,33 +141,20 @@ namespace boost
 
       typedef internal::JointLimitConstraintModelAccessor<Scalar, Options> Accessor;
       auto & cmodel_ = reinterpret_cast<Accessor &>(cmodel);
-      ar & make_nvp("m_set", cmodel_.m_set);
       ar & make_nvp("activable_joints", cmodel_.activable_joints);
       ar & make_nvp("nq_reduce", cmodel_.nq_reduce);
       ar & make_nvp("nv_max_atom", cmodel_.nv_max_atom);
       ar & make_nvp("lower_activable_size", cmodel_.lower_activable_size);
-      ar & make_nvp("lower_active_size", cmodel_.lower_active_size);
       ar & make_nvp("row_sparsity_pattern", cmodel_.row_sparsity_pattern);
       ar & make_nvp("row_indexes", cmodel_.row_indexes);
       ar & make_nvp("position_limit", cmodel_.position_limit);
       ar & make_nvp("position_margin", cmodel_.position_margin);
       ar & make_nvp("activable_idx_qs", cmodel_.activable_idx_qs);
-      ar & make_nvp("active_set_indexes", cmodel_.active_set_indexes);
       ar & make_nvp("activable_idx_rows", cmodel_.activable_idx_rows);
       ar & make_nvp("activable_idx_qs_reduce", cmodel_.activable_idx_qs_reduce);
       ar & make_nvp("activable_nvs", cmodel_.activable_nvs);
       ar & make_nvp("activable_idx_vs", cmodel_.activable_idx_vs);
-      ar & make_nvp("active_idx_rows", cmodel_.active_idx_rows);
-      ar & make_nvp("active_idx_qs_reduce", cmodel_.active_idx_qs_reduce);
-      ar & make_nvp("active_nvs", cmodel_.active_nvs);
-      ar & make_nvp("active_idx_vs", cmodel_.active_idx_vs);
       ar & make_nvp("m_set", cmodel_.m_set);
-      ar & make_nvp("active_compliance_storage", cmodel_.active_compliance_storage);
-
-      if (Archive::is_loading::value)
-      {
-        cmodel_.active_compliance = cmodel_.active_compliance_storage.map();
-      }
     }
 
     namespace internal

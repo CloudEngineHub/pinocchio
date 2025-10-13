@@ -773,7 +773,7 @@ BOOST_AUTO_TEST_CASE(test_delassus_operator_dense_serialization)
   }
 
   // compute delassus
-  ContactCholeskyDecomposition chol(model, constraint_models);
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   // check dense method
