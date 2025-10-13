@@ -1,11 +1,9 @@
+import importlib.util
 import unittest
 
-from pinocchio.utils import isapprox
-
-import pinocchio as pin
 import numpy as np
-
-import importlib.util
+import pinocchio as pin
+from pinocchio.utils import isapprox
 
 coal_spec = importlib.util.find_spec("coal")
 coal_found = coal_spec is not None
@@ -75,16 +73,28 @@ class ContactSolverTestCase(PinocchioTestCase):
         return model, list_cm
 
     def setupTest(self, model, constraint_models, q0, v0, tau0, fext, dt):
+        # initialize data
         data = model.createData()
+        pin.aba(model, data, q0, v0, tau0, fext)
         data.q_in = q0
-        constraint_datas = []
-        for cm in constraint_models:
-            constraint_datas.append(cm.createData())
+        data.v_in = v0
+        data.tau_in = tau0
+
         pin.crba(model, data, q0, pin.Convention.WORLD)
-        chol = pin.ContactCholeskyDecomposition(model, constraint_models)
+        vfree = v0 + dt * pin.aba(model, data, q0, v0, tau0, fext)
+
+        # initialize constraint datas
+        constraint_datas = []
+        for cmodel in constraint_models:
+            constraint_datas.append(cmodel.createData())
+            cdata = constraint_datas[-1]
+            cmodel.calc(model, data, cdata)
+
+        chol = pin.ContactCholeskyDecomposition(
+            model, data, constraint_models, constraint_datas
+        )
         chol.compute(model, data, constraint_models, constraint_datas, 1e-10)
         delassus_matrix = chol.getDelassusCholeskyExpression().matrix()
-        vfree = v0 + dt * pin.aba(model, data, q0, v0, tau0, fext)
         Jc = pin.getConstraintsJacobian(
             model, data, constraint_models, constraint_datas
         )
@@ -92,21 +102,21 @@ class ContactSolverTestCase(PinocchioTestCase):
         idx_cm = 0
         for i, cm in enumerate(constraint_models):
             cd = constraint_datas[i]
-            cm_size = cm.size()
-            cm.calc(model, data, cd)
+            cm_active_size = cm.activeSize(cd)
             if cm.shortname() == "FrictionalPointConstraintModel":
                 continue
             elif cm.shortname() == "FrictionalJointConstraintModel":
                 continue
             elif cm.shortname() == "JointLimitConstraintModel":
-                g[idx_cm : idx_cm + cm_size] *= dt
-                g[idx_cm : idx_cm + cm_size] += cd.extract().constraint_residual
+                g[idx_cm : idx_cm + cm_active_size] *= dt
+                g[idx_cm : idx_cm + cm_active_size] += cd.extract().constraint_residual
             elif cm.shortname() == "BilateralPointConstraintModel":
-                continue
-                g[idx_cm : idx_cm + cm_size] *= dt
-                g[idx_cm : idx_cm + cm_size] += cd.constraint_residual
-            idx_cm += cm_size
-        return delassus_matrix, g
+                g[idx_cm : idx_cm + cm_active_size] *= dt
+                g[idx_cm : idx_cm + cm_active_size] += (
+                    cd.extract().constraint_position_error
+                )
+            idx_cm += cm_active_size
+        return delassus_matrix, g, constraint_datas
 
     @unittest.skipUnless(coal_found, "Needs Coal.")
     def addFloor(self, geom_model: pin.GeometryModel, visual_model: pin.GeometryModel):
@@ -132,9 +142,10 @@ class ContactSolverTestCase(PinocchioTestCase):
     def addSystemCollisionPairs(self, model, geom_model, qref):
         """
         Add the right collision pairs of a model, given qref.
-        qref is here as a `T-pose`. The function uses this pose to determine which objects are in collision
-        in this ref pose. If objects are in collision, they are not added as collision pairs, as they are considered
-        to always be in collision.
+        qref is here as a `T-pose`. The function uses this pose to determine
+        which objects are in collision in this ref pose.
+        If objects are in collision, they are not added as collision pairs,
+        as they are considered to always be in collision.
         """
         data = model.createData()
         geom_data = geom_model.createData()
@@ -153,7 +164,8 @@ class ContactSolverTestCase(PinocchioTestCase):
                         geom_model.addCollisionPair(col_pair)
                     else:
                         if gobj_i.parentJoint != gobj_j.parentJoint:
-                            # Compute collision between the geometries. Only add the collision pair if there is no collision.
+                            # Compute collision between the geometries.
+                            # Only add the collision pair if there is no collision.
                             M1 = geom_data.oMg[i]
                             M2 = geom_data.oMg[j]
                             colreq = coal.CollisionRequest()

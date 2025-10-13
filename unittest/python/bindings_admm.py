@@ -1,11 +1,10 @@
+import importlib.util
 import unittest
 from pathlib import Path
 
 import numpy as np
 import pinocchio as pin
 from test_case import ContactSolverTestCase as TestCase
-
-import importlib.util
 
 coal_spec = importlib.util.find_spec("coal")
 coal_found = coal_spec is not None
@@ -23,9 +22,10 @@ class TestADMM(TestCase):
         q0 = pin.neutral(model)
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
-        fext = [pin.Force.Zero() for i in range(model.njoints)]
+        fext = [pin.Force.Zero() for _ in range(model.njoints)]
         dt = 1e-3
-        delassus_matrix, g = self.setupTest(
+
+        delassus_matrix, g, constraint_datas = self.setupTest(
             model, constraint_models, q0, v0, tau0, fext, dt
         )
         delassus = pin.DelassusOperatorDense(delassus_matrix)
@@ -34,7 +34,7 @@ class TestADMM(TestCase):
         solver.setAbsolutePrecision(1e-13)
         solver.setRelativePrecision(1e-14)
         solver.setLanczosSize(g.size)
-        solver.solve(delassus, g, constraint_models, dt)
+        solver.solve(delassus, g, constraint_models, constraint_datas, dt)
 
     @unittest.skipUnless(coal_found, "Needs Coal.")
     def test_cassie(self, display=False, stat_record=True):
@@ -70,7 +70,7 @@ class TestADMM(TestCase):
         q0 = model.referenceConfigurations["home"]
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
-        fext = [pin.Force.Zero() for i in range(model.njoints)]
+        fext = [pin.Force.Zero() for _ in range(model.njoints)]
         dt = 1e-3
         self.addFloor(geom_model, visual_model)
         self.addSystemCollisionPairs(model, geom_model, q0)
@@ -80,7 +80,7 @@ class TestADMM(TestCase):
         for fpcm in contact_constraints:
             constraint_models.append(pin.ConstraintModel(fpcm))
 
-        delassus_matrix, g = self.setupTest(
+        delassus_matrix, g, constraint_datas = self.setupTest(
             model, constraint_models, q0, v0, tau0, fext, dt
         )
         delassus = pin.DelassusOperatorDense(delassus_matrix)
@@ -108,6 +108,7 @@ class TestADMM(TestCase):
             delassus,
             g,
             constraint_models,
+            constraint_datas,
             dt,
             None,
             None,
@@ -125,7 +126,7 @@ class TestADMM(TestCase):
             self.plotContactSolver(solver)
 
         if display and meshcat_found:
-            vizer, viewer = self.createVisualizer(model, geom_model, geom_model)
+            vizer, _ = self.createVisualizer(model, geom_model, geom_model)
             vizer.display(q0)
 
 
