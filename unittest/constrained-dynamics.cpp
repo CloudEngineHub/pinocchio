@@ -551,7 +551,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_LOCAL_6D_loop_closure_j1j2)
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 100);
 
-  initConstraintDynamics(model, data, constraint_models);
+  initConstraintDynamics(model, data, constraint_models, constraint_data);
   const VectorXd ddq_ref =
     constraintDynamics(model, data, q, v, tau, constraint_models, constraint_data, prox_settings);
   const VectorXd lambda_ref = data.lambda_c;
@@ -928,7 +928,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
     contact_datas_bis.push_back(RigidConstraintData(*it));
 
   Data data_bis(model);
-  initConstraintDynamics(model, data_bis, contact_models_bis);
+  initConstraintDynamics(model, data_bis, contact_models_bis, contact_datas_bis);
   constraintDynamics(
     model, data_bis, q, v, tau, contact_models_bis, contact_datas_bis, prox_settings);
 
@@ -1044,7 +1044,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
   Data data_plus(model);
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
   contact_datas_plus = createData(contact_models);
-  initConstraintDynamics(model, data_plus, contact_models);
+  initConstraintDynamics(model, data_plus, contact_models, contact_datas_plus);
   constraintDynamics(model, data_plus, q_plus, v, tau, contact_models, contact_datas_plus);
 
   const Motion contact_RF_velocity_error_fd =
@@ -1062,7 +1062,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
     Data data_sim(model);
     PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
     contact_data_sim = createData(contact_models);
-    initConstraintDynamics(model, data_sim, contact_models);
+    initConstraintDynamics(model, data_sim, contact_models, contact_data_sim);
 
     Eigen::VectorXd q0(model.nq);
     const SE3 M0 = SE3::Random();
@@ -1179,7 +1179,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_3D)
     Data data_sim(model);
     PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
     contact_data_sim = createData(contact_models);
-    initConstraintDynamics(model, data_sim, contact_models);
+    initConstraintDynamics(model, data_sim, contact_models, contact_data_sim);
 
     Eigen::VectorXd q0(model.nq);
     const SE3 M0 = SE3::Random();
@@ -1440,7 +1440,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
     contact_datas_bis.push_back(RigidConstraintData(*it));
 
   Data data_bis(model);
-  initConstraintDynamics(model, data_bis, contact_models_bis);
+  initConstraintDynamics(model, data_bis, contact_models_bis, contact_datas_bis);
   constraintDynamics(
     model, data_bis, q, v, tau, contact_models_bis, contact_datas_bis, prox_settings);
 
@@ -1667,7 +1667,7 @@ BOOST_AUTO_TEST_CASE(test_contact_ABA_6D)
   J_ref.setZero();
 
   ProximalSettings prox_settings_cd(1e-12, mu0, 1);
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas_ref);
   constraintDynamics(
     model, data_ref, q, v, tau, contact_models, contact_datas_ref, prox_settings_cd);
   forwardKinematics(model, data_ref, q, v, v * 0);
@@ -1837,7 +1837,7 @@ BOOST_AUTO_TEST_CASE(test_contact_ABA_3D)
   J_ref.setZero();
 
   ProximalSettings prox_settings_cd(1e-12, 0, 1);
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas_ref);
   constraintDynamics(
     model, data_ref, q, v, tau, contact_models, contact_datas_ref, prox_settings_cd);
   forwardKinematics(model, data_ref, q, v, v * 0);

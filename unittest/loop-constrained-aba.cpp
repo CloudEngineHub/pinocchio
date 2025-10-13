@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(test_6D_descendants)
   ProximalSettings prox_settings_ref(1e-14, mu0, 100);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE(test_6D_descendants_reversed)
   ProximalSettings prox_settings_ref(1e-14, mu0, 100);
   ProximalSettings prox_settings(prox_settings_ref), prox_settings_reversed(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(test_6D_descendants_reversed)
   contact_datas_reversed.push_back(rcm1_reversed.createData());
   contact_datas_reversed_ref.push_back(rcm1_reversed.createData());
 
-  initConstraintDynamics(model, data_ref, contact_models_reversed);
+  initConstraintDynamics(model, data_ref, contact_models_reversed, contact_datas_reversed_ref);
   constraintDynamics(
     model, data_ref, q, v, tau, contact_models_reversed, contact_datas_reversed_ref,
     prox_settings_ref);
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(test_12D_descendants_redundant_reversed)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(test_6D_different_branches)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -343,7 +343,7 @@ BOOST_AUTO_TEST_CASE(test_12D_coupled_loop_common_link)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(test_24D_coupling_with_double_ground)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -434,7 +434,7 @@ BOOST_AUTO_TEST_CASE(test_6D_consecutive_links)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -476,7 +476,7 @@ BOOST_AUTO_TEST_CASE(test_12D_coupled_on_a_chain)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -518,7 +518,7 @@ BOOST_AUTO_TEST_CASE(test_12D_cross_coupled_on_a_chain)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -574,7 +574,7 @@ BOOST_AUTO_TEST_CASE(test_24D_cross_coupling)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -638,7 +638,7 @@ BOOST_AUTO_TEST_CASE(test_6D_cons_baumgarte)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -702,7 +702,7 @@ BOOST_AUTO_TEST_CASE(test_3D_cons_baumgarte)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -744,7 +744,7 @@ BOOST_AUTO_TEST_CASE(test_loop_con_and_ground_con)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -787,7 +787,7 @@ BOOST_AUTO_TEST_CASE(test_loop_con_and_ground_con3D)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -830,7 +830,7 @@ BOOST_AUTO_TEST_CASE(test_loop_con3D_ground_con3D)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
@@ -874,7 +874,7 @@ BOOST_AUTO_TEST_CASE(test_coupled_3D_6D_loops)
   ProximalSettings prox_settings_ref(1e-12, mu0, 3);
   ProximalSettings prox_settings(prox_settings_ref);
 
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);

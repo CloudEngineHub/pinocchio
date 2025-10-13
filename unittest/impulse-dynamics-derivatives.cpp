@@ -197,8 +197,8 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
     model, data, contact_models, contact_data, r_coeff, prox_settings);
 
   // Data_fd
-  auto constraint_datas_fd = createData(constraint_models);
-  initConstraintDynamics(model, data_fd, contact_models);
+  auto constraint_datas_fd = createData(contact_models);
+  initConstraintDynamics(model, data_fd, contact_models, contact_data);
 
   MatrixXd dqafter_partial_dq_fd(model.nv, model.nv);
   dqafter_partial_dq_fd.setZero();

@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
   const double mu0 = 0.0;
 
   ProximalSettings prox_settings(1e-12, mu0, 1);
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings);
 
   initPvSolver(model, data, contact_models);
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_3D_humanoid)
   const double mu0 = 0.0;
 
   ProximalSettings prox_settings(1e-12, mu0, 1);
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings);
 
   initPvSolver(model, data, contact_models);
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_3D_humanoid)
   const double mu0 = 1e-3;
 
   ProximalSettings prox_settings(1e-14, mu0, 10);
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings);
 
   computeAllTerms(model, data_ref, q, v);
@@ -398,7 +398,7 @@ BOOST_AUTO_TEST_CASE(test_FD_humanoid_redundant_baumgarte)
   const double mu0 = 1e-4;
 
   ProximalSettings prox_settings(1e-14, mu0, 10);
-  initConstraintDynamics(model, data_ref, contact_models);
+  initConstraintDynamics(model, data_ref, contact_models, contact_datas);
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings);
 
   initPvSolver(model, data, contact_models);
