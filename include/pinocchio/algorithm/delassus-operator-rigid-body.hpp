@@ -7,7 +7,7 @@
 
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
-#include "pinocchio/utils/reference.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 
 #include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
@@ -123,8 +123,8 @@ namespace pinocchio
       const ConstraintDataVectorHolder & constraint_datas_ref,
       const Scalar min_damping_value = Scalar(1e-8))
     : Base()
-    , m_size(evalConstraintActiveSize(
-        helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref)))
+    , m_size(
+        activeSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref)))
     , m_model_ref(model_ref)
     , m_data_ref(data_ref)
     , m_constraint_models_ref(constraint_models_ref)
@@ -383,34 +383,6 @@ namespace pinocchio
     }
 
   protected:
-    static Eigen::DenseIndex evalConstraintSize(const ConstraintModelVector & constraint_models)
-    {
-      Eigen::DenseIndex size = 0;
-      for (const ConstraintModel & cm : constraint_models)
-      {
-        const auto & cmodel = helper::get_ref(cm);
-        size += cmodel.size();
-      }
-
-      return size;
-    }
-
-    static Eigen::DenseIndex evalConstraintActiveSize(
-      const ConstraintModelVector & constraint_models,
-      const ConstraintDataVector & constraint_datas)
-    {
-      Eigen::DenseIndex active_size = 0;
-      for (std::size_t i = 0; i < constraint_models.size(); ++i)
-      // for (const ConstraintModel & cm : constraint_models)
-      {
-        const auto & cmodel = helper::get_ref(constraint_models[i]);
-        const auto & cdata = helper::get_ref(constraint_datas[i]);
-        active_size += cmodel.activeSize(cdata);
-      }
-
-      return active_size;
-    }
-
     inline void compute_conclude()
     {
       m_dirty = false;
