@@ -67,14 +67,14 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeConstRef compliance() const
+    /// \brief Returns the compliance internally stored in the constraint model.
+    ComplianceVectorTypeConstRef compliance_impl() const
     {
       return m_compliance;
     }
 
-    /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeRef compliance()
+    /// \brief Returns the compliance internally stored in the constraint model.
+    ComplianceVectorTypeRef compliance_impl()
     {
       return m_compliance;
     }

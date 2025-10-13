@@ -3,6 +3,7 @@
 //
 
 #include "pinocchio/algorithm/constraints/constraints.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/contact-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/contact-jacobian.hpp"
@@ -59,8 +60,8 @@ struct TestBoxTpl
 
     // Cholesky of the Delassus matrix
     crba(model, data, q0, Convention::WORLD);
-    ContactCholeskyDecomposition chol(model, constraint_models);
-    chol.resize(model, constraint_models);
+    ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+    chol.resize(model, constraint_models, constraint_datas);
     chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
     // std::cout << "chol.getDamping() :   " << chol.getDamping().transpose() << std::endl;
 
@@ -93,7 +94,8 @@ struct TestBoxTpl
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(mean_inertia);
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     has_converged = admm_solver.solve(
-      G_expression, g, constraint_models, dt, preconditioner_vec, primal_solution_constref,
+      G_expression, g, constraint_models, constraint_datas, dt, preconditioner_vec,
+      primal_solution_constref,
       boost::none,              // dual_guess
       true,                     // solve_ncp
       ADMMUpdateRule::SPECTRAL, // admm_update_rule
@@ -116,10 +118,10 @@ struct TestBoxTpl
     if (test_warmstart)
     {
       boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_warmstart(primal_solution);
-      has_converged =
-        has_converged
-        && admm_solver.solve(
-          G_expression, g, constraint_models, dt, preconditioner_vec, primal_solution_warmstart);
+      has_converged = has_converged
+                      && admm_solver.solve(
+                        G_expression, g, constraint_models, constraint_datas, dt,
+                        preconditioner_vec, primal_solution_warmstart);
       primal_solution = admm_solver.getPrimalSolution();
     }
 
@@ -526,8 +528,9 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   // Cholesky of the Delassus matrix
   crba(model, data, q0, Convention::WORLD);
-  ContactCholeskyDecomposition chol(model, constraint_models);
-  chol.resize(model, constraint_models);
+  calc(model, data, constraint_models, constraint_datas);
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  chol.resize(model, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -552,8 +555,8 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   admm_solver.setAbsolutePrecision(1e-13);
   admm_solver.setRelativePrecision(1e-14);
 
-  const bool has_converged =
-    admm_solver.solve(G_expression, g, constraint_models, dt, preconditioner_vec, primal_solution);
+  const bool has_converged = admm_solver.solve(
+    G_expression, g, constraint_models, constraint_datas, dt, preconditioner_vec, primal_solution);
   BOOST_CHECK(has_converged);
 
   dual_solution = G * primal_solution.get() + g;
@@ -645,8 +648,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
   auto & cdata = constraint_datas[0];
   cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, constraint_models);
-  chol.resize(model, constraint_models);
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  chol.resize(model, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -675,8 +678,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, dt, preconditioner_vec,
-      primal_solution_constref);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      preconditioner_vec, primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -709,7 +712,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, dt, preconditioner_vec,
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, dt, preconditioner_vec,
       primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -779,15 +782,15 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
   auto & cdata = constraint_datas[0];
   cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, constraint_models);
-  chol.resize(model, constraint_models);
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  chol.resize(model, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(cdata), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -797,8 +800,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -809,8 +812,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, dt, preconditioner_vec,
-      primal_solution_constref);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      preconditioner_vec, primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -836,8 +839,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -848,7 +851,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, dt, preconditioner_vec,
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, dt, preconditioner_vec,
       primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -918,15 +921,15 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
   auto & cdata = constraint_datas[0];
   cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, constraint_models);
-  chol.resize(model, constraint_models);
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  chol.resize(model, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(cdata), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -936,8 +939,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -948,8 +951,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, dt, preconditioner_vec,
-      primal_solution_constref);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      preconditioner_vec, primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -975,8 +978,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -987,7 +990,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, dt, preconditioner_vec,
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, dt, preconditioner_vec,
       primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -1048,15 +1051,15 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
   auto & cdata = constraint_datas[0];
   cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, constraint_models);
-  chol.resize(model, constraint_models);
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  chol.resize(model, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(cdata), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -1066,8 +1069,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -1078,8 +1081,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, dt, preconditioner_vec,
-      primal_solution_constref);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      preconditioner_vec, primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     // std::cout << " admm_solver.getAbsoluteConvergenceResidual():   " <<
     // admm_solver.getAbsoluteConvergenceResidual() << std::endl; std::cout << "
@@ -1105,8 +1108,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -1117,7 +1120,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, dt, preconditioner_vec,
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, dt, preconditioner_vec,
       primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -1178,15 +1181,15 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
   auto & cdata = constraint_datas[0];
   cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, constraint_models);
-  chol.resize(model, constraint_models);
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  chol.resize(model, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(cdata), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -1196,8 +1199,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -1208,8 +1211,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, dt, preconditioner_vec,
-      primal_solution_constref);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      preconditioner_vec, primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -1230,8 +1233,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -1242,7 +1245,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, dt, preconditioner_vec,
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, dt, preconditioner_vec,
       primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -1306,15 +1309,15 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
   auto & cdata = constraint_datas[0];
   cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, constraint_models);
-  chol.resize(model, constraint_models);
+  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  chol.resize(model, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.activeSize(cdata), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -1324,8 +1327,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -1336,8 +1339,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, dt, preconditioner_vec,
-      primal_solution_constref);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      preconditioner_vec, primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -1361,8 +1364,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize());
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
@@ -1373,7 +1376,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, dt, preconditioner_vec,
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, dt, preconditioner_vec,
       primal_solution_constref);
     primal_solution = admm_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);

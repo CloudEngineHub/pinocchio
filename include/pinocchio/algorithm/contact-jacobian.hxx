@@ -112,6 +112,7 @@ namespace pinocchio
 
     const Eigen::DenseIndex constraint_size =
       getTotalConstraintActiveSize(constraint_models, constraint_datas);
+    assert(constraint_forces.rows() == constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), constraint_size);
 
     auto & joint_torques = joint_torques_.const_cast_derived();
@@ -274,6 +275,7 @@ namespace pinocchio
 
     const Eigen::DenseIndex constraint_size =
       getTotalConstraintActiveSize(constraint_models, constraint_datas);
+    assert(J_.rows() == constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.cols(), model.nv);
 

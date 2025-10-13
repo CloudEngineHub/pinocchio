@@ -123,7 +123,8 @@ namespace pinocchio
       const ConstraintDataVectorHolder & constraint_datas_ref,
       const Scalar min_damping_value = Scalar(1e-8))
     : Base()
-    , m_size(evalConstraintSize(helper::get_ref(constraint_models_ref)))
+    , m_size(evalConstraintActiveSize(
+        helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref)))
     , m_model_ref(model_ref)
     , m_data_ref(data_ref)
     , m_constraint_models_ref(constraint_models_ref)
@@ -392,6 +393,22 @@ namespace pinocchio
       }
 
       return size;
+    }
+
+    static Eigen::DenseIndex evalConstraintActiveSize(
+      const ConstraintModelVector & constraint_models,
+      const ConstraintDataVector & constraint_datas)
+    {
+      Eigen::DenseIndex active_size = 0;
+      for (std::size_t i = 0; i < constraint_models.size(); ++i)
+      // for (const ConstraintModel & cm : constraint_models)
+      {
+        const auto & cmodel = helper::get_ref(constraint_models[i]);
+        const auto & cdata = helper::get_ref(constraint_datas[i]);
+        active_size += cmodel.activeSize(cdata);
+      }
+
+      return active_size;
     }
 
     inline void compute_conclude()

@@ -29,6 +29,7 @@ namespace pinocchio
 
     static constexpr bool has_baumgarte_corrector = true;
     static constexpr bool has_baumgarte_corrector_vector = true;
+    static constexpr bool constant_size = false;
 
     typedef ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> ConstraintData;
     typedef ConstraintData Data;

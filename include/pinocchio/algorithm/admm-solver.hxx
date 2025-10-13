@@ -570,7 +570,7 @@ namespace pinocchio
         if (solve_ncp)
         {
           // s-update
-          internal::computeDeSaxeCorrection(constraint_models, z_previous_, s_);
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_previous_, s_);
         }
 
         // default (non-accelerated) x-update

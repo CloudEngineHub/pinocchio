@@ -61,12 +61,13 @@ namespace pinocchio
 
       typedef typename ConstraintModel::ConstraintData ConstraintData;
       typedef Eigen::aligned_allocator<ConstraintModel> ConstraintModelAllocator;
+      typedef Eigen::aligned_allocator<ConstraintData> ConstraintDataAllocator;
 
       bp::def(
         "initConstraintDynamics",
         &initConstraintDynamics<
-          context::Scalar, context::Options, ConstraintModel, JointCollectionDefaultTpl,
-          ConstraintModelAllocator>,
+          context::Scalar, context::Options, JointCollectionDefaultTpl, ConstraintModel,
+          ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
         bp::args("model", "data", "contact_models"),
         "This function allows to allocate the memory before hand for contact dynamics algorithms.\n"
         "This allows to avoid online memory allocation when running these algorithms.",

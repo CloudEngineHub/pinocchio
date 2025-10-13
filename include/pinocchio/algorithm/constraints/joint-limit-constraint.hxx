@@ -319,7 +319,7 @@ namespace pinocchio
     const std::size_t active_size = static_cast<std::size_t>(this->activeSize(cdata));
 
     assert(
-      constraint_residual.size() == active_size
+      constraint_residual.size() == static_cast<int>(active_size)
       && "The active constraint_residual size in constraint data is different from the constraint "
          "model active size.");
 

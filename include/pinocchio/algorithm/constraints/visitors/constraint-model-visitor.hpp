@@ -680,7 +680,6 @@ namespace pinocchio
     struct ConstraintModelActiveSizeVisitor
     : visitors::ConstraintUnaryVisitorBase<ConstraintModelActiveSizeVisitor<Scalar, Options>, int>
     {
-
       typedef NoArg ArgsType;
 
       template<typename ConstraintModel>
@@ -1252,7 +1251,7 @@ namespace pinocchio
 
       template<typename ConstraintModel>
       static ReturnType algo(
-        const ConstraintModelBase<ConstraintModel> & cmodel,
+        const ::pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
         const typename ConstraintModel::ConstraintData & cdata)
       {
         return cmodel.getActiveCompliance(cdata);
@@ -1272,12 +1271,14 @@ namespace pinocchio
       template<typename S, int O> class ConstraintCollectionTpl>
     typename traits<
       ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::ComplianceVectorTypeConstRef
-    getActiveCompliance(const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
+    getActiveCompliance(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
     {
       typedef typename traits<ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::
         ComplianceVectorTypeConstRef ReturnType;
       typedef ConstraintModelActiveComplianceVisitor<ReturnType> Algo;
-      return Algo::run(cmodel);
+      return Algo::run(cmodel, cdata);
     }
 
     template<

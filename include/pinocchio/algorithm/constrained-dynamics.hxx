@@ -862,6 +862,7 @@ namespace pinocchio
 
     settings.iter = 0;
     bool optimal_solution_found = false;
+    PINOCCHIO_UNUSED_VARIABLE(optimal_solution_found);
     if (constraint_models.size() == 0)
     {
       return data.ddq;

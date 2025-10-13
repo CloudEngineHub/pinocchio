@@ -63,12 +63,18 @@ namespace pinocchio
           .def(bp::init<const Model &>(
             bp::args("self", "model"),
             "Constructor from a model.")[mimic_not_supported_function<>(1)])
-          .def(bp::init<const Model &, const RigidConstraintModelVector &>(
-            (bp::arg("self"), bp::arg("model"), bp::arg("contact_models")),
+          .def(bp::init<
+               const Model &, const Data &, const RigidConstraintModelVector &,
+               const RigidConstraintDataVector>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("contact_models"),
+             bp::arg("contact_datas")),
             "Constructor from a model and a collection of RigidConstraintModels.")
                  [mimic_not_supported_function<>(1)])
-          .def(bp::init<const Model &, const ConstraintModelVector &>(
-            (bp::arg("self"), bp::arg("model"), bp::arg("constraint_models")),
+          .def(bp::init<
+               const Model &, const Data &, const ConstraintModelVector &,
+               const ConstraintDataVector>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
+             bp::arg("constraint_datas")),
             "Constructor from a model and a collection of ConstraintModels.")
                  [mimic_not_supported_function<>(1)])
 
@@ -102,13 +108,20 @@ namespace pinocchio
 
           .def(
             "resize",
-            (void (*)(Self & self, const Model &, const RigidConstraintModelVector &))&resize,
-            (bp::arg("self"), bp::arg("model"), bp::arg("constraint_models")),
+            (void (*)(
+              Self & self, const Model &, const RigidConstraintModelVector &,
+              const RigidConstraintDataVector &))&resize,
+            (bp::arg("self"), bp::arg("model"), bp::arg("constraint_models"),
+             bp::arg("constraint_datas")),
             "Resizes the Cholesky decompostion according to the input constraint models")
 
           .def(
-            "resize", (void (*)(Self & self, const Model &, const ConstraintModelVector &))&resize,
-            (bp::arg("self"), bp::arg("model"), bp::arg("constraint_models")),
+            "resize",
+            (void (*)(
+              Self & self, const Model &, const ConstraintModelVector &,
+              const ConstraintDataVector &))&resize,
+            (bp::arg("self"), bp::arg("model"), bp::arg("constraint_models"),
+             bp::arg("constraint_datas")),
             "Resizes the Cholesky decompostion according to the input constraint models")
 
           .def(
@@ -311,13 +324,18 @@ namespace pinocchio
         return self.solve(mat);
       }
 
-      template<typename ConstraintModel, typename ConstraintModelAllocator>
+      template<
+        typename ConstraintModel,
+        typename ConstraintModelAllocator,
+        typename ConstraintData,
+        typename ConstraintDataAllocator>
       static void resize(
         Self & self,
         const Model & model,
-        const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models)
+        const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
+        const std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas)
       {
-        self.resize(model, contact_models);
+        self.resize(model, contact_models, contact_datas);
       }
 
       template<

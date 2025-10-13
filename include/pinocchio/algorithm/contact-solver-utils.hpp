@@ -10,6 +10,7 @@
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
+#include "pinocchio/utils/std-vector.hpp"
 
 namespace pinocchio
 {

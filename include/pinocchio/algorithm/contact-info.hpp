@@ -415,14 +415,14 @@ namespace pinocchio
       return colwise_span_indexes;
     }
 
-    /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeConstRef compliance() const
+    /// \brief Returns the compliance internally stored in the constraint model.
+    ComplianceVectorTypeConstRef compliance_impl() const
     {
       return m_compliance;
     }
 
-    /// \brief Returns the compliance internally stored in the constraint model
-    ComplianceVectorTypeRef compliance()
+    /// \brief Returns the compliance internally stored in the constraint model.
+    ComplianceVectorTypeRef compliance_impl()
     {
       return m_compliance;
     }
@@ -449,18 +449,6 @@ namespace pinocchio
     // BaumgarteCorrectorVectorParametersRef baumgarte_corrector_vector_parameters_impl()
     // {
     //   return m_baumgarte_vector_parameters;
-    // }
-
-    // /// \brief Returns the Baumgarte parameters internally stored in the constraint model
-    // const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_impl() const
-    // {
-    //   return m_baumgarte_parameters;
-    // }
-
-    // /// \brief Returns the Baumgarte parameters internally stored in the constraint model
-    // BaumgarteCorrectorParameters & baumgarte_corrector_parameters_impl()
-    // {
-    //   return m_baumgarte_parameters;
     // }
 
     ///

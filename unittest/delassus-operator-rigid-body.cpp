@@ -856,7 +856,6 @@ void test_apply_on_the_right(
     size += constraint_model.size();
     active_size += constraint_model.activeSize(constraint_data);
   }
-
   BOOST_CHECK(active_size <= size);
 
   Data data_gt(model), data_aba(model);
@@ -868,6 +867,7 @@ void test_apply_on_the_right(
   delassus_operator.updateDamping(damping_value);
   delassus_operator.updateCompliance(0);
   delassus_operator.compute(q_neutral);
+  BOOST_CHECK(delassus_operator.size() == active_size);
 
   const Eigen::VectorXd rhs = Eigen::VectorXd::Random(delassus_operator.size());
   Eigen::VectorXd res(delassus_operator.size());
@@ -883,9 +883,20 @@ void test_apply_on_the_right(
   make_symmetric(M_gt);
 
   ConstraintDataVector constraint_datas_gt = createData(constraint_models);
+  data_gt.q_in = data.q_in; // important for constraints to eval correctly
+  evalConstraints(model, data_gt, constraint_models, constraint_datas_gt);
+  int active_size_gt = 0;
+  for (std::size_t i = 0; i < constraint_models.size(); ++i)
+  {
+    const auto & cmodel = constraint_models[i];
+    const auto & cdata = constraint_datas_gt[i];
+    size += cmodel.size();
+    active_size_gt += cmodel.activeSize(cdata);
+  }
+  BOOST_CHECK(active_size_gt == active_size);
+
   Eigen::MatrixXd constraints_jacobian_gt(delassus_operator.size(), model.nv);
   constraints_jacobian_gt.setZero();
-  evalConstraints(model, data_gt, constraint_models, constraint_datas_gt);
   getConstraintsJacobian(
     model, data_gt, constraint_models, constraint_datas_gt, constraints_jacobian_gt);
 
@@ -953,7 +964,6 @@ void test_solve_in_place(
     DelassusOperatorRigidBodyReferenceWrapper;
 
   const Model & model = model_ref;
-  Data & data = data_ref;
   const ConstraintModelVector & constraint_models = constraint_models_ref;
 
   //    Data data(model);
@@ -1019,7 +1029,6 @@ BOOST_AUTO_TEST_CASE(general_test_joint_frictional_constraint)
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
-  typedef DelassusOperatorRigidBodyReferenceWrapper::CustomData CustomData;
   typedef
     typename DelassusOperatorRigidBodyReferenceWrapper::ConstraintModelVector ConstraintModelVector;
   typedef
@@ -1055,9 +1064,6 @@ BOOST_AUTO_TEST_CASE(general_test_joint_frictional_constraint)
 
   const double damping_value = 1e-4;
 
-  const double mu_inv = damping_value;
-  const double mu = 1. / mu_inv;
-
   // Test operator *
   {
     test_apply_on_the_right(
@@ -1077,7 +1083,6 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
-  typedef DelassusOperatorRigidBodyReferenceWrapper::CustomData CustomData;
   typedef
     typename DelassusOperatorRigidBodyReferenceWrapper::ConstraintModelVector ConstraintModelVector;
   typedef
@@ -1136,9 +1141,6 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
 
   const double damping_value = 1e-4;
 
-  const double mu_inv = damping_value;
-  const double mu = 1. / mu_inv;
-
   // Test operator *
   {
     test_apply_on_the_right(
@@ -1159,7 +1161,6 @@ BOOST_AUTO_TEST_CASE(general_test_constraint_generic)
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
-  typedef DelassusOperatorRigidBodyReferenceWrapper::CustomData CustomData;
   typedef
     typename DelassusOperatorRigidBodyReferenceWrapper::ConstraintModelVector ConstraintModelVector;
   typedef

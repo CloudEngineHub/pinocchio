@@ -316,7 +316,7 @@ namespace pinocchio
     {
       if constexpr (traits<Derived>::constant_size)
       {
-        return derived().compliance();
+        return compliance();
       }
       else
       {
@@ -330,7 +330,7 @@ namespace pinocchio
     {
       if constexpr (traits<Derived>::constant_size)
       {
-        return derived().compliance();
+        return compliance();
       }
       else
       {
@@ -380,17 +380,17 @@ namespace pinocchio
         model, data, cdata, diagonal_constraint_inertia.derived(), reference_frame);
     }
 
-    // /// \brief Returns the compliance internally stored in the constraint model
-    // ComplianceVectorTypeConstRef compliance() const
-    // {
-    //   return derived().compliance();
-    // }
+    /// \brief Returns the compliance internally stored in the constraint model.
+    ComplianceVectorTypeConstRef compliance() const
+    {
+      return derived().compliance_impl();
+    }
 
-    // /// \brief Returns the compliance internally stored in the constraint model
-    // ComplianceVectorTypeRef compliance()
-    // {
-    //   return derived().compliance();
-    // }
+    /// \brief Returns the compliance internally stored in the constraint model.
+    ComplianceVectorTypeRef compliance()
+    {
+      return derived().compliance_impl();
+    }
 
     // CHOICE: right now we use the scalar Baumgarte
     // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
