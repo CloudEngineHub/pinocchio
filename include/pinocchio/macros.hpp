@@ -90,6 +90,29 @@
  */
 #define PINOCCHIO_GET_TYPE_NAME(type) typeid(type).name()
 
+/**
+ * @brief Return the demangled runtime type name of a given C++ type.
+ *
+ * This macro expands to a call to `::boost::core::demangle` applied to
+ * `PINOCCHIO_GET_TYPE_NAME(type)`, providing a human‑readable name of
+ * the C++ type @p type. It is typically used for readable logging,
+ * debugging, or diagnostic output where it is useful to show the
+ * demangled identifier of a runtime or template type.
+ *
+ * @param type The C++ type whose demangled runtime name is to be retrieved.
+ *
+ * @return A demangled C‑string representing the readable type name of @p type.
+ *
+ * @note This macro relies on Boost.Core’s `boost::core::demangle`, which
+ *       uses compiler‑specific facilities (such as `abi::__cxa_demangle`
+ *       on GCC/Clang) to produce a readable name. The returned string
+ *       may differ across compilers or platforms.
+ *
+ * @warning RTTI (Run‑Time Type Information) must be enabled for `typeid`
+ *          to work, and the demangling process may incur a small runtime cost.
+ *
+ * @sa PINOCCHIO_GET_TYPE_NAME, boost::core::demangle, typeid
+ */
 #define PINOCCHIO_GET_DEMANGLED_TYPE_NAME(type)                                                    \
   ::boost::core::demangle(PINOCCHIO_GET_TYPE_NAME(type))
 
