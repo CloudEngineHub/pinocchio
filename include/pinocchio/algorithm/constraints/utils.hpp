@@ -90,14 +90,16 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConstraintModel,
     class ConstraintModelAllocator,
-    typename ConstraintData,
-    class ConstraintDataAllocator>
+    typename ConstraintDataVector>
   void calc(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
+    ConstraintDataVector & constraint_datas)
   {
+    static_assert(
+      helper::is_std_vector_v<ConstraintDataVector>,
+      "ConstraintDataVector should be an std::vector.");
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);
