@@ -54,9 +54,10 @@ namespace pinocchio
     typedef typename Model::Data Data;
 
     typedef _ConstraintModel ConstraintModel;
-    typedef typename helper::remove_ref<ConstraintModel>::type InnerConstraintModel;
+    typedef typename helper::remove_holder<ConstraintModel>::type InnerConstraintModel;
 
-    typedef typename helper::remove_ref<ConstraintModel>::type::ConstraintData InnerConstraintData;
+    typedef
+      typename helper::remove_holder<ConstraintModel>::type::ConstraintData InnerConstraintData;
     typedef typename std::conditional<
       helper::is_type_holder<ConstraintModel>::value,
       typename internal::extract_template_template_parameter<ConstraintModel>::template type<
