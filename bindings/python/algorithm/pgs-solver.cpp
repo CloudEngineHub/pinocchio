@@ -17,21 +17,28 @@ namespace pinocchio
   {
     namespace bp = boost::python;
 
-    typedef PGSContactSolverTpl<context::Scalar> Solver;
+    typedef context::Scalar Scalar;
+    typedef context::VectorXs VectorXs;
+    typedef PGSContactSolverTpl<Scalar> Solver;
     typedef Solver::SolverStats SolverStats;
     typedef typename Solver::RefConstVectorXs RefConstVectorXs;
 
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
-    template<typename DelassusMatrixType, typename ConstraintModel>
+    template<
+      typename DelassusMatrixType,
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     static bool solve_wrapper(
       Solver & solver,
       const DelassusOperatorDense & delassus,
-      const context::VectorXs & g,
-      const context::ConstraintModelVector & constraint_models,
-      const context::ConstraintDataVector & constraint_datas,
-      const context::Scalar dt,
+      const VectorXs & g,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const Scalar dt,
       const boost::optional<RefConstVectorXs> x = boost::none,
-      const context::Scalar over_relax = 1,
+      const Scalar over_relax = 1,
       const bool solve_ncp = true,
       const bool stat_record = false)
     {
@@ -59,16 +66,26 @@ namespace pinocchio
       void run(ConstraintModelBase<ConstraintModel> * ptr = 0)
       {
         PINOCCHIO_UNUSED_VARIABLE(ptr);
+        typedef typename traits<ConstraintModel>::ConstraintData ConstraintData;
+        typedef Eigen::aligned_allocator<ConstraintModel> ConstraintModelAllocator;
+        typedef Eigen::aligned_allocator<ConstraintData> ConstraintDataAllocator;
+
         class_
           .def(
-            "solve", solve_wrapper<context::MatrixXs, ConstraintModel>,
+            "solve",
+            solve_wrapper<
+              context::MatrixXs, ConstraintModel, ConstraintModelAllocator, ConstraintData,
+              ConstraintDataAllocator>,
             (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
              bp::arg("primal_solution") = boost::none, bp::arg("over_relax") = context::Scalar(1),
              bp::arg("solve_ncp") = true, bp::arg("stat_record") = false),
             "Solve the constrained conic problem composed of problem data (G,g,cones) and starting "
             "from the initial guess.")
           .def(
-            "solve", solve_wrapper<context::SparseMatrix, ConstraintModel>,
+            "solve",
+            solve_wrapper<
+              context::SparseMatrix, ConstraintModel, ConstraintModelAllocator, ConstraintData,
+              ConstraintDataAllocator>,
             (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
              bp::arg("primal_solution") = boost::none, bp::arg("over_relax") = context::Scalar(1),
              bp::arg("solve_ncp") = true, bp::arg("stat_record") = false),
