@@ -133,41 +133,41 @@ namespace pinocchio
         for (size_t j = 0; j < joint_neighbours.size(); j++)
         {
           const JointIndex vertex_j = joint_neighbours[j];
-          const Matrix6 & crosscoupling_ij =
+          const Matrix6 & crosscoupling_ji =
             (i > vertex_j)
               ? joint_cross_coupling.get(JointPair(vertex_j, i))
               : joint_cross_coupling.get(JointPair(i, vertex_j)).transpose(); // avoid memalloc
 
-          auto & crosscoupling_ix_Jcols = mat1_tmp;
-          crosscoupling_ix_Jcols.noalias() =
-            crosscoupling_ij * Jcols; // Warning: UDinv() is actually edge_ij * J
+          auto & crosscoupling_xi_Jcols = mat1_tmp;
+          crosscoupling_xi_Jcols.noalias() =
+            crosscoupling_ji * Jcols; // Warning: UDinv() is actually edge_ij * J
 
-          auto & crosscoupling_ij_Jcols_Dinv = mat2_tmp;
-          crosscoupling_ij_Jcols_Dinv.noalias() = crosscoupling_ix_Jcols * jdata_augmented.Dinv();
+          auto & crosscoupling_ji_Jcols_Dinv = mat2_tmp;
+          crosscoupling_ji_Jcols_Dinv.noalias() = crosscoupling_xi_Jcols * jdata_augmented.Dinv();
 
           data.oYaba_augmented[vertex_j].noalias() -=
-            crosscoupling_ij_Jcols_Dinv
-            * crosscoupling_ix_Jcols.transpose(); // Warning: UDinv() is actually edge_ij * J, U()
+            crosscoupling_ji_Jcols_Dinv
+            * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ij * J, U()
                                                   // is actually edge_ij * J_cols * Dinv
                                                   //          data.of[vertex_j].toVector().noalias()
                                                   //          += crosscoupling_ij * a_tmp;
 
-          const Matrix6 crosscoupling_ij_oL = crosscoupling_ij * oL;
+          const Matrix6 crosscoupling_ji_oL = crosscoupling_ji * oL;
           if (vertex_j == parent)
           {
             data.oYaba_augmented[parent].noalias() +=
-              crosscoupling_ij_oL + crosscoupling_ij_oL.transpose();
+              crosscoupling_ji_oL + crosscoupling_ji_oL.transpose();
           }
           else
           {
             if (vertex_j < parent)
             {
-              joint_cross_coupling.get({vertex_j, parent}).noalias() += crosscoupling_ij_oL;
+              joint_cross_coupling.get({vertex_j, parent}).noalias() += crosscoupling_ji_oL;
             }
             else
             {
               joint_cross_coupling.get({parent, vertex_j}).noalias() +=
-                crosscoupling_ij_oL.transpose();
+                crosscoupling_ji_oL.transpose();
             }
           }
 
@@ -175,25 +175,25 @@ namespace pinocchio
           {
             const JointIndex vertex_k = joint_neighbours[k];
 
-            const Matrix6 & edge_ik =
+            const Matrix6 & crosscoupling_ki =
               (i > vertex_k) ? joint_cross_coupling.get(JointPair(vertex_k, i))
                              : joint_cross_coupling.get(JointPair(i, vertex_k)).transpose();
 
-            crosscoupling_ix_Jcols.noalias() = edge_ik * Jcols;
+            crosscoupling_xi_Jcols.noalias() = crosscoupling_ki * Jcols;
 
             assert(vertex_j != vertex_k && "Must never happen!");
             if (vertex_j < vertex_k)
             {
               joint_cross_coupling.get({vertex_j, vertex_k}).noalias() -=
-                crosscoupling_ij_Jcols_Dinv
-                * crosscoupling_ix_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
+                crosscoupling_ji_Jcols_Dinv
+                * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
                                                       // J_col, U() is edge_ij * J_col * Dinv
             }
             else // if (vertex_k < vertex_j)
             {
               joint_cross_coupling.get({vertex_k, vertex_j}).transpose().noalias() -=
-                crosscoupling_ij_Jcols_Dinv
-                * crosscoupling_ix_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
+                crosscoupling_ji_Jcols_Dinv
+                * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
                                                       // J_col, U() is edge_ij * J_col * Dinv
             }
           }
@@ -398,7 +398,6 @@ namespace pinocchio
           J_cols.transpose() * coupling_forces.toVector();
       }
 
-      // Abuse of notation using custom_data.ddq for storing delta ddq
       jmodel.jointVelocitySelector(custom_data.ddq).noalias() =
         jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u)
         - jdata.UDinv().transpose() * oai.toVector();
