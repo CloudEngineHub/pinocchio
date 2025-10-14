@@ -93,6 +93,10 @@ BOOST_AUTO_TEST_CASE(default_constructor_reference_wrapper)
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref);
 
+  const auto active_constraint_size =
+    activeSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref));
+  BOOST_CHECK(delassus_operator.size() == active_constraint_size);
+
   BOOST_CHECK(delassus_operator.size() == 0);
   BOOST_CHECK(&delassus_operator.model() == &model);
   BOOST_CHECK(&delassus_operator.data() == &data);
@@ -946,13 +950,15 @@ void test_apply_on_the_right(
 
 template<
   template<typename> class Holder,
-  typename Scalar,
+  typename Model,
+  typename Data,
   typename ConstraintModelVector,
   typename ConstraintDataVector,
-  typename GeneralizedCondigurationVector>
+  typename GeneralizedCondigurationVector,
+  typename Scalar>
 void test_solve_in_place(
   const Holder<Model> & model_ref,
-  Holder<Data> & data_ref,
+  const Holder<Data> & data_ref,
   const Holder<ConstraintModelVector> & constraint_models_ref,
   const Holder<ConstraintDataVector> & constraint_datas_ref,
   const Eigen::MatrixBase<GeneralizedCondigurationVector> & q_neutral,
@@ -963,11 +969,14 @@ void test_solve_in_place(
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
 
-  const Model & model = model_ref;
-  const ConstraintModelVector & constraint_models = constraint_models_ref;
+  const auto & model = helper::get_ref(model_ref);
+  auto & data = helper::get_ref(data_ref);
+  const auto & constraint_models = helper::get_ref(constraint_models_ref);
+  auto & constraint_datas = helper::get_ref(constraint_datas_ref);
 
-  //    Data data(model);
-  //    std::reference_wrapper<Data> data_ref = data;
+  data.q_in = q_neutral;
+
+  calc(model, data, constraint_models, constraint_datas);
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
   delassus_operator.updateDamping(damping_value);
@@ -977,6 +986,9 @@ void test_solve_in_place(
   Data data_crba(model);
   Eigen::MatrixXd M = crba(model, data_crba, q_neutral, Convention::WORLD);
   make_symmetric(M);
+
+  data_crba.q_in = q_neutral;
+  BOOST_CHECK(data_crba.q_in == data.q_in);
 
   auto constraint_datas_crba = createData(constraint_models);
   const auto Jc =
@@ -1147,12 +1159,11 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
       model_ref, data_ref, constraint_models_ref, constraint_datas_ref, q_neutral, damping_value);
   } // End: Test operator *
 
-  // // Test solveInPlace
-  // {
-  //   test_solve_in_place(
-  //     model_ref, data_ref, constraint_models_ref, constraint_datas_ref, q_neutral,
-  //     damping_value);
-  // }
+  // Test solveInPlace
+  {
+    test_solve_in_place(
+      model_ref, data_ref, constraint_models_ref, constraint_datas_ref, q_neutral, damping_value);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(general_test_constraint_generic)
