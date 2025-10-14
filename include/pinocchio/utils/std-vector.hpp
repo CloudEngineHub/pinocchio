@@ -172,6 +172,74 @@ namespace pinocchio
     typedef std::vector<Holder<const T>> WrappedTVector;
     return WrappedTVector(vec.cbegin(), vec.cend());
   }
+
+  namespace helper
+  {
+    /**
+     * @brief Type trait to detect whether a given type is an instantiation of `std::vector`.
+     *
+     * This trait provides a compile‑time Boolean constant that is `true` if the
+     * specified type @p T is (after removal of const/volatile qualifiers and
+     * references) an instantiation of `std::vector<...>`, and `false` otherwise.
+     *
+     * It can be used in `static_assert` expressions, `if constexpr` branches, or
+     * to enable/disable function or class template overloads through SFINAE.
+     *
+     * ### Example
+     * @code
+     * static_assert(is_std_vector<std::vector<int>>::value, "is a vector");
+     * static_assert(!is_std_vector<double>::value, "not a vector");
+     *
+     * void f(const auto& x) {
+     *   if constexpr (is_std_vector_v<decltype(x)>)
+     *     std::cout << "x is an std::vector\n";
+     * }
+     * @endcode
+     *
+     * @tparam T The type to test. Any cv‑qualified or reference form of
+     *           an `std::vector` is normalized before the check.
+     *
+     * @see std::false_type, std::true_type, std::remove_cv_t, std::remove_reference_t
+     */
+    template<class T>
+    struct is_std_vector : std::false_type
+    {
+    };
+
+    /// @cond SPECIALIZATION
+    /**
+     * @brief Partial specialization for types of the form `std::vector<T, Alloc>`.
+     *
+     * This specialization derives from `std::true_type`, indicating that
+     * the tested type is indeed a standard vector instantiation.
+     *
+     * @tparam T      The element type of the vector.
+     * @tparam Alloc  The allocator type used by the vector.
+     */
+    template<class T, class Alloc>
+    struct is_std_vector<std::vector<T, Alloc>> : std::true_type
+    {
+    };
+    /// @endcond
+
+    /**
+     * @brief Convenience variable template yielding the `is_std_vector` result.
+     *
+     * Expands to a `bool` constant equal to
+     * `is_std_vector<std::remove_cv_t<std::remove_reference_t<T>>>::value`,
+     * allowing easy usage as `is_std_vector_v<T>`.
+     *
+     * @tparam T The type to test.
+     *
+     * @return `true` if @p T denotes an `std::vector` type (ignoring cv/ref qualifiers),
+     *         `false` otherwise.
+     *
+     * @since C++17
+     */
+    template<class T>
+    inline constexpr bool is_std_vector_v =
+      is_std_vector<std::remove_cv_t<std::remove_reference_t<T>>>::value;
+  } // namespace helper
 } // namespace pinocchio
 
 #endif // __pinocchio_utils_std_vector_hpp__
