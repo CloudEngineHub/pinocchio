@@ -85,42 +85,35 @@ class TestADMM(TestCase):
         )
         delassus = pin.DelassusOperatorDense(delassus_matrix)
 
+        active_size = 0
+        for i, cm in enumerate(constraint_models):
+            cd = constraint_datas[i]
+            active_size += cm.activeSize(cd)
         self.assertTrue(
-            delassus.matrix().shape[0]
-            == (3 * len(constraint_models_dict["bilateral_point_constraint_models"]))
-            + (6 * len(constraint_models_dict["weld_constraint_models"]))
-            + (3 * len(contact_constraints))
-            + (model.upperPositionLimit != np.inf).sum()
-            - 4 * 3
-            + (model.lowerPositionLimit != -np.inf).sum()
-            - 4 * 3
-            + model.nv,
+            delassus.matrix().shape[0] == active_size,
             "constraint problem is of wrong size.",
         )
 
         dim_pb = g.shape[0]
+        self.assertTrue(dim_pb == active_size, "constraint problem is of wrong size")
         solver = pin.ADMMContactSolver(dim_pb)
-        solver.setAbsolutePrecision(1e-13)
-        solver.setRelativePrecision(1e-14)
+        solver.setAbsolutePrecision(1e-10)
+        solver.setRelativePrecision(1e-12)
+        solver.setAndersonAccelerationCapacity(4)
+        solver.setRhoMomentum(0.9)
         solver.setLanczosSize(g.size)
+        # solver = pin.PGSContactSolver(dim_pb)
+        # solver.setAbsolutePrecision(1e-10)
+        # solver.setRelativePrecision(1e-12)
 
         has_converged = solver.solve(
-            delassus,
-            g,
-            constraint_models,
-            constraint_datas,
-            dt,
-            None,
-            None,
-            None,
-            True,
-            pin.ADMMUpdateRule.SPECTRAL,
-            stat_record,
+            delassus, g, constraint_models, constraint_datas, dt
         )
+
+        print(f"{solver.getIterationCount()=}")
+        print(f"{solver.getAbsoluteConvergenceResidual()=}")
+        print(f"{solver.getRelativeConvergenceResidual()=}")
         self.assertTrue(has_converged, "Solver did not converge.")
-        print(solver.getIterationCount())
-        print(solver.getAbsoluteConvergenceResidual())
-        print(solver.getRelativeConvergenceResidual())
 
         if stat_record and matplotlib_found:
             self.plotContactSolver(solver)

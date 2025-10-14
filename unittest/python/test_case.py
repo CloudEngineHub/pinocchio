@@ -84,7 +84,7 @@ class ContactSolverTestCase(PinocchioTestCase):
         vfree = v0 + dt * pin.aba(model, data, q0, v0, tau0, fext)
 
         # initialize constraint datas
-        constraint_datas = []
+        constraint_datas = pin.StdVec_ConstraintData()
         for cmodel in constraint_models:
             constraint_datas.append(cmodel.createData())
             cdata = constraint_datas[-1]
