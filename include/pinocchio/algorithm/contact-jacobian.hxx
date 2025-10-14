@@ -345,9 +345,7 @@ namespace pinocchio
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
     typedef typename Data::MatrixXs ReturnType;
 
-    Eigen::DenseIndex constraint_size = 0;
-    for (const ConstraintModel & cm : constraint_models)
-      constraint_size += cm.size();
+    const auto constraint_size = getTotalConstraintActiveSize(constraint_models, constraint_datas);
 
     ReturnType res = ReturnType::Zero(constraint_size, model.nv);
     getConstraintsJacobian(model, data, constraint_models, constraint_datas, res);
