@@ -49,132 +49,141 @@ namespace pinocchio
     }
 
     template<typename T>
-    struct remove_ref
+    struct remove_holder
     {
       typedef T type;
-      static T & get_ref(T & v)
+      typedef T & ref_type;
+      static ref_type get_ref(T & v)
       {
         return v;
       }
     };
 
-    //    template<typename T>
-    //    struct remove_ref<const T>
-    //    {
-    //      typedef const T type;
-    //      static const T & get_ref(const T & v)
-    //      {
-    //        return v;
-    //      }
-    //    };
+    template<typename T>
+    struct remove_holder<const T>
+    {
+      typedef T type;
+      typedef const T & ref_type;
+      static ref_type get_ref(const T & v)
+      {
+        return v;
+      }
+    };
 
     template<typename T>
-    struct remove_ref<std::reference_wrapper<T>>
+    struct remove_holder<std::reference_wrapper<T>>
     {
-      typedef typename remove_ref<T>::type type;
+      typedef typename remove_holder<T>::type type;
+      typedef typename remove_holder<T>::ref_type ref_type;
 
-      static T & get_ref(std::reference_wrapper<T> & ref)
+      static ref_type get_ref(std::reference_wrapper<T> & ref)
       {
         return ref.get();
       }
     };
 
     template<typename T>
-    struct remove_ref<const std::reference_wrapper<T>> : remove_ref<std::reference_wrapper<T>>
+    struct remove_holder<const std::reference_wrapper<T>> : remove_holder<std::reference_wrapper<T>>
     {
-      typedef typename remove_ref<T>::type type;
+      typedef typename remove_holder<T>::type type;
+      typedef typename remove_holder<T>::ref_type ref_type;
 
-      static T & get_ref(const std::reference_wrapper<T> & ref)
+      static ref_type get_ref(const std::reference_wrapper<T> & ref)
       {
         return ref.get();
       }
     };
 
     template<typename T>
-    struct remove_ref<const std::reference_wrapper<const T>>
+    struct remove_holder<const std::reference_wrapper<const T>>
     {
-      typedef typename remove_ref<const T>::type type;
+      typedef typename remove_holder<const T>::type type;
+      typedef typename remove_holder<const T>::ref_type ref_type;
 
-      static const T & get_ref(const std::reference_wrapper<const T> & ref)
+      static ref_type get_ref(const std::reference_wrapper<const T> & ref)
       {
         return ref.get();
       }
     };
 
     template<typename T>
-    struct remove_ref<std::shared_ptr<T>>
+    struct remove_holder<std::shared_ptr<T>>
     {
-      typedef typename remove_ref<T>::type type;
+      typedef typename remove_holder<T>::type type;
+      typedef typename remove_holder<T>::ref_type ref_type;
 
-      static T & get_ref(const std::shared_ptr<T> & ptr)
+      static ref_type get_ref(const std::shared_ptr<T> & ptr)
       {
         return *ptr;
       }
     };
 
     template<typename T>
-    struct remove_ref<const std::shared_ptr<T>> : remove_ref<std::shared_ptr<T>>
+    struct remove_holder<const std::shared_ptr<T>> : remove_holder<std::shared_ptr<T>>
     {
     };
 
     template<typename T>
-    struct remove_ref<std::shared_ptr<const T>>
+    struct remove_holder<std::shared_ptr<const T>>
     {
-      typedef typename remove_ref<const T>::type type;
+      typedef typename remove_holder<const T>::type type;
+      typedef typename remove_holder<const T>::ref_type ref_type;
 
-      static const T & get_ref(const std::shared_ptr<const T> & ptr)
+      static ref_type get_ref(const std::shared_ptr<const T> & ptr)
       {
         return *ptr;
       }
     };
 
     template<typename T>
-    struct remove_ref<const std::shared_ptr<const T>> : remove_ref<std::shared_ptr<const T>>
+    struct remove_holder<const std::shared_ptr<const T>> : remove_holder<std::shared_ptr<const T>>
     {
     };
 
     template<typename T>
-    struct remove_ref<std::unique_ptr<T>>
+    struct remove_holder<std::unique_ptr<T>>
     {
-      typedef typename remove_ref<T>::type type;
+      typedef typename remove_holder<T>::type type;
+      typedef typename remove_holder<T>::ref_type ref_type;
 
-      static T & get_ref(const std::unique_ptr<T> & ptr)
+      static ref_type get_ref(const std::unique_ptr<T> & ptr)
       {
         return *ptr;
       }
     };
 
     template<typename T>
-    struct remove_ref<const std::unique_ptr<T>> : remove_ref<std::unique_ptr<T>>
+    struct remove_holder<const std::unique_ptr<T>> : remove_holder<std::unique_ptr<T>>
     {
     };
 
     template<typename T>
-    struct remove_ref<std::unique_ptr<const T>>
+    struct remove_holder<std::unique_ptr<const T>>
     {
-      typedef typename remove_ref<const T>::type type;
+      typedef typename remove_holder<const T>::type type;
+      typedef typename remove_holder<const T>::ref_type ref_type;
 
-      static const T & get_ref(const std::unique_ptr<const T> & ptr)
+      static ref_type get_ref(const std::unique_ptr<const T> & ptr)
       {
         return *ptr;
       }
     };
 
     template<typename T>
-    struct remove_ref<const std::unique_ptr<const T>> : remove_ref<std::unique_ptr<const T>>
+    struct remove_holder<const std::unique_ptr<const T>> : remove_holder<std::unique_ptr<const T>>
     {
     };
 
     template<typename T>
-    typename remove_ref<T>::type & get_ref(T & v)
+    typename remove_holder<T>::ref_type get_ref(T & v)
     {
-      return remove_ref<T>::get_ref(v);
+      return remove_holder<T>::get_ref(v);
     }
 
     template<typename T>
-    const typename remove_ref<const T>::type & get_ref(const T & v)
+    const typename remove_holder<const T>::ref_type get_ref(const T & v)
     {
-      return remove_ref<const T>::get_ref(v);
+      return remove_holder<const T>::get_ref(v);
     }
 
     template<typename T>
