@@ -7,6 +7,7 @@
 #define __pinocchio_macros_hpp__
 
 #include <sstream>
+#include <boost/core/demangle.hpp>
 
 // On Windows, __cplusplus is not necessarily set to the C++ version being used.
 // See https://docs.microsoft.com/fr-fr/cpp/build/reference/zc-cplusplus?view=vs-2019 for further
@@ -88,6 +89,9 @@
  * @sa typeid, abi::__cxa_demangle
  */
 #define PINOCCHIO_GET_TYPE_NAME(type) typeid(type).name()
+
+#define PINOCCHIO_GET_DEMANGLED_TYPE_NAME(type)                                                    \
+  ::boost::core::demangle(PINOCCHIO_GET_TYPE_NAME(type))
 
 namespace pinocchio
 {
