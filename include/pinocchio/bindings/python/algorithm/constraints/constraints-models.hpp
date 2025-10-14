@@ -65,7 +65,6 @@ namespace pinocchio
     expose_constraint_model(bp::class_<context::JointLimitConstraintModel> & cl)
     {
       typedef typename context::JointLimitConstraintModel::JointIndexVector JointIndexVector;
-      typedef typename context::JointLimitConstraintModel::ConstraintData ConstraintData;
       typedef typename context::JointLimitConstraintModel Self;
       cl.def(bp::init<const context::Model &, const JointIndexVector &>(
                (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints")),

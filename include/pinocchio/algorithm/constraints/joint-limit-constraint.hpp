@@ -426,18 +426,20 @@ namespace pinocchio
       return activable_idx_vs;
     }
 
-    // const EigenIndexVector & getActiveIdxQsReduce() const // TODO: move to constraint_data
-    // {
-    //   return active_idx_qs_reduce;
-    // }
-    // const EigenIndexVector & getActiveNvs() const  // TODO: move to constraint_data
-    // {
-    //   return active_nvs;
-    // }
-    // const EigenIndexVector & getActiveIdxVs() const  // TODO: move to constraint_data
-    // {
-    //   return active_idx_vs;
-    // }
+    const EigenIndexVector & getActiveIdxQsReduce(const ConstraintData & constraint_data) const
+    {
+      return constraint_data.active_idx_qs_reduce;
+    }
+
+    const EigenIndexVector & getActiveNvs(const ConstraintData & constraint_data) const
+    {
+      return constraint_data.active_nvs;
+    }
+
+    const EigenIndexVector & getActiveIdxVs(const ConstraintData & constraint_data) const
+    {
+      return constraint_data.active_idx_vs;
+    }
 
     // row_sparsity_pattern, row_indexes, activable_idx_rows, active_idx_rows are
     // not exposed as they only privately allow getRowActiv[e/able]SparsityPattern and
