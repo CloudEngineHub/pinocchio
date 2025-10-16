@@ -110,11 +110,15 @@ q = q0.copy()
 
 y = np.ones(constraint_dim)
 data.M = np.eye(model.nv) * rho
-kkt_constraint = pin.ContactCholeskyDecomposition(model, [constraint_model])
+kkt_constraint = pin.ContactCholeskyDecomposition(
+    model, data, [constraint_model], [constraint_data]
+)
 eps = 1e-10
 N = 100
 for k in range(N):
     pin.computeJointJacobians(model, data, q)
+    data.q_in = q
+    constraint_model.calc(model, data, constraint_data)
     kkt_constraint.compute(model, data, [constraint_model], [constraint_data], mu)
     constraint_value = constraint_data.c1Mc2.translation
 
@@ -154,7 +158,7 @@ t = 0
 mu_sim = 1e-10
 constraint_model.corrector.Kp[:] = 10
 constraint_model.corrector.Kd[:] = 2.0 * np.sqrt(constraint_model.corrector.Kp)
-pin.initConstraintDynamics(model, data, [constraint_model])
+pin.initConstraintDynamics(model, data, [constraint_model], [constraint_data])
 prox_settings = pin.ProximalSettings(1e-8, mu_sim, 10)
 
 try:
