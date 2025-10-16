@@ -20,7 +20,7 @@ namespace pinocchio
       const context::Model & model,
       const context::Data & data,
       const ConstraintModel & constraint_model,
-      ConstraintData & constraint_data)
+      const ConstraintData & constraint_data)
     {
       context::MatrixXs J(constraint_model.activeSize(constraint_data), model.nv);
       J.setZero();
@@ -33,7 +33,7 @@ namespace pinocchio
       const context::Model & model,
       const context::Data & data,
       const ConstraintModelVector & constraint_models,
-      ConstraintDataVector & constraint_datas)
+      const ConstraintDataVector & constraint_datas)
     {
       const Eigen::DenseIndex constraint_active_size =
         getTotalConstraintActiveSize(constraint_models, constraint_datas);

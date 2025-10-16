@@ -356,6 +356,10 @@ namespace pinocchio
 
     /// \brief Evaluate the constraint values at the current state given by data and store the
     /// results in cdata.
+    /// \note data must be populated by results of a `forwardKinematic(model, data, q, v, a)`.
+    /// The forward kinematics on q determines the constraint position error, on v the constraint
+    /// velocity error, on a the constraint acceleration error.
+    /// Typically, a call to `aba` will fill all the necessary fields of data.
     template<template<typename, int> class JointCollectionTpl>
     void calc(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -825,7 +829,7 @@ namespace pinocchio
     void jacobian(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata,
+      const ConstraintData & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
     {
       typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;

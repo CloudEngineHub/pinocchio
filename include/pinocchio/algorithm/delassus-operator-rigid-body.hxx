@@ -46,41 +46,6 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
     template<typename T> class Holder>
-  template<typename ConfigVectorType>
-  void DelassusOperatorRigidBodySystemsTpl<
-    Scalar,
-    Options,
-    JointCollectionTpl,
-    ConstraintModel,
-    Holder>::
-    compute(
-      const Eigen::MatrixBase<ConfigVectorType> & q, bool apply_on_the_right, bool solve_in_place)
-  {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      q.size(), model().nq, "The joint configuration vector is not of right size");
-
-    const Model & model_ref = model();
-    Data & data_ref = data();
-
-    // Zero-th order forward kinematics
-    typedef DelassusOperatorRigidBodySystemsComputeForwardPass<
-      DelassusOperatorRigidBodySystemsTpl, ConfigVectorType>
-      Pass1;
-    for (JointIndex i = 1; i < (JointIndex)model_ref.njoints; ++i)
-    {
-      typename Pass1::ArgsType args(model_ref, data_ref, q.derived());
-      Pass1::run(model_ref.joints[i], data_ref.joints[i], args);
-    }
-
-    compute(apply_on_the_right, solve_in_place);
-  }
-
-  template<
-    typename Scalar,
-    int Options,
-    template<typename, int> class JointCollectionTpl,
-    class ConstraintModel,
-    template<typename T> class Holder>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
@@ -94,7 +59,7 @@ namespace pinocchio
     const Model & model_ref = model();
     Data & data_ref = data();
     const ConstraintModelVector & constraint_models_ref = constraint_models();
-    ConstraintDataVector & constraint_datas_ref = constraint_datas();
+    const ConstraintDataVector & constraint_datas_ref = constraint_datas();
 
     //      computeJointMinimalOrdering(model_ref, data_ref, constraint_models_ref);
 
@@ -128,7 +93,7 @@ namespace pinocchio
       for (size_t ee_id = 0; ee_id < constraint_models_ref.size(); ++ee_id)
       {
         const auto & cmodel = helper::get_ref(constraint_models_ref[ee_id]);
-        auto & cdata = helper::get_ref(constraint_datas_ref[ee_id]);
+        const auto & cdata = helper::get_ref(constraint_datas_ref[ee_id]);
 
         const auto constraint_size = cmodel.activeSize(cdata);
 

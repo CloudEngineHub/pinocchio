@@ -309,9 +309,6 @@ namespace pinocchio
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     ConstraintData & cdata) const
   {
-    PINOCCHIO_UNUSED_VARIABLE(model);
-    PINOCCHIO_UNUSED_VARIABLE(data);
-
     auto & activable_constraint_residual = cdata.activable_constraint_residual;
     auto & constraint_residual = cdata.constraint_residual;
 
@@ -339,7 +336,7 @@ namespace pinocchio
   void JointLimitConstraintModelTpl<Scalar, Options>::jacobian(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & /*data*/,
-    ConstraintData & cdata,
+    const ConstraintData & cdata,
     const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
   {
     JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();

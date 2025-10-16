@@ -13,6 +13,7 @@
 #include "pinocchio/algorithm/contact-cholesky.hxx"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/math/fwd.hpp"
 #include <limits>
 
@@ -280,6 +281,7 @@ namespace pinocchio
 
     // Computes the Cholesky decomposition
     const Scalar mu = settings.mu;
+    calc(model, data, constraint_models, contact_datas);
     contact_chol.compute(model, data, constraint_models, contact_datas, mu);
 
     primal_dual_contact_solution.tail(model.nv) = tau - data.nle;

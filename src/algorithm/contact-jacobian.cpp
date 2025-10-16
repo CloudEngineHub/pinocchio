@@ -20,7 +20,7 @@ namespace pinocchio
     const context::Model &,
     const context::Data &,
     const ConstraintModelBase<context::RigidConstraintModel> &,
-    ConstraintDataBase<context::RigidConstraintData> &,
+    const ConstraintDataBase<context::RigidConstraintData> &,
     const Eigen::MatrixBase<context::MatrixXs> &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void getConstraintsJacobian<
@@ -35,7 +35,7 @@ namespace pinocchio
     const context::Model &,
     const context::Data &,
     const context::RigidConstraintModelVector &,
-    context::RigidConstraintDataVector &,
+    const context::RigidConstraintDataVector &,
     const Eigen::MatrixBase<context::MatrixXs> &);
 
 } // namespace pinocchio

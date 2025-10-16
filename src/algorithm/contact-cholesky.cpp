@@ -63,7 +63,7 @@ namespace pinocchio
     const context::Model &,
     context::Data &,
     const context::RigidConstraintModelVector &,
-    context::RigidConstraintDataVector &,
+    const context::RigidConstraintDataVector &,
     const context::Scalar);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void

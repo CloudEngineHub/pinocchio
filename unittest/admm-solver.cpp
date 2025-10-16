@@ -57,6 +57,10 @@ struct TestBoxTpl
 
     const Eigen::VectorXd v_free =
       v0 + dt * aba(model, data, q0, v0, tau0, external_forces, Convention::WORLD);
+    data.q_in = q0;
+    data.v_in = v0;
+    data.tau_in = tau0;
+    calc(model, data, constraint_models, constraint_datas);
 
     // Cholesky of the Delassus matrix
     crba(model, data, q0, Convention::WORLD);
@@ -528,6 +532,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   // Cholesky of the Delassus matrix
   crba(model, data, q0, Convention::WORLD);
+  data.q_in = q0;
   calc(model, data, constraint_models, constraint_datas);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.resize(model, constraint_models, constraint_datas);
@@ -642,11 +647,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
 
   // Cholesky of the Delassus matrix
   crba(model, data, q0, Convention::WORLD);
-
   data.q_in = q0;
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
-  cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.resize(model, constraint_models, constraint_datas);
@@ -776,11 +779,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
 
   // Cholesky of the Delassus matrix
   crba(model, data, q0, Convention::WORLD);
-
   data.q_in = q0;
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
-  cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.resize(model, constraint_models, constraint_datas);
@@ -915,11 +916,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
 
   // Cholesky of the Delassus matrix
   crba(model, data, q0, Convention::WORLD);
-
   data.q_in = q0;
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
-  cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.resize(model, constraint_models, constraint_datas);
@@ -1045,11 +1044,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
   // Cholesky of the Delassus matrix
   crba(model, data, q0, Convention::WORLD);
-
   data.q_in = q0;
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
-  cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.resize(model, constraint_models, constraint_datas);
@@ -1175,11 +1172,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
   // Cholesky of the Delassus matrix
   crba(model, data, q0, Convention::WORLD);
-
   data.q_in = q0;
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
-  cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.resize(model, constraint_models, constraint_datas);
@@ -1303,11 +1298,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
   // Cholesky of the Delassus matrix
   crba(model, data, q0, Convention::WORLD);
-
   data.q_in = q0;
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
-  cmodel.resize(model, data, cdata);
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.resize(model, constraint_models, constraint_datas);

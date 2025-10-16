@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  Data data(model), data_gt(model), data_aba(model);
+  Data data(model);
   std::reference_wrapper<Data> data_ref = data;
 
   ConstraintModelVector constraint_models;
@@ -139,6 +139,10 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
   const ConstraintModel cm_LF_LOCAL(model, model.getJointId(LF), SE3::Random());
   constraint_models.push_back(cm_LF_LOCAL);
   constraint_datas.push_back(cm_LF_LOCAL.createData());
+
+  computeJointJacobians(model, data, q_neutral);
+  data.q_in = q_neutral;
+  calc(model, data, constraint_models, constraint_datas);
 
   //  ConstraintDataVector constraint_datas_gt = constraint_datas;
   //
@@ -157,7 +161,7 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
     delassus_operator.updateDamping(mu_inv);
     delassus_operator.updateCompliance(0);
     BOOST_CHECK(delassus_operator.isDirty());
-    delassus_operator.compute(q_neutral);
+    delassus_operator.compute();
     BOOST_CHECK(!delassus_operator.isDirty());
 
     const Eigen::VectorXd rhs = Eigen::VectorXd::Random(delassus_operator.size());
@@ -166,6 +170,7 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
     delassus_operator.applyOnTheRight(rhs, res);
 
     // Eval J Minv Jt
+    Data data_gt(model);
     auto Minv_gt = computeMinverse(model, data_gt, q_neutral);
     make_symmetric(Minv_gt);
     BOOST_CHECK(Minv_gt.isApprox(Minv_gt.transpose()));
@@ -176,7 +181,9 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
     ConstraintDataVector constraint_datas_gt = createData(constraint_models);
     Eigen::MatrixXd constraints_jacobian_gt(delassus_operator.size(), model.nv);
     constraints_jacobian_gt.setZero();
-    evalConstraints(model, data_gt, constraint_models, constraint_datas_gt);
+    computeJointJacobians(model, data_gt, data.q_in);
+    data_gt.q_in = data.q_in;
+    calc(model, data_gt, constraint_models, constraint_datas_gt);
     getConstraintsJacobian(
       model, data_gt, constraint_models, constraint_datas_gt, constraints_jacobian_gt);
 
@@ -192,6 +199,7 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
     BOOST_CHECK(tau_constraints.isApprox(Jt_rhs_gt));
 
     std::vector<Force> fext_gt(size_t(model.njoints), Force::Zero());
+    Data data_aba(model);
     mapConstraintForcesToJointForces(
       model, data_aba, constraint_models, constraint_datas_gt, rhs, fext_gt, LocalFrameTag());
     auto fext_gt_copy = fext_gt;
@@ -256,19 +264,22 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
       model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
     delassus_operator.updateDamping(mu_inv);
     delassus_operator.updateCompliance(0);
-    delassus_operator.compute(q_neutral);
+    delassus_operator.compute();
 
     Data data2(model);
     std::reference_wrapper<Data> data2_ref = data2;
 
     ConstraintDataVector constraint_datas2 = createData(constraint_models_ref.get());
+    computeJointJacobians(model, data2, data.q_in);
+    data2.q_in = data.q_in;
+    calc(model, data2, constraint_models, constraint_datas2);
     std::reference_wrapper<ConstraintDataVector> constraint_datas2_ref = constraint_datas2;
 
     DelassusOperatorRigidBodyReferenceWrapper delassus_operator2(
       model_ref, data2_ref, constraint_models_ref, constraint_datas2_ref, damping_value);
     delassus_operator2.updateDamping(mu_inv);
     delassus_operator2.updateCompliance(0);
-    delassus_operator2.compute(q_neutral);
+    delassus_operator2.compute();
 
     // Check consistency between a fresh and dirty data
     {
@@ -313,13 +324,16 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
       model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
     delassus_operator.updateDamping(mu_inv);
     delassus_operator.updateCompliance(0);
-    delassus_operator.compute(q_neutral);
+    delassus_operator.compute();
 
     Data data_crba(model);
     Eigen::MatrixXd M = crba(model, data_crba, q_neutral, Convention::WORLD);
     make_symmetric(M);
 
     auto constraint_datas_crba = createData(constraint_models);
+    computeJointJacobians(model, data_crba, data.q_in);
+    data_crba.q_in = data.q_in;
+    calc(model, data_crba, constraint_models, constraint_datas_crba);
     const auto Jc =
       getConstraintsJacobian(model, data_crba, constraint_models, constraint_datas_crba);
 
@@ -368,15 +382,21 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
     std::reference_wrapper<Data> data_ref = data;
 
     auto constraint_datas = createData(constraint_models);
+    computeJointJacobians(model, data, q_neutral);
+    data.q_in = q_neutral;
+    calc(model, data, constraint_models, constraint_datas);
     std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;
 
     DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
       model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
-    delassus_operator.compute(q_neutral);
+    delassus_operator.compute();
 
     Data data2(model);
     std::reference_wrapper<Data> data2_ref = data2;
     auto constraint_datas2 = createData(constraint_models);
+    computeJointJacobians(model, data2, q_neutral);
+    data2.q_in = q_neutral;
+    calc(model, data, constraint_models, constraint_datas2);
     std::reference_wrapper<ConstraintDataVector> constraint_datas2_ref = constraint_datas2;
 
     const double new_damping_value = 1e-6;
@@ -384,7 +404,7 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
     DelassusOperatorRigidBodyReferenceWrapper delassus_operator2(
       model_ref, data2_ref, constraint_models_ref, constraint_datas2_ref, new_damping_value);
     BOOST_CHECK(delassus_operator2.isDirty());
-    delassus_operator2.compute(q_neutral);
+    delassus_operator2.compute();
     BOOST_CHECK(!delassus_operator2.isDirty());
 
     BOOST_CHECK(!delassus_operator.isDirty());
@@ -421,6 +441,9 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
     make_symmetric(M);
 
     auto constraint_datas_crba = createData(constraint_models);
+    computeJointJacobians(model, data_crba, q_neutral);
+    data_crba.q_in = q_neutral;
+    calc(model, data_crba, constraint_models, constraint_datas_crba);
     const auto Jc =
       getConstraintsJacobian(model, data_crba, constraint_models, constraint_datas_crba);
 
@@ -526,7 +549,7 @@ BOOST_AUTO_TEST_CASE(general_test_frictional_point_constraint_model)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  Data data(model), data_gt(model), data_aba(model);
+  Data data(model), data_gt(model);
   std::reference_wrapper<Data> data_ref = data;
   //  const ConstraintModel cm_RF_LOCAL(model, model.getJointId(RF), SE3::Random());
   //  const ConstraintModel cm_RF_LOCAL(model, 0, SE3::Identity(), model.getJointId(RF),
@@ -549,6 +572,15 @@ BOOST_AUTO_TEST_CASE(general_test_frictional_point_constraint_model)
   constraint_datas.push_back(cm_RF_LOCAL.createData());
 
   ConstraintDataVector constraint_datas_gt = constraint_datas;
+
+  // Fill data and constraint data with necessary computations
+  computeJointJacobians(model, data, q_neutral);
+  data.q_in = q_neutral;
+  calc(model, data, constraint_models, constraint_datas);
+  //
+  computeJointJacobians(model, data_gt, q_neutral);
+  data_gt.q_in = q_neutral;
+  calc(model, data_gt, constraint_models, constraint_datas_gt);
 
   std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
   std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;
@@ -603,7 +635,7 @@ BOOST_AUTO_TEST_CASE(general_test_frictional_point_constraint_model)
     const Eigen::VectorXd rhs = Eigen::VectorXd::Random(delassus_operator.size());
     Eigen::VectorXd res(delassus_operator.size());
 
-    delassus_operator.compute(q_neutral);
+    delassus_operator.compute();
     delassus_operator.applyOnTheRight(rhs, res);
 
     // Eval Jt*rhs vs internal computations. This test is useful to check intermediate computation.
@@ -628,6 +660,7 @@ BOOST_AUTO_TEST_CASE(general_test_frictional_point_constraint_model)
     const Eigen::VectorXd Jt_rhs_gt = constraints_jacobian_gt.transpose() * rhs;
     BOOST_CHECK(tau_constraints.isApprox(Jt_rhs_gt));
 
+    Data data_aba(model);
     aba(
       model, data_aba, q_neutral, Eigen::VectorXd::Zero(model.nv), tau_constraints,
       Convention::LOCAL);
@@ -724,12 +757,15 @@ BOOST_AUTO_TEST_CASE(general_test_frictional_point_constraint_model)
 
     Data data(model);
     std::reference_wrapper<Data> data_ref = data;
+    computeJointJacobians(model, data, q_neutral);
+    data.q_in = q_neutral;
+    calc(model, data, constraint_models, constraint_datas);
 
     DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
       model_ref, data_ref, constraint_models_ref, constraint_datas_ref, min_damping_value);
     delassus_operator.updateDamping(mu_inv);
     delassus_operator.updateCompliance(0);
-    delassus_operator.compute(q_neutral);
+    delassus_operator.compute();
     delassus_operator.getAugmentedMassMatrixOperator().solveInPlace(res);
 
     // Check elimination_order
@@ -751,6 +787,9 @@ BOOST_AUTO_TEST_CASE(general_test_frictional_point_constraint_model)
     make_symmetric(M);
 
     auto constraint_datas_crba = createData(constraint_models);
+    computeJointJacobians(model, data_crba, q_neutral);
+    data_crba.q_in = q_neutral;
+    calc(model, data, constraint_models, constraint_datas_crba);
     const auto Jc =
       getConstraintsJacobian(model, data_crba, constraint_models, constraint_datas_crba);
 
@@ -830,16 +869,18 @@ BOOST_AUTO_TEST_CASE(general_test_frictional_point_constraint_model)
 
 template<
   template<typename> class Holder,
-  typename Scalar,
+  typename Model,
+  typename Data,
   typename ConstraintModelVector,
   typename ConstraintDataVector,
-  typename GeneralizedCondigurationVector>
+  typename GeneralizedConfigurationVector,
+  typename Scalar>
 void test_apply_on_the_right(
   const Holder<Model> & model_ref,
-  Holder<Data> & data_ref,
+  const Holder<Data> & data_ref,
   const Holder<ConstraintModelVector> & constraint_models_ref,
   const Holder<ConstraintDataVector> & constraint_datas_ref,
-  const Eigen::MatrixBase<GeneralizedCondigurationVector> & q_neutral,
+  const Eigen::MatrixBase<GeneralizedConfigurationVector> & q_neutral,
   const Scalar damping_value)
 {
   typedef typename ConstraintModelVector::value_type ConstraintModel;
@@ -850,7 +891,13 @@ void test_apply_on_the_right(
   const Model & model = model_ref;
   Data & data = data_ref;
   const ConstraintModelVector & constraint_models = constraint_models_ref;
-  const ConstraintDataVector & constraint_datas = constraint_datas_ref;
+  ConstraintDataVector & constraint_datas = constraint_datas_ref;
+
+  // Necessary to update data oMi, lMi and J for internal rigid body computations
+  computeJointJacobians(model, data, q_neutral);
+  // Necessary to keep constraint datas up to date
+  data.q_in = q_neutral;
+  calc(model, data, constraint_models, constraint_datas);
 
   int size = 0, active_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
@@ -862,7 +909,6 @@ void test_apply_on_the_right(
   }
   BOOST_CHECK(active_size <= size);
 
-  Data data_gt(model), data_aba(model);
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
 
@@ -870,7 +916,7 @@ void test_apply_on_the_right(
 
   delassus_operator.updateDamping(damping_value);
   delassus_operator.updateCompliance(0);
-  delassus_operator.compute(q_neutral);
+  delassus_operator.compute();
   BOOST_CHECK(delassus_operator.size() == active_size);
 
   const Eigen::VectorXd rhs = Eigen::VectorXd::Random(delassus_operator.size());
@@ -879,6 +925,7 @@ void test_apply_on_the_right(
   delassus_operator.applyOnTheRight(rhs, res);
 
   // Eval J Minv Jt
+  Data data_gt(model);
   auto Minv_gt = computeMinverse(model, data_gt, q_neutral);
   make_symmetric(Minv_gt);
   BOOST_CHECK(Minv_gt.isApprox(Minv_gt.transpose()));
@@ -887,8 +934,10 @@ void test_apply_on_the_right(
   make_symmetric(M_gt);
 
   ConstraintDataVector constraint_datas_gt = createData(constraint_models);
-  data_gt.q_in = data.q_in; // important for constraints to eval correctly
-  evalConstraints(model, data_gt, constraint_models, constraint_datas_gt);
+  computeJointJacobians(model, data_gt, q_neutral);
+  data_gt.q_in = q_neutral;
+  BOOST_CHECK(data_gt.q_in == data.q_in);
+  calc(model, data_gt, constraint_models, constraint_datas_gt);
   int active_size_gt = 0;
   for (std::size_t i = 0; i < constraint_models.size(); ++i)
   {
@@ -915,11 +964,13 @@ void test_apply_on_the_right(
   const Eigen::VectorXd Jt_rhs_gt = constraints_jacobian_gt.transpose() * rhs;
   BOOST_CHECK(tau_constraints.isApprox(Jt_rhs_gt));
 
+  Data data_aba(model);
   aba(
     model, data_aba, q_neutral, Eigen::VectorXd::Zero(model.nv), tau_constraints,
     Convention::LOCAL);
 
-  for (Model::JointIndex joint_id = 1; joint_id < Model::JointIndex(model.njoints); ++joint_id)
+  for (typename Model::JointIndex joint_id = 1;
+       joint_id < typename Model::JointIndex(model.njoints); ++joint_id)
   {
     BOOST_CHECK(data.joints[joint_id].S().isApprox(data_aba.joints[joint_id].S()));
     BOOST_CHECK(data.liMi[joint_id].isApprox(data_aba.liMi[joint_id]));
@@ -947,21 +998,20 @@ void test_apply_on_the_right(
     }
   }
 }
-
 template<
   template<typename> class Holder,
   typename Model,
   typename Data,
   typename ConstraintModelVector,
   typename ConstraintDataVector,
-  typename GeneralizedCondigurationVector,
+  typename GeneralizedConfigurationVector,
   typename Scalar>
 void test_solve_in_place(
   const Holder<Model> & model_ref,
   const Holder<Data> & data_ref,
   const Holder<ConstraintModelVector> & constraint_models_ref,
   const Holder<ConstraintDataVector> & constraint_datas_ref,
-  const Eigen::MatrixBase<GeneralizedCondigurationVector> & q_neutral,
+  const Eigen::MatrixBase<GeneralizedConfigurationVector> & q_neutral,
   const Scalar damping_value)
 {
   typedef typename ConstraintModelVector::value_type ConstraintModel;
@@ -969,28 +1019,33 @@ void test_solve_in_place(
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
 
-  const auto & model = helper::get_ref(model_ref);
-  auto & data = helper::get_ref(data_ref);
-  const auto & constraint_models = helper::get_ref(constraint_models_ref);
-  auto & constraint_datas = helper::get_ref(constraint_datas_ref);
+  const Model & model = helper::get_ref(model_ref);
+  Data & data = helper::get_ref(data_ref);
+  const ConstraintModelVector & constraint_models = helper::get_ref(constraint_models_ref);
+  ConstraintDataVector & constraint_datas = helper::get_ref(constraint_datas_ref);
 
+  // Necessary to update data oMi, lMi and J for internal rigid body computations
+  computeJointJacobians(model, data, q_neutral);
+  // Necessary to keep constraint datas up to date
   data.q_in = q_neutral;
-
   calc(model, data, constraint_models, constraint_datas);
+
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
   delassus_operator.updateDamping(damping_value);
   delassus_operator.updateCompliance(0);
-  delassus_operator.compute(q_neutral);
+  delassus_operator.compute();
 
   Data data_crba(model);
   Eigen::MatrixXd M = crba(model, data_crba, q_neutral, Convention::WORLD);
   make_symmetric(M);
 
+  computeJointJacobians(model, data_crba, q_neutral);
   data_crba.q_in = q_neutral;
   BOOST_CHECK(data_crba.q_in == data.q_in);
 
   auto constraint_datas_crba = createData(constraint_models);
+  calc(model, data_crba, constraint_models, constraint_datas_crba);
   const auto Jc =
     getConstraintsJacobian(model, data_crba, constraint_models, constraint_datas_crba);
 
@@ -1055,7 +1110,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_frictional_constraint)
   const Eigen::VectorXd v = Eigen::VectorXd::Random(model.nv);
   const Eigen::VectorXd tau = Eigen::VectorXd::Random(model.nv);
 
-  Data data(model), data_gt(model), data_aba(model);
+  Data data(model);
   std::reference_wrapper<Data> data_ref = data;
 
   ConstraintModelVector constraint_models;
@@ -1111,7 +1166,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
   const Eigen::VectorXd v = Eigen::VectorXd::Random(model.nv);
   const Eigen::VectorXd tau = Eigen::VectorXd::Random(model.nv);
 
-  Data data(model), data_gt(model), data_aba(model);
+  Data data(model);
   std::reference_wrapper<Data> data_ref = data;
 
   ConstraintModelVector constraint_models;
@@ -1143,11 +1198,12 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
   auto & constraint_model = constraint_models.back();
   auto & constraint_data = constraint_datas.back();
 
+  // simple size check
   const Eigen::VectorXd q = model.lowerPositionLimit;
   data.q_in = q;
-
-  constraint_model.calc(model, data, constraint_data);
+  calc(model, data, constraint_models, constraint_datas);
   BOOST_CHECK(constraint_model.activeSize(constraint_data) == model.nv - 6);
+
   std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
   std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;
 
@@ -1186,7 +1242,7 @@ BOOST_AUTO_TEST_CASE(general_test_constraint_generic)
   const Eigen::VectorXd v = Eigen::VectorXd::Random(model.nv);
   const Eigen::VectorXd tau = Eigen::VectorXd::Random(model.nv);
 
-  Data data(model), data_gt(model), data_aba(model);
+  Data data(model);
   std::reference_wrapper<Data> data_ref = data;
 
   ConstraintModelVector constraint_models;
@@ -1240,13 +1296,20 @@ BOOST_AUTO_TEST_CASE(general_test_no_constraints)
   const Eigen::VectorXd v = Eigen::VectorXd::Random(model.nv);
   const Eigen::VectorXd tau = Eigen::VectorXd::Random(model.nv);
 
-  Data data(model), data_gt(model), data_aba(model);
+  Data data(model), data_gt(model);
   std::reference_wrapper<Data> data_ref = data;
 
   ConstraintModelVector constraint_models;
   ConstraintDataVector constraint_datas;
 
   ConstraintDataVector constraint_datas_gt = constraint_datas;
+
+  computeJointJacobians(model, data, q_neutral);
+  data.q_in = q_neutral;
+  calc(model, data, constraint_models, constraint_datas);
+  computeJointJacobians(model, data_gt, q_neutral);
+  data_gt.q_in = q_neutral;
+  calc(model, data_gt, constraint_models, constraint_datas_gt);
 
   std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
   std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;
@@ -1267,7 +1330,7 @@ BOOST_AUTO_TEST_CASE(general_test_no_constraints)
 
     delassus_operator.updateDamping(mu);
     delassus_operator.updateCompliance(0);
-    delassus_operator.compute(q_neutral);
+    delassus_operator.compute();
 
     delassus_operator.getAugmentedMassMatrixOperator().solveInPlace(res);
 

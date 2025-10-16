@@ -605,7 +605,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
         constraint_models,
-      const std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const boost::optional<RefConstVectorXs> preconditioner = boost::none,
       const boost::optional<RefConstVectorXs> primal_guess = boost::none,

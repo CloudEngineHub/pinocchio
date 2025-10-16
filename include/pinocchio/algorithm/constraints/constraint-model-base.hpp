@@ -91,11 +91,15 @@ namespace pinocchio
       derived().calc(model, data, cdata);
     }
 
+    /// \brief Evaluate the Jacobian associated to the constraint at the given state stored in data
+    /// and cdata.
+    /// The results Jacobian is evaluated in the jacobian input/output matrix.
+    /// This method assumes that the constrained data is up-to-date.
     template<int Options, template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
     void jacobian(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata,
+      const ConstraintData & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & jacobian_matrix) const
     {
       derived().jacobian(model, data, cdata, jacobian_matrix.const_cast_derived());

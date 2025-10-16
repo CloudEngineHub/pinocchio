@@ -256,6 +256,8 @@ namespace pinocchio
     /// \param[in] model Model of the kinematic tree
     /// \param[in] constraint_models Vector of ConstraintModel
     ///
+    /// \note This method assumes that the constrained datas are up-to-date.
+    ///
     template<
       typename S1,
       int O1,
@@ -312,6 +314,8 @@ namespace pinocchio
     /// \param[in] model Model of the kinematic tree
     /// \param[in] constraint_models Vector of constraint models
     /// \param[in] constraint_datas Vector of constraint datas
+    ///
+    /// \note This method assumes that the constrained datas are up-to-date.
     ///
     template<
       typename S1,
@@ -460,8 +464,7 @@ namespace pinocchio
     ///
     /// \remarks The mass matrix and the Jacobians of the dynamical system should have been computed
     /// first. This can be achieved by simply calling pinocchio::crba.
-    /// The `resize` method should have been called before calling this method if the size of the
-    /// constraints changed.
+    /// This method assumes that the constrained datas are up-to-date.
     ///
     // TODO Remove when API is stabilized
     PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
@@ -478,7 +481,7 @@ namespace pinocchio
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const S1 mu = S1(0.))
     {
       compute(
@@ -502,8 +505,7 @@ namespace pinocchio
     ///
     /// \remarks The mass matrix and the Jacobians of the dynamical system should have been computed
     /// first. This can be achieved by simply calling pinocchio::crba.
-    /// The `resize` method should have been called before calling this method if the size of the
-    /// constraints changed.
+    /// This method assumes that the constrained datas are up-to-date.
     ///
     template<
       typename S1,
@@ -519,7 +521,7 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
         constraint_models,
-      std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
       const S1 mu = S1(0.))
     {
       compute(
@@ -544,8 +546,7 @@ namespace pinocchio
     ///
     /// \remarks The mass matrix and the Jacobians of the dynamical system should have been computed
     /// first. This can be achieved by simply calling pinocchio::crba.
-    /// The `resize` method should have been called before calling this method if the size of the
-    /// constraints changed.
+    /// This method assumes that the constrained datas are up-to-date.
     ///
     template<
       typename S1,
@@ -560,7 +561,7 @@ namespace pinocchio
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Eigen::MatrixBase<VectorLike> & mus)
     {
       typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
@@ -569,7 +570,7 @@ namespace pinocchio
       WrappedConstraintModelVector wrapped_constraint_models(
         constraint_models.cbegin(), constraint_models.cend());
 
-      typedef std::reference_wrapper<ConstraintData> WrappedConstraintDataType;
+      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
       typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
 
       WrappedConstraintDataVector wrapped_constraint_datas(
@@ -595,8 +596,7 @@ namespace pinocchio
     ///
     /// \remarks The mass matrix and the Jacobians of the dynamical system should have been computed
     /// first. This can be achieved by simply calling pinocchio::crba.
-    /// The `resize` method should have been called before calling this method if the size of the
-    /// constraints changed.
+    /// This method assumes that the constrained datas are up-to-date.
     ///
     template<
       typename S1,
@@ -613,7 +613,7 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
         constraint_models,
-      std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
       const Eigen::MatrixBase<VectorLike> & mus);
 
     ///

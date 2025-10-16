@@ -17,6 +17,7 @@
 #include <pinocchio/algorithm/crba.hpp>
 #include <pinocchio/math/matrix.hpp>
 #include <pinocchio/multibody/sample-models.hpp>
+#include "pinocchio/algorithm/constraints/utils.hpp"
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
@@ -90,12 +91,7 @@ BOOST_AUTO_TEST_CASE(test_cholesky_expression_to_dense)
   constraint_models.push_back(joints_limit);
   constraint_datas.push_back(joints_limit.createData());
 
-  for (size_t i = 0; i < constraint_models.size(); ++i)
-  {
-    const ConstraintModel & cmodel = constraint_models[i];
-    ConstraintData & cdata = constraint_datas[i];
-    cmodel.calc(model, data, cdata);
-  }
+  calc(model, data, constraint_models, constraint_datas);
 
   // compute delassus
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);

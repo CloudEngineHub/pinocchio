@@ -183,7 +183,7 @@ namespace pinocchio
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<VectorLike> & mus)
   {
     static_assert(
@@ -210,15 +210,6 @@ namespace pinocchio
 
     const size_t num_ee = constraint_models.size();
 
-    // Update frame placements if needed
-    for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
-    {
-      const ConstraintModel & cmodel = constraint_models[ee_id].get();
-      ConstraintData & cdata = constraint_datas[ee_id].get();
-      // TODO: should we call resize on cmodel ?
-      cmodel.calc(model, data, cdata);
-    }
-
     D.tail(model.nv) = M.diagonal();
     U.bottomRightCorner(model.nv, model.nv).template triangularView<Eigen::StrictlyUpper>() =
       M.template triangularView<Eigen::StrictlyUpper>();
@@ -229,7 +220,7 @@ namespace pinocchio
     for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
     {
       const ConstraintModel & cmodel = constraint_models[ee_id].get();
-      ConstraintData & cdata = constraint_datas[ee_id].get();
+      const ConstraintData & cdata = constraint_datas[ee_id].get();
 
       const Eigen::DenseIndex constraint_dim = cmodel.activeSize(cdata);
       auto U_block = U.block(current_row, total_constraints_dim, constraint_dim, model.nv);

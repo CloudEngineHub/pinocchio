@@ -8,42 +8,6 @@
 namespace pinocchio
 {
 
-  template<typename DelassusOperator, typename ConfigVectorType>
-  struct DelassusOperatorRigidBodySystemsComputeForwardPass
-  : public fusion::JointUnaryVisitorBase<
-      DelassusOperatorRigidBodySystemsComputeForwardPass<DelassusOperator, ConfigVectorType>>
-  {
-    typedef typename DelassusOperator::Model Model;
-    typedef typename DelassusOperator::Data Data;
-
-    typedef boost::fusion::vector<const Model &, Data &, const ConfigVectorType &> ArgsType;
-
-    template<typename JointModel>
-    static void algo(
-      const pinocchio::JointModelBase<JointModel> & jmodel,
-      pinocchio::JointDataBase<typename JointModel::JointDataDerived> & jdata,
-      const Model & model,
-      Data & data,
-      const Eigen::MatrixBase<ConfigVectorType> & q)
-    {
-      typedef typename Model::JointIndex JointIndex;
-
-      const JointIndex i = jmodel.id();
-      jmodel.calc(jdata.derived(), q.derived());
-
-      const JointIndex parent = model.parents[i];
-      data.liMi[i] = model.jointPlacements[i] * jdata.M();
-      auto & oMi = data.oMi[i];
-      if (parent > 0)
-        oMi = data.oMi[parent] * data.liMi[i];
-      else
-        oMi = data.liMi[i];
-
-      // ABA in WORLD frame requires these quantities
-      jmodel.jointCols(data.J) = oMi.act(jdata.S());
-    }
-  };
-
   template<typename DelassusOperator, bool apply_on_the_right = true, bool solve_in_place = true>
   struct DelassusOperatorRigidBodySystemsComputeBackwardPass
   : public fusion::JointUnaryVisitorBase<DelassusOperatorRigidBodySystemsComputeBackwardPass<

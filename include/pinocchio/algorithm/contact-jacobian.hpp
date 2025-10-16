@@ -38,7 +38,7 @@ namespace pinocchio
   /// \brief Maps the constraint forces expressed in the constraint space to joint forces expressed
   /// in the local frame.
   ///
-  /// \remarks This function assumes that the constrained data are up-to-date.
+  /// \remarks This function assumes that the constrained datas are up-to-date.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
@@ -71,7 +71,7 @@ namespace pinocchio
   /// \brief Maps the joint motions expressed in the joint space local frame to the constraint
   /// motions.
   ///
-  /// \remarks This function assumes that the constrained data are up-to-date.
+  /// \remarks This function assumes that the constrained datas are up-to-date.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
@@ -105,6 +105,7 @@ namespace pinocchio
   ///
   /// \remarks This function assumes that the a computeJointJacobians has been called first or any
   /// algorithms that computes data.J and data.oMi.
+  /// This function also assumes that the constrained datas are up-to-date.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
@@ -125,7 +126,7 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintModelBase<ConstraintModelDerived> & constraint_model,
-    ConstraintDataBase<ConstraintDataDerived> & constraint_data,
+    const ConstraintDataBase<ConstraintDataDerived> & constraint_data,
     const Eigen::MatrixBase<Matrix6Like> & J);
 
   ///
@@ -133,6 +134,7 @@ namespace pinocchio
   ///
   /// \remarks This function assumes that the a computeJointJacobians has been called first or any
   /// algorithms that computes data.J and data.oMi.
+  /// This function also assumes that the constrained datas are up-to-date.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
@@ -155,7 +157,7 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_model,
-    std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_data,
+    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_data,
     const Eigen::MatrixBase<DynamicMatrixLike> & J);
 
   ///
@@ -163,6 +165,7 @@ namespace pinocchio
   ///
   /// \remarks This function assumes that the a computeJointJacobians has been called first or any
   /// algorithms that computes data.J and data.oMi.
+  /// This function also assumes that the constrained datas are up-to-date.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
@@ -184,7 +187,7 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintDataAllocator> & constraint_model,
-    std::vector<ConstraintData, ConstraintDataAllocator> & constraint_data,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_data,
     const Eigen::MatrixBase<DynamicMatrixLike> & J);
 
   ///
@@ -192,6 +195,7 @@ namespace pinocchio
   ///
   /// \remarks This function assumes that the a computeJointJacobians has been called first or any
   /// algorithms that computes data.J and data.oMi.
+  /// This function also assumes that the constrained datas are up-to-date.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
@@ -215,7 +219,7 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<RhsMatrixType> & rhs,
     const Eigen::MatrixBase<ResultMatrixType> & res);
 
@@ -224,6 +228,7 @@ namespace pinocchio
   ///
   /// \remarks This function assumes that the a computeJointJacobians has been called first or any
   /// algorithms that computes data.J and data.oMi.
+  /// This function also assumes that the constrained datas are up-to-date.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.

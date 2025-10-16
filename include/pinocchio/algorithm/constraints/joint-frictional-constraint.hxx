@@ -78,7 +78,7 @@ namespace pinocchio
   void FrictionalJointConstraintModelTpl<Scalar, Options>::jacobian(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & /*data*/,
-    ConstraintData & cdata,
+    const ConstraintData & cdata,
     const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
   {
     JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();

@@ -115,7 +115,7 @@ namespace pinocchio
     typedef typename traits<Self>::ConstraintData ConstraintData;
     typedef typename traits<Self>::InnerConstraintData InnerConstraintData;
     typedef typename traits<Self>::ConstraintDataVector ConstraintDataVector;
-    typedef Holder<ConstraintDataVector> ConstraintDataVectorHolder;
+    typedef Holder<const ConstraintDataVector> ConstraintDataVectorHolder;
 
     DelassusOperatorRigidBodySystemsTpl(
       const ModelHolder & model_ref,
@@ -156,17 +156,6 @@ namespace pinocchio
     void update(
       const ConstraintModelVectorHolder & constraint_models_ref,
       const ConstraintDataVectorHolder & constraint_datas_ref);
-
-    ///
-    /// \brief Update the intermediate computations according to a new configuration vector entry
-    ///
-    /// \param[in] q Configuration vector
-    ///
-    template<typename ConfigVectorType>
-    void compute(
-      const Eigen::MatrixBase<ConfigVectorType> & q,
-      bool apply_on_the_right = true,
-      bool solve_in_place = true);
 
     template<typename MatrixType>
     void matrix(const Eigen::MatrixBase<MatrixType> & res, bool enforce_symmetry = false) const
@@ -216,18 +205,11 @@ namespace pinocchio
     ///
     /// \remarks By activating or deactivating apply_on_the_right and solve_in_place, this enables
     /// to lower the quantities updated to the minimum, helping to save time overall.
+    /// This method assumes the fields data.oMi, data.lMi and data.J have been computed.
+    /// This is typically done by calling `computeJointJacobians` or `aba` in `Convention::WORLD`.
+    ///
     void compute(bool apply_on_the_right = true, bool solve_in_place = true)
     {
-      const ConstraintModelVector & constraint_models_ref = constraint_models();
-      ConstraintDataVector & constraint_datas_ref = constraint_datas();
-
-      for (size_t ee_id = 0; ee_id < constraint_models_ref.size(); ++ee_id)
-      {
-        const auto & cmodel = helper::get_ref(constraint_models_ref[ee_id]);
-        auto & cdata = helper::get_ref(constraint_datas_ref[ee_id]);
-        cmodel.calc(model(), data(), cdata);
-      }
-
       compute_or_update_decomposition(apply_on_the_right, solve_in_place);
     }
 
@@ -252,10 +234,6 @@ namespace pinocchio
     }
 
     const ConstraintDataVector & constraint_datas() const
-    {
-      return helper::get_ref(m_constraint_datas_ref);
-    }
-    ConstraintDataVector & constraint_datas()
     {
       return helper::get_ref(m_constraint_datas_ref);
     }

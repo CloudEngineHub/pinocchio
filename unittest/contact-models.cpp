@@ -113,6 +113,7 @@ void check_A1_and_A2(
   BOOST_CHECK(A2_local.isApprox(A2_local_ref));
 
   // Check Jacobians
+  cmodel.calc(model, data, cdata);
   Data::MatrixXs J_ref(3, model.nv);
   J_ref.setZero();
   getConstraintJacobian(model, data, cmodel, cdata, J_ref);
@@ -248,18 +249,21 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     Data::MatrixXs J_RF_LOCAL_sparse(6, model.nv);
     J_RF_LOCAL_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                  // with CRTP on contact constraints
+    cm_RF_LOCAL.calc(model, data, cd_RF_LOCAL);
     getConstraintJacobian(model, data, cm_RF_LOCAL, cd_RF_LOCAL, J_RF_LOCAL_sparse);
     BOOST_CHECK(J_RF_LOCAL.isApprox(J_RF_LOCAL_sparse));
 
     Data::MatrixXs J_LF_LOCAL_sparse(6, model.nv);
     J_LF_LOCAL_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                  // with CRTP on contact constraints
+    cm_LF_LOCAL.calc(model, data, cd_LF_LOCAL);
     getConstraintJacobian(model, data, cm_LF_LOCAL, cd_LF_LOCAL, J_LF_LOCAL_sparse);
     BOOST_CHECK(J_LF_LOCAL.isApprox(J_LF_LOCAL_sparse));
 
     Data::MatrixXs J_clm_LOCAL_sparse(6, model.nv);
     J_clm_LOCAL_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                   // with CRTP on contact constraints
+    clm_RF_LF_LOCAL.calc(model, data, cld_RF_LF_LOCAL);
     getConstraintJacobian(model, data, clm_RF_LF_LOCAL, cld_RF_LF_LOCAL, J_clm_LOCAL_sparse);
     BOOST_CHECK(J_clm_LOCAL.isApprox(J_clm_LOCAL_sparse));
   }
@@ -321,18 +325,21 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     Data::MatrixXs J_RF_LWA_sparse(6, model.nv);
     J_RF_LWA_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                // with CRTP on contact constraints
+    cm_RF_LWA.calc(model, data, cd_RF_LWA);
     getConstraintJacobian(model, data, cm_RF_LWA, cd_RF_LWA, J_RF_LWA_sparse);
     BOOST_CHECK(J_RF_LWA.isApprox(J_RF_LWA_sparse));
 
     Data::MatrixXs J_LF_LWA_sparse(6, model.nv);
     J_LF_LWA_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                // with CRTP on contact constraints
+    cm_LF_LWA.calc(model, data, cd_LF_LWA);
     getConstraintJacobian(model, data, cm_LF_LWA, cd_LF_LWA, J_LF_LWA_sparse);
     BOOST_CHECK(J_LF_LWA.isApprox(J_LF_LWA_sparse));
 
     Data::MatrixXs J_clm_LWA_sparse(6, model.nv);
     J_clm_LWA_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                 // with CRTP on contact constraints
+    clm_RF_LF_LWA.calc(model, data, cld_RF_LF_LWA);
     getConstraintJacobian(model, data, clm_RF_LF_LWA, cld_RF_LF_LWA, J_clm_LWA_sparse);
     BOOST_CHECK(J_clm_LWA.isApprox(J_clm_LWA_sparse));
   }
@@ -386,18 +393,21 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     Data::MatrixXs J_RF_LOCAL_sparse(3, model.nv);
     J_RF_LOCAL_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                  // with CRTP on contact constraints
+    cm_RF_LOCAL.calc(model, data, cd_RF_LOCAL);
     getConstraintJacobian(model, data, cm_RF_LOCAL, cd_RF_LOCAL, J_RF_LOCAL_sparse);
     BOOST_CHECK(J_RF_LOCAL.middleRows<3>(SE3::LINEAR).isApprox(J_RF_LOCAL_sparse));
 
     Data::MatrixXs J_LF_LOCAL_sparse(3, model.nv);
     J_LF_LOCAL_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                  // with CRTP on contact constraints
+    cm_LF_LOCAL.calc(model, data, cd_LF_LOCAL);
     getConstraintJacobian(model, data, cm_LF_LOCAL, cd_LF_LOCAL, J_LF_LOCAL_sparse);
     BOOST_CHECK(J_LF_LOCAL.middleRows<3>(SE3::LINEAR).isApprox(J_LF_LOCAL_sparse));
 
     Data::MatrixXs J_clm_LOCAL_sparse(3, model.nv);
     J_clm_LOCAL_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                   // with CRTP on contact constraints
+    clm_RF_LF_LOCAL.calc(model, data, cld_RF_LF_LOCAL);
     getConstraintJacobian(model, data, clm_RF_LF_LOCAL, cld_RF_LF_LOCAL, J_clm_LOCAL_sparse);
     BOOST_CHECK(J_clm_LOCAL.isApprox(J_clm_LOCAL_sparse));
 
@@ -466,18 +476,21 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     Data::MatrixXs J_RF_LWA_sparse(3, model.nv);
     J_RF_LWA_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                // with CRTP on contact constraints
+    cm_RF_LWA.calc(model, data, cd_RF_LWA);
     getConstraintJacobian(model, data, cm_RF_LWA, cd_RF_LWA, J_RF_LWA_sparse);
     BOOST_CHECK(J_RF_LWA.middleRows<3>(SE3::LINEAR).isApprox(J_RF_LWA_sparse));
 
     Data::MatrixXs J_LF_LWA_sparse(3, model.nv);
     J_LF_LWA_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                // with CRTP on contact constraints
+    cm_LF_LWA.calc(model, data, cd_LF_LWA);
     getConstraintJacobian(model, data, cm_LF_LWA, cd_LF_LWA, J_LF_LWA_sparse);
     BOOST_CHECK(J_LF_LWA.middleRows<3>(SE3::LINEAR).isApprox(J_LF_LWA_sparse));
 
     Data::MatrixXs J_clm_LWA_sparse(3, model.nv);
     J_clm_LWA_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                 // with CRTP on contact constraints
+    clm_RF_LF_LWA.calc(model, data, cld_RF_LF_LWA);
     getConstraintJacobian(model, data, clm_RF_LF_LWA, cld_RF_LF_LWA, J_clm_LWA_sparse);
     BOOST_CHECK(J_clm_LWA.isApprox(J_clm_LWA_sparse));
   }

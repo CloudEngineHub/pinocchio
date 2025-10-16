@@ -253,8 +253,10 @@ namespace pinocchio
       return static_cast<const BaseCommonParameters &>(*this);
     }
 
-    /// \brief Compute the constraint residual for the active constraints. It assumes that the
-    /// active set has been computed by calling `resize` beforehand.
+    /// \brief Compute the constraint residual for the active constraints.
+    /// \note `calc` internally calls `resize`.
+    /// \note the constraint residual is computed based on the model's lower/upper position limits,
+    /// joint limit margin. It is also computed based on data.q_in.
     template<template<typename, int> class JointCollectionTpl>
     void calc(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -502,7 +504,7 @@ namespace pinocchio
     void jacobian(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata,
+      const ConstraintData & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const;
 
     template<typename InputMatrix, template<typename, int> class JointCollectionTpl>

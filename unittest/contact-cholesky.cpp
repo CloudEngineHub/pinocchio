@@ -11,6 +11,7 @@
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
 #include "pinocchio/algorithm/constraints/constraints.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/contact-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
@@ -352,6 +353,11 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
+  // Compute constraint data requirements
+  computeJointJacobians(model, data_ref, q);
+  data_ref.q_in = q;
+  calc(model, data_ref, contact_models, contact_datas);
+
   // Compute Mass Matrix
   crba(model, data_ref, q, Convention::WORLD);
   data_ref.M.triangularView<Eigen::StrictlyLower>() =
@@ -646,6 +652,9 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_LOCAL)
   //  RigidConstraintModel ci_LA(CONTACT_3D,model.getJointId(LA),LOCAL_WORLD_ALIGNED);
   //  contact_models.push_back(ci_LA);
   //  contact_datas.push_back(RigidConstraintData(ci_LA));
+  computeJointJacobians(model, data_ref, q);
+  data_ref.q_in = q;
+  calc(model, data_ref, contact_models, contact_datas);
 
   // Compute Mass Matrix
   crba(model, data_ref, q, Convention::WORLD);
@@ -870,6 +879,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL_WORLD_ALIGNED)
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
+  computeJointJacobians(model, data_ref, q);
+  data_ref.q_in = q;
+  calc(model, data_ref, contact_models, contact_datas);
+
   // Compute Mass Matrix
   crba(model, data_ref, q, Convention::WORLD);
   data_ref.M.triangularView<Eigen::StrictlyLower>() =
@@ -974,6 +987,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_by_joint_2)
   RigidConstraintModel ci_LA(CONTACT_6D, model, 0, model.getJointId(LA), LOCAL);
   contact_models.push_back(ci_LA);
   contact_datas.push_back(RigidConstraintData(ci_LA));
+
+  computeJointJacobians(model, data_ref, q);
+  data_ref.q_in = q;
+  calc(model, data_ref, contact_models, contact_datas);
 
   // Compute Mass Matrix
   crba(model, data_ref, q, Convention::WORLD);
@@ -1182,6 +1199,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_WORLD_by_joint_2)
   contact_models.push_back(ci_LA);
   contact_datas.push_back(RigidConstraintData(ci_LA));
 
+  computeJointJacobians(model, data_ref, q);
+  data_ref.q_in = q;
+  calc(model, data_ref, contact_models, contact_datas);
+
   // Compute Mass Matrix
   crba(model, data_ref, q, Convention::WORLD);
   data_ref.M.triangularView<Eigen::StrictlyLower>() =
@@ -1304,6 +1325,10 @@ BOOST_AUTO_TEST_CASE(loop_contact_cholesky_contact6D)
 
   contact_models.push_back(loop_RA_LA_lwa);
   contact_datas.push_back(RigidConstraintData(loop_RA_LA_lwa));
+
+  computeJointJacobians(model, data_ref, q);
+  data_ref.q_in = q;
+  calc(model, data_ref, contact_models, contact_datas);
 
   // Compute Mass Matrix
   crba(model, data_ref, q, Convention::WORLD);
@@ -1444,6 +1469,10 @@ BOOST_AUTO_TEST_CASE(loop_contact_cholesky_contact_3d)
   contact_models.push_back(loop_RA_LA_lwa);
   contact_datas.push_back(RigidConstraintData(loop_RA_LA_lwa));
 
+  computeJointJacobians(model, data_ref, q);
+  data_ref.q_in = q;
+  calc(model, data_ref, contact_models, contact_datas);
+
   // Compute Mass Matrix
   crba(model, data_ref, q, Convention::WORLD);
   data_ref.M.triangularView<Eigen::StrictlyLower>() =
@@ -1583,6 +1612,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_updateDamping)
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
+  computeJointJacobians(model, data_ref, q);
+  data_ref.q_in = q;
+  calc(model, data_ref, contact_models, contact_datas);
+
   Data data(model);
   crba(model, data, q, Convention::WORLD);
 
@@ -1650,6 +1683,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_joint_frictional_constraint)
   // Build Cholesky decomposition
   Data data(model);
   crba(model, data, q, Convention::WORLD);
+  computeJointJacobians(model, data, q);
+  calc(model, data, constraint_models, constraint_datas);
 
   ContactCholeskyDecomposition contact_chol_decomposition;
   contact_chol_decomposition.resize(model, constraint_models, constraint_datas);
@@ -1716,6 +1751,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_generic)
 
   Data data(model);
   crba(model, data, q, Convention::WORLD);
+  computeJointJacobians(model, data, q);
+  data.q_in = q;
+  calc(model, data, constraint_models, constraint_datas);
+  calc(model, data, rigid_constraint_models, rigid_constraint_datas);
 
   ContactCholeskyDecomposition contact_chol_decomposition, contact_chol_decomposition_ref;
   contact_chol_decomposition.resize(model, constraint_models, constraint_datas);
@@ -1775,19 +1814,9 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
       constraint_datas.push_back(cm.createData());
 
     crba(model, data, q, Convention::WORLD);
-
-    for (std::size_t i = 0; i < constraint_models.size(); ++i)
-    {
-      JointLimitConstraintModel * jlcm =
-        boost::get<JointLimitConstraintModel>(&constraint_models[i]);
-      if (jlcm != nullptr)
-      {
-        JointLimitConstraintData * jlcd =
-          boost::get<JointLimitConstraintData>(&constraint_datas[i]);
-        jlcm->resize(model, data, *jlcd);
-      }
-      constraint_models[i].calc(model, data, constraint_datas[i]);
-    }
+    computeJointJacobians(model, data, q);
+    data.q_in = q;
+    calc(model, data, constraint_models, constraint_datas);
 
     // No active joint limits
     BOOST_CHECK(constraint_models[0].activeSize(constraint_datas[0]) == 0);
@@ -1844,19 +1873,9 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
       constraint_datas.push_back(cm.createData());
 
     crba(model, data, q, Convention::WORLD);
-
-    for (std::size_t i = 0; i < constraint_models.size(); ++i)
-    {
-      JointLimitConstraintModel * jlcm =
-        boost::get<JointLimitConstraintModel>(&constraint_models[i]);
-      if (jlcm != nullptr)
-      {
-        JointLimitConstraintData * jlcd =
-          boost::get<JointLimitConstraintData>(&constraint_datas[i]);
-        jlcm->resize(model, data, *jlcd);
-      }
-      constraint_models[i].calc(model, data, constraint_datas[i]);
-    }
+    computeJointJacobians(model, data, q);
+    data.q_in = q;
+    calc(model, data, constraint_models, constraint_datas);
 
     // No active joint limits
     BOOST_CHECK(constraint_models[0].activeSize(constraint_datas[0]) == 0);
@@ -1910,19 +1929,9 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
       constraint_datas.push_back(cm.createData());
 
     crba(model, data, q, Convention::WORLD);
-
-    for (std::size_t i = 0; i < constraint_models.size(); ++i)
-    {
-      JointLimitConstraintModel * jlcm =
-        boost::get<JointLimitConstraintModel>(&constraint_models[i]);
-      if (jlcm != nullptr)
-      {
-        JointLimitConstraintData * jlcd =
-          boost::get<JointLimitConstraintData>(&constraint_datas[i]);
-        jlcm->resize(model, data, *jlcd);
-      }
-      constraint_models[i].calc(model, data, constraint_datas[i]);
-    }
+    computeJointJacobians(model, data, q);
+    data.q_in = q;
+    calc(model, data, constraint_models, constraint_datas);
 
     // Active joint limits (only the the rotation part of the freeflyer is not active)
     BOOST_CHECK(constraint_models[0].activeSize(constraint_datas[0]) == (model.nv - 3));
@@ -1975,6 +1984,9 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_with_compliance)
 
   Data data(model);
   crba(model, data, q, Convention::WORLD);
+  computeJointJacobians(model, data, q);
+  data.q_in = q;
+  calc(model, data, constraint_models, constraint_datas);
 
   ContactCholeskyDecomposition contact_chol_decomposition, contact_chol_decomposition_ref;
   contact_chol_decomposition.resize(model, constraint_models, constraint_datas);
@@ -2036,6 +2048,9 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_check_resize)
 
   Data data(model);
   crba(model, data, q, Convention::WORLD);
+  computeJointJacobians(model, data, q);
+  data.q_in = q;
+  calc(model, data, contact_models, contact_datas);
   ContactCholeskyDecomposition contact_chol_decomposition;
   contact_chol_decomposition.resize(model, contact_models, contact_datas);
   contact_chol_decomposition.compute(model, data, contact_models, contact_datas);
@@ -2077,6 +2092,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_check_resize)
       RigidConstraintDataStdVector contact_datas;
       for (const auto & cmodel : contact_models)
         contact_datas.push_back(cmodel.createData());
+      calc(model, data, contact_models, contact_datas);
 
       contact_chol_decomposition_empty.compute(model, data, contact_models, contact_datas);
       BOOST_CHECK(contact_chol_decomposition_empty.U == contact_chol_decomposition.U);

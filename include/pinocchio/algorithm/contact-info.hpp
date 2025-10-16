@@ -727,11 +727,12 @@ namespace pinocchio
 
     ///  \brief Evaluate the Jacobian associated to the constraint at the given state stored in data
     /// and cdata.  The results Jacobian is evaluated in the jacobian input/output matrix.
+    /// \remarks This method assumes `calc` has been called on this contraint model.
     template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
     void jacobian(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      RigidConstraintDataTpl<Scalar, Options> & cdata,
+      const RigidConstraintDataTpl<Scalar, Options> & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
     {
       typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;

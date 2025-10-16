@@ -8,6 +8,7 @@
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/algorithm/constraints/constraints.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 
 #include <iostream>
 
@@ -61,12 +62,14 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian_operations)
       Data::MatrixXs J_RF_LOCAL_sparse(3, model.nv);
       J_RF_LOCAL_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                    // with CRTP on contact constraints
+      cm_RF_LOCAL.calc(model, data, cd_RF_LOCAL);
       getConstraintJacobian(model, data, cm_RF_LOCAL, cd_RF_LOCAL, J_RF_LOCAL_sparse);
       res_ref += J_RF_LOCAL_sparse.transpose() * rhs.segment<3>(0);
 
       Data::MatrixXs J_LF_LOCAL_sparse(3, model.nv);
       J_LF_LOCAL_sparse.setZero(); // TODO: change input type when all the API would be refactorized
                                    // with CRTP on contact constraints
+      cm_LF_LOCAL.calc(model, data, cd_LF_LOCAL);
       getConstraintJacobian(model, data, cm_LF_LOCAL, cd_LF_LOCAL, J_LF_LOCAL_sparse);
       res_ref += J_LF_LOCAL_sparse.transpose() * rhs.segment<3>(3);
 
@@ -77,6 +80,7 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian_operations)
     {
       Eigen::MatrixXd J_ref(6, model.nv);
       J_ref.setZero();
+      calc(model, data_ref, constraints_models, constraints_datas_ref);
       getConstraintsJacobian(model, data_ref, constraints_models, constraints_datas_ref, J_ref);
       const Eigen::VectorXd res_ref = J_ref.transpose() * rhs;
       BOOST_CHECK(res.isApprox(res_ref));
@@ -87,10 +91,12 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian_operations)
       using Matrix3Xs = Eigen::Matrix<Data::Scalar, 3, Eigen::Dynamic, Data::Options>;
       Matrix3Xs J_RF_LOCAL_sparse_3xs(3, model.nv);
       J_RF_LOCAL_sparse_3xs.setZero();
+      cm_RF_LOCAL.calc(model, data, cd_RF_LOCAL);
       getConstraintJacobian(model, data, cm_RF_LOCAL, cd_RF_LOCAL, J_RF_LOCAL_sparse_3xs);
 
       Data::MatrixXs J_RF_LOCAL_sparse_xs(3, model.nv);
       J_RF_LOCAL_sparse_xs.setZero();
+      cm_RF_LOCAL.calc(model, data, cd_RF_LOCAL);
       getConstraintJacobian(model, data, cm_RF_LOCAL, cd_RF_LOCAL, J_RF_LOCAL_sparse_xs);
 
       BOOST_CHECK(J_RF_LOCAL_sparse_3xs.isApprox(J_RF_LOCAL_sparse_xs));
@@ -101,11 +107,13 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian_operations)
       using Matrix6Xs = Eigen::Matrix<Data::Scalar, 6, Eigen::Dynamic, Data::Options>;
       Matrix6Xs J_RF_LOCAL_sparse_6xs(6, model.nv);
       J_RF_LOCAL_sparse_6xs.setZero();
+      cm_RF_LOCAL.calc(model, data, cd_RF_LOCAL);
       getConstraintJacobian(
         model, data, cm_RF_LOCAL, cd_RF_LOCAL, J_RF_LOCAL_sparse_6xs.topRows(3));
 
       Data::MatrixXs J_RF_LOCAL_sparse_xs(6, model.nv);
       J_RF_LOCAL_sparse_xs.setZero();
+      cm_RF_LOCAL.calc(model, data, cd_RF_LOCAL);
       getConstraintJacobian(model, data, cm_RF_LOCAL, cd_RF_LOCAL, J_RF_LOCAL_sparse_xs.topRows(3));
 
       BOOST_CHECK(J_RF_LOCAL_sparse_6xs.isApprox(J_RF_LOCAL_sparse_xs));

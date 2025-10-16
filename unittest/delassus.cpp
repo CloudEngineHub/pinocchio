@@ -7,6 +7,7 @@
 #include "pinocchio/algorithm/contact-dynamics.hpp"
 #include "pinocchio/algorithm/contact-cholesky.hxx"
 #include "pinocchio/algorithm/joint-configuration.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/algorithm/delassus.hpp"
 
@@ -68,18 +69,25 @@ BOOST_AUTO_TEST_CASE(contact_6D)
   contact_models.push_back(ci_RA_6D);
   contact_data.push_back(RigidConstraintData(ci_RA_6D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  data.q_in = q;
+  data.v_in = v;
+  pinocchio::computeJointJacobians(model, data, q);
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
 
   for (int i = 0; i < 10; i++)
   {
     computeAllTerms(model, data, q, v);
+    data.q_in = q;
+    data.v_in = v;
+    pinocchio::calc(model, data, contact_models, contact_data);
     contact_chol.compute(model, data, contact_models, contact_data, mu);
     contact_chol.inverse(H_inverse);
 
@@ -127,12 +135,16 @@ BOOST_AUTO_TEST_CASE(contact_6D6D)
   contact_models.push_back(ci_LA_6D);
   contact_data.push_back(RigidConstraintData(ci_LA_6D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  data.q_in = q;
+  data.v_in = v;
+  pinocchio::computeJointJacobians(model, data, q);
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -183,12 +195,15 @@ BOOST_AUTO_TEST_CASE(contact_6D4)
   contact_models.push_back(ci_LF_6D);
   contact_data.push_back(RigidConstraintData(ci_LF_6D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -229,12 +244,15 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated)
   contact_models.push_back(ci_RA_6D);
   contact_data.push_back(RigidConstraintData(ci_RA_6D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -284,12 +302,15 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated_6D3)
   contact_models.push_back(ci_LA_6D);
   contact_data.push_back(RigidConstraintData(ci_LA_6D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -328,12 +349,15 @@ BOOST_AUTO_TEST_CASE(contact_3D)
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -376,12 +400,15 @@ BOOST_AUTO_TEST_CASE(contact_3D3D)
   contact_models.push_back(ci_LA_3D);
   contact_data.push_back(RigidConstraintData(ci_LA_3D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -432,12 +459,15 @@ BOOST_AUTO_TEST_CASE(contact_3D4)
   contact_models.push_back(ci_LF_3D);
   contact_data.push_back(RigidConstraintData(ci_LF_3D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -479,12 +509,15 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated)
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -529,12 +562,15 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4)
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -595,12 +631,15 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4_6D4)
   contact_models.push_back(ci_LF_6D);
   contact_data.push_back(RigidConstraintData(ci_LF_6D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -644,13 +683,15 @@ BOOST_AUTO_TEST_CASE(contact_3D_ancestors)
   contact_models.push_back(ci_LA_3D);
   contact_data.push_back(RigidConstraintData(ci_LA_3D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
-
   VectorXd v = Eigen::VectorXd::Random(model.nv);
   VectorXd q = randomConfiguration(model);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -665,6 +706,9 @@ BOOST_AUTO_TEST_CASE(contact_3D_ancestors)
     dampedDelassusInverse.setZero();
 
     computeAllTerms(model, data, q, v);
+    data.q_in = q;
+    data.v_in = v;
+    pinocchio::calc(model, data, contact_models, contact_data);
     contact_chol.compute(model, data, contact_models, contact_data, mu);
     contact_chol.inverse(H_inverse);
 
@@ -705,12 +749,15 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor)
   contact_models.push_back(ci_LA_6D);
   contact_data.push_back(RigidConstraintData(ci_LA_6D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);
@@ -762,12 +809,15 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor_6D4)
   contact_models.push_back(ci_LF_6D);
   contact_data.push_back(RigidConstraintData(ci_LF_6D));
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
-    model, data, contact_models, contact_data);
-
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
   VectorXd q = randomConfiguration(model);
   VectorXd v = Eigen::VectorXd::Random(model.nv);
+  pinocchio::computeJointJacobians(model, data, q);
+  data.q_in = q;
+  pinocchio::calc(model, data, contact_models, contact_data);
+
+  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+    model, data, contact_models, contact_data);
+  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
   computeAllTerms(model, data, q, v);
   contact_chol.compute(model, data, contact_models, contact_data, mu);

@@ -152,8 +152,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_empty)
   constraintDynamics(
     model, data, q, v, tau, empty_contact_models, empty_contact_datas, prox_settings);
 
-  data.M.triangularView<Eigen::StrictlyLower>() =
-    data.M.transpose().triangularView<Eigen::StrictlyLower>();
+  make_symmetric(data.M);
 
   Data data_ag(model);
   ccrba(model, data_ag, q, v);

@@ -156,7 +156,7 @@ namespace pinocchio
     void jacobian(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata,
+      const ConstraintData & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & jacobian_matrix) const
     {
       ::pinocchio::visitors::jacobian(

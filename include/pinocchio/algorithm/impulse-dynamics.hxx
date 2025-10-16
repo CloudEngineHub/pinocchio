@@ -73,6 +73,7 @@ namespace pinocchio
     }
 
     data.M.diagonal() += model.armature;
+    calc(model, data, contact_models, contact_datas);
     contact_chol.compute(model, data, contact_models, contact_datas, settings.mu);
 
     // Centroidal computations
