@@ -718,12 +718,12 @@ namespace pinocchio
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
         const Eigen::DenseIndex row_id)
       {
-        return cmodel.getRowActivableIndexes(row_id);
+        return cmodel.getActivableRowIndexes(row_id);
       }
     };
 
     template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
-    const std::vector<Eigen::DenseIndex> & getRowActivableIndexes(
+    const std::vector<Eigen::DenseIndex> & getActivableRowIndexes(
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       const Eigen::DenseIndex row_id)
     {

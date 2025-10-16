@@ -164,9 +164,9 @@ namespace pinocchio
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getRowActivableIndexes(const Eigen::DenseIndex row_id) const
+    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
     {
-      return ::pinocchio::visitors::getRowActivableIndexes(*this, row_id);
+      return ::pinocchio::visitors::getActivableRowIndexes(*this, row_id);
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row

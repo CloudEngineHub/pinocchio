@@ -104,7 +104,7 @@ namespace pinocchio
             bp::args("self", "row_id"), bp::return_value_policy<bp::copy_const_reference>(),
             "Active colwise sparsity associated with a given row.")
           .def(
-            "getRowActivableIndexes", &Self::getRowActivableIndexes, bp::args("self", "row_id"),
+            "getActivableRowIndexes", &Self::getActivableRowIndexes, bp::args("self", "row_id"),
             bp::return_value_policy<bp::copy_const_reference>(),
             "Vector of the activable indexes associated with a given row.")
           .def(

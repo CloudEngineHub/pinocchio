@@ -306,7 +306,7 @@ namespace pinocchio
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getRowActivableIndexes(const Eigen::DenseIndex row_id) const
+    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return colwise_span_indexes;

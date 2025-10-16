@@ -294,9 +294,9 @@ namespace pinocchio
     }
 
     /// \brief Returns the vector of the activable indexes associated with a given row
-    const EigenIndexVector & getRowActivableIndexes(const Eigen::DenseIndex row_id) const
+    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
     {
-      return derived().getRowActivableIndexes(row_id);
+      return derived().getActivableRowIndexes(row_id);
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
@@ -305,7 +305,7 @@ namespace pinocchio
     {
       if constexpr (traits<Derived>::constant_size)
       {
-        return getRowActivableIndexes(row_id);
+        return getActivableRowIndexes(row_id);
       }
       else
       {

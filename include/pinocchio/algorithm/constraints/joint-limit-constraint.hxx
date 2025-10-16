@@ -312,6 +312,8 @@ namespace pinocchio
     auto & activable_constraint_residual = cdata.activable_constraint_residual;
     auto & constraint_residual = cdata.constraint_residual;
 
+    // TODO: the const cast is only needed because resize touches `m_set`.
+    // Introduce set model/data to avoid that.
     const_cast<JointLimitConstraintModelTpl &>(*this).resize(model, data, cdata);
     const std::size_t active_size = static_cast<std::size_t>(this->activeSize(cdata));
 

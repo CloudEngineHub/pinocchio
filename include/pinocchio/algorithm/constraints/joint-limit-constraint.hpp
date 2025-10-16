@@ -288,7 +288,7 @@ namespace pinocchio
     }
 
     /// \brief Returns the vector of the activable indexes associated with a given row
-    const EigenIndexVector & getRowActivableIndexes(const Eigen::DenseIndex row_id) const
+    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return row_indexes[activable_idx_rows[static_cast<size_t>(row_id)]];
