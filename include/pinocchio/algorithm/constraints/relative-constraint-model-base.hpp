@@ -1,0 +1,357 @@
+//
+// Copyright (c) 2025 INRIA
+//
+
+#ifndef __pinocchio_algorithm_constraints_relative_constraint_model_base_hpp__
+#define __pinocchio_algorithm_constraints_relative_constraint_model_base_hpp__
+
+#include <algorithm>
+
+#include "pinocchio/multibody/model.hpp"
+#include "pinocchio/algorithm/fwd.hpp"
+#include "pinocchio/algorithm/constraints/fwd.hpp"
+#include "pinocchio/algorithm/constraints/kinematics-constraint-base.hpp"
+#include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
+#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
+#include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
+
+namespace pinocchio
+{
+
+  template<typename Derived>
+  struct RelativeConstraintModelBase
+  : KinematicsConstraintModelBase<Derived>
+  , ConstraintModelCommonParameters<Derived>
+  {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    typedef typename traits<Derived>::Scalar Scalar;
+    enum
+    {
+      Options = traits<Derived>::Options
+    };
+
+    typedef KinematicsConstraintModelBase<Derived> KinematicsBase;
+    typedef ConstraintModelCommonParameters<Derived> BaseCommonParameters;
+    typedef ConstraintModelBase<Derived> RootBase;
+
+    template<typename OtherDerived>
+    friend struct RelativeConstraintModelBase;
+
+    using KinematicsBase::derived;
+    using KinematicsBase::joint1_id;
+    using KinematicsBase::joint2_id;
+    using typename RootBase::BooleanVector;
+    using typename RootBase::EigenIndexVector;
+
+    typedef typename traits<Derived>::ConstraintData ConstraintData;
+    typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
+    typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
+    typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
+      ActiveComplianceVectorTypeConstRef;
+    typedef typename traits<Derived>::BaumgarteCorrectorVectorParameters
+      BaumgarteCorrectorVectorParameters;
+
+    typedef SE3Tpl<Scalar, Options> SE3;
+    typedef MotionTpl<Scalar, Options> Motion;
+    typedef ForceTpl<Scalar, Options> Force;
+    typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
+    typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
+    typedef typename traits<Derived>::VectorConstraintSize VectorConstraintSize;
+    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+
+    KinematicsBase & base()
+    {
+      return static_cast<KinematicsBase &>(*this);
+    }
+    const KinematicsBase & base() const
+    {
+      return static_cast<const KinematicsBase &>(*this);
+    }
+
+    BaseCommonParameters & base_common_parameters()
+    {
+      return static_cast<BaseCommonParameters &>(*this);
+    }
+    const BaseCommonParameters & base_common_parameters() const
+    {
+      return static_cast<const BaseCommonParameters &>(*this);
+    }
+
+    /// \brief Position of attached point with respect to the frame of joint1.
+    SE3 joint1_placement;
+
+    /// \brief Position of attached point with respect to the frame of joint2.
+    SE3 joint2_placement;
+
+    /// \brief Desired constraint shift at position level.
+    VectorConstraintSize desired_constraint_offset;
+
+    /// \brief Desired constraint velocity at velocity level.
+    VectorConstraintSize desired_constraint_velocity;
+
+    /// \brief Desired constraint acceleration at acceleration level.
+    VectorConstraintSize desired_constraint_acceleration;
+
+    /// \brief Column-wise sparsity pattern associated with joint 1.
+    BooleanVector colwise_joint1_sparsity;
+
+    /// \brief Column-wise sparsity pattern associated with joint 2.
+    BooleanVector colwise_joint2_sparsity;
+
+    /// \brief Joint-wise span indexes associated with joint 1.
+    EigenIndexVector joint1_span_indexes;
+
+    /// \brief Joint-wise span indexes associated with joint 2.
+    EigenIndexVector joint2_span_indexes;
+
+    EigenIndexVector loop_span_indexes;
+
+    /// \brief Sparsity pattern associated to the constraint.
+    BooleanVector colwise_sparsity;
+
+    /// \brief Indexes of the columns spanned by the constraints.
+    EigenIndexVector colwise_span_indexes;
+
+    /// \brief Dimensions of the model.
+    int nv;
+
+    /// \brief Depth of the kinematic tree for joint1 and joint2.
+    size_t depth_joint1, depth_joint2;
+
+  protected:
+    using BaseCommonParameters::m_compliance;
+    // CHOICE: right now we use the scalar Baumgarte.
+    // using BaseCommonParameters::m_baumgarte_vector_parameters;
+    using BaseCommonParameters::m_baumgarte_parameters;
+
+  public:
+    RelativeConstraintModelBase()
+    : joint1_placement(SE3::Identity())
+    , joint2_placement(SE3::Identity())
+    , desired_constraint_offset(VectorConstraintSize::Zero())
+    , desired_constraint_velocity(VectorConstraintSize::Zero())
+    , desired_constraint_acceleration(VectorConstraintSize::Zero())
+    , nv(-1)
+    , depth_joint1(0)
+    , depth_joint2(0)
+    {
+    }
+
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    RelativeConstraintModelBase(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndex joint1_id,
+      const SE3 & joint1_placement,
+      const JointIndex joint2_id,
+      const SE3 & joint2_placement)
+    : KinematicsBase(model, joint1_id, joint2_id)
+    , joint1_placement(joint1_placement)
+    , joint2_placement(joint2_placement)
+    , desired_constraint_offset(VectorConstraintSize::Zero())
+    , desired_constraint_velocity(VectorConstraintSize::Zero())
+    , desired_constraint_acceleration(VectorConstraintSize::Zero())
+    , colwise_joint1_sparsity(model.nv)
+    , colwise_joint2_sparsity(model.nv)
+    , loop_span_indexes((size_t)model.nv)
+    , nv(-1)
+    , depth_joint1(0)
+    , depth_joint2(0)
+    {
+      init(model);
+    }
+
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    RelativeConstraintModelBase(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndex joint1_id,
+      const SE3 & joint1_placement)
+    : RelativeConstraintModelBase(model, joint1_id, joint1_placement, 0, SE3::Identity())
+    {
+    }
+
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    RelativeConstraintModelBase(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndex joint1_id,
+      const JointIndex joint2_id)
+    : RelativeConstraintModelBase(model, joint1_id, SE3::Identity(), joint2_id, SE3::Identity())
+    {
+    }
+
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    RelativeConstraintModelBase(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
+    : RelativeConstraintModelBase(model, joint1_id, SE3::Identity(), 0, SE3::Identity())
+    {
+    }
+
+    /// \brief Create data storage associated to the constraint.
+    ConstraintData createData() const
+    {
+      return ConstraintData(*this);
+    }
+
+    /// \brief Returns the column-wise sparsity associated with a given row index.
+    const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < Derived::size());
+      return colwise_sparsity;
+    }
+
+    /// \brief Returns the vector of the active indexes associated with a given row.
+    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < Derived::size());
+      return colwise_span_indexes;
+    }
+
+    template<typename OtherDerived>
+    bool operator==(const RelativeConstraintModelBase<OtherDerived> & other) const
+    {
+      if (this == &other)
+        return true;
+
+      return base() == other.base() && base_common_parameters() == other.base_common_parameters()
+             && joint1_id == other.joint1_id && joint2_id == other.joint2_id
+             && joint1_placement == other.joint1_placement
+             && joint2_placement == other.joint2_placement && nv == other.nv
+             && desired_constraint_offset == other.desired_constraint_offset
+             && desired_constraint_velocity == other.desired_constraint_velocity
+             && desired_constraint_acceleration == other.desired_constraint_acceleration
+             && colwise_joint1_sparsity == other.colwise_joint1_sparsity
+             && colwise_joint2_sparsity == other.colwise_joint2_sparsity
+             && joint1_span_indexes == other.joint1_span_indexes
+             && joint2_span_indexes == other.joint2_span_indexes
+             && depth_joint1 == other.depth_joint1 && depth_joint2 == other.depth_joint2
+             && colwise_sparsity == other.colwise_sparsity
+             && colwise_span_indexes == other.colwise_span_indexes
+             && loop_span_indexes == other.loop_span_indexes;
+    }
+
+    template<typename OtherDerived>
+    bool operator!=(const RelativeConstraintModelBase<OtherDerived> & other) const
+    {
+      return !(*this == other);
+    }
+
+    template<typename NewScalar, typename OtherDerived>
+    void cast(RelativeConstraintModelBase<OtherDerived> & res) const
+    {
+      KinematicsBase::cast(res);
+      BaseCommonParameters::template cast<NewScalar>(res);
+
+      res.joint1_id = joint1_id;
+      res.joint2_id = joint2_id;
+      res.joint1_placement = joint1_placement.template cast<NewScalar>();
+      res.joint2_placement = joint2_placement.template cast<NewScalar>();
+      res.desired_constraint_offset = desired_constraint_offset.template cast<NewScalar>();
+      res.desired_constraint_velocity = desired_constraint_velocity.template cast<NewScalar>();
+      res.desired_constraint_acceleration =
+        desired_constraint_acceleration.template cast<NewScalar>();
+      res.colwise_joint1_sparsity = colwise_joint1_sparsity;
+      res.colwise_joint2_sparsity = colwise_joint2_sparsity;
+      res.joint1_span_indexes = joint1_span_indexes;
+      res.joint2_span_indexes = joint2_span_indexes;
+      res.colwise_sparsity = colwise_sparsity;
+      res.colwise_span_indexes = colwise_span_indexes;
+      res.nv = nv;
+      res.depth_joint1 = depth_joint1;
+      res.depth_joint2 = depth_joint2;
+      res.loop_span_indexes = loop_span_indexes;
+    }
+
+  protected:
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    void init(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
+    {
+      nv = model.nv;
+      depth_joint1 = static_cast<size_t>(model.supports[joint1_id].size());
+      depth_joint2 = static_cast<size_t>(model.supports[joint2_id].size());
+
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef typename Model::JointModel JointModel;
+      static const bool default_sparsity_value = false;
+      colwise_joint1_sparsity.fill(default_sparsity_value);
+      colwise_joint2_sparsity.fill(default_sparsity_value);
+
+      joint1_span_indexes.reserve(size_t(model.njoints));
+      joint2_span_indexes.reserve(size_t(model.njoints));
+
+      JointIndex current1_id = joint1_id > 0 ? joint1_id : JointIndex(0);
+      JointIndex current2_id = joint2_id > 0 ? joint2_id : JointIndex(0);
+
+      while (current1_id != current2_id)
+      {
+        if (current1_id > current2_id)
+        {
+          const JointModel & joint1 = model.joints[current1_id];
+          joint1_span_indexes.push_back((Eigen::DenseIndex)current1_id);
+          Eigen::DenseIndex current1_col_id = joint1.idx_v();
+          for (int k = 0; k < joint1.nv(); ++k, ++current1_col_id)
+          {
+            colwise_joint1_sparsity[current1_col_id] = true;
+          }
+          current1_id = model.parents[current1_id];
+        }
+        else
+        {
+          const JointModel & joint2 = model.joints[current2_id];
+          joint2_span_indexes.push_back((Eigen::DenseIndex)current2_id);
+          Eigen::DenseIndex current2_col_id = joint2.idx_v();
+          for (int k = 0; k < joint2.nv(); ++k, ++current2_col_id)
+          {
+            colwise_joint2_sparsity[current2_col_id] = true;
+          }
+          current2_id = model.parents[current2_id];
+        }
+      }
+      assert(current1_id == current2_id && "current1_id should be equal to current2_id");
+
+      {
+        JointIndex current_id = current1_id;
+        while (current_id > 0)
+        {
+          const JointModel & joint = model.joints[current_id];
+          joint1_span_indexes.push_back((Eigen::DenseIndex)current_id);
+          joint2_span_indexes.push_back((Eigen::DenseIndex)current_id);
+          Eigen::DenseIndex current_row_id = joint.idx_v();
+          for (int k = 0; k < joint.nv(); ++k, ++current_row_id)
+          {
+            colwise_joint1_sparsity[current_row_id] = true;
+            colwise_joint2_sparsity[current_row_id] = true;
+          }
+          current_id = model.parents[current_id];
+        }
+      }
+      std::reverse(joint1_span_indexes.begin(), joint1_span_indexes.end());
+      std::reverse(joint2_span_indexes.begin(), joint2_span_indexes.end());
+      colwise_span_indexes.reserve((size_t)model.nv);
+      colwise_sparsity.resize(model.nv);
+      colwise_sparsity.setZero();
+      loop_span_indexes.reserve((size_t)model.nv);
+      for (Eigen::DenseIndex col_id = 0; col_id < model.nv; ++col_id)
+      {
+        if (colwise_joint1_sparsity[col_id] || colwise_joint2_sparsity[col_id])
+        {
+          colwise_span_indexes.push_back(col_id);
+          colwise_sparsity[col_id] = true;
+        }
+
+        if (colwise_joint1_sparsity[col_id] != colwise_joint2_sparsity[col_id])
+        {
+          loop_span_indexes.push_back(col_id);
+        }
+      }
+
+      // Set compliance and Baumgarte parameters.
+      m_compliance = ComplianceVectorType::Zero(Derived::size());
+      // CHOICE: right now we use the scalar Baumgarte.
+      // m_baumgarte_vector_parameters = BaumgarteCorrectorVectorParameters(size());
+      m_baumgarte_parameters = BaumgarteCorrectorParameters();
+    }
+  }; // struct RelativeConstraintModelBase<Derived>
+
+} // namespace pinocchio
+
+#endif // ifndef __pinocchio_algorithm_constraints_relative_constraint_model_base_hpp__

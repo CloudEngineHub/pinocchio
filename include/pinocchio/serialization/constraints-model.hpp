@@ -197,12 +197,12 @@ namespace boost
     template<typename Archive, typename Derived>
     void serialize(
       Archive & ar,
-      ::pinocchio::PointConstraintModelBase<Derived> & cmodel,
+      ::pinocchio::RelativeConstraintModelBase<Derived> & cmodel,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::PointConstraintModelBase<Derived> Self;
-      typedef typename Self::Base Base;
-      ar & make_nvp("base", boost::serialization::base_object<Base>(cmodel));
+      typedef ::pinocchio::RelativeConstraintModelBase<Derived> Self;
+      typedef typename Self::KinematicsBase KinematicsBase;
+      ar & make_nvp("base", boost::serialization::base_object<KinematicsBase>(cmodel));
       typedef typename Self::BaseCommonParameters BaseCommonParameters;
       ar & make_nvp(
         "base_common_parameters", boost::serialization::base_object<BaseCommonParameters>(cmodel));
@@ -222,6 +222,17 @@ namespace boost
       ar & make_nvp("nv", cmodel.nv);
       ar & make_nvp("depth_joint1", cmodel.depth_joint1);
       ar & make_nvp("depth_joint2", cmodel.depth_joint2);
+    }
+
+    template<typename Archive, typename Derived>
+    void serialize(
+      Archive & ar,
+      ::pinocchio::PointConstraintModelBase<Derived> & cmodel,
+      const unsigned int /*version*/)
+    {
+      typedef ::pinocchio::PointConstraintModelBase<Derived> Self;
+      typedef typename Self::Base Base;
+      ar & make_nvp("base", boost::serialization::base_object<Base>(cmodel));
     }
 
     namespace internal
@@ -285,26 +296,6 @@ namespace boost
       typedef ::pinocchio::FrameConstraintModelBase<Derived> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cmodel));
-      typedef typename Self::BaseCommonParameters BaseCommonParameters;
-      ar & make_nvp(
-        "base_common_parameters", boost::serialization::base_object<BaseCommonParameters>(cmodel));
-
-      // TODO: point/frame constraint models data structure are identical, factor them
-      ar & make_nvp("joint1_placement", cmodel.joint1_placement);
-      ar & make_nvp("joint2_placement", cmodel.joint2_placement);
-      ar & make_nvp("desired_constraint_offset", cmodel.desired_constraint_offset);
-      ar & make_nvp("desired_constraint_velocity", cmodel.desired_constraint_velocity);
-      ar & make_nvp("desired_constraint_acceleration", cmodel.desired_constraint_acceleration);
-      ar & make_nvp("colwise_joint1_sparsity", cmodel.colwise_joint1_sparsity);
-      ar & make_nvp("colwise_joint2_sparsity", cmodel.colwise_joint2_sparsity);
-      ar & make_nvp("joint1_span_indexes", cmodel.joint1_span_indexes);
-      ar & make_nvp("joint2_span_indexes", cmodel.joint2_span_indexes);
-      ar & make_nvp("loop_span_indexes", cmodel.loop_span_indexes);
-      ar & make_nvp("colwise_sparsity", cmodel.colwise_sparsity);
-      ar & make_nvp("colwise_span_indexes", cmodel.colwise_span_indexes);
-      ar & make_nvp("nv", cmodel.nv);
-      ar & make_nvp("depth_joint1", cmodel.depth_joint1);
-      ar & make_nvp("depth_joint2", cmodel.depth_joint2);
     }
 
     namespace internal

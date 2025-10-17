@@ -16,6 +16,7 @@
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
+#include "pinocchio/algorithm/constraints/relative-constraint-model-base.hpp"
 
 namespace pinocchio
 {
@@ -59,9 +60,7 @@ namespace pinocchio
   ///  \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename Derived>
-  struct FrameConstraintModelBase
-  : KinematicsConstraintModelBase<Derived>
-  , ConstraintModelCommonParameters<Derived>
+  struct FrameConstraintModelBase : RelativeConstraintModelBase<Derived>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -71,8 +70,8 @@ namespace pinocchio
       Options = traits<Derived>::Options
     };
 
-    typedef KinematicsConstraintModelBase<Derived> Base;
-    typedef ConstraintModelCommonParameters<Derived> BaseCommonParameters;
+    typedef RelativeConstraintModelBase<Derived> Base;
+    typedef typename Base::BaseCommonParameters BaseCommonParameters;
     typedef ConstraintModelBase<Derived> RootBase;
 
     template<typename OtherDerived>
@@ -89,15 +88,13 @@ namespace pinocchio
       BaumgarteCorrectorVectorParameters;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
+    using Base::activeSize;
     using Base::derived;
-    using Base::joint1_id;
-    using Base::joint2_id;
     using typename Base::BooleanVector;
     using typename Base::EigenIndexVector;
 
     typedef SE3Tpl<Scalar, Options> SE3;
     typedef MotionTpl<Scalar, Options> Motion;
-    typedef ForceTpl<Scalar, Options> Force;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Vector6 VectorConstraintSize;
@@ -120,61 +117,12 @@ namespace pinocchio
       return static_cast<const BaseCommonParameters &>(*this);
     }
 
-    /// \brief Position of attached point with respect to the frame of joint1.
-    SE3 joint1_placement;
-
-    /// \brief Position of attached point with respect to the frame of joint2.
-    SE3 joint2_placement;
-
-    /// \brief Desired constraint shift at position level
-    Vector6 desired_constraint_offset;
-
-    /// \brief Desired constraint velocity at velocity level
-    Vector6 desired_constraint_velocity;
-
-    /// \brief Desired constraint velocity at acceleration level
-    Vector6 desired_constraint_acceleration;
-
-    /// \brief Colwise sparsity pattern associated with joint 1.
-    BooleanVector colwise_joint1_sparsity;
-
-    /// \brief Colwise sparsity pattern associated with joint 2.
-    BooleanVector colwise_joint2_sparsity;
-
-    /// \brief Jointwise span indexes associated with joint 1.
-    EigenIndexVector joint1_span_indexes;
-
-    /// \brief Jointwise span indexes associated with joint 2.
-    EigenIndexVector joint2_span_indexes;
-
-    EigenIndexVector loop_span_indexes;
-
-    /// \brief Sparsity pattern associated to the constraint;
-    BooleanVector colwise_sparsity;
-
-    /// \brief Indexes of the columns spanned by the constraints.
-    EigenIndexVector colwise_span_indexes;
-
-    /// \brief Dimensions of the model
-    int nv;
-
-    ///  \brief Depth of the kinematic tree for joint1 and joint2
-    size_t depth_joint1, depth_joint2;
-
-  protected:
-    using BaseCommonParameters::m_compliance;
-    // CHOICE: right now we use the scalar Baumgarte
-    // using BaseCommonParameters::m_baumgarte_vector_parameters;
-    using BaseCommonParameters::m_baumgarte_parameters;
-
   public:
     ///
     ///  \brief Default constructor
     ///
     FrameConstraintModelBase()
-    : nv(-1)
-    , depth_joint1(0)
-    , depth_joint2(0)
+    : Base()
     {
     }
 
@@ -197,17 +145,8 @@ namespace pinocchio
       const SE3 & joint1_placement,
       const JointIndex joint2_id,
       const SE3 & joint2_placement)
-    : Base(model, joint1_id, joint2_id)
-    , joint1_placement(joint1_placement)
-    , joint2_placement(joint2_placement)
-    , desired_constraint_offset(Vector6::Zero())
-    , desired_constraint_velocity(Vector6::Zero())
-    , desired_constraint_acceleration(Vector6::Zero())
-    , colwise_joint1_sparsity(model.nv)
-    , colwise_joint2_sparsity(model.nv)
-    , loop_span_indexes((size_t)model.nv)
+    : Base(model, joint1_id, joint1_placement, joint2_id, joint2_placement)
     {
-      init(model);
     }
 
     ///
@@ -224,17 +163,8 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement)
-    : Base(model, joint1_id, 0)
-    , joint1_placement(joint1_placement)
-    , joint2_placement(SE3::Identity())
-    , desired_constraint_offset(Vector6::Zero())
-    , desired_constraint_velocity(Vector6::Zero())
-    , desired_constraint_acceleration(Vector6::Zero())
-    , colwise_joint1_sparsity(model.nv)
-    , colwise_joint2_sparsity(model.nv)
-    , loop_span_indexes((size_t)model.nv)
+    : Base(model, joint1_id, joint1_placement)
     {
-      init(model);
     }
 
     ///
@@ -250,16 +180,7 @@ namespace pinocchio
       const JointIndex joint1_id,
       const JointIndex joint2_id)
     : Base(model, joint1_id, joint2_id)
-    , joint1_placement(SE3::Identity())
-    , joint2_placement(SE3::Identity())
-    , desired_constraint_offset(Vector6::Zero())
-    , desired_constraint_velocity(Vector6::Zero())
-    , desired_constraint_acceleration(Vector6::Zero())
-    , colwise_joint1_sparsity(model.nv)
-    , colwise_joint2_sparsity(model.nv)
-    , loop_span_indexes((size_t)model.nv)
     {
-      init(model);
     }
 
     ///
@@ -274,17 +195,8 @@ namespace pinocchio
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     FrameConstraintModelBase(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
-    : Base(model, joint1_id, 0)
-    , joint1_placement(SE3::Identity())
-    , joint2_placement(SE3::Identity())
-    , desired_constraint_offset(Vector6::Zero())
-    , desired_constraint_velocity(Vector6::Zero())
-    , desired_constraint_acceleration(Vector6::Zero())
-    , colwise_joint1_sparsity(model.nv)
-    , colwise_joint2_sparsity(model.nv)
-    , loop_span_indexes((size_t)model.nv)
+    : Base(model, joint1_id)
     {
-      init(model);
     }
 
     ///
@@ -299,14 +211,14 @@ namespace pinocchio
     const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
-      return colwise_sparsity;
+      return this->colwise_sparsity;
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
     const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
-      return colwise_span_indexes;
+      return this->colwise_span_indexes;
     }
 
     ///
@@ -319,23 +231,7 @@ namespace pinocchio
     ///
     bool operator==(const FrameConstraintModelBase & other) const
     {
-      if (this == &other)
-        return true;
-      return base() == other.base() && base_common_parameters() == other.base_common_parameters()
-             && joint1_id == other.joint1_id && joint2_id == other.joint2_id
-             && joint1_placement == other.joint1_placement
-             && joint2_placement == other.joint2_placement && nv == other.nv
-             && desired_constraint_offset == other.desired_constraint_offset
-             && desired_constraint_velocity == other.desired_constraint_velocity
-             && desired_constraint_acceleration == other.desired_constraint_acceleration
-             && colwise_joint1_sparsity == other.colwise_joint1_sparsity
-             && colwise_joint2_sparsity == other.colwise_joint2_sparsity
-             && joint1_span_indexes == other.joint1_span_indexes
-             && joint2_span_indexes == other.joint2_span_indexes && nv == other.nv
-             && depth_joint1 == other.depth_joint1 && depth_joint2 == other.depth_joint2
-             && colwise_sparsity == other.colwise_sparsity
-             && colwise_span_indexes == other.colwise_span_indexes
-             && loop_span_indexes == other.loop_span_indexes;
+      return Base::operator==(other);
     }
 
     ///
@@ -348,7 +244,7 @@ namespace pinocchio
     ///
     bool operator!=(const FrameConstraintModelBase & other) const
     {
-      return !(*this == other);
+      return Base::operator!=(other);
     }
 
     /// \brief Evaluate the constraint values at the current state given by data and store the
@@ -365,15 +261,15 @@ namespace pinocchio
     {
       PINOCCHIO_UNUSED_VARIABLE(model);
 
-      if (joint1_id > 0)
-        cdata.oMc1 = data.oMi[joint1_id] * joint1_placement;
+      if (this->joint1_id > 0)
+        cdata.oMc1 = data.oMi[this->joint1_id] * this->joint1_placement;
       else
-        cdata.oMc1 = joint1_placement;
+        cdata.oMc1 = this->joint1_placement;
 
-      if (joint2_id > 0)
-        cdata.oMc2 = data.oMi[joint2_id] * joint2_placement;
+      if (this->joint2_id > 0)
+        cdata.oMc2 = data.oMi[this->joint2_id] * this->joint2_placement;
       else
-        cdata.oMc2 = joint2_placement;
+        cdata.oMc2 = this->joint2_placement;
 
       // Compute relative placement
       cdata.c1Mc2 = cdata.oMc1.actInv(cdata.oMc2);
@@ -382,16 +278,16 @@ namespace pinocchio
       auto & position_error = cdata.constraint_position_error;
       position_error = log6(cdata.c1Mc2).toVector();
 
-      const auto vf1 = joint1_placement.actInv(data.v[this->joint1_id]);
-      const auto vf2 = joint2_placement.actInv(data.v[this->joint2_id]);
+      const auto vf1 = this->joint1_placement.actInv(data.v[this->joint1_id]);
+      const auto vf2 = this->joint2_placement.actInv(data.v[this->joint2_id]);
 
       auto & velocity_error = cdata.constraint_velocity_error;
       const Motion vf2_in_frame1 = cdata.c1Mc2.act(vf2);
       const Motion motion_velocity_error = vf2_in_frame1 - vf1;
       velocity_error = motion_velocity_error.toVector();
 
-      const auto af1 = joint1_placement.actInv(data.a[this->joint1_id]);
-      const auto af2 = joint2_placement.actInv(data.a[this->joint2_id]);
+      const auto af1 = this->joint1_placement.actInv(data.a[this->joint1_id]);
+      const auto af2 = this->joint2_placement.actInv(data.a[this->joint2_id]);
       const Motion af2_in_frame1 = cdata.c1Mc2.act(af2);
       auto & acceleration_error = cdata.constraint_acceleration_error;
 
@@ -499,7 +395,7 @@ namespace pinocchio
         std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value ? cdata.A2_world : cdata.A2_local;
 
       Matrix6 diagonal_constraint_inertia_time_A;
-      if (joint1_id > 0)
+      if (this->joint1_id > 0)
       {
         diagonal_constraint_inertia_time_A = diagonal_constraint_inertia.asDiagonal() * A1;
         I11.const_cast_derived().noalias() = A1.transpose() * diagonal_constraint_inertia_time_A;
@@ -507,7 +403,7 @@ namespace pinocchio
       else
         I11.const_cast_derived().setZero();
 
-      if (joint2_id > 0)
+      if (this->joint2_id > 0)
       {
         diagonal_constraint_inertia_time_A = diagonal_constraint_inertia.asDiagonal() * A2;
         I22.const_cast_derived().noalias() = A2.transpose() * diagonal_constraint_inertia_time_A;
@@ -516,7 +412,7 @@ namespace pinocchio
         I22.const_cast_derived().setZero();
 
       // Compute the cross coupling term
-      if (joint1_id > 0 && joint2_id > 0)
+      if (this->joint1_id > 0 && this->joint2_id > 0)
       {
         I12.const_cast_derived().noalias() = A1.transpose() * diagonal_constraint_inertia_time_A;
       }
@@ -545,28 +441,28 @@ namespace pinocchio
         && "must never happened");
 
       Matrix6 & Y1 = std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value
-                       ? data.oYaba_augmented[joint1_id]
-                       : data.oYaba_augmented[joint1_id];
+                       ? data.oYaba_augmented[this->joint1_id]
+                       : data.oYaba_augmented[this->joint1_id];
 
-      if (joint1_id > 0)
+      if (this->joint1_id > 0)
         Y1 += I11;
 
       Matrix6 & Y2 = std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value
-                       ? data.oYaba_augmented[joint2_id]
-                       : data.oYaba_augmented[joint2_id];
+                       ? data.oYaba_augmented[this->joint2_id]
+                       : data.oYaba_augmented[this->joint2_id];
 
-      if (joint2_id > 0)
+      if (this->joint2_id > 0)
         Y2 += I22;
 
-      if (joint1_id > 0 && joint2_id > 0)
+      if (this->joint1_id > 0 && this->joint2_id > 0)
       {
-        if (joint1_id < joint2_id)
+        if (this->joint1_id < this->joint2_id)
         {
-          data.joint_cross_coupling.get({joint1_id, joint2_id}) += I12;
+          data.joint_cross_coupling.get({this->joint1_id, this->joint2_id}) += I12;
         }
         else
         {
-          data.joint_cross_coupling.get({joint2_id, joint1_id}) += I12.transpose();
+          data.joint_cross_coupling.get({this->joint2_id, this->joint1_id}) += I12.transpose();
         }
       }
     }
@@ -698,16 +594,16 @@ namespace pinocchio
 
       for (Eigen::DenseIndex jj = 0; jj < model.nv; ++jj)
       {
-        if (!(colwise_joint1_sparsity[jj] || colwise_joint2_sparsity[jj]))
+        if (!(this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj]))
           continue;
-        if (colwise_joint1_sparsity[jj] == colwise_joint2_sparsity[jj])
+        if (this->colwise_joint1_sparsity[jj] == this->colwise_joint2_sparsity[jj])
           continue;
         Vector6 AxSi;
 
         typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
         const ConstColXpr Jcol = data.J.col(jj);
 
-        if (colwise_joint1_sparsity[jj])
+        if (this->colwise_joint1_sparsity[jj])
           AxSi.noalias() = -A * Jcol;
         else
           AxSi.noalias() = A * Jcol;
@@ -763,16 +659,16 @@ namespace pinocchio
 
       for (Eigen::DenseIndex jj = 0; jj < model.nv; ++jj)
       {
-        if (!(colwise_joint1_sparsity[jj] || colwise_joint2_sparsity[jj]))
+        if (!(this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj]))
           continue;
-        if (colwise_joint1_sparsity[jj] == colwise_joint2_sparsity[jj])
+        if (this->colwise_joint1_sparsity[jj] == this->colwise_joint2_sparsity[jj])
           continue;
         Vector6 AxSi;
 
         typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
         const ConstColXpr Jcol = data.J.col(jj);
 
-        if (colwise_joint1_sparsity[jj])
+        if (this->colwise_joint1_sparsity[jj])
           AxSi.noalias() = -A * Jcol;
         else
           AxSi.noalias() = A * Jcol;
@@ -806,19 +702,19 @@ namespace pinocchio
 
       for (Eigen::DenseIndex j = 0; j < model.nv; ++j)
       {
-        if (colwise_joint1_sparsity[j] || colwise_joint2_sparsity[j])
+        if (this->colwise_joint1_sparsity[j] || this->colwise_joint2_sparsity[j])
         {
           typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
           const ConstColXpr Jcol = data.J.col(j);
           const MotionRef<const ConstColXpr> Jcol_motion(Jcol);
 
           // TODO: simplify computations
-          if (colwise_joint1_sparsity[j] == colwise_joint2_sparsity[j])
+          if (this->colwise_joint1_sparsity[j] == this->colwise_joint2_sparsity[j])
             jacobian_matrix.col(j).setZero();
           else
           {
             const Motion Jcol_local(oMc1.actInv(Jcol_motion));
-            if (colwise_joint1_sparsity[j])
+            if (this->colwise_joint1_sparsity[j])
               jacobian_matrix.col(j) = -Jcol_local.toVector();
             else
               jacobian_matrix.col(j) = Jcol_local.toVector();
@@ -857,9 +753,9 @@ namespace pinocchio
       const auto & A2 =
         std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value ? cdata.A2_world : cdata.A2_local;
 
-      if (joint1_id > 0)
+      if (this->joint1_id > 0)
         joint_forces[this->joint1_id].toVector().noalias() += A1.transpose() * constraint_forces;
-      if (joint2_id > 0)
+      if (this->joint2_id > 0)
         joint_forces[this->joint2_id].toVector().noalias() += A2.transpose() * constraint_forces;
     }
 
@@ -892,14 +788,14 @@ namespace pinocchio
       const auto & A2 =
         std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value ? cdata.A2_world : cdata.A2_local;
 
-      if (joint1_id > 0 && joint2_id > 0)
+      if (this->joint1_id > 0 && this->joint2_id > 0)
         constraint_motion.const_cast_derived().noalias() =
           A1 * joint_accelerations[this->joint1_id].toVector()
           + A2 * joint_accelerations[this->joint2_id].toVector();
-      else if (joint1_id > 0)
+      else if (this->joint1_id > 0)
         constraint_motion.const_cast_derived().noalias() =
           A1 * joint_accelerations[this->joint1_id].toVector();
-      else if (joint2_id > 0)
+      else if (this->joint2_id > 0)
         constraint_motion.const_cast_derived().noalias() =
           A2 * joint_accelerations[this->joint2_id].toVector();
       else
@@ -910,128 +806,12 @@ namespace pinocchio
     {
       return 6;
     }
-    using Base::activeSize;
 
     /// \returns An expression of *this with the Scalar type casted to NewScalar.
     template<typename NewScalar, typename OtherDerived>
     void cast(FrameConstraintModelBase<OtherDerived> & res) const
     {
-      Base::cast(res);
-      BaseCommonParameters::template cast<NewScalar>(res);
-
-      res.joint1_id = joint1_id;
-      res.joint2_id = joint2_id;
-      res.joint1_placement = joint1_placement.template cast<NewScalar>();
-      res.joint2_placement = joint2_placement.template cast<NewScalar>();
-      res.desired_constraint_offset = desired_constraint_offset.template cast<NewScalar>();
-      res.desired_constraint_velocity = desired_constraint_velocity.template cast<NewScalar>();
-      res.desired_constraint_acceleration =
-        desired_constraint_acceleration.template cast<NewScalar>();
-      res.colwise_joint1_sparsity = colwise_joint1_sparsity;
-      res.colwise_joint2_sparsity = colwise_joint2_sparsity;
-      res.joint1_span_indexes = joint1_span_indexes;
-      res.joint2_span_indexes = joint2_span_indexes;
-      res.colwise_sparsity = colwise_sparsity;
-      res.colwise_span_indexes = colwise_span_indexes;
-      res.nv = nv;
-      res.depth_joint1 = depth_joint1;
-      res.depth_joint2 = depth_joint2;
-      res.loop_span_indexes = loop_span_indexes;
-    }
-
-  protected:
-    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    void init(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
-    {
-      nv = model.nv;
-      depth_joint1 = static_cast<size_t>(model.supports[joint1_id].size());
-      depth_joint2 = static_cast<size_t>(model.supports[joint2_id].size());
-
-      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
-      typedef typename Model::JointModel JointModel;
-      static const bool default_sparsity_value = false;
-      colwise_joint1_sparsity.fill(default_sparsity_value);
-      colwise_joint2_sparsity.fill(default_sparsity_value);
-
-      joint1_span_indexes.reserve(size_t(model.njoints));
-      joint2_span_indexes.reserve(size_t(model.njoints));
-
-      JointIndex current1_id = 0;
-      if (joint1_id > 0)
-        current1_id = joint1_id;
-
-      JointIndex current2_id = 0;
-      if (joint2_id > 0)
-        current2_id = joint2_id;
-
-      while (current1_id != current2_id)
-      {
-        if (current1_id > current2_id)
-        {
-          const JointModel & joint1 = model.joints[current1_id];
-          joint1_span_indexes.push_back((Eigen::DenseIndex)current1_id);
-          Eigen::DenseIndex current1_col_id = joint1.idx_v();
-          for (int k = 0; k < joint1.nv(); ++k, ++current1_col_id)
-          {
-            colwise_joint1_sparsity[current1_col_id] = true;
-          }
-          current1_id = model.parents[current1_id];
-        }
-        else
-        {
-          const JointModel & joint2 = model.joints[current2_id];
-          joint2_span_indexes.push_back((Eigen::DenseIndex)current2_id);
-          Eigen::DenseIndex current2_col_id = joint2.idx_v();
-          for (int k = 0; k < joint2.nv(); ++k, ++current2_col_id)
-          {
-            colwise_joint2_sparsity[current2_col_id] = true;
-          }
-          current2_id = model.parents[current2_id];
-        }
-      }
-      assert(current1_id == current2_id && "current1_id should be equal to current2_id");
-
-      {
-        JointIndex current_id = current1_id;
-        while (current_id > 0)
-        {
-          const JointModel & joint = model.joints[current_id];
-          joint1_span_indexes.push_back((Eigen::DenseIndex)current_id);
-          joint2_span_indexes.push_back((Eigen::DenseIndex)current_id);
-          Eigen::DenseIndex current_row_id = joint.idx_v();
-          for (int k = 0; k < joint.nv(); ++k, ++current_row_id)
-          {
-            colwise_joint1_sparsity[current_row_id] = true;
-            colwise_joint2_sparsity[current_row_id] = true;
-          }
-          current_id = model.parents[current_id];
-        }
-      }
-      std::reverse(joint1_span_indexes.begin(), joint1_span_indexes.end());
-      std::reverse(joint2_span_indexes.begin(), joint2_span_indexes.end());
-      colwise_span_indexes.reserve((size_t)model.nv);
-      colwise_sparsity.resize(model.nv);
-      colwise_sparsity.setZero();
-      loop_span_indexes.reserve((size_t)model.nv);
-      for (Eigen::DenseIndex col_id = 0; col_id < model.nv; ++col_id)
-      {
-        if (colwise_joint1_sparsity[col_id] || colwise_joint2_sparsity[col_id])
-        {
-          colwise_span_indexes.push_back(col_id);
-          colwise_sparsity[col_id] = true;
-        }
-
-        if (colwise_joint1_sparsity[col_id] != colwise_joint2_sparsity[col_id])
-        {
-          loop_span_indexes.push_back(col_id);
-        }
-      }
-
-      // Set compliance and baumgarte parameters
-      m_compliance = ComplianceVectorType::Zero(size());
-      // CHOICE: right now we use the scalar Baumgarte
-      // m_baumgarte_vector_parameters = BaumgarteCorrectorVectorParameters(size());
-      m_baumgarte_parameters = BaumgarteCorrectorParameters();
+      Base::template cast<NewScalar>(res);
     }
   }; // FrameConstraintModelBase<Derived>
 
