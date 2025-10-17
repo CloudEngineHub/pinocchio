@@ -21,6 +21,7 @@
 #include "pinocchio/algorithm/loop-constrained-aba.hpp"
 #include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/proximal.hpp"
+#include "pinocchio/utils/reference.hpp"
 
 #include "utils/model-generator.hpp"
 
@@ -98,6 +99,63 @@ BOOST_AUTO_TEST_CASE(default_constructor_reference_wrapper)
   BOOST_CHECK(delassus_operator.size() == active_constraint_size);
 
   BOOST_CHECK(delassus_operator.size() == 0);
+  BOOST_CHECK(&delassus_operator.model() == &model);
+  BOOST_CHECK(&delassus_operator.data() == &data);
+  BOOST_CHECK(&delassus_operator.constraint_models() == &constraint_models);
+  BOOST_CHECK(&delassus_operator.constraint_datas() == &constraint_datas);
+}
+
+BOOST_AUTO_TEST_CASE(default_constructor_const_reference_wrapper)
+{
+  Model model;
+  buildModels::humanoidRandom(model, true);
+  Data data(model);
+
+  // creating a constraint model (joint limits)
+  const JointIndex last_joint_id = Model::JointIndex(model.njoints);
+  Model::IndexVector selected_joints;
+  for (Model::JointIndex i = 2 /* skip free_flyer*/; i < last_joint_id; ++i)
+  {
+    selected_joints.push_back(i);
+  }
+  JointLimitConstraintModel jlcm(model, selected_joints);
+  ConstraintModel cmodel(jlcm); // let's put it in a variant just to show it works
+  ConstraintData cdata = cmodel.createData();
+
+  // we will wrap the constraint model in a std::reference_wrapper
+  // we make it const -> the delassus does not touch the constraint models/datas
+  typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModel;
+
+  // delassus trait automatically infers the correct type for the wrapped constraint data
+  typedef DelassusOperatorRigidBodySystemsTpl<
+    double, 0, JointCollectionDefaultTpl, WrappedConstraintModel>
+    WrappedDelassusOperatorRigidBody;
+
+  typedef
+    typename WrappedDelassusOperatorRigidBody::ConstraintModelVector WrappedConstraintModelVector;
+  typedef
+    typename WrappedDelassusOperatorRigidBody::ConstraintDataVector WrappedConstraintDataVector;
+  WrappedConstraintModelVector constraint_models;
+  constraint_models.push_back(cmodel);
+  WrappedConstraintDataVector constraint_datas;
+  constraint_datas.push_back(cdata);
+
+  // we can still call calc on cmodel (but not via its const wrapped handle)
+  VectorXd q = neutral(model);
+  computeJointJacobians(model, data, q); // fill data's oMi, lMi and J fields
+  data.q_in = q;
+  cmodel.calc(model, data, cdata); // make constraint data up to date with system state
+
+  WrappedDelassusOperatorRigidBody delassus_operator(
+    helper::make_ref(model),             //
+    helper::make_ref(data),              //
+    helper::make_ref(constraint_models), //
+    helper::make_ref(constraint_datas));
+
+  const auto active_constraint_size =
+    activeSize(helper::get_ref(constraint_models), helper::get_ref(constraint_datas));
+
+  BOOST_CHECK(delassus_operator.size() == active_constraint_size);
   BOOST_CHECK(&delassus_operator.model() == &model);
   BOOST_CHECK(&delassus_operator.data() == &data);
   BOOST_CHECK(&delassus_operator.constraint_models() == &constraint_models);

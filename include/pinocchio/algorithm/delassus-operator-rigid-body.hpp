@@ -55,13 +55,20 @@ namespace pinocchio
 
     typedef _ConstraintModel ConstraintModel;
     typedef typename helper::remove_holder<ConstraintModel>::type InnerConstraintModel;
+    typedef typename helper::remove_holder<ConstraintModel>::ref_type ConstraintModelReference;
+    typedef
+      typename std::remove_reference<ConstraintModelReference>::type ConstraintModelReferenceValue;
+    static constexpr bool ConstraintModelIsConst =
+      std::is_const<ConstraintModelReferenceValue>::value;
 
     typedef
       typename helper::remove_holder<ConstraintModel>::type::ConstraintData InnerConstraintData;
     typedef typename std::conditional<
       helper::is_type_holder<ConstraintModel>::value,
       typename internal::extract_template_template_parameter<ConstraintModel>::template type<
-        InnerConstraintData>,
+        typename std::
+          conditional<ConstraintModelIsConst, const InnerConstraintData, InnerConstraintData>::
+            type>,
       InnerConstraintData>::type ConstraintData;
 
     typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConstraintModel) ConstraintModelVector;
