@@ -85,16 +85,7 @@ namespace pinocchio
     typedef BilateralPointConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef UnboundedSetTpl<Scalar, Options> ConstraintSet;
 
-    using typename Base::BooleanVector;
-    using typename Base::EigenIndexVector;
-    using typename Base::Force;
-    using typename Base::Matrix36;
-    using typename Base::Matrix6;
-    using typename Base::Motion;
     using typename Base::SE3;
-    using typename Base::Vector3;
-    using typename Base::Vector6;
-    using typename Base::VectorConstraintSize;
 
     Base & base()
     {
@@ -272,14 +263,7 @@ namespace pinocchio
     typedef BilateralPointConstraintDataTpl ConstraintData;
     typedef PointConstraintDataBase<BilateralPointConstraintDataTpl> Base;
 
-    using typename Base::Force;
-    using typename Base::Matrix6;
-    using typename Base::Matrix6x;
-    using typename Base::MatrixX;
-    using typename Base::Motion;
     using typename Base::SE3;
-    using typename Base::Vector3;
-    using typename Base::VectorOfMatrix6;
 
     /// \brief Default constructor
     BilateralPointConstraintDataTpl()
