@@ -507,7 +507,6 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(data);
 
     auto & joint_torques = joint_torques_.const_cast_derived();
-    joint_torques.setZero();
 
     const auto & compact_tangent_map = cdata.compact_tangent_map;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
