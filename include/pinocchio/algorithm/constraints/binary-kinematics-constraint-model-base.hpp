@@ -19,7 +19,7 @@ namespace pinocchio
 {
 
   template<typename Derived>
-  struct RelativeConstraintModelBase
+  struct BinaryKinematicsConstraintBase
   : KinematicsConstraintModelBase<Derived>
   , ConstraintModelCommonParameters<Derived>
   {
@@ -36,7 +36,7 @@ namespace pinocchio
     typedef ConstraintModelBase<Derived> RootBase;
 
     template<typename OtherDerived>
-    friend struct RelativeConstraintModelBase;
+    friend struct BinaryKinematicsConstraintBase;
 
     using KinematicsBase::derived;
     using KinematicsBase::joint1_id;
@@ -126,7 +126,7 @@ namespace pinocchio
     using BaseCommonParameters::m_baumgarte_parameters;
 
   public:
-    RelativeConstraintModelBase()
+    BinaryKinematicsConstraintBase()
     : joint1_placement(SE3::Identity())
     , joint2_placement(SE3::Identity())
     , desired_constraint_offset(VectorConstraintSize::Zero())
@@ -139,7 +139,7 @@ namespace pinocchio
     }
 
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    RelativeConstraintModelBase(
+    BinaryKinematicsConstraintBase(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement,
@@ -162,27 +162,27 @@ namespace pinocchio
     }
 
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    RelativeConstraintModelBase(
+    BinaryKinematicsConstraintBase(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement)
-    : RelativeConstraintModelBase(model, joint1_id, joint1_placement, 0, SE3::Identity())
+    : BinaryKinematicsConstraintBase(model, joint1_id, joint1_placement, 0, SE3::Identity())
     {
     }
 
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    RelativeConstraintModelBase(
+    BinaryKinematicsConstraintBase(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const JointIndex joint2_id)
-    : RelativeConstraintModelBase(model, joint1_id, SE3::Identity(), joint2_id, SE3::Identity())
+    : BinaryKinematicsConstraintBase(model, joint1_id, SE3::Identity(), joint2_id, SE3::Identity())
     {
     }
 
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    RelativeConstraintModelBase(
+    BinaryKinematicsConstraintBase(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
-    : RelativeConstraintModelBase(model, joint1_id, SE3::Identity(), 0, SE3::Identity())
+    : BinaryKinematicsConstraintBase(model, joint1_id, SE3::Identity(), 0, SE3::Identity())
     {
     }
 
@@ -207,7 +207,7 @@ namespace pinocchio
     }
 
     template<typename OtherDerived>
-    bool operator==(const RelativeConstraintModelBase<OtherDerived> & other) const
+    bool operator==(const BinaryKinematicsConstraintBase<OtherDerived> & other) const
     {
       if (this == &other)
         return true;
@@ -230,13 +230,13 @@ namespace pinocchio
     }
 
     template<typename OtherDerived>
-    bool operator!=(const RelativeConstraintModelBase<OtherDerived> & other) const
+    bool operator!=(const BinaryKinematicsConstraintBase<OtherDerived> & other) const
     {
       return !(*this == other);
     }
 
     template<typename NewScalar, typename OtherDerived>
-    void cast(RelativeConstraintModelBase<OtherDerived> & res) const
+    void cast(BinaryKinematicsConstraintBase<OtherDerived> & res) const
     {
       KinematicsBase::cast(res);
       BaseCommonParameters::template cast<NewScalar>(res);
@@ -350,7 +350,7 @@ namespace pinocchio
       // m_baumgarte_vector_parameters = BaumgarteCorrectorVectorParameters(size());
       m_baumgarte_parameters = BaumgarteCorrectorParameters();
     }
-  }; // struct RelativeConstraintModelBase<Derived>
+  }; // struct BinaryKinematicsConstraintBase<Derived>
 
 } // namespace pinocchio
 

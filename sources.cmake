@@ -34,6 +34,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-problem-data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/kinematics-constraint-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-ordering.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-ordering.hxx
@@ -64,7 +65,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/orthant-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-constraint-model-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-constraint-data-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/relative-constraint-model-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/set-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/jointwise-constraint-base.hpp

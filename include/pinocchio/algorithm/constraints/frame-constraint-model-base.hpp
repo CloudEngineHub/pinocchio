@@ -11,12 +11,11 @@
 #include "pinocchio/spatial/skew.hpp"
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/kinematics-constraint-base.hpp"
+#include "pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/algorithm/constraints/relative-constraint-model-base.hpp"
 
 namespace pinocchio
 {
@@ -60,7 +59,7 @@ namespace pinocchio
   ///  \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename Derived>
-  struct FrameConstraintModelBase : RelativeConstraintModelBase<Derived>
+  struct FrameConstraintModelBase : BinaryKinematicsConstraintBase<Derived>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -70,7 +69,7 @@ namespace pinocchio
       Options = traits<Derived>::Options
     };
 
-    typedef RelativeConstraintModelBase<Derived> Base;
+    typedef BinaryKinematicsConstraintBase<Derived> Base;
     typedef typename Base::BaseCommonParameters BaseCommonParameters;
     typedef ConstraintModelBase<Derived> RootBase;
 

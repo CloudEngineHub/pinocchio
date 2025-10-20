@@ -197,10 +197,10 @@ namespace boost
     template<typename Archive, typename Derived>
     void serialize(
       Archive & ar,
-      ::pinocchio::RelativeConstraintModelBase<Derived> & cmodel,
+      ::pinocchio::BinaryKinematicsConstraintBase<Derived> & cmodel,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::RelativeConstraintModelBase<Derived> Self;
+      typedef ::pinocchio::BinaryKinematicsConstraintBase<Derived> Self;
       typedef typename Self::KinematicsBase KinematicsBase;
       ar & make_nvp("base", boost::serialization::base_object<KinematicsBase>(cmodel));
       typedef typename Self::BaseCommonParameters BaseCommonParameters;
