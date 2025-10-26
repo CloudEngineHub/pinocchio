@@ -284,23 +284,22 @@ namespace pinocchio
     typename TangentMapMatrixType>
   void compactTangentMap(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const std::vector<JointIndex> & joint_selection,
+    const std::vector<JointIndex> & joint_ids,
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentMapMatrixType> & TMc)
   {
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       q.size(), model.nq, "The configuration vector is not of the right size");
-    // Assume TMc.rows() == SUM_(j in joint_selection) j.nq() --> assert at the end
+    // Assume TMc.rows() == SUM_(j in joint_ids) j.nq() --> assert at the end
     // Assume TMc.cols() >= max_nv --> assert in the Visitor
 
     typedef CompactSetTangentMapStep<LieGroup_t, ConfigVectorType, TangentMapMatrixType> Algo;
 
     int idx_q = 0, idx_v = 0;
     typename Algo::ArgsType args(q.derived(), TMc.const_cast_derived(), idx_q, idx_v);
-    for (size_t i = 0; i < joint_selection.size(); ++i)
+    for (const auto joint_id : joint_ids)
     {
       idx_v = 0; // reset to 0. Used for composite joints.
-      const auto joint_id = joint_selection[i];
       Algo::run(model.joints[joint_id], args);
     }
     assert(idx_q == TMc.rows());

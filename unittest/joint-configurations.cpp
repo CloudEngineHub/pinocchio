@@ -137,18 +137,18 @@ BOOST_AUTO_TEST_CASE(tangent_map_test)
     model, q, Eigen::MatrixXd::Identity(model.nq, model.nq), TMs[2].transpose());
 
   typedef typename Model::JointIndex JointIndex;
-  std::vector<JointIndex> joint_selection;
+  std::vector<JointIndex> joint_ids;
   for (JointIndex i = 1; i < (JointIndex)model.njoints; ++i)
   {
-    joint_selection.push_back(i);
+    joint_ids.push_back(i);
   }
-  compactTangentMap(model, joint_selection, q, TMc);
+  compactTangentMap(model, joint_ids, q, TMc);
   std::vector<int> nvs;
   nvs.reserve(static_cast<size_t>(model.nq));
   std::vector<int> idx_vs;
   idx_vs.reserve(static_cast<size_t>(model.nq));
 
-  getTangentToConfigurationSparsitySegment(model, joint_selection, nvs, idx_vs);
+  getTangentToConfigurationSparsitySegment(model, joint_ids, nvs, idx_vs);
   for (Eigen::DenseIndex k = 0; k < model.nq; ++k)
   {
     TMs[3].block(k, idx_vs[size_t(k)], 1, nvs[size_t(k)]) = TMc.block(k, 0, 1, nvs[size_t(k)]);

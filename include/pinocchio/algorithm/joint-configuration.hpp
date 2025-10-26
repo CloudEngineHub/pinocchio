@@ -568,7 +568,7 @@ namespace pinocchio
    *
    * @param[in]  model   Model of the kinematic tree on which the integration operation is
    * performed.
-   * @param[in]  joint_selection  Joint to condider to compute the tangentMap
+   * @param[in]  joint_ids  Joint to condider to compute the tangentMap
    * @param[in]  q                Initial configuration (size model.nq)
    * @param[out] TMc              Compact storage of the tangent map
    * space.
@@ -584,16 +584,17 @@ namespace pinocchio
   void compactTangentMap(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
-      joint_selection,
+      joint_ids,
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentMapMatrixType> & TMc);
 
   /**
    *
-   * @brief   Set the tangentMap in a compact manner in matric of size nq x MAX_JOINT_NV.
+   * @brief   Set the tangentMap in a compact manner in a matrix of size nq x MAX_JOINT_NV.
    *
    * @param[in]  model   Model of the kinematic tree on which the integration operation is
    * performed.
+   * @param[in]  joint_ids  Joint to condider to compute the tangentMap
    * @param[in]  q            Initial configuration (size model.nq)
    * @param[out] TMc          Compact storage of the tangent map
    * space.
@@ -608,13 +609,13 @@ namespace pinocchio
   void compactTangentMap(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
-      joint_selection,
+      joint_ids,
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentMapMatrixType> & TMc)
   {
     compactTangentMap<
       LieGroupMap, Scalar, Options, JointCollectionTpl, ConfigVectorType, TangentMapMatrixType>(
-      model, joint_selection, q.derived(), PINOCCHIO_EIGEN_CONST_CAST(TangentMapMatrixType, TMc));
+      model, joint_ids, q.derived(), PINOCCHIO_EIGEN_CONST_CAST(TangentMapMatrixType, TMc));
   }
 
   /**

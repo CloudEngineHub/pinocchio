@@ -103,13 +103,13 @@ namespace pinocchio
     {
       context::MatrixXs TMc(context::MatrixXs::Zero(model.nq, MAX_JOINT_NV));
       typedef typename context::Model::JointIndex JointIndex;
-      std::vector<JointIndex> joint_selection;
+      std::vector<JointIndex> joint_ids;
       for (JointIndex i = 1; i < (JointIndex)model.njoints; ++i)
       {
-        joint_selection.push_back(i);
+        joint_ids.push_back(i);
       }
 
-      compactTangentMap(model, joint_selection, q, TMc);
+      compactTangentMap(model, joint_ids, q, TMc);
 
       return TMc;
     }
@@ -149,13 +149,13 @@ namespace pinocchio
       std::vector<int> idx_vs;
 
       typedef typename context::Model::JointIndex JointIndex;
-      std::vector<JointIndex> joint_selection;
+      std::vector<JointIndex> joint_ids;
       for (JointIndex i = 1; i < (JointIndex)model.njoints; ++i)
       {
-        joint_selection.push_back(i);
+        joint_ids.push_back(i);
       }
 
-      getTangentToConfigurationSparsitySegment(model, joint_selection, nvs, idx_vs);
+      getTangentToConfigurationSparsitySegment(model, joint_ids, nvs, idx_vs);
 
       return bp::make_tuple(nvs, idx_vs);
     }
