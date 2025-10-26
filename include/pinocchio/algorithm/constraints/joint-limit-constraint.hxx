@@ -356,9 +356,9 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
     {
-      jacobian_matrix.row(row_id).segment(
-        cdata.active_idx_vs[constraint_id], cdata.active_nvs[constraint_id]) =
-        -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(cdata.active_nvs[constraint_id]);
+      const auto constraint_size = cdata.active_nvs[constraint_id];
+      jacobian_matrix.row(row_id).segment(cdata.active_idx_vs[constraint_id], constraint_size) =
+        -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
     }
   }
 
@@ -392,9 +392,10 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
     {
+      const auto constraint_size = cdata.active_nvs[constraint_id];
       const auto lazy_product_expression =
-        -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(cdata.active_nvs[constraint_id])
-        * mat.middleRows(cdata.active_idx_vs[constraint_id], cdata.active_nvs[constraint_id]);
+        -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size)
+        * mat.middleRows(cdata.active_idx_vs[constraint_id], constraint_size);
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(row_id).noalias() -= lazy_product_expression;
       else
@@ -432,16 +433,16 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
     {
-      const auto lazy_product_expression = -CTM.row(cdata.active_idx_qs_reduce[constraint_id])
-                                              .head(cdata.active_nvs[constraint_id])
-                                              .transpose()
-                                           * mat.row(row_id);
+      const auto constraint_size = cdata.active_nvs[constraint_id];
+      const auto lazy_product_expression =
+        -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size).transpose()
+        * mat.row(row_id);
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
-        res.middleRows(cdata.active_idx_vs[constraint_id], cdata.active_nvs[constraint_id])
-          .noalias() -= lazy_product_expression;
+        res.middleRows(cdata.active_idx_vs[constraint_id], constraint_size).noalias() -=
+          lazy_product_expression;
       else
-        res.middleRows(cdata.active_idx_vs[constraint_id], cdata.active_nvs[constraint_id])
-          .noalias() += lazy_product_expression;
+        res.middleRows(cdata.active_idx_vs[constraint_id], constraint_size).noalias() +=
+          lazy_product_expression;
     }
   }
 
