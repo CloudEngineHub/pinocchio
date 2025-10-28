@@ -14,7 +14,9 @@
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
+
 #include "pinocchio/container/eigen-storage.hpp"
+#include "pinocchio/container/matrix-stack.hpp"
 
 namespace pinocchio
 {
@@ -48,6 +50,7 @@ namespace pinocchio
     typedef ConstraintData Data;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+    typedef Eigen::Matrix<Scalar, 1, Eigen::Dynamic, Eigen::RowMajor> RowVectorXs;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> JacobianMatrixType;
     typedef VectorXs VectorConstraintSize;
 
@@ -141,7 +144,8 @@ namespace pinocchio
     typedef std::vector<EigenIndexVector> VectofOfEigenIndexVector;
     typedef std::vector<size_t> VectorOfSize;
     typedef std::vector<JointIndex> JointIndexVector;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+    typedef typename traits<Self>::VectorXs VectorXs;
+    typedef typename traits<Self>::RowVectorXs RowVectorXs;
     typedef VectorXs VectorConstraintSize;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
       CompactTangentMap;
@@ -159,7 +163,8 @@ namespace pinocchio
     JointLimitConstraintModelTpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const JointIndexVector & _activable_joints)
-    : joint_nvs(model.nvs)
+    : joint_nqs(model.nqs)
+    , joint_nvs(model.nvs)
     , joint_idx_vs(model.idx_vs)
     {
       init(
@@ -176,7 +181,8 @@ namespace pinocchio
       const JointIndexVector & _activable_joints,
       const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
       const Eigen::MatrixBase<VectorUpperConfiguration> & ub)
-    : joint_nvs(model.nvs)
+    : joint_nqs(model.nqs)
+    , joint_nvs(model.nvs)
     , joint_idx_vs(model.idx_vs)
     {
       init(model, _activable_joints, lb, ub, model.positionLimitMargin);
@@ -193,7 +199,8 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
       const Eigen::MatrixBase<VectorUpperConfiguration> & ub,
       const Eigen::MatrixBase<VectorMarginConfiguration> & margin)
-    : joint_nvs(model.nvs)
+    : joint_nqs(model.nqs)
+    , joint_nvs(model.nvs)
     , joint_idx_vs(model.idx_vs)
     {
       init(model, _activable_joints, lb, ub, margin);
@@ -219,6 +226,7 @@ namespace pinocchio
       res.activable_idx_qs = activable_idx_qs;
       res.activable_idx_rows = activable_idx_rows;
       res.activable_idx_qs_reduce = activable_idx_qs_reduce;
+      res.joint_nqs = joint_nqs;
       res.joint_nvs = joint_nvs;
       res.joint_idx_vs = joint_idx_vs;
       res.m_set = m_set.template cast<NewScalar>();
@@ -453,7 +461,8 @@ namespace pinocchio
              && activable_idx_qs == other.activable_idx_qs
              && activable_idx_rows == other.activable_idx_rows
              && activable_idx_qs_reduce == other.activable_idx_qs_reduce
-             && joint_nvs == other.joint_nvs && joint_idx_vs == other.joint_idx_vs;
+             && joint_nqs == other.joint_nqs && joint_nvs == other.joint_nvs
+             && joint_idx_vs == other.joint_idx_vs;
     }
 
     bool operator!=(const JointLimitConstraintModelTpl & other) const
@@ -477,6 +486,7 @@ namespace pinocchio
         activable_idx_qs = other.activable_idx_qs;
         activable_idx_rows = other.activable_idx_rows;
         activable_idx_qs_reduce = other.activable_idx_qs_reduce;
+        joint_nqs = other.joint_nqs;
         joint_nvs = other.joint_nvs;
         joint_idx_vs = other.joint_idx_vs;
         m_set = other.m_set;
@@ -606,7 +616,7 @@ namespace pinocchio
     /// @brief give for each activable constraint of sparsity pattern
     EigenIndexVector activable_idx_qs_reduce;
 
-    std::vector<int> joint_nvs, joint_idx_vs;
+    std::vector<int> joint_nqs, joint_nvs, joint_idx_vs;
 
     ConstraintSet m_set;
     using BaseCommonParameters::m_baumgarte_parameters;
@@ -680,6 +690,17 @@ namespace pinocchio
         == constraint_model.upperActiveSize(*this) == 0);
 
       constraint_residual_storage.resize(0);
+
+      // Allocate slices for rowise_tangent_map
+      for (const auto joint_id : constraint_model.activable_joints)
+      {
+        const auto joint_nq = constraint_model.joint_nqs[joint_id];
+        const auto joint_nv = constraint_model.joint_nvs[joint_id];
+        for (int i = 0; i < joint_nq; ++i)
+          rowise_tangent_map.push_back(1, joint_nv);
+      }
+
+      assert(rowise_tangent_map.size() == size_t(constraint_model.getNqReduce()));
     }
 
     bool operator==(const JointLimitConstraintDataTpl & other) const
@@ -688,6 +709,7 @@ namespace pinocchio
         return true;
       return (
         compact_tangent_map == other.compact_tangent_map
+        && rowise_tangent_map == other.rowise_tangent_map
         && activable_constraint_residual == other.activable_constraint_residual
         && constraint_residual_storage == other.constraint_residual_storage
         && constraint_residual == other.constraint_residual
@@ -729,6 +751,8 @@ namespace pinocchio
 
     /// @brief Compact storage of the tangent map
     CompactTangentMap compact_tangent_map;
+
+    RowVectorStack rowise_tangent_map;
 
     /// \brief Residual of all the activable constraints
     VectorXs activable_constraint_residual;

@@ -300,7 +300,22 @@ namespace pinocchio
     }
 
     // Fill the compact tangent map
-    pinocchio::compactTangentMap(model, activable_joints, data.q_in, cdata.compact_tangent_map);
+    auto & compact_tangent_map = cdata.compact_tangent_map;
+    pinocchio::compactTangentMap(model, activable_joints, data.q_in, compact_tangent_map);
+
+    auto & rowise_tangent_map = cdata.rowise_tangent_map;
+    assert(rowise_tangent_map.size() == size_t(compact_tangent_map.rows()));
+
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
+         ++constraint_id)
+    {
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      rowise_tangent_map[cdata.active_idx_qs_reduce[constraint_id]] =
+        compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
+    }
   }
 
   template<typename Scalar, int Options>

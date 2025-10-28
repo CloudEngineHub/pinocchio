@@ -114,6 +114,7 @@ namespace boost
         using Base::activable_idx_rows;
         using Base::activable_joints;
         using Base::joint_idx_vs;
+        using Base::joint_nqs;
         using Base::joint_nvs;
         using Base::lower_activable_size;
         using Base::m_set;
@@ -152,6 +153,7 @@ namespace boost
       ar & make_nvp("activable_idx_qs", cmodel_.activable_idx_qs);
       ar & make_nvp("activable_idx_rows", cmodel_.activable_idx_rows);
       ar & make_nvp("activable_idx_qs_reduce", cmodel_.activable_idx_qs_reduce);
+      ar & make_nvp("joint_nqs", cmodel_.joint_nqs);
       ar & make_nvp("joint_nvs", cmodel_.joint_nvs);
       ar & make_nvp("joint_idx_vs", cmodel_.joint_idx_vs);
       ar & make_nvp("m_set", cmodel_.m_set);
