@@ -693,11 +693,12 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(nvs.size(), 0, "The nvs vector must be empty");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(idx_vs.size(), 0, "The idx_vs vector must empty");
 
-    typename getTangentToConfigurationSparsitySegmentStep::ArgsType args(nvs, idx_vs);
+    typedef GetTangentToConfigurationSparsitySegmentStepAlgo Algo;
+    typename Algo::ArgsType args(nvs, idx_vs);
 
     for (const auto joint_id : joint_ids)
     {
-      getTangentToConfigurationSparsitySegmentStep::run(model.joints[joint_id], args);
+      Algo::run(model.joints[joint_id], args);
     }
   }
 

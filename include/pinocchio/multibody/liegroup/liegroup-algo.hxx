@@ -1078,21 +1078,21 @@ namespace pinocchio
   PINOCCHIO_DETAILS_CANCEL_JOINT_MIMIC_1(LieGroupInstanceStepAlgo);
 
   template<typename Visitor, typename JointModel>
-  struct getTangentToConfigurationSparsitySegmentStepAlgo;
+  struct GetTangentToConfigurationSparsitySegmentStepAlgoAlgo;
 
-  struct getTangentToConfigurationSparsitySegmentStep
-  : public fusion::JointUnaryVisitorBase<getTangentToConfigurationSparsitySegmentStep>
+  struct GetTangentToConfigurationSparsitySegmentStepAlgo
+  : public fusion::JointUnaryVisitorBase<GetTangentToConfigurationSparsitySegmentStepAlgo>
   {
     typedef boost::blank LieGroup_t;
     typedef boost::fusion::vector<std::vector<int> &, std::vector<int> &> ArgsType;
 
     PINOCCHIO_DETAILS_VISITOR_METHOD_ALGO_2(
-      getTangentToConfigurationSparsitySegmentStepAlgo,
-      getTangentToConfigurationSparsitySegmentStep)
+      GetTangentToConfigurationSparsitySegmentStepAlgoAlgo,
+      GetTangentToConfigurationSparsitySegmentStepAlgo)
   };
 
   template<typename Visitor, typename JointModel>
-  struct getTangentToConfigurationSparsitySegmentStepAlgo
+  struct GetTangentToConfigurationSparsitySegmentStepAlgoAlgo
   {
     static void run(
       const JointModelBase<JointModel> & jmodel, std::vector<int> & nvs, std::vector<int> & idx_vs)
@@ -1108,7 +1108,7 @@ namespace pinocchio
     }
   };
 
-  PINOCCHIO_DETAILS_CANCEL_JOINT_MIMIC_2(getTangentToConfigurationSparsitySegmentStepAlgo);
+  PINOCCHIO_DETAILS_CANCEL_JOINT_MIMIC_2(GetTangentToConfigurationSparsitySegmentStepAlgoAlgo);
 
 } // namespace pinocchio
 
