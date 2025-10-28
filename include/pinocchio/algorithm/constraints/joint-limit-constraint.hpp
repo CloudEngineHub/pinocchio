@@ -159,6 +159,8 @@ namespace pinocchio
     JointLimitConstraintModelTpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const JointIndexVector & _activable_joints)
+    : joint_nvs(model.nvs)
+    , joint_idx_vs(model.idx_vs)
     {
       init(
         model, _activable_joints, model.lowerPositionLimit, model.upperPositionLimit,
@@ -174,6 +176,8 @@ namespace pinocchio
       const JointIndexVector & _activable_joints,
       const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
       const Eigen::MatrixBase<VectorUpperConfiguration> & ub)
+    : joint_nvs(model.nvs)
+    , joint_idx_vs(model.idx_vs)
     {
       init(model, _activable_joints, lb, ub, model.positionLimitMargin);
     }
@@ -189,6 +193,8 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
       const Eigen::MatrixBase<VectorUpperConfiguration> & ub,
       const Eigen::MatrixBase<VectorMarginConfiguration> & margin)
+    : joint_nvs(model.nvs)
+    , joint_idx_vs(model.idx_vs)
     {
       init(model, _activable_joints, lb, ub, margin);
     }
@@ -213,8 +219,8 @@ namespace pinocchio
       res.activable_idx_qs = activable_idx_qs;
       res.activable_idx_rows = activable_idx_rows;
       res.activable_idx_qs_reduce = activable_idx_qs_reduce;
-      res.activable_nvs = activable_nvs;
-      res.activable_idx_vs = activable_idx_vs;
+      res.joint_nvs = joint_nvs;
+      res.joint_idx_vs = joint_idx_vs;
       res.m_set = m_set.template cast<NewScalar>();
 
       return res;
@@ -418,29 +424,9 @@ namespace pinocchio
       return activable_idx_qs_reduce;
     }
 
-    const EigenIndexVector & getActivableNvs() const
-    {
-      return activable_nvs;
-    }
-
-    const EigenIndexVector & getActivableIdxVs() const
-    {
-      return activable_idx_vs;
-    }
-
     const EigenIndexVector & getActiveIdxQsReduce(const ConstraintData & constraint_data) const
     {
       return constraint_data.active_idx_qs_reduce;
-    }
-
-    const EigenIndexVector & getActiveNvs(const ConstraintData & constraint_data) const
-    {
-      return constraint_data.active_nvs;
-    }
-
-    const EigenIndexVector & getActiveIdxVs(const ConstraintData & constraint_data) const
-    {
-      return constraint_data.active_idx_vs;
     }
 
     // row_sparsity_pattern, row_indexes, activable_idx_rows, active_idx_rows are
@@ -467,7 +453,7 @@ namespace pinocchio
              && activable_idx_qs == other.activable_idx_qs
              && activable_idx_rows == other.activable_idx_rows
              && activable_idx_qs_reduce == other.activable_idx_qs_reduce
-             && activable_nvs == other.activable_nvs && activable_idx_vs == other.activable_idx_vs;
+             && joint_nvs == other.joint_nvs && joint_idx_vs == other.joint_idx_vs;
     }
 
     bool operator!=(const JointLimitConstraintModelTpl & other) const
@@ -491,8 +477,8 @@ namespace pinocchio
         activable_idx_qs = other.activable_idx_qs;
         activable_idx_rows = other.activable_idx_rows;
         activable_idx_qs_reduce = other.activable_idx_qs_reduce;
-        activable_nvs = other.activable_nvs;
-        activable_idx_vs = other.activable_idx_vs;
+        joint_nvs = other.joint_nvs;
+        joint_idx_vs = other.joint_idx_vs;
         m_set = other.m_set;
       }
       return *this;
@@ -620,9 +606,7 @@ namespace pinocchio
     /// @brief give for each activable constraint of sparsity pattern
     EigenIndexVector activable_idx_qs_reduce;
 
-    /// @brief For each dof, the associated nv and idx_v to exploit tangent map sparsity
-    EigenIndexVector activable_nvs;
-    EigenIndexVector activable_idx_vs;
+    std::vector<int> joint_nvs, joint_idx_vs;
 
     ConstraintSet m_set;
     using BaseCommonParameters::m_baumgarte_parameters;
@@ -647,6 +631,7 @@ namespace pinocchio
     typedef JointLimitConstraintModelTpl<Scalar, Options> ConstraintModel;
 
     typedef typename ConstraintModel::VectorXs VectorXs;
+    typedef typename ConstraintModel::RowVectorXs RowVectorXs;
     typedef typename ConstraintModel::CompactTangentMap CompactTangentMap;
     typedef typename ConstraintModel::EigenStorageVector EigenStorageVector;
     typedef typename ConstraintModel::BooleanVector BooleanVector;
@@ -655,6 +640,8 @@ namespace pinocchio
 
     typedef std::vector<BooleanVector> VectorOfBooleanVector;
     typedef std::vector<EigenIndexVector> VectofOfEigenIndexVector;
+
+    typedef MatrixStackTpl<RowVectorXs> RowVectorStack;
 
     JointLimitConstraintDataTpl()
     : constraint_residual(constraint_residual_storage.map())
@@ -672,6 +659,8 @@ namespace pinocchio
     explicit JointLimitConstraintDataTpl(const ConstraintModel & constraint_model)
     : compact_tangent_map(
         CompactTangentMap::Zero(constraint_model.getNqReduce(), constraint_model.getNvMaxAtom()))
+    , rowise_tangent_map(
+        size_t(constraint_model.getNqReduce()), size_t(constraint_model.getNvMaxAtom()))
     , activable_constraint_residual(constraint_model.size())
     , constraint_residual_storage(constraint_model.size())
     , constraint_residual(constraint_residual_storage.map())
@@ -685,8 +674,6 @@ namespace pinocchio
       active_set_indexes.reserve(max_size);
       active_idx_rows.reserve(max_size);
       active_idx_qs_reduce.reserve(max_size);
-      active_nvs.reserve(max_size);
-      active_idx_vs.reserve(max_size);
       active_compliance_storage.reserve(int(max_size));
       assert(
         constraint_model.activeSize(*this) == constraint_model.lowerActiveSize(*this)
@@ -708,8 +695,7 @@ namespace pinocchio
         && lower_active_size == other.lower_active_size
         && active_set_indexes == other.active_set_indexes
         && active_idx_rows == other.active_idx_rows
-        && active_idx_qs_reduce == other.active_idx_qs_reduce && active_nvs == other.active_nvs
-        && active_idx_vs == other.active_idx_vs
+        && active_idx_qs_reduce == other.active_idx_qs_reduce
 
         && active_compliance_storage == other.active_compliance_storage
         && active_compliance == other.active_compliance);
@@ -725,6 +711,7 @@ namespace pinocchio
       if (this != &other)
       {
         compact_tangent_map = other.compact_tangent_map;
+        rowise_tangent_map = other.rowise_tangent_map;
         activable_constraint_residual = other.activable_constraint_residual;
         constraint_residual_storage = other.constraint_residual_storage;
         constraint_residual = constraint_residual_storage.map();
@@ -733,8 +720,6 @@ namespace pinocchio
         active_set_indexes = other.active_set_indexes;
         active_idx_rows = other.active_idx_rows;
         active_idx_qs_reduce = other.active_idx_qs_reduce;
-        active_nvs = other.active_nvs;
-        active_idx_vs = other.active_idx_vs;
 
         active_compliance_storage = other.active_compliance_storage;
         active_compliance = active_compliance_storage.map();
@@ -766,10 +751,6 @@ namespace pinocchio
 
     /// @brief give for each active constraint of sparsity pattern
     EigenIndexVector active_idx_qs_reduce;
-
-    /// @brief For each dof, the associated nv and idx_v to exploit tangent map sparsity
-    EigenIndexVector active_nvs;
-    EigenIndexVector active_idx_vs;
 
     /// \brief Compliance of the active constraints
     EigenStorageVector active_compliance_storage;

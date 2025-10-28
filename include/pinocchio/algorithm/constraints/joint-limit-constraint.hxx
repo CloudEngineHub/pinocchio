@@ -181,7 +181,7 @@ namespace pinocchio
       position_margin[bound_row_id] = margin[activable_idx_q];
     }
 
-    // Get nvs and idx_vs of all actibale joints to compute nv_max_atom
+    // Get nvs and idx_vs of all activable joints to compute nv_max_atom
     // and activable_nvs, activable_idx_vs
     std::vector<int> reduce_nvs, reduce_idx_vs;
     reduce_nvs.reserve(size_t(nq_reduce));
@@ -195,18 +195,6 @@ namespace pinocchio
     auto nv_max_atom_iter = std::max_element(reduce_nvs.begin(), reduce_nvs.end());
     nv_max_atom = nv_max_atom_iter != reduce_nvs.end() ? *nv_max_atom_iter : 1;
     assert(nv_max_atom <= MAX_JOINT_NV);
-
-    std::size_t r_size = static_cast<std::size_t>(size());
-    activable_nvs.reserve(r_size);
-    activable_idx_vs.reserve(r_size);
-    for (const auto activable_idx_q_reduce : activable_idx_qs_reduce)
-    {
-      std::size_t idx_query = static_cast<std::size_t>(activable_idx_q_reduce);
-      activable_nvs.push_back(reduce_nvs[idx_query]);
-      activable_idx_vs.push_back(reduce_idx_vs[idx_query]);
-    }
-    assert(r_size == activable_nvs.size());
-    assert(r_size == activable_idx_vs.size());
 
     m_compliance = ComplianceVectorType::Zero(size());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
@@ -227,16 +215,12 @@ namespace pinocchio
     auto & active_set_indexes = cdata.active_set_indexes;
     auto & active_idx_rows = cdata.active_idx_rows;
     auto & active_idx_qs_reduce = cdata.active_idx_qs_reduce;
-    auto & active_nvs = cdata.active_nvs;
-    auto & active_idx_vs = cdata.active_idx_vs;
     auto & lower_active_size = cdata.lower_active_size;
 
     // Reset values
     active_set_indexes.clear();
     active_idx_rows.clear();
     active_idx_qs_reduce.clear();
-    active_nvs.clear();
-    active_idx_vs.clear();
     lower_active_size = 0;
 
     // Fill the constraint residual for all activable constraints and detect the active ones.
@@ -262,8 +246,6 @@ namespace pinocchio
         active_set_indexes.push_back(i);
         active_idx_rows.push_back(activable_idx_rows[i]);
         active_idx_qs_reduce.push_back(activable_idx_qs_reduce[i]);
-        active_nvs.push_back(activable_nvs[i]);
-        active_idx_vs.push_back(activable_idx_vs[i]);
         lower_active_size += 1;
       }
     }
@@ -280,8 +262,6 @@ namespace pinocchio
         active_set_indexes.push_back(i);
         active_idx_rows.push_back(activable_idx_rows[i]);
         active_idx_qs_reduce.push_back(activable_idx_qs_reduce[i]);
-        active_nvs.push_back(activable_nvs[i]);
-        active_idx_vs.push_back(activable_idx_vs[i]);
       }
     }
 
@@ -356,8 +336,13 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
     {
-      const auto constraint_size = cdata.active_nvs[constraint_id];
-      jacobian_matrix.row(row_id).segment(cdata.active_idx_vs[constraint_id], constraint_size) =
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+
+      jacobian_matrix.row(row_id).segment(idx_vs, constraint_size) =
         -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
     }
   }
@@ -392,10 +377,15 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
     {
-      const auto constraint_size = cdata.active_nvs[constraint_id];
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+
       const auto lazy_product_expression =
         -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size)
-        * mat.middleRows(cdata.active_idx_vs[constraint_id], constraint_size);
+        * mat.middleRows(idx_vs, constraint_size);
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(row_id).noalias() -= lazy_product_expression;
       else
@@ -433,16 +423,19 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
     {
-      const auto constraint_size = cdata.active_nvs[constraint_id];
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+
       const auto lazy_product_expression =
         -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size).transpose()
         * mat.row(row_id);
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
-        res.middleRows(cdata.active_idx_vs[constraint_id], constraint_size).noalias() -=
-          lazy_product_expression;
+        res.middleRows(idx_vs, constraint_size).noalias() -= lazy_product_expression;
       else
-        res.middleRows(cdata.active_idx_vs[constraint_id], constraint_size).noalias() +=
-          lazy_product_expression;
+        res.middleRows(idx_vs, constraint_size).noalias() += lazy_product_expression;
     }
   }
 
@@ -469,15 +462,16 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
     {
-      const Eigen::Index constraint_size = cdata.active_nvs[constraint_id];
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+
       const auto & constraint_damping_value =
         diagonal_constraint_inertia[Eigen::DenseIndex(constraint_id)];
       const auto constraint_jacobian =
         -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
 
-      const JointIndex joint_id =
-        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
-                                                                // constraint
       assert(
         joint_id > 0 && joint_id < JointIndex(model.njoints) && "joint_id value is incorrect.");
 
@@ -513,11 +507,16 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
     {
-      const Eigen::Index constraint_size = cdata.active_nvs[constraint_id];
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+
       const auto constraint_jacobian =
         -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
 
-      joint_torques.middleRows(cdata.active_idx_vs[constraint_id], constraint_size).noalias() +=
+      joint_torques.middleRows(idx_vs, constraint_size).noalias() +=
         constraint_jacobian.transpose() * constraint_forces.row(Eigen::DenseIndex(constraint_id));
     }
   }
@@ -545,13 +544,17 @@ namespace pinocchio
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
     {
-      const Eigen::Index constraint_size = cdata.active_nvs[constraint_id];
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+
       const auto constraint_jacobian =
         -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
 
       constraint_motions.row(Eigen::DenseIndex(constraint_id)).noalias() +=
-        constraint_jacobian
-        * joint_motions.middleRows(cdata.active_idx_vs[constraint_id], constraint_size);
+        constraint_jacobian * joint_motions.middleRows(idx_vs, constraint_size);
     }
   }
 } // namespace pinocchio

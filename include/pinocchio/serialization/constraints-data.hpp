@@ -38,8 +38,6 @@ namespace boost
         using Base::active_compliance_storage;
         using Base::active_idx_qs_reduce;
         using Base::active_idx_rows;
-        using Base::active_idx_vs;
-        using Base::active_nvs;
         using Base::active_set_indexes;
         using Base::lower_active_size;
       };
@@ -71,8 +69,6 @@ namespace boost
       ar & make_nvp("active_set_indexes", cdata_.active_set_indexes);
       ar & make_nvp("active_idx_rows", cdata_.active_idx_rows);
       ar & make_nvp("active_idx_qs_reduce", cdata_.active_idx_qs_reduce);
-      ar & make_nvp("active_nvs", cdata_.active_nvs);
-      ar & make_nvp("active_idx_vs", cdata_.active_idx_vs);
       ar & make_nvp("active_compliance_storage", cdata_.active_compliance_storage);
 
       if (Archive::is_loading::value)
