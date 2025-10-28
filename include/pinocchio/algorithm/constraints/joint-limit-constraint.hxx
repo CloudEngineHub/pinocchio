@@ -337,9 +337,8 @@ namespace pinocchio
 
     const CompactTangentMap & CTM = cdata.compact_tangent_map;
     jacobian_matrix.setZero();
-    Eigen::DenseIndex row_id = 0;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
-         ++constraint_id, ++row_id)
+         ++constraint_id)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -347,7 +346,7 @@ namespace pinocchio
       const Eigen::Index constraint_size = joint_nvs[joint_id];
       const Eigen::Index idx_vs = joint_idx_vs[joint_id];
 
-      jacobian_matrix.row(row_id).segment(idx_vs, constraint_size) =
+      jacobian_matrix.row(Eigen::DenseIndex(constraint_id)).segment(idx_vs, constraint_size) =
         -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
     }
   }
