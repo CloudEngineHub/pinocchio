@@ -313,7 +313,7 @@ namespace pinocchio
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
                                                                 // constraint
       const Eigen::Index constraint_size = joint_nvs[joint_id];
-      rowise_tangent_map[cdata.active_idx_qs_reduce[constraint_id]] =
+      rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])] =
         compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
     }
   }
@@ -335,7 +335,7 @@ namespace pinocchio
       jacobian_matrix.cols(), model.nv,
       "The input/output Jacobian matrix does not have the right number of cols.");
 
-    const CompactTangentMap & CTM = cdata.compact_tangent_map;
+    const auto & rowise_tangent_map = cdata.rowise_tangent_map;
     jacobian_matrix.setZero();
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
@@ -347,7 +347,7 @@ namespace pinocchio
       const Eigen::Index idx_vs = joint_idx_vs[joint_id];
 
       jacobian_matrix.row(Eigen::DenseIndex(constraint_id)).segment(idx_vs, constraint_size) =
-        -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
+        -rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])];
     }
   }
 
@@ -376,7 +376,7 @@ namespace pinocchio
     if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
-    const CompactTangentMap & CTM = cdata.compact_tangent_map;
+    const auto & rowise_tangent_map = cdata.rowise_tangent_map;
     Eigen::DenseIndex row_id = 0;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
@@ -388,7 +388,7 @@ namespace pinocchio
       const Eigen::Index idx_vs = joint_idx_vs[joint_id];
 
       const auto lazy_product_expression =
-        -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size)
+        -rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])]
         * mat.middleRows(idx_vs, constraint_size);
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(row_id).noalias() -= lazy_product_expression;
@@ -422,7 +422,7 @@ namespace pinocchio
     if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
-    const CompactTangentMap & CTM = cdata.compact_tangent_map;
+    const auto & rowise_tangent_map = cdata.rowise_tangent_map;
     Eigen::DenseIndex row_id = 0;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id, ++row_id)
@@ -434,7 +434,7 @@ namespace pinocchio
       const Eigen::Index idx_vs = joint_idx_vs[joint_id];
 
       const auto lazy_product_expression =
-        -CTM.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size).transpose()
+        -rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])].transpose()
         * mat.row(row_id);
       if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.middleRows(idx_vs, constraint_size).noalias() -= lazy_product_expression;
@@ -462,7 +462,7 @@ namespace pinocchio
       diagonal_constraint_inertia.size(), activeSize(cdata),
       "The diagonal_constraint_inertia is of wrong size.");
 
-    const auto & compact_tangent_map = cdata.compact_tangent_map;
+    const auto & rowise_tangent_map = cdata.rowise_tangent_map;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
     {
@@ -474,7 +474,7 @@ namespace pinocchio
       const auto & constraint_damping_value =
         diagonal_constraint_inertia[Eigen::DenseIndex(constraint_id)];
       const auto constraint_jacobian =
-        -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
+        -rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])];
 
       assert(
         joint_id > 0 && joint_id < JointIndex(model.njoints) && "joint_id value is incorrect.");
@@ -507,7 +507,7 @@ namespace pinocchio
 
     auto & joint_torques = joint_torques_.const_cast_derived();
 
-    const auto & compact_tangent_map = cdata.compact_tangent_map;
+    const auto & rowise_tangent_map = cdata.rowise_tangent_map;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
     {
@@ -518,7 +518,7 @@ namespace pinocchio
       const Eigen::Index idx_vs = joint_idx_vs[joint_id];
 
       const auto constraint_jacobian =
-        -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
+        -rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])];
 
       joint_torques.middleRows(idx_vs, constraint_size).noalias() +=
         constraint_jacobian.transpose() * constraint_forces.row(Eigen::DenseIndex(constraint_id));
@@ -544,7 +544,7 @@ namespace pinocchio
     auto & constraint_motions = constraint_motions_.const_cast_derived();
     constraint_motions.setZero();
 
-    const auto & compact_tangent_map = cdata.compact_tangent_map;
+    const auto & rowise_tangent_map = cdata.rowise_tangent_map;
     for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
          ++constraint_id)
     {
@@ -555,7 +555,7 @@ namespace pinocchio
       const Eigen::Index idx_vs = joint_idx_vs[joint_id];
 
       const auto constraint_jacobian =
-        -compact_tangent_map.row(cdata.active_idx_qs_reduce[constraint_id]).head(constraint_size);
+        -rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])];
 
       constraint_motions.row(Eigen::DenseIndex(constraint_id)).noalias() +=
         constraint_jacobian * joint_motions.middleRows(idx_vs, constraint_size);
