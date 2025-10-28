@@ -5,8 +5,6 @@
 #ifndef __pinocchio_algorithm_constraints_joint_limit_constraint_hxx__
 #define __pinocchio_algorithm_constraints_joint_limit_constraint_hxx__
 
-#include "pinocchio/multibody/joint/joint-basic-visitors.hpp"
-
 namespace pinocchio
 {
 
@@ -181,20 +179,12 @@ namespace pinocchio
       position_margin[bound_row_id] = margin[activable_idx_q];
     }
 
-    // Get nvs and idx_vs of all activable joints to compute nv_max_atom
-    // and activable_nvs, activable_idx_vs
-    std::vector<int> reduce_nvs, reduce_idx_vs;
-    reduce_nvs.reserve(size_t(nq_reduce));
-    reduce_idx_vs.reserve(size_t(nq_reduce));
-
-    // Compute nv_max_atom, the maximal nv values for all activable joints
-    pinocchio::getTangentToConfigurationSparsitySegment(
-      model, activable_joints, reduce_nvs, reduce_idx_vs);
-    assert(size_t(nq_reduce) == reduce_nvs.size());
-    assert(size_t(nq_reduce) == reduce_idx_vs.size());
-    auto nv_max_atom_iter = std::max_element(reduce_nvs.begin(), reduce_nvs.end());
-    nv_max_atom = nv_max_atom_iter != reduce_nvs.end() ? *nv_max_atom_iter : 1;
-    assert(nv_max_atom <= MAX_JOINT_NV);
+    nv_max_atom = 1;
+    for (const auto joint_id : activable_joints)
+    {
+      const auto joint_nv = joint_nvs[joint_id];
+      nv_max_atom = std::max(nv_max_atom, joint_nv);
+    }
 
     m_compliance = ComplianceVectorType::Zero(size());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
