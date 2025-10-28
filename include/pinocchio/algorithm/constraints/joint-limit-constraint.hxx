@@ -75,7 +75,7 @@ namespace pinocchio
       const int nv = jmodel.nv();
       const auto & has_configuration_limit = jmodel.hasConfigurationLimit();
 
-      bool is_joint_really_active = false;
+      bool is_joint_really_active = false; // if at least one of its bound values is finite
       for (int j_qi = 0; j_qi < nq; ++j_qi)
       {
         if (!has_configuration_limit[size_t(j_qi)])
@@ -87,18 +87,18 @@ namespace pinocchio
         if (!(lb[q_index] == -std::numeric_limits<Scalar>::max()
               || lb[q_index] == -std::numeric_limits<Scalar>::infinity()))
         {
+          is_joint_really_active = true;
           activable_idx_rows_lower.push_back(idx_row);
           activable_idx_qs_lower.push_back(q_index);
           activable_idx_qs_reduce_lower.push_back(q_reduce_index);
-          is_joint_really_active = true;
         }
         if (!(ub[q_index] == +std::numeric_limits<Scalar>::max()
               || ub[q_index] == +std::numeric_limits<Scalar>::infinity()))
         {
+          is_joint_really_active = true;
           activable_idx_rows_upper.push_back(idx_row);
           activable_idx_qs_upper.push_back(q_index);
           activable_idx_qs_reduce_upper.push_back(q_reduce_index);
-          is_joint_really_active = true;
         }
       }
 
