@@ -107,21 +107,6 @@ namespace pinocchio
           "Q index in thre reduce configuration (about activable joints) of each active limit "
           "constraint.")
         .def(
-          "getActivableNvs", &Self::getActivableNvs,
-          bp::return_value_policy<bp::copy_const_reference>(),
-          "Nv of the atomic joint for which each activable position limit contribute to.")
-        .def(
-          "getActiveNvs", &Self::getActiveNvs, bp::return_value_policy<bp::copy_const_reference>(),
-          "Nv of the atomic joint for which each active position limit contribute to.")
-        .def(
-          "getActivableIdxVs", &Self::getActivableIdxVs,
-          bp::return_value_policy<bp::copy_const_reference>(),
-          "V index of the atomic joint for which each activable position limit contribute to.")
-        .def(
-          "getActiveIdxVs", &Self::getActiveIdxVs,
-          bp::return_value_policy<bp::copy_const_reference>(),
-          "V index of the atomic joint for which each active position limit contribute to.")
-        .def(
           "getActiveSetIndexes", &Self::getActiveSetIndexes,
           bp::return_value_policy<bp::copy_const_reference>(),
           "Indexes of the active constraints set.");
