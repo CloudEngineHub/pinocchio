@@ -16,6 +16,7 @@ typedef MatrixXs::Scalar Scalar;
 typedef MatrixStackTpl<MatrixXs, ALIGNMENT_VALUE> MatrixXsStack;
 typedef MatrixStackTpl<PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs), ALIGNMENT_VALUE>
   RowMatrixXsStack;
+
 // typedef EigenStorageTpl<Eigen::VectorXd> EigenStorageVector;
 
 bool is_aligned(const void * ptr, const std::size_t alignment)
@@ -191,6 +192,62 @@ BOOST_AUTO_TEST_CASE(matrix_stack_apply)
 
   matrix_stack.apply([](MapType v) { v.fill(10.); });
   as_const(matrix_stack).apply([](const MapType v) { BOOST_CHECK(v.isConstant(10., 0)); });
+}
+
+BOOST_AUTO_TEST_CASE(matrix_stack_no_malloc)
+{
+  constexpr auto matrix_size = 16;
+  const size_t stack_size = 100;
+  MatrixXsStack matrix_stack(stack_size, matrix_size);
+
+  const void * init_data_ptr = matrix_stack.data();
+  BOOST_CHECK(init_data_ptr != nullptr);
+  BOOST_CHECK(matrix_stack.size() == 0);
+  BOOST_CHECK(matrix_stack.capacity() == stack_size);
+
+  for (size_t k = 0; k < stack_size; ++k)
+  {
+    matrix_stack.push_back(6, 6);
+    BOOST_CHECK(matrix_stack.data() == init_data_ptr);
+    matrix_stack.back().setConstant(float(k));
+  }
+  BOOST_CHECK(matrix_stack.size() == stack_size);
+
+  for (size_t k = 0; k < stack_size; ++k)
+  {
+    BOOST_CHECK(matrix_stack[k].isConstant(float(k), float(0)));
+  }
+
+  matrix_stack.push_back(6, 6);
+  matrix_stack.back().setConstant(float(stack_size));
+
+  BOOST_CHECK(matrix_stack.size() == stack_size + 1);
+  BOOST_CHECK(matrix_stack.capacity() >= stack_size + 1);
+  BOOST_CHECK(matrix_stack.data() == init_data_ptr);
+
+  for (size_t k = 0; k < stack_size + 1; ++k)
+  {
+    BOOST_CHECK(matrix_stack[k].isConstant(float(k), float(0)));
+  }
+
+  auto current_stack_size = matrix_stack.size();
+  while (true)
+  {
+    matrix_stack.push_back(6, 6);
+    matrix_stack.back().setConstant(float(current_stack_size));
+    current_stack_size += 1;
+
+    if (matrix_stack.data() != init_data_ptr)
+      break;
+  }
+
+  BOOST_CHECK(
+    matrix_stack.data() != init_data_ptr); // After some push_back, we have a new allocation
+  for (size_t k = 0; k < matrix_stack.size(); ++k)
+  {
+    const auto matrix = matrix_stack[k];
+    BOOST_CHECK(matrix.isConstant(float(k), float(0)));
+  }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
