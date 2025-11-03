@@ -619,7 +619,7 @@ namespace pinocchio
     typedef std::pair<JointIndex, JointIndex> JointIndexPair;
 
     /// \brief Stores the cross-coupling between links in CL-CABA
-    container::DoubleEntryContainer<Matrix6, Eigen::aligned_allocator<Matrix6>>
+    container::DoubleEntryContainer<std::vector<Matrix6, Eigen::aligned_allocator<Matrix6>>>
       joint_cross_coupling;
 
     /// \brief Stores the elimination ordering of CL-CABA

@@ -15,23 +15,23 @@ namespace boost
 
     namespace internal
     {
-      template<typename T, class Allocator>
+      template<typename StdVectorLike>
       struct DoubleEntryContainerAccessor
-      : public ::pinocchio::container::DoubleEntryContainer<T, Allocator>
+      : public ::pinocchio::container::DoubleEntryContainer<StdVectorLike>
       {
-        typedef ::pinocchio::container::DoubleEntryContainer<T, Allocator> Base;
+        typedef ::pinocchio::container::DoubleEntryContainer<StdVectorLike> Base;
         using Base::m_keys;
         using Base::m_values;
       };
     } // namespace internal
 
-    template<typename Archive, typename T, class Allocator>
+    template<typename Archive, typename StdVectorLike>
     void serialize(
       Archive & ar,
-      ::pinocchio::container::DoubleEntryContainer<T, Allocator> & container,
+      ::pinocchio::container::DoubleEntryContainer<StdVectorLike> & container,
       const unsigned int /*version*/)
     {
-      typedef internal::DoubleEntryContainerAccessor<T, Allocator> Accessor;
+      typedef internal::DoubleEntryContainerAccessor<StdVectorLike> Accessor;
       Accessor & container_ = static_cast<Accessor &>(container);
       ar & make_nvp("m_keys", container_.m_keys);
       ar & make_nvp("m_values", container_.m_values);

@@ -6,6 +6,7 @@
 #define __pinocchio_container_double_entry_container_hpp__
 
 #include "pinocchio/fwd.hpp"
+
 #include <vector>
 #include <functional>
 
@@ -13,16 +14,18 @@ namespace pinocchio
 {
   namespace container
   {
-    template<typename T, class Allocator = std::allocator<T>>
+    template<typename Vector>
     struct DoubleEntryContainer;
 
-    template<typename T, class Allocator>
+    template<typename _Vector>
     struct DoubleEntryContainer
     {
-      typedef Eigen::Array<long, Eigen::Dynamic, Eigen::Dynamic> Array;
-      typedef std::vector<T, Allocator> Vector;
       typedef Eigen::Index Index;
+      typedef Eigen::Array<long, Eigen::Dynamic, Eigen::Dynamic> Array;
       typedef std::pair<Index, Index> IndexPair;
+      typedef _Vector Vector;
+
+      typedef typename Vector::value_type T;
       typedef typename Vector::iterator iterator;
       typedef typename Vector::const_iterator const_iterator;
 
