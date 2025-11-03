@@ -176,6 +176,18 @@ BOOST_AUTO_TEST_CASE(matrix_stack_clear)
   BOOST_CHECK(matrix_stack_copy == matrix_stack);
 }
 
+BOOST_AUTO_TEST_CASE(matrix_stack_erase)
+{
+  MatrixXsStack matrix_stack(100);
+  matrix_stack.push_back(1, 1);
+  matrix_stack.push_back(1, 1);
+  matrix_stack.push_back(1, 1);
+  BOOST_CHECK(matrix_stack.size() == 3);
+
+  matrix_stack.erase(matrix_stack.begin());
+  BOOST_CHECK(matrix_stack.size() == 2);
+}
+
 BOOST_AUTO_TEST_CASE(matrix_stack_apply)
 {
   MatrixXsStack matrix_stack(100);
