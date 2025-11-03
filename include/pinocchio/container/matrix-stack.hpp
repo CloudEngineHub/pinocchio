@@ -10,7 +10,6 @@
 
 namespace pinocchio
 {
-
   template<typename MatrixLike, std::size_t Alignment = alignof(std::max_align_t)>
   struct MatrixStackTpl;
 
@@ -37,6 +36,8 @@ namespace pinocchio
     {
       Alignment = _Alignment
     };
+
+    typedef MatrixLike value_type;
 
     typedef Eigen::Map<PlainMatrixType, Alignment> MapType;
     typedef MapType & RefMapType;
@@ -164,6 +165,13 @@ namespace pinocchio
     bool operator!=(const MatrixStackTpl & other) const
     {
       return !(*this == other);
+    }
+
+    template<typename Matrix>
+    void push_back(const Eigen::MatrixBase<Matrix> & matrix)
+    {
+      this->push_back(matrix.rows(), matrix.cols());
+      this->back() = matrix;
     }
 
     void push_back(const Index rows, const Index cols)
