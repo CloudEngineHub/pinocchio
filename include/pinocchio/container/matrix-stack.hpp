@@ -294,6 +294,20 @@ namespace pinocchio
       return m_data_ptr;
     }
 
+    /// \brief Erases the specified elements from the container.
+    /// \remarks The data associated with the pos element is not reused after erasing.
+    iterator erase(iterator pos)
+    {
+      return m_matrix_maps.erase(pos);
+    }
+
+    /// \brief Erases the specified elements from the container.
+    /// \remarks The data associated with the pos element is not reused after erasing.
+    iterator erase(const_iterator pos)
+    {
+      return m_matrix_maps.erase(pos);
+    }
+
     void clear()
     {
       m_offsets.clear();
