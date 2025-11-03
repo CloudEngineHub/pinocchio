@@ -261,6 +261,12 @@ namespace pinocchio
       return m_matrix_maps.empty();
     }
 
+    /// \brief Increase the capacity of the vector of matrix maps.
+    void reserve(size_t new_cap)
+    {
+      m_matrix_maps.reserve(new_cap);
+    }
+
     std::size_t capacity() const
     {
       return m_matrix_maps.capacity();
