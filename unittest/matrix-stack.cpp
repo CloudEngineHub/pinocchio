@@ -214,12 +214,14 @@ BOOST_AUTO_TEST_CASE(matrix_stack_no_malloc)
 
   const void * init_data_ptr = matrix_stack.data();
   BOOST_CHECK(init_data_ptr != nullptr);
+  BOOST_CHECK(is_aligned(init_data_ptr, MatrixXsStack::Alignment));
   BOOST_CHECK(matrix_stack.size() == 0);
   BOOST_CHECK(matrix_stack.capacity() == stack_size);
 
   for (size_t k = 0; k < stack_size; ++k)
   {
     matrix_stack.push_back(6, 6);
+    BOOST_CHECK(is_aligned(matrix_stack.data(), MatrixXsStack::Alignment));
     BOOST_CHECK(matrix_stack.data() == init_data_ptr);
     matrix_stack.back().setConstant(float(k));
     if (matrix_stack.data() != init_data_ptr)
