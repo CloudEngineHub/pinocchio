@@ -200,7 +200,9 @@ namespace pinocchio
 
           if (!data.joint_cross_coupling.exist(jp_pair))
           {
-            data.joint_cross_coupling[jp_pair] = Matrix6::Zero(); // add joint_cross_coupling
+            data.joint_cross_coupling.insert(
+              jp_pair, Matrix6::Zero()); // add edge (neighbour_j, parent_id) if neighbour_j <
+                                         // parent_id else (parent_id, neighbour_j)
 
             if (
               std::find(parent_neighbours.begin(), parent_neighbours.end(), neighbour_j)
