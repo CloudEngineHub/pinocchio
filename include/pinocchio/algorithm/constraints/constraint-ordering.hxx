@@ -222,13 +222,14 @@ namespace pinocchio
           const JointIndex neighbour_k = joint_neighbours[k];
           auto & neighbour_k_neighbours = neighbours[neighbour_k];
           assert(neighbour_k != neighbour_j && "Must never happen!");
-          const JointPair cross_coupling = neighbour_j < neighbour_k
-                                             ? JointPair{neighbour_j, neighbour_k}
-                                             : JointPair{neighbour_k, neighbour_j};
+          const JointPair cross_coupling_key = neighbour_j < neighbour_k
+                                                 ? JointPair{neighbour_j, neighbour_k}
+                                                 : JointPair{neighbour_k, neighbour_j};
 
-          if (!data.joint_cross_coupling.exist(cross_coupling))
+          if (!data.joint_cross_coupling.exist(cross_coupling_key))
           {
-            data.joint_cross_coupling[cross_coupling] = Matrix6::Zero(); // add edge
+            data.joint_cross_coupling.insert(cross_coupling_key, Matrix6::Zero()); // add edge
+
             neighbour_j_neighbours.push_back(neighbour_k);
             neighbour_k_neighbours.push_back(neighbour_j);
           }
