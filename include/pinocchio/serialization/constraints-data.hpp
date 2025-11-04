@@ -54,7 +54,6 @@ namespace boost
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
 
       // Public members
-      ar & make_nvp("compact_tangent_map", cdata.compact_tangent_map);
       ar & make_nvp("rowise_tangent_map", cdata.rowise_tangent_map);
       ar & make_nvp("activable_constraint_residual", cdata.activable_constraint_residual);
       ar & make_nvp("constraint_residual_storage", cdata.constraint_residual_storage);

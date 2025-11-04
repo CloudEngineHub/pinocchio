@@ -708,8 +708,7 @@ namespace pinocchio
       if (this == &other)
         return true;
       return (
-        compact_tangent_map == other.compact_tangent_map
-        && rowise_tangent_map == other.rowise_tangent_map
+        rowise_tangent_map == other.rowise_tangent_map
         && activable_constraint_residual == other.activable_constraint_residual
         && constraint_residual_storage == other.constraint_residual_storage
         && constraint_residual == other.constraint_residual
@@ -732,7 +731,6 @@ namespace pinocchio
     {
       if (this != &other)
       {
-        compact_tangent_map = other.compact_tangent_map;
         rowise_tangent_map = other.rowise_tangent_map;
         activable_constraint_residual = other.activable_constraint_residual;
         constraint_residual_storage = other.constraint_residual_storage;

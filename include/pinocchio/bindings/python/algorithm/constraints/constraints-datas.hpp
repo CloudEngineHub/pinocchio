@@ -63,7 +63,7 @@ namespace pinocchio
       return cl
         .def(bp::init<const typename Self::ConstraintModel &>(
           bp::args("self", "constraint_model"), "From model constructor."))
-        .PINOCCHIO_ADD_PROPERTY(Self, compact_tangent_map, "Compact tangent map.")
+        .PINOCCHIO_ADD_PROPERTY(Self, rowise_tangent_map, "Rowise tangent map.")
         .PINOCCHIO_ADD_PROPERTY(
           Self, activable_constraint_residual, "Activable constraint residual.")
         .add_property(
