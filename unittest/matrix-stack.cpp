@@ -222,6 +222,11 @@ BOOST_AUTO_TEST_CASE(matrix_stack_no_malloc)
     matrix_stack.push_back(6, 6);
     BOOST_CHECK(matrix_stack.data() == init_data_ptr);
     matrix_stack.back().setConstant(float(k));
+    if (matrix_stack.data() != init_data_ptr)
+    {
+      std::cout << "matrix_stack.data(): " << matrix_stack.data() << std::endl;
+      std::cout << "init_data_ptr: " << init_data_ptr << std::endl;
+    }
   }
   BOOST_CHECK(matrix_stack.size() == stack_size);
 
