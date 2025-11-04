@@ -387,23 +387,72 @@ namespace pinocchio
     static void * malloc(std::size_t size, std::size_t alignment = Alignment)
     {
       assert(size > 0 && "size should be greater than 0.");
-      return Eigen::internal::handmade_aligned_malloc(size, alignment);
+      // return Eigen::internal::handmade_aligned_malloc(size, alignment);
+
+      eigen_assert(
+        alignment >= sizeof(void *) && alignment <= 256 && (alignment & (alignment - 1)) == 0
+        && "Alignment must be at least sizeof(void*), less than or equal to 256, and a power of 2");
+
+      Eigen::internal::check_that_malloc_is_allowed();
+      EIGEN_USING_STD(malloc)
+      void * original = malloc(size + alignment);
+      if (original == nullptr)
+        return nullptr;
+      std::size_t offset = alignment - (reinterpret_cast<std::size_t>(original) & (alignment - 1));
+      void * aligned = static_cast<void *>(static_cast<uint8_t *>(original) + offset);
+      // Store offset - 1, since it is guaranteed to be at least 1.
+      *(static_cast<uint8_t *>(aligned) - 1) = static_cast<uint8_t>(offset - 1);
+
+      return aligned;
     }
 
     static void free(void * ptr)
     {
-      Eigen::internal::handmade_aligned_free(ptr);
+      // Eigen::internal::handmade_aligned_free(ptr);
+      if (ptr != nullptr)
+      {
+        std::size_t offset = static_cast<std::size_t>(*(static_cast<uint8_t *>(ptr) - 1)) + 1;
+        void * original = static_cast<void *>(static_cast<uint8_t *>(ptr) - offset);
+
+        Eigen::internal::check_that_malloc_is_allowed();
+        EIGEN_USING_STD(free)
+        free(original);
+      }
     }
 
     static void * realloc(
       void * ptr, std::size_t new_size, std::size_t old_size, std::size_t alignment = Alignment)
     {
-#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
-      return Eigen::internal::handmade_aligned_realloc(ptr, new_size, old_size, alignment);
-#else
-      return Eigen::internal::handmade_aligned_realloc(ptr, new_size, old_size);
-      PINOCCHIO_UNUSED_VARIABLE(alignment);
-#endif
+      // #if EIGEN_VERSION_AT_LEAST(3, 4, 90)
+      //       return Eigen::internal::handmade_aligned_realloc(ptr, new_size, old_size, alignment);
+      // #else
+      //       return Eigen::internal::handmade_aligned_realloc(ptr, new_size, old_size);
+      //       PINOCCHIO_UNUSED_VARIABLE(alignment);
+      // #endif
+
+      if (ptr == nullptr)
+        return MatrixStackTpl::malloc(new_size, alignment);
+      std::size_t old_offset = static_cast<std::size_t>(*(static_cast<uint8_t *>(ptr) - 1)) + 1;
+      void * old_original = static_cast<uint8_t *>(ptr) - old_offset;
+
+      Eigen::internal::check_that_malloc_is_allowed();
+      EIGEN_USING_STD(realloc)
+      void * original = realloc(old_original, new_size + alignment);
+      if (original == nullptr)
+        return nullptr;
+      if (original == old_original)
+        return ptr;
+      std::size_t offset = alignment - (reinterpret_cast<std::size_t>(original) & (alignment - 1));
+      void * aligned = static_cast<void *>(static_cast<uint8_t *>(original) + offset);
+      if (offset != old_offset)
+      {
+        const void * src = static_cast<const void *>(static_cast<uint8_t *>(original) + old_offset);
+        std::size_t count = (std::min)(new_size, old_size);
+        std::memmove(aligned, src, count);
+      }
+      // Store offset - 1, since it is guaranteed to be at least 1.
+      *(static_cast<uint8_t *>(aligned) - 1) = static_cast<uint8_t>(offset - 1);
+      return aligned;
     }
 
     static void * incr_ptr(void * ptr, std::size_t inc_value)
