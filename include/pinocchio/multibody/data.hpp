@@ -90,9 +90,9 @@ namespace pinocchio
     ///        It also handles the notion of co-tangent vector (e.g. torque, etc).
     typedef VectorXs TangentVectorType;
 
-    /// \brief The 6d jacobian type (temporary)
+    /// \brief Colmajor matrix with fixed rows (dimension 6) and dynamic cols.
     typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> Matrix6x;
-    /// \brief The 3d jacobian type (temporary)
+    /// \brief Colmajor matrix with fixed rows (dimension 3) and dynamic cols.
     typedef Eigen::Matrix<Scalar, 3, Eigen::Dynamic, Options> Matrix3x;
 
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
