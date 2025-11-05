@@ -1,5 +1,7 @@
 //
 // Copyright (c) 2017-2020 CNRS INRIA
+// Copyright (c) 2025 INRIA
+//
 
 #ifndef __pinocchio_algorithm_rnea_second_order_derivatives_hxx__
 #define __pinocchio_algorithm_rnea_second_order_derivatives_hxx__
@@ -163,8 +165,9 @@ namespace pinocchio
       typedef typename Model::JointIndex JointIndex;
       typedef typename Motion::ActionMatrixType ActionMatrixType;
       typedef typename Data::Matrix6 Matrix6;
-      typedef typename Data::Vector6r Vector6r;
-      typedef typename Data::Vector6c Vector6c;
+
+      typedef Eigen::Matrix<Scalar, 1, 6, Eigen::RowMajor | Options> RowVector6;
+      typedef Eigen::Matrix<Scalar, 1, 6, Options> Vector6;
 
       const JointIndex i = jmodel.id();
       const JointIndex parent = model.parents[i];
@@ -177,19 +180,19 @@ namespace pinocchio
       Tensor3 & dtau_dqdv_ = const_cast<Tensor3 &>(dtau_dqdv);
       Tensor4 & dtau_dadq_ = const_cast<Tensor4 &>(dtau_dadq);
 
-      Vector6r u1;
-      Vector6r u2;
-      Vector6c u3;
-      Vector6c u4;
-      Vector6c u5;
-      Vector6c u6;
-      Vector6c u7;
-      Vector6c u8;
-      Vector6c u9;
-      Vector6c u10;
-      Vector6r u11;
-      Vector6r u12;
-      Vector6c u13;
+      RowVector6 u1;
+      RowVector6 u2;
+      Vector6 u3;
+      Vector6 u4;
+      Vector6 u5;
+      Vector6 u6;
+      Vector6 u7;
+      Vector6 u8;
+      Vector6 u9;
+      Vector6 u10;
+      RowVector6 u11;
+      RowVector6 u12;
+      Vector6 u13;
 
       Matrix6 Bicphii;
       Matrix6 oBicpsidot;
