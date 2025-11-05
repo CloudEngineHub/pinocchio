@@ -355,7 +355,7 @@ namespace pinocchio
                            : data.joint_cross_coupling.get(JointPair(i, vertex_j));
 
           const auto & oaj = custom_data.oa_augmented[vertex_j];
-          coupling_forces.toVector().noalias() += crosscoupling_ij * oa_aug_j.toVector();
+          coupling_forces.toVector().noalias() += crosscoupling_ij * oaj.toVector();
         }
 
         jmodel.jointVelocitySelector(custom_data.u).noalias() -=
