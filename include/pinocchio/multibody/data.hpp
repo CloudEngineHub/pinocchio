@@ -82,9 +82,6 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
 
-    typedef Vector6 Vector6c;
-    typedef Eigen::Matrix<Scalar, 1, 6, Eigen::RowMajor | Options> Vector6r;
-
     /// \brief Dense vectorized version of a joint configuration vector.
     typedef VectorXs ConfigVectorType;
 
