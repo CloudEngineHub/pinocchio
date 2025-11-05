@@ -174,7 +174,8 @@ namespace pinocchio
       this->back() = matrix;
     }
 
-    void push_back(const Index rows, const Index cols)
+    void
+    push_back(const Index rows, const Index cols, const std::function<void(MapType)> init_func = {})
     {
       void * next_data_ptr =
         m_matrix_maps.size() == 0
@@ -245,6 +246,8 @@ namespace pinocchio
 
       MapType aligned_map = MapType(reinterpret_cast<Scalar *>(aligned_data), rows, cols);
       m_matrix_maps.push_back(aligned_map);
+      if (init_func)
+        init_func(m_matrix_maps.back());
 
       m_offsets.push_back(
         reinterpret_cast<std::size_t>(aligned_data) - reinterpret_cast<std::size_t>(m_data_ptr));
