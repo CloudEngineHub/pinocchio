@@ -290,17 +290,17 @@ namespace pinocchio
         MapVectorNV res = MapVectorNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, jmodel.nv(), 1));
         res.noalias() = (jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u));
 
-        const Vector6 a_tmp = Jcols * res;
+        const Vector6 Ji_res = Jcols * res;
 
-        for (JointIndex vertex_j : neighbours[i])
+        for (JointIndex vertex_j : joint_neighbours)
         {
-          const Matrix6 & crosscoupling_ij =
+          const Matrix6 & crosscoupling_ji =
             (i > vertex_j) ? joint_cross_coupling.get(JointPair(vertex_j, i))
                            : joint_cross_coupling.get(JointPair(i, vertex_j)).transpose();
 
           Force & ofj = custom_data.of_augmented[vertex_j];
           // Compare to ABA, the sign of ofj is reversed
-          ofj.toVector().noalias() -= crosscoupling_ij * a_tmp;
+          ofj.toVector().noalias() -= crosscoupling_ji * Ji_res;
         }
       }
 
@@ -354,8 +354,8 @@ namespace pinocchio
             (i > vertex_j) ? data.joint_cross_coupling.get(JointPair(vertex_j, i)).transpose()
                            : data.joint_cross_coupling.get(JointPair(i, vertex_j));
 
-          coupling_forces.toVector().noalias() +=
-            crosscoupling_ij * custom_data.oa_augmented[vertex_j].toVector();
+          const auto & oaj = custom_data.oa_augmented[vertex_j];
+          coupling_forces.toVector().noalias() += crosscoupling_ij * oa_aug_j.toVector();
         }
 
         jmodel.jointVelocitySelector(custom_data.u).noalias() -=
