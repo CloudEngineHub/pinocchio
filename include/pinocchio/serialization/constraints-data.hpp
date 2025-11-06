@@ -9,6 +9,7 @@
 #include "pinocchio/serialization/eigen.hpp"
 #include "pinocchio/serialization/se3.hpp"
 #include "pinocchio/serialization/boost-blank.hpp"
+#include "pinocchio/serialization/matrix-stack.hpp"
 
 #include <boost/serialization/variant.hpp>
 
