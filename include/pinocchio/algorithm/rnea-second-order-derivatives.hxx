@@ -166,8 +166,8 @@ namespace pinocchio
       typedef typename Motion::ActionMatrixType ActionMatrixType;
       typedef typename Data::Matrix6 Matrix6;
 
+      typedef typename Data::Vector6 Vector6;
       typedef Eigen::Matrix<Scalar, 1, 6, Eigen::RowMajor | Options> RowVector6;
-      typedef Eigen::Matrix<Scalar, 1, 6, Options> Vector6;
 
       const JointIndex i = jmodel.id();
       const JointIndex parent = model.parents[i];
