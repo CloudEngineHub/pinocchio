@@ -22,8 +22,8 @@ namespace pinocchio
 
     static bp::tuple computeInverseDynamicsConstraintForces_wrapper(
       const VectorXs & c_ref,
-      const context::FrictionalPointConstraintModelVector & contact_models,
-      const context::FrictionalPointConstraintDataVector & contact_datas,
+      const context::PointContactConstraintModelVector & contact_models,
+      const context::PointContactConstraintDataVector & contact_datas,
       const boost::optional<VectorXs> & lambda_guess,
       ProximalSettingsTpl<Scalar> & settings,
       bool solve_ncp)
@@ -47,8 +47,8 @@ namespace pinocchio
 //      ConstRefVectorXs & v,
 //      ConstRefVectorXs & a,
 //      Scalar dt,
-//      const context::FrictionalPointConstraintModelVector & contact_models,
-//      context::FrictionalPointConstraintDataVector & contact_datas,
+//      const context::PointContactConstraintModelVector & contact_models,
+//      context::PointContactConstraintDataVector & contact_datas,
 //      ConstRefVectorXs & R,
 //      ConstRefVectorXs & constraint_correction,
 //      ProximalSettingsTpl<Scalar> & settings,
@@ -67,7 +67,7 @@ namespace pinocchio
         "computeInverseDynamicsConstraintForces", computeInverseDynamicsConstraintForces_wrapper,
         (bp::args("c_ref", "contact_models", "contact_datas"),
          bp::arg("lambda_guess") = boost::none, bp::arg("settings"), bp::arg("solve_ncp") = true),
-        "Computes the inverse dynamics with frictional contacts. Returns a tuple containing "
+        "Computes the inverse dynamics with point contacts. Returns a tuple containing "
         "(has_converged, lambda_sol).\n\n"
         "Parameters:\n"
         "\tcontact_models: list of contact models\n"
@@ -81,7 +81,7 @@ namespace pinocchio
 //        "contactInverseDynamics", contactInverseDynamics_wrapper,
 //        (bp::arg("model"), "data", "q", "v", "a", "dt", "contact_models", "contact_datas", "R",
 //         "constraint_correction", bp::arg("settings"), bp::arg("lambda_guess") = boost::none),
-//        "Compute the inverse dynamics with frictional contacts, store the result in Data and "
+//        "Compute the inverse dynamics with point contacts, store the result in Data and "
 //        "return it.\n\n"
 //        "Parameters:\n"
 //        "\tmodel: model of the kinematic tree\n"

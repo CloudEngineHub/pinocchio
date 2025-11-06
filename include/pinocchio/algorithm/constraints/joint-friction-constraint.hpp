@@ -2,8 +2,8 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_frictional_joint_constraint_hpp__
-#define __pinocchio_algorithm_constraints_frictional_joint_constraint_hpp__
+#ifndef __pinocchio_algorithm_constraints_joint_friction_constraint_hpp__
+#define __pinocchio_algorithm_constraints_joint_friction_constraint_hpp__
 
 #include "pinocchio/math/fwd.hpp"
 
@@ -17,13 +17,13 @@ namespace pinocchio
 {
 
   template<typename NewScalar, typename Scalar, int Options>
-  struct CastType<NewScalar, FrictionalJointConstraintModelTpl<Scalar, Options>>
+  struct CastType<NewScalar, JointFrictionConstraintModelTpl<Scalar, Options>>
   {
-    typedef FrictionalJointConstraintModelTpl<NewScalar, Options> type;
+    typedef JointFrictionConstraintModelTpl<NewScalar, Options> type;
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<FrictionalJointConstraintModelTpl<_Scalar, _Options>>
+  struct traits<JointFrictionConstraintModelTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     enum
@@ -37,8 +37,8 @@ namespace pinocchio
     static constexpr bool has_baumgarte_corrector_vector = false;
     static constexpr bool constant_size = true;
 
-    typedef FrictionalJointConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef FrictionalJointConstraintDataTpl<Scalar, Options> ConstraintData;
+    typedef JointFrictionConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef JointFrictionConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef BoxSetTpl<Scalar, Options> ConstraintSet;
 
     typedef ConstraintModel Model;
@@ -86,15 +86,15 @@ namespace pinocchio
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<FrictionalJointConstraintDataTpl<_Scalar, _Options>>
-  : traits<FrictionalJointConstraintModelTpl<_Scalar, _Options>>
+  struct traits<JointFrictionConstraintDataTpl<_Scalar, _Options>>
+  : traits<JointFrictionConstraintModelTpl<_Scalar, _Options>>
   {
   };
 
   template<typename _Scalar, int _Options>
-  struct FrictionalJointConstraintModelTpl
-  : JointWiseConstraintModelBase<FrictionalJointConstraintModelTpl<_Scalar, _Options>>
-  , ConstraintModelCommonParameters<FrictionalJointConstraintModelTpl<_Scalar, _Options>>
+  struct JointFrictionConstraintModelTpl
+  : JointWiseConstraintModelBase<JointFrictionConstraintModelTpl<_Scalar, _Options>>
+  , ConstraintModelCommonParameters<JointFrictionConstraintModelTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     enum
@@ -102,16 +102,16 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef FrictionalJointConstraintModelTpl Self;
+    typedef JointFrictionConstraintModelTpl Self;
     typedef JointWiseConstraintModelBase<Self> Base;
     typedef ConstraintModelCommonParameters<Self> BaseCommonParameters;
-    typedef ConstraintModelBase<FrictionalJointConstraintModelTpl> RootBase;
+    typedef ConstraintModelBase<JointFrictionConstraintModelTpl> RootBase;
 
     template<typename NewScalar, int NewOptions>
-    friend struct FrictionalJointConstraintModelTpl;
+    friend struct JointFrictionConstraintModelTpl;
 
     static const ConstraintFormulationLevel constraint_formulation_level =
-      traits<FrictionalJointConstraintModelTpl>::constraint_formulation_level;
+      traits<JointFrictionConstraintModelTpl>::constraint_formulation_level;
     typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
     typedef typename traits<Self>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
@@ -119,7 +119,7 @@ namespace pinocchio
       typename traits<Self>::ActiveComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
     typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
 
-    typedef FrictionalJointConstraintDataTpl<Scalar, Options> ConstraintData;
+    typedef JointFrictionConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef BoxSetTpl<Scalar, Options> ConstraintSet;
 
     using RootBase::jacobian;
@@ -132,12 +132,12 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef VectorXs VectorConstraintSize;
 
-    FrictionalJointConstraintModelTpl()
+    JointFrictionConstraintModelTpl()
     {
     }
 
     template<template<typename, int> class JointCollectionTpl>
-    FrictionalJointConstraintModelTpl(
+    JointFrictionConstraintModelTpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const JointIndexVector & active_joints)
     : active_joints(active_joints)
@@ -147,9 +147,9 @@ namespace pinocchio
 
     /// \brief Cast operator
     template<typename NewScalar>
-    typename CastType<NewScalar, FrictionalJointConstraintModelTpl>::type cast() const
+    typename CastType<NewScalar, JointFrictionConstraintModelTpl>::type cast() const
     {
-      typedef typename CastType<NewScalar, FrictionalJointConstraintModelTpl>::type ReturnType;
+      typedef typename CastType<NewScalar, JointFrictionConstraintModelTpl>::type ReturnType;
       ReturnType res;
       Base::cast(res);
       BaseCommonParameters::template cast<NewScalar>(res);
@@ -341,12 +341,12 @@ namespace pinocchio
     ///
     ///  \brief Comparison operator
     ///
-    /// \param[in] other Other FrictionalJointConstraintModelTpl to compare with.
+    /// \param[in] other Other JointFrictionConstraintModelTpl to compare with.
     ///
     /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
     /// must be the same).
     ///
-    bool operator==(const FrictionalJointConstraintModelTpl & other) const
+    bool operator==(const JointFrictionConstraintModelTpl & other) const
     {
       if (this == &other)
         return true;
@@ -358,14 +358,14 @@ namespace pinocchio
 
     static std::string classname()
     {
-      return std::string("FrictionalJointConstraintModel");
+      return std::string("JointFrictionConstraintModel");
     }
     std::string shortname() const
     {
       return classname();
     }
 
-    bool operator!=(const FrictionalJointConstraintModelTpl & other) const
+    bool operator!=(const JointFrictionConstraintModelTpl & other) const
     {
       return !(*this == other);
     }
@@ -386,40 +386,40 @@ namespace pinocchio
   };
 
   template<typename _Scalar, int _Options>
-  struct FrictionalJointConstraintDataTpl
-  : ConstraintDataBase<FrictionalJointConstraintDataTpl<_Scalar, _Options>>
+  struct JointFrictionConstraintDataTpl
+  : ConstraintDataBase<JointFrictionConstraintDataTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     enum
     {
       Options = _Options
     };
-    typedef ConstraintDataBase<FrictionalJointConstraintDataTpl> Base;
+    typedef ConstraintDataBase<JointFrictionConstraintDataTpl> Base;
     typedef std::vector<JointIndex> JointIndexVector;
 
-    typedef FrictionalJointConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef JointFrictionConstraintModelTpl<Scalar, Options> ConstraintModel;
 
-    FrictionalJointConstraintDataTpl()
+    JointFrictionConstraintDataTpl()
     {
     }
 
-    explicit FrictionalJointConstraintDataTpl(const ConstraintModel & /*constraint_model*/)
+    explicit JointFrictionConstraintDataTpl(const ConstraintModel & /*constraint_model*/)
     {
     }
 
-    bool operator==(const FrictionalJointConstraintDataTpl & /*other*/) const
+    bool operator==(const JointFrictionConstraintDataTpl & /*other*/) const
     {
       return true;
     }
 
-    bool operator!=(const FrictionalJointConstraintDataTpl & other) const
+    bool operator!=(const JointFrictionConstraintDataTpl & other) const
     {
       return !(*this == other);
     }
 
     static std::string classname()
     {
-      return std::string("FrictionalJointConstraintData");
+      return std::string("JointFrictionConstraintData");
     }
     std::string shortname() const
     {
@@ -428,6 +428,6 @@ namespace pinocchio
   };
 } // namespace pinocchio
 
-#include "pinocchio/algorithm/constraints/joint-frictional-constraint.hxx"
+#include "pinocchio/algorithm/constraints/joint-friction-constraint.hxx"
 
-#endif // ifndef __pinocchio_algorithm_constraints_frictional_joint_constraint_hpp__
+#endif // ifndef __pinocchio_algorithm_constraints_joint_friction_constraint_hpp__

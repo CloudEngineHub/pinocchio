@@ -11,8 +11,8 @@
 
 #include <boost/test/unit_test.hpp>
 
-using BilateralPointConstraintModelVector =
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::BilateralPointConstraintModel);
+using PointAnchorConstraintModelVector =
+  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::PointAnchorConstraintModel);
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(build_model)
 
   pinocchio::Model model;
   const std::string rootLinkName = "pelvis";
-  BilateralPointConstraintModelVector constraint_models;
+  PointAnchorConstraintModelVector constraint_models;
   pinocchio::sdf::buildModel(filename, model, constraint_models, rootLinkName);
   pinocchio::GeometryModel geomModel;
   pinocchio::sdf::buildGeom(model, filename, pinocchio::COLLISION, geomModel, rootLinkName, dir);
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(build_model_with_joint)
   const std::string dir = PINOCCHIO_MODEL_DIR;
   const std::string rootLinkName = "pelvis";
   pinocchio::Model model;
-  BilateralPointConstraintModelVector constraint_models;
+  PointAnchorConstraintModelVector constraint_models;
   pinocchio::sdf::buildModel(
     filename, pinocchio::JointModelFreeFlyer(), model, constraint_models, rootLinkName);
   pinocchio::GeometryModel geomModel;
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(build_model_without_rootLink)
   const std::string dir = PINOCCHIO_MODEL_DIR;
   const std::string rootLinkName = "";
   pinocchio::Model model;
-  BilateralPointConstraintModelVector constraint_models;
+  PointAnchorConstraintModelVector constraint_models;
   pinocchio::sdf::buildModel(
     filename, pinocchio::JointModelFreeFlyer(), model, constraint_models, rootLinkName);
   pinocchio::GeometryModel geomModel;
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(build_model_with_root_joint_name)
   const std::string filename = PINOCCHIO_MODEL_DIR + std::string("/simple_humanoid.sdf");
   const std::string dir = PINOCCHIO_MODEL_DIR;
   const std::string rootLinkName = "WAIST_LINK0";
-  BilateralPointConstraintModelVector constraint_models;
+  PointAnchorConstraintModelVector constraint_models;
   pinocchio::Model model;
   pinocchio::sdf::buildModel(
     filename, pinocchio::JointModelFreeFlyer(), model, constraint_models, rootLinkName);
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(build_model_with_root_joint_name)
 
   pinocchio::Model model_name;
   const std::string name_ = "freeFlyer_joint";
-  BilateralPointConstraintModelVector constraint_models_name;
+  PointAnchorConstraintModelVector constraint_models_name;
   pinocchio::sdf::buildModel(
     filename, pinocchio::JointModelFreeFlyer(), name_, model_name, constraint_models_name,
     rootLinkName);
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(compare_model_with_urdf)
 
   pinocchio::Model model_sdf;
   const std::string rootLinkName = "WAIST_LINK0";
-  BilateralPointConstraintModelVector constraint_models;
+  PointAnchorConstraintModelVector constraint_models;
   pinocchio::sdf::buildModel(
     filename, pinocchio::JointModelFreeFlyer(), model_sdf, constraint_models, rootLinkName);
   pinocchio::GeometryModel geomModel;
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE(compare_model_in_version_1_6)
   model.appendBodyToJoint(joint4_id, inertia_link_A_2, placement_center_link_A_minus);
 
   pinocchio::Model model_sdf;
-  BilateralPointConstraintModelVector constraint_models;
+  PointAnchorConstraintModelVector constraint_models;
   pinocchio::sdf::buildModelFromXML(filestr, model_sdf, constraint_models);
 
   BOOST_CHECK(model.nq == model_sdf.nq);

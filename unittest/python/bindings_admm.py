@@ -52,8 +52,8 @@ class TestADMM(TestCase):
         for typed_constraint_models in constraint_models_dict.values():
             for cm in typed_constraint_models:
                 constraint_models.append(pin.ConstraintModel(cm))
-        # Adding only bilateral constraints to the list of constraints
-        # for bpcm in constraint_models_dict['bilateral_point_constraint_models']:
+        # Adding only point anchor constraints to the list of constraints
+        # for bpcm in constraint_models_dict['point_anchor_constraint_models']:
         #     constraint_models.append(pin.ConstraintModel(bpcm))
 
         # adding joint limit constraints
@@ -63,7 +63,7 @@ class TestADMM(TestCase):
 
         # adding friction on joints
         active_joints_friction = [i for i in range(1, model.njoints)]
-        fjcm = pin.FrictionalJointConstraintModel(model, active_joints_friction)
+        fjcm = pin.JointFrictionConstraintModel(model, active_joints_friction)
         fjcm.set = pin.BoxSet(model.lowerDryFrictionLimit, model.upperDryFrictionLimit)
         constraint_models.append(pin.ConstraintModel(fjcm))
 
@@ -75,7 +75,7 @@ class TestADMM(TestCase):
         self.addFloor(geom_model, visual_model)
         self.addSystemCollisionPairs(model, geom_model, q0)
 
-        # Adding constraints from frictional contacts
+        # Adding constraints from points contacts
         contact_constraints = self.computeContactConstraints(model, geom_model, q0)
         for fpcm in contact_constraints:
             constraint_models.append(pin.ConstraintModel(fpcm))

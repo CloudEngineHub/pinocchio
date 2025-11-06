@@ -17,32 +17,32 @@ using namespace Eigen;
 using namespace pinocchio;
 using namespace pinocchio::internal;
 
-typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrictionalPointConstraintModel)
-  FrictionalPointConstraintModelVector;
-typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrictionalPointConstraintData)
-  FrictionalPointConstraintDataVector;
+typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactConstraintModel)
+  PointContactConstraintModelVector;
+typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactConstraintData)
+  PointContactConstraintDataVector;
 
-void init(Model & model, FrictionalPointConstraintModelVector & constraint_models)
+void init(Model & model, PointContactConstraintModelVector & constraint_models)
 {
   pinocchio::buildModels::humanoidRandom(model, true);
   model.lowerPositionLimit.head<3>().fill(-1.);
   model.upperPositionLimit.head<3>().fill(1.);
 
   const std::string RF = "rleg6_joint";
-  FrictionalPointConstraintModel ci_RF(model, model.getJointId(RF));
+  PointContactConstraintModel ci_RF(model, model.getJointId(RF));
   ci_RF.set().mu = 0.4;
   constraint_models.push_back(ci_RF);
 
   const std::string LF = "lleg6_joint";
-  FrictionalPointConstraintModel ci_LF(model, model.getJointId(LF));
+  PointContactConstraintModel ci_LF(model, model.getJointId(LF));
   ci_LF.set().mu = 0.4;
   constraint_models.push_back(ci_LF);
 }
 
-FrictionalPointConstraintDataVector
-createData(const FrictionalPointConstraintModelVector & constraint_models)
+PointContactConstraintDataVector
+createData(const PointContactConstraintModelVector & constraint_models)
 {
-  FrictionalPointConstraintDataVector constraint_datas;
+  PointContactConstraintDataVector constraint_datas;
 
   for (const auto & cmodel : constraint_models)
   {
@@ -60,8 +60,7 @@ typename PINOCCHIO_EIGEN_PLAIN_TYPE(VectorLike) abs(const Eigen::MatrixBase<Vect
 
 template<typename VectorLike>
 void makeIsotropic(
-  FrictionalPointConstraintModelVector & constraint_models,
-  const Eigen::MatrixBase<VectorLike> & vec_)
+  PointContactConstraintModelVector & constraint_models, const Eigen::MatrixBase<VectorLike> & vec_)
 {
   auto & vec = vec_.const_cast_derived();
 
@@ -88,7 +87,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
 #endif
 
   Model model;
-  FrictionalPointConstraintModelVector constraint_models;
+  PointContactConstraintModelVector constraint_models;
 
   init(model, constraint_models);
   auto constraint_datas = createData(constraint_models);

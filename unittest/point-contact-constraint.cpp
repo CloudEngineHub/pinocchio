@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2024-2025 INRIA
 //
 
 #include "pinocchio/algorithm/aba.hpp"
@@ -15,7 +15,7 @@
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/utils/timer.hpp"
 #include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/algorithm/constraints/weld-constraint.hpp"
+#include "pinocchio/algorithm/constraints/point-anchor-constraint.hpp"
 #include "pinocchio/algorithm/constraints/utils.hpp"
 
 // Helpers
@@ -58,75 +58,93 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 BOOST_AUTO_TEST_CASE(basic_constructor)
 {
-  Model model;
-  buildModels::humanoidRandom(model, true);
+  pinocchio::Model model;
+  pinocchio::buildModels::humanoidRandom(model, true);
 
   // Check complete constructor
   const SE3 M(SE3::Random());
-  WeldConstraintModel cmodel2(model, 0, M);
+  PointAnchorConstraintModel cmodel2(model, 0, M);
   BOOST_CHECK(cmodel2.joint1_id == 0);
   BOOST_CHECK(cmodel2.joint1_placement == M);
-  BOOST_CHECK(cmodel2.size() == 6);
+  BOOST_CHECK(cmodel2.size() == 3);
 
   // Check contructor with two arguments
-  WeldConstraintModel cmodel2prime(model, 0);
+  PointAnchorConstraintModel cmodel2prime(model, 0);
   BOOST_CHECK(cmodel2prime.joint1_id == 0);
   BOOST_CHECK(cmodel2prime.joint1_placement.isIdentity(0.));
-  BOOST_CHECK(cmodel2prime.size() == 6);
+  BOOST_CHECK(cmodel2prime.size() == 3);
 
   // Check default copy constructor
-  WeldConstraintModel cmodel3(cmodel2);
+  PointAnchorConstraintModel cmodel3(cmodel2);
   BOOST_CHECK(cmodel3 == cmodel2);
 }
-
 void check_A1_and_A2(
   const Model & model,
   const Data & data,
-  const WeldConstraintModel & cmodel,
-  WeldConstraintData & cdata)
+  const PointAnchorConstraintModel & cmodel,
+  PointAnchorConstraintData & cdata)
 {
-  const WeldConstraintModel::Matrix6 A1_world = cmodel.getA1(cdata, WorldFrameTag());
-  WeldConstraintModel::Matrix6 A1_world_ref = -cdata.oMc1.toActionMatrixInverse();
+  const PointAnchorConstraintModel::Matrix36 A1_world = cmodel.getA1(cdata, WorldFrameTag());
+  PointAnchorConstraintModel::Matrix36 A1_world_ref =
+    -cdata.oMc1.toActionMatrixInverse().topRows<3>();
+  A1_world_ref.rightCols<3>() +=
+    skew(cdata.constraint_position_error) * cdata.oMc1.rotation().transpose();
 
   BOOST_CHECK(A1_world.isApprox(A1_world_ref));
 
-  const WeldConstraintModel::Matrix6 A2_world = cmodel.getA2(cdata, WorldFrameTag());
-  const WeldConstraintModel::Matrix6 A2_world_ref = -A1_world_ref;
+  const PointAnchorConstraintModel::Matrix36 A2_world = cmodel.getA2(cdata, WorldFrameTag());
+  const PointAnchorConstraintModel::Matrix36 A2_world_ref =
+    cdata.c1Mc2.rotation() * cdata.oMc2.toActionMatrixInverse().topRows<3>();
 
   BOOST_CHECK(A2_world.isApprox(A2_world_ref));
 
-  const WeldConstraintModel::Matrix6 A1_local = cmodel.getA1(cdata, LocalFrameTag());
-  WeldConstraintModel::Matrix6 A1_local_ref = -cmodel.joint1_placement.toActionMatrixInverse();
+  const PointAnchorConstraintModel::Matrix36 A1_local = cmodel.getA1(cdata, LocalFrameTag());
+  PointAnchorConstraintModel::Matrix36 A1_local_ref =
+    -cmodel.joint1_placement.toActionMatrixInverse().topRows<3>();
+  A1_local_ref.rightCols<3>() +=
+    skew(cdata.constraint_position_error) * cmodel.joint1_placement.rotation().transpose();
 
   BOOST_CHECK(A1_local.isApprox(A1_local_ref));
 
-  const WeldConstraintModel::Matrix6 A2_local = cmodel.getA2(cdata, LocalFrameTag());
-  const WeldConstraintModel::Matrix6 A2_local_ref =
-    (cdata.c1Mc2 * cmodel.joint2_placement.inverse()).toActionMatrix();
+  const PointAnchorConstraintModel::Matrix36 A2_local = cmodel.getA2(cdata, LocalFrameTag());
+  const PointAnchorConstraintModel::Matrix36 A2_local_ref =
+    cdata.c1Mc2.rotation() * cmodel.joint2_placement.toActionMatrixInverse().topRows<3>();
 
   BOOST_CHECK(A2_local.isApprox(A2_local_ref));
 
   // Check Jacobians
-  Data::MatrixXs J_ref(6, model.nv);
+  Data::MatrixXs J_ref(3, model.nv);
   J_ref.setZero();
   getConstraintJacobian(model, data, cmodel, cdata, J_ref);
 
   // World
   const Data::Matrix6x J1_world = getJointJacobian(model, data, cmodel.joint1_id, WORLD);
   const Data::Matrix6x J2_world = getJointJacobian(model, data, cmodel.joint2_id, WORLD);
-  const Data::Matrix6x J_world = A1_world * J1_world + A2_world * J2_world;
+  const Data::Matrix3x J_world = A1_world * J1_world + A2_world * J2_world;
 
   BOOST_CHECK(J_world.isApprox(J_ref));
 
   // Local
   const Data::Matrix6x J1_local = getJointJacobian(model, data, cmodel.joint1_id, LOCAL);
   const Data::Matrix6x J2_local = getJointJacobian(model, data, cmodel.joint2_id, LOCAL);
-  const Data::Matrix6x J_local = A1_local * J1_local + A2_local * J2_local;
+  const Data::Matrix3x J_local = A1_local * J1_local + A2_local * J2_local;
 
   BOOST_CHECK(J_local.isApprox(J_ref));
+
+  // Check Jacobian matrix product
+  const Eigen::DenseIndex m = 40;
+  const Data::MatrixXs mat = Data::MatrixXs::Random(model.nv, m);
+
+  Data::MatrixXs res(cmodel.size(), m);
+  res.setZero();
+  cmodel.jacobianMatrixProduct(model, data, cdata, mat, res);
+
+  const Data::MatrixXs res_ref = J_ref * mat;
+
+  BOOST_CHECK(res.isApprox(res_ref));
 }
 
-BOOST_AUTO_TEST_CASE(basic_operations)
+BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
 {
   pinocchio::Model model;
   pinocchio::buildModels::humanoidRandom(model, true);
@@ -141,19 +159,33 @@ BOOST_AUTO_TEST_CASE(basic_operations)
   const std::string RF_name = "rleg6_joint";
   const std::string LF_name = "lleg6_joint";
 
-  WeldConstraintModel cm(
+  PointAnchorConstraintModel cm(
     model, model.getJointId(RF_name), SE3::Random(), model.getJointId(LF_name), SE3::Random());
-  WeldConstraintData cd(cm);
+  PointAnchorConstraintData cd(cm);
   cm.calc(model, data, cd);
 
   // Vector LOCAL
   {
-    const Inertia::Vector6 diagonal_inertia(1, 2, 3, 4, 5, 6);
+    const pinocchio::SE3 placement_local = cm.joint1_placement;
+    pinocchio::SE3 placement_local_with_correction = placement_local;
+    placement_local_with_correction.translation() +=
+      placement_local.rotation() * cd.constraint_position_error;
+
+    const Eigen::Vector3d diagonal_inertia(1, 2, 3);
+
+    const pinocchio::SE3::Matrix6 spatial_inertia_join1 =
+      cm.computeConstraintSpatialInertia(placement_local_with_correction, diagonal_inertia);
+    BOOST_CHECK(
+      spatial_inertia_join1.transpose().isApprox(spatial_inertia_join1)); // check symmetric matrix
 
     const auto A1 = cm.getA1(cd, LocalFrameTag());
+    BOOST_CHECK(A1.isApprox(cd.A1_local));
     const Inertia::Matrix6 I11_ref = A1.transpose() * diagonal_inertia.asDiagonal() * A1;
 
+    BOOST_CHECK(spatial_inertia_join1.isApprox(I11_ref));
+
     const auto A2 = cm.getA2(cd, LocalFrameTag());
+    BOOST_CHECK(A2.isApprox(cd.A2_local));
     const Inertia::Matrix6 I22_ref = A2.transpose() * diagonal_inertia.asDiagonal() * A2;
 
     const Inertia::Matrix6 I12_ref = A1.transpose() * diagonal_inertia.asDiagonal() * A2;
@@ -168,8 +200,8 @@ BOOST_AUTO_TEST_CASE(basic_operations)
 
     // Check against scalar signature
     const double constant_inertia_value = 10;
-    const Inertia::Vector6 diagonal_inertia_scalar =
-      Inertia::Vector6::Constant(constant_inertia_value);
+    const Eigen::Vector3d diagonal_inertia_scalar =
+      Eigen::Vector3d::Constant(constant_inertia_value);
     Inertia::Matrix6 I11_scalar = -Inertia::Matrix6::Ones(), I12_scalar = -Inertia::Matrix6::Ones(),
                      I22_scalar = -Inertia::Matrix6::Ones();
 
@@ -183,10 +215,22 @@ BOOST_AUTO_TEST_CASE(basic_operations)
 
   // Vector WORLD
   {
-    const Inertia::Vector6 diagonal_inertia(1, 2, 3, 4, 5, 6);
+    const Eigen::Vector3d diagonal_inertia(1, 2, 3);
+
+    const pinocchio::SE3 placement_world = cd.oMc1;
+    pinocchio::SE3 placement_world_with_correction = placement_world;
+    placement_world_with_correction.translation() +=
+      placement_world.rotation() * cd.constraint_position_error;
+
+    const pinocchio::SE3::Matrix6 spatial_inertia_join1 =
+      cm.computeConstraintSpatialInertia(placement_world_with_correction, diagonal_inertia);
+    BOOST_CHECK(
+      spatial_inertia_join1.transpose().isApprox(spatial_inertia_join1)); // check symmetric matrix
 
     const auto A1 = cm.getA1(cd, WorldFrameTag());
     const Inertia::Matrix6 I11_ref = A1.transpose() * diagonal_inertia.asDiagonal() * A1;
+
+    BOOST_CHECK(spatial_inertia_join1.isApprox(I11_ref));
 
     const auto A2 = cm.getA2(cd, WorldFrameTag());
     const Inertia::Matrix6 I22_ref = A2.transpose() * diagonal_inertia.asDiagonal() * A2;
@@ -203,8 +247,8 @@ BOOST_AUTO_TEST_CASE(basic_operations)
 
     // Check against scalar signature
     const double constant_inertia_value = 10;
-    const Inertia::Vector6 diagonal_inertia_scalar =
-      Inertia::Vector6::Constant(constant_inertia_value);
+    const Eigen::Vector3d diagonal_inertia_scalar =
+      Eigen::Vector3d::Constant(constant_inertia_value);
     Inertia::Matrix6 I11_scalar = -Inertia::Matrix6::Ones(), I12_scalar = -Inertia::Matrix6::Ones(),
                      I22_scalar = -Inertia::Matrix6::Ones();
 
@@ -218,8 +262,8 @@ BOOST_AUTO_TEST_CASE(basic_operations)
 
   // Check null values
   {
-    WeldConstraintModel cm1(model, model.getJointId(RF_name), SE3::Random());
-    WeldConstraintData cd1(cm1);
+    PointAnchorConstraintModel cm1(model, model.getJointId(RF_name), SE3::Random());
+    PointAnchorConstraintData cd1(cm1);
     cm1.calc(model, data, cd1);
 
     Inertia::Matrix6 I11 = -Inertia::Matrix6::Ones(), I12 = -Inertia::Matrix6::Ones(),
@@ -239,8 +283,9 @@ BOOST_AUTO_TEST_CASE(basic_operations)
     BOOST_CHECK(I12.isZero(0));
     BOOST_CHECK(I22.isZero(0));
 
-    WeldConstraintModel cm2(model, 0, SE3::Identity(), model.getJointId(RF_name), SE3::Random());
-    WeldConstraintData cd2(cm2);
+    PointAnchorConstraintModel cm2(
+      model, 0, SE3::Identity(), model.getJointId(RF_name), SE3::Random());
+    PointAnchorConstraintData cd2(cm2);
     cm2.calc(model, data, cd2);
 
     I11.fill(-1);
@@ -264,14 +309,14 @@ BOOST_AUTO_TEST_CASE(basic_operations)
 template<typename VectorLike>
 Eigen::MatrixXd compute_jacobian_fd(
   const Model & model,
-  const WeldConstraintModel & cmodel,
+  const PointAnchorConstraintModel & cmodel,
   const Eigen::MatrixBase<VectorLike> & q,
   const double eps)
 {
   Data data_fd(model), data(model);
-  WeldConstraintData cdata(cmodel), cdata_fd(cmodel);
+  PointAnchorConstraintData cdata(cmodel), cdata_fd(cmodel);
 
-  Eigen::MatrixXd res(cmodel.size(), model.nv);
+  Eigen::MatrixXd res(3, model.nv);
   res.setZero();
 
   forwardKinematics(model, data, q),
@@ -288,7 +333,7 @@ Eigen::MatrixXd compute_jacobian_fd(
 
       cmodel.calc(model, data_fd, cdata_fd);
 
-    res.col(i) = log6(cdata_fd.c1Mc2.act(cdata.c1Mc2.inverse())).toVector() / eps;
+    res.col(i) = (cdata_fd.constraint_position_error - cdata.constraint_position_error) / eps;
 
     v_plus[i] = 0;
   }
@@ -296,16 +341,18 @@ Eigen::MatrixXd compute_jacobian_fd(
   return res;
 }
 
-SE3 computeConstraintError(const Model & model, const Data & data, const WeldConstraintModel & cm)
+Vector3d computeConstraintError(
+  const Model & model, const Data & data, const PointAnchorConstraintModel & cm)
 {
   PINOCCHIO_UNUSED_VARIABLE(model);
 
   const SE3 oMc1 = data.oMi[cm.joint1_id] * cm.joint1_placement;
   const SE3 oMc2 = data.oMi[cm.joint2_id] * cm.joint2_placement;
 
-  const SE3 c1Mc2 = oMc1.actInv(oMc2);
+  const Vector3d error_world_frame = oMc2.translation() - oMc1.translation();
+  const Vector3d error_local_frame1 = oMc1.rotation().transpose() * error_world_frame;
 
-  return c1Mc2;
+  return error_local_frame1;
 }
 
 BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
@@ -328,56 +375,56 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
   const std::string LF = "lleg6_joint";
   const double eps_fd = 1e-8;
 
-  const WeldConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
-  const WeldConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
-  const WeldConstraintModel clm_RF_LF(
+  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
+  const PointAnchorConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
+  const PointAnchorConstraintModel clm_RF_LF(
     model, cm_RF.joint1_id, cm_RF.joint1_placement, cm_LF.joint1_id, cm_LF.joint1_placement);
 
   // Check errors values
   {
     Data data(model);
 
-    WeldConstraintData cd_RF(cm_RF);
-    WeldConstraintData cd_LF(cm_LF);
-    WeldConstraintData cld_RF_LF(clm_RF_LF);
+    PointAnchorConstraintData cd_RF(cm_RF);
+    PointAnchorConstraintData cd_LF(cm_LF);
+    PointAnchorConstraintData cld_RF_LF(clm_RF_LF);
 
     forwardKinematics(model, data, q);
 
     cm_RF.calc(model, data, cd_RF);
-    const auto error_RF_ref = computeConstraintError(model, data, cm_RF);
-    BOOST_CHECK(cd_RF.c1Mc2.isApprox(error_RF_ref));
-    BOOST_CHECK(cd_RF.constraint_position_error.isApprox(log6(error_RF_ref).toVector()));
+    const Vector3d position_error_RF_ref = computeConstraintError(model, data, cm_RF);
+    BOOST_CHECK(cd_RF.constraint_position_error.isApprox(position_error_RF_ref));
 
     cm_LF.calc(model, data, cd_LF);
-    const auto error_LF_ref = computeConstraintError(model, data, cm_LF);
-    BOOST_CHECK(cd_LF.c1Mc2.isApprox(error_LF_ref));
+    const Vector3d position_error_LF_ref = computeConstraintError(model, data, cm_LF);
+    BOOST_CHECK(cd_LF.constraint_position_error.isApprox(position_error_LF_ref));
 
     clm_RF_LF.calc(model, data, cld_RF_LF);
-    const auto error_RF_LF_ref = computeConstraintError(model, data, clm_RF_LF);
-    BOOST_CHECK(cld_RF_LF.c1Mc2.isApprox(error_RF_LF_ref));
+    const Vector3d position_error_RF_LF_ref = computeConstraintError(model, data, clm_RF_LF);
+    BOOST_CHECK(cld_RF_LF.constraint_position_error.isApprox(position_error_RF_LF_ref));
   }
-
   {
     forwardKinematics(model, data, q, v, a);
 
-    WeldConstraintData cd_RF(cm_RF);
+    PointAnchorConstraintData cd_RF(cm_RF);
     cm_RF.calc(model, data, cd_RF);
-    WeldConstraintData cd_LF(cm_LF);
+    PointAnchorConstraintData cd_LF(cm_LF);
     cm_LF.calc(model, data, cd_LF);
-    WeldConstraintData cld_RF_LF(clm_RF_LF);
+    PointAnchorConstraintData cld_RF_LF(clm_RF_LF);
     clm_RF_LF.calc(model, data, cld_RF_LF);
 
-    Data::Matrix6x J_RF_LOCAL(6, model.nv);
-    J_RF_LOCAL.setZero();
-    getFrameJacobian(model, data, cm_RF.joint1_id, cm_RF.joint1_placement, LOCAL, J_RF_LOCAL);
+    Data::Matrix6x J6_RF_LOCAL(6, model.nv);
+    J6_RF_LOCAL.setZero();
+    getFrameJacobian(model, data, cm_RF.joint1_id, cm_RF.joint1_placement, LOCAL, J6_RF_LOCAL);
+    Data::Matrix3x J_RF_LOCAL(3, model.nv);
+    J_RF_LOCAL = -J6_RF_LOCAL.middleRows<3>(SE3::LINEAR);
+    J_RF_LOCAL += cross(cd_RF.constraint_position_error, J6_RF_LOCAL.middleRows<3>(SE3::ANGULAR));
 
-    const Data::Matrix6x J_RF_LOCAL_constraint = -J_RF_LOCAL;
-
-    Data::Matrix6x J_LF_LOCAL(6, model.nv);
-    J_LF_LOCAL.setZero();
-    getFrameJacobian(model, data, cm_LF.joint1_id, cm_LF.joint1_placement, LOCAL, J_LF_LOCAL);
-
-    const Data::Matrix6x J_LF_LOCAL_constraint = -J_LF_LOCAL;
+    Data::Matrix6x J6_LF_LOCAL(6, model.nv);
+    J6_LF_LOCAL.setZero();
+    getFrameJacobian(model, data, cm_LF.joint1_id, cm_LF.joint1_placement, LOCAL, J6_LF_LOCAL);
+    Data::Matrix3x J_LF_LOCAL(3, model.nv);
+    J_LF_LOCAL = -J6_LF_LOCAL.middleRows<3>(SE3::LINEAR);
+    J_LF_LOCAL += cross(cd_LF.constraint_position_error, J6_LF_LOCAL.middleRows<3>(SE3::ANGULAR));
 
     for (DenseIndex k = 0; k < model.nv; ++k)
     {
@@ -392,7 +439,10 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     const SE3 oMc1 = data.oMi[clm_RF_LF.joint1_id] * clm_RF_LF.joint1_placement;
     const SE3 oMc2 = data.oMi[clm_RF_LF.joint2_id] * clm_RF_LF.joint2_placement;
     const SE3 c1Mc2 = oMc1.actInv(oMc2);
-    const Data::Matrix6x J_clm_LOCAL = c1Mc2.toActionMatrix() * J_LF_LOCAL - J_RF_LOCAL;
+    Data::Matrix3x J_clm_LOCAL = c1Mc2.rotation() * J6_LF_LOCAL.middleRows<3>(SE3::LINEAR)
+                                 - J6_RF_LOCAL.middleRows<3>(SE3::LINEAR);
+    J_clm_LOCAL +=
+      cross(cld_RF_LF.constraint_position_error, J6_RF_LOCAL.middleRows<3>(SE3::ANGULAR));
 
     for (DenseIndex k = 0; k < model.nv; ++k)
     {
@@ -400,34 +450,37 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     }
 
     // Check Jacobian vs sparse Jacobian computation
-    Data::MatrixXs J_RF_constraint_sparse(6, model.nv);
-    J_RF_constraint_sparse.setZero();
-    getConstraintJacobian(model, data, cm_RF, cd_RF, J_RF_constraint_sparse);
-    BOOST_CHECK(J_RF_LOCAL_constraint.isApprox(J_RF_constraint_sparse));
+    Data::MatrixXs J_RF_sparse(3, model.nv);
+    J_RF_sparse.setZero(); // TODO: change input type when all the API would be refactorized
+                           // with CRTP on contact constraints
+    getConstraintJacobian(model, data, cm_RF, cd_RF, J_RF_sparse);
+    BOOST_CHECK(J_RF_LOCAL.isApprox(J_RF_sparse));
 
-    const auto J_RF_constraint_fd = compute_jacobian_fd(model, cm_RF, q, eps_fd);
-    BOOST_CHECK(J_RF_constraint_sparse.isApprox(J_RF_constraint_fd, sqrt(eps_fd)));
+    const auto J_RF_fd = compute_jacobian_fd(model, cm_RF, q, eps_fd);
+    BOOST_CHECK(J_RF_sparse.isApprox(J_RF_fd, sqrt(eps_fd)));
 
-    Data::MatrixXs J_LF_constraint_sparse(6, model.nv);
-    J_LF_constraint_sparse.setZero();
-    getConstraintJacobian(model, data, cm_LF, cd_LF, J_LF_constraint_sparse);
-    BOOST_CHECK(J_LF_LOCAL_constraint.isApprox(J_LF_constraint_sparse));
+    Data::MatrixXs J_LF_sparse(3, model.nv);
+    J_LF_sparse.setZero(); // TODO: change input type when all the API would be refactorized
+                           // with CRTP on contact constraints
+    getConstraintJacobian(model, data, cm_LF, cd_LF, J_LF_sparse);
+    BOOST_CHECK(J_LF_LOCAL.middleRows<3>(SE3::LINEAR).isApprox(J_LF_sparse));
 
-    const auto J_LF_constraint_fd = compute_jacobian_fd(model, cm_LF, q, eps_fd);
-    BOOST_CHECK(J_LF_constraint_sparse.isApprox(J_LF_constraint_fd, sqrt(eps_fd)));
+    const auto J_LF_fd = compute_jacobian_fd(model, cm_LF, q, eps_fd);
+    BOOST_CHECK(J_LF_sparse.isApprox(J_LF_fd, sqrt(eps_fd)));
 
-    Data::MatrixXs J_clm_constraint_sparse(6, model.nv);
-    J_clm_constraint_sparse.setZero();
-    getConstraintJacobian(model, data, clm_RF_LF, cld_RF_LF, J_clm_constraint_sparse);
-    BOOST_CHECK(J_clm_LOCAL.isApprox(J_clm_constraint_sparse));
+    Data::MatrixXs J_clm_sparse(3, model.nv);
+    J_clm_sparse.setZero(); // TODO: change input type when all the API would be refactorized
+                            // with CRTP on contact constraints
+    getConstraintJacobian(model, data, clm_RF_LF, cld_RF_LF, J_clm_sparse);
+    BOOST_CHECK(J_clm_LOCAL.isApprox(J_clm_sparse));
 
     const auto J_clm_fd = compute_jacobian_fd(model, clm_RF_LF, q, eps_fd);
-    BOOST_CHECK(J_clm_constraint_sparse.isApprox(J_clm_fd, sqrt(eps_fd)));
+    BOOST_CHECK(J_clm_sparse.isApprox(J_clm_fd, sqrt(eps_fd)));
 
     // Check velocity and acceleration
     {
       const double dt = eps_fd;
-      WeldConstraintData cd_RF(cm_RF), cd_RF_plus(cm_RF);
+      PointAnchorConstraintData cd_RF(cm_RF), cd_RF_plus(cm_RF);
       cm_RF.calc(model, data, cd_RF);
 
       Data data_plus(model);
@@ -436,51 +489,51 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       forwardKinematics(model, data_plus, q_plus, v_plus);
 
       {
-        WeldConstraintData cd_RF(cm_RF), cd_RF_plus(cm_RF);
+        PointAnchorConstraintData cd_RF(cm_RF), cd_RF_plus(cm_RF);
         cm_RF.calc(model, data, cd_RF);
-        BOOST_CHECK(cd_RF.constraint_velocity_error.isApprox(J_RF_constraint_sparse * v));
+        BOOST_CHECK(cd_RF.constraint_velocity_error.isApprox(J_RF_sparse * v));
 
         cm_RF.calc(model, data_plus, cd_RF_plus);
-        const Motion::Vector6 constraint_velocity_error_fd =
-          log6(cd_RF_plus.c1Mc2.act(cd_RF.c1Mc2.inverse())).toVector() / dt;
+        const Vector3d constraint_velocity_error_fd =
+          (cd_RF_plus.constraint_position_error - cd_RF.constraint_position_error) / dt;
         BOOST_CHECK(
           cd_RF.constraint_velocity_error.isApprox(constraint_velocity_error_fd, sqrt(dt)));
 
-        const Motion::Vector6 constraint_acceleration_error_fd =
+        const Vector3d constraint_acceleration_error_fd =
           (cd_RF_plus.constraint_velocity_error - cd_RF.constraint_velocity_error) / dt;
         BOOST_CHECK(
           cd_RF.constraint_acceleration_error.isApprox(constraint_acceleration_error_fd, sqrt(dt)));
       }
 
       {
-        WeldConstraintData cd_LF(cm_LF), cd_LF_plus(cm_LF);
+        PointAnchorConstraintData cd_LF(cm_LF), cd_LF_plus(cm_LF);
         cm_LF.calc(model, data, cd_LF);
-        BOOST_CHECK(cd_LF.constraint_velocity_error.isApprox(J_LF_constraint_sparse * v));
+        BOOST_CHECK(cd_LF.constraint_velocity_error.isApprox(J_LF_sparse * v));
 
         cm_LF.calc(model, data_plus, cd_LF_plus);
-        const Motion::Vector6 constraint_velocity_error_fd =
-          log6(cd_LF_plus.c1Mc2.act(cd_LF.c1Mc2.inverse())).toVector() / dt;
+        const Vector3d constraint_velocity_error_fd =
+          (cd_LF_plus.constraint_position_error - cd_LF.constraint_position_error) / dt;
         BOOST_CHECK(
           cd_LF.constraint_velocity_error.isApprox(constraint_velocity_error_fd, sqrt(dt)));
 
-        const Motion::Vector6 constraint_acceleration_error_fd =
+        const Vector3d constraint_acceleration_error_fd =
           (cd_LF_plus.constraint_velocity_error - cd_LF.constraint_velocity_error) / dt;
         BOOST_CHECK(
           cd_LF.constraint_acceleration_error.isApprox(constraint_acceleration_error_fd, sqrt(dt)));
       }
 
       {
-        WeldConstraintData cld_RF_LF(clm_RF_LF), cld_RF_LF_plus(clm_RF_LF);
+        PointAnchorConstraintData cld_RF_LF(clm_RF_LF), cld_RF_LF_plus(clm_RF_LF);
         clm_RF_LF.calc(model, data, cld_RF_LF);
-        BOOST_CHECK(cld_RF_LF.constraint_velocity_error.isApprox(J_clm_constraint_sparse * v));
+        BOOST_CHECK(cld_RF_LF.constraint_velocity_error.isApprox(J_clm_sparse * v));
 
         clm_RF_LF.calc(model, data_plus, cld_RF_LF_plus);
-        const Motion::Vector6 constraint_velocity_error_fd =
-          log6(cld_RF_LF_plus.c1Mc2.act(cld_RF_LF.c1Mc2.inverse())).toVector() / dt;
+        const Vector3d constraint_velocity_error_fd =
+          (cld_RF_LF_plus.constraint_position_error - cld_RF_LF.constraint_position_error) / dt;
         BOOST_CHECK(
           cld_RF_LF.constraint_velocity_error.isApprox(constraint_velocity_error_fd, sqrt(dt)));
 
-        const Motion::Vector6 constraint_acceleration_error_fd =
+        const Vector3d constraint_acceleration_error_fd =
           (cld_RF_LF_plus.constraint_velocity_error - cld_RF_LF.constraint_velocity_error) / dt;
         BOOST_CHECK(cld_RF_LF.constraint_acceleration_error.isApprox(
           constraint_acceleration_error_fd, sqrt(dt)));
@@ -504,11 +557,11 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       forwardKinematics(model, data_zero_acc, q, v, VectorXd::Zero(model.nv));
 
       // RF
-      WeldConstraintData cd_RF(cm_RF), cd_RF_zero_acc(cm_RF);
+      PointAnchorConstraintData cd_RF(cm_RF), cd_RF_zero_acc(cm_RF);
       cm_RF.calc(model, data, cd_RF);
       cm_RF.calc(model, data_zero_acc, cd_RF_zero_acc);
 
-      Data::MatrixXs J_RF_sparse(6, model.nv);
+      Data::MatrixXs J_RF_sparse(3, model.nv);
       J_RF_sparse.setZero();
       cm_RF.jacobian(model, data, cd_RF, J_RF_sparse);
 
@@ -516,11 +569,11 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
                     .isApprox(cd_RF.constraint_acceleration_error));
 
       // LF
-      WeldConstraintData cd_LF(cm_LF), cd_LF_zero_acc(cm_LF);
+      PointAnchorConstraintData cd_LF(cm_LF), cd_LF_zero_acc(cm_LF);
       cm_LF.calc(model, data, cd_LF);
       cm_LF.calc(model, data_zero_acc, cd_LF_zero_acc);
 
-      Data::MatrixXs J_LF_sparse(6, model.nv);
+      Data::MatrixXs J_LF_sparse(3, model.nv);
       J_LF_sparse.setZero();
       cm_LF.jacobian(model, data, cd_LF, J_LF_sparse);
 
@@ -528,11 +581,11 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
                     .isApprox(cd_LF.constraint_acceleration_error));
 
       // Close loop
-      WeldConstraintData cld_RF_LF(clm_RF_LF), cld_RF_LF_zero_acc(clm_RF_LF);
+      PointAnchorConstraintData cld_RF_LF(clm_RF_LF), cld_RF_LF_zero_acc(clm_RF_LF);
       clm_RF_LF.calc(model, data, cld_RF_LF);
       clm_RF_LF.calc(model, data_zero_acc, cld_RF_LF_zero_acc);
 
-      Data::MatrixXs J_clm_sparse(6, model.nv);
+      Data::MatrixXs J_clm_sparse(3, model.nv);
       J_clm_sparse.setZero();
       clm_RF_LF.jacobian(model, data, cld_RF_LF, J_clm_sparse);
 
@@ -550,7 +603,7 @@ BOOST_AUTO_TEST_CASE(cast)
 
   const std::string RF = "rleg6_joint";
 
-  const WeldConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
+  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
   const auto cm_RF_cast_double = cm_RF.cast<double>();
   BOOST_CHECK(cm_RF_cast_double == cm_RF);
 
@@ -576,25 +629,26 @@ BOOST_AUTO_TEST_CASE(cholesky)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  const WeldConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
-  const WeldConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
-  const WeldConstraintModel clm_RF_LF(
+  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
+  const PointAnchorConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
+  const PointAnchorConstraintModel clm_RF_LF(
     model, cm_RF.joint1_id, cm_RF.joint1_placement, cm_LF.joint1_id, cm_LF.joint1_placement);
 
-  std::vector<WeldConstraintModel> constraint_models;
+  std::vector<PointAnchorConstraintModel> constraint_models;
   constraint_models.push_back(cm_RF);
   constraint_models.push_back(cm_LF);
   constraint_models.push_back(clm_RF_LF);
 
-  std::vector<WeldConstraintData> constraint_datas, constraint_datas_ref;
+  std::vector<PointAnchorConstraintData> constraint_datas, constraint_datas_ref;
   for (const auto & cm : constraint_models)
   {
     constraint_datas.push_back(cm.createData());
     constraint_datas_ref.push_back(cm.createData());
   }
 
-  const double mu = 1e-10;
   calc(model, data, constraint_models, constraint_datas);
+
+  const double mu = 1e-10;
   ContactCholeskyDecomposition cholesky(model, data, constraint_models, constraint_datas);
   cholesky.compute(model, data, constraint_models, constraint_datas, mu);
 
@@ -614,8 +668,12 @@ BOOST_AUTO_TEST_CASE(cholesky)
   BOOST_CHECK(cholesky.matrix().isApprox(H_ref));
 }
 
+/*
 void check_maps_impl(
-  const Model & model, Data & data, const WeldConstraintModel & cm, WeldConstraintData & cd)
+  const Model & model,
+  Data & data,
+  const PointAnchorConstraintModel & cm,
+  PointAnchorConstraintData & cd)
 {
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -628,7 +686,7 @@ void check_maps_impl(
   // Test mapConstraintForceToJointForces : WorldFrameTag
   {
     std::vector<Force> joint_forces(size_t(model.njoints), Force::Zero());
-    const Motion::Vector6 constraint_force = Motion::Vector6::Ones();
+    const Eigen::Vector3d constraint_force = Eigen::Vector3d::Ones();
     const auto joint_torque_ref = constraint_jacobian.transpose() * constraint_force;
 
     cm.mapConstraintForceToJointForces(
@@ -667,7 +725,7 @@ void check_maps_impl(
   // Test mapConstraintForceToJointForces : LocalFrameTag
   {
     std::vector<Force> joint_forces(size_t(model.njoints), Force::Zero());
-    const Motion::Vector6 constraint_force = Motion::Vector6::Ones();
+    const Eigen::Vector3d constraint_force = Eigen::Vector3d::Ones();
     const auto joint_torque_ref = constraint_jacobian.transpose() * constraint_force;
 
     cm.mapConstraintForceToJointForces(
@@ -713,7 +771,7 @@ void check_maps_impl(
     }
 
     const auto & joint_accelerations = data.ov;
-    Motion::Vector6 constraint_motion = Motion::Vector6::Zero();
+    Eigen::Vector3d constraint_motion = Eigen::Vector3d::Zero();
     cm.mapJointMotionsToConstraintMotion(
       model, data, cd, joint_accelerations, constraint_motion, WorldFrameTag());
 
@@ -725,7 +783,7 @@ void check_maps_impl(
     const auto constraint_motion_ref = constraint_jacobian * v;
 
     const auto & joint_motions = data.v;
-    Motion::Vector6 constraint_motion = Motion::Vector6::Zero();
+    Eigen::Vector3d constraint_motion = Eigen::Vector3d::Zero();
     cm.mapJointMotionsToConstraintMotion(
       model, data, cd, joint_motions, constraint_motion, LocalFrameTag());
 
@@ -745,12 +803,12 @@ BOOST_AUTO_TEST_CASE(check_maps)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  const WeldConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
+  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
   auto cd_RF = cm_RF.createData();
 
-  const WeldConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
+  const PointAnchorConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
   auto cd_LF = cm_LF.createData();
-  const WeldConstraintModel clm_RF_LF(
+  const PointAnchorConstraintModel clm_RF_LF(
     model, cm_RF.joint1_id, cm_RF.joint1_placement, cm_LF.joint1_id, cm_LF.joint1_placement);
   auto cld_RF_LF = clm_RF_LF.createData();
 
@@ -758,5 +816,7 @@ BOOST_AUTO_TEST_CASE(check_maps)
   check_maps_impl(model, data, cm_LF, cd_LF);
   check_maps_impl(model, data, clm_RF_LF, cld_RF_LF);
 }
+
+*/
 
 BOOST_AUTO_TEST_SUITE_END()

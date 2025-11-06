@@ -309,14 +309,16 @@ def _buildModelsFromMJCF(
 
     lst = [model]
     if constraints:
-        bilateral_constraint_models = pin.buildBilateralConstraintModelsFromMJCF(
+        point_anchor_constraint_models = pin.buildBilateralConstraintModelsFromMJCF(
             model, filename
         )
-        weld_constraint_models = pin.buildWeldConstraintModelsFromMJCF(model, filename)
+        frame_anchor_constraint_models = pin.buildFrameAnchorConstraintModelsFromMJCF(
+            model, filename
+        )
         lst.append(
             {
-                "bilateral_point_constraint_models": bilateral_constraint_models,
-                "weld_constraint_models": weld_constraint_models,
+                "point_anchor_constraint_models": point_anchor_constraint_models,
+                "frame_anchor_constraint_models": frame_anchor_constraint_models,
             }
         )
 

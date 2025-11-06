@@ -9,12 +9,12 @@
 
 // Sets
 #include "pinocchio/algorithm/constraints/box-set.hpp"
-#include "pinocchio/algorithm/constraints/unbounded-set.hpp"
-#include "pinocchio/algorithm/constraints/null-set.hpp"
 
 // Cones
 #include "pinocchio/algorithm/constraints/coulomb-friction-cone.hpp"
 #include "pinocchio/algorithm/constraints/orthant-cone.hpp"
 #include "pinocchio/algorithm/constraints/joint-limit-constraint-cone.hpp"
+#include "pinocchio/algorithm/constraints/unbounded-set.hpp"
+#include "pinocchio/algorithm/constraints/null-set.hpp"
 
 #endif // ifndef __pinocchio_algorithm_constraints_sets_hpp__

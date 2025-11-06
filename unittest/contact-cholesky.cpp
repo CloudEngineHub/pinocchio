@@ -1656,7 +1656,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_updateDamping)
   }
 }
 
-BOOST_AUTO_TEST_CASE(contact_cholesky_joint_frictional_constraint)
+BOOST_AUTO_TEST_CASE(contact_cholesky_joint_friction_constraint)
 {
   using namespace Eigen;
   using namespace pinocchio;
@@ -1672,12 +1672,12 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_joint_frictional_constraint)
   const Model::IndexVector & RF_support = model.supports[RF_id];
   const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
 
-  FrictionalJointConstraintModel constraint_model(model, active_joint_ids);
-  FrictionalJointConstraintData constraint_data(constraint_model);
+  JointFrictionConstraintModel constraint_model(model, active_joint_ids);
+  JointFrictionConstraintData constraint_data(constraint_model);
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrictionalJointConstraintModel) constraint_models;
+  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(JointFrictionConstraintModel) constraint_models;
   constraint_models.push_back(constraint_model);
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrictionalJointConstraintData) constraint_datas;
+  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(JointFrictionConstraintData) constraint_datas;
   constraint_datas.push_back(constraint_data);
 
   // Build Cholesky decomposition
@@ -1733,21 +1733,21 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_generic)
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConstraintModel) constraint_models;
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConstraintData) constraint_datas;
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel) rigid_constraint_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintData) rigid_constraint_datas;
+  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) rigid_constraint_models;
+  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintData) rigid_constraint_datas;
 
-  BilateralPointConstraintModel ci_RF(
+  PointAnchorConstraintModel ci_RF(
     model, 0, SE3::Identity(), model.getJointId(RF_name), SE3::Identity());
   constraint_models.push_back(ci_RF);
   rigid_constraint_models.push_back(ci_RF);
-  constraint_datas.push_back(BilateralPointConstraintData(ci_RF));
-  rigid_constraint_datas.push_back(BilateralPointConstraintData(ci_RF));
-  BilateralPointConstraintModel ci_LF(
+  constraint_datas.push_back(PointAnchorConstraintData(ci_RF));
+  rigid_constraint_datas.push_back(PointAnchorConstraintData(ci_RF));
+  PointAnchorConstraintModel ci_LF(
     model, 0, SE3::Identity(), model.getJointId(LF_name), SE3::Identity());
   constraint_models.push_back(ci_LF);
   rigid_constraint_models.push_back(ci_LF);
-  constraint_datas.push_back(BilateralPointConstraintData(ci_LF));
-  rigid_constraint_datas.push_back(BilateralPointConstraintData(ci_LF));
+  constraint_datas.push_back(PointAnchorConstraintData(ci_LF));
+  rigid_constraint_datas.push_back(PointAnchorConstraintData(ci_LF));
 
   Data data(model);
   crba(model, data, q, Convention::WORLD);
@@ -1803,10 +1803,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     const std::string RF_name = "rleg6_joint";
     const std::string LF_name = "lleg6_joint";
 
-    BilateralPointConstraintModel ci_RF(
+    PointAnchorConstraintModel ci_RF(
       model, 0, SE3::Identity(), model.getJointId(RF_name), SE3::Identity());
     constraint_models.push_back(ci_RF);
-    BilateralPointConstraintModel ci_LF(
+    PointAnchorConstraintModel ci_LF(
       model, 0, SE3::Identity(), model.getJointId(LF_name), SE3::Identity());
     constraint_models.push_back(ci_LF);
 
@@ -1820,7 +1820,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
 
     // No active joint limits
     BOOST_CHECK(constraint_models[0].activeSize(constraint_datas[0]) == 0);
-    // Size of bilateral constraints should be 3
+    // Size of point anchor constraints should be 3
     BOOST_CHECK(constraint_models[1].activeSize(constraint_datas[1]) == 3);
     BOOST_CHECK(constraint_models[2].activeSize(constraint_datas[2]) == 3);
 
@@ -1830,7 +1830,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     const double mu = 1e-10;
     contact_chol_decomposition.compute(model, data, constraint_models, constraint_datas, mu);
 
-    // Only bilateral constraints should be active
+    // Only point anchor constraints should be active
     BOOST_CHECK(contact_chol_decomposition.constraintDim() == 6);
 
     // BOOST_CHECK(contact_chol_decomposition.D.isApprox(contact_chol_decomposition_ref.D));
@@ -1862,10 +1862,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     const std::string RF_name = "rleg6_joint";
     const std::string LF_name = "lleg6_joint";
 
-    BilateralPointConstraintModel ci_RF(
+    PointAnchorConstraintModel ci_RF(
       model, 0, SE3::Identity(), model.getJointId(RF_name), SE3::Identity());
     constraint_models.push_back(ci_RF);
-    BilateralPointConstraintModel ci_LF(
+    PointAnchorConstraintModel ci_LF(
       model, 0, SE3::Identity(), model.getJointId(LF_name), SE3::Identity());
     constraint_models.push_back(ci_LF);
 
@@ -1886,7 +1886,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     const double mu = 1e-10;
     contact_chol_decomposition.compute(model, data, constraint_models, constraint_datas, mu);
 
-    // Only bilateral constraints should be active
+    // Only point anchor constraints should be active
     BOOST_CHECK(contact_chol_decomposition.constraintDim() == 6);
 
     // BOOST_CHECK(contact_chol_decomposition.D.isApprox(contact_chol_decomposition_ref.D));
@@ -1918,10 +1918,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     const std::string RF_name = "rleg6_joint";
     const std::string LF_name = "lleg6_joint";
 
-    BilateralPointConstraintModel ci_RF(
+    PointAnchorConstraintModel ci_RF(
       model, 0, SE3::Identity(), model.getJointId(RF_name), SE3::Identity());
     constraint_models.push_back(ci_RF);
-    BilateralPointConstraintModel ci_LF(
+    PointAnchorConstraintModel ci_LF(
       model, 0, SE3::Identity(), model.getJointId(LF_name), SE3::Identity());
     constraint_models.push_back(ci_LF);
 
@@ -1971,16 +1971,16 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_with_compliance)
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConstraintModel) constraint_models;
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConstraintData) constraint_datas;
 
-  BilateralPointConstraintModel ci_RF(
+  PointAnchorConstraintModel ci_RF(
     model, 0, SE3::Identity(), model.getJointId(RF_name), SE3::Identity());
   ci_RF.compliance() = Eigen::VectorXd::Constant(3, 6e-4);
   constraint_models.push_back(ci_RF);
-  constraint_datas.push_back(BilateralPointConstraintData(ci_RF));
-  BilateralPointConstraintModel ci_LF(
+  constraint_datas.push_back(PointAnchorConstraintData(ci_RF));
+  PointAnchorConstraintModel ci_LF(
     model, 0, SE3::Identity(), model.getJointId(LF_name), SE3::Identity());
   ci_LF.compliance() = Eigen::VectorXd::Constant(3, 7e-4);
   constraint_models.push_back(ci_LF);
-  constraint_datas.push_back(BilateralPointConstraintData(ci_LF));
+  constraint_datas.push_back(PointAnchorConstraintData(ci_LF));
 
   Data data(model);
   crba(model, data, q, Convention::WORLD);

@@ -154,33 +154,33 @@ namespace pinocchio
       typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
         RigidConstraintDataVector;
 
-      typedef BilateralPointConstraintModelTpl<Scalar, Options> BilateralPointConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-        BilateralPointConstraintModelVector;
-      typedef BilateralPointConstraintDataTpl<Scalar, Options> BilateralPointConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintData)
-        BilateralPointConstraintDataVector;
+      typedef PointAnchorConstraintModelTpl<Scalar, Options> PointAnchorConstraintModel;
+      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+        PointAnchorConstraintModelVector;
+      typedef PointAnchorConstraintDataTpl<Scalar, Options> PointAnchorConstraintData;
+      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintData)
+        PointAnchorConstraintDataVector;
 
-      typedef WeldConstraintModelTpl<Scalar, Options> WeldConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel)
-        WeldConstraintModelVector;
-      typedef WeldConstraintDataTpl<Scalar, Options> WeldConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintData)
-        WeldConstraintDataVector;
+      typedef FrameAnchorConstraintModelTpl<Scalar, Options> FrameAnchorConstraintModel;
+      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+        FrameAnchorConstraintModelVector;
+      typedef FrameAnchorConstraintDataTpl<Scalar, Options> FrameAnchorConstraintData;
+      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintData)
+        FrameAnchorConstraintDataVector;
 
-      typedef FrictionalPointConstraintModelTpl<Scalar, Options> FrictionalPointConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrictionalPointConstraintModel)
-        FrictionalPointConstraintModelVector;
-      typedef FrictionalPointConstraintDataTpl<Scalar, Options> FrictionalPointConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrictionalPointConstraintData)
-        FrictionalPointConstraintDataVector;
+      typedef PointContactConstraintModelTpl<Scalar, Options> PointContactConstraintModel;
+      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactConstraintModel)
+        PointContactConstraintModelVector;
+      typedef PointContactConstraintDataTpl<Scalar, Options> PointContactConstraintData;
+      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactConstraintData)
+        PointContactConstraintDataVector;
 
-      typedef FrictionalJointConstraintModelTpl<Scalar, Options> FrictionalJointConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrictionalJointConstraintModel)
-        FrictionalJointConstraintModelVector;
-      typedef FrictionalJointConstraintDataTpl<Scalar, Options> FrictionalJointConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrictionalJointConstraintData)
-        FrictionalJointConstraintDataVector;
+      typedef JointFrictionConstraintModelTpl<Scalar, Options> JointFrictionConstraintModel;
+      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(JointFrictionConstraintModel)
+        JointFrictionConstraintModelVector;
+      typedef JointFrictionConstraintDataTpl<Scalar, Options> JointFrictionConstraintData;
+      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(JointFrictionConstraintData)
+        JointFrictionConstraintDataVector;
 
       typedef JointLimitConstraintModelTpl<Scalar, Options> JointLimitConstraintModel;
       typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(JointLimitConstraintModel)

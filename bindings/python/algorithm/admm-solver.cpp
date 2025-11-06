@@ -289,13 +289,6 @@ namespace pinocchio
           bp::args("constraint_models", "constraint_datas", "velocities"),
           "Compute the complementarity shift associated to the De Saxé function.");
       }
-      //
-      //      template<typename S, int O>
-      //      void run(FictiousConstraintModelTpl<S, O> * ptr = 0)
-      //      {
-      //        PINOCCHIO_UNUSED_VARIABLE(ptr);
-      //      }
-      //
       void run(boost::blank * ptr = 0)
       {
         PINOCCHIO_UNUSED_VARIABLE(ptr);

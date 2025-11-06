@@ -17,17 +17,12 @@ namespace pinocchio
   struct RigidConstraintDataTpl;
 
   template<typename Scalar, int Options = 0>
-  struct FictiousConstraintModelTpl;
-  template<typename Scalar, int Options = 0>
-  struct FictiousConstraintDataTpl;
+  struct JointFrictionConstraintModelTpl;
+  typedef JointFrictionConstraintModelTpl<context::Scalar> JointFrictionConstraintModel;
 
   template<typename Scalar, int Options = 0>
-  struct FrictionalJointConstraintModelTpl;
-  typedef FrictionalJointConstraintModelTpl<context::Scalar> FrictionalJointConstraintModel;
-
-  template<typename Scalar, int Options = 0>
-  struct FrictionalJointConstraintDataTpl;
-  typedef FrictionalJointConstraintDataTpl<context::Scalar> FrictionalJointConstraintData;
+  struct JointFrictionConstraintDataTpl;
+  typedef JointFrictionConstraintDataTpl<context::Scalar> JointFrictionConstraintData;
 
   template<typename Scalar, int Options = 0>
   struct JointLimitConstraintModelTpl;
@@ -38,25 +33,25 @@ namespace pinocchio
   typedef JointLimitConstraintDataTpl<context::Scalar> JointLimitConstraintData;
 
   template<typename Scalar, int Options = 0>
-  struct BilateralPointConstraintModelTpl;
-  typedef BilateralPointConstraintModelTpl<context::Scalar> BilateralPointConstraintModel;
+  struct PointAnchorConstraintModelTpl;
+  typedef PointAnchorConstraintModelTpl<context::Scalar> PointAnchorConstraintModel;
   template<typename Scalar, int Options = 0>
-  struct BilateralPointConstraintDataTpl;
-  typedef BilateralPointConstraintDataTpl<context::Scalar> BilateralPointConstraintData;
+  struct PointAnchorConstraintDataTpl;
+  typedef PointAnchorConstraintDataTpl<context::Scalar> PointAnchorConstraintData;
 
   template<typename Scalar, int Options = 0>
-  struct FrictionalPointConstraintModelTpl;
-  typedef FrictionalPointConstraintModelTpl<context::Scalar> FrictionalPointConstraintModel;
+  struct PointContactConstraintModelTpl;
+  typedef PointContactConstraintModelTpl<context::Scalar> PointContactConstraintModel;
   template<typename Scalar, int Options = 0>
-  struct FrictionalPointConstraintDataTpl;
-  typedef FrictionalPointConstraintDataTpl<context::Scalar> FrictionalPointConstraintData;
+  struct PointContactConstraintDataTpl;
+  typedef PointContactConstraintDataTpl<context::Scalar> PointContactConstraintData;
 
   template<typename Scalar, int Options = 0>
-  struct WeldConstraintModelTpl;
-  typedef WeldConstraintModelTpl<context::Scalar> WeldConstraintModel;
+  struct FrameAnchorConstraintModelTpl;
+  typedef FrameAnchorConstraintModelTpl<context::Scalar> FrameAnchorConstraintModel;
   template<typename Scalar, int Options = 0>
-  struct WeldConstraintDataTpl;
-  typedef WeldConstraintDataTpl<context::Scalar> WeldConstraintData;
+  struct FrameAnchorConstraintDataTpl;
+  typedef FrameAnchorConstraintDataTpl<context::Scalar> FrameAnchorConstraintData;
 
   template<typename Scalar, int Options = 0>
   struct ConstraintCollectionDefaultTpl;

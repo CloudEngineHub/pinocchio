@@ -15,7 +15,7 @@
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/utils/timer.hpp"
 #include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/algorithm/constraints/point-bilateral-constraint.hpp"
+#include "pinocchio/algorithm/constraints/point-anchor-constraint.hpp"
 #include "pinocchio/algorithm/constraints/utils.hpp"
 
 // Helpers
@@ -63,52 +63,52 @@ BOOST_AUTO_TEST_CASE(basic_constructor)
 
   // Check complete constructor
   const SE3 M(SE3::Random());
-  BilateralPointConstraintModel cmodel2(model, 0, M);
+  PointAnchorConstraintModel cmodel2(model, 0, M);
   BOOST_CHECK(cmodel2.joint1_id == 0);
   BOOST_CHECK(cmodel2.joint1_placement == M);
   BOOST_CHECK(cmodel2.size() == 3);
 
   // Check contructor with two arguments
-  BilateralPointConstraintModel cmodel2prime(model, 0);
+  PointAnchorConstraintModel cmodel2prime(model, 0);
   BOOST_CHECK(cmodel2prime.joint1_id == 0);
   BOOST_CHECK(cmodel2prime.joint1_placement.isIdentity(0.));
   BOOST_CHECK(cmodel2prime.size() == 3);
 
   // Check default copy constructor
-  BilateralPointConstraintModel cmodel3(cmodel2);
+  PointAnchorConstraintModel cmodel3(cmodel2);
   BOOST_CHECK(cmodel3 == cmodel2);
 }
 
 void check_A1_and_A2(
   const Model & model,
   const Data & data,
-  const BilateralPointConstraintModel & cmodel,
-  BilateralPointConstraintData & cdata)
+  const PointAnchorConstraintModel & cmodel,
+  PointAnchorConstraintData & cdata)
 {
-  const BilateralPointConstraintModel::Matrix36 A1_world = cmodel.getA1(cdata, WorldFrameTag());
-  BilateralPointConstraintModel::Matrix36 A1_world_ref =
+  const PointAnchorConstraintModel::Matrix36 A1_world = cmodel.getA1(cdata, WorldFrameTag());
+  PointAnchorConstraintModel::Matrix36 A1_world_ref =
     -cdata.oMc1.toActionMatrixInverse().topRows<3>();
   A1_world_ref.rightCols<3>() +=
     skew(cdata.constraint_position_error) * cdata.oMc1.rotation().transpose();
 
   BOOST_CHECK(A1_world.isApprox(A1_world_ref));
 
-  const BilateralPointConstraintModel::Matrix36 A2_world = cmodel.getA2(cdata, WorldFrameTag());
-  const BilateralPointConstraintModel::Matrix36 A2_world_ref =
+  const PointAnchorConstraintModel::Matrix36 A2_world = cmodel.getA2(cdata, WorldFrameTag());
+  const PointAnchorConstraintModel::Matrix36 A2_world_ref =
     cdata.c1Mc2.rotation() * cdata.oMc2.toActionMatrixInverse().topRows<3>();
 
   BOOST_CHECK(A2_world.isApprox(A2_world_ref));
 
-  const BilateralPointConstraintModel::Matrix36 A1_local = cmodel.getA1(cdata, LocalFrameTag());
-  BilateralPointConstraintModel::Matrix36 A1_local_ref =
+  const PointAnchorConstraintModel::Matrix36 A1_local = cmodel.getA1(cdata, LocalFrameTag());
+  PointAnchorConstraintModel::Matrix36 A1_local_ref =
     -cmodel.joint1_placement.toActionMatrixInverse().topRows<3>();
   A1_local_ref.rightCols<3>() +=
     skew(cdata.constraint_position_error) * cmodel.joint1_placement.rotation().transpose();
 
   BOOST_CHECK(A1_local.isApprox(A1_local_ref));
 
-  const BilateralPointConstraintModel::Matrix36 A2_local = cmodel.getA2(cdata, LocalFrameTag());
-  const BilateralPointConstraintModel::Matrix36 A2_local_ref =
+  const PointAnchorConstraintModel::Matrix36 A2_local = cmodel.getA2(cdata, LocalFrameTag());
+  const PointAnchorConstraintModel::Matrix36 A2_local_ref =
     cdata.c1Mc2.rotation() * cmodel.joint2_placement.toActionMatrixInverse().topRows<3>();
 
   BOOST_CHECK(A2_local.isApprox(A2_local_ref));
@@ -137,8 +137,8 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
 {
   const pinocchio::Model model;
   const pinocchio::Data data(model);
-  BilateralPointConstraintModel cm(model, 0, SE3::Random());
-  BilateralPointConstraintData cd(cm);
+  PointAnchorConstraintModel cm(model, 0, SE3::Random());
+  PointAnchorConstraintData cd(cm);
   cm.calc(model, data, cd);
 
   const pinocchio::SE3 placement = cm.joint1_placement;
@@ -183,12 +183,12 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
 template<typename VectorLike>
 Eigen::MatrixXd compute_jacobian_fd(
   const Model & model,
-  const BilateralPointConstraintModel & cmodel,
+  const PointAnchorConstraintModel & cmodel,
   const Eigen::MatrixBase<VectorLike> & q,
   const double eps)
 {
   Data data_fd(model), data(model);
-  BilateralPointConstraintData cdata(cmodel), cdata_fd(cmodel);
+  PointAnchorConstraintData cdata(cmodel), cdata_fd(cmodel);
 
   Eigen::MatrixXd res(3, model.nv);
   res.setZero();
@@ -216,7 +216,7 @@ Eigen::MatrixXd compute_jacobian_fd(
 }
 
 Vector3d computeConstraintError(
-  const Model & model, const Data & data, const BilateralPointConstraintModel & cm)
+  const Model & model, const Data & data, const PointAnchorConstraintModel & cm)
 {
   PINOCCHIO_UNUSED_VARIABLE(model);
 
@@ -249,18 +249,18 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
   const std::string LF = "lleg6_joint";
   const double eps_fd = 1e-8;
 
-  const BilateralPointConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
-  const BilateralPointConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
-  const BilateralPointConstraintModel clm_RF_LF(
+  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
+  const PointAnchorConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
+  const PointAnchorConstraintModel clm_RF_LF(
     model, cm_RF.joint1_id, cm_RF.joint1_placement, cm_LF.joint1_id, cm_LF.joint1_placement);
 
   // Check errors values
   {
     Data data(model);
 
-    BilateralPointConstraintData cd_RF(cm_RF);
-    BilateralPointConstraintData cd_LF(cm_LF);
-    BilateralPointConstraintData cld_RF_LF(clm_RF_LF);
+    PointAnchorConstraintData cd_RF(cm_RF);
+    PointAnchorConstraintData cd_LF(cm_LF);
+    PointAnchorConstraintData cld_RF_LF(clm_RF_LF);
 
     forwardKinematics(model, data, q);
 
@@ -279,11 +279,11 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
   {
     forwardKinematics(model, data, q, v, a);
 
-    BilateralPointConstraintData cd_RF(cm_RF);
+    PointAnchorConstraintData cd_RF(cm_RF);
     cm_RF.calc(model, data, cd_RF);
-    BilateralPointConstraintData cd_LF(cm_LF);
+    PointAnchorConstraintData cd_LF(cm_LF);
     cm_LF.calc(model, data, cd_LF);
-    BilateralPointConstraintData cld_RF_LF(clm_RF_LF);
+    PointAnchorConstraintData cld_RF_LF(clm_RF_LF);
     clm_RF_LF.calc(model, data, cld_RF_LF);
 
     Data::Matrix6x J6_RF_LOCAL(6, model.nv);
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     // Check velocity and acceleration
     {
       const double dt = eps_fd;
-      BilateralPointConstraintData cd_RF(cm_RF), cd_RF_plus(cm_RF);
+      PointAnchorConstraintData cd_RF(cm_RF), cd_RF_plus(cm_RF);
       cm_RF.calc(model, data, cd_RF);
 
       Data data_plus(model);
@@ -363,7 +363,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       forwardKinematics(model, data_plus, q_plus, v_plus);
 
       {
-        BilateralPointConstraintData cd_RF(cm_RF), cd_RF_plus(cm_RF);
+        PointAnchorConstraintData cd_RF(cm_RF), cd_RF_plus(cm_RF);
         cm_RF.calc(model, data, cd_RF);
         BOOST_CHECK(cd_RF.constraint_velocity_error.isApprox(J_RF_sparse * v));
 
@@ -380,7 +380,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       }
 
       {
-        BilateralPointConstraintData cd_LF(cm_LF), cd_LF_plus(cm_LF);
+        PointAnchorConstraintData cd_LF(cm_LF), cd_LF_plus(cm_LF);
         cm_LF.calc(model, data, cd_LF);
         BOOST_CHECK(cd_LF.constraint_velocity_error.isApprox(J_LF_sparse * v));
 
@@ -397,7 +397,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       }
 
       {
-        BilateralPointConstraintData cld_RF_LF(clm_RF_LF), cld_RF_LF_plus(clm_RF_LF);
+        PointAnchorConstraintData cld_RF_LF(clm_RF_LF), cld_RF_LF_plus(clm_RF_LF);
         clm_RF_LF.calc(model, data, cld_RF_LF);
         BOOST_CHECK(cld_RF_LF.constraint_velocity_error.isApprox(J_clm_sparse * v));
 
@@ -431,7 +431,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       forwardKinematics(model, data_zero_acc, q, v, VectorXd::Zero(model.nv));
 
       // RF
-      BilateralPointConstraintData cd_RF(cm_RF), cd_RF_zero_acc(cm_RF);
+      PointAnchorConstraintData cd_RF(cm_RF), cd_RF_zero_acc(cm_RF);
       cm_RF.calc(model, data, cd_RF);
       cm_RF.calc(model, data_zero_acc, cd_RF_zero_acc);
 
@@ -443,7 +443,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
                     .isApprox(cd_RF.constraint_acceleration_error));
 
       // LF
-      BilateralPointConstraintData cd_LF(cm_LF), cd_LF_zero_acc(cm_LF);
+      PointAnchorConstraintData cd_LF(cm_LF), cd_LF_zero_acc(cm_LF);
       cm_LF.calc(model, data, cd_LF);
       cm_LF.calc(model, data_zero_acc, cd_LF_zero_acc);
 
@@ -455,7 +455,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
                     .isApprox(cd_LF.constraint_acceleration_error));
 
       // Close loop
-      BilateralPointConstraintData cld_RF_LF(clm_RF_LF), cld_RF_LF_zero_acc(clm_RF_LF);
+      PointAnchorConstraintData cld_RF_LF(clm_RF_LF), cld_RF_LF_zero_acc(clm_RF_LF);
       clm_RF_LF.calc(model, data, cld_RF_LF);
       clm_RF_LF.calc(model, data_zero_acc, cld_RF_LF_zero_acc);
 
@@ -477,7 +477,7 @@ BOOST_AUTO_TEST_CASE(cast)
 
   const std::string RF = "rleg6_joint";
 
-  const BilateralPointConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
+  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
   const auto cm_RF_cast_double = cm_RF.cast<double>();
   BOOST_CHECK(cm_RF_cast_double == cm_RF);
 
@@ -503,17 +503,17 @@ BOOST_AUTO_TEST_CASE(cholesky)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  const BilateralPointConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
-  const BilateralPointConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
-  const BilateralPointConstraintModel clm_RF_LF(
+  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
+  const PointAnchorConstraintModel cm_LF(model, model.getJointId(LF), SE3::Random());
+  const PointAnchorConstraintModel clm_RF_LF(
     model, cm_RF.joint1_id, cm_RF.joint1_placement, cm_LF.joint1_id, cm_LF.joint1_placement);
 
-  std::vector<BilateralPointConstraintModel> constraint_models;
+  std::vector<PointAnchorConstraintModel> constraint_models;
   constraint_models.push_back(cm_RF);
   constraint_models.push_back(cm_LF);
   constraint_models.push_back(clm_RF_LF);
 
-  std::vector<BilateralPointConstraintData> constraint_datas, constraint_datas_ref;
+  std::vector<PointAnchorConstraintData> constraint_datas, constraint_datas_ref;
   for (const auto & cm : constraint_models)
   {
     constraint_datas.push_back(cm.createData());

@@ -9,8 +9,8 @@
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/joint/joints.hpp"
 #include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/algorithm/constraints/point-bilateral-constraint.hpp"
-#include "pinocchio/algorithm/constraints/weld-constraint.hpp"
+#include "pinocchio/algorithm/constraints/point-anchor-constraint.hpp"
+#include "pinocchio/algorithm/constraints/frame-anchor-constraint.hpp"
 #include "pinocchio/multibody/liegroup/liegroup.hpp"
 #include "pinocchio/multibody/liegroup/liegroup-joint.hpp"
 
@@ -452,7 +452,7 @@ namespace pinocchio
         // Specified relative to the local coordinate frame of the first body.
         Eigen::Vector3d anchor = Eigen::Vector3d::Zero();
 
-        // Relative pose of the weld position where the two bodies are welded.
+        // Relative pose of the frame anchor position where the two bodies are welded.
         // Specified relative to the local coordinate frame of the first body.
         SE3 relpose = SE3::Identity();
 
@@ -657,13 +657,14 @@ namespace pinocchio
 
         /// @brief Parse the equality constraints and add them to the model
         /// @param model Model to add the constraints to
-        /// @param bilateral_constraint_models Vector of contact models to add the constraints to
-        /// @param weld_constraint_models Vector of contact models to add the constraints to
+        /// @param point_anchor_constraint_models Vector of contact models to add the constraints to
+        /// @param frame_anchor_constraint_models Vector of contact models to add the constraints to
         void parseContactInformation(
           const Model & model,
-          PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-            & bilateral_constraint_models,
-          PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel) & weld_constraint_models);
+          PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+            & point_anchor_constraint_models,
+          PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+            & frame_anchor_constraint_models);
 
         /// @brief Fill geometry model with all the info taken from the mjcf model file
         /// @param type Type of geometry to parse (COLLISION or VISUAL)

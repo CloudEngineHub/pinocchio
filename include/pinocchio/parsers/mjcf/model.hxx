@@ -53,9 +53,10 @@ namespace pinocchio
     void buildConstraintModelsFromXML(
       const std::string & xmlStream,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-        & bilateral_constraint_models,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel) & weld_constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+        & point_anchor_constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+        & frame_anchor_constraint_models,
       const bool verbose)
     {
       typedef ::pinocchio::parsers::Model Model;
@@ -73,37 +74,39 @@ namespace pinocchio
 
       // Use the Mjcf graph to create the model
       graph.parseContactInformation(
-        mjcf_model, bilateral_constraint_models, weld_constraint_models);
+        mjcf_model, point_anchor_constraint_models, frame_anchor_constraint_models);
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
       & buildConstraintModelsFromXML(
         const std::string & xmlStream,
         ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-          & bilateral_constraint_models,
+        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+          & point_anchor_constraint_models,
         const bool verbose)
     {
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel) weld_constraint_models;
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+      frame_anchor_constraint_models;
       buildConstraintModelsFromXML(
-        xmlStream, model, bilateral_constraint_models, weld_constraint_models, verbose);
-      return bilateral_constraint_models;
+        xmlStream, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
+      return point_anchor_constraint_models;
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel)
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
       & buildConstraintModelsFromXML(
         const std::string & xmlStream,
         ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel) & weld_constraint_models,
+        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+          & frame_anchor_constraint_models,
         const bool verbose)
     {
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-      bilateral_constraint_models;
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+      point_anchor_constraint_models;
       buildConstraintModelsFromXML(
-        xmlStream, model, bilateral_constraint_models, weld_constraint_models, verbose);
-      return weld_constraint_models;
+        xmlStream, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
+      return frame_anchor_constraint_models;
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>

@@ -2,11 +2,11 @@
 // Copyright (c) 2019-2024 INRIA CNRS
 //
 
-#ifndef __pinocchio_algorithm_constraints_frictional_point_constraint_hpp__
-#define __pinocchio_algorithm_constraints_frictional_point_constraint_hpp__
+#ifndef __pinocchio_algorithm_constraints_point_anchor_constraint_hpp__
+#define __pinocchio_algorithm_constraints_point_anchor_constraint_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/coulomb-friction-cone.hpp"
+#include "pinocchio/algorithm/constraints/unbounded-set.hpp"
 #include "pinocchio/algorithm/constraints/point-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/point-constraint-data-base.hpp"
 
@@ -14,14 +14,14 @@ namespace pinocchio
 {
 
   template<typename NewScalar, typename Scalar, int Options>
-  struct CastType<NewScalar, FrictionalPointConstraintModelTpl<Scalar, Options>>
+  struct CastType<NewScalar, PointAnchorConstraintModelTpl<Scalar, Options>>
   {
-    typedef FrictionalPointConstraintModelTpl<NewScalar, Options> type;
+    typedef PointAnchorConstraintModelTpl<NewScalar, Options> type;
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<FrictionalPointConstraintModelTpl<_Scalar, _Options>>
-  : traits<PointConstraintModelBase<FrictionalPointConstraintModelTpl<_Scalar, _Options>>>
+  struct traits<PointAnchorConstraintModelTpl<_Scalar, _Options>>
+  : traits<PointConstraintModelBase<PointAnchorConstraintModelTpl<_Scalar, _Options>>>
   {
     typedef _Scalar Scalar;
 
@@ -30,9 +30,9 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef FrictionalPointConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef FrictionalPointConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef CoulombFrictionConeTpl<Scalar> ConstraintSet;
+    typedef PointAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef PointAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
+    typedef UnboundedSetTpl<Scalar, Options> ConstraintSet;
 
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
@@ -56,8 +56,8 @@ namespace pinocchio
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<FrictionalPointConstraintDataTpl<_Scalar, _Options>>
-  : traits<FrictionalPointConstraintModelTpl<_Scalar, _Options>>
+  struct traits<PointAnchorConstraintDataTpl<_Scalar, _Options>>
+  : traits<PointAnchorConstraintModelTpl<_Scalar, _Options>>
   {
   };
 
@@ -65,8 +65,8 @@ namespace pinocchio
   ///  \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
-  struct FrictionalPointConstraintModelTpl
-  : PointConstraintModelBase<FrictionalPointConstraintModelTpl<_Scalar, _Options>>
+  struct PointAnchorConstraintModelTpl
+  : PointConstraintModelBase<PointAnchorConstraintModelTpl<_Scalar, _Options>>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -76,14 +76,14 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef PointConstraintModelBase<FrictionalPointConstraintModelTpl> Base;
-    typedef ConstraintModelBase<FrictionalPointConstraintModelTpl> RootBase;
+    typedef PointConstraintModelBase<PointAnchorConstraintModelTpl> Base;
+    typedef ConstraintModelBase<PointAnchorConstraintModelTpl> RootBase;
 
     template<typename NewScalar, int NewOptions>
-    friend struct FrictionalPointConstraintModelTpl;
+    friend struct PointAnchorConstraintModelTpl;
 
-    typedef FrictionalPointConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef CoulombFrictionConeTpl<Scalar> ConstraintSet;
+    typedef PointAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
+    typedef UnboundedSetTpl<Scalar, Options> ConstraintSet;
 
     using typename Base::SE3;
 
@@ -99,7 +99,7 @@ namespace pinocchio
     ///
     ///  \brief Default constructor
     ///
-    FrictionalPointConstraintModelTpl()
+    PointAnchorConstraintModelTpl()
     : Base()
     {
     }
@@ -116,7 +116,7 @@ namespace pinocchio
     /// expressed.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    FrictionalPointConstraintModelTpl(
+    PointAnchorConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement,
@@ -135,7 +135,7 @@ namespace pinocchio
     /// expressed.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    FrictionalPointConstraintModelTpl(
+    PointAnchorConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement)
@@ -151,7 +151,7 @@ namespace pinocchio
     /// \param[in] joint2_id Index of the joint 2 in the model tree.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    FrictionalPointConstraintModelTpl(
+    PointAnchorConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const JointIndex joint2_id)
@@ -169,7 +169,7 @@ namespace pinocchio
     /// universe).
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    FrictionalPointConstraintModelTpl(
+    PointAnchorConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
     : Base(model, joint1_id)
     {
@@ -185,9 +185,9 @@ namespace pinocchio
 
     /// \brief Cast operator
     template<typename NewScalar>
-    typename CastType<NewScalar, FrictionalPointConstraintModelTpl>::type cast() const
+    typename CastType<NewScalar, PointAnchorConstraintModelTpl>::type cast() const
     {
-      typedef typename CastType<NewScalar, FrictionalPointConstraintModelTpl>::type ReturnType;
+      typedef typename CastType<NewScalar, PointAnchorConstraintModelTpl>::type ReturnType;
       ReturnType res;
       Base::template cast<NewScalar>(res);
       res.m_set = m_set.template cast<NewScalar>();
@@ -197,12 +197,12 @@ namespace pinocchio
     ///
     ///  \brief Comparison operator
     ///
-    /// \param[in] other Other FrictionalPointConstraintModelTpl to compare with.
+    /// \param[in] other Other PointAnchorConstraintModelTpl to compare with.
     ///
     /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
     /// must be the same).
     ///
-    bool operator==(const FrictionalPointConstraintModelTpl & other) const
+    bool operator==(const PointAnchorConstraintModelTpl & other) const
     {
       return base() == other.base() && m_set == other.m_set;
     }
@@ -210,12 +210,12 @@ namespace pinocchio
     ///
     ///  \brief Oposite of the comparison operator.
     ///
-    /// \param[in] other Other FrictionalPointConstraintModelTpl to compare with.
+    /// \param[in] other Other PointAnchorConstraintModelTpl to compare with.
     ///
     /// \returns false if the two *this is not equal to other (at least type, joint1_id or placement
     /// attributs is different).
     ///
-    bool operator!=(const FrictionalPointConstraintModelTpl & other) const
+    bool operator!=(const PointAnchorConstraintModelTpl & other) const
     {
       return !(*this == other);
     }
@@ -232,7 +232,7 @@ namespace pinocchio
 
     static std::string classname()
     {
-      return std::string("FrictionalPointConstraintModel");
+      return std::string("PointAnchorConstraintModel");
     }
     std::string shortname() const
     {
@@ -240,16 +240,16 @@ namespace pinocchio
     }
 
   protected:
-    ConstraintSet m_set = ConstraintSet();
+    ConstraintSet m_set = ConstraintSet(3);
 
-  }; // struct FrictionalPointConstraintModelTpl<_Scalar,_Options>
+  }; // struct PointAnchorConstraintModelTpl<_Scalar,_Options>
 
   ///
   ///  \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
-  struct FrictionalPointConstraintDataTpl
-  : PointConstraintDataBase<FrictionalPointConstraintDataTpl<_Scalar, _Options>>
+  struct PointAnchorConstraintDataTpl
+  : PointConstraintDataBase<PointAnchorConstraintDataTpl<_Scalar, _Options>>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -259,28 +259,28 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef FrictionalPointConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef FrictionalPointConstraintDataTpl ConstraintData;
-    typedef PointConstraintDataBase<FrictionalPointConstraintDataTpl> Base;
+    typedef PointAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef PointAnchorConstraintDataTpl ConstraintData;
+    typedef PointConstraintDataBase<PointAnchorConstraintDataTpl> Base;
 
     using typename Base::SE3;
 
     /// \brief Default constructor
-    FrictionalPointConstraintDataTpl()
+    PointAnchorConstraintDataTpl()
     {
     }
 
-    explicit FrictionalPointConstraintDataTpl(const ConstraintModel & constraint_model)
+    explicit PointAnchorConstraintDataTpl(const ConstraintModel & constraint_model)
     : Base(constraint_model)
     {
     }
 
-    bool operator==(const FrictionalPointConstraintDataTpl & other) const
+    bool operator==(const PointAnchorConstraintDataTpl & other) const
     {
       return base() == other.base();
     }
 
-    bool operator!=(const FrictionalPointConstraintDataTpl & other) const
+    bool operator!=(const PointAnchorConstraintDataTpl & other) const
     {
       return !(*this == other);
     }
@@ -296,14 +296,14 @@ namespace pinocchio
 
     static std::string classname()
     {
-      return std::string("FrictionalPointConstraintData");
+      return std::string("PointAnchorConstraintData");
     }
     std::string shortname() const
     {
       return classname();
     }
-  }; // struct FrictionalPointConstraintDataTpl<_Scalar,_Options>
+  }; // struct PointAnchorConstraintDataTpl<_Scalar,_Options>
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_constraints_frictional_point_constraint_hpp__
+#endif // ifndef __pinocchio_algorithm_constraints_point_anchor_constraint_hpp__

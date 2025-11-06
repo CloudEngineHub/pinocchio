@@ -38,13 +38,12 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/kinematics-constraint-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-ordering.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-ordering.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-bilateral-constraint.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/weld-constraint.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-anchor-constraint.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-anchor-constraint.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/box-set.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/cone-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/coulomb-friction-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraints.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/fictious-constraint.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-collection-default.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-data-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-data-generic.hpp
@@ -53,14 +52,13 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-model-generic.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-constraint-model-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-constraint-data-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/patch-frictional-constraint.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-frictional-constraint.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-contact-constraint.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-limit-constraint.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-limit-constraint.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-limit-constraint-cone.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-frictional-constraint.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-frictional-constraint.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-friction-constraint.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-friction-constraint.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/null-set.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/orthant-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-constraint-model-base.hpp

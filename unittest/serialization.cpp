@@ -749,15 +749,15 @@ BOOST_AUTO_TEST_CASE(test_delassus_operator_dense_serialization)
   std::vector<ConstraintModel> constraint_models;
   std::vector<ConstraintData> constraint_datas;
 
-  FrictionalJointConstraintModel::JointIndexVector active_friction_idxs;
-  FrictionalJointConstraintModel::JointIndexVector active_limit_idxs;
+  JointFrictionConstraintModel::JointIndexVector active_friction_idxs;
+  JointFrictionConstraintModel::JointIndexVector active_limit_idxs;
   for (size_t i = 1; i < model.joints.size(); ++i)
   {
     const Model::JointModel & joint = model.joints[i];
     active_friction_idxs.push_back(joint.id());
     active_limit_idxs.push_back(joint.id());
   }
-  FrictionalJointConstraintModel joints_friction(model, active_friction_idxs);
+  JointFrictionConstraintModel joints_friction(model, active_friction_idxs);
   constraint_models.push_back(joints_friction);
   constraint_datas.push_back(joints_friction.createData());
   //
@@ -962,14 +962,14 @@ struct initConstraint<pinocchio::JointLimitConstraintModel>
 };
 
 template<>
-struct initConstraint<pinocchio::FrictionalJointConstraintModel>
+struct initConstraint<pinocchio::JointFrictionConstraintModel>
 {
   typedef pinocchio::Model Model;
-  typedef pinocchio::FrictionalJointConstraintModel ConstraintModel;
+  typedef pinocchio::JointFrictionConstraintModel ConstraintModel;
 
   static ConstraintModel run(const Model & model)
   {
-    // Note: The upper/lower bounds of FrictionalJointConstraintModel's constraint set
+    // Note: The upper/lower bounds of JointFrictionConstraintModel's constraint set
     // need to be set after constructing the constraint model.
     ConstraintModel cmodel =
       JointLimitAndFrictionConstraintModelInitializer<ConstraintModel>::run(model);
@@ -981,28 +981,28 @@ struct initConstraint<pinocchio::FrictionalJointConstraintModel>
 };
 
 template<>
-struct initConstraint<pinocchio::BilateralPointConstraintModel>
+struct initConstraint<pinocchio::PointAnchorConstraintModel>
 {
   typedef pinocchio::Model Model;
-  typedef pinocchio::BilateralPointConstraintModel ConstraintModel;
+  typedef pinocchio::PointAnchorConstraintModel ConstraintModel;
 
   static ConstraintModel run(const Model & model)
   {
-    // Note: For bilateral constraints, no need to manually set the constraint set.
+    // Note: For point anchor constraints, no need to manually set the constraint set.
     ConstraintModel cmodel = PointAndFrameConstraintModelInitializer<ConstraintModel>::run(model);
     return cmodel;
   }
 };
 
 template<>
-struct initConstraint<pinocchio::FrictionalPointConstraintModel>
+struct initConstraint<pinocchio::PointContactConstraintModel>
 {
   typedef pinocchio::Model Model;
-  typedef pinocchio::FrictionalPointConstraintModel ConstraintModel;
+  typedef pinocchio::PointContactConstraintModel ConstraintModel;
 
   static ConstraintModel run(const Model & model)
   {
-    // Note: For frictional point constraints, the friction coeff of the coulomb cone needs to be
+    // Note: For PointContact constraints, the friction coeff of the coulomb cone needs to be
     // set.
     ConstraintModel cmodel = PointAndFrameConstraintModelInitializer<ConstraintModel>::run(model);
     cmodel.set() = pinocchio::CoulombFrictionCone(0.1234);
@@ -1011,14 +1011,14 @@ struct initConstraint<pinocchio::FrictionalPointConstraintModel>
 };
 
 template<>
-struct initConstraint<pinocchio::WeldConstraintModel>
+struct initConstraint<pinocchio::FrameAnchorConstraintModel>
 {
   typedef pinocchio::Model Model;
-  typedef pinocchio::WeldConstraintModel ConstraintModel;
+  typedef pinocchio::FrameAnchorConstraintModel ConstraintModel;
 
   static ConstraintModel run(const Model & model)
   {
-    // Note: For weld constraints, no need to manually set the constraint set.
+    // Note: For FrameAnchor constraints, no need to manually set the constraint set.
     ConstraintModel cmodel = PointAndFrameConstraintModelInitializer<ConstraintModel>::run(model);
     return cmodel;
   }
@@ -1127,8 +1127,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
     // generic_test(cdata, TEST_SERIALIZATION_FOLDER "/Constraint", "cdata_variant");
   }
   {
-    FrictionalJointConstraintModel cmodel_ =
-      initConstraint<FrictionalJointConstraintModel>::run(model);
+    JointFrictionConstraintModel cmodel_ = initConstraint<JointFrictionConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
     cmodel.calc(model, data, cdata);
@@ -1140,8 +1139,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
     generic_test(cdata, TEST_SERIALIZATION_FOLDER "/Constraint", "cdata_variant");
   }
   {
-    FrictionalPointConstraintModel cmodel_ =
-      initConstraint<FrictionalPointConstraintModel>::run(model);
+    PointContactConstraintModel cmodel_ = initConstraint<PointContactConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
     cmodel.calc(model, data, cdata);
@@ -1153,8 +1151,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
     generic_test(cdata, TEST_SERIALIZATION_FOLDER "/Constraint", "cdata_variant");
   }
   {
-    BilateralPointConstraintModel cmodel_ =
-      initConstraint<BilateralPointConstraintModel>::run(model);
+    PointAnchorConstraintModel cmodel_ = initConstraint<PointAnchorConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
     cmodel.calc(model, data, cdata);
@@ -1166,7 +1163,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
     generic_test(cdata, TEST_SERIALIZATION_FOLDER "/Constraint", "cdata_variant");
   }
   {
-    WeldConstraintModel cmodel_ = initConstraint<WeldConstraintModel>::run(model);
+    FrameAnchorConstraintModel cmodel_ = initConstraint<FrameAnchorConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
     cmodel.calc(model, data, cdata);

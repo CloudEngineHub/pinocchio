@@ -2,14 +2,14 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_frictional_joint_constraint_hxx__
-#define __pinocchio_algorithm_constraints_frictional_joint_constraint_hxx__
+#ifndef __pinocchio_algorithm_constraints_joint_friction_constraint_hxx__
+#define __pinocchio_algorithm_constraints_joint_friction_constraint_hxx__
 
 namespace pinocchio
 {
   template<typename Scalar, int Options>
   template<template<typename, int> class JointCollectionTpl>
-  void FrictionalJointConstraintModelTpl<Scalar, Options>::init(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::init(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const JointIndexVector & active_joints)
   {
@@ -75,7 +75,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
-  void FrictionalJointConstraintModelTpl<Scalar, Options>::jacobian(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::jacobian(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & /*data*/,
     const ConstraintData & cdata,
@@ -83,7 +83,7 @@ namespace pinocchio
   {
     JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
 
-    const FrictionalJointConstraintModelTpl & cmodel = *this;
+    const JointFrictionConstraintModelTpl & cmodel = *this;
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       jacobian_matrix.rows(), cmodel.activeSize(cdata),
       "The input/output Jacobian matrix does not have the right number of rows.");
@@ -105,7 +105,7 @@ namespace pinocchio
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
-  void FrictionalJointConstraintModelTpl<Scalar, Options>::jacobianMatrixProduct(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianMatrixProduct(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -142,7 +142,7 @@ namespace pinocchio
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
-  void FrictionalJointConstraintModelTpl<Scalar, Options>::jacobianTransposeMatrixProduct(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianTransposeMatrixProduct(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -178,7 +178,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename VectorNLike,
     ReferenceFrame rf>
-  void FrictionalJointConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertias(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertias(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -210,7 +210,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConstraintForcesLike,
     typename JointTorquesLike>
-  void FrictionalJointConstraintModelTpl<Scalar, Options>::mapConstraintForceToJointTorques(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::mapConstraintForceToJointTorques(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -237,7 +237,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename JointMotionsLike,
     typename ConstraintMotionsLike>
-  void FrictionalJointConstraintModelTpl<Scalar, Options>::mapJointMotionsToConstraintMotion(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::mapJointMotionsToConstraintMotion(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -261,4 +261,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_constraints_frictional_joint_constraint_hxx__
+#endif // ifndef __pinocchio_algorithm_constraints_joint_friction_constraint_hxx__
