@@ -106,7 +106,8 @@ namespace pinocchio
       }
 
       ///  \brief Returns true if the key (entry1,entry2) has been succesfully added.
-      bool insert(const Index entry1, const Index entry2, const T & value = T())
+      template<typename... Args>
+      bool insert(const Index entry1, const Index entry2, Args &&... args)
       {
         if (!(entry1 >= 0 && entry1 < rows()) || !(entry2 >= 0 && entry2 < cols()))
           return false;
@@ -114,7 +115,7 @@ namespace pinocchio
           return false;
 
         m_keys(entry1, entry2) = long(m_values.size());
-        m_values.push_back(value);
+        m_values.emplace_back(std::forward<Args>(args)...);
         return true;
       }
 
