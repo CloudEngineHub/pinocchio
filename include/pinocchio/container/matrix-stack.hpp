@@ -37,9 +37,8 @@ namespace pinocchio
       Alignment = _Alignment
     };
 
-    typedef MatrixLike value_type;
-
     typedef Eigen::Map<PlainMatrixType, Alignment> MapType;
+    typedef MapType value_type;
     typedef MapType & RefMapType;
     typedef const MapType & ConstRefMapType;
 
