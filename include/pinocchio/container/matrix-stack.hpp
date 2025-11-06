@@ -173,6 +173,13 @@ namespace pinocchio
       this->back() = matrix;
     }
 
+    template<typename... Args>
+    void emplace_back(Args &&... args)
+    {
+      PlainMatrixType matrix(std::forward<Args>(args)...);
+      push_back(matrix);
+    }
+
     void
     push_back(const Index rows, const Index cols, const std::function<void(MapType)> init_func = {})
     {
