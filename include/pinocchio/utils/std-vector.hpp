@@ -6,7 +6,9 @@
 #define __pinocchio_utils_std_vector_hpp__
 
 #include <vector>
+#include <algorithm>
 
+#include "pinocchio/utils/fwd.hpp"
 #include "pinocchio/utils/template-template-parameter.hpp"
 
 namespace pinocchio
@@ -239,6 +241,80 @@ namespace pinocchio
     template<class T>
     inline constexpr bool is_std_vector_v =
       is_std_vector<std::remove_cv_t<std::remove_reference_t<T>>>::value;
+
+    // Define the tag types
+    struct erase_first_t
+    {
+    };
+    struct erase_all_t
+    {
+    };
+    struct erase_by_index_t
+    {
+    };
+
+    // Provide constexpr instances for convenience
+    inline constexpr erase_first_t erase_first{};
+    inline constexpr erase_all_t erase_all{};
+    inline constexpr erase_by_index_t erase_by_index{};
+
+    template<typename Tag>
+    struct eraser;
+
+    // Specialization: erase first occurrence
+    template<>
+    struct eraser<erase_first_t>
+    {
+      template<typename T, class Allocator>
+      static void apply(std::vector<T, Allocator> & vec, const T & value)
+      {
+        auto it = std::find(vec.begin(), vec.end(), value);
+        if (it != vec.end())
+          vec.erase(it);
+      }
+    };
+
+    // Specialization: erase all occurrences
+    template<>
+    struct eraser<erase_all_t>
+    {
+      template<typename T, class Allocator>
+      static void apply(std::vector<T, Allocator> & vec, const T & value)
+      {
+        vec.erase(std::remove(vec.begin(), vec.end(), value), vec.end());
+      }
+    };
+
+    // Specialization: erase by index
+    template<>
+    struct eraser<erase_by_index_t>
+    {
+      template<typename T, class Allocator>
+      static void apply(std::vector<T, Allocator> & vec, std::size_t index)
+      {
+        PINOCCHIO_THROW_IF(index >= vec.size(), std::out_of_range, "Index out of range");
+        vec.erase(vec.begin() + index);
+      }
+    };
+
+    template<typename Tag, typename T, class Allocator>
+    void erase(std::vector<T, Allocator> & vec, const T & value, Tag)
+    {
+      eraser<Tag>::apply(vec, value);
+    }
+
+    template<typename Tag, typename T, class Allocator>
+    void erase(std::vector<T, Allocator> & vec, const size_t index)
+    {
+      eraser<erase_by_index_t>::apply(vec, index);
+    }
+
+    template<typename T, class Allocator>
+    bool exists(const std::vector<T, Allocator> & vec, const T & value)
+    {
+      return std::find(vec.begin(), vec.end(), value) != vec.end();
+    }
+
   } // namespace helper
 } // namespace pinocchio
 
