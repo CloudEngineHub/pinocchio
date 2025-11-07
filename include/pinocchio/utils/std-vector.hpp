@@ -208,7 +208,6 @@ namespace pinocchio
     {
     };
 
-    /// @cond SPECIALIZATION
     /**
      * @brief Partial specialization for types of the form `std::vector<T, Alloc>`.
      *
@@ -222,7 +221,6 @@ namespace pinocchio
     struct is_std_vector<std::vector<T, Alloc>> : std::true_type
     {
     };
-    /// @endcond
 
     /**
      * @brief Convenience variable template yielding the `is_std_vector` result.
