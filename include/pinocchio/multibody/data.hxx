@@ -169,6 +169,7 @@ namespace pinocchio
   , constraints_on_joint((std::size_t)model.njoints)
   , joint_neighbours((std::size_t)model.njoints)
   , joint_cross_coupling(model.njoints, model.njoints)
+  , projected_joint_cross_coupling(model.njoints, model.njoints)
   , joint_apparent_inertia(
       std::size_t(model.njoints),
       std::size_t(PINOCCHIO_SQUARE(*std::max_element(model.nvs.begin(), model.nvs.end()))))
@@ -417,6 +418,7 @@ namespace pinocchio
       && data1.constraints_on_joint == data2.constraints_on_joint
       && data1.joint_neighbours == data2.joint_neighbours
       && data1.joint_cross_coupling == data2.joint_cross_coupling
+      && data1.projected_joint_cross_coupling == data2.projected_joint_cross_coupling
       && data1.joint_apparent_inertia == data2.joint_apparent_inertia;
 
     // operator== for Eigen::Tensor provides an Expression which might be not evaluated as a boolean

@@ -619,6 +619,10 @@ namespace pinocchio
     container::DoubleEntryContainer<std::vector<Matrix6, Eigen::aligned_allocator<Matrix6>>>
       joint_cross_coupling;
 
+    /// \brief Stores the projected cross-coupling between links as
+    /// `projected_joint_cross_coupling(j,i) = cross_coupling(j,i) * J_i`.
+    container::DoubleEntryContainer<MatrixStackTpl<Matrix6x>> projected_joint_cross_coupling;
+
     /// \brief Stores the elimination ordering of CL-CABA
     std::vector<JointIndex> elimination_order;
 
