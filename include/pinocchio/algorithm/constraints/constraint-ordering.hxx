@@ -7,6 +7,7 @@
 
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 #include "pinocchio/utils/reference.hpp"
+#include "pinocchio/utils/std-vector.hpp"
 
 /// @cond DEV
 
@@ -204,9 +205,7 @@ namespace pinocchio
               jp_pair, Matrix6::Zero()); // add edge (neighbour_j, parent_id) if neighbour_j <
                                          // parent_id else (parent_id, neighbour_j)
 
-            if (
-              std::find(parent_neighbours.begin(), parent_neighbours.end(), neighbour_j)
-              == parent_neighbours.end())
+            if (!helper::exists(parent_neighbours, neighbour_j))
             {
               parent_neighbours.push_back(neighbour_j);
               neighbour_j_neighbours.push_back(parent_id);
@@ -215,9 +214,7 @@ namespace pinocchio
         }
 
         // Remove joint_id from the list of neighbours for neighbour_j_neighbours
-        neighbour_j_neighbours.erase(
-          std::remove(neighbour_j_neighbours.begin(), neighbour_j_neighbours.end(), joint_id),
-          neighbour_j_neighbours.end());
+        helper::erase(neighbour_j_neighbours, joint_id, helper::erase_first);
 
         for (size_t k = j + 1; k < joint_neighbours.size(); ++k)
         {
