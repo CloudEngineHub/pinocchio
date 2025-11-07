@@ -215,9 +215,18 @@ namespace pinocchio
         const Index entry1 = key.first;
         const Index entry2 = key.second;
 
-        if (!this->exists(entry1, entry2))
-          this->insert(entry1, entry2);
+        assert(this->exists(entry1, entry2));
+        const long index = m_keys(entry1, entry2);
 
+        return m_values[size_t(index)];
+      }
+
+      const T & operator[](const IndexPair & key) const
+      {
+        const Index entry1 = key.first;
+        const Index entry2 = key.second;
+
+        assert(this->exists(entry1, entry2));
         const long index = m_keys(entry1, entry2);
 
         return m_values[size_t(index)];
