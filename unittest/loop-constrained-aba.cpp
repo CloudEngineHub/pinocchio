@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE(test_6D_descendants_reversed)
   for (JointIndex j = 1; j < size_t(model.njoints); ++j)
   {
     if (data.constraints_supported_dim[j] == 0)
-      BOOST_CHECK(data.neighbour_links[j].size() == 0);
+      BOOST_CHECK(data.joint_neighbours[j].size() == 0);
   }
 }
 

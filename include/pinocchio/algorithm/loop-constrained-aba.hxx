@@ -123,7 +123,7 @@ namespace pinocchio
       }
 
       // End of the classic ABA backward pass - beginning of cross-coupling handling
-      const auto & neighbours = data.neighbour_links;
+      const auto & neighbours = data.joint_neighbours;
       auto & joint_cross_coupling = data.joint_cross_coupling;
       const auto & joint_neighbours = neighbours[i];
 
@@ -242,7 +242,7 @@ namespace pinocchio
       typedef typename Data::Matrix6 Matrix6;
       typedef std::pair<JointIndex, JointIndex> JointPair;
 
-      const auto & neighbours = data.neighbour_links;
+      const auto & neighbours = data.joint_neighbours;
       auto & joint_cross_coupling = data.joint_cross_coupling;
 
       const JointIndex i = jmodel.id();
@@ -304,7 +304,7 @@ namespace pinocchio
 
       const JointIndex i = jmodel.id();
       const JointIndex parent = model.parents[i];
-      const std::vector<JointIndex> & neighbours = data.neighbour_links[i];
+      const std::vector<JointIndex> & neighbours = data.joint_neighbours[i];
 
       data.oa_gf[i] += data.oa_gf[parent]; // does take into account the gravity field
 
@@ -360,7 +360,7 @@ namespace pinocchio
 
       const JointIndex i = jmodel.id();
       const JointIndex parent = model.parents[i];
-      const auto & neighbours = data.neighbour_links[i];
+      const auto & neighbours = data.joint_neighbours[i];
 
       data.oa_gf[i] = data.oa_gf[parent]; // does take into account the gravity field
 

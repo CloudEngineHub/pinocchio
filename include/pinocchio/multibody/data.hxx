@@ -167,7 +167,7 @@ namespace pinocchio
   , constraints_supported_dim((std::size_t)model.njoints, 0)
   , constraints_supported((std::size_t)model.njoints)
   , constraints_on_joint((std::size_t)model.njoints)
-  , neighbour_links((std::size_t)model.njoints)
+  , joint_neighbours((std::size_t)model.njoints)
   , joint_cross_coupling(model.njoints, model.njoints)
   , joint_apparent_inertia(
       std::size_t(model.njoints),
@@ -415,7 +415,7 @@ namespace pinocchio
       && data1.constraints_supported_dim == data2.constraints_supported_dim
       && data1.constraints_supported == data2.constraints_supported
       && data1.constraints_on_joint == data2.constraints_on_joint
-      && data1.neighbour_links == data2.neighbour_links
+      && data1.joint_neighbours == data2.joint_neighbours
       && data1.joint_cross_coupling == data2.joint_cross_coupling
       && data1.joint_apparent_inertia == data2.joint_apparent_inertia;
 

@@ -49,7 +49,7 @@ namespace pinocchio
 
       const JointIndex joint1_id = cmodel.joint1_id;
       const JointIndex joint2_id = cmodel.joint2_id;
-      auto & neighbours = data.neighbour_links;
+      auto & neighbours = data.joint_neighbours;
 
       const auto constraint_size = cmodel.size();
       data.constraints_supported_dim[joint1_id] += constraint_size;
@@ -128,7 +128,7 @@ namespace pinocchio
     typedef typename Data::Matrix6 Matrix6;
 
     // First step: for each joint, collect their neighbourds
-    auto & neighbours = data.neighbour_links;
+    auto & neighbours = data.joint_neighbours;
     for (auto & neighbour_elt : neighbours)
       neighbour_elt.clear();
     data.joint_cross_coupling.clear();

@@ -611,7 +611,7 @@ namespace pinocchio
     typedef std::vector<JointIndex> JointIndexVector;
 
     /// \brief Bookkeeping neighbouring vertices during CL-CABA or proxBBO
-    std::vector<JointIndexVector> neighbour_links;
+    std::vector<JointIndexVector> joint_neighbours;
 
     typedef std::pair<JointIndex, JointIndex> JointIndexPair;
 

@@ -352,7 +352,7 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
       BOOST_CHECK(data.Yaba == data2.Yaba);
       BOOST_CHECK(data.elimination_order == data2.elimination_order);
       BOOST_CHECK(data.constraints_supported_dim == data2.constraints_supported_dim);
-      BOOST_CHECK(data.neighbour_links == data2.neighbour_links);
+      BOOST_CHECK(data.joint_neighbours == data2.joint_neighbours);
       BOOST_CHECK((data.joint_cross_coupling.keys() == data2.joint_cross_coupling.keys()).all());
 
       for (JointIndex joint_id = 1; joint_id < JointIndex(model.njoints); ++joint_id)
