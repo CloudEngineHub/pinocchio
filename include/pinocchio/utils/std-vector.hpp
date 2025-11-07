@@ -240,29 +240,53 @@ namespace pinocchio
     inline constexpr bool is_std_vector_v =
       is_std_vector<std::remove_cv_t<std::remove_reference_t<T>>>::value;
 
-    // Define the tag types
+    /// @brief Tag type used to indicate that only the first matching element
+    /// should be erased from the vector.
     struct erase_first_t
     {
     };
+
+    /// @brief Tag type used to indicate that all matching elements
+    /// should be erased from the vector.
     struct erase_all_t
     {
     };
+
+    /// @brief Tag type used to indicate that an element should be erased
+    /// by its index position in the vector.
     struct erase_by_index_t
     {
     };
 
-    // Provide constexpr instances for convenience
+    /// @brief Convenient inline tag instance corresponding to @ref erase_first_t.
     inline constexpr erase_first_t erase_first{};
+
+    /// @brief Convenient inline tag instance corresponding to @ref erase_all_t.
     inline constexpr erase_all_t erase_all{};
+
+    /// @brief Convenient inline tag instance corresponding to @ref erase_by_index_t.
     inline constexpr erase_by_index_t erase_by_index{};
 
+    /// @brief Template interface for tag-based eraser.
+    /// @tparam Tag Erasure policy tag (e.g., @ref erase_first_t, @ref erase_all_t, @ref
+    /// erase_by_index_t)
     template<typename Tag>
     struct eraser;
 
-    // Specialization: erase first occurrence
+    /// @brief Eraser specialization for removing only the first occurrence of a value.
+    /// @tparam T           Type of elements stored in the vector.
+    /// @tparam Allocator   Allocator type used by the vector.
     template<>
     struct eraser<erase_first_t>
     {
+      /**
+       * @brief Removes the first element in the vector equal to `value`.
+       *
+       * @param vec   Reference to the vector to modify.
+       * @param value Element value to remove.
+       *
+       * If the value does not exist, the vector remains unchanged.
+       */
       template<typename T, class Allocator>
       static void apply(std::vector<T, Allocator> & vec, const T & value)
       {
@@ -272,10 +296,20 @@ namespace pinocchio
       }
     };
 
-    // Specialization: erase all occurrences
+    /// @brief Eraser specialization for removing all occurrences of a value.
+    /// @tparam T           Type of elements stored in the vector.
+    /// @tparam Allocator   Allocator type used by the vector.
     template<>
     struct eraser<erase_all_t>
     {
+      /**
+       * @brief Removes all elements in the vector equal to `value`.
+       *
+       * @param vec   Reference to the vector to modify.
+       * @param value Element value to remove.
+       *
+       * Uses the remove‑erase idiom internally.
+       */
       template<typename T, class Allocator>
       static void apply(std::vector<T, Allocator> & vec, const T & value)
       {
@@ -283,10 +317,20 @@ namespace pinocchio
       }
     };
 
-    // Specialization: erase by index
+    /// @brief Eraser specialization for removing an element by index.
+    /// @tparam T           Type of elements stored in the vector.
+    /// @tparam Allocator   Allocator type used by the vector.
     template<>
     struct eraser<erase_by_index_t>
     {
+      /**
+       * @brief Removes the element at the specified index from the vector.
+       *
+       * @param vec   Reference to the vector to modify.
+       * @param index Index of the element to remove.
+       *
+       * @throw std::out_of_range if @p index is greater than or equal to `vec.size()`.
+       */
       template<typename T, class Allocator>
       static void apply(std::vector<T, Allocator> & vec, std::size_t index)
       {
@@ -295,18 +339,48 @@ namespace pinocchio
       }
     };
 
+    /**
+     * @brief Erase elements from a vector based on the provided tag type.
+     *
+     * @tparam Tag         Tag struct choosing the erasure mode
+     *                     (e.g., @ref erase_first_t, @ref erase_all_t).
+     * @tparam T           Type of elements stored in the vector.
+     * @tparam Allocator   Allocator type used by the vector.
+     * @param vec          Reference to the vector to modify.
+     * @param value        Value of the element(s) to remove.
+     */
     template<typename Tag, typename T, class Allocator>
     void erase(std::vector<T, Allocator> & vec, const T & value, Tag)
     {
       eraser<Tag>::apply(vec, value);
     }
 
+    /**
+     * @brief Erase the element at the given index in a vector.
+     *
+     * @tparam Tag         Dummy template parameter, ignored here.
+     * @tparam T           Type of elements stored in the vector.
+     * @tparam Allocator   Allocator type used by the vector.
+     * @param vec          Reference to the vector to modify.
+     * @param index        Index of the element to remove.
+     *
+     * @throw std::out_of_range if @p index is out of bounds.
+     */
     template<typename Tag, typename T, class Allocator>
-    void erase(std::vector<T, Allocator> & vec, const size_t index)
+    void erase(std::vector<T, Allocator> & vec, const std::size_t index)
     {
       eraser<erase_by_index_t>::apply(vec, index);
     }
 
+    /**
+     * @brief Checks whether a given value exists in a vector.
+     *
+     * @tparam T           Type of elements stored in the vector.
+     * @tparam Allocator   Allocator type used by the vector.
+     * @param vec          Constant reference to the vector to inspect.
+     * @param value        Value to search for.
+     * @return true if the value is found, false otherwise.
+     */
     template<typename T, class Allocator>
     bool exists(const std::vector<T, Allocator> & vec, const T & value)
     {
