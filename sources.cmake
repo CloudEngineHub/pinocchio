@@ -359,6 +359,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/check.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-fix.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/file-io.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/helpers.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/openmp.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/reference.hpp
