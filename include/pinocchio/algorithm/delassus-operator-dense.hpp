@@ -12,8 +12,11 @@
 namespace pinocchio
 {
 
-  template<typename _Scalar, int _Options>
-  struct traits<DelassusOperatorDenseTpl<_Scalar, _Options>>
+  template<
+    typename _Scalar,
+    int _Options,
+    template<typename, auto...> class CholeskyDecompositionTpl>
+  struct traits<DelassusOperatorDenseTpl<_Scalar, _Options, CholeskyDecompositionTpl>>
   {
     typedef _Scalar Scalar;
     enum
@@ -28,7 +31,10 @@ namespace pinocchio
     typedef const Vector & getDampingReturnType;
   };
 
-  template<typename _Scalar, int _Options>
+  template<
+    typename _Scalar,
+    int _Options,
+    template<typename, auto...> class CholeskyDecompositionTpl>
   struct DelassusOperatorDenseTpl
   : DelassusOperatorBase<DelassusOperatorDenseTpl<_Scalar, _Options>>
   {
@@ -44,7 +50,7 @@ namespace pinocchio
 
     typedef typename traits<Self>::Matrix Matrix;
     typedef typename traits<Self>::Vector Vector;
-    typedef Eigen::LLT<Matrix> CholeskyDecomposition;
+    typedef CholeskyDecompositionTpl<Matrix> CholeskyDecomposition;
     typedef DelassusOperatorBase<Self> Base;
 
     template<typename MatrixDerived>

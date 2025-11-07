@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2024 INRIA
+// Copyright (c) 2020-2025 INRIA
 //
 
 #ifndef __pinocchio_algorithm_fwd_hpp__
@@ -26,9 +26,13 @@ namespace pinocchio
   typedef RigidConstraintModelTpl<context::Scalar, context::Options> RigidConstraintModel;
   typedef RigidConstraintDataTpl<context::Scalar, context::Options> RigidConstraintData;
 
-  template<typename Scalar, int Options = 0>
+  template<
+    typename Scalar,
+    int Options = 0,
+    template<typename, auto...> class CholeskyDecompositionTpl = Eigen::LLT>
   struct DelassusOperatorDenseTpl;
   typedef DelassusOperatorDenseTpl<context::Scalar, context::Options> DelassusOperatorDense;
+
   template<
     typename Scalar,
     int Options = 0,
