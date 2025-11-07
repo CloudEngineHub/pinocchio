@@ -6,6 +6,7 @@
 #define __pinocchio_algorithm_constraints_constraint_ordering_hxx__
 
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
+
 #include "pinocchio/utils/reference.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 
@@ -60,18 +61,14 @@ namespace pinocchio
           joint1_id > joint2_id ? JointPair{joint2_id, joint1_id} : JointPair{joint1_id, joint2_id};
 
         if (!data.joint_cross_coupling.exists(joint_pair))
-          data.joint_cross_coupling[joint_pair] = Matrix6::Zero();
+          data.joint_cross_coupling.insert(joint_pair, Matrix6::Zero());
 
         auto & joint1_neighbours = neighbours[joint1_id];
         auto & joint2_neighbours = neighbours[joint2_id];
 
-        if (
-          std::find(joint1_neighbours.begin(), joint1_neighbours.end(), joint2_id)
-          == joint1_neighbours.end())
+        if (!helper::exists(joint1_neighbours, joint2_id))
           joint1_neighbours.push_back(joint2_id);
-        if (
-          std::find(joint2_neighbours.begin(), joint2_neighbours.end(), joint1_id)
-          == joint2_neighbours.end())
+        if (!helper::exists(joint2_neighbours, joint1_id))
           joint2_neighbours.push_back(joint1_id);
       }
     }
