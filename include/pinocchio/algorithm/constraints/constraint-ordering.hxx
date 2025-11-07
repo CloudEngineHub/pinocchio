@@ -59,7 +59,7 @@ namespace pinocchio
         const JointPair joint_pair =
           joint1_id > joint2_id ? JointPair{joint2_id, joint1_id} : JointPair{joint1_id, joint2_id};
 
-        if (!data.joint_cross_coupling.exist(joint_pair))
+        if (!data.joint_cross_coupling.exists(joint_pair))
           data.joint_cross_coupling[joint_pair] = Matrix6::Zero();
 
         auto & joint1_neighbours = neighbours[joint1_id];
@@ -199,7 +199,7 @@ namespace pinocchio
           const JointPair jp_pair = neighbour_j < parent_id ? JointPair(neighbour_j, parent_id)
                                                             : JointPair(parent_id, neighbour_j);
 
-          if (!data.joint_cross_coupling.exist(jp_pair))
+          if (!data.joint_cross_coupling.exists(jp_pair))
           {
             data.joint_cross_coupling.insert(
               jp_pair, Matrix6::Zero()); // add edge (neighbour_j, parent_id) if neighbour_j <
@@ -225,7 +225,7 @@ namespace pinocchio
                                                  ? JointPair{neighbour_j, neighbour_k}
                                                  : JointPair{neighbour_k, neighbour_j};
 
-          if (!data.joint_cross_coupling.exist(cross_coupling_key))
+          if (!data.joint_cross_coupling.exists(cross_coupling_key))
           {
             data.joint_cross_coupling.insert(cross_coupling_key, Matrix6::Zero()); // add edge
 

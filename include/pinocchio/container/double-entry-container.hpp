@@ -195,7 +195,7 @@ namespace pinocchio
       }
 
       /// \brief Check whether the key (entry1,entry2) exists.
-      bool exist(const Index entry1, const Index entry2) const
+      bool exists(const Index entry1, const Index entry2) const
       {
         if (!(entry1 >= 0 && entry1 < rows()) || !(entry2 >= 0 && entry2 < cols()))
           return false;
@@ -205,9 +205,9 @@ namespace pinocchio
         return true;
       }
 
-      bool exist(const IndexPair & key) const
+      bool exists(const IndexPair & key) const
       {
-        return exist(key.first, key.second);
+        return exists(key.first, key.second);
       }
 
       T & operator[](const IndexPair & key)
@@ -215,7 +215,7 @@ namespace pinocchio
         const Index entry1 = key.first;
         const Index entry2 = key.second;
 
-        if (!this->exist(entry1, entry2))
+        if (!this->exists(entry1, entry2))
           this->insert(entry1, entry2);
 
         const long index = m_keys(entry1, entry2);
@@ -226,7 +226,7 @@ namespace pinocchio
       /// \brief Getter to access to a given value referenced by the input key without prior check.
       T & get(const IndexPair & key)
       {
-        assert(this->exist(key));
+        assert(this->exists(key));
         const Index entry1 = key.first;
         const Index entry2 = key.second;
         const long index = m_keys(entry1, entry2);
@@ -237,7 +237,7 @@ namespace pinocchio
       /// \brief Getter to access to a given value referenced by the input key without prior check.
       const T & get(const IndexPair & key) const
       {
-        assert(this->exist(key));
+        assert(this->exists(key));
         const Index entry1 = key.first;
         const Index entry2 = key.second;
         const long index = m_keys(entry1, entry2);
