@@ -98,21 +98,8 @@ namespace pinocchio
       const VectorXs & forces)
     {
       context::VectorXs res(forces.size());
-
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-
-      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-      WrappedConstraintDataVector wrapped_constraint_datas(
-        constraint_datas.cbegin(), constraint_datas.cend());
-
       ::pinocchio::internal::computeConeProjection(
-        wrapped_constraint_models, wrapped_constraint_datas, forces, res);
+        constraint_models, constraint_datas, forces, res);
       return res;
     }
 
@@ -127,21 +114,8 @@ namespace pinocchio
       const VectorXs & velocities)
     {
       context::VectorXs res(velocities.size());
-
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-
-      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-      WrappedConstraintDataVector wrapped_constraint_datas(
-        constraint_datas.cbegin(), constraint_datas.cend());
-
       ::pinocchio::internal::computeDualConeProjection(
-        wrapped_constraint_models, wrapped_constraint_datas, velocities, res);
+        constraint_models, constraint_datas, velocities, res);
       return res;
     }
 
@@ -179,20 +153,8 @@ namespace pinocchio
       const VectorXs & velocities)
     {
       context::VectorXs res(velocities.size());
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-
-      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-      WrappedConstraintDataVector wrapped_constraint_datas(
-        constraint_datas.cbegin(), constraint_datas.cend());
-
       ::pinocchio::internal::computeDeSaxeCorrection(
-        wrapped_constraint_models, wrapped_constraint_datas, velocities, res);
+        constraint_models, constraint_datas, velocities, res);
       return res;
     }
 #endif // PINOCCHIO_PYTHON_SKIP_CASADI_UNSUPPORTED

@@ -67,7 +67,7 @@ namespace pinocchio
    * @tparam ConstraintModel Type of each constraint model contained in the @p constraint_models
    * vector.
    * @tparam ConstraintModelAllocator Allocator type for the @p constraint_models vector.
-   * @tparam ConstraintData Type of each constraint data object contained in the @p constraint_datas
+   * @tparam ConstraintData Type of each constraint model contained in the @p constraint_models
    * vector.
    * @tparam ConstraintDataAllocator Allocator type for the @p constraint_datas vector.
    *
@@ -90,16 +90,14 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConstraintModel,
     class ConstraintModelAllocator,
-    typename ConstraintDataVector>
+    typename ConstraintData,
+    typename ConstraintDataAllocator>
   void calc(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    ConstraintDataVector & constraint_datas)
+    std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    static_assert(
-      helper::is_std_vector_v<ConstraintDataVector>,
-      "ConstraintDataVector should be an std::vector.");
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);

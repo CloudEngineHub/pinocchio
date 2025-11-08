@@ -11,6 +11,7 @@
 #include "pinocchio/algorithm/constraints/coulomb-friction-cone.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 #include "pinocchio/algorithm/delassus-operator-preconditioned.hpp"
+#include "pinocchio/utils/reference.hpp"
 
 #include "pinocchio/tracy.hpp"
 
@@ -140,15 +141,14 @@ namespace pinocchio
   }; // struct ZeroInitialGuessMaxConstraintViolationVisitor
 
   template<
-    template<typename T> class Holder,
     typename ConstraintModel,
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator,
     typename VectorLikeIn>
   typename ConstraintModel::Scalar computeZeroInitialGuessMaxConstraintViolation(
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::DenseBase<VectorLikeIn> & drift)
   {
     PINOCCHIO_TRACY_ZONE_SCOPED_N("computeZeroInitialGuessMaxConstraintViolation");
@@ -164,8 +164,8 @@ namespace pinocchio
     Scalar max_violation = Scalar(0);
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const auto & cmodel = constraint_models[k];
-      const auto & cdata = constraint_datas[k];
+      const auto & cmodel = helper::get_ref(constraint_models[k]);
+      const auto & cdata = helper::get_ref(constraint_datas[k]);
       const auto csize = cmodel.activeSize(cdata);
 
       SegmentType drift_segment = drift.segment(cindex, csize);
@@ -224,7 +224,6 @@ namespace pinocchio
   template<
     typename DelassusDerived,
     typename VectorLike,
-    template<typename T> class Holder,
     typename ConstraintModel,
     typename ConstraintModelAllocator,
     typename ConstraintData,
@@ -232,8 +231,8 @@ namespace pinocchio
   bool ADMMContactSolverTpl<_Scalar>::solve(
     DelassusOperatorBase<DelassusDerived> & _delassus,
     const Eigen::MatrixBase<VectorLike> & g,
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Scalar dt,
     const boost::optional<RefConstVectorXs> preconditioner,
     const boost::optional<RefConstVectorXs> primal_guess,
@@ -392,8 +391,8 @@ namespace pinocchio
     tmp -= rhs;
     dual_feasibility = tmp.template lpNorm<Eigen::Infinity>();
     // -- complementarity
-    complementarity =
-      internal::computeConicComplementarity(constraint_models, constraint_datas, rhs, y_);
+    internal::computeConicComplementarity(
+      constraint_models, constraint_datas, rhs, y_, complementarity);
 
     bool abs_prec_reached = false;
     bool rel_prec_reached = false;
@@ -620,8 +619,8 @@ namespace pinocchio
         primal_feasibility = primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
         dual_feasibility = dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
         dual_feasibility = math::max(mu_prox * tau_prox, rho * tau) * dual_feasibility;
-        complementarity =
-          internal::computeConicComplementarity(constraint_models, constraint_datas, z_, y_);
+        internal::computeConicComplementarity(
+          constraint_models, constraint_datas, z_, y_, complementarity);
 
         if (stat_record)
         {

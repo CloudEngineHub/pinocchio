@@ -8,6 +8,7 @@
 #include "pinocchio/algorithm/constraints/sets.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 #include "pinocchio/algorithm/contact-solver-utils.hpp"
+#include "pinocchio/utils/std-vector.hpp"
 
 namespace pinocchio
 {
@@ -549,7 +550,6 @@ namespace pinocchio
   template<
     typename MatrixType,
     typename VectorLike,
-    template<typename T> class Holder,
     typename ConstraintModel,
     typename ConstraintModelAllocator,
     typename ConstraintData,
@@ -557,14 +557,13 @@ namespace pinocchio
   bool PGSContactSolverTpl<_Scalar>::solve(
     const Eigen::MatrixBase<MatrixType> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Scalar dt,
     const boost::optional<RefConstVectorXs> x_guess,
     const Scalar over_relax,
     const bool solve_ncp,
     const bool stat_record)
-
   {
     PINOCCHIO_UNUSED_VARIABLE(dt);
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
@@ -573,6 +572,7 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(g.size(), this->getProblemSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(G.rows(), this->getProblemSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(G.cols(), this->getProblemSize());
+
     if (x_guess)
     {
       x = x_guess.get();
@@ -611,8 +611,8 @@ namespace pinocchio
       Eigen::DenseIndex row_id = 0;
       for (size_t constraint_id = 0; constraint_id < nc; ++constraint_id)
       {
-        const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const ConstraintData & cdata = constraint_datas[constraint_id];
+        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
         const Eigen::DenseIndex constraint_size = cmodel.activeSize(cdata);
 
         auto G_block = G.block(row_id, row_id, constraint_size, constraint_size);
@@ -703,40 +703,6 @@ namespace pinocchio
     return false;
   }
 
-  template<typename _Scalar>
-  template<
-    typename MatrixType,
-    typename VectorLike,
-    typename ConstraintModel,
-    typename ConstraintModelAllocator,
-    typename ConstraintData,
-    typename ConstraintDataAllocator>
-  bool PGSContactSolverTpl<_Scalar>::solve(
-    const Eigen::MatrixBase<MatrixType> & delassus,
-    const Eigen::MatrixBase<VectorLike> & g,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Scalar dt,
-    const boost::optional<RefConstVectorXs> x_guess,
-    const Scalar over_relax,
-    const bool solve_ncp,
-    const bool stat_record)
-
-  {
-    typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-    typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-    typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-    typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-    WrappedConstraintModelVector wrapped_constraint_models(
-      constraint_models.cbegin(), constraint_models.cend());
-    WrappedConstraintDataVector wrapped_constraint_datas(
-      constraint_datas.cbegin(), constraint_datas.cend());
-
-    return solve(
-      delassus, g, wrapped_constraint_models, wrapped_constraint_datas, dt, x_guess, over_relax,
-      solve_ncp, stat_record);
-  }
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_pgs_solver_hxx__

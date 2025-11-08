@@ -147,7 +147,6 @@ namespace pinocchio
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
-    template<typename T> class Holder,
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
@@ -156,8 +155,8 @@ namespace pinocchio
   void getConstraintsJacobian(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_model,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<DynamicMatrixLike> & J);
 
   ///
@@ -171,57 +170,21 @@ namespace pinocchio
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] constraint_models Vector of constraint models.
   /// \param[in] constraint_datas Vector of constraint data.
-  /// \param[out] J A reference on the Jacobian matrix where the results will be stored in (dim nc x
-  /// model.nv). You must fill J with zero elements, e.g. J.fill(0.).
+  /// \return A Jacobian matrix where the results will be stored in (dim nc x model.nv).
   ///
   template<
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
-    typename DynamicMatrixLike,
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  void getConstraintsJacobian(
+  typename DataTpl<Scalar, Options, JointCollectionTpl>::MatrixXs getConstraintsJacobian(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintDataAllocator> & constraint_model,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_data,
-    const Eigen::MatrixBase<DynamicMatrixLike> & J);
-
-  ///
-  /// \brief Evaluate the operation res = J.T * rhs
-  ///
-  /// \remarks This function assumes that the a computeJointJacobians has been called first or any
-  /// algorithms that computes data.J and data.oMi.
-  /// This function also assumes that the constrained datas are up-to-date.
-  ///
-  /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] data The data structure of the rigid body system.
-  /// \param[in] constraint_models Vector of constraint models.
-  /// \param[in] constraint_datas Vector of constraint data.
-  /// \param[in] rhs Right-hand side term.
-  /// \param[out] res Results.
-  ///
-  template<
-    typename Scalar,
-    int Options,
-    template<typename, int> class JointCollectionTpl,
-    template<typename T> class Holder,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator,
-    typename RhsMatrixType,
-    typename ResultMatrixType>
-  void evalConstraintJacobianTransposeMatrixProduct(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
-    const Eigen::MatrixBase<RhsMatrixType> & rhs,
-    const Eigen::MatrixBase<ResultMatrixType> & res);
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
   ///
   /// \brief Evaluate the operation res = J.T * rhs

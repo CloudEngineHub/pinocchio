@@ -52,37 +52,6 @@ namespace pinocchio
     template<
       typename MatrixType,
       typename VectorLike,
-      template<typename T> class Holder,
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator>
-    bool solve(
-      const Eigen::MatrixBase<MatrixType> & delassus,
-      const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
-      const boost::optional<RefConstVectorXs> x_guess = boost::none,
-      const Scalar over_relax = Scalar(1),
-      const bool solve_ncp = true,
-      const bool stat_record = false);
-
-    ///
-    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_sets) and
-    /// starting from the initial guess.
-    ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the contact problem.
-    /// \param[in] g Free contact acceleration or velicity associted with the contact problem.
-    /// \param[in] constraint_models Vector of constraint models.
-    /// \param[in] x_guess Initial guess and output solution of the problem
-    /// \param[in] over_relax Over relaxation value
-    ///
-    /// \returns True if the problem has converged.
-    template<
-      typename MatrixType,
-      typename VectorLike,
       typename ConstraintModel,
       typename ConstraintModelAllocator,
       typename ConstraintData,
@@ -107,41 +76,6 @@ namespace pinocchio
     /// \param[in] constraint_models Vector of constraint models.
     /// \param[in] x Initial guess solution of the problem.
     /// \param[in] over_relax Optional over relaxation value, default to 1.
-    ///
-    /// \returns True if the problem has converged.
-    template<
-      typename VectorLike,
-      template<typename T> class Holder,
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator>
-    bool solve(
-      const DelassusOperatorDense & delassus,
-      const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
-      const boost::optional<RefConstVectorXs> x_guess = boost::none,
-      const Scalar over_relax = Scalar(1),
-      const bool solve_ncp = true,
-      const bool stat_record = false)
-    {
-      return solve(
-        delassus.matrix(), g, constraint_models, constraint_datas, dt, x_guess, over_relax,
-        solve_ncp, stat_record);
-    }
-
-    ///
-    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_sets) and
-    /// starting from the initial guess.
-    ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the contact problem.
-    /// \param[in] g Free contact acceleration or velicity associted with the contact problem.
-    /// \param[in] constraint_models Vector of constraint models.
-    /// \param[in] x_guess Initial guess and output solution of the problem
-    /// \param[in] over_relax Over relaxation value
     ///
     /// \returns True if the problem has converged.
     template<

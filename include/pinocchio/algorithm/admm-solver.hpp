@@ -595,7 +595,6 @@ namespace pinocchio
     template<
       typename DelassusDerived,
       typename VectorLike,
-      template<typename T> class Holder,
       typename ConstraintModel,
       typename ConstraintModelAllocator,
       typename ConstraintData,
@@ -603,9 +602,8 @@ namespace pinocchio
     bool solve(
       DelassusOperatorBase<DelassusDerived> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const boost::optional<RefConstVectorXs> preconditioner = boost::none,
       const boost::optional<RefConstVectorXs> primal_guess = boost::none,
@@ -624,63 +622,6 @@ namespace pinocchio
     /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
     /// \param[in] g Free constraint acceleration or velicity associted with the constraint problem.
     /// \param[in] constraint_models Vector of constraints.
-    /// \param[in] preconditioner Precondtionner of the problem.
-    /// \param[in] primal_guess Optional initial guess of the primal solution (constrained forces).
-    /// \param[in] dual_guess Optinal Initial guess of the dual solution (constrained velocities).
-    /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false)
-    /// \param[in] admm_update_rule update rule for ADMM (constant, linear or spectral)
-    /// \param[in] rho0 Initial value of the rho parameter.
-    /// \param[in] stat_record record solver metrics
-    ///
-    /// \returns True if the problem has converged.
-    template<
-      typename DelassusDerived,
-      typename VectorLike,
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator>
-    bool solve(
-      DelassusOperatorBase<DelassusDerived> & delassus,
-      const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
-      const boost::optional<RefConstVectorXs> preconditioner = boost::none,
-      const boost::optional<RefConstVectorXs> primal_guess = boost::none,
-      const boost::optional<RefConstVectorXs> dual_guess = boost::none,
-      const bool solve_ncp = true,
-      const ADMMUpdateRule admm_update_rule = ADMMUpdateRule::SPECTRAL,
-      const boost::optional<Scalar> rho0 = boost::none,
-      const ADMMProximalRule admm_proximal_policy = ADMMProximalRule::MANUAL,
-      const boost::optional<Scalar> mu_prox0 = boost::none,
-      const bool stat_record = false)
-    {
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-
-      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-      WrappedConstraintDataVector wrapped_constraint_datas(
-        constraint_datas.cbegin(), constraint_datas.cend());
-
-      return solve(
-        delassus, g, wrapped_constraint_models, wrapped_constraint_datas, dt, preconditioner,
-        primal_guess, dual_guess, solve_ncp, admm_update_rule, rho0, admm_proximal_policy, mu_prox0,
-        stat_record);
-    }
-
-    ///
-    /// \brief Solve the constraint problem composed of problem data (G,g,constraint_models) and
-    /// starting from the initial guess.
-    ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
-    /// \param[in] g Free constraint acceleration or velicity associted with the constraint problem.
-    /// \param[in] constraint_models Vector of constraints.
     /// \param[in] primal_guess Optional initial guess of the primal solution (constrained forces).
     /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false)
     ///
@@ -688,7 +629,6 @@ namespace pinocchio
     template<
       typename DelassusDerived,
       typename VectorLike,
-      template<typename T> class Holder,
       typename ConstraintModel,
       typename ConstraintModelAllocator,
       typename ConstraintData,
@@ -697,9 +637,8 @@ namespace pinocchio
     bool solve(
       DelassusOperatorBase<DelassusDerived> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Scalar dt,
       const Eigen::DenseBase<VectorLikeOut> & primal_guess,
       const bool solve_ncp = true)
@@ -707,51 +646,6 @@ namespace pinocchio
       return solve(
         delassus.derived(), g.derived(), constraint_models, constraint_datas, dt, boost::none,
         primal_guess.derived(), boost::none, solve_ncp);
-    }
-
-    ///
-    /// \brief Solve the constraint problem composed of problem data (G,g,constraint_models) and
-    /// starting from the initial guess.
-    ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
-    /// \param[in] g Free constraint acceleration or velicity associted with the constraint problem.
-    /// \param[in] constraint_models Vector of constraints.
-    /// \param[in] primal_guess Optional initial guess of the primal solution (constrained forces).
-    /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false)
-    ///
-    /// \returns True if the problem has converged.
-    template<
-      typename DelassusDerived,
-      typename VectorLike,
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator,
-      typename VectorLikeOut>
-    bool solve(
-      DelassusOperatorBase<DelassusDerived> & delassus,
-      const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
-      const Eigen::DenseBase<VectorLikeOut> & primal_guess,
-      const bool solve_ncp = true)
-    {
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-
-      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-      WrappedConstraintDataVector wrapped_constraint_datas(
-        constraint_datas.cbegin(), constraint_datas.cend());
-
-      return solve(
-        delassus, g, wrapped_constraint_models, wrapped_constraint_datas, dt, primal_guess,
-        solve_ncp);
     }
 
     /// \returns the primal solution of the problem

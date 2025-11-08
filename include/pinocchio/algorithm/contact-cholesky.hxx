@@ -7,6 +7,7 @@
 
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/multibody/data.hpp"
+#include "pinocchio/utils/reference.hpp"
 
 #include <algorithm>
 
@@ -22,22 +23,17 @@ namespace pinocchio
     typename S1,
     int O1,
     template<typename, int> class JointCollectionTpl,
-    template<typename T> class Holder,
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::resize(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas)
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
     typedef ModelTpl<S1, O1, JointCollectionTpl> Model;
     typedef typename Model::JointModel JointModel;
-
-    static_assert(
-      std::is_base_of<ConstraintModelBase<ConstraintModel>, ConstraintModel>::value,
-      "ConstraintModel is not a ConstraintModelBase");
 
     assert(
       constraint_models.size() == constraint_datas.size()
@@ -48,8 +44,8 @@ namespace pinocchio
     Eigen::DenseIndex num_total_constraints = 0;
     for (std::size_t i = 0; i < constraint_models.size(); i++)
     {
-      const ConstraintModel & cmodel = constraint_models[i];
-      const ConstraintData & cdata = constraint_datas[i];
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cdata = helper::get_ref(constraint_datas[i]);
       num_total_constraints += cmodel.activeSize(cdata);
     }
 
@@ -97,8 +93,8 @@ namespace pinocchio
     Eigen::DenseIndex row_id = 0;
     for (std::size_t i = 0; i < constraint_models.size(); i++)
     {
-      const ConstraintModel & cmodel = constraint_models[i];
-      const ConstraintData & cdata = constraint_datas[i];
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cdata = helper::get_ref(constraint_datas[i]);
       for (Eigen::DenseIndex k = 0; k < cmodel.activeSize(cdata); ++k, row_id++)
       {
         const auto & row_active_indexes = cmodel.getActiveRowIndexes(cdata, k);
@@ -173,7 +169,6 @@ namespace pinocchio
     typename S1,
     int O1,
     template<typename, int> class JointCollectionTpl,
-    template<typename T> class Holder,
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
@@ -182,17 +177,10 @@ namespace pinocchio
   void ContactCholeskyDecompositionTpl<Scalar, Options>::compute(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     DataTpl<S1, O1, JointCollectionTpl> & data,
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<VectorLike> & mus)
   {
-    static_assert(
-      std::is_base_of<ConstraintModelBase<ConstraintModel>, ConstraintModel>::value,
-      "ConstraintModel is not a ConstraintModelBase");
-    static_assert(
-      std::is_base_of<ConstraintDataBase<ConstraintData>, ConstraintData>::value,
-      "ConstraintData is not a ConstraintDataBase");
-
     assert(model.check(data) && "data is not consistent with model.");
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
 
@@ -219,8 +207,8 @@ namespace pinocchio
     U.topRightCorner(total_constraints_dim, model.nv).setZero();
     for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
     {
-      const ConstraintModel & cmodel = constraint_models[ee_id].get();
-      const ConstraintData & cdata = constraint_datas[ee_id].get();
+      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
 
       const Eigen::DenseIndex constraint_dim = cmodel.activeSize(cdata);
       auto U_block = U.block(current_row, total_constraints_dim, constraint_dim, model.nv);
@@ -257,8 +245,8 @@ namespace pinocchio
       Eigen::DenseIndex current_row = total_constraints_dim - 1;
       for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
       {
-        const ConstraintModel & cmodel = constraint_models[num_ee - 1 - ee_id];
-        const ConstraintData & cdata = constraint_datas[num_ee - 1 - ee_id];
+        const auto & cmodel = helper::get_ref(constraint_models[num_ee - 1 - ee_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[num_ee - 1 - ee_id]);
         const Eigen::DenseIndex constraint_dim = cmodel.activeSize(cdata);
 
         for (Eigen::DenseIndex constraint_row_id = constraint_dim - 1; constraint_row_id >= 0;
@@ -279,8 +267,8 @@ namespace pinocchio
     int cindex = 0;
     for (std::size_t ee_id = 0; ee_id < num_ee; ee_id++)
     {
-      const ConstraintModel & cmodel = constraint_models[ee_id];
-      const ConstraintData & cdata = constraint_datas[ee_id];
+      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
       // TODO use active compliance
       const int cdim = cmodel.activeSize(cdata);
       compliance.segment(cindex, cdim) = cmodel.getActiveCompliance(cdata);

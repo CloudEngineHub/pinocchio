@@ -15,6 +15,7 @@
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
+#include "pinocchio/utils/reference.hpp"
 
 namespace pinocchio
 {
@@ -1058,30 +1059,6 @@ namespace pinocchio
   /// \brief Computes the sum of the active sizes of the constraints contained in the input
   /// `constraint_models` vector.
   template<
-    template<typename T> class Holder,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator>
-  Eigen::DenseIndex getTotalConstraintActiveSize(
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<ConstraintData>, ConstraintDataAllocator> & constraint_datas)
-  {
-    Eigen::DenseIndex total_size = 0;
-    for (size_t k = 0; k < constraint_models.size(); ++k)
-    {
-      const ConstraintModel & constraint_model = constraint_models[k];
-      const ConstraintData & constraint_data = constraint_datas[k];
-      total_size += constraint_model.activeSize(constraint_data);
-    }
-
-    return total_size;
-  }
-
-  ///
-  /// \brief Computes the sum of the active sizes of the constraints contained in the input
-  /// `constraint_models` vector.
-  template<
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
@@ -1090,32 +1067,12 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-    typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-    WrappedConstraintModelVector wrapped_constraint_models(
-      constraint_models.cbegin(), constraint_models.cend());
-
-    typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-    typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-    WrappedConstraintDataVector wrapped_constraint_datas(
-      constraint_datas.cbegin(), constraint_datas.cend());
-    return getTotalConstraintActiveSize(wrapped_constraint_models, wrapped_constraint_datas);
-  }
-
-  ///
-  /// \brief Computes the sum of the sizes of the constraints contained in the input
-  /// `constraint_models` vector.
-  template<template<typename T> class Holder, class ConstraintModel, class ConstraintModelAllocator>
-  Eigen::DenseIndex getTotalConstraintSize(
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models)
-  {
     Eigen::DenseIndex total_size = 0;
-    for (const auto & wrapper : constraint_models)
+    for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const ConstraintModel & constraint_model = wrapper;
-      total_size += constraint_model.size();
+      const auto & constraint_model = helper::get_ref(constraint_models[k]);
+      const auto & constraint_data = helper::get_ref(constraint_datas[k]);
+      total_size += constraint_model.activeSize(constraint_data);
     }
 
     return total_size;
@@ -1128,13 +1085,14 @@ namespace pinocchio
   Eigen::DenseIndex getTotalConstraintSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
-    typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-    typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
+    Eigen::DenseIndex total_size = 0;
+    for (size_t k = 0; k < constraint_models.size(); ++k)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[k]);
+      total_size += cmodel.size();
+    }
 
-    WrappedConstraintModelVector wrapped_constraint_models(
-      constraint_models.cbegin(), constraint_models.cend());
-
-    return getTotalConstraintSize(wrapped_constraint_models);
+    return total_size;
   }
 
   ///

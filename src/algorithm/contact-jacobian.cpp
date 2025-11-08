@@ -27,11 +27,11 @@ namespace pinocchio
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,
-    context::MatrixXs,
     context::RigidConstraintModel,
     typename context::RigidConstraintModelVector::allocator_type,
     context::RigidConstraintData,
-    typename context::RigidConstraintDataVector::allocator_type>(
+    typename context::RigidConstraintDataVector::allocator_type,
+    context::MatrixXs>(
     const context::Model &,
     const context::Data &,
     const context::RigidConstraintModelVector &,

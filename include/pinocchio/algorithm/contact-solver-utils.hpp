@@ -11,6 +11,7 @@
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 #include "pinocchio/utils/std-vector.hpp"
+#include "pinocchio/utils/reference.hpp"
 
 namespace pinocchio
 {
@@ -69,7 +70,6 @@ namespace pinocchio
 
     /// \brief Project a vector x on the vector of cones.
     template<
-      template<typename T> class Holder,
       typename ConstraintModel,
       typename ConstraintModelAllocator,
       typename ConstraintData,
@@ -77,9 +77,8 @@ namespace pinocchio
       typename VectorLikeIn,
       typename VectorLikeOut>
     void computeConeProjection(
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Eigen::DenseBase<VectorLikeIn> & x,
       const Eigen::DenseBase<VectorLikeOut> & x_proj_)
     {
@@ -92,8 +91,8 @@ namespace pinocchio
 
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const ConstraintData & cdata = constraint_datas[constraint_id];
+        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
 
         const auto active_size = cmodel.activeSize(cdata);
         SegmentType1 force_segment = x.derived().segment(index, active_size);
@@ -104,28 +103,6 @@ namespace pinocchio
 
         index += active_size;
       }
-    }
-
-    /// \brief Project a vector x on the vector of cones.
-    template<
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator,
-      typename VectorLikeIn,
-      typename VectorLikeOut>
-    void computeConeProjection(
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Eigen::DenseBase<VectorLikeIn> & x,
-      const Eigen::DenseBase<VectorLikeOut> & x_proj)
-    {
-      auto wrapped_constraint_models = make_held_vector<std::reference_wrapper>(constraint_models);
-      auto wrapped_constraint_datas = make_held_vector<std::reference_wrapper>(constraint_datas);
-
-      computeConeProjection(
-        wrapped_constraint_models, wrapped_constraint_datas, x.derived(),
-        x_proj.const_cast_derived());
     }
 
     template<typename ForceVectorLike, typename ScaleVectorLike, typename ResultVectorLike>
@@ -184,7 +161,6 @@ namespace pinocchio
 
     /// \brief Project a vector x on the vector of cones.
     template<
-      template<typename T> class Holder,
       typename ConstraintModel,
       typename ConstraintModelAllocator,
       typename ConstraintData,
@@ -193,9 +169,8 @@ namespace pinocchio
       typename VectorLikeIn2,
       typename VectorLikeOut>
     void computeScaledConeProjection(
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Eigen::DenseBase<VectorLikeIn> & x,
       const Eigen::DenseBase<VectorLikeIn2> & scale,
       const Eigen::DenseBase<VectorLikeOut> & x_proj_)
@@ -210,8 +185,8 @@ namespace pinocchio
 
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const ConstraintData & cdata = constraint_datas[constraint_id];
+        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
         const auto active_size = cmodel.activeSize(cdata);
 
         SegmentType1 force_segment = x.derived().segment(index, active_size);
@@ -223,39 +198,6 @@ namespace pinocchio
 
         index += active_size;
       }
-    }
-
-    /// \brief Project a vector x on the vector of cones.
-    template<
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator,
-      typename VectorLikeIn,
-      typename VectorLikeIn2,
-      typename VectorLikeOut>
-    void computeScaledConeProjection(
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Eigen::DenseBase<VectorLikeIn> & x,
-      const Eigen::DenseBase<VectorLikeIn2> & scale,
-      const Eigen::DenseBase<VectorLikeOut> & x_proj)
-    {
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-
-      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-      WrappedConstraintDataVector wrapped_constraint_datas(
-        constraint_datas.cbegin(), constraint_datas.cend());
-
-      computeScaledConeProjection(
-        wrapped_constraint_models, wrapped_constraint_datas, x.derived(), scale.derived(),
-        x_proj.const_cast_derived());
     }
 
     template<typename VelocityVectorLike, typename ResultVectorLike>
@@ -347,7 +289,6 @@ namespace pinocchio
 
     /// \brief Project a vector x on the dual of the cones contained in the vector of cones.
     template<
-      template<typename T> class Holder,
       typename ConstraintModel,
       typename ConstraintModelAllocator,
       typename ConstraintData,
@@ -355,9 +296,8 @@ namespace pinocchio
       typename VectorLikeIn,
       typename VectorLikeOut>
     void computeDualConeProjection(
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Eigen::DenseBase<VectorLikeIn> & x,
       const Eigen::DenseBase<VectorLikeOut> & x_proj_)
     {
@@ -370,8 +310,8 @@ namespace pinocchio
 
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const ConstraintData & cdata = constraint_datas[constraint_id];
+        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
         const auto active_size = cmodel.activeSize(cdata);
 
         SegmentType1 velocity_segment = x.segment(index, active_size);
@@ -381,36 +321,6 @@ namespace pinocchio
         Algo::run(cmodel, velocity_segment, res_segment);
         index += active_size;
       }
-    }
-
-    template<
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator,
-      typename VectorLikeIn,
-      typename VectorLikeOut>
-    void computeDualConeProjection(
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Eigen::DenseBase<VectorLikeIn> & x,
-      const Eigen::DenseBase<VectorLikeOut> & x_proj)
-    {
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-
-      typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-      typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-      WrappedConstraintDataVector wrapped_constraint_datas(
-        constraint_datas.cbegin(), constraint_datas.cend());
-
-      computeDualConeProjection(
-        wrapped_constraint_models, wrapped_constraint_datas, x.derived(),
-        x_proj.const_cast_derived());
     }
 
     template<typename Scalar, typename VelocityVectorLike, typename ForceVectorLike>
@@ -519,32 +429,31 @@ namespace pinocchio
     }; // struct ComplementarityVisitor
 
     template<
-      template<typename T> class Holder,
+      typename Scalar,
       typename ConstraintModel,
       typename ConstraintModelAllocator,
       typename ConstraintData,
       typename ConstraintDataAllocator,
       typename VectorLikeVelocity,
       typename VectorLikeForce>
-    typename ConstraintModel::Scalar computeConicComplementarity(
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+    void computeConicComplementarity(
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Eigen::DenseBase<VectorLikeVelocity> & velocities,
-      const Eigen::DenseBase<VectorLikeForce> & forces)
+      const Eigen::DenseBase<VectorLikeForce> & forces,
+      Scalar & complementarity)
     {
-      typedef typename ConstraintModel::Scalar Scalar;
       assert(velocities.size() == forces.size());
       Eigen::DenseIndex index = 0;
-      Scalar complementarity = Scalar(0);
+      complementarity = Scalar(0);
 
       typedef typename VectorLikeVelocity::ConstSegmentReturnType SegmentType1;
       typedef typename VectorLikeForce::ConstSegmentReturnType SegmentType2;
 
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const ConstraintData & cdata = constraint_datas[constraint_id];
+        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
         const auto active_size = cmodel.activeSize(cdata);
 
         SegmentType1 velocity_segment = velocities.segment(index, active_size);
@@ -557,8 +466,6 @@ namespace pinocchio
         complementarity = math::max(complementarity, constraint_complementarity);
         index += active_size;
       }
-
-      return complementarity;
     }
 
     template<typename VelocityVectorLike, typename ResultVectorLike>
@@ -627,7 +534,6 @@ namespace pinocchio
     }; // struct DeSaxeCorrectionVisitor
 
     template<
-      template<typename T> class Holder,
       typename ConstraintModel,
       typename ConstraintModelAllocator,
       typename ConstraintData,
@@ -635,9 +541,8 @@ namespace pinocchio
       typename VectorLikeIn,
       typename VectorLikeOut>
     void computeDeSaxeCorrection(
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Eigen::DenseBase<VectorLikeIn> & velocities,
       const Eigen::DenseBase<VectorLikeOut> & correction_)
     {
@@ -650,8 +555,8 @@ namespace pinocchio
       Eigen::DenseIndex index = 0;
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const ConstraintData & cdata = constraint_datas[constraint_id];
+        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
         const auto active_size = cmodel.activeSize(cdata);
 
         SegmentType1 velocity_segment = velocities.segment(index, active_size);
@@ -662,29 +567,6 @@ namespace pinocchio
 
         index += active_size;
       }
-    }
-
-    template<
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator,
-      typename VectorLikeIn,
-      typename VectorLikeOut>
-    void computeDeSaxeCorrection(
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Eigen::DenseBase<VectorLikeIn> & velocities,
-      const Eigen::DenseBase<VectorLikeOut> & correction)
-    {
-      const auto & wrapped_constraint_models =
-        make_held_vector<std::reference_wrapper>(constraint_models);
-      const auto & wrapped_constraint_datas =
-        make_held_vector<std::reference_wrapper>(constraint_datas);
-
-      computeDeSaxeCorrection(
-        wrapped_constraint_models, wrapped_constraint_datas, velocities.derived(),
-        correction.const_cast_derived());
     }
 
     template<typename ConstraintSet, typename ConstraintAllocator, typename VectorLikeIn>
@@ -828,28 +710,26 @@ namespace pinocchio
     /// \param[out] time_scaling the vector of time scaling factors
     ///
     template<
-      template<typename T> class Holder,
+      typename Scalar,
       typename ConstraintModel,
       typename ConstraintModelAllocator,
       typename ConstraintData,
       typename ConstraintDataAllocator,
       typename VectorLikeOut>
     void getTimeScalingFromAccelerationToConstraints(
-      const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
-        constraint_models,
-      const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
-      const typename ConstraintModel::Scalar dt,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const Scalar dt,
       const Eigen::DenseBase<VectorLikeOut> & time_scaling_)
     {
-      using Scalar = typename ConstraintModel::Scalar;
       using SegmentType = typename VectorLikeOut::SegmentReturnType;
       VectorLikeOut & time_scaling = time_scaling_.const_cast_derived();
 
       Eigen::DenseIndex cindex = 0;
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const ConstraintData & cdata = constraint_datas[constraint_id];
+        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
         const auto csize = cmodel.activeSize(cdata);
 
         SegmentType time_scaling_segment = time_scaling.segment(cindex, csize);
@@ -862,23 +742,6 @@ namespace pinocchio
     }
 
     ///
-    /// \brief see \ref getTimeScalingFromConstraints
-    ///
-    template<typename ConstraintModel, typename ConstraintModelAllocator, typename VectorLikeOut>
-    void getTimeScalingFromAccelerationToConstraints(
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const typename ConstraintModel::Scalar dt,
-      const Eigen::DenseBase<VectorLikeOut> & time_scaling)
-    {
-      typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-      typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-      WrappedConstraintModelVector wrapped_constraint_models(
-        constraint_models.cbegin(), constraint_models.cend());
-      getTimeScalingFromAccelerationToConstraints(wrapped_constraint_models, dt, time_scaling);
-    }
-
-    ///
     /// \brief
     ///
     /// \param[in] time_scaling_acc_to_constraints Vector of time scaling that scale accelerations
@@ -887,7 +750,7 @@ namespace pinocchio
     /// \param[out] time_scaling_constraints_to_pos the vector of time scaling that scales
     /// constraints units to position.
     ///
-    template<typename VectorLikeIn, typename Scalar, typename VectorLikeOut>
+    template<typename Scalar, typename VectorLikeIn, typename VectorLikeOut>
     void getTimeScalingFromConstraintsToPosition(
       const Eigen::MatrixBase<VectorLikeIn> & time_scaling_acc_to_constraints,
       const Scalar dt,

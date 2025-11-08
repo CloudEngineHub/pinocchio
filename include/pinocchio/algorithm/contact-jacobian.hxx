@@ -32,8 +32,8 @@ namespace pinocchio
 
     for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
     {
-      const ConstraintModel & cmodel = constraint_models[ee_id];
-      ConstraintData & cdata = constraint_datas[ee_id];
+      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
+      auto & cdata = helper::get_ref(constraint_datas[ee_id]);
 
       cmodel.calc(model, data, cdata);
     }
@@ -72,8 +72,8 @@ namespace pinocchio
     Eigen::Index row_id = 0;
     for (size_t ee_id = 0; ee_id < constraint_models.size(); ++ee_id)
     {
-      const ConstraintModel & cmodel = constraint_models[ee_id];
-      const ConstraintData & cdata = constraint_datas[ee_id];
+      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
       const auto constraint_size = cmodel.activeSize(cdata);
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
@@ -242,8 +242,8 @@ namespace pinocchio
     const Eigen::MatrixBase<JacobianMatrixLike> & J_)
   {
     JacobianMatrixLike & J = J_.const_cast_derived();
-    const ConstraintModel & constraint_model = constraint_model_.derived();
-    const ConstraintData & constraint_data = constraint_data_.derived();
+    const auto & constraint_model = helper::get_ref(constraint_model_.derived());
+    const auto & constraint_data = helper::get_ref(constraint_data_.derived());
 
     assert(model.check(data) && "data is not consistent with model.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_model.activeSize(constraint_data));
@@ -256,7 +256,6 @@ namespace pinocchio
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
-    template<typename T> class Holder,
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
@@ -265,13 +264,10 @@ namespace pinocchio
   void getConstraintsJacobian(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<DynamicMatrixLike> & J_)
   {
-    typedef ConstraintModel ContraintModel;
-    typedef ConstraintData ContraintData;
-
     const Eigen::DenseIndex constraint_size =
       getTotalConstraintActiveSize(constraint_models, constraint_datas);
     assert(J_.rows() == constraint_size);
@@ -285,8 +281,8 @@ namespace pinocchio
     Eigen::DenseIndex row_id = 0;
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const ContraintModel & cmodel = constraint_models[k];
-      const ContraintData & cdata = constraint_datas[k];
+      const auto & cmodel = helper::get_ref(constraint_models[k]);
+      const auto & cdata = helper::get_ref(constraint_datas[k]);
 
       const auto active_size = cmodel.activeSize(cdata);
       getConstraintJacobian(model, data, cmodel, cdata, J.middleRows(row_id, active_size));
@@ -299,38 +295,6 @@ namespace pinocchio
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
-    typename DynamicMatrixLike,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator>
-  void getConstraintsJacobian(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Eigen::MatrixBase<DynamicMatrixLike> & J_)
-  {
-    typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-    typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-    WrappedConstraintModelVector wrapped_constraint_models(
-      constraint_models.cbegin(), constraint_models.cend());
-
-    typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-    typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-    WrappedConstraintDataVector wrapped_constraint_datas(
-      constraint_datas.begin(), constraint_datas.end());
-
-    getConstraintsJacobian(model, data, wrapped_constraint_models, wrapped_constraint_datas, J_);
-  }
-
-  template<
-    typename Scalar,
-    int Options,
-    template<typename, int> class JointCollectionTpl,
-    template<typename T> class Holder,
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
@@ -338,8 +302,8 @@ namespace pinocchio
   typename DataTpl<Scalar, Options, JointCollectionTpl>::MatrixXs getConstraintsJacobian(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas)
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
     typedef typename Data::MatrixXs ReturnType;
@@ -359,44 +323,14 @@ namespace pinocchio
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
-    class ConstraintDataAllocator>
-  typename DataTpl<Scalar, Options, JointCollectionTpl>::MatrixXs getConstraintsJacobian(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-  {
-    typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-    typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-    WrappedConstraintModelVector wrapped_constraint_models(
-      constraint_models.cbegin(), constraint_models.cend());
-
-    typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-    typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-    WrappedConstraintDataVector wrapped_constraint_datas(
-      constraint_datas.begin(), constraint_datas.end());
-
-    return getConstraintsJacobian(model, data, wrapped_constraint_models, wrapped_constraint_datas);
-  }
-
-  template<
-    typename Scalar,
-    int Options,
-    template<typename, int> class JointCollectionTpl,
-    template<typename> class Holder,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
     class ConstraintDataAllocator,
     typename RhsMatrixType,
     typename ResultMatrixType>
   void evalConstraintJacobianTransposeMatrixProduct(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> & constraint_models,
-    const std::vector<Holder<const ConstraintData>, ConstraintDataAllocator> & constraint_datas,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<RhsMatrixType> & rhs,
     const Eigen::MatrixBase<ResultMatrixType> & res_)
   {
@@ -413,8 +347,8 @@ namespace pinocchio
     res.setZero();
     for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const ConstraintModel & cmodel = constraint_models[constraint_id];
-      const ConstraintData & cdata = constraint_datas[constraint_id];
+      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.activeSize(cdata);
 
       const auto rhs_block = rhs.middleRows(row_id, constraint_size);
@@ -422,41 +356,6 @@ namespace pinocchio
 
       row_id += constraint_size;
     }
-  }
-
-  template<
-    typename Scalar,
-    int Options,
-    template<typename, int> class JointCollectionTpl,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator,
-    typename RhsMatrixType,
-    typename ResultMatrixType>
-  void evalConstraintJacobianTransposeMatrixProduct(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Eigen::MatrixBase<RhsMatrixType> & rhs,
-    const Eigen::MatrixBase<ResultMatrixType> & res_)
-  {
-    typedef std::reference_wrapper<const ConstraintModel> WrappedConstraintModelType;
-    typedef std::vector<WrappedConstraintModelType> WrappedConstraintModelVector;
-
-    WrappedConstraintModelVector wrapped_constraint_models(
-      constraint_models.cbegin(), constraint_models.cend());
-
-    typedef std::reference_wrapper<const ConstraintData> WrappedConstraintDataType;
-    typedef std::vector<WrappedConstraintDataType> WrappedConstraintDataVector;
-
-    WrappedConstraintDataVector wrapped_constraint_datas(
-      constraint_datas.begin(), constraint_datas.end());
-
-    evalConstraintJacobianTransposeMatrixProduct(
-      model, data, wrapped_constraint_models, wrapped_constraint_datas, rhs.derived(),
-      res_.const_cast_derived());
   }
 
 } // namespace pinocchio
