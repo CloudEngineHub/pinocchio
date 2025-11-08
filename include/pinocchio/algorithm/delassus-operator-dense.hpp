@@ -118,7 +118,9 @@ namespace pinocchio
         mat_tmp.template block<3, 3>(offs, offs) += block;
         offs += 3;
       }
-      llt.compute(mat_tmp);
+      mat_tmp += compliance.asDiagonal();
+      m_cholesky_decomposition.compute(mat_tmp);
+      m_cholesky_decomposition_dirty = false;
     }
 
     template<typename MatrixLike>
