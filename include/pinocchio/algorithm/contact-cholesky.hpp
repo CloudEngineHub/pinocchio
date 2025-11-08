@@ -119,6 +119,7 @@ namespace pinocchio
     , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
+    , Delassus(Delassus_storage.map())
     {
     }
 
@@ -135,6 +136,7 @@ namespace pinocchio
     , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
+    , Delassus(Delassus_storage.map())
     {
       // TODO Remove when API is stabilized
       PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
@@ -173,6 +175,7 @@ namespace pinocchio
     , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
+    , Delassus(Delassus_storage.map())
     {
       PINOCCHIO_UNUSED_VARIABLE(data);
       resize(model, constraint_models, constraint_datas);
@@ -190,6 +193,7 @@ namespace pinocchio
     , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
+    , Delassus(Delassus_storage.map())
     {
       *this = other;
     }
@@ -406,10 +410,11 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const S1 mu = S1(0.))
+      const S1 mu = S1(0.),
+      bool use_explicit_delassus = false)
     {
       compute(
-        model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu));
+        model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu), use_explicit_delassus);
     }
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
@@ -446,7 +451,8 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Eigen::MatrixBase<VectorLike> & mus);
+      const Eigen::MatrixBase<VectorLike> & mus,
+      bool use_explicit_delassus = false);
 
     ///
     /// \brief Update the compliance terms on the upper left block part of the KKT matrix. The
@@ -481,7 +487,7 @@ namespace pinocchio
     /// property of the KKT matrix.
     ///
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & mus);
+    void updateDamping(const Eigen::MatrixBase<VectorLike> & mus, bool use_explicit_delassus = false);
 
     ///
     /// \brief Update the damping term on the upper left block part of the KKT matrix. The damping
@@ -490,7 +496,12 @@ namespace pinocchio
     /// \param[in] mu Regularization factor allowing to enforce the definite property of the KKT
     /// matrix.
     ///
-    void updateDamping(const Scalar & mu);
+    void updateDamping(const Scalar & mu, bool use_explicit_delassus = false);
+
+    void computeDelassusFromU();
+
+    template<typename VectorLike>
+    void updateDampingDelassus(const Eigen::MatrixBase<VectorLike> & mus);
 
     ///
     /// \brief Returns the current damping vector.
@@ -635,6 +646,9 @@ namespace pinocchio
     /// \brief Store the current damping value
     EigenStorageVector damping_storage;
     typename EigenStorageVector::RefMapType damping;
+
+    EigenStorageRowMatrix Delassus_storage;
+    typename EigenStorageRowMatrix::RefMapType Delassus;
   };
 
 } // namespace pinocchio

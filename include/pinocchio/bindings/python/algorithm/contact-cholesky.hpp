@@ -179,8 +179,8 @@ namespace pinocchio
             "regularized with a factor mu.")
 
           .def(
-            "updateDamping", (void(Self::*)(const Scalar &)) & Self::updateDamping,
-            bp::args("self", "mu"),
+            "updateDamping", (void(Self::*)(const Scalar &, bool)) & Self::updateDamping,
+            bp::args("self", "mu", "use_explicit_delassus = false"),
             "Update the damping term on the upper left block part of the KKT matrix. The damping "
             "term should be positive.")
 

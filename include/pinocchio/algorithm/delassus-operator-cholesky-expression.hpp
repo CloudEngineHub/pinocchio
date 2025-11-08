@@ -64,8 +64,13 @@ namespace pinocchio
 
     template<typename MatrixIn, typename MatrixOut>
     void applyOnTheRight(
-      const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res) const
+      const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res, bool use_explicit_delassus = false) const
     {
+      if (use_explicit_delassus)
+      {
+        applyOnTheRightExplicit(x, res);
+        return;
+      }
       PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), self.constraintDim());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), self.constraintDim());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), x.cols());
@@ -88,6 +93,17 @@ namespace pinocchio
         triangularMatrixMatrixProduct<Eigen::UnitUpper>(U1, tmp_mat, res.const_cast_derived());
         PINOCCHIO_EIGEN_MALLOC_ALLOWED();
       }
+    }
+
+    template<typename MatrixIn, typename MatrixOut>
+    void applyOnTheRightExplicit(
+      const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res) const
+    {
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), self.constraintDim());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), self.constraintDim());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), x.cols());
+
+      res.const_cast_derived().noalias() = self.Delassus * x;
     }
 
     template<typename MatrixDerived>
@@ -211,9 +227,9 @@ namespace pinocchio
     /// positiveness of the matrix.
     ///
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & mus)
+    void updateDamping(const Eigen::MatrixBase<VectorLike> & mus, bool use_explicit_delassus = false)
     {
-      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mus);
+      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mus, use_explicit_delassus);
     }
 
     ///

@@ -215,6 +215,11 @@ namespace pinocchio
       return !(*this == other);
     }
 
+    void runProtectedCholeskyDecomposition() const
+    {
+      runCholeskyDecomposition();
+    }
+
   protected:
     void runCholeskyDecomposition() const
     {

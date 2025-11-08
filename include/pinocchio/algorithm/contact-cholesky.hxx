@@ -160,6 +160,7 @@ namespace pinocchio
     D_storage.resize(total_dim);
     Dinv_storage.resize(total_dim);
     U_storage.resize(total_dim, total_dim);
+    Delassus_storage.resize(num_total_constraints, num_total_constraints);
     U.setIdentity();
     DUt_storage.resize(total_dim);
   }
@@ -179,7 +180,8 @@ namespace pinocchio
     DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Eigen::MatrixBase<VectorLike> & mus)
+    const Eigen::MatrixBase<VectorLike> & mus,
+    bool use_explicit_delassus)
   {
     assert(model.check(data) && "data is not consistent with model.");
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
@@ -276,7 +278,16 @@ namespace pinocchio
     }
 
     // Setting numerical damping
-    updateDamping(mus);
+    if (use_explicit_delassus)
+    {
+      computeDelassusFromU();
+      updateDampingDelassus(mus);
+    }
+    
+    else
+    {
+      updateDamping(mus, false);
+    }
   }
 
   template<typename Scalar, int Options>
@@ -300,24 +311,57 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusFromU()
+  {
+    // Delassus.setZero();
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    const Matrix & UtopRight = U.topRightCorner(total_constraints_dim, nv);
+    const Vector & Dtail = D.tail(nv);
+
+    // // Upper left triangular part of U
+    //   for (Eigen::DenseIndex j = total_constraints_dim - 1; j >= 0; --j)
+    //   {
+    //     const Eigen::DenseIndex slice_dim = nv;
+    //     auto DUt_partial = DUt.head(slice_dim);
+    //     DUt_partial.noalias() =
+    //       UtopRight.row(j).transpose().cwiseProduct(Dtail);
+    //     for (Eigen::DenseIndex _i = j; _i >= 0; _i--)
+    //     {
+    //       Delassus(_i, j) = UtopRight.row(_i).dot(DUt_partial);
+    //     }
+    //   }
+    
+    // typedef Eigen::Map<RowMatrix> MapRowMatrix;
+    // MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraints_dim, nv));
+    // OSIMinv.noalias() = UtopRight * Dtail.asDiagonal();
+    // Delassus.noalias() = OSIMinv * UtopRight.transpose();
+
+    Delassus.noalias() = (UtopRight * Dtail.asDiagonal()) * UtopRight.transpose();
+  }
+
+  template<typename Scalar, int Options>
   template<typename VectorLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDampingDelassus(
     const Eigen::MatrixBase<VectorLike> & vec)
   {
     EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
     damping = vec;
     const Eigen::DenseIndex total_dim = size();
     const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
-
+    U.topLeftCorner(total_constraints_dim, total_constraints_dim).setIdentity();
+    
     // Upper left triangular part of U
     for (Eigen::DenseIndex j = total_constraints_dim - 1; j >= 0; --j)
     {
-      const Eigen::DenseIndex slice_dim = total_dim - j - 1;
+      const Eigen::DenseIndex slice_dim = total_constraints_dim - j - 1;
       auto DUt_partial = DUt.head(slice_dim);
       DUt_partial.noalias() =
         U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
+      
+      D[j] = -Delassus(j,j) - damping[j] - compliance[j] - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
+      // std::cout << "j = " << j << ", slice_dim = " << slice_dim << " D[j] = " << D[j] << std::endl;
 
-      D[j] = -damping[j] - compliance[j] - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
       assert(
         check_expression_if_real<Scalar>(D[j] != Scalar(0))
         && "The diagonal element is equal to zero.");
@@ -325,20 +369,58 @@ namespace pinocchio
 
       for (Eigen::DenseIndex _i = j - 1; _i >= 0; _i--)
       {
-        U(_i, j) = -U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial) * Dinv[j];
+        U(_i, j) = (-Delassus(_i,j) -U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial)) * Dinv[j];
       }
     }
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(const Scalar & mu)
+  template<typename VectorLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+    const Eigen::MatrixBase<VectorLike> & vec, bool use_explicit_delasssus)
+  {
+    EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
+    damping = vec;
+    if (use_explicit_delasssus)
+    {
+      updateDampingDelassus(vec);
+    }
+    else
+    {
+      const Eigen::DenseIndex total_dim = size();
+      const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+
+      // Upper left triangular part of U
+      for (Eigen::DenseIndex j = total_constraints_dim - 1; j >= 0; --j)
+      {
+        const Eigen::DenseIndex slice_dim = total_dim - j - 1;
+        auto DUt_partial = DUt.head(slice_dim);
+        DUt_partial.noalias() =
+          U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
+
+        D[j] = -damping[j] - compliance[j] - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
+        assert(
+          check_expression_if_real<Scalar>(D[j] != Scalar(0))
+          && "The diagonal element is equal to zero.");
+        Dinv[j] = Scalar(1) / D[j];
+
+        for (Eigen::DenseIndex _i = j - 1; _i >= 0; _i--)
+        {
+          U(_i, j) = -U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial) * Dinv[j];
+        }
+      }
+    }
+  }
+
+  template<typename Scalar, int Options>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(const Scalar & mu, bool use_explicit_delassus)
   {
     //      PINOCCHIO_CHECK_INPUT_ARGUMENT(check_expression_if_real<Scalar>(mu >= 0), "mu should be
     //      positive.");
 
     const Eigen::DenseIndex total_dim = size();
     const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
-    updateDamping(Vector::Constant(total_constraints_dim, mu));
+    updateDamping(Vector::Constant(total_constraints_dim, mu), use_explicit_delassus);
   }
 
   template<typename Scalar, int Options>
