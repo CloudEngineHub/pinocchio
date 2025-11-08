@@ -44,20 +44,6 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3Like> & y,
       Eigen::MatrixBase<Vector3Like> & out);
 
-    /// \brief normalize cone variables by multiplying normal component by mu
-    /// this makes sure that x \in K_\mu is equivalent to x_normalized \in K_1
-    template<typename Vector3Like, typename ConstraintModel, typename ConstraintModelAllocator>
-    static void normalizeConeVariables(
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & cones,
-      Eigen::MatrixBase<Vector3Like> & x);
-
-    /// \brief denormalize cone variables by dividing normal component by mu
-    /// this makes sure that x \in K^*_\mu is equivalent to x_denormalized \in K_1
-    template<typename Vector3Like, typename ConstraintModel, typename ConstraintModelAllocator>
-    static void denormalizeConeVariables(
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & cones,
-      Eigen::MatrixBase<Vector3Like> & x);
-
     /// \brief evaluates x = H(\lambda^0.5) * x
     template<typename Vector3Like>
     static Vector3
@@ -83,7 +69,7 @@ namespace pinocchio
       Eigen::MatrixBase<VectorLike> & out);
 
     /// \brief represents a scaling matrix of a pair (s, z) of 3-vectors
-    struct scalingMatrix
+    struct ScalingMatrix
     {
       /// \brief computes the scaling matrix for the pair (s, z)
       Vector3 compute(const Vector3 & s, const Vector3 & z);
@@ -102,7 +88,7 @@ namespace pinocchio
       Matrix3x3 getMatrix();
 
       /// \brief returns the inverse scaling matrix
-      Matrix3x3 getInverseMatrix();
+      Matrix3x3 getInverseMatrix() const;
 
       Vector3 v;
       Scalar beta;
@@ -174,7 +160,7 @@ namespace pinocchio
 
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 1>
-  IPSolverConeOperations<Scalar>::scalingMatrix::compute(const Vector3 & s, const Vector3 & z)
+  IPSolverConeOperations<Scalar>::ScalingMatrix::compute(const Vector3 & s, const Vector3 & z)
   {
     Vector3 lambda;
     Scalar aa = jnrm2(s);
@@ -196,7 +182,7 @@ namespace pinocchio
 
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 1>
-  IPSolverConeOperations<Scalar>::scalingMatrix::update(const Vector3 & s, const Vector3 & z)
+  IPSolverConeOperations<Scalar>::ScalingMatrix::update(const Vector3 & s, const Vector3 & z)
   {
     Vector3 lambda;
     Scalar aa = jnrm2(s);
@@ -226,7 +212,7 @@ namespace pinocchio
   };
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 1>
-  IPSolverConeOperations<Scalar>::scalingMatrix::apply(const Vector3 & x)
+  IPSolverConeOperations<Scalar>::ScalingMatrix::apply(const Vector3 & x)
   {
     Scalar w = x.dot(v);
     return beta * (2 * v * w - jprod(x));
@@ -234,13 +220,13 @@ namespace pinocchio
 
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 1>
-  IPSolverConeOperations<Scalar>::scalingMatrix::applyInverse(const Vector3 & x)
+  IPSolverConeOperations<Scalar>::ScalingMatrix::applyInverse(const Vector3 & x)
   {
     return -1. / beta * (jprod(2 * v * (jprod(-x).dot(v)) + x));
   };
 
   template<typename Scalar>
-  Eigen::Matrix<Scalar, 3, 3> IPSolverConeOperations<Scalar>::scalingMatrix::getMatrix()
+  Eigen::Matrix<Scalar, 3, 3> IPSolverConeOperations<Scalar>::ScalingMatrix::getMatrix()
   {
     Matrix3x3 ret = Matrix3x3::Zero();
     ret = 2 * v * v.transpose();
@@ -250,7 +236,8 @@ namespace pinocchio
   };
 
   template<typename Scalar>
-  Eigen::Matrix<Scalar, 3, 3> IPSolverConeOperations<Scalar>::scalingMatrix::getInverseMatrix()
+  Eigen::Matrix<Scalar, 3, 3>
+  IPSolverConeOperations<Scalar>::ScalingMatrix::getInverseMatrix() const
   {
     Matrix3x3 ret = Matrix3x3::Zero();
     ret = 2 * v * (-jprod(v)).transpose();
@@ -338,32 +325,6 @@ namespace pinocchio
         inverseConeProduct(x.template segment<3>(i), y.template segment<3>(i));
     }
   };
-
-  template<typename Scalar>
-  template<typename Vector3Like, typename ConstraintModel, typename ConstraintModelAllocator>
-  void IPSolverConeOperations<Scalar>::normalizeConeVariables(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraints,
-    Eigen::MatrixBase<Vector3Like> & x)
-  {
-    for (std::size_t i = 0; i < constraints.size(); i++)
-    {
-      const auto & cone = helper::get_ref(constraints[i]).set();
-      x[static_cast<Eigen::Index>(3 * i + 2)] /= cone.mu;
-    }
-  }
-
-  template<typename Scalar>
-  template<typename Vector3Like, typename ConstraintModel, typename ConstraintModelAllocator>
-  void IPSolverConeOperations<Scalar>::denormalizeConeVariables(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraints,
-    Eigen::MatrixBase<Vector3Like> & x)
-  {
-    for (std::size_t i = 0; i < constraints.size(); i++)
-    {
-      const auto & cone = helper::get_ref(constraints[i]).set();
-      x[static_cast<Eigen::Index>(3 * i + 2)] *= cone.mu;
-    }
-  }
 
   template<typename Scalar>
   template<typename Vector3Like>

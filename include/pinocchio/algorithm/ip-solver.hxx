@@ -6,6 +6,7 @@
 #define __pinocchio_algorithm_ip_solver_hxx__
 
 #include "pinocchio/algorithm/contact-solver-utils.hpp"
+#include "pinocchio/macros.hpp"
 #include "pinocchio/utils/reference.hpp"
 
 #include <iomanip>
@@ -23,10 +24,16 @@ namespace pinocchio
 {
   // implementation
   template<typename Scalar>
-  template<typename DelassusDerived, typename ConstraintModel, typename ConstraintModelAllocator>
+  template<
+    typename DelassusDerived,
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator>
   void IPConstraintSolverTpl<Scalar>::solvePDSystem(
     const DelassusOperatorBase<DelassusDerived> & delassus,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     int iterative_refinement_steps)
   {
     iterative_refinement_steps = math::max(0, iterative_refinement_steps);
@@ -43,7 +50,7 @@ namespace pinocchio
       tmp_vec_1 = rhs_z;
       for (Eigen::Index i = 0; i < problem_size / 3; ++i)
       {
-        auto & scaling = scalingMatrices[static_cast<std::size_t>(i)];
+        auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         tmp_vec_1.template segment<3>(3 * i).noalias() +=
           scaling.apply(tmp_vec_0.template segment<3>(3 * i));
       }
@@ -54,20 +61,20 @@ namespace pinocchio
       auto & g = tmp_vec_1;
       for (Eigen::Index i = 0; i < problem_size / 3; ++i)
       {
-        auto & scaling = scalingMatrices[static_cast<std::size_t>(i)];
+        auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         Vector3s tmp = scaling.applyInverse(g.template segment<3>(3 * i));
         p_w_barrier.template segment<3>(3 * i).noalias() = -scaling.applyInverse(tmp);
       }
-      ConeOps::denormalizeConeVariables(constraint_models, p_w_barrier);
+      denormalizeConeVariables(constraint_models, constraint_datas, p_w_barrier);
       p_w_barrier += rhs_x;
       delta_xi = -p_w_barrier;
       delassus.solveInPlace(delta_xi);
       // for z we have Wz = W^{-T})(g - G^T x)
       delta_zi.noalias() = -delta_xi;
-      ConeOps::denormalizeConeVariables(constraint_models, delta_zi);
+      denormalizeConeVariables(constraint_models, constraint_datas, delta_zi);
       for (Eigen::Index i = 0; i < problem_size / 3; ++i)
       {
-        auto & scaling = scalingMatrices[static_cast<std::size_t>(i)];
+        auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         Vector3s tmp = g.template segment<3>(3 * i) + delta_zi.template segment<3>(3 * i);
         Vector3s tmp2 = scaling.applyInverse(tmp);
         delta_zi.template segment<3>(3 * i).noalias() = tmp2;
@@ -87,12 +94,12 @@ namespace pinocchio
       tmp_vec_0 = -delta_z;
       for (Eigen::Index i = 0; i < problem_size / 3; ++i)
       {
-        auto & scaling = scalingMatrices[static_cast<std::size_t>(i)];
+        auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         Vector3s tmp = tmp_vec_0.template segment<3>(3 * i);
         Vector3s tmp2 = scaling.applyInverse(tmp);
         tmp_vec_0.template segment<3>(3 * i).noalias() = tmp2;
       }
-      ConeOps::denormalizeConeVariables(constraint_models, tmp_vec_0);
+      denormalizeConeVariables(constraint_models, constraint_datas, tmp_vec_0);
       rhs_x += tmp_vec_0;
       tmp_vec_0 = delta_x;
       delassus.applyOnTheRight(tmp_vec_0, tmp_vec_1);
@@ -104,11 +111,11 @@ namespace pinocchio
       rhs_s += tmp_vec_0 + tmp_vec_1;
       // compute rhs_z
       tmp_vec_0 = -delta_x;
-      ConeOps::denormalizeConeVariables(constraint_models, tmp_vec_0);
+      denormalizeConeVariables(constraint_models, constraint_datas, tmp_vec_0);
       rhs_z += tmp_vec_0;
       for (Eigen::Index i = 0; i < problem_size / 3; ++i)
       {
-        auto & scaling = scalingMatrices[static_cast<std::size_t>(i)];
+        auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         Vector3s tmp = delta_s.template segment<3>(3 * i);
         Vector3s tmp2 = scaling.apply(tmp);
         rhs_z.template segment<3>(3 * i).noalias() += tmp2;
@@ -204,9 +211,9 @@ namespace pinocchio
       }
     }
     internal::computeDualConeProjection(constraint_models, constraint_datas, z, z);
-    ConeOps::normalizeConeVariables(constraint_models, z);
+    normalizeConeVariables(constraint_models, constraint_datas, z);
     internal::computeConeProjection(constraint_models, constraint_datas, x, s);
-    ConeOps::denormalizeConeVariables(constraint_models, s);
+    denormalizeConeVariables(constraint_models, constraint_datas, s);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(x.size(), problem_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(s.size(), problem_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(z.size(), problem_size);
@@ -219,8 +226,8 @@ namespace pinocchio
         pinocchio::internal::computeDeSaxeCorrection(
           constraint_models, constraint_datas, v_constraint, saxce_corr);
       }
-      computePrimalFeasibilityVector(constraint_models);
-      computePrimalOptimalityVector(constraint_models);
+      computePrimalFeasibilityVector(constraint_models, constraint_datas);
+      computePrimalOptimalityVector(constraint_models, constraint_datas);
       Scalar primal_feas = ccp_primal_feas.template lpNorm<Eigen::Infinity>();
       Scalar primal_opt = ccp_primal_opt.template lpNorm<Eigen::Infinity>()
                           / (std::max(1., (g + saxce_corr).template lpNorm<Eigen::Infinity>()));
@@ -229,7 +236,7 @@ namespace pinocchio
       if (
         math::max(complementarity, math::max(primal_opt, primal_feas)) <= this->absolute_precision)
       {
-        ConeOps::denormalizeConeVariables(constraint_models, z);
+        denormalizeConeVariables(constraint_models, constraint_datas, z);
         return true;
       }
     }
@@ -256,7 +263,7 @@ namespace pinocchio
     // initialize the lambda & scaling matrices
     for (int i = 0; i < problem_size / 3; i++)
     {
-      auto & scaling = scalingMatrices[static_cast<std::size_t>(i)];
+      auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
       lambda.template segment<3>(3 * i) =
         scaling.compute(s.template segment<3>(3 * i), z.template segment<3>(3 * i));
     }
@@ -285,10 +292,10 @@ namespace pinocchio
       }
 
       // primal feasibility
-      computePrimalFeasibilityVector(constraint_models);
+      computePrimalFeasibilityVector(constraint_models, constraint_datas);
 
       // primal optimality
-      computePrimalOptimalityVector(constraint_models);
+      computePrimalOptimalityVector(constraint_models, constraint_datas);
 
       // complementarity slackness
       computeComplementaritySlacknessVector();
@@ -333,7 +340,7 @@ namespace pinocchio
         (math::max(complementarity, primal_feas) <= this->absolute_precision)
         && primal_opt <= this->primal_opt_tol)
       {
-        ConeOps::denormalizeConeVariables(constraint_models, z);
+        denormalizeConeVariables(constraint_models, constraint_datas, z);
         TIMER_STOP;
         if (stat_record)
         {
@@ -352,18 +359,10 @@ namespace pinocchio
 
       // update the barrier terms
       // add the 3x3 block diagonal teems to the block diagonal of P matrix
-      for (std::size_t i = 0; i < static_cast<std::size_t>(problem_size / 3); ++i)
-      {
-        const auto & cmodel = helper::get_ref(constraint_models[i]);
-        Scalar mui = cmodel.set().mu;
-        Matrix3x3 W_minTG = scalingMatrices[i].getInverseMatrix();
-        W_minTG.col(2) *= mui;
-        barrierHessianTerms[i] = W_minTG.transpose() * W_minTG;
-        // barrierHessianTerms[i].diagonal().array() += R.template segment<3>(3 * i).array();
-      }
+      updateBarrierHessian(constraint_models, scaling_matrices, barrier_hessian_terms);
 
       // update delassus matrix and refactorize
-      delassus.updateBarrierHessian(barrierHessianTerms);
+      delassus.updateBarrierHessian(barrier_hessian_terms);
 
       // solve PD Newton systems
       // - first system  (i = 0): affine (predictor)
@@ -411,7 +410,7 @@ namespace pinocchio
         }
 
         // solve PD system for affine / combined direction
-        solvePDSystem(delassus, constraint_models, iterative_refinement_steps);
+        solvePDSystem(delassus, constraint_models, constraint_datas, iterative_refinement_steps);
         if (i == 0)
         {
           // compute the mehrotra correction
@@ -448,7 +447,7 @@ namespace pinocchio
       ConeOps::scale2Inv(lambda, delta_z, delta_z);
       for (int i = 0; i < problem_size / 3; i++)
       {
-        auto & scaling = scalingMatrices[static_cast<std::size_t>(i)];
+        auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         // s.template segment<3>(3*i) = scalings[i] * delta_s.template segment<3>(3*i);
         s.template segment<3>(3 * i) = scaling.apply(delta_s.template segment<3>(3 * i));
         z.template segment<3>(3 * i) = scaling.applyInverse(delta_z.template segment<3>(3 * i));
@@ -460,7 +459,7 @@ namespace pinocchio
       //
       for (int i = 0; i < problem_size / 3; i++)
       {
-        auto & scaling = scalingMatrices[static_cast<std::size_t>(i)];
+        auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         lambda.template segment<3>(3 * i) =
           scaling.update(delta_s.template segment<3>(3 * i), delta_z.template segment<3>(3 * i));
       }
@@ -506,23 +505,287 @@ namespace pinocchio
               << std::endl;
   }
 
+  template<typename VectorLikeInOut>
+  struct NormalizeConeVariablesVisitor
+  : visitors::ConstraintUnaryVisitorBase<NormalizeConeVariablesVisitor<VectorLikeInOut>>
+  {
+    typedef boost::fusion::vector<VectorLikeInOut &> ArgsType;
+    typedef visitors::ConstraintUnaryVisitorBase<NormalizeConeVariablesVisitor<VectorLikeInOut>>
+      Base;
+
+    template<typename ConstraintModel>
+    static void
+    algo(const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel, VectorLikeInOut & x)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(cmodel);
+      PINOCCHIO_UNUSED_VARIABLE(x);
+      PINOCCHIO_THROW(
+        std::runtime_error,
+        "NormalizeConeVariablesVisitor not yet implemented for this constraint.");
+    }
+
+    template<typename Scalar, int Options>
+    static void algo(
+      const pinocchio::FrictionalPointConstraintModelTpl<Scalar, Options> & cmodel,
+      VectorLikeInOut & x)
+    {
+      x.coeffRef(2) /= cmodel.set().mu;
+    }
+
+    /// \brief Non-variant `run` method.
+    template<typename ConstraintModel>
+    static void
+    run(const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel, VectorLikeInOut & x)
+    {
+      algo(cmodel.derived(), x);
+    }
+
+    /// \brief Variant `run` method.
+    template<
+      typename Scalar,
+      int Options,
+      template<typename S, int O> class ConstraintCollectionTpl>
+    static void run(
+      const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      VectorLikeInOut & x)
+    {
+      ArgsType args(x);
+      // Base::run will call `algo` (dispatch to right type)
+      Base::run(cmodel, args);
+    }
+  };
+
+  template<typename Scalar>
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator,
+    typename VectorLikeInOut>
+  void IPConstraintSolverTpl<Scalar>::normalizeConeVariables(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const Eigen::MatrixBase<VectorLikeInOut> & x_)
+  {
+    assert(
+      constraint_models.size() == constraint_datas.size()
+      && "Both std::vector should be of equal size.");
+
+    using SegmentType = typename VectorLikeInOut::SegmentReturnType;
+
+    VectorLikeInOut & x = x_.const_cast_derived();
+    Eigen::DenseIndex cindex = 0;
+    for (std::size_t k = 0; k < constraint_models.size(); ++k)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[k]);
+      const auto & cdata = helper::get_ref(constraint_datas[k]);
+      const auto csize = cmodel.activeSize(cdata);
+
+      SegmentType x_segment = x.segment(cindex, csize);
+      typedef NormalizeConeVariablesVisitor<SegmentType> Algo;
+      Algo::run(cmodel, x_segment);
+
+      cindex += csize;
+    }
+  }
+
+  template<typename VectorLikeInOut>
+  struct DenormalizeConeVariablesVisitor
+  : visitors::ConstraintUnaryVisitorBase<DenormalizeConeVariablesVisitor<VectorLikeInOut>>
+  {
+    typedef boost::fusion::vector<VectorLikeInOut &> ArgsType;
+    typedef visitors::ConstraintUnaryVisitorBase<DenormalizeConeVariablesVisitor<VectorLikeInOut>>
+      Base;
+
+    template<typename ConstraintModel>
+    static void
+    algo(const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel, VectorLikeInOut & x)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(cmodel);
+      PINOCCHIO_UNUSED_VARIABLE(x);
+      PINOCCHIO_THROW(
+        std::runtime_error,
+        "DenormalizeConeVariablesVisitor not yet implemented for this constraint.");
+    }
+
+    template<typename Scalar, int Options>
+    static void algo(
+      const pinocchio::FrictionalPointConstraintModelTpl<Scalar, Options> & cmodel,
+      VectorLikeInOut & x)
+    {
+      x.coeffRef(2) *= cmodel.set().mu;
+    }
+
+    /// \brief Non-variant `run` method.
+    template<typename ConstraintModel>
+    static void
+    run(const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel, VectorLikeInOut & x)
+    {
+      algo(cmodel.derived(), x);
+    }
+
+    /// \brief Variant `run` method.
+    template<
+      typename Scalar,
+      int Options,
+      template<typename S, int O> class ConstraintCollectionTpl>
+    static void run(
+      const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      VectorLikeInOut & x)
+    {
+      ArgsType args(x);
+      // Base::run will call `algo` (dispatch to right type)
+      Base::run(cmodel, args);
+    }
+  };
+
+  template<typename Scalar>
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator,
+    typename VectorLikeInOut>
+  void IPConstraintSolverTpl<Scalar>::denormalizeConeVariables(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const Eigen::MatrixBase<VectorLikeInOut> & x_)
+  {
+    assert(
+      constraint_models.size() == constraint_datas.size()
+      && "Both std::vector should be of equal size.");
+
+    using SegmentType = typename VectorLikeInOut::SegmentReturnType;
+
+    VectorLikeInOut & x = x_.const_cast_derived();
+    Eigen::DenseIndex cindex = 0;
+    for (std::size_t k = 0; k < constraint_models.size(); ++k)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[k]);
+      const auto & cdata = helper::get_ref(constraint_datas[k]);
+      const auto csize = cmodel.activeSize(cdata);
+
+      SegmentType x_segment = x.segment(cindex, csize);
+      typedef DenormalizeConeVariablesVisitor<SegmentType> Algo;
+      Algo::run(cmodel, x_segment);
+
+      cindex += csize;
+    }
+  }
+
+  template<typename ScalingMatrix, typename BarrierHessianTerm>
+  struct UpdateBarrierHessianTermVisitor
+  : visitors::ConstraintUnaryVisitorBase<
+      UpdateBarrierHessianTermVisitor<ScalingMatrix, BarrierHessianTerm>>
+  {
+    typedef boost::fusion::vector<const ScalingMatrix &, BarrierHessianTerm &> ArgsType;
+    typedef visitors::ConstraintUnaryVisitorBase<
+      UpdateBarrierHessianTermVisitor<ScalingMatrix, BarrierHessianTerm>>
+      Base;
+
+    template<typename ConstraintModel>
+    static void algo(
+      const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+      const ScalingMatrix & scaling_matrix,
+      BarrierHessianTerm & barrier_hessian_term)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(cmodel);
+      PINOCCHIO_UNUSED_VARIABLE(scaling_matrix);
+      PINOCCHIO_UNUSED_VARIABLE(barrier_hessian_term);
+      PINOCCHIO_THROW(
+        std::runtime_error,
+        "UpdateBarrierHessianTermVisitor not yet implemented for this constraint.");
+    }
+
+    template<typename Scalar, int Options>
+    static void algo(
+      const pinocchio::FrictionalPointConstraintModelTpl<Scalar, Options> & cmodel,
+      const ScalingMatrix & scaling_matrix,
+      BarrierHessianTerm & barrier_hessian_term)
+    {
+      auto W_minTG = scaling_matrix.getInverseMatrix();
+      W_minTG.col(2) *= cmodel.set().mu;
+      barrier_hessian_term = W_minTG.transpose() * W_minTG;
+    }
+
+    /// \brief Non-variant `run` method.
+    template<typename ConstraintModel>
+    static void run(
+      const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+      const ScalingMatrix & scaling_matrix,
+      BarrierHessianTerm & barrier_hessian_term)
+    {
+      algo(cmodel.derived(), scaling_matrix, barrier_hessian_term);
+    }
+
+    /// \brief Variant `run` method.
+    template<
+      typename Scalar,
+      int Options,
+      template<typename S, int O> class ConstraintCollectionTpl>
+    static void run(
+      const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ScalingMatrix & scaling_matrix,
+      BarrierHessianTerm & barrier_hessian_term)
+    {
+      ArgsType args(scaling_matrix, barrier_hessian_term);
+      // Base::run will call `algo` (dispatch to right type)
+      Base::run(cmodel, args);
+    }
+  };
+
   template<typename Scalar>
   template<typename ConstraintModel, typename ConstraintModelAllocator>
+  void IPConstraintSolverTpl<Scalar>::updateBarrierHessian(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const ScalingMatrixVector & scaling_matrices,
+    BarrierHessianTermVector & barrier_hessian_terms)
+  {
+    assert(
+      constraint_models.size() == scaling_matrices.size()
+      && "Both std::vector should be of equal size.");
+    assert(
+      constraint_models.size() == barrier_hessian_terms.size()
+      && "Both std::vector should be of equal size.");
+
+    for (std::size_t k = 0; k < constraint_models.size(); ++k)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[k]);
+      const auto & scaling_matrix = helper::get_ref(scaling_matrices[k]);
+      auto & barrier_hessian_term = helper::get_ref(barrier_hessian_terms[k]);
+
+      typedef UpdateBarrierHessianTermVisitor<ScalingMatrix, BarrierHessianTerm> Algo;
+      Algo::run(cmodel, scaling_matrix, barrier_hessian_term);
+    }
+  }
+
+  template<typename Scalar>
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator>
   void IPConstraintSolverTpl<Scalar>::computePrimalFeasibilityVector(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
     ccp_primal_feas.noalias() = -x;
-    ConeOps::denormalizeConeVariables(constraint_models, ccp_primal_feas);
+    denormalizeConeVariables(constraint_models, constraint_datas, ccp_primal_feas);
     ccp_primal_feas.noalias() += s;
   }
 
   template<typename Scalar>
-  template<typename ConstraintModel, typename ConstraintModelAllocator>
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator>
   void IPConstraintSolverTpl<Scalar>::computePrimalOptimalityVector(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
     ccp_primal_opt.noalias() = -z;
-    ConeOps::denormalizeConeVariables(constraint_models, ccp_primal_opt);
+    denormalizeConeVariables(constraint_models, constraint_datas, ccp_primal_opt);
     ccp_primal_opt.noalias() += v_constraint;
     ccp_primal_opt.noalias() += saxce_corr;
   }

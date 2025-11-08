@@ -26,6 +26,10 @@ namespace pinocchio
     typedef CoulombFrictionConeTpl<Scalar> Cone;
     typedef IPSolverConeOperations<Scalar> ConeOps;
     typedef const Eigen::Ref<const VectorXs> RefConstVectorXs;
+    typedef Matrix3x3 BarrierHessianTerm;
+    typedef std::vector<BarrierHessianTerm> BarrierHessianTermVector;
+    typedef typename ConeOps::ScalingMatrix ScalingMatrix;
+    typedef std::vector<ScalingMatrix> ScalingMatrixVector;
 
     explicit IPConstraintSolverTpl(const int problem_size)
     : Base(problem_size)
@@ -56,8 +60,8 @@ namespace pinocchio
     , rhs_z2(VectorXs::Zero(problem_size))
     , rhs_s2(VectorXs::Zero(problem_size))
     , saxce_corr(VectorXs::Zero(problem_size))
-    , barrierHessianTerms(std::size_t(problem_size / 3), Matrix3x3::Zero())
-    , scalingMatrices(std::size_t(problem_size / 3))
+    , barrier_hessian_terms(std::size_t(problem_size / 3), Matrix3x3::Zero())
+    , scaling_matrices(std::size_t(problem_size / 3))
     , stats(Base::max_it)
     {
     }
@@ -188,8 +192,8 @@ namespace pinocchio
     VectorXs rhs_x, rhs_z, rhs_s;
     VectorXs rhs_x2, rhs_z2, rhs_s2;
     VectorXs saxce_corr;
-    std::vector<Matrix3x3> barrierHessianTerms;
-    std::vector<typename ConeOps::scalingMatrix> scalingMatrices;
+    BarrierHessianTermVector barrier_hessian_terms;
+    ScalingMatrixVector scaling_matrices;
     IPSolverStats stats;
     bool v_constraint_evaluated = false;
     bool is_initialized = false;
@@ -228,17 +232,55 @@ namespace pinocchio
     }
 
     /// \brief Compute the primal feasibility vector (-Gx + s)
-    template<typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     void computePrimalFeasibilityVector(
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models);
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
     /// \brief Compute the primal optimality vector (Px - G^T z + p + saxce)
-    template<typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     void computePrimalOptimalityVector(
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models);
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
     /// \brief Compute the complementarity slackness vector (W^{-T} s ∘ W z)
     void computeComplementaritySlacknessVector();
+
+    template<
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator,
+      typename VectorLikeInOut>
+    static void normalizeConeVariables(
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const Eigen::MatrixBase<VectorLikeInOut> & x);
+
+    template<
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator,
+      typename VectorLikeInOut>
+    static void denormalizeConeVariables(
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const Eigen::MatrixBase<VectorLikeInOut> & x);
+
+    template<typename ConstraintModel, typename ConstraintModelAllocator>
+    static void updateBarrierHessian(
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const ScalingMatrixVector & scaling_matrices,
+      BarrierHessianTermVector & barrier_hessian_terms);
 
     /// \brief solve the primal-dual linear system
     //   Solve
@@ -256,10 +298,16 @@ namespace pinocchio
     //      delta_x, delta_s and delta_z member variables.
     //      Internally, the function uses the object's member variables tmp_vec_0,
     //      tmp_vec_1, tmp_vec_2, to store intermediate results without memory alloc.
-    template<typename DelassusDerived, typename ConstraintModel, typename ConstraintModelAllocator>
+    template<
+      typename DelassusDerived,
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
     void solvePDSystem(
       const DelassusOperatorBase<DelassusDerived> & delassus,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       int iterative_refinement_steps);
 
     static void printIterationDetails(
