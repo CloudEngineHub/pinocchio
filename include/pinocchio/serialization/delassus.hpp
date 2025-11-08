@@ -36,7 +36,7 @@ namespace boost
         using Base::compliance;
         using Base::damping;
         using Base::delassus_matrix;
-        using Base::llt;
+        using Base::m_cholesky_decomposition;
         using Base::mat_tmp;
       };
 
@@ -64,7 +64,7 @@ namespace boost
 
       if (Archive::is_loading::value)
       {
-        delassus_.llt = CholeskyDecomposition(delassus_.delassus_matrix);
+        delassus_.m_cholesky_decomposition = CholeskyDecomposition(delassus_.delassus_matrix);
         delassus_.mat_tmp.resize(
           delassus_.delassus_matrix.rows(), delassus_.delassus_matrix.cols());
       }
