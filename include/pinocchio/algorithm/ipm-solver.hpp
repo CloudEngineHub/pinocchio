@@ -5,7 +5,7 @@
 #ifndef __pinocchio_algorithm_ip_solver_hpp__
 #define __pinocchio_algorithm_ip_solver_hpp__
 
-#include "pinocchio/algorithm/ip-solver-cone-operations.hpp"
+#include "pinocchio/algorithm/ipm-solver-cone-operations.hpp"
 #include "pinocchio/algorithm/contact-solver-base.hpp"
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
 
@@ -15,7 +15,7 @@ namespace pinocchio
 {
   /// \brief Interior point solver
   template<typename _Scalar>
-  struct IPConstraintSolverTpl : ContactSolverBaseTpl<_Scalar>
+  struct IPMConstraintSolverTpl : ContactSolverBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
     typedef ContactSolverBaseTpl<Scalar> Base;
@@ -24,14 +24,14 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3s;
     typedef Eigen::Matrix<Scalar, 3, 3> Matrix3x3;
     typedef CoulombFrictionConeTpl<Scalar> Cone;
-    typedef IPSolverConeOperations<Scalar> ConeOps;
+    typedef IPMSolverConeOperations<Scalar> ConeOps;
     typedef const Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef Matrix3x3 BarrierHessianTerm;
     typedef std::vector<BarrierHessianTerm> BarrierHessianTermVector;
     typedef typename ConeOps::ScalingMatrix ScalingMatrix;
     typedef std::vector<ScalingMatrix> ScalingMatrixVector;
 
-    explicit IPConstraintSolverTpl(const int problem_size)
+    explicit IPMConstraintSolverTpl(const int problem_size)
     : Base(problem_size)
     , v_constraint(VectorXs::Zero(problem_size))
     , x(VectorXs::Zero(problem_size))
@@ -320,10 +320,10 @@ namespace pinocchio
 
     static void printIterationsHeader();
 
-  }; // struct IPConstraintSolverTpl
+  }; // struct IPMConstraintSolverTpl
 
 } // namespace pinocchio
 
-#include "ip-solver.hxx"
+#include "ipm-solver.hxx"
 
 #endif // ifndef __pinocchio_algorithm_ip_solver_hpp__

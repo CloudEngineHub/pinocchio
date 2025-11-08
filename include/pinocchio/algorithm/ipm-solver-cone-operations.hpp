@@ -11,7 +11,7 @@
 namespace pinocchio
 {
   template<typename _Scalar>
-  struct IPSolverConeOperations
+  struct IPMSolverConeOperations
   {
     typedef _Scalar Scalar;
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
@@ -112,7 +112,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename Vector3Like>
-  Scalar IPSolverConeOperations<Scalar>::jdot(
+  Scalar IPMSolverConeOperations<Scalar>::jdot(
     const Eigen::MatrixBase<Vector3Like> & x, const Eigen::MatrixBase<Vector3Like> & y)
   {
     return x[2] * y[2] - (x[0] * y[0] + x[1] * y[1]);
@@ -121,14 +121,14 @@ namespace pinocchio
   template<typename Scalar>
   template<typename Vector3Like>
   Eigen::Matrix<Scalar, 3, 1>
-  IPSolverConeOperations<Scalar>::jprod(const Eigen::MatrixBase<Vector3Like> & x)
+  IPMSolverConeOperations<Scalar>::jprod(const Eigen::MatrixBase<Vector3Like> & x)
   {
     return Vector3(-x[0], -x[1], x[2]);
   }
 
   template<typename Scalar>
   template<typename Vector3Like>
-  Eigen::Matrix<Scalar, 3, 1> IPSolverConeOperations<Scalar>::scale2(
+  Eigen::Matrix<Scalar, 3, 1> IPMSolverConeOperations<Scalar>::scale2(
     const Eigen::MatrixBase<Vector3Like> & lambda, const Eigen::MatrixBase<Vector3Like> & x)
   {
     Vector3 ret;
@@ -144,7 +144,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename Vector3Like>
-  Eigen::Matrix<Scalar, 3, 1> IPSolverConeOperations<Scalar>::scale2Inv(
+  Eigen::Matrix<Scalar, 3, 1> IPMSolverConeOperations<Scalar>::scale2Inv(
     const Eigen::MatrixBase<Vector3Like> & lambda, const Eigen::MatrixBase<Vector3Like> & x)
   {
     Vector3 ret;
@@ -160,7 +160,7 @@ namespace pinocchio
 
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 1>
-  IPSolverConeOperations<Scalar>::ScalingMatrix::compute(const Vector3 & s, const Vector3 & z)
+  IPMSolverConeOperations<Scalar>::ScalingMatrix::compute(const Vector3 & s, const Vector3 & z)
   {
     Vector3 lambda;
     Scalar aa = jnrm2(s);
@@ -182,7 +182,7 @@ namespace pinocchio
 
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 1>
-  IPSolverConeOperations<Scalar>::ScalingMatrix::update(const Vector3 & s, const Vector3 & z)
+  IPMSolverConeOperations<Scalar>::ScalingMatrix::update(const Vector3 & s, const Vector3 & z)
   {
     Vector3 lambda;
     Scalar aa = jnrm2(s);
@@ -212,7 +212,7 @@ namespace pinocchio
   };
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 1>
-  IPSolverConeOperations<Scalar>::ScalingMatrix::apply(const Vector3 & x)
+  IPMSolverConeOperations<Scalar>::ScalingMatrix::apply(const Vector3 & x)
   {
     Scalar w = x.dot(v);
     return beta * (2 * v * w - jprod(x));
@@ -220,13 +220,13 @@ namespace pinocchio
 
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 1>
-  IPSolverConeOperations<Scalar>::ScalingMatrix::applyInverse(const Vector3 & x)
+  IPMSolverConeOperations<Scalar>::ScalingMatrix::applyInverse(const Vector3 & x)
   {
     return -1. / beta * (jprod(2 * v * (jprod(-x).dot(v)) + x));
   };
 
   template<typename Scalar>
-  Eigen::Matrix<Scalar, 3, 3> IPSolverConeOperations<Scalar>::ScalingMatrix::getMatrix()
+  Eigen::Matrix<Scalar, 3, 3> IPMSolverConeOperations<Scalar>::ScalingMatrix::getMatrix()
   {
     Matrix3x3 ret = Matrix3x3::Zero();
     ret = 2 * v * v.transpose();
@@ -237,7 +237,7 @@ namespace pinocchio
 
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 3>
-  IPSolverConeOperations<Scalar>::ScalingMatrix::getInverseMatrix() const
+  IPMSolverConeOperations<Scalar>::ScalingMatrix::getInverseMatrix() const
   {
     Matrix3x3 ret = Matrix3x3::Zero();
     ret = 2 * v * (-jprod(v)).transpose();
@@ -248,7 +248,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename VectorLike>
-  void IPSolverConeOperations<Scalar>::scale2(
+  void IPMSolverConeOperations<Scalar>::scale2(
     const Eigen::MatrixBase<VectorLike> & lambda,
     const Eigen::MatrixBase<VectorLike> & x,
     Eigen::MatrixBase<VectorLike> & out)
@@ -261,7 +261,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename VectorLike>
-  void IPSolverConeOperations<Scalar>::scale2Inv(
+  void IPMSolverConeOperations<Scalar>::scale2Inv(
     const Eigen::MatrixBase<VectorLike> & lambda,
     const Eigen::MatrixBase<VectorLike> & x,
     Eigen::MatrixBase<VectorLike> & out)
@@ -275,7 +275,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename Vector3Like>
-  Eigen::Matrix<Scalar, 3, 1> IPSolverConeOperations<Scalar>::coneProduct(
+  Eigen::Matrix<Scalar, 3, 1> IPMSolverConeOperations<Scalar>::coneProduct(
     const Eigen::MatrixBase<Vector3Like> & x, const Eigen::MatrixBase<Vector3Like> & y)
   {
     Vector3 ret;
@@ -286,7 +286,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename Vector3Like>
-  void IPSolverConeOperations<Scalar>::coneProduct(
+  void IPMSolverConeOperations<Scalar>::coneProduct(
     const Eigen::MatrixBase<Vector3Like> & x,
     const Eigen::MatrixBase<Vector3Like> & y,
     Eigen::MatrixBase<Vector3Like> & out)
@@ -299,7 +299,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename Vector3Like>
-  Eigen::Matrix<Scalar, 3, 1> IPSolverConeOperations<Scalar>::inverseConeProduct(
+  Eigen::Matrix<Scalar, 3, 1> IPMSolverConeOperations<Scalar>::inverseConeProduct(
     const Eigen::MatrixBase<Vector3Like> & x, const Eigen::MatrixBase<Vector3Like> & y)
   {
     // see ecos implementation paper
@@ -314,7 +314,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename Vector3Like>
-  void IPSolverConeOperations<Scalar>::inverseConeProduct(
+  void IPMSolverConeOperations<Scalar>::inverseConeProduct(
     const Eigen::MatrixBase<Vector3Like> & x,
     const Eigen::MatrixBase<Vector3Like> & y,
     Eigen::MatrixBase<Vector3Like> & out)
@@ -328,7 +328,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename Vector3Like>
-  Scalar IPSolverConeOperations<Scalar>::jnrm2(const Eigen::MatrixBase<Vector3Like> & x)
+  Scalar IPMSolverConeOperations<Scalar>::jnrm2(const Eigen::MatrixBase<Vector3Like> & x)
   {
     Scalar a = x.template head<2>().norm();
     Scalar b = x[2];

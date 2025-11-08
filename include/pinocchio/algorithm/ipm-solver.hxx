@@ -30,7 +30,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  void IPConstraintSolverTpl<Scalar>::solvePDSystem(
+  void IPMConstraintSolverTpl<Scalar>::solvePDSystem(
     const DelassusOperatorBase<DelassusDerived> & delassus,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
@@ -131,7 +131,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  bool IPConstraintSolverTpl<Scalar>::solve(
+  bool IPMConstraintSolverTpl<Scalar>::solve(
     DelassusOperatorBase<DelassusDerived> & delassus,
     const Eigen::MatrixBase<VectorLikeConstraintDrift> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -470,7 +470,7 @@ namespace pinocchio
   };
 
   template<typename Scalar>
-  void IPConstraintSolverTpl<Scalar>::printIterationDetails(
+  void IPMConstraintSolverTpl<Scalar>::printIterationDetails(
     int iteration,
     Scalar primal_feas,
     Scalar primal_opt,
@@ -493,7 +493,7 @@ namespace pinocchio
   }
 
   template<typename Scalar>
-  void IPConstraintSolverTpl<Scalar>::printIterationsHeader()
+  void IPMConstraintSolverTpl<Scalar>::printIterationsHeader()
   {
     // Define column widths for formatting
     const int col_width = 20;
@@ -562,7 +562,7 @@ namespace pinocchio
     typename ConstraintData,
     typename ConstraintDataAllocator,
     typename VectorLikeInOut>
-  void IPConstraintSolverTpl<Scalar>::normalizeConeVariables(
+  void IPMConstraintSolverTpl<Scalar>::normalizeConeVariables(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<VectorLikeInOut> & x_)
@@ -646,7 +646,7 @@ namespace pinocchio
     typename ConstraintData,
     typename ConstraintDataAllocator,
     typename VectorLikeInOut>
-  void IPConstraintSolverTpl<Scalar>::denormalizeConeVariables(
+  void IPMConstraintSolverTpl<Scalar>::denormalizeConeVariables(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<VectorLikeInOut> & x_)
@@ -736,7 +736,7 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename ConstraintModel, typename ConstraintModelAllocator>
-  void IPConstraintSolverTpl<Scalar>::updateBarrierHessian(
+  void IPMConstraintSolverTpl<Scalar>::updateBarrierHessian(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const ScalingMatrixVector & scaling_matrices,
     BarrierHessianTermVector & barrier_hessian_terms)
@@ -765,7 +765,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  void IPConstraintSolverTpl<Scalar>::computePrimalFeasibilityVector(
+  void IPMConstraintSolverTpl<Scalar>::computePrimalFeasibilityVector(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
@@ -780,7 +780,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  void IPConstraintSolverTpl<Scalar>::computePrimalOptimalityVector(
+  void IPMConstraintSolverTpl<Scalar>::computePrimalOptimalityVector(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
@@ -791,7 +791,7 @@ namespace pinocchio
   }
 
   template<typename Scalar>
-  void IPConstraintSolverTpl<Scalar>::computeComplementaritySlacknessVector()
+  void IPMConstraintSolverTpl<Scalar>::computeComplementaritySlacknessVector()
   {
     ConeOps::coneProduct(lambda, lambda, ccp_compl_slackness);
   }

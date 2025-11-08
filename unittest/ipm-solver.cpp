@@ -6,7 +6,7 @@
 #include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/algorithm/ip-solver.hpp"
+#include "pinocchio/algorithm/ipm-solver.hpp"
 #include "pinocchio/algorithm/contact-jacobian.hpp"
 
 #include "pinocchio/algorithm/admm-solver.hpp"
@@ -137,7 +137,7 @@ struct TestBoxTpl
     const Eigen::VectorXd g = constraint_jacobian * v_free;
 
     // Configure the IP solver
-    IPConstraintSolverTpl<double> ip_solver(int(activeSize(constraint_models, constraint_datas)));
+    IPMConstraintSolverTpl<double> ip_solver(int(activeSize(constraint_models, constraint_datas)));
     ip_solver.setMaxIterations(10000);
     ip_solver.setAbsolutePrecision(tol_abs);
     ip_solver.setRelativePrecision(tol_rel);

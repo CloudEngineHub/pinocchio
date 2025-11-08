@@ -110,9 +110,9 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics-derivatives.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ip-solver.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ip-solver.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ip-solver-cone-operations.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ipm-solver.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ipm-solver.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ipm-solver-cone-operations.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/jacobian.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/jacobian.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/joint-configuration.hpp
