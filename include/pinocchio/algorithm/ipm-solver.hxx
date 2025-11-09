@@ -513,17 +513,6 @@ namespace pinocchio
     typedef visitors::ConstraintUnaryVisitorBase<NormalizeConeVariablesVisitor<VectorLikeInOut>>
       Base;
 
-    template<typename ConstraintModel>
-    static void
-    algo(const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel, VectorLikeInOut & x)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(cmodel);
-      PINOCCHIO_UNUSED_VARIABLE(x);
-      PINOCCHIO_THROW(
-        std::runtime_error,
-        "NormalizeConeVariablesVisitor not yet implemented for this constraint.");
-    }
-
     template<typename Scalar, int Options>
     static void algo(
       const pinocchio::FrictionalPointConstraintModelTpl<Scalar, Options> & cmodel,
@@ -549,9 +538,18 @@ namespace pinocchio
       const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       VectorLikeInOut & x)
     {
-      ArgsType args(x);
+      // ArgsType args(x);
       // Base::run will call `algo` (dispatch to right type)
-      Base::run(cmodel, args);
+      // Base::run(cmodel, args);
+      typedef FrictionalPointConstraintModelTpl<Scalar, Options> ContactModel;
+      if (const ContactModel * fpc_model = boost::get<const ContactModel>(&cmodel))
+      {
+        algo(*fpc_model, x);
+      }
+      else
+      {
+        PINOCCHIO_THROW_PRETTY(std::runtime_error, "Constraint not supported yet");
+      }
     }
   };
 
@@ -597,17 +595,6 @@ namespace pinocchio
     typedef visitors::ConstraintUnaryVisitorBase<DenormalizeConeVariablesVisitor<VectorLikeInOut>>
       Base;
 
-    template<typename ConstraintModel>
-    static void
-    algo(const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel, VectorLikeInOut & x)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(cmodel);
-      PINOCCHIO_UNUSED_VARIABLE(x);
-      PINOCCHIO_THROW(
-        std::runtime_error,
-        "DenormalizeConeVariablesVisitor not yet implemented for this constraint.");
-    }
-
     template<typename Scalar, int Options>
     static void algo(
       const pinocchio::FrictionalPointConstraintModelTpl<Scalar, Options> & cmodel,
@@ -633,9 +620,18 @@ namespace pinocchio
       const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       VectorLikeInOut & x)
     {
-      ArgsType args(x);
+      // ArgsType args(x);
       // Base::run will call `algo` (dispatch to right type)
-      Base::run(cmodel, args);
+      // Base::run(cmodel, args);
+      typedef FrictionalPointConstraintModelTpl<Scalar, Options> ContactModel;
+      if (const ContactModel * fpc_model = boost::get<const ContactModel>(&cmodel))
+      {
+        algo(*fpc_model, x);
+      }
+      else
+      {
+        PINOCCHIO_THROW_PRETTY(std::runtime_error, "Constraint not supported yet");
+      }
     }
   };
 
@@ -683,20 +679,6 @@ namespace pinocchio
       UpdateBarrierHessianTermVisitor<ScalingMatrix, BarrierHessianTerm>>
       Base;
 
-    template<typename ConstraintModel>
-    static void algo(
-      const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-      const ScalingMatrix & scaling_matrix,
-      BarrierHessianTerm & barrier_hessian_term)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(cmodel);
-      PINOCCHIO_UNUSED_VARIABLE(scaling_matrix);
-      PINOCCHIO_UNUSED_VARIABLE(barrier_hessian_term);
-      PINOCCHIO_THROW(
-        std::runtime_error,
-        "UpdateBarrierHessianTermVisitor not yet implemented for this constraint.");
-    }
-
     template<typename Scalar, int Options>
     static void algo(
       const pinocchio::FrictionalPointConstraintModelTpl<Scalar, Options> & cmodel,
@@ -728,9 +710,18 @@ namespace pinocchio
       const ScalingMatrix & scaling_matrix,
       BarrierHessianTerm & barrier_hessian_term)
     {
-      ArgsType args(scaling_matrix, barrier_hessian_term);
+      // ArgsType args(scaling_matrix, barrier_hessian_term);
       // Base::run will call `algo` (dispatch to right type)
-      Base::run(cmodel, args);
+      // Base::run(cmodel, args);
+      typedef FrictionalPointConstraintModelTpl<Scalar, Options> ContactModel;
+      if (const ContactModel * fpc_model = boost::get<const ContactModel>(&cmodel))
+      {
+        algo(*fpc_model, scaling_matrix, barrier_hessian_term);
+      }
+      else
+      {
+        PINOCCHIO_THROW_PRETTY(std::runtime_error, "Constraint not supported yet");
+      }
     }
   };
 

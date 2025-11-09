@@ -25,7 +25,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 3> Matrix3x3;
     typedef CoulombFrictionConeTpl<Scalar> Cone;
     typedef IPMSolverConeOperations<Scalar> ConeOps;
-    typedef const Eigen::Ref<const VectorXs> RefConstVectorXs;
+    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef Matrix3x3 BarrierHessianTerm;
     typedef std::vector<BarrierHessianTerm> BarrierHessianTermVector;
     typedef typename ConeOps::ScalingMatrix ScalingMatrix;
@@ -66,15 +66,15 @@ namespace pinocchio
     {
     }
 
-    struct IPSolverStats : Base::SolverStats
+    struct IPMSolverStats : Base::SolverStats
     {
-      IPSolverStats()
+      IPMSolverStats()
       : Base::SolverStats()
       , delassus_decomposition_update_count(0)
       {
       }
 
-      explicit IPSolverStats(const int max_it)
+      explicit IPMSolverStats(const int max_it)
       : it(0)
       , delassus_decomposition_update_count(0)
       {
@@ -175,7 +175,7 @@ namespace pinocchio
     }
 
     /// \returns the stats of the solver (if solve was called with stat_record=true)
-    const IPSolverStats & getStats() const
+    const IPMSolverStats & getStats() const
     {
       return stats;
     }
@@ -194,7 +194,7 @@ namespace pinocchio
     VectorXs saxce_corr;
     BarrierHessianTermVector barrier_hessian_terms;
     ScalingMatrixVector scaling_matrices;
-    IPSolverStats stats;
+    IPMSolverStats stats;
     bool v_constraint_evaluated = false;
     bool is_initialized = false;
 
