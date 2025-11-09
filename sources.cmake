@@ -648,6 +648,7 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-algorithms.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/admm-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/pgs-solver.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/ipm-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-com.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-frames.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-energy.cpp

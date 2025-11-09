@@ -12,11 +12,13 @@ namespace pinocchio
     // Forward declaration
     void exposePGSContactSolver();
     void exposeADMMContactSolver();
+    void exposeIPMConstraintSolver();
 
     void exposeContactSolvers()
     {
       exposePGSContactSolver();
       exposeADMMContactSolver();
+      exposeIPMConstraintSolver();
     }
 
   } // namespace python
