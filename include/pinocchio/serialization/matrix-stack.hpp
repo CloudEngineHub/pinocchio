@@ -68,9 +68,16 @@ namespace boost
       if (Archive::is_loading::value)
       {
         Accessor::free(data_ptr);
-        data_ptr = Accessor::malloc(real_memory_capacity);
-        assert(data_ptr != nullptr);
-        assert(reinterpret_cast<std::size_t>(data_ptr) % Alignment == 0);
+        if (real_memory_capacity > 0)
+        {
+          data_ptr = Accessor::malloc(real_memory_capacity);
+          assert(data_ptr != nullptr);
+          assert(reinterpret_cast<std::size_t>(data_ptr) % Alignment == 0);
+        }
+        else
+        {
+          data_ptr = nullptr;
+        }
       }
       ar & make_nvp(
         "data",
