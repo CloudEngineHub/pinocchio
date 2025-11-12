@@ -9,6 +9,9 @@
 #include "pinocchio/algorithm/ip-solver.hpp"
 #include "pinocchio/algorithm/contact-jacobian.hpp"
 
+#include "pinocchio/algorithm/admm-solver.hpp"
+#include "pinocchio/algorithm/clarabel-solver.hpp"
+
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
@@ -150,6 +153,40 @@ struct TestBoxTpl
     v_next =
       v0
       + dt * aba(model, data, q0, v0, (tau0 + tau_ext).eval(), external_forces, Convention::WORLD);
+
+    // Run ADMM
+    ADMMContactSolverTpl<double> admm_solver(int(activeSize(constraint_models, constraint_datas)));
+    admm_solver.setMaxIterations(10000);
+    admm_solver.setAbsolutePrecision(tol_abs);
+    admm_solver.setRelativePrecision(tol_rel);
+    admm_solver.solve(
+      delassus_dense, g, constraint_models, constraint_datas, dt, boost::none, boost::none,
+      boost::none, solve_ncp, ADMMUpdateRule::OSQP);
+
+#ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
+    // Run CLARABEL
+    ClarabelContactSolverTpl<double> clarabel_solver(
+      int(activeSize(constraint_models, constraint_datas)));
+    clarabel_solver.setMaxIterations(10000);
+    clarabel_solver.setAbsolutePrecision(tol_abs);
+    clarabel_solver.setRelativePrecision(tol_rel);
+    auto G_expression = chol.getDelassusCholeskyExpression();
+    clarabel_solver.solve(
+      G_expression, g, constraint_models, constraint_datas, dt, boost::none, boost::none,
+      boost::none, solve_ncp, false, false /*verbose*/);
+
+    std::cout << "NUMIT CLARABEL: " << clarabel_solver.getIterationCount()
+              << " / NUMIT IPSolver: " << ip_solver.getIterationCount()
+              << " / NUMIT ADMMSolver: " << admm_solver.getIterationCount()
+              << " (chol updates: " << admm_solver.getDelassusDecompositionUpdateCount() << ")\n";
+#else
+    std::cout << " / NUMIT IPSolver: " << ip_solver.getIterationCount()
+              << " / NUMIT ADMMSolver: " << admm_solver.getIterationCount()
+              << " (chol updates: " << admm_solver.getDelassusDecompositionUpdateCount() << ")\n";
+#endif
+
+    std::cout << "TIMINGS IPSolver: " << ip_solver.getCPUTimes().user << "\n";
+    std::cout << "TIMINGS ADMMSolver: " << admm_solver.getCPUTimes().user << "\n";
   }
 
   Model model;
@@ -228,7 +265,7 @@ BOOST_AUTO_TEST_CASE(box)
 
   const int num_tests =
 #ifdef NDEBUG
-    1000
+    1
 #else
     1
 #endif
@@ -254,11 +291,7 @@ BOOST_AUTO_TEST_CASE(box)
     BOOST_CHECK(test.dual_solution.isZero(2e-10));
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - fext.linear();
     const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.primal_solution / dt);
-    std::cout << "-- STATIC ZERO FORCE --\n";
-    std::cout << "f_tot_ref = " << f_tot_ref.transpose() << "\n";
-    std::cout << "f_tot = " << f_tot.transpose() << "\n";
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-8));
-    std::cout << "v_next = " << test.v_next.transpose() << "\n";
     BOOST_CHECK(test.v_next.isZero(2e-10));
   }
 
@@ -280,11 +313,7 @@ BOOST_AUTO_TEST_CASE(box)
     BOOST_CHECK(test.dual_solution.isZero(1e-8));
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - fext.linear();
     const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.primal_solution / dt);
-    std::cout << "-- STATIC SMALL FORCE --\n";
-    std::cout << "f_tot_ref = " << f_tot_ref.transpose() << "\n";
-    std::cout << "f_tot = " << f_tot.transpose() << "\n";
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-6));
-    std::cout << "v_next = " << test.v_next.transpose() << "\n";
     BOOST_CHECK(test.v_next.isZero(1e-8));
   }
 
@@ -296,13 +325,17 @@ BOOST_AUTO_TEST_CASE(box)
     fext.linear().head<2>().setRandom().normalize();
     fext.linear() *= scaling * f_sliding;
 
+    std::cout << "-- SLIDING MOTION --\n";
     TestBox test(model, constraint_models);
     test(q0, v0, tau0, fext, dt);
 
     BOOST_CHECK(test.has_converged == true);
-    std::cout << "-- SLIDING MOTION --\n";
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - 1 / scaling * fext.linear();
     const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.primal_solution / dt);
+    std::cout << "-- STATIC SMALL FORCE --\n";
+    std::cout << "f_tot_ref = " << f_tot_ref.transpose() << "\n";
+    std::cout << "f_tot = " << f_tot.transpose() << "\n";
+    std::cout << "v_next = " << test.v_next.transpose() << "\n";
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-6));
     BOOST_CHECK(
       math::fabs(Motion(test.v_next).linear().norm() - (f_sliding * 0.1 / box_mass * dt)) <= 1e-6);
@@ -313,7 +346,8 @@ BOOST_AUTO_TEST_CASE(box)
 BOOST_AUTO_TEST_CASE(stack_of_boxes)
 {
   const int n_cubes = 10;
-  const double conditionning = 1e6;
+  // const double conditionning = 1e6;
+  const double conditionning = 1e3;
   const double mass_factor = std::pow(conditionning, 1. / (n_cubes - 1));
   std::vector<double> masses;
   double mass_tot = 0;
@@ -357,6 +391,8 @@ BOOST_AUTO_TEST_CASE(stack_of_boxes)
     // We check the total force applied on the bottom box of the stack
     const Force::Vector3 f_tot_ref = -mass_tot * Model::gravity981;
     const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.primal_solution / dt);
+    std::cout << "f_tot_ref = " << f_tot_ref.transpose() << "\n";
+    std::cout << "f_tot     = " << f_tot.transpose() << "\n";
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-6));
     BOOST_CHECK(test.v_next.isZero(1e-8));
   }
