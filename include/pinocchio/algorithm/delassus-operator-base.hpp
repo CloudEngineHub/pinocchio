@@ -168,6 +168,12 @@ namespace pinocchio
     }
 
     template<typename MatrixLike>
+    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
+    {
+      derived().updateBarrierHessian(blocks);
+    }
+
+    template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       derived().solveInPlace(mat.const_cast_derived());

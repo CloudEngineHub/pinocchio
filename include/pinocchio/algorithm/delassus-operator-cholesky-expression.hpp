@@ -106,6 +106,15 @@ namespace pinocchio
       res.const_cast_derived().noalias() = self.Delassus * x;
     }
 
+    template<typename MatrixLike>
+    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(blocks);
+      PINOCCHIO_THROW(
+        std::runtime_error,
+        "updateBarrierHessian not implemented for DelassusCholeskyExpressionTpl.");
+    }
+
     template<typename MatrixDerived>
     void solveInPlace(const Eigen::MatrixBase<MatrixDerived> & x) const
     {

@@ -197,6 +197,14 @@ namespace pinocchio
     }
 
     template<typename MatrixLike>
+    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(blocks);
+      PINOCCHIO_THROW(
+        std::runtime_error, "updateBarrierHessian not implemented for DelassusOperatorSparseTpl.");
+    }
+
+    template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       internal::SparseSolveInPlaceMethod<CholeskyDecomposition>::run(

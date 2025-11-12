@@ -68,6 +68,15 @@ namespace pinocchio
     }
 
     template<typename MatrixLike>
+    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(blocks);
+      PINOCCHIO_THROW(
+        std::runtime_error,
+        "updateBarrierHessian not implemented for DelassusOperatorPreconditionedTpl.");
+    }
+
+    template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       auto & mat_ = mat.const_cast_derived();

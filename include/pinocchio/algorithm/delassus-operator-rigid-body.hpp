@@ -301,6 +301,15 @@ namespace pinocchio
       return m_compliance;
     }
 
+    template<typename MatrixLike>
+    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(blocks);
+      PINOCCHIO_THROW(
+        std::runtime_error,
+        "updateBarrierHessian not implemented for DelassusOperatorRigidBodySystemsTpl.");
+    }
+
     /// \brief solveInPlace operation returning the results of the inverse of the Delassus operator
     /// times the input matrix mat
     ///

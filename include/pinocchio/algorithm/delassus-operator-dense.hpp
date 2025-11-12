@@ -107,6 +107,21 @@ namespace pinocchio
     }
 
     template<typename MatrixLike>
+    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
+    {
+      // todo check if number of blocks is equal to the size of the delassus matrix / 3
+      // and check if MatrixLike is a 3x3 matrix
+      mat_tmp = delassus_matrix;
+      int offs = 0;
+      for (const auto & block : blocks)
+      {
+        mat_tmp.template block<3, 3>(offs, offs) += block;
+        offs += 3;
+      }
+      llt.compute(mat_tmp);
+    }
+
+    template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       runCholeskyDecomposition(); // only if needed
