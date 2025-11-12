@@ -529,15 +529,15 @@ namespace pinocchio
 
             urdfVisitor << "joint REVOLUTE with axis" << axis.transpose() << '\n';
             urdfVisitor.addJointAndBody(
-              JointType::REVOLUTE, axis, parentFrameId, pMj, jointName, Y, cMj.inverse(),
-              childName, max_effort, max_velocity, min_config, max_config, friction, damping);
+              JointType::REVOLUTE, axis, parentFrameId, pMj, jointName, Y, cMj.inverse(), childName,
+              max_effort, max_velocity, min_config, max_config, friction, damping);
           }
           else if (jointElement->template Get<std::string>("type") == "gearbox")
           {
             urdfVisitor << "joint GEARBOX with axis" << '\n';
             urdfVisitor.addJointAndBody(
-              JointType::REVOLUTE, axis, parentFrameId, pMj, jointName, Y, cMj.inverse(),
-              childName, max_effort, max_velocity, min_config, max_config, friction, damping);
+              JointType::REVOLUTE, axis, parentFrameId, pMj, jointName, Y, cMj.inverse(), childName,
+              max_effort, max_velocity, min_config, max_config, friction, damping);
           }
           else if (jointElement->template Get<std::string>("type") == "prismatic")
           {
@@ -634,8 +634,7 @@ namespace pinocchio
         const SdfGraph & graph,
         const urdf::details::UrdfVisitor & visitor,
         const Model & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-          & constraint_models);
+        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models);
 
       /**
        * @brief Find the parent of all elements, the root link, and return it.
@@ -653,7 +652,7 @@ namespace pinocchio
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel) & constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -699,7 +698,7 @@ namespace pinocchio
       const std::string & xmlStream,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel) & constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -715,7 +714,7 @@ namespace pinocchio
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel) & constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -762,7 +761,7 @@ namespace pinocchio
       const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel) & constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -776,7 +775,7 @@ namespace pinocchio
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
       const std::string & xmlStream,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel) & constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -813,7 +812,7 @@ namespace pinocchio
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel) & constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)

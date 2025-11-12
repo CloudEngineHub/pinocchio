@@ -93,12 +93,6 @@ namespace pinocchio
             "from the initial guess.");
       }
 
-      //      template<typename S, int O>
-      //      void run(FictiousConstraintModelTpl<S, O> * ptr = 0)
-      //      {
-      //        PINOCCHIO_UNUSED_VARIABLE(ptr);
-      //      }
-
       void run(boost::blank * ptr = 0)
       {
         PINOCCHIO_UNUSED_VARIABLE(ptr);

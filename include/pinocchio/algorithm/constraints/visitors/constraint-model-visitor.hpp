@@ -294,22 +294,6 @@ namespace pinocchio
           return internal::NoRun<ReturnType>::run();
         }
 
-        template<typename S, int O>
-        ReturnType operator()(const FictiousConstraintModelTpl<S, O> &) const
-        {
-          PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint model is of type FictiousConstraintModelTpl.");
-          return internal::NoRun<ReturnType>::run();
-        }
-
-        template<typename S, int O>
-        ReturnType operator()(const FictiousConstraintDataTpl<S, O> &) const
-        {
-          PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint data is of type FictiousConstraintDataTpl.");
-          return internal::NoRun<ReturnType>::run();
-        }
-
         ArgsTmp args;
       };
 
@@ -352,21 +336,6 @@ namespace pinocchio
           return internal::NoRun<ReturnType>::run();
         }
 
-        template<typename S, int O>
-        ReturnType operator()(const FictiousConstraintModelTpl<S, O> &) const
-        {
-          PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint model is of type FictiousConstraintModelTpl.");
-          return internal::NoRun<ReturnType>::run();
-        }
-
-        template<typename S, int O>
-        ReturnType operator()(const FictiousConstraintDataTpl<S, O> &) const
-        {
-          PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint data is of type FictiousConstraintDataTpl.");
-          return internal::NoRun<ReturnType>::run();
-        }
       }; // struct ModelVisitor
 
       template<typename ConstraintModel, typename ConstraintData, typename ArgsTmp>
@@ -409,14 +378,6 @@ namespace pinocchio
             bf::append(
               boost::ref(cmodel.derived()), boost::ref(boost::get<ConstraintDataGet>(cdata)),
               args));
-        }
-
-        template<typename S, int O>
-        ReturnType operator()(const FictiousConstraintModelTpl<S, O> &) const
-        {
-          PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint model is of type FictiousConstraintModelTpl.");
-          return ReturnType();
         }
 
         ReturnType operator()(const boost::blank &) const
@@ -468,14 +429,6 @@ namespace pinocchio
             &ConstraintModelVisitorDerived::template algo<ConstraintModelDerived>,
             bf::make_vector(
               boost::ref(cmodel.derived()), boost::ref(boost::get<ConstraintDataGet>(cdata))));
-        }
-
-        template<typename S, int O>
-        ReturnType operator()(const FictiousConstraintModelTpl<S, O> &) const
-        {
-          PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint model is of type FictiousConstraintModelTpl.");
-          return ReturnType();
         }
 
         ReturnType operator()(const boost::blank &) const

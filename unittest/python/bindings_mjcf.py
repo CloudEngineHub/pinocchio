@@ -1,9 +1,8 @@
+import importlib.util
 import unittest
 from pathlib import Path
 
 import pinocchio as pin
-
-import importlib.util
 
 mujoco_spec = importlib.util.find_spec("mujoco")
 mujoco_found = mujoco_spec is not None
@@ -16,10 +15,10 @@ class TestMJCFBindings(unittest.TestCase):
         model_dir = current_dir / "../models/"
         model_path = model_dir / "closed_chain.xml"
         model = pin.buildModelFromMJCF(model_path, model)
-        bilateral_constraint_models = pin.buildBilateralConstraintModelsFromMJCF(
+        point_anchor_constraint_models = pin.buildBilateralConstraintModelsFromMJCF(
             model, model_path
         )
-        self.assertEqual(len(bilateral_constraint_models), 4)
+        self.assertEqual(len(point_anchor_constraint_models), 4)
 
 
 @unittest.skipUnless(mujoco_found, "Needs MuJoCo.")
@@ -33,13 +32,13 @@ class TestMJCFBindingsWithMujoco(unittest.TestCase):
         model_dir = current_dir / "../models/"
         model_path = model_dir / "closed_chain.xml"
         model_pin = pin.buildModelFromMJCF(model_path, model_pin)
-        bilateral_constraint_models_pin = pin.buildBilateralConstraintModelsFromMJCF(
+        point_anchor_constraint_models_pin = pin.buildBilateralConstraintModelsFromMJCF(
             model_pin, model_path
         )
-        weld_constraint_models_pin = pin.buildWeldConstraintModelsFromMJCF(
-            model_pin, model_path
+        frame_anchor_constraint_models_pin = (
+            pin.buildFrameAnchorConstraintModelsFromMJCF(model_pin, model_path)
         )
-        print(bilateral_constraint_models_pin, weld_constraint_models_pin)
+        print(point_anchor_constraint_models_pin, frame_anchor_constraint_models_pin)
         data_pin = model_pin.createData()
         q0_pin = model_pin.referenceConfigurations["home"]
         pin.forwardKinematics(model_pin, data_pin, q0_pin)

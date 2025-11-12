@@ -19,42 +19,37 @@ namespace pinocchio
       Options = _Options
     };
 
-    //    typedef FictiousConstraintModelTpl<Scalar, Options> FictiousConstraintModel;
-    //    typedef FictiousConstraintDataTpl<Scalar, Options> FictiousConstraintData;
+    typedef PointAnchorConstraintModelTpl<Scalar, Options> PointAnchorConstraintModel;
+    typedef PointAnchorConstraintDataTpl<Scalar, Options> PointAnchorConstraintData;
 
-    typedef BilateralPointConstraintModelTpl<Scalar, Options> BilateralPointConstraintModel;
-    typedef BilateralPointConstraintDataTpl<Scalar, Options> BilateralPointConstraintData;
+    typedef PointContactConstraintModelTpl<Scalar, Options> PointContactConstraintModel;
+    typedef PointContactConstraintDataTpl<Scalar, Options> PointContactConstraintData;
 
-    typedef FrictionalPointConstraintModelTpl<Scalar, Options> FrictionalPointConstraintModel;
-    typedef FrictionalPointConstraintDataTpl<Scalar, Options> FrictionalPointConstraintData;
-
-    typedef FrictionalJointConstraintModelTpl<Scalar, Options> FrictionalJointConstraintModel;
-    typedef FrictionalJointConstraintDataTpl<Scalar, Options> FrictionalJointConstraintData;
+    typedef JointFrictionConstraintModelTpl<Scalar, Options> JointFrictionConstraintModel;
+    typedef JointFrictionConstraintDataTpl<Scalar, Options> JointFrictionConstraintData;
 
     typedef JointLimitConstraintModelTpl<Scalar, Options> JointLimitConstraintModel;
     typedef JointLimitConstraintDataTpl<Scalar, Options> JointLimitConstraintData;
 
-    typedef WeldConstraintModelTpl<Scalar, Options> WeldConstraintModel;
-    typedef WeldConstraintDataTpl<Scalar, Options> WeldConstraintData;
+    typedef FrameAnchorConstraintModelTpl<Scalar, Options> FrameAnchorConstraintModel;
+    typedef FrameAnchorConstraintDataTpl<Scalar, Options> FrameAnchorConstraintData;
 
     typedef boost::variant<
       boost::blank,
-      //      FictiousConstraintModel,
-      BilateralPointConstraintModel,
-      FrictionalPointConstraintModel,
-      FrictionalJointConstraintModel,
+      PointAnchorConstraintModel,
+      PointContactConstraintModel,
+      JointFrictionConstraintModel,
       JointLimitConstraintModel,
-      WeldConstraintModel>
+      FrameAnchorConstraintModel>
       ConstraintModelVariant;
 
     typedef boost::variant<
       boost::blank,
-      //      FictiousConstraintData,
-      BilateralPointConstraintData,
-      FrictionalPointConstraintData,
-      FrictionalJointConstraintData,
+      PointAnchorConstraintData,
+      PointContactConstraintData,
+      JointFrictionConstraintData,
       JointLimitConstraintData,
-      WeldConstraintData>
+      FrameAnchorConstraintData>
       ConstraintDataVariant;
   }; // struct ConstraintCollectionDefaultTpl
 

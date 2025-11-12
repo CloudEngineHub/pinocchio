@@ -48,8 +48,7 @@ namespace pinocchio
         const SdfGraph & graph,
         const urdf::details::UrdfVisitor & visitor,
         const Model & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-          & constraint_models)
+        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models)
       {
         for (PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(
                SdfGraph::ContactDetails)::const_iterator cm = std::cbegin(graph.contact_details);
@@ -59,7 +58,7 @@ namespace pinocchio
           const JointIndex joint_id = visitor.getParentId(cm->name);
           const SE3 & cMj = graph.childPoseMap.find(cm->name)->second;
 
-          BilateralPointConstraintModel bpcm(
+          PointAnchorConstraintModel bpcm(
             model, cm->joint1_id, cm->joint1_placement, joint_id, cMj.inverse());
 
           constraint_models.push_back(bpcm);

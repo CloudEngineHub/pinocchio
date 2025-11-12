@@ -2,26 +2,26 @@
 // Copyright (c) 2019-2024 INRIA CNRS
 //
 
-#ifndef __pinocchio_algorithm_constraints_bilateral_point_constraint_hpp__
-#define __pinocchio_algorithm_constraints_bilateral_point_constraint_hpp__
+#ifndef __pinocchio_algorithm_constraints_frame_anchor_constraint_hpp__
+#define __pinocchio_algorithm_constraints_frame_anchor_constraint_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/unbounded-set.hpp"
-#include "pinocchio/algorithm/constraints/point-constraint-model-base.hpp"
-#include "pinocchio/algorithm/constraints/point-constraint-data-base.hpp"
+#include "pinocchio/algorithm/constraints/frame-constraint-model-base.hpp"
+#include "pinocchio/algorithm/constraints/frame-constraint-data-base.hpp"
 
 namespace pinocchio
 {
 
   template<typename NewScalar, typename Scalar, int Options>
-  struct CastType<NewScalar, BilateralPointConstraintModelTpl<Scalar, Options>>
+  struct CastType<NewScalar, FrameAnchorConstraintModelTpl<Scalar, Options>>
   {
-    typedef BilateralPointConstraintModelTpl<NewScalar, Options> type;
+    typedef FrameAnchorConstraintModelTpl<NewScalar, Options> type;
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<BilateralPointConstraintModelTpl<_Scalar, _Options>>
-  : traits<PointConstraintModelBase<BilateralPointConstraintModelTpl<_Scalar, _Options>>>
+  struct traits<FrameAnchorConstraintModelTpl<_Scalar, _Options>>
+  : traits<FrameConstraintModelBase<FrameAnchorConstraintModelTpl<_Scalar, _Options>>>
   {
     typedef _Scalar Scalar;
 
@@ -30,25 +30,25 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef BilateralPointConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef BilateralPointConstraintDataTpl<Scalar, Options> ConstraintData;
+    typedef FrameAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef FrameAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef UnboundedSetTpl<Scalar, Options> ConstraintSet;
 
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
 
-    typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
-    typedef Eigen::Matrix<Scalar, 3, Eigen::Dynamic, Options> JacobianMatrixType;
-    typedef Vector3 VectorConstraintSize;
+    typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
+    typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> JacobianMatrixType;
+    typedef Vector6 VectorConstraintSize;
 
-    typedef Vector3 ComplianceVectorType;
+    typedef Vector6 ComplianceVectorType;
     typedef ComplianceVectorType & ComplianceVectorTypeRef;
     typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
 
     typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
     typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
 
-    typedef Vector3 BaumgarteVectorType;
+    typedef Vector6 BaumgarteVectorType;
     typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
       BaumgarteCorrectorVectorParameters;
     typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
@@ -56,8 +56,8 @@ namespace pinocchio
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<BilateralPointConstraintDataTpl<_Scalar, _Options>>
-  : traits<BilateralPointConstraintModelTpl<_Scalar, _Options>>
+  struct traits<FrameAnchorConstraintDataTpl<_Scalar, _Options>>
+  : traits<FrameAnchorConstraintModelTpl<_Scalar, _Options>>
   {
   };
 
@@ -65,8 +65,8 @@ namespace pinocchio
   ///  \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
-  struct BilateralPointConstraintModelTpl
-  : PointConstraintModelBase<BilateralPointConstraintModelTpl<_Scalar, _Options>>
+  struct FrameAnchorConstraintModelTpl
+  : FrameConstraintModelBase<FrameAnchorConstraintModelTpl<_Scalar, _Options>>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -76,13 +76,13 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef PointConstraintModelBase<BilateralPointConstraintModelTpl> Base;
-    typedef ConstraintModelBase<BilateralPointConstraintModelTpl> RootBase;
+    typedef FrameConstraintModelBase<FrameAnchorConstraintModelTpl> Base;
+    typedef ConstraintModelBase<FrameAnchorConstraintModelTpl> RootBase;
 
     template<typename NewScalar, int NewOptions>
-    friend struct BilateralPointConstraintModelTpl;
+    friend struct FrameAnchorConstraintModelTpl;
 
-    typedef BilateralPointConstraintDataTpl<Scalar, Options> ConstraintData;
+    typedef FrameAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef UnboundedSetTpl<Scalar, Options> ConstraintSet;
 
     using typename Base::SE3;
@@ -99,7 +99,7 @@ namespace pinocchio
     ///
     ///  \brief Default constructor
     ///
-    BilateralPointConstraintModelTpl()
+    FrameAnchorConstraintModelTpl()
     : Base()
     {
     }
@@ -107,7 +107,6 @@ namespace pinocchio
     ///
     ///  \brief Contructor with from a given type, joint indexes and placements.
     ///
-    /// \param[in] type Type of the contact.
     /// \param[in] model Model associated to the constraint.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     /// \param[in] joint2_id Index of the joint 2 in the model tree.
@@ -116,7 +115,7 @@ namespace pinocchio
     /// expressed.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    BilateralPointConstraintModelTpl(
+    FrameAnchorConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement,
@@ -129,13 +128,13 @@ namespace pinocchio
     ///
     ///  \brief Contructor with from a given type, joint1_id and placement.
     ///
-    /// \param[in] type Type of the contact.
+    /// \param[in] model Model associated to the constraint.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     /// \param[in] joint1_placement Placement of the constraint w.r.t the frame of joint1.
     /// expressed.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    BilateralPointConstraintModelTpl(
+    FrameAnchorConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement)
@@ -146,12 +145,12 @@ namespace pinocchio
     ///
     ///  \brief Contructor with from a given type and the joint ids.
     ///
-    /// \param[in] type Type of the contact.
+    /// \param[in] model Model associated to the constraint.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     /// \param[in] joint2_id Index of the joint 2 in the model tree.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    BilateralPointConstraintModelTpl(
+    FrameAnchorConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const JointIndex joint2_id)
@@ -162,14 +161,14 @@ namespace pinocchio
     ///
     ///  \brief Contructor with from a given type and .
     ///
-    /// \param[in] type Type of the contact.
+    /// \param[in] model Model associated to the constraint.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     ///
     /// \remarks The second joint id (joint2_id) is set to be 0 (corresponding to the index of the
     /// universe).
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    BilateralPointConstraintModelTpl(
+    FrameAnchorConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
     : Base(model, joint1_id)
     {
@@ -185,9 +184,9 @@ namespace pinocchio
 
     /// \brief Cast operator
     template<typename NewScalar>
-    typename CastType<NewScalar, BilateralPointConstraintModelTpl>::type cast() const
+    typename CastType<NewScalar, FrameAnchorConstraintModelTpl>::type cast() const
     {
-      typedef typename CastType<NewScalar, BilateralPointConstraintModelTpl>::type ReturnType;
+      typedef typename CastType<NewScalar, FrameAnchorConstraintModelTpl>::type ReturnType;
       ReturnType res;
       Base::template cast<NewScalar>(res);
       res.m_set = m_set.template cast<NewScalar>();
@@ -197,12 +196,12 @@ namespace pinocchio
     ///
     ///  \brief Comparison operator
     ///
-    /// \param[in] other Other BilateralPointConstraintModelTpl to compare with.
+    /// \param[in] other Other FrameAnchorConstraintModelTpl to compare with.
     ///
     /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
     /// must be the same).
     ///
-    bool operator==(const BilateralPointConstraintModelTpl & other) const
+    bool operator==(const FrameAnchorConstraintModelTpl & other) const
     {
       return base() == other.base() && m_set == other.m_set;
     }
@@ -210,12 +209,12 @@ namespace pinocchio
     ///
     ///  \brief Oposite of the comparison operator.
     ///
-    /// \param[in] other Other BilateralPointConstraintModelTpl to compare with.
+    /// \param[in] other Other FrameAnchorConstraintModelTpl to compare with.
     ///
     /// \returns false if the two *this is not equal to other (at least type, joint1_id or placement
     /// attributs is different).
     ///
-    bool operator!=(const BilateralPointConstraintModelTpl & other) const
+    bool operator!=(const FrameAnchorConstraintModelTpl & other) const
     {
       return !(*this == other);
     }
@@ -232,7 +231,7 @@ namespace pinocchio
 
     static std::string classname()
     {
-      return std::string("BilateralPointConstraintModel");
+      return std::string("FrameAnchorConstraintModel");
     }
     std::string shortname() const
     {
@@ -240,16 +239,16 @@ namespace pinocchio
     }
 
   protected:
-    ConstraintSet m_set = ConstraintSet(3);
+    ConstraintSet m_set = ConstraintSet(6);
 
-  }; // struct BilateralPointConstraintModelTpl<_Scalar,_Options>
+  }; // struct FrameAnchorConstraintModelTpl<_Scalar,_Options>
 
   ///
   ///  \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
-  struct BilateralPointConstraintDataTpl
-  : PointConstraintDataBase<BilateralPointConstraintDataTpl<_Scalar, _Options>>
+  struct FrameAnchorConstraintDataTpl
+  : FrameConstraintDataBase<FrameAnchorConstraintDataTpl<_Scalar, _Options>>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -259,28 +258,28 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef BilateralPointConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef BilateralPointConstraintDataTpl ConstraintData;
-    typedef PointConstraintDataBase<BilateralPointConstraintDataTpl> Base;
+    typedef FrameAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef FrameAnchorConstraintDataTpl ConstraintData;
+    typedef FrameConstraintDataBase<FrameAnchorConstraintDataTpl> Base;
 
     using typename Base::SE3;
 
     /// \brief Default constructor
-    BilateralPointConstraintDataTpl()
+    FrameAnchorConstraintDataTpl()
     {
     }
 
-    explicit BilateralPointConstraintDataTpl(const ConstraintModel & constraint_model)
+    explicit FrameAnchorConstraintDataTpl(const ConstraintModel & constraint_model)
     : Base(constraint_model)
     {
     }
 
-    bool operator==(const BilateralPointConstraintDataTpl & other) const
+    bool operator==(const FrameAnchorConstraintDataTpl & other) const
     {
       return base() == other.base();
     }
 
-    bool operator!=(const BilateralPointConstraintDataTpl & other) const
+    bool operator!=(const FrameAnchorConstraintDataTpl & other) const
     {
       return !(*this == other);
     }
@@ -296,14 +295,14 @@ namespace pinocchio
 
     static std::string classname()
     {
-      return std::string("BilateralPointConstraintData");
+      return std::string("FrameAnchorConstraintData");
     }
     std::string shortname() const
     {
       return classname();
     }
-  }; // struct BilateralPointConstraintDataTpl<_Scalar,_Options>
+  }; // struct FrameAnchorConstraintDataTpl<_Scalar,_Options>
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_constraints_bilateral_point_constraint_hpp__
+#endif // ifndef __pinocchio_algorithm_constraints_frame_anchor_constraint_hpp__

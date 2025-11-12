@@ -455,7 +455,7 @@ BOOST_AUTO_TEST_CASE(parse_default_class)
   typedef pinocchio::SE3::Vector3 Vector3;
   typedef pinocchio::SE3::Matrix3 Matrix3;
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::BilateralPointConstraintModel)
+  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::PointAnchorConstraintModel)
   constraint_models;
   std::string filename = PINOCCHIO_MODEL_DIR + std::string("/../unittest/models/test_mjcf.xml");
 
@@ -1484,7 +1484,7 @@ BOOST_AUTO_TEST_CASE(test_geometry_parsing)
 
 BOOST_AUTO_TEST_CASE(test_contact_parsing)
 {
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::BilateralPointConstraintModel)
+  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::PointAnchorConstraintModel)
   constraint_models;
   std::string filename = PINOCCHIO_MODEL_DIR + std::string("/../unittest/models/closed_chain.xml");
 
@@ -1505,7 +1505,7 @@ BOOST_AUTO_TEST_CASE(test_contact_parsing)
     constraint_models[3].joint1_placement.translation(), pinocchio::SE3::Vector3(0.35012, 0, 0));
 
   // Next, we check if the other constraint placement has been computed correctly.
-  // If a bilateral constraint has been constructed well, then the origin of the constraint
+  // If a point anchor constraint has been constructed well, then the origin of the constraint
   // placements, expressed in the world frame, should match
   const Eigen::VectorXd q0 = model.referenceConfigurations["qpos0"];
   pinocchio::Data data(model);

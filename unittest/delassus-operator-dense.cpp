@@ -75,15 +75,15 @@ BOOST_AUTO_TEST_CASE(test_cholesky_expression_to_dense)
   std::vector<ConstraintModel> constraint_models;
   std::vector<ConstraintData> constraint_datas;
 
-  FrictionalJointConstraintModel::JointIndexVector active_friction_idxs;
-  FrictionalJointConstraintModel::JointIndexVector active_limit_idxs;
+  JointFrictionConstraintModel::JointIndexVector active_friction_idxs;
+  JointFrictionConstraintModel::JointIndexVector active_limit_idxs;
   for (size_t i = 1; i < model.joints.size(); ++i)
   {
     const Model::JointModel & joint = model.joints[i];
     active_friction_idxs.push_back(joint.id());
     active_limit_idxs.push_back(joint.id());
   }
-  FrictionalJointConstraintModel joints_friction(model, active_friction_idxs);
+  JointFrictionConstraintModel joints_friction(model, active_friction_idxs);
   constraint_models.push_back(joints_friction);
   constraint_datas.push_back(joints_friction.createData());
   //

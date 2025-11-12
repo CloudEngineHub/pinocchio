@@ -4,7 +4,7 @@
 
 #include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
-#include "pinocchio/algorithm/constraints/joint-frictional-constraint.hpp"
+#include "pinocchio/algorithm/constraints/joint-friction-constraint.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 
@@ -17,8 +17,8 @@
 #include <boost/utility/binary.hpp>
 
 using namespace pinocchio;
-typedef FrictionalJointConstraintModel::EigenIndexVector EigenIndexVector;
-typedef FrictionalJointConstraintModel::BooleanVector BooleanVector;
+typedef JointFrictionConstraintModel::EigenIndexVector EigenIndexVector;
+typedef JointFrictionConstraintModel::BooleanVector BooleanVector;
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(constraint_empty_constructor)
 
   const Model::IndexVector empty_active_joint_ids;
 
-  FrictionalJointConstraintModel constraint(model, empty_active_joint_ids);
+  JointFrictionConstraintModel constraint(model, empty_active_joint_ids);
 }
 
 BOOST_AUTO_TEST_CASE(constraint_constructor)
@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
   const Model::IndexVector & RF_support = model.supports[RF_id];
   const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
 
-  FrictionalJointConstraintModel constraint(model, active_joint_ids);
-  FrictionalJointConstraintData constraint_data = constraint.createData();
+  JointFrictionConstraintModel constraint(model, active_joint_ids);
+  JointFrictionConstraintData constraint_data = constraint.createData();
 
   // Check size
   {
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(cast)
   const Model::IndexVector & RF_support = model.supports[RF_id];
   const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
 
-  FrictionalJointConstraintModel cm(model, active_joint_ids);
+  JointFrictionConstraintModel cm(model, active_joint_ids);
 
   const auto cm_cast_double = cm.cast<double>();
   BOOST_CHECK(cm_cast_double == cm);
@@ -130,8 +130,8 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
   const Model::IndexVector & RF_support = model.supports[RF_id];
   const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
 
-  FrictionalJointConstraintModel constraint_model(model, active_joint_ids);
-  FrictionalJointConstraintData constraint_data(constraint_model);
+  JointFrictionConstraintModel constraint_model(model, active_joint_ids);
+  JointFrictionConstraintData constraint_data(constraint_model);
 
   Eigen::MatrixXd jacobian_matrix(constraint_model.size(), model.nv);
   constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
@@ -169,8 +169,8 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
   const Model::IndexVector & RF_support = model.supports[RF_id];
   const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
 
-  FrictionalJointConstraintModel constraint_model(model, active_joint_ids);
-  FrictionalJointConstraintData constraint_data(constraint_model);
+  JointFrictionConstraintModel constraint_model(model, active_joint_ids);
+  JointFrictionConstraintData constraint_data(constraint_model);
 
   constraint_model.calc(model, data, constraint_data);
   const Eigen::VectorXd diagonal_inertia =
@@ -229,8 +229,8 @@ BOOST_AUTO_TEST_CASE(check_maps)
   const Model::IndexVector & RF_support = model.supports[RF_id];
   const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
 
-  FrictionalJointConstraintModel constraint_model(model, active_joint_ids);
-  FrictionalJointConstraintData constraint_data(constraint_model),
+  JointFrictionConstraintModel constraint_model(model, active_joint_ids);
+  JointFrictionConstraintData constraint_data(constraint_model),
     constraint_data_ref(constraint_model);
 
   const Eigen::VectorXd q = neutral(model);

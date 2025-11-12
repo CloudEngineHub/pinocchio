@@ -7,7 +7,7 @@
 
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/geometry.hpp"
-#include "pinocchio/algorithm/constraints/point-bilateral-constraint.hpp"
+#include "pinocchio/algorithm/constraints/point-anchor-constraint.hpp"
 
 namespace pinocchio
 {

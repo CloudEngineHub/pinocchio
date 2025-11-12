@@ -25,37 +25,37 @@ namespace pinocchio
 
     // specialization for ConstraintModels
     template<>
-    bp::class_<context::BilateralPointConstraintModel> &
-    expose_constraint_model(bp::class_<context::BilateralPointConstraintModel> & cl)
+    bp::class_<context::PointAnchorConstraintModel> &
+    expose_constraint_model(bp::class_<context::PointAnchorConstraintModel> & cl)
     {
       return cl;
     }
 
     template<>
-    bp::class_<context::FrictionalPointConstraintModel> &
-    expose_constraint_model(bp::class_<context::FrictionalPointConstraintModel> & cl)
+    bp::class_<context::PointContactConstraintModel> &
+    expose_constraint_model(bp::class_<context::PointContactConstraintModel> & cl)
     {
       return cl;
     }
 
     template<>
-    bp::class_<context::WeldConstraintModel> &
-    expose_constraint_model(bp::class_<context::WeldConstraintModel> & cl)
+    bp::class_<context::FrameAnchorConstraintModel> &
+    expose_constraint_model(bp::class_<context::FrameAnchorConstraintModel> & cl)
     {
       return cl;
     }
 
     template<>
-    bp::class_<context::FrictionalJointConstraintModel> &
-    expose_constraint_model(bp::class_<context::FrictionalJointConstraintModel> & cl)
+    bp::class_<context::JointFrictionConstraintModel> &
+    expose_constraint_model(bp::class_<context::JointFrictionConstraintModel> & cl)
     {
-      typedef typename context::FrictionalJointConstraintModel::JointIndexVector JointIndexVector;
+      typedef typename context::JointFrictionConstraintModel::JointIndexVector JointIndexVector;
       cl.def(bp::init<const context::Model &, const JointIndexVector &>(
                (bp::arg("self"), bp::arg("model"), bp::arg("active_joints")),
                "Contructor from given joint index vector "
                "implied in the constraint."))
         .def(
-          "getActiveDofs", &context::FrictionalJointConstraintModel::getActiveDofs,
+          "getActiveDofs", &context::JointFrictionConstraintModel::getActiveDofs,
           bp::return_value_policy<bp::copy_const_reference>());
       return cl;
     }

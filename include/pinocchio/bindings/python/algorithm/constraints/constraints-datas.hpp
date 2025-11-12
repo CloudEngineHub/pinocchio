@@ -26,32 +26,32 @@ namespace pinocchio
 
     // specialization for ConstraintDatas
     template<>
-    bp::class_<context::BilateralPointConstraintData> &
-    expose_constraint_data(bp::class_<context::BilateralPointConstraintData> & cl)
+    bp::class_<context::PointAnchorConstraintData> &
+    expose_constraint_data(bp::class_<context::PointAnchorConstraintData> & cl)
     {
       return cl;
     }
 
     template<>
-    bp::class_<context::FrictionalPointConstraintData> &
-    expose_constraint_data(bp::class_<context::FrictionalPointConstraintData> & cl)
+    bp::class_<context::PointContactConstraintData> &
+    expose_constraint_data(bp::class_<context::PointContactConstraintData> & cl)
     {
       return cl;
     }
 
     template<>
-    bp::class_<context::WeldConstraintData> &
-    expose_constraint_data(bp::class_<context::WeldConstraintData> & cl)
+    bp::class_<context::FrameAnchorConstraintData> &
+    expose_constraint_data(bp::class_<context::FrameAnchorConstraintData> & cl)
     {
       return cl;
     }
 
     template<>
-    bp::class_<context::FrictionalJointConstraintData> &
-    expose_constraint_data(bp::class_<context::FrictionalJointConstraintData> & cl)
+    bp::class_<context::JointFrictionConstraintData> &
+    expose_constraint_data(bp::class_<context::JointFrictionConstraintData> & cl)
     {
       return cl.def(
-        bp::init<const typename context::FrictionalJointConstraintData::ConstraintModel &>(
+        bp::init<const typename context::JointFrictionConstraintData::ConstraintModel &>(
           bp::args("self", "constraint_model"), "From model constructor."));
     }
 

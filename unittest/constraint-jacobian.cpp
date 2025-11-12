@@ -38,14 +38,14 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian_operations)
 
   // 3D - LOCAL
   {
-    BilateralPointConstraintModel cm_RF_LOCAL(model, model.getJointId(RF), SE3::Random());
-    BilateralPointConstraintData cd_RF_LOCAL(cm_RF_LOCAL);
-    BilateralPointConstraintModel cm_LF_LOCAL(model, model.getJointId(LF), SE3::Random());
-    BilateralPointConstraintData cd_LF_LOCAL(cm_LF_LOCAL);
+    PointAnchorConstraintModel cm_RF_LOCAL(model, model.getJointId(RF), SE3::Random());
+    PointAnchorConstraintData cd_RF_LOCAL(cm_RF_LOCAL);
+    PointAnchorConstraintModel cm_LF_LOCAL(model, model.getJointId(LF), SE3::Random());
+    PointAnchorConstraintData cd_LF_LOCAL(cm_LF_LOCAL);
 
-    const std::vector<BilateralPointConstraintModel> constraints_models{cm_RF_LOCAL, cm_LF_LOCAL};
-    std::vector<BilateralPointConstraintData> constraints_datas{cd_RF_LOCAL, cd_LF_LOCAL};
-    std::vector<BilateralPointConstraintData> constraints_datas_ref{cd_RF_LOCAL, cd_LF_LOCAL};
+    const std::vector<PointAnchorConstraintModel> constraints_models{cm_RF_LOCAL, cm_LF_LOCAL};
+    std::vector<PointAnchorConstraintData> constraints_datas{cd_RF_LOCAL, cd_LF_LOCAL};
+    std::vector<PointAnchorConstraintData> constraints_datas_ref{cd_RF_LOCAL, cd_LF_LOCAL};
 
     const Eigen::DenseIndex m = getTotalConstraintSize(constraints_models);
 

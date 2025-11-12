@@ -1,11 +1,10 @@
+import importlib.util
 import unittest
 from pathlib import Path
 
 import numpy as np
 import pinocchio as pin
 from test_case import ContactSolverTestCase as TestCase
-
-import importlib.util
 
 coal_spec = importlib.util.find_spec("coal")
 coal_found = coal_spec is not None
@@ -48,8 +47,8 @@ class TestPGS(TestCase):
         for typed_constraint_models in constraint_models_dict.values():
             for cm in typed_constraint_models:
                 constraint_models.append(pin.ConstraintModel(cm))
-        # Adding only bilateral constraints to the list of constraints
-        # for bpcm in constraint_models_dict['bilateral_point_constraint_models']:
+        # Adding only point anchor constraints to the list of constraints
+        # for bpcm in constraint_models_dict['point_anchor_constraint_models']:
         #     constraint_models.append(pin.ConstraintModel(bpcm))
 
         # adding joint limit constraints
@@ -59,7 +58,7 @@ class TestPGS(TestCase):
 
         # adding friction on joints
         active_joints_friction = [i for i in range(1, model.njoints)]
-        fjcm = pin.FrictionalJointConstraintModel(model, active_joints_friction)
+        fjcm = pin.JointFrictionConstraintModel(model, active_joints_friction)
         fjcm.set = pin.BoxSet(model.lowerDryFrictionLimit, model.upperDryFrictionLimit)
         constraint_models.append(pin.ConstraintModel(fjcm))
 
@@ -71,7 +70,7 @@ class TestPGS(TestCase):
         self.addFloor(geom_model, visual_model)
         self.addSystemCollisionPairs(model, geom_model, q0)
 
-        # Adding constraints from frictional contacts
+        # Adding constraints from point contacts
         contact_constraints = self.computeContactConstraints(model, geom_model, q0)
         for fpcm in contact_constraints:
             constraint_models.append(pin.ConstraintModel(fpcm))
@@ -80,8 +79,8 @@ class TestPGS(TestCase):
 
         self.assertTrue(
             delassus.shape[0]
-            == (3 * len(constraint_models_dict["bilateral_point_constraint_models"]))
-            + (6 * len(constraint_models_dict["weld_constraint_models"]))
+            == (3 * len(constraint_models_dict["point_anchor_constraint_models"]))
+            + (6 * len(constraint_models_dict["frame_anchor_constraint_models"]))
             + (3 * len(contact_constraints))
             + (model.upperPositionLimit != np.inf).sum()
             - 4 * 3

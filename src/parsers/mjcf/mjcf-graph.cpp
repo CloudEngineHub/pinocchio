@@ -1292,28 +1292,29 @@ namespace pinocchio
 
       void MjcfGraph::parseContactInformation(
         const Model & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-          & bilateral_constraint_models,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel) & weld_constraint_models)
+        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+          & point_anchor_constraint_models,
+        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+          & frame_anchor_constraint_models)
       {
         Data data(model);
         Eigen::VectorXd qref;
         if (!model.referenceConfigurations.empty())
         {
-          // If possible, it's always preferable to select qpos0 to construct the bilateral
+          // If possible, it's always preferable to select qpos0 to construct the point anchor
           // constraints as the mujoco equality constraints are defined w.r.t the default
           // configuration of the model (qpos0).
           if (model.referenceConfigurations.find("qpos0") != model.referenceConfigurations.end())
           {
             mjcfVisitor << "Using qpos0 (default configuration defined by the XML file) to "
-                           "construct bilateral constraints.\n";
+                           "construct point anchor constraints.\n";
             qref = model.referenceConfigurations.at("qpos0");
           }
           else
           {
             mjcfVisitor << "Could not find qpos0 in referenceConfigurations. Using keyframe "
                         << model.referenceConfigurations.begin()->first
-                        << " to construct bilateral constraints.\n";
+                        << " to construct point anchor constraints.\n";
             qref = model.referenceConfigurations.begin()->second;
           }
         }
@@ -1321,8 +1322,8 @@ namespace pinocchio
         {
           mjcfVisitor << "WARNING: Could not find qpos0 nor other keyframes in "
                          "referenceConfigurations.\n"
-                      << "This is unexpected and may lead to issues for bilateral constraints.\n"
-                      << "Using ::pinocchio::neutral to construct bilateral constraints.\n";
+                      << "This is unexpected and may lead to issues for point anchor constraints.\n"
+                      << "Using ::pinocchio::neutral to construct point anchor constraints.\n";
           qref = ::pinocchio::neutral(model);
         }
         ::pinocchio::forwardKinematics(model, data, qref);
@@ -1383,13 +1384,13 @@ namespace pinocchio
           // Create the constraints
           if (eq.type == "connect")
           {
-            BilateralPointConstraintModel bpcm(model, joint1, i1Mc, joint2, i2Mc);
-            bilateral_constraint_models.push_back(bpcm);
+            PointAnchorConstraintModel bpcm(model, joint1, i1Mc, joint2, i2Mc);
+            point_anchor_constraint_models.push_back(bpcm);
           }
           else if (eq.type == "weld")
           {
-            WeldConstraintModel wcm(model, joint1, i1Mc, joint2, i2Mc);
-            weld_constraint_models.push_back(wcm);
+            FrameAnchorConstraintModel wcm(model, joint1, i1Mc, joint2, i2Mc);
+            frame_anchor_constraint_models.push_back(wcm);
           }
         }
       }

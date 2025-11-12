@@ -81,10 +81,10 @@ namespace boost
     template<typename Archive, typename Scalar, int Options>
     void serialize(
       Archive & ar,
-      ::pinocchio::FrictionalJointConstraintDataTpl<Scalar, Options> & cdata,
+      ::pinocchio::JointFrictionConstraintDataTpl<Scalar, Options> & cdata,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::FrictionalJointConstraintDataTpl<Scalar, Options> Self;
+      typedef ::pinocchio::JointFrictionConstraintDataTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
     }
@@ -119,10 +119,10 @@ namespace boost
     template<typename Archive, typename Scalar, int Options>
     void serialize(
       Archive & ar,
-      ::pinocchio::BilateralPointConstraintDataTpl<Scalar, Options> & cdata,
+      ::pinocchio::PointAnchorConstraintDataTpl<Scalar, Options> & cdata,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::BilateralPointConstraintDataTpl<Scalar, Options> Self;
+      typedef ::pinocchio::PointAnchorConstraintDataTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
     }
@@ -130,10 +130,10 @@ namespace boost
     template<typename Archive, typename Scalar, int Options>
     void serialize(
       Archive & ar,
-      ::pinocchio::FrictionalPointConstraintDataTpl<Scalar, Options> & cdata,
+      ::pinocchio::PointContactConstraintDataTpl<Scalar, Options> & cdata,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::FrictionalPointConstraintDataTpl<Scalar, Options> Self;
+      typedef ::pinocchio::PointContactConstraintDataTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
     }
@@ -168,10 +168,10 @@ namespace boost
     template<typename Archive, typename Scalar, int Options>
     void serialize(
       Archive & ar,
-      ::pinocchio::WeldConstraintDataTpl<Scalar, Options> & cdata,
+      ::pinocchio::FrameAnchorConstraintDataTpl<Scalar, Options> & cdata,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::WeldConstraintDataTpl<Scalar, Options> Self;
+      typedef ::pinocchio::FrameAnchorConstraintDataTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
     }

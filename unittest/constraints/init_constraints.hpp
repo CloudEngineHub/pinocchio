@@ -28,9 +28,9 @@ namespace pinocchio
   };
 
   template<typename Scalar, int Options>
-  struct init_constraint_default<FrictionalPointConstraintModelTpl<Scalar, Options>>
+  struct init_constraint_default<PointContactConstraintModelTpl<Scalar, Options>>
   {
-    typedef FrictionalPointConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef PointContactConstraintModelTpl<Scalar, Options> ConstraintModel;
 
     template<typename S, int O, template<typename, int> class JointCollectionTpl>
     static ConstraintModel run(const ModelTpl<S, O, JointCollectionTpl> & model)

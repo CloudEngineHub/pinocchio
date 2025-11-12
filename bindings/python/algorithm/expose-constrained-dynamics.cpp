@@ -122,7 +122,7 @@ namespace pinocchio
       ContactCholeskyDecompositionPythonVisitor<context::ContactCholeskyDecomposition>::expose();
 
       exposeConstraintDynamicsFor<RigidConstraintModel>();
-      // exposeConstraintDynamicsFor<WeldConstraintModel>();
+      // exposeConstraintDynamicsFor<FrameAnchorConstraintModel>();
     }
   } // namespace python
 } // namespace pinocchio

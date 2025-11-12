@@ -99,17 +99,19 @@ namespace pinocchio
     /// \param[in] xmlStream The MJCF string.
     /// \param[in] model The assocaited model
     /// \param[in] verbose Print parsing info.
-    /// \param[out] bilateral_constraint_models Reference constraint models where to put the parsed
-    /// \param[out] weld_constraint_models Reference constraint models where to put the parsed
-    /// information for weld constraints.
+    /// \param[out] point_anchor_constraint_models Reference constraint models where to put the
+    /// parsed
+    /// \param[out] frame_anchor_constraint_models Reference constraint models where to put the
+    /// parsed information for frame anchor constraints.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     void buildConstraintModelsFromXML(
       const std::string & xmlStream,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-        & bilateral_constraint_models,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel) & weld_constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+        & point_anchor_constraint_models,
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+        & frame_anchor_constraint_models,
       const bool verbose = false);
 
     ///
@@ -119,17 +121,17 @@ namespace pinocchio
     /// \param[in] xmlStream The MJCF string.
     /// \param[in] model The assocaited model
     /// \param[in] verbose Print parsing info.
-    /// \param[out] bilateral_constraint_models Reference constraint models where to put the parsed
-    /// information for bilateral constraints.
+    /// \param[out] point_anchor_constraint_models Reference constraint models where to put the
+    /// parsed information for point anchor constraints.
     /// \return Return the reference on argument billateral constraint models for convenience.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
       & buildConstraintModelsFromXML(
         const std::string & xmlStream,
         ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(BilateralPointConstraintModel)
-          & bilateral_constraint_models,
+        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+          & point_anchor_constraint_models,
         const bool verbose = false);
 
     ///
@@ -139,16 +141,17 @@ namespace pinocchio
     /// \param[in] xmlStream The MJCF string.
     /// \param[in] model The assocaited model
     /// \param[in] verbose Print parsing info.
-    /// \param[out] weld_constraint_models Reference constraint models where to put the parsed
-    /// information for weld constraints.
-    /// \return Return the reference on argument weld constraint models for convenience.
+    /// \param[out] frame_anchor_constraint_models Reference constraint models where to put the
+    /// parsed information for frame anchor constraints.
+    /// \return Return the reference on argument frame anchor constraint models for convenience.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel)
+      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
       & buildConstraintModelsFromXML(
         const std::string & xmlStream,
         ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(WeldConstraintModel) & weld_constraint_models,
+        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+          & frame_anchor_constraint_models,
         const bool verbose = false);
 
     /**

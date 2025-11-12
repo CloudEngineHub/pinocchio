@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 BOOST_AUTO_TEST_CASE(default_constructor_shared_ptr)
 {
-  typedef FrictionalPointConstraintModelTpl<double> ConstraintModel;
+  typedef PointContactConstraintModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::shared_ptr>
     DelassusOperatorRigidBodySharedPtr;
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(default_constructor_shared_ptr)
 
 BOOST_AUTO_TEST_CASE(default_constructor_reference_wrapper)
 {
-  typedef FrictionalPointConstraintModelTpl<double> ConstraintModel;
+  typedef PointContactConstraintModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
@@ -162,9 +162,9 @@ BOOST_AUTO_TEST_CASE(default_constructor_const_reference_wrapper)
   BOOST_CHECK(&delassus_operator.constraint_datas() == &constraint_datas);
 }
 
-BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
+BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
 {
-  typedef WeldConstraintModelTpl<double> ConstraintModel;
+  typedef FrameAnchorConstraintModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
@@ -585,9 +585,9 @@ BOOST_AUTO_TEST_CASE(general_test_weld_constraint_model)
   //  }
 }
 
-BOOST_AUTO_TEST_CASE(general_test_frictional_point_constraint_model)
+BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
 {
-  typedef FrictionalPointConstraintModelTpl<double> ConstraintModel;
+  typedef PointContactConstraintModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
@@ -1148,9 +1148,9 @@ void test_solve_in_place(
   }
 }
 
-BOOST_AUTO_TEST_CASE(general_test_joint_frictional_constraint)
+BOOST_AUTO_TEST_CASE(general_test_joint_friction_constraint)
 {
-  typedef FrictionalJointConstraintModelTpl<double> ConstraintModel;
+  typedef JointFrictionConstraintModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
@@ -1180,7 +1180,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_frictional_constraint)
   const Model::IndexVector & RF_support = model.supports[RF_id];
   const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
 
-  FrictionalJointConstraintModel constraint_model(model, active_joint_ids);
+  JointFrictionConstraintModel constraint_model(model, active_joint_ids);
 
   constraint_models.push_back(constraint_model);
   constraint_datas.push_back(constraint_model.createData());
@@ -1282,7 +1282,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
 
 BOOST_AUTO_TEST_CASE(general_test_constraint_generic)
 {
-  typedef FrictionalJointConstraintModelTpl<double> FrictionalJointConstraintModel;
+  typedef JointFrictionConstraintModelTpl<double> JointFrictionConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
@@ -1312,7 +1312,7 @@ BOOST_AUTO_TEST_CASE(general_test_constraint_generic)
   const Model::IndexVector & RF_support = model.supports[RF_id];
   const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
 
-  FrictionalJointConstraintModel constraint_model(model, active_joint_ids);
+  JointFrictionConstraintModel constraint_model(model, active_joint_ids);
 
   constraint_models.push_back(constraint_model);
   constraint_datas.push_back(constraint_model.createData());
@@ -1336,7 +1336,7 @@ BOOST_AUTO_TEST_CASE(general_test_constraint_generic)
 
 BOOST_AUTO_TEST_CASE(general_test_no_constraints)
 {
-  typedef FrictionalPointConstraintModelTpl<double> ConstraintModel;
+  typedef PointContactConstraintModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;

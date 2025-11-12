@@ -108,7 +108,9 @@ class TestJointsAlgo(TestCase):
         geom_model.addCollisionPair(pin.CollisionPair(ball_geom_id, caps_geom_id))
 
         # Set up limits
-        model.positionLimitMargin = np.array([1000.0] * model.nq) # take all joint limits into consideration
+        model.positionLimitMargin = np.array(
+            [1000.0] * model.nq
+        )  # take all joint limits into consideration
         model.upperPositionLimit = np.array([0.5] * model.nq)
         model.upperPositionLimit[-1] = 2.0
         model.lowerPositionLimit = np.array([-0.5] * model.nq)
@@ -135,12 +137,12 @@ class TestJointsAlgo(TestCase):
 
         # Bilateral constraints
         bilat_joint1_anchor_placement = pin.SE3.Identity()
-        bilat1 = pin.BilateralPointConstraintModel(model, caps_joint_id)
-        bilat2 = pin.BilateralPointConstraintModel(
+        bilat1 = pin.PointAnchorConstraintModel(model, caps_joint_id)
+        bilat2 = pin.PointAnchorConstraintModel(
             model, caps_joint_id, bilat_joint1_anchor_placement
         )
-        bilat3 = pin.BilateralPointConstraintModel(model, caps_joint_id, world_joint_id)
-        bilat4 = pin.BilateralPointConstraintModel(
+        bilat3 = pin.PointAnchorConstraintModel(model, caps_joint_id, world_joint_id)
+        bilat4 = pin.PointAnchorConstraintModel(
             model,
             caps_joint_id,
             bilat_joint1_anchor_placement,
@@ -153,28 +155,28 @@ class TestJointsAlgo(TestCase):
             constraints_std_vec.append(gb)
             constraints_list.append(b)
 
-        # weld constraints
-        weld_joint1_anchor_placement = pin.SE3.Identity()
-        weld1 = pin.WeldConstraintModel(model, cyl_joint_id)
-        weld2 = pin.WeldConstraintModel(
-            model, cyl_joint_id, weld_joint1_anchor_placement
+        # Frame anchor constraints
+        frame_anchor_joint1_placement = pin.SE3.Identity()
+        facm1 = pin.FrameAnchorConstraintModel(model, cyl_joint_id)
+        facm2 = pin.FrameAnchorConstraintModel(
+            model, cyl_joint_id, frame_anchor_joint1_placement
         )
-        weld3 = pin.WeldConstraintModel(model, cyl_joint_id, world_joint_id)
-        weld4 = pin.WeldConstraintModel(
+        facm3 = pin.FrameAnchorConstraintModel(model, cyl_joint_id, world_joint_id)
+        facm4 = pin.FrameAnchorConstraintModel(
             model,
             cyl_joint_id,
-            weld_joint1_anchor_placement,
+            frame_anchor_joint1_placement,
             world_joint_id,
             pin.SE3.Identity(),
         )
-        welds_list = [weld1, weld2, weld3, weld4]
-        for w in welds_list:
+        facms_list = [facm1, facm2, facm3, facm4]
+        for w in facms_list:
             gw = pin.ConstraintModel(w)
             constraints_std_vec.append(gw)
             constraints_list.append(w)
 
         # Joint friction
-        jfc = pin.FrictionalJointConstraintModel(model, [1, 3])
+        jfc = pin.JointFrictionConstraintModel(model, [1, 3])
         jfc.set = pin.BoxSet(
             np.array([model.lowerDryFrictionLimit[i] for i in jfc.getActiveDofs()]),
             np.array([model.upperDryFrictionLimit[i] for i in jfc.getActiveDofs()]),
@@ -212,7 +214,7 @@ class TestJointsAlgo(TestCase):
 
         jlc = pin.ConstraintModel(jlc_raw).extract()
 
-        frictional_points_list = []
+        point_contact_list = []
         for col_pair, col_res, patch_res in zip(
             geom_model.collisionPairs,
             geom_data.collisionResults,
@@ -246,13 +248,13 @@ class TestJointsAlgo(TestCase):
                     i1Mc = oMi1.actInv(oMc)
                     oMc.translation = patch.getPointShape2(i)
                     i2Mc = oMi2.actInv(oMc)
-                    fp = pin.FrictionalPointConstraintModel(
+                    fp = pin.PointContactConstraintModel(
                         model, joint_id1, i1Mc, joint_id2, i2Mc
                     )
                     gfp = pin.ConstraintModel(fp)
                     constraints_std_vec.append(gfp)
                     constraints_list.append(fp)
-                    frictional_points_list.append(fp)
+                    point_contact_list.append(fp)
 
         # Sotre some values
         self.data = data
@@ -261,16 +263,16 @@ class TestJointsAlgo(TestCase):
         self.constraints_list = constraints_list
         self.bilats_list = bilats_list
         self.bilat = bilat1
-        self.welds_list = welds_list
-        self.weld = weld1
-        self.frictional_points_list = frictional_points_list
-        self.fp = frictional_points_list[0]
+        self.facms_list = facms_list
+        self.facm = facm1
+        self.point_contact_list = point_contact_list
+        self.fp = point_contact_list[0]
         self.jlc_raw = jlc_raw
         self.jlc = jlc
         self.jfc = jfc
-        self.one_of_each = [self.bilat, self.weld, self.fp, self.jlc, self.jfc]
+        self.one_of_each = [self.bilat, self.facm, self.fp, self.jlc, self.jfc]
 
-    def test_bilateral(self):
+    def test_point_anchor(self):
         # Coherence between all inits
         for b_1, b_2 in itertools.product(self.bilats_list, self.bilats_list):
             self.assertTrue(b_1 == b_2)
@@ -280,22 +282,22 @@ class TestJointsAlgo(TestCase):
             bd = b.createData()
             self.assertTrue(b.size() == b.activeSize(bd) == 3)
 
-    def test_weld(self):
+    def test_frame_anchor(self):
         # Coherence between all inits
-        for w_1, w_2 in itertools.product(self.welds_list, self.welds_list):
+        for w_1, w_2 in itertools.product(self.facms_list, self.facms_list):
             self.assertTrue(w_1 == w_2)
 
         # Check size
-        for w in self.welds_list:
+        for w in self.facms_list:
             wd = w.createData()
             self.assertTrue(w.size() == w.activeSize(wd) == 6)
 
-    def test_frictional_point(self):
-        for fp in self.frictional_points_list:
+    def test_point_contact(self):
+        for fp in self.point_contact_list:
             fpd = fp.createData()
             self.assertTrue(fp.size() == fp.activeSize(fpd) == 3)
 
-    def test_joint_frictional(self):
+    def test_joint_friction(self):
         jfcd = self.jfc.createData()
         self.assertTrue(self.jfc.activeSize(jfcd) == self.jfc.size() <= self.model.nv)
 
@@ -310,7 +312,9 @@ class TestJointsAlgo(TestCase):
         jld_raw_not_calc = self.jlc_raw.createData()
         self.assertTrue(self.jlc_raw.activeSize(jld_raw_not_calc) == 0)
         self.assertTrue(self.jlc.activeSize(jld) > 0)
-        self.assertTrue(self.jlc.activeSize(jld) <= self.jlc.size() <= 2 * self.model.nq)
+        self.assertTrue(
+            self.jlc.activeSize(jld) <= self.jlc.size() <= 2 * self.model.nq
+        )
 
     def test_generic_methods(self):
         ref_set = set(range(self.model.nv))
@@ -348,7 +352,7 @@ class TestJointsAlgo(TestCase):
             self.assertTrue(len(ccm.getActiveCompliance(ccd)) == ccm.activeSize(ccd))
             self.assertTrue(ccm.activeSize(ccd) == ccm.set.size() == ccm.set.dim())
             if not hasattr(ccm, "baumgarte_corrector_parameters"):
-                self.assertTrue(isinstance(ccm, pin.FrictionalJointConstraintModel))
+                self.assertTrue(isinstance(ccm, pin.JointFrictionConstraintModel))
                 do_except = False
                 self.assertTrue("baumgarte_corrector_parameters" in dir(gcm))
                 try:
@@ -382,7 +386,11 @@ class TestJointsAlgo(TestCase):
             )
 
             lamb = np.stack(
-                [np.ones(cmodel.activeSize(cdata)), 2 * np.ones(cmodel.activeSize(cdata))], axis=1
+                [
+                    np.ones(cmodel.activeSize(cdata)),
+                    2 * np.ones(cmodel.activeSize(cdata)),
+                ],
+                axis=1,
             )
 
             jac = cmodel.jacobian(model, data, cdata)
@@ -410,10 +418,10 @@ class TestJointsAlgo(TestCase):
         self.assertTrue(self.bilat.set.isInside(force))
         self.assertTrue(np.all(p_force == force))
 
-        # weld
+        # fac
         force = np.array([1] * 6)
-        p_force = self.weld.set.project(force)
-        self.assertTrue(self.weld.set.isInside(force))
+        p_force = self.facm.set.project(force)
+        self.assertTrue(self.facm.set.isInside(force))
         self.assertTrue(np.all(p_force == force))
 
         # jlc
@@ -470,7 +478,7 @@ class TestJointsAlgo(TestCase):
             self.assertTrue(model_name[-5:] == "Model")
             self.assertTrue(data_name[-4:] == "Data")
 
-        for cmodel in [self.bilat, self.weld]:
+        for cmodel in [self.bilat, self.facm]:
             cdata = cmodel.createData()
             cmodel.calc(self.model, self.data, cdata)
             self.assertTrue(hasattr(cdata, "constraint_force"))
