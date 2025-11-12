@@ -1202,7 +1202,7 @@ BOOST_AUTO_TEST_CASE(double_entry_container)
   DoubleEntryContainer container(10, 20);
   for (Eigen::DenseIndex k = 0; k < 10; ++k)
   {
-    container[{k, k}] = Matrix6::Random();
+    container.insert({k, k}, Matrix6::Random());
   }
 
   generic_test(container, TEST_SERIALIZATION_FOLDER "/Container", "double_entry_container");
