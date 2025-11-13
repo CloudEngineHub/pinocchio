@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(test_all_std_vector)
   BOOST_CHECK(container.find(4, 4) == container.end());
 
   // Check operator[] insertion
-  container[{4, 4}] = Matrix6::Identity();
+  container.insert({4, 4}, Matrix6::Identity());
   BOOST_CHECK(container.keys()(4, 4) == long(nrows - 1));
   BOOST_CHECK(container != copy);
 }
