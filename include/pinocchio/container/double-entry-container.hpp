@@ -7,7 +7,6 @@
 
 #include "pinocchio/fwd.hpp"
 
-#include <vector>
 #include <functional>
 
 namespace pinocchio
@@ -123,11 +122,6 @@ namespace pinocchio
       bool insert(const IndexPair & key, Args &&... args)
       {
         return this->insert(key.first, key.second, std::forward<Args>(args)...);
-      }
-
-      bool insert(const IndexPair & key, const T & value = T())
-      {
-        return this->insert(key.first, key.second, value);
       }
 
       ///  \brief Returns true if the key (entry1,entry2) has been succesfully removed.
