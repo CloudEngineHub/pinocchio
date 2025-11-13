@@ -119,6 +119,12 @@ namespace pinocchio
         return true;
       }
 
+      template<typename... Args>
+      bool insert(const IndexPair & key, Args &&... args)
+      {
+        return this->insert(key.first, key.second, std::forward<Args>(args)...);
+      }
+
       bool insert(const IndexPair & key, const T & value = T())
       {
         return this->insert(key.first, key.second, value);
