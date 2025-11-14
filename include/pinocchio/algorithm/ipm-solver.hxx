@@ -43,12 +43,13 @@ namespace pinocchio
     delta_x.setZero();
     delta_s.setZero();
     delta_z.setZero();
+    const auto nc = static_cast<Eigen::Index>(constraint_models.size());
     for (int k = 0; k <= iterative_refinement_steps; ++k)
     {
       ConeOps::inverseConeProduct(lambda, rhs_s, tmp_vec_0);
       tmp_vec_0 *= -1;
       tmp_vec_1 = rhs_z;
-      for (Eigen::Index i = 0; i < problem_size / 3; ++i)
+      for (Eigen::Index i = 0; i < nc; ++i)
       {
         auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         tmp_vec_1.template segment<3>(3 * i).noalias() +=
@@ -59,7 +60,7 @@ namespace pinocchio
       // tmp_vec_2 is the barrier gradient
       auto & p_w_barrier = tmp_vec_2;
       auto & g = tmp_vec_1;
-      for (Eigen::Index i = 0; i < problem_size / 3; ++i)
+      for (Eigen::Index i = 0; i < nc; ++i)
       {
         auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         Vector3s tmp = scaling.applyInverse(g.template segment<3>(3 * i));
@@ -72,7 +73,7 @@ namespace pinocchio
       // for z we have Wz = W^{-T})(g - G^T x)
       delta_zi.noalias() = -delta_xi;
       denormalizeConeVariables(constraint_models, constraint_datas, delta_zi);
-      for (Eigen::Index i = 0; i < problem_size / 3; ++i)
+      for (Eigen::Index i = 0; i < nc; ++i)
       {
         auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         Vector3s tmp = g.template segment<3>(3 * i) + delta_zi.template segment<3>(3 * i);
@@ -92,7 +93,7 @@ namespace pinocchio
       rhs_s = rhs_s2;
       // compute rhs_x
       tmp_vec_0 = -delta_z;
-      for (Eigen::Index i = 0; i < problem_size / 3; ++i)
+      for (Eigen::Index i = 0; i < nc; ++i)
       {
         auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         Vector3s tmp = tmp_vec_0.template segment<3>(3 * i);
@@ -113,7 +114,7 @@ namespace pinocchio
       tmp_vec_0 = -delta_x;
       denormalizeConeVariables(constraint_models, constraint_datas, tmp_vec_0);
       rhs_z += tmp_vec_0;
-      for (Eigen::Index i = 0; i < problem_size / 3; ++i)
+      for (Eigen::Index i = 0; i < nc; ++i)
       {
         auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         Vector3s tmp = delta_s.template segment<3>(3 * i);
@@ -159,6 +160,11 @@ namespace pinocchio
     v_constraint_evaluated = false;
     is_initialized = false;
     saxce_corr.setZero();
+    const int nc = static_cast<int>(constraint_models.size()); // number of constraints
+    assert(
+      nc == static_cast<int>(constraint_datas.size())
+      && "There should be nc elements in constraint_datas");
+    const Scalar nc_inv = Scalar(1) / Scalar(nc);
 
     // --------------
     // Initialization
@@ -247,13 +253,13 @@ namespace pinocchio
     // cone
     // Scalar min_dist = 1. * this->absolute_precision;
     Scalar min_dist = 1e-3;
-    for (int i = 0; i < problem_size / 3; i++)
+    for (int i = 0; i < nc; i++)
     {
       Scalar dist = s[3 * i + 2] - s.template segment<2>(3 * i).norm();
       if (dist < min_dist)
         s[3 * i + 2] = s.template segment<2>(3 * i).norm() + min_dist;
     }
-    for (int i = 0; i < problem_size / 3; i++)
+    for (int i = 0; i < nc; i++)
     {
       Scalar dist = z[3 * i + 2] - z.template segment<2>(3 * i).norm();
       if (dist < min_dist)
@@ -261,7 +267,7 @@ namespace pinocchio
     }
 
     // initialize the lambda & scaling matrices
-    for (int i = 0; i < problem_size / 3; i++)
+    for (int i = 0; i < nc; i++)
     {
       auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
       lambda.template segment<3>(3 * i) =
@@ -312,7 +318,7 @@ namespace pinocchio
       Scalar primal_opt = ccp_primal_opt.template lpNorm<Eigen::Infinity>()
                           / (std::max(1., (g + saxce_corr).template lpNorm<Eigen::Infinity>()));
       Scalar complementarity = 0.;
-      for (int i = 0; i < problem_size / 3; i++)
+      for (int i = 0; i < nc; i++)
       {
         complementarity =
           math::max(complementarity, math::fabs(ccp_compl_slackness[3 * i + 2] - target_mu));
@@ -328,6 +334,7 @@ namespace pinocchio
       {
         stats.primal_feasibility.push_back(primal_feas);
         stats.dual_feasibility.push_back(primal_opt);
+        // TODO: monitor dual feas ncp
         // stats.dual_feasibility_ncp.push_back(dual_feasibility_ncp);
         stats.complementarity.push_back(complementarity);
         stats.mu.push_back(barrier_parameter);
@@ -355,7 +362,7 @@ namespace pinocchio
       // Step 4 - Compute search direction
       //
       // update the log-barrier parameter
-      barrier_parameter = s.dot(z) / (problem_size / 3);
+      barrier_parameter = s.dot(z) * nc_inv;
 
       // update the barrier terms
       // add the 3x3 block diagonal teems to the block diagonal of P matrix
@@ -424,7 +431,7 @@ namespace pinocchio
 
         // compute the maximum step length stepLength
         Scalar t = 0.;
-        for (int i = 0; i < problem_size / 3; i++)
+        for (int i = 0; i < nc; i++)
         {
           t = math::max(t, delta_s.template segment<2>(3 * i).norm() - delta_s[3 * i + 2]);
           t = math::max(t, delta_z.template segment<2>(3 * i).norm() - delta_z[3 * i + 2]);
@@ -438,14 +445,14 @@ namespace pinocchio
       x = x + stepLength * delta_x;
       delta_s *= stepLength;
       delta_z *= stepLength;
-      for (int i = 0; i < problem_size / 3; i++)
+      for (int i = 0; i < nc; i++)
       {
         delta_s[3 * i + 2] += 1.;
         delta_z[3 * i + 2] += 1.;
       }
       ConeOps::scale2Inv(lambda, delta_s, delta_s);
       ConeOps::scale2Inv(lambda, delta_z, delta_z);
-      for (int i = 0; i < problem_size / 3; i++)
+      for (int i = 0; i < nc; i++)
       {
         auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         // s.template segment<3>(3*i) = scalings[i] * delta_s.template segment<3>(3*i);
@@ -457,7 +464,7 @@ namespace pinocchio
       //
       // Step 7 - Update lambda & scaling matrices -> move at the beginning of the loop
       //
-      for (int i = 0; i < problem_size / 3; i++)
+      for (int i = 0; i < nc; i++)
       {
         auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
         lambda.template segment<3>(3 * i) =
