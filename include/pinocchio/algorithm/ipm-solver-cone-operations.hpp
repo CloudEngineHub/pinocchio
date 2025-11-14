@@ -74,10 +74,6 @@ namespace pinocchio
       /// \brief computes the scaling matrix for the pair (s, z)
       Vector3 compute(const Vector3 & s, const Vector3 & z);
 
-      /// \brief updates the scaling matrix for the pair (s, z),
-      /// here s and z are the new values represented in the current scalings
-      Vector3 update(const Vector3 & s, const Vector3 & z);
-
       /// \brief applies the scaling matrix to a 3-vector x, res = W*x
       Vector3 apply(const Vector3 & x);
 
@@ -94,18 +90,25 @@ namespace pinocchio
       Scalar beta;
     };
 
-  private:
-    /// \brief computes xN^2 - xT^T @ xT
+  protected:
+    /// \brief compute x^T J y
+    /// Note:  J = [-I 0]
+    ///            [ 0 1]
     template<typename Vector3Like>
     static Scalar
     jdot(const Eigen::MatrixBase<Vector3Like> & x, const Eigen::MatrixBase<Vector3Like> & y);
 
-    /// \brief returns [-xt; -yt; N]
+    /// \brief compute Jx
     template<typename Vector3Like>
     static Vector3 jprod(const Eigen::MatrixBase<Vector3Like> & x);
 
+    /// \brief Compute the J norm: sqrt(x^T J x)
     template<typename Vector3Like>
-    static Scalar jnrm2(const Eigen::MatrixBase<Vector3Like> & x);
+    static Scalar jnorm(const Eigen::MatrixBase<Vector3Like> & x);
+
+    /// \brief Compute the J squared norm: x^T J x
+    template<typename Vector3Like>
+    static Scalar jnorm2(const Eigen::MatrixBase<Vector3Like> & x);
   };
 
   // implementation
@@ -115,7 +118,12 @@ namespace pinocchio
   Scalar IPMSolverConeOperations<Scalar>::jdot(
     const Eigen::MatrixBase<Vector3Like> & x, const Eigen::MatrixBase<Vector3Like> & y)
   {
-    return x[2] * y[2] - (x[0] * y[0] + x[1] * y[1]);
+    Scalar xn = x.coeff(2);
+    Scalar yn = y.coeff(2);
+    auto xt = x.template head<2>();
+    auto yt = y.template head<2>();
+
+    return xn * yn - xt.dot(yt);
   }
 
   template<typename Scalar>
@@ -132,7 +140,7 @@ namespace pinocchio
     const Eigen::MatrixBase<Vector3Like> & lambda, const Eigen::MatrixBase<Vector3Like> & x)
   {
     Vector3 ret;
-    Scalar a = jnrm2(lambda);
+    Scalar a = jnorm(lambda);
     Scalar lx = jdot(lambda, x) / a;
     Scalar xN = x[2];
     Scalar c = -(lx + xN) / (lambda[2] / a + 1) / a;
@@ -148,7 +156,7 @@ namespace pinocchio
     const Eigen::MatrixBase<Vector3Like> & lambda, const Eigen::MatrixBase<Vector3Like> & x)
   {
     Vector3 ret;
-    Scalar a = jnrm2(lambda);
+    Scalar a = jnorm(lambda);
     Scalar lx = lambda.dot(x) / a;
     Scalar xN = x[2];
     Scalar c = (lx + xN) / (lambda[2] / a + 1) / a;
@@ -163,8 +171,8 @@ namespace pinocchio
   IPMSolverConeOperations<Scalar>::ScalingMatrix::compute(const Vector3 & s, const Vector3 & z)
   {
     Vector3 lambda;
-    Scalar aa = jnrm2(s);
-    Scalar bb = jnrm2(z);
+    Scalar aa = jnorm(s);
+    Scalar bb = jnorm(z);
     beta = math::sqrt(aa / bb);
     Vector3 s_stripe = s / aa;
     Vector3 z_stripe = z / bb;
@@ -180,36 +188,6 @@ namespace pinocchio
     return lambda;
   }
 
-  template<typename Scalar>
-  Eigen::Matrix<Scalar, 3, 1>
-  IPMSolverConeOperations<Scalar>::ScalingMatrix::update(const Vector3 & s, const Vector3 & z)
-  {
-    Vector3 lambda;
-    Scalar aa = jnrm2(s);
-    Scalar bb = jnrm2(z);
-    Vector3 sa = s / aa;
-    Vector3 zb = z / bb;
-    Scalar cc = math::sqrt((1. + sa.dot(zb)) / 2.);
-    Scalar vs = v.dot(sa);
-    Scalar vz = jdot(v, zb);
-    Scalar vq = (vs + vz) / 2. / cc;
-    Scalar vu = vs - vz;
-    lambda[2] = cc;
-    Scalar wk0 = 2 * v[2] * vq - (sa[2] + zb[2]) / 2. / cc;
-    Scalar dd = (v[2] * vu - sa[2] / 2. + zb[2] / 2.) / (wk0 + 1.);
-    lambda.template head<2>() = v.template head<2>() * (2.0 * (-dd * vq + 0.5 * vu));
-    lambda.template head<2>() += 0.5 * (1.0 - dd / cc) * sa.template head<2>();
-    lambda.template head<2>() += 0.5 * (1.0 + dd / cc) * zb.template head<2>();
-    lambda *= math::sqrt(aa * bb);
-    v *= 2. * vq;
-    v[2] -= sa[2] / 2. / cc;
-    v.template head<2>() += 0.5 / cc * sa.template head<2>();
-    v += -0.5 / cc * zb;
-    v[2] += 1.;
-    v *= 1. / math::sqrt(2.0 * v[2]);
-    beta *= math::sqrt(aa / bb);
-    return lambda;
-  };
   template<typename Scalar>
   Eigen::Matrix<Scalar, 3, 1>
   IPMSolverConeOperations<Scalar>::ScalingMatrix::apply(const Vector3 & x)
@@ -304,7 +282,7 @@ namespace pinocchio
   {
     // see ecos implementation paper
     Vector3 ret;
-    Scalar q = std::pow(jnrm2(x), 2);
+    Scalar q = jnorm2(x);
     Scalar nu = x.template head<2>().dot(y.template head<2>());
     ret.template head<2>() =
       1. / q * (nu / x[2] - y[2]) * x.template head<2>() + 1. / x[2] * y.template head<2>();
@@ -328,12 +306,23 @@ namespace pinocchio
 
   template<typename Scalar>
   template<typename Vector3Like>
-  Scalar IPMSolverConeOperations<Scalar>::jnrm2(const Eigen::MatrixBase<Vector3Like> & x)
+  Scalar IPMSolverConeOperations<Scalar>::jnorm(const Eigen::MatrixBase<Vector3Like> & x)
   {
-    Scalar a = x.template head<2>().norm();
-    Scalar b = x[2];
-    assert(b - a >= 0);
-    return math::sqrt(b - a) * math::sqrt(b + a);
+    return math::sqrt(jnorm2(x));
+  }
+
+  template<typename Scalar>
+  template<typename Vector3Like>
+  Scalar IPMSolverConeOperations<Scalar>::jnorm2(const Eigen::MatrixBase<Vector3Like> & x)
+  {
+    Scalar xn = x.coeff(2);
+    auto xt = x.template head<2>();
+
+    Scalar xn2 = xn * xn;
+    Scalar xt2 = xt.dot(xt);
+
+    assert(xn2 - xt2 >= 0);
+    return xn2 - xt2;
   }
 
 } // namespace pinocchio
