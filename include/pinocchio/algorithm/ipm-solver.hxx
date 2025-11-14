@@ -266,14 +266,6 @@ namespace pinocchio
         z[3 * i + 2] = z.template segment<2>(3 * i).norm() + min_dist;
     }
 
-    // initialize the lambda & scaling matrices
-    for (int i = 0; i < nc; i++)
-    {
-      auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
-      lambda.template segment<3>(3 * i) =
-        scaling.compute(s.template segment<3>(3 * i), z.template segment<3>(3 * i));
-    }
-
     is_initialized = true;
 
     // ---------
@@ -282,8 +274,19 @@ namespace pinocchio
     if (verbose)
       printIterationsHeader();
     Scalar stepLength = 0.0;
+    bool converged = false;
     for (Base::it = 0; Base::it < Base::max_it; Base::it++)
     {
+      //
+      // Step 0 - Update lambda & scaling matrices -> lambda needed for convergence criterion
+      //
+      for (int i = 0; i < nc; i++)
+      {
+        auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
+        lambda.template segment<3>(3 * i) =
+          scaling.compute(s.template segment<3>(3 * i), z.template segment<3>(3 * i));
+      }
+
       //
       // Step 1 - Compute residuals
       //
@@ -347,15 +350,8 @@ namespace pinocchio
         (math::max(complementarity, primal_feas) <= this->absolute_precision)
         && primal_opt <= this->primal_opt_tol)
       {
-        denormalizeConeVariables(constraint_models, constraint_datas, z);
-        TIMER_STOP;
-        if (stat_record)
-        {
-          stats.it = Base::it;
-          stats.delassus_decomposition_update_count = Base::it;
-        }
-        PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-        return true; // TODO: replace with break
+        converged = true;
+        break;
       }
 
       //
@@ -460,20 +456,18 @@ namespace pinocchio
         z.template segment<3>(3 * i) = scaling.applyInverse(delta_z.template segment<3>(3 * i));
       }
       v_constraint_evaluated = false;
-
-      //
-      // Step 7 - Update lambda & scaling matrices -> move at the beginning of the loop
-      //
-      for (int i = 0; i < nc; i++)
-      {
-        auto & scaling = scaling_matrices[static_cast<std::size_t>(i)];
-        lambda.template segment<3>(3 * i) =
-          scaling.update(delta_s.template segment<3>(3 * i), delta_z.template segment<3>(3 * i));
-      }
     }
+    denormalizeConeVariables(constraint_models, constraint_datas, z);
     TIMER_STOP
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    return false;
+
+    if (stat_record)
+    {
+      stats.it = Base::it;
+      stats.delassus_decomposition_update_count = Base::it;
+    }
+
+    return converged;
   };
 
   template<typename Scalar>
