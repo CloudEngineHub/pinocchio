@@ -216,8 +216,8 @@ namespace pinocchio
     // Fill the constraint residual for all activable constraints and detect the active ones.
     // The convention is lower | upper, and negative | positive constraint so:
     // q_l <= q + TMv <= q_up
-    // -TMv + (q_l - q) <= 0
-    // -TMv + (q_u - q) >= 0
+    // TMv + (q - q_l) >= 0 --> J = TM, res = q-q_l
+    // -TMv + (q_u - q) >= 0 --> J = -TM, res = q_u-q
 
     // We compute all active quanties
     // active_[idx_rows|idx_qs_reduce|nvs|idx_vs] are store
@@ -230,8 +230,8 @@ namespace pinocchio
     {
       const Eigen::DenseIndex i_ = static_cast<Eigen::DenseIndex>(i);
       const Eigen::DenseIndex idx_q = activable_idx_qs[i];
-      activable_constraint_residual[i_] = position_limit[i_] - data.q_in[idx_q];
-      if (activable_constraint_residual[i_] >= -position_margin[i_])
+      activable_constraint_residual[i_] = data.q_in[idx_q] - position_limit[i_];
+      if (activable_constraint_residual[i_] <= position_margin[i_])
       {
         active_set_indexes.push_back(i);
         active_idx_rows.push_back(activable_idx_rows[i]);
@@ -337,15 +337,29 @@ namespace pinocchio
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
     jacobian_matrix.setZero();
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
-         ++constraint_id)
+
+    // Lower bounds
+    for (std::size_t constraint_id = 0;
+         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
                                                                 // constraint
       const Eigen::Index constraint_size = joint_nvs[joint_id];
       const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+      jacobian_matrix.row(Eigen::DenseIndex(constraint_id)).segment(idx_vs, constraint_size) =
+        rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])];
+    }
 
+    // Upper bounds
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id < static_cast<std::size_t>(activeSize()); constraint_id++)
+    {
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
       jacobian_matrix.row(Eigen::DenseIndex(constraint_id)).segment(idx_vs, constraint_size) =
         -rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])];
     }
@@ -378,8 +392,30 @@ namespace pinocchio
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
     Eigen::DenseIndex row_id = 0;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
-         ++constraint_id, ++row_id)
+
+    // Lower bounds
+    for (std::size_t constraint_id = 0;
+         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id++, ++row_id)
+    {
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+
+      const auto lazy_product_expression =
+        rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])]
+        * mat.middleRows(idx_vs, constraint_size);
+      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+        res.row(row_id).noalias() -= lazy_product_expression;
+      else
+        res.row(row_id).noalias() += lazy_product_expression;
+    }
+
+    // Upper bounds
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id < static_cast<std::size_t>(activeSize()); constraint_id++, ++row_id)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -424,8 +460,30 @@ namespace pinocchio
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
     Eigen::DenseIndex row_id = 0;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
-         ++constraint_id, ++row_id)
+
+    // Lower bounds
+    for (std::size_t constraint_id = 0;
+         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id++, ++row_id)
+    {
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+
+      const auto lazy_product_expression =
+        rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])].transpose()
+        * mat.row(row_id);
+      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+        res.middleRows(idx_vs, constraint_size).noalias() -= lazy_product_expression;
+      else
+        res.middleRows(idx_vs, constraint_size).noalias() += lazy_product_expression;
+    }
+
+    // Upper bounds
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id < static_cast<std::size_t>(activeSize()); constraint_id++, ++row_id)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -463,8 +521,36 @@ namespace pinocchio
       "The diagonal_constraint_inertia is of wrong size.");
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
-         ++constraint_id)
+
+    // Lower bounds
+    for (std::size_t constraint_id = 0;
+         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata)); constraint_id++)
+    {
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+
+      const auto & constraint_damping_value =
+        diagonal_constraint_inertia[Eigen::DenseIndex(constraint_id)];
+      const auto constraint_jacobian =
+        rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])];
+
+      assert(
+        joint_id > 0 && joint_id < JointIndex(model.njoints) && "joint_id value is incorrect.");
+
+      auto & support_joint_apparent_inertia = data.joint_apparent_inertia[joint_id];
+      PINOCCHIO_ONLY_USED_FOR_DEBUG(constraint_size);
+      assert(support_joint_apparent_inertia.rows() == constraint_size);
+      assert(support_joint_apparent_inertia.cols() == constraint_size);
+
+      support_joint_apparent_inertia.noalias() +=
+        constraint_damping_value * constraint_jacobian.transpose() * constraint_jacobian;
+    }
+
+    // Upper bounds
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -508,8 +594,27 @@ namespace pinocchio
     auto & joint_torques = joint_torques_.const_cast_derived();
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
-         ++constraint_id)
+
+    // Lower bounds
+    for (std::size_t constraint_id = 0;
+         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata)); constraint_id++)
+    {
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+
+      const auto constraint_jacobian =
+        rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])];
+
+      joint_torques.middleRows(idx_vs, constraint_size).noalias() +=
+        constraint_jacobian.transpose() * constraint_forces.row(Eigen::DenseIndex(constraint_id));
+    }
+
+    // Upper bounds
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -545,8 +650,27 @@ namespace pinocchio
     constraint_motions.setZero();
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
-         ++constraint_id)
+
+    // Lower bounds
+    for (std::size_t constraint_id = 0;
+         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata)); constraint_id++)
+    {
+      const JointIndex joint_id =
+        activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
+                                                                // constraint
+      const Eigen::Index constraint_size = joint_nvs[joint_id];
+      const Eigen::Index idx_vs = joint_idx_vs[joint_id];
+
+      const auto constraint_jacobian =
+        rowise_tangent_map[size_t(cdata.active_idx_qs_reduce[constraint_id])];
+
+      constraint_motions.row(Eigen::DenseIndex(constraint_id)).noalias() +=
+        constraint_jacobian * joint_motions.middleRows(idx_vs, constraint_size);
+    }
+
+    // Upper bounds
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the

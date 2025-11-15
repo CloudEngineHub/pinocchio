@@ -135,7 +135,6 @@ namespace pinocchio
 
     typedef JointLimitConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef OrthantConeTpl<Scalar> ConstraintSet;
-    typedef BoxSetTpl<Scalar, Options> BoxSet;
 
     using RootBase::jacobian;
     using typename Base::BooleanVector;
