@@ -134,75 +134,25 @@ namespace boost
 
     namespace internal
     {
-      template<typename Derived>
-      struct OrthantConeBaseAccessor : public ::pinocchio::OrthantConeBase<Derived>
+      template<typename Scalar>
+      struct OrthantConeAccessor : public ::pinocchio::OrthantCone<Scalar>
       {
-        typedef ::pinocchio::OrthantConeBase<Derived> Base;
+        typedef ::pinocchio::OrthantCone<Scalar> Base;
         using Base::m_size;
       };
     } // namespace internal
 
     template<typename Archive, typename Derived>
-    void serialize(
-      Archive & ar, ::pinocchio::OrthantConeBase<Derived> & set, const unsigned int /*version*/)
+    void
+    serialize(Archive & ar, ::pinocchio::OrthantCone<Scalar> & set, const unsigned int /*version*/)
     {
-      typedef ::pinocchio::OrthantConeBase<Derived> Self;
+      typedef ::pinocchio::OrthantCone<Scalar> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(set));
 
-      typedef internal::OrthantConeBaseAccessor<Derived> Accessor;
+      typedef internal::OrthantConeAccessor<Scalar> Accessor;
       auto & set_ = reinterpret_cast<Accessor &>(set);
       ar & make_nvp("m_size", set_.m_size);
-    }
-
-    template<typename Archive, typename Scalar>
-    void serialize(
-      Archive & ar,
-      ::pinocchio::PositiveOrthantConeTpl<Scalar> & set,
-      const unsigned int /*version*/)
-    {
-      typedef ::pinocchio::PositiveOrthantConeTpl<Scalar> Self;
-      typedef typename Self::Base Base;
-      ar & make_nvp("base", boost::serialization::base_object<Base>(set));
-    }
-
-    template<typename Archive, typename Scalar>
-    void serialize(
-      Archive & ar,
-      ::pinocchio::NegativeOrthantConeTpl<Scalar> & set,
-      const unsigned int /*version*/)
-    {
-      typedef ::pinocchio::NegativeOrthantConeTpl<Scalar> Self;
-      typedef typename Self::Base Base;
-      ar & make_nvp("base", boost::serialization::base_object<Base>(set));
-    }
-
-    namespace internal
-    {
-      template<typename Scalar>
-      struct JointLimitConstraintConeAccessor
-      : public ::pinocchio::JointLimitConstraintConeTpl<Scalar>
-      {
-        typedef ::pinocchio::JointLimitConstraintConeTpl<Scalar> Base;
-        using Base::negative_orthant;
-        using Base::positive_orthant;
-      };
-    } // namespace internal
-
-    template<typename Archive, typename Scalar>
-    void serialize(
-      Archive & ar,
-      ::pinocchio::JointLimitConstraintConeTpl<Scalar> & set,
-      const unsigned int /*version*/)
-    {
-      typedef ::pinocchio::JointLimitConstraintConeTpl<Scalar> Self;
-      typedef typename Self::Base Base;
-      ar & make_nvp("base", boost::serialization::base_object<Base>(set));
-
-      typedef internal::JointLimitConstraintConeAccessor<Scalar> Accessor;
-      auto & set_ = reinterpret_cast<Accessor &>(set);
-      ar & make_nvp("positive_orthant", set_.positive_orthant);
-      ar & make_nvp("negative_orthant", set_.negative_orthant);
     }
 
   } // namespace serialization

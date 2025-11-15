@@ -13,7 +13,6 @@
 // Cones
 #include "pinocchio/algorithm/constraints/coulomb-friction-cone.hpp"
 #include "pinocchio/algorithm/constraints/orthant-cone.hpp"
-#include "pinocchio/algorithm/constraints/joint-limit-constraint-cone.hpp"
 #include "pinocchio/algorithm/constraints/unbounded-set.hpp"
 #include "pinocchio/algorithm/constraints/null-set.hpp"
 

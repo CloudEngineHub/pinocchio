@@ -34,8 +34,7 @@ namespace pinocchio
     typedef ConeBase<JointLimitConstraintConeTpl> Base;
     typedef typename traits<JointLimitConstraintConeTpl>::DualCone DualCone;
 
-    typedef PositiveOrthantConeTpl<Scalar> PositiveOrthantCone;
-    typedef NegativeOrthantConeTpl<Scalar> NegativeOrthantCone;
+    typedef OrthantConeTpl<Scalar> OrthantCone;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> Vector;
 
     using Base::project;
@@ -153,7 +152,7 @@ namespace pinocchio
 
     /// \brief Returns a const reference to the positive orthant.
     ///
-    const PositiveOrthantCone & getPositiveOrthant() const
+    const OrthantCone & getPositiveOrthant() const
     {
       return positive_orthant;
     }
@@ -169,7 +168,7 @@ namespace pinocchio
 
   protected:
     NegativeOrthantCone negative_orthant;
-    PositiveOrthantCone positive_orthant;
+    OrthantCone positive_orthant;
   };
 } // namespace pinocchio
 

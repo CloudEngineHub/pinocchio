@@ -464,11 +464,11 @@ namespace pinocchio
   }; // PGSConstraintProjectionStep<BoxSetTpl<_Scalar>>
 
   template<typename _Scalar>
-  struct PGSConstraintProjectionStep<JointLimitConstraintConeTpl<_Scalar>>
+  struct PGSConstraintProjectionStep<OrthantConeTpl<_Scalar>>
   : PGSConstraintProjectionStepBase<_Scalar>
   {
     typedef _Scalar Scalar;
-    typedef JointLimitConstraintConeTpl<Scalar> ConstraintSet;
+    typedef OrthantConeTpl<Scalar> ConstraintSet;
     typedef BoxSetTpl<Scalar> BoxSet;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> Vector;
     typedef PGSConstraintProjectionStepBase<Scalar> Base;
@@ -544,7 +544,7 @@ namespace pinocchio
 
     const ConstraintSet & set;
 
-  }; // PGSConstraintProjectionStep<JointLimitConstraintConeTpl<_Scalar>>
+  }; // PGSConstraintProjectionStep<OrthantConeTpl<_Scalar>>
 
   template<typename _Scalar>
   template<

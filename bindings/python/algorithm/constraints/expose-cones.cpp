@@ -7,7 +7,6 @@
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/set-coulomb-friction-cone.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/set-box-set.hpp"
-#include "pinocchio/bindings/python/algorithm/constraints/set-joint-limit-cone.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/set-trivial-cones.hpp"
 
 // #include "pinocchio/bindings/python/serialization/serialization.hpp"
@@ -34,14 +33,10 @@ namespace pinocchio
       // #endif
 
       BoxSetPythonVisitor<context::BoxSet>::expose();
-      JointLimitConstraintConePythonVisitor<context::JointLimitConstraintCone>::expose();
       TrivialConePythonVisitor<context::NullSet>::expose(
         "NullSet", "Set reduce to 0 singleton in R^d.");
       TrivialConePythonVisitor<context::UnboundedSet>::expose("UnboundedSet", "Set R^d.");
-      TrivialConePythonVisitor<context::PositiveOrthantCone>::expose(
-        "PositiveOrthantCone", "Set R_+^d.");
-      TrivialConePythonVisitor<context::NegativeOrthantCone>::expose(
-        "NegativeOrthantCone", "Set R_-^d.");
+      TrivialConePythonVisitor<context::OrthantCone>::expose("OrthantCone", "Set R_+^d.");
     }
   } // namespace python
 } // namespace pinocchio

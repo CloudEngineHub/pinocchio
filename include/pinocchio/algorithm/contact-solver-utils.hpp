@@ -233,7 +233,7 @@ namespace pinocchio
 
       template<typename Vector1Like, typename Vector2Like>
       static void algo_step(
-        const JointLimitConstraintConeTpl<double> & cone,
+        const OrthantConeTpl<double> & cone,
         const Eigen::MatrixBase<Vector1Like> & velocity,
         const Eigen::MatrixBase<Vector2Like> & result)
       {
@@ -393,7 +393,7 @@ namespace pinocchio
 
       template<typename Vector1Like, typename Vector2Like>
       static Scalar algo_step(
-        const JointLimitConstraintConeTpl<Scalar> & cone,
+        const OrthantConeTpl<Scalar> & cone,
         const Eigen::MatrixBase<Vector1Like> & velocity,
         const Eigen::MatrixBase<Vector2Like> & force)
       {

@@ -269,7 +269,7 @@ namespace pinocchio
     }
 
     // Resize the constraint set so it corresponds to the active set.
-    m_set.resize(lowerActiveSize(cdata), upperActiveSize(cdata));
+    m_set.resize(activeSize(cdata));
   }
 
   template<typename Scalar, int Options>

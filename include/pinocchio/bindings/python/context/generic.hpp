@@ -203,9 +203,7 @@ namespace pinocchio
       typedef BoxSetTpl<context::Scalar> BoxSet;
       typedef NullSetTpl<context::Scalar> NullSet;
       typedef UnboundedSetTpl<context::Scalar> UnboundedSet;
-      typedef NegativeOrthantConeTpl<context::Scalar> NegativeOrthantCone;
-      typedef PositiveOrthantConeTpl<context::Scalar> PositiveOrthantCone;
-      typedef JointLimitConstraintConeTpl<context::Scalar> JointLimitConstraintCone;
+      typedef OrthantConeTpl<context::Scalar> OrthantCone;
 
       typedef ConstraintCollectionDefaultTpl<Scalar, Options> ConstraintCollectionDefault;
 

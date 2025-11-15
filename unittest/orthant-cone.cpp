@@ -12,12 +12,13 @@ using namespace pinocchio;
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
-template<typename Orthant>
-void common_test(const int num_tests, const int dim)
+BOOST_AUTO_TEST_CASE(test_orthant)
 {
+  const int num_tests = int(1e6);
+  const int dim = 10;
 
-  const Orthant orthant(dim);
-  typedef typename Orthant::Vector Vector;
+  const OrthantCone orthant(dim);
+  typedef typename OrthantCone::Vector Vector;
 
   BOOST_CHECK(orthant.dim() == dim);
 
@@ -41,17 +42,6 @@ void common_test(const int num_tests, const int dim)
 
     BOOST_CHECK(fabs((x - proj_x).dot(proj_x)) <= 1e-12); // orthogonal projection
   }
-}
-
-BOOST_AUTO_TEST_CASE(test_positive_orthant)
-{
-  const int num_tests = int(1e6);
-  const int dim = 10;
-
-  common_test<PositiveOrthantCone>(num_tests, dim);
-
-  const PositiveOrthantCone positive_orthant(dim);
-  typedef PositiveOrthantCone::Vector Vector;
 
   for (int k = 0; k < num_tests; ++k)
   {
@@ -59,44 +49,6 @@ BOOST_AUTO_TEST_CASE(test_positive_orthant)
     const Vector x_proj = positive_orthant.project(x);
 
     BOOST_CHECK((x_proj.array() >= 0).all());
-  }
-}
-
-BOOST_AUTO_TEST_CASE(test_negative_orthant)
-{
-  const int num_tests = int(1e6);
-  const int dim = 10;
-
-  common_test<NegativeOrthantCone>(num_tests, dim);
-
-  const NegativeOrthantCone negative_orthant(dim);
-  typedef NegativeOrthantCone::Vector Vector;
-
-  for (int k = 0; k < num_tests; ++k)
-  {
-    const Vector x = Vector::Random(dim);
-    const Vector x_proj = negative_orthant.project(x);
-
-    BOOST_CHECK((x_proj.array() <= 0).all());
-  }
-}
-
-BOOST_AUTO_TEST_CASE(test_decomposition)
-{
-  const int num_tests = int(1e6);
-  const int dim = 10;
-
-  const NegativeOrthantCone negative_orthant(dim);
-  const PositiveOrthantCone positive_orthant(dim);
-  typedef NegativeOrthantCone::Vector Vector;
-
-  for (int k = 0; k < num_tests; ++k)
-  {
-    const Vector x = Vector::Random(dim);
-    const Vector x_proj_neg = negative_orthant.project(x);
-    const Vector x_proj_pos = positive_orthant.project(x);
-
-    BOOST_CHECK(x == (x_proj_neg + x_proj_pos));
   }
 }
 

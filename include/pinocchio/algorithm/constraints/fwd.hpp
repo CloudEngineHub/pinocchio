@@ -98,17 +98,8 @@ namespace pinocchio
   typedef DualCoulombFrictionConeTpl<context::Scalar> DualCoulombFrictionCone;
 
   template<typename Scalar>
-  struct PositiveOrthantConeTpl;
-  typedef PositiveOrthantConeTpl<context::Scalar> PositiveOrthantCone;
-
-  template<typename Scalar>
-  struct NegativeOrthantConeTpl;
-  typedef NegativeOrthantConeTpl<context::Scalar> NegativeOrthantCone;
-
-  template<typename Scalar>
-  struct JointLimitConstraintConeTpl;
-  typedef JointLimitConstraintConeTpl<context::Scalar> JointLimitConstraintCone;
-
+  struct OrthantConeTpl;
+  typedef OrthantConeTpl<context::Scalar> OrthantCone;
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_constraints_fwd_hpp__
