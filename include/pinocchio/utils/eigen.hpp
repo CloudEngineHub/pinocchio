@@ -67,6 +67,8 @@ namespace pinocchio
         typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Rhs) PlainRhs;
         const auto lhs_map = make_map<PlainLhs>(lhs);
         const auto rhs_map = make_map<PlainRhs>(rhs);
+        const auto matrix_map_product = lhs_map * rhs_map;
+        typedef decltype(matrix_map_product) OtherDerived;
 
         if constexpr (helper::is_eigen_noalias_v<ExpressionType>)
         {
@@ -74,13 +76,23 @@ namespace pinocchio
             std::remove_cv_t<std::remove_reference_t<decltype(expression().expression())>>)
             PlainExpression;
           auto result_matrix_map = make_map<PlainExpression>(expression().expression());
-          result_matrix_map.noalias() = lhs_map * rhs_map;
+
+          // result_matrix_map.noalias() = matrix_map_product;
+          Eigen::internal::call_assignment_no_alias(
+            result_matrix_map, matrix_map_product,
+            Eigen::internal::assign_op<
+              typename PlainExpression::Scalar, typename OtherDerived::Scalar>());
         }
         else
         {
           typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(ExpressionType) PlainExpression;
           auto result_matrix_map = make_map<PlainExpression>(expression());
-          result_matrix_map = lhs_map * rhs_map;
+
+          // result_matrix_map = matrix_map_product;
+          Eigen::internal::call_assignment(
+            result_matrix_map, matrix_map_product,
+            Eigen::internal::assign_op<
+              typename PlainExpression::Scalar, typename OtherDerived::Scalar>());
         }
 
         return m_expression;
