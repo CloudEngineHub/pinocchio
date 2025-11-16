@@ -122,8 +122,8 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
       const Eigen::VectorXd f = Eigen::VectorXd::Random(total_active_dofs);
       const Eigen::VectorXd f_proj = constraint.set().project(f);
 
-      BOOST_CHECK((f_proj.head(nb_lower_active_dofs).array() <= 0).all());
-      BOOST_CHECK((f_proj.tail(nb_lower_active_dofs).array() >= 0).all());
+      BOOST_CHECK((f_proj.array() >= 0).all());
+      // BOOST_CHECK((f_proj.tail(nb_lower_active_dofs).array() >= 0).all());
     }
   }
 }
@@ -256,8 +256,8 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
         if (!has_configuration_limit[size_t(k)])
           continue;
         const int q_index = idx_q + k;
-        activable_residual(set_idx) = -(q0(q_index) - model.lowerPositionLimit[q_index]);
-        if (-activable_residual(set_idx) < model.positionLimitMargin[q_index])
+        activable_residual(set_idx) = q0(q_index) - model.lowerPositionLimit[q_index];
+        if (activable_residual(set_idx) < model.positionLimitMargin[q_index])
         {
           active_size++;
           active_indexes.push_back((std::size_t)set_idx);

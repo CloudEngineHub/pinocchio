@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(test_orthant)
   for (int k = 0; k < num_tests; ++k)
   {
     const Vector x = Vector::Random(dim);
-    const Vector x_proj = positive_orthant.project(x);
+    const Vector x_proj = orthant.project(x);
 
     BOOST_CHECK((x_proj.array() >= 0).all());
   }

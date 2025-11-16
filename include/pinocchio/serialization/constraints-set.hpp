@@ -135,18 +135,18 @@ namespace boost
     namespace internal
     {
       template<typename Scalar>
-      struct OrthantConeAccessor : public ::pinocchio::OrthantCone<Scalar>
+      struct OrthantConeAccessor : public ::pinocchio::OrthantConeTpl<Scalar>
       {
-        typedef ::pinocchio::OrthantCone<Scalar> Base;
+        typedef ::pinocchio::OrthantConeTpl<Scalar> Base;
         using Base::m_size;
       };
     } // namespace internal
 
-    template<typename Archive, typename Derived>
-    void
-    serialize(Archive & ar, ::pinocchio::OrthantCone<Scalar> & set, const unsigned int /*version*/)
+    template<typename Archive, typename Scalar>
+    void serialize(
+      Archive & ar, ::pinocchio::OrthantConeTpl<Scalar> & set, const unsigned int /*version*/)
     {
-      typedef ::pinocchio::OrthantCone<Scalar> Self;
+      typedef ::pinocchio::OrthantConeTpl<Scalar> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(set));
 

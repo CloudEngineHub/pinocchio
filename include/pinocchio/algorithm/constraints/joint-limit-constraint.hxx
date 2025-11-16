@@ -353,7 +353,7 @@ namespace pinocchio
 
     // Upper bounds
     for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
-         constraint_id < static_cast<std::size_t>(activeSize()); constraint_id++)
+         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -415,7 +415,7 @@ namespace pinocchio
 
     // Upper bounds
     for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
-         constraint_id < static_cast<std::size_t>(activeSize()); constraint_id++, ++row_id)
+         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++, ++row_id)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -483,7 +483,7 @@ namespace pinocchio
 
     // Upper bounds
     for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
-         constraint_id < static_cast<std::size_t>(activeSize()); constraint_id++, ++row_id)
+         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++, ++row_id)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the

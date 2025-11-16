@@ -60,9 +60,9 @@ namespace pinocchio
 
     /// \brief Cast operator
     template<typename NewScalar>
-    typename CastType<NewScalar, Derived>::type cast() const
+    typename CastType<NewScalar, OrthantConeTpl>::type cast() const
     {
-      typedef typename CastType<NewScalar, Derived>::type ReturnType;
+      typedef typename CastType<NewScalar, OrthantConeTpl>::type ReturnType;
       return ReturnType(size());
     }
 
@@ -130,7 +130,7 @@ namespace pinocchio
     }
 
     /// \brief Project the value given as input for the given row index.
-    Scalar rowiseProject(const Eigen::DenseIndex row_id, const Scalar value) const
+    Scalar rowiseProject(const Eigen::DenseIndex /*row_id*/, const Scalar value) const
     {
       return math::max(Scalar(0), value);
     }
