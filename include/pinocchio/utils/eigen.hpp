@@ -41,7 +41,17 @@ namespace pinocchio
     inline constexpr bool has_fixed_cols_v<T, std::void_t<decltype(T::ColsAtCompileTime)>> =
       (T::ColsAtCompileTime != Eigen::Dynamic);
 
+    template<typename T, typename = void>
+    inline constexpr bool has_fixed_size_v = false;
+
+    template<typename T>
+    inline constexpr bool has_fixed_size_v<
+      T,
+      std::void_t<decltype(T::RowsAtCompileTime), decltype(T::ColsAtCompileTime)>> =
+      has_fixed_rows_v<T> && has_fixed_cols_v<T>;
+
   } // namespace helper
+
   namespace internal
   {
 
