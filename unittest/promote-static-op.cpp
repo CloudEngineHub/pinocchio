@@ -17,6 +17,15 @@ BOOST_AUTO_TEST_CASE(test_helpers)
 
   BOOST_CHECK(!helper::is_eigen_noalias_v<decltype(A)>);
   BOOST_CHECK(helper::is_eigen_noalias_v<decltype(A.noalias())>);
+
+  typedef Eigen::Matrix<double, 3, Eigen::Dynamic> Matrix3d;
+  typedef Eigen::Matrix<double, Eigen::Dynamic, 3> Matrixd3;
+
+  BOOST_CHECK(helper::has_fixed_rows_v<Matrix3d>);
+  BOOST_CHECK(!helper::has_fixed_cols_v<Matrix3d>);
+
+  BOOST_CHECK(!helper::has_fixed_rows_v<Matrixd3>);
+  BOOST_CHECK(helper::has_fixed_cols_v<Matrixd3>);
 }
 
 BOOST_AUTO_TEST_CASE(test_dynamic_matrix)

@@ -6,7 +6,7 @@
 #define __pinocchio_utils_eigen_hpp__
 
 #include "pinocchio/utils/fwd.hpp"
-#include <algorithm>
+#include <type_traits>
 
 namespace pinocchio
 {
@@ -26,6 +26,20 @@ namespace pinocchio
     template<class T>
     inline constexpr bool is_eigen_noalias_v =
       is_eigen_noalias<std::remove_cv_t<std::remove_reference_t<T>>>::value;
+
+    template<typename T, typename = void>
+    inline constexpr bool has_fixed_rows_v = false;
+
+    template<typename T>
+    inline constexpr bool has_fixed_rows_v<T, std::void_t<decltype(T::RowsAtCompileTime)>> =
+      (T::RowsAtCompileTime != Eigen::Dynamic);
+
+    template<typename T, typename = void>
+    inline constexpr bool has_fixed_cols_v = false;
+
+    template<typename T>
+    inline constexpr bool has_fixed_cols_v<T, std::void_t<decltype(T::ColsAtCompileTime)>> =
+      (T::ColsAtCompileTime != Eigen::Dynamic);
 
   } // namespace helper
   namespace internal
