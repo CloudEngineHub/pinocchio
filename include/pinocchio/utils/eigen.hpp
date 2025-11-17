@@ -27,6 +27,18 @@ namespace pinocchio
     inline constexpr bool is_eigen_noalias_v =
       is_eigen_noalias<std::remove_cv_t<std::remove_reference_t<T>>>::value;
 
+    template<typename T>
+    struct remove_eigen_noalias
+    {
+      typedef T type;
+    };
+
+    template<typename ExpressionType, template<typename> class StorageBase>
+    struct remove_eigen_noalias<Eigen::NoAlias<ExpressionType, StorageBase>>
+    {
+      typedef ExpressionType type;
+    };
+
     template<typename T, typename = void>
     inline constexpr bool has_fixed_rows_v = false;
 
