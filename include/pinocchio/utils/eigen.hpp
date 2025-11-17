@@ -120,13 +120,18 @@ namespace pinocchio
         return {plain_object.data(), plain_object.rows(), plain_object.cols(), stride};
       }
 
-      template<template<typename, typename> class Op, typename Dst, typename Src>
-      inline constexpr void call_assignment_no_alias(Dst & dst, const Src & src)
+      template<
+        template<typename, typename> class Op,
+        typename Dst,
+        template<typename> class _StorageBase,
+        typename Src>
+      inline constexpr void
+      call_assignment(Eigen::NoAlias<Dst, _StorageBase> && dst, const Src & src)
       {
         typedef typename Dst::Scalar S1;
         typedef typename Src::Scalar S2;
 
-        Eigen::internal::call_assignment_no_alias(dst, src, Op<S1, S2>());
+        Eigen::internal::call_assignment_no_alias(dst.expression(), src, Op<S1, S2>());
       }
 
       template<template<typename, typename> class Op, typename Dst, typename Src>
@@ -158,7 +163,7 @@ namespace pinocchio
             PlainExpression;
           auto result_matrix_map = make_map<PlainExpression>(expression().expression());
 
-          call_assignment_no_alias<EigenOp>(result_matrix_map, matrix_map_product);
+          call_assignment<EigenOp>(result_matrix_map.noalias(), matrix_map_product);
         }
         else
         {
