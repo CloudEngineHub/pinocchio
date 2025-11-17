@@ -202,7 +202,7 @@ namespace pinocchio
         DualCoulombFrictionConeVector;
       typedef BoxSetTpl<context::Scalar> BoxSet;
       typedef NullSetTpl<context::Scalar> NullSet;
-      typedef UnboundedSetTpl<context::Scalar> UnboundedSet;
+      typedef FullSpaceConeTpl<context::Scalar> FullSpaceCone;
       typedef NonNegativeOrthantConeTpl<context::Scalar> NonNegativeOrthantCone;
 
       typedef ConstraintCollectionDefaultTpl<Scalar, Options> ConstraintCollectionDefault;

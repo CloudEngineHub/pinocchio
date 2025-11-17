@@ -2,7 +2,7 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include "pinocchio/algorithm/constraints/unbounded-set.hpp"
+#include "pinocchio/algorithm/constraints/full-space-cone.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
@@ -16,16 +16,16 @@ BOOST_AUTO_TEST_CASE(test_proj)
   const int num_tests = int(1e6);
   const int dim = 10;
 
-  const UnboundedSet set(dim);
+  const FullSpaceCone set(dim);
 
   BOOST_CHECK(set.dim() == dim);
 
-  BOOST_CHECK(set.isInside(UnboundedSet::Vector::Zero(dim)));
-  BOOST_CHECK(set.project(UnboundedSet::Vector::Zero(dim)) == UnboundedSet::Vector::Zero(dim));
+  BOOST_CHECK(set.isInside(FullSpaceCone::Vector::Zero(dim)));
+  BOOST_CHECK(set.project(FullSpaceCone::Vector::Zero(dim)) == FullSpaceCone::Vector::Zero(dim));
 
   for (int k = 0; k < num_tests; ++k)
   {
-    const UnboundedSet::Vector x = UnboundedSet::Vector::Random(dim);
+    const FullSpaceCone::Vector x = FullSpaceCone::Vector::Random(dim);
 
     const auto proj_x = set.project(x);
     const auto proj_proj_x = set.project(proj_x);

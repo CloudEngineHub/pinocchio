@@ -54,7 +54,7 @@ namespace pinocchio
 
     template<typename VectorLike>
     static void algo_impl(
-      const UnboundedSetTpl<Scalar> & set,
+      const FullSpaceConeTpl<Scalar> & set,
       const Eigen::MatrixBase<VectorLike> & drift,
       Scalar & max_violation)
     {

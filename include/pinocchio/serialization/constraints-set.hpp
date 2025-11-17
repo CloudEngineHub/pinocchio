@@ -61,9 +61,9 @@ namespace boost
     namespace internal
     {
       template<typename Scalar, int Options>
-      struct UnboundedSetAccessor : public ::pinocchio::UnboundedSetTpl<Scalar, Options>
+      struct FullSpaceConeAccessor : public ::pinocchio::FullSpaceConeTpl<Scalar, Options>
       {
-        typedef ::pinocchio::UnboundedSetTpl<Scalar, Options> Base;
+        typedef ::pinocchio::FullSpaceConeTpl<Scalar, Options> Base;
         using Base::m_size;
       };
     } // namespace internal
@@ -71,14 +71,14 @@ namespace boost
     template<typename Archive, typename Scalar, int Options>
     void serialize(
       Archive & ar,
-      ::pinocchio::UnboundedSetTpl<Scalar, Options> & set,
+      ::pinocchio::FullSpaceConeTpl<Scalar, Options> & set,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::UnboundedSetTpl<Scalar, Options> Self;
+      typedef ::pinocchio::FullSpaceConeTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(set));
 
-      typedef internal::UnboundedSetAccessor<Scalar, Options> Accessor;
+      typedef internal::FullSpaceConeAccessor<Scalar, Options> Accessor;
       auto & set_ = reinterpret_cast<Accessor &>(set);
       ar & make_nvp("m_size", set_.m_size);
     }

@@ -82,8 +82,8 @@ namespace pinocchio
 
   // Cone sets
   template<typename Scalar, int Options = 0>
-  struct UnboundedSetTpl;
-  typedef UnboundedSetTpl<context::Scalar> UnboundedSet;
+  struct FullSpaceConeTpl;
+  typedef FullSpaceConeTpl<context::Scalar> FullSpaceCone;
 
   template<typename Scalar, int Options = 0>
   struct NullSetTpl;

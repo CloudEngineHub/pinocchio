@@ -12,13 +12,13 @@ namespace pinocchio
 {
 
   template<typename NewScalar, typename Scalar, int Options>
-  struct CastType<NewScalar, UnboundedSetTpl<Scalar, Options>>
+  struct CastType<NewScalar, FullSpaceConeTpl<Scalar, Options>>
   {
-    typedef UnboundedSetTpl<NewScalar, Options> type;
+    typedef FullSpaceConeTpl<NewScalar, Options> type;
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<UnboundedSetTpl<_Scalar, _Options>>
+  struct traits<FullSpaceConeTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     enum
@@ -31,7 +31,7 @@ namespace pinocchio
 
   ///  \brief Unbounded set covering the whole space
   template<typename _Scalar, int _Options>
-  struct UnboundedSetTpl : ConeBase<UnboundedSetTpl<_Scalar, _Options>>
+  struct FullSpaceConeTpl : ConeBase<FullSpaceConeTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     enum
@@ -39,38 +39,38 @@ namespace pinocchio
       Options = _Options
     };
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
-    typedef ConeBase<UnboundedSetTpl> Base;
-    typedef typename traits<UnboundedSetTpl>::DualCone DualCone;
+    typedef ConeBase<FullSpaceConeTpl> Base;
+    typedef typename traits<FullSpaceConeTpl>::DualCone DualCone;
 
     /// \brief Constructor from a given size
     ///
-    explicit UnboundedSetTpl(const Eigen::DenseIndex size)
+    explicit FullSpaceConeTpl(const Eigen::DenseIndex size)
     : m_size(size)
     {
     }
 
     /// \brief Copy constructor.
-    UnboundedSetTpl(const UnboundedSetTpl & other) = default;
+    FullSpaceConeTpl(const FullSpaceConeTpl & other) = default;
 
     /// \brief Copy operator
-    UnboundedSetTpl & operator=(const UnboundedSetTpl & other) = default;
+    FullSpaceConeTpl & operator=(const FullSpaceConeTpl & other) = default;
 
     /// \brief Cast operator
     template<typename NewScalar>
-    UnboundedSetTpl<NewScalar, Options> cast() const
+    FullSpaceConeTpl<NewScalar, Options> cast() const
     {
-      typedef UnboundedSetTpl<NewScalar, Options> ReturnType;
+      typedef FullSpaceConeTpl<NewScalar, Options> ReturnType;
       return ReturnType(this->size());
     }
 
     /// \brief Comparison operator
-    bool operator==(const UnboundedSetTpl & other) const
+    bool operator==(const FullSpaceConeTpl & other) const
     {
       return base() == other.base() && m_size == other.m_size;
     }
 
     /// \brief Difference  operator
-    bool operator!=(const UnboundedSetTpl & other) const
+    bool operator!=(const FullSpaceConeTpl & other) const
     {
       return !(*this == other);
     }
@@ -143,7 +143,7 @@ namespace pinocchio
 
   protected:
     Eigen::DenseIndex m_size;
-  }; // UnboundedSetTpl
+  }; // FullSpaceConeTpl
 
 } // namespace pinocchio
 

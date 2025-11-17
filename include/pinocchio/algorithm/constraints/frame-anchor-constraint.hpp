@@ -6,7 +6,7 @@
 #define __pinocchio_algorithm_constraints_frame_anchor_constraint_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/unbounded-set.hpp"
+#include "pinocchio/algorithm/constraints/full-space-cone.hpp"
 #include "pinocchio/algorithm/constraints/frame-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/frame-constraint-data-base.hpp"
 
@@ -32,7 +32,7 @@ namespace pinocchio
 
     typedef FrameAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef FrameAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef UnboundedSetTpl<Scalar, Options> ConstraintSet;
+    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
 
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
@@ -83,7 +83,7 @@ namespace pinocchio
     friend struct FrameAnchorConstraintModelTpl;
 
     typedef FrameAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef UnboundedSetTpl<Scalar, Options> ConstraintSet;
+    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
 
     using typename Base::SE3;
 

@@ -203,7 +203,7 @@ namespace pinocchio
   }; // PGSConstraintProjectionStep<CoulombFrictionConeTpl<_Scalar>>
 
   template<typename _Scalar, int _Options>
-  struct PGSConstraintProjectionStep<UnboundedSetTpl<_Scalar, _Options>>
+  struct PGSConstraintProjectionStep<FullSpaceConeTpl<_Scalar, _Options>>
   : PGSConstraintProjectionStepBase<_Scalar>
   {
     typedef _Scalar Scalar;
@@ -211,7 +211,7 @@ namespace pinocchio
     {
       Options = _Options
     };
-    typedef UnboundedSetTpl<Scalar, Options> ConstraintSet;
+    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
     typedef PGSConstraintProjectionStepBase<Scalar> Base;
 
     PGSConstraintProjectionStep(const Scalar over_relax_value, const ConstraintSet & set)
@@ -291,7 +291,7 @@ namespace pinocchio
 
     const ConstraintSet & set;
 
-  }; // PGSConstraintProjectionStep<UnboundedSetTpl<_Scalar,_Options>>
+  }; // PGSConstraintProjectionStep<FullSpaceConeTpl<_Scalar,_Options>>
 
   template<typename _Scalar>
   struct PGSConstraintProjectionStep<BoxSetTpl<_Scalar>> : PGSConstraintProjectionStepBase<_Scalar>

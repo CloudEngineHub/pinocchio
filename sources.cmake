@@ -65,7 +65,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/set-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/jointwise-constraint-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/unbounded-set.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/full-space-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hpp

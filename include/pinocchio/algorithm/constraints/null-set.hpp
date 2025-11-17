@@ -26,7 +26,7 @@ namespace pinocchio
     {
       Options = _Options
     };
-    typedef UnboundedSetTpl<Scalar, _Options> DualCone;
+    typedef FullSpaceConeTpl<Scalar, _Options> DualCone;
   };
 
   ///  \brief Null set containing (0 singleton).
