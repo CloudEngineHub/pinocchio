@@ -36,7 +36,7 @@ namespace pinocchio
     {
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(VectorLike) ReturnType;
       ReturnType res(x.size());
-      derived().project(x, res);
+      derived().projectImpl(x, res);
       return res;
     }
 
@@ -45,7 +45,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLikeIn> & x,
       const Eigen::MatrixBase<VectorLikeOut> & x_proj) const
     {
-      return derived().project(x.derived(), x_proj.const_cast_derived());
+      return derived().projectImpl(x.derived(), x_proj.const_cast_derived());
     }
 
     template<typename VectorLikeIn, typename VectorLikeIn2, typename VectorLikeOut>
@@ -55,14 +55,13 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLikeOut> & x_proj) const
     {
       // project x such that scale * x_proj is in the set.
-      return derived().scaledProject_impl(
-        x.derived(), scale.derived(), x_proj.const_cast_derived());
+      return derived().scaledProjectImpl(x.derived(), scale.derived(), x_proj.const_cast_derived());
     }
 
     template<typename Vector>
     bool isInside(const Eigen::MatrixBase<Vector> & x, Scalar prec = Scalar(0)) const
     {
-      return derived().isInside(x, prec);
+      return derived().isInsideImpl(x, prec);
     }
 
     template<typename OtherDerived>

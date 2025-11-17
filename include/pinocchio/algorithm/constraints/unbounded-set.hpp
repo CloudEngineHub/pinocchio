@@ -75,13 +75,14 @@ namespace pinocchio
       return !(*this == other);
     }
 
+    using Base::isInside;
     /// \brief Check whether a vector x lies within the set.
     /// Any vector x always belong the the unbounded set.
     ///
     /// \param[in] f vector to check (assimilated to a  force vector).
     ///
     template<typename VectorLike>
-    bool isInside(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
+    bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
       assert(prec >= 0 && "prec should be positive");
       PINOCCHIO_UNUSED_VARIABLE(x);
@@ -90,14 +91,13 @@ namespace pinocchio
     }
 
     using Base::project;
-
     /// \brief Project a vector x into the set.
     ///
     /// \param[in] x a vector to project.
     /// \param[in] res result of the projection.
     ///
     template<typename VectorLikeIn, typename VectorLikeOut>
-    void project(
+    void projectImpl(
       const Eigen::MatrixBase<VectorLikeIn> & x,
       const Eigen::MatrixBase<VectorLikeOut> & res_) const
     {

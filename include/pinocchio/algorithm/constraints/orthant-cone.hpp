@@ -104,12 +104,13 @@ namespace pinocchio
       this->resize(new_size);
     }
 
+    using Base::isInside;
     /// \brief Check whether a vector x lies within the orthant.
     ///
     /// \param[in] x vector to check .
     ///
     template<typename VectorLike>
-    bool isInside(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
+    bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
       assert(prec >= 0 && "prec should be positive");
       return (x - project(x)).norm() <= prec;
@@ -122,7 +123,7 @@ namespace pinocchio
     /// \param[in] res result of the projection.
     ///
     template<typename VectorLikeIn, typename VectorLikeOut>
-    void project(
+    void projectImpl(
       const Eigen::MatrixBase<VectorLikeIn> & x,
       const Eigen::MatrixBase<VectorLikeOut> & res_) const
     {

@@ -29,8 +29,9 @@ namespace pinocchio
       return derived().dual();
     }
 
+    using Base::scaledProject;
     template<typename VectorLikeIn, typename VectorLikeIn2, typename VectorLikeOut>
-    void scaledProject_impl(
+    void scaledProjectImpl(
       const Eigen::MatrixBase<VectorLikeIn> & x,
       const Eigen::MatrixBase<VectorLikeIn2> & scale,
       const Eigen::MatrixBase<VectorLikeOut> & x_proj) const

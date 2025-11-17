@@ -96,12 +96,13 @@ namespace pinocchio
       return !(*this == other);
     }
 
+    using Base::isInside;
     /// \brief Check whether a vector x lies within the cone.
     ///
     /// \param[in] f vector to check (assimilated to a  force vector).
     ///
     template<typename Vector3Like>
-    bool isInside(const Eigen::MatrixBase<Vector3Like> & f, const Scalar prec = Scalar(0)) const
+    bool isInsideImpl(const Eigen::MatrixBase<Vector3Like> & f, const Scalar prec = Scalar(0)) const
     {
       assert(mu >= 0 && "mu must be positive");
       assert(prec >= 0 && "prec should be positive");
@@ -112,13 +113,12 @@ namespace pinocchio
     }
 
     using Base::project;
-
     /// \brief Project a vector x onto the cone.
     ///
     /// \param[in] x a 3d vector to project.
     ///
     template<typename Vector3LikeIn, typename Vector3LikeOut>
-    void project(
+    void projectImpl(
       const Eigen::MatrixBase<Vector3LikeIn> & x,
       const Eigen::MatrixBase<Vector3LikeOut> & res_) const
     {
@@ -321,12 +321,13 @@ namespace pinocchio
       return !(*this == other);
     }
 
+    using Base::isInside;
     /// \brief Check whether a vector v lies within the cone.
     ///
     /// \param[in] v vector to check (assimilated to a linear velocity).
     ///
     template<typename Vector3Like>
-    bool isInside(const Eigen::MatrixBase<Vector3Like> & v, const Scalar prec = Scalar(0)) const
+    bool isInsideImpl(const Eigen::MatrixBase<Vector3Like> & v, const Scalar prec = Scalar(0)) const
     {
       assert(mu >= 0 && "mu must be positive");
       //      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3);
@@ -338,7 +339,7 @@ namespace pinocchio
     using Base::project;
     /// \brief Project a vector x onto the cone
     template<typename Vector3LikeIn, typename Vector3LikeOut>
-    void project(
+    void projectImpl(
       const Eigen::MatrixBase<Vector3LikeIn> & x,
       const Eigen::MatrixBase<Vector3LikeOut> & res_) const
     {
