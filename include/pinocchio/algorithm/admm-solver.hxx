@@ -82,7 +82,7 @@ namespace pinocchio
 
     template<typename VectorLike>
     static void algo_impl(
-      const OrthantConeTpl<Scalar> & set,
+      const NonNegativeOrthantConeTpl<Scalar> & set,
       const Eigen::MatrixBase<VectorLike> & drift,
       Scalar & max_violation)
     {

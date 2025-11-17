@@ -36,7 +36,8 @@ namespace pinocchio
       TrivialConePythonVisitor<context::NullSet>::expose(
         "NullSet", "Set reduce to 0 singleton in R^d.");
       TrivialConePythonVisitor<context::UnboundedSet>::expose("UnboundedSet", "Set R^d.");
-      TrivialConePythonVisitor<context::OrthantCone>::expose("OrthantCone", "Set R_+^d.");
+      TrivialConePythonVisitor<context::NonNegativeOrthantCone>::expose(
+        "NonNegativeOrthantCone", "Set R_+^d.");
     }
   } // namespace python
 } // namespace pinocchio

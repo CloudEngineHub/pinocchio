@@ -45,7 +45,7 @@ namespace pinocchio
 
     typedef JointLimitConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef JointLimitConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef OrthantConeTpl<Scalar> ConstraintSet;
+    typedef NonNegativeOrthantConeTpl<Scalar> ConstraintSet;
 
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
@@ -134,7 +134,7 @@ namespace pinocchio
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     typedef JointLimitConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef OrthantConeTpl<Scalar> ConstraintSet;
+    typedef NonNegativeOrthantConeTpl<Scalar> ConstraintSet;
 
     using RootBase::jacobian;
     using typename Base::BooleanVector;

@@ -12,25 +12,25 @@ namespace pinocchio
 {
 
   template<typename NewScalar, typename Scalar>
-  struct CastType<NewScalar, OrthantConeTpl<Scalar>>
+  struct CastType<NewScalar, NonNegativeOrthantConeTpl<Scalar>>
   {
-    typedef OrthantConeTpl<NewScalar> type;
+    typedef NonNegativeOrthantConeTpl<NewScalar> type;
   };
 
   template<typename _Scalar>
-  struct traits<OrthantConeTpl<_Scalar>>
+  struct traits<NonNegativeOrthantConeTpl<_Scalar>>
   {
     typedef _Scalar Scalar;
-    typedef OrthantConeTpl<Scalar> DualCone;
+    typedef NonNegativeOrthantConeTpl<Scalar> DualCone;
   };
 
   template<typename _Scalar>
-  struct OrthantConeTpl : ConeBase<OrthantConeTpl<_Scalar>>
+  struct NonNegativeOrthantConeTpl : ConeBase<NonNegativeOrthantConeTpl<_Scalar>>
   {
     typedef _Scalar Scalar;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> Vector;
-    typedef ConeBase<OrthantConeTpl> Base;
-    typedef typename traits<OrthantConeTpl>::DualCone DualCone;
+    typedef ConeBase<NonNegativeOrthantConeTpl> Base;
+    typedef typename traits<NonNegativeOrthantConeTpl>::DualCone DualCone;
 
     const Base & base() const
     {
@@ -43,40 +43,40 @@ namespace pinocchio
 
     /// \brief Default constructor
     ///
-    OrthantConeTpl()
+    NonNegativeOrthantConeTpl()
     : m_size(0)
     {
     }
 
     /// \brief Constructor from a given size
     ///
-    explicit OrthantConeTpl(const Eigen::DenseIndex size)
+    explicit NonNegativeOrthantConeTpl(const Eigen::DenseIndex size)
     : m_size(size)
     {
     }
 
     /// \brief Copy constructor.
-    OrthantConeTpl(const OrthantConeTpl & other) = default;
+    NonNegativeOrthantConeTpl(const NonNegativeOrthantConeTpl & other) = default;
 
     /// \brief Cast operator
     template<typename NewScalar>
-    typename CastType<NewScalar, OrthantConeTpl>::type cast() const
+    typename CastType<NewScalar, NonNegativeOrthantConeTpl>::type cast() const
     {
-      typedef typename CastType<NewScalar, OrthantConeTpl>::type ReturnType;
+      typedef typename CastType<NewScalar, NonNegativeOrthantConeTpl>::type ReturnType;
       return ReturnType(size());
     }
 
     /// \brief Copy operator
-    OrthantConeTpl & operator=(const OrthantConeTpl & other) = default;
+    NonNegativeOrthantConeTpl & operator=(const NonNegativeOrthantConeTpl & other) = default;
 
     /// \brief Comparison operator
-    bool operator==(const OrthantConeTpl & other) const
+    bool operator==(const NonNegativeOrthantConeTpl & other) const
     {
       return base() == other.base() && m_size == other.m_size;
     }
 
     /// \brief Difference  operator
-    bool operator!=(const OrthantConeTpl & other) const
+    bool operator!=(const NonNegativeOrthantConeTpl & other) const
     {
       return !(*this == other);
     }
@@ -146,7 +146,7 @@ namespace pinocchio
 
   protected:
     Eigen::DenseIndex m_size;
-  }; // struct OrthantConeTpl
+  }; // struct NonNegativeOrthantConeTpl
 
 } // namespace pinocchio
 #endif // ifndef __pinocchio_algorithm_constraints_orthant_cone_hpp__
