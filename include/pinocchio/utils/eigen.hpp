@@ -84,52 +84,22 @@ namespace pinocchio
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       operator=(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        const auto & lhs = matrix_product.lhs();
-        const auto & rhs = matrix_product.rhs();
-
-        typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Lhs) PlainLhs;
-        typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Rhs) PlainRhs;
-        const auto lhs_map = make_map<PlainLhs>(lhs);
-        const auto rhs_map = make_map<PlainRhs>(rhs);
-        const auto matrix_map_product = lhs_map * rhs_map;
-
-        if constexpr (helper::is_eigen_noalias_v<ExpressionType>)
-        {
-          typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(
-            std::remove_cv_t<std::remove_reference_t<decltype(expression().expression())>>)
-            PlainExpression;
-          auto result_matrix_map = make_map<PlainExpression>(expression().expression());
-
-          call_assignment_no_alias<Eigen::internal::assign_op>(
-            result_matrix_map, matrix_map_product);
-        }
-        else
-        {
-          typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(ExpressionType) PlainExpression;
-          auto result_matrix_map = make_map<PlainExpression>(expression());
-
-          call_assignment<Eigen::internal::assign_op>(result_matrix_map, matrix_map_product);
-        }
-
-        return m_expression;
+        return static_dispatch<Eigen::internal::assign_op>(matrix_product.derived());
       }
-      // template <typename OtherDerived>
-      // EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType& operator+=(const
-      // StorageBase<OtherDerived>& other) {
-      //   call_assignment_no_alias(m_expression, other.derived(),
-      //                            internal::add_assign_op<Scalar, typename
-      //                            OtherDerived::Scalar>());
-      //   return m_expression;
-      // }
 
-      // template <typename OtherDerived>
-      // EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType& operator-=(const
-      // StorageBase<OtherDerived>& other) {
-      //   call_assignment_no_alias(m_expression, other.derived(),
-      //                            internal::sub_assign_op<Scalar, typename
-      //                            OtherDerived::Scalar>());
-      //   return m_expression;
-      // }
+      template<typename Lhs, typename Rhs, int Option>
+      EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
+      operator+=(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      {
+        return static_dispatch<Eigen::internal::add_assign_op>(matrix_product.derived());
+      }
+
+      template<typename Lhs, typename Rhs, int Option>
+      EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
+      operator-=(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      {
+        return static_dispatch<Eigen::internal::sub_assign_op>(matrix_product.derived());
+      }
 
       EIGEN_DEVICE_FUNC ExpressionType & expression() const
       {
@@ -166,6 +136,39 @@ namespace pinocchio
         typedef typename Src::Scalar S2;
 
         Eigen::internal::call_assignment(dst, src, Op<S1, S2>());
+      }
+
+      template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
+      EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
+      static_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      {
+        const auto & lhs = matrix_product.lhs();
+        const auto & rhs = matrix_product.rhs();
+
+        typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Lhs) PlainLhs;
+        typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Rhs) PlainRhs;
+        const auto lhs_map = make_map<PlainLhs>(lhs);
+        const auto rhs_map = make_map<PlainRhs>(rhs);
+        const auto matrix_map_product = lhs_map * rhs_map;
+
+        if constexpr (helper::is_eigen_noalias_v<ExpressionType>)
+        {
+          typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(
+            std::remove_cv_t<std::remove_reference_t<decltype(expression().expression())>>)
+            PlainExpression;
+          auto result_matrix_map = make_map<PlainExpression>(expression().expression());
+
+          call_assignment_no_alias<EigenOp>(result_matrix_map, matrix_map_product);
+        }
+        else
+        {
+          typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(ExpressionType) PlainExpression;
+          auto result_matrix_map = make_map<PlainExpression>(expression());
+
+          call_assignment<EigenOp>(result_matrix_map, matrix_map_product);
+        }
+
+        return m_expression;
       }
 
     }; // struct PromoteStaticOp
