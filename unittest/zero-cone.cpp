@@ -2,7 +2,7 @@
 // Copyright (c) 2025 INRIA
 //
 
-#include "pinocchio/algorithm/constraints/null-set.hpp"
+#include "pinocchio/algorithm/constraints/zero-cone.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
@@ -16,18 +16,18 @@ BOOST_AUTO_TEST_CASE(test_proj)
   const int num_tests = int(1000);
   const int dim = 10;
 
-  const NullSet set(dim);
+  const ZeroCone set(dim);
 
   BOOST_CHECK(set.dim() == dim);
 
-  BOOST_CHECK(set.isInside(NullSet::Vector::Zero(dim)));
-  BOOST_CHECK(!set.isInside(NullSet::Vector::Ones(dim)));
-  BOOST_CHECK(set.project(NullSet::Vector::Zero(dim)) == NullSet::Vector::Zero(dim));
-  BOOST_CHECK(set.project(NullSet::Vector::Ones(dim)) == NullSet::Vector::Zero(dim));
+  BOOST_CHECK(set.isInside(ZeroCone::Vector::Zero(dim)));
+  BOOST_CHECK(!set.isInside(ZeroCone::Vector::Ones(dim)));
+  BOOST_CHECK(set.project(ZeroCone::Vector::Zero(dim)) == ZeroCone::Vector::Zero(dim));
+  BOOST_CHECK(set.project(ZeroCone::Vector::Ones(dim)) == ZeroCone::Vector::Zero(dim));
 
   for (int k = 0; k < num_tests; ++k)
   {
-    const NullSet::Vector x = NullSet::Vector::Random(dim);
+    const ZeroCone::Vector x = ZeroCone::Vector::Random(dim);
     if (!x.isZero())
       BOOST_CHECK(!set.isInside(x));
 

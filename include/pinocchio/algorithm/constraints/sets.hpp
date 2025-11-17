@@ -14,6 +14,6 @@
 #include "pinocchio/algorithm/constraints/coulomb-friction-cone.hpp"
 #include "pinocchio/algorithm/constraints/orthant-cone.hpp"
 #include "pinocchio/algorithm/constraints/full-space-cone.hpp"
-#include "pinocchio/algorithm/constraints/null-set.hpp"
+#include "pinocchio/algorithm/constraints/zero-cone.hpp"
 
 #endif // ifndef __pinocchio_algorithm_constraints_sets_hpp__

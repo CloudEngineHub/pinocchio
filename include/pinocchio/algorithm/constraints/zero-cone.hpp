@@ -2,8 +2,8 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_null_set_hpp__
-#define __pinocchio_algorithm_constraints_null_set_hpp__
+#ifndef __pinocchio_algorithm_constraints_zero_cone_hpp__
+#define __pinocchio_algorithm_constraints_zero_cone_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/cone-base.hpp"
@@ -12,13 +12,13 @@ namespace pinocchio
 {
 
   template<typename NewScalar, typename Scalar, int Options>
-  struct CastType<NewScalar, NullSetTpl<Scalar, Options>>
+  struct CastType<NewScalar, ZeroConeTpl<Scalar, Options>>
   {
-    typedef NullSetTpl<NewScalar, Options> type;
+    typedef ZeroConeTpl<NewScalar, Options> type;
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<NullSetTpl<_Scalar, _Options>>
+  struct traits<ZeroConeTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
 
@@ -31,7 +31,7 @@ namespace pinocchio
 
   ///  \brief Null set containing (0 singleton).
   template<typename _Scalar, int _Options>
-  struct NullSetTpl : ConeBase<NullSetTpl<_Scalar, _Options>>
+  struct ZeroConeTpl : ConeBase<ZeroConeTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     enum
@@ -39,38 +39,38 @@ namespace pinocchio
       Options = _Options
     };
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
-    typedef ConeBase<NullSetTpl> Base;
-    typedef typename traits<NullSetTpl>::DualCone DualCone;
+    typedef ConeBase<ZeroConeTpl> Base;
+    typedef typename traits<ZeroConeTpl>::DualCone DualCone;
 
     /// \brief Constructor from a given size
     ///
-    explicit NullSetTpl(const Eigen::DenseIndex size)
+    explicit ZeroConeTpl(const Eigen::DenseIndex size)
     : m_size(size)
     {
     }
 
     /// \brief Copy constructor.
-    NullSetTpl(const NullSetTpl & other) = default;
+    ZeroConeTpl(const ZeroConeTpl & other) = default;
 
     /// \brief Copy operator
-    NullSetTpl & operator=(const NullSetTpl & other) = default;
+    ZeroConeTpl & operator=(const ZeroConeTpl & other) = default;
 
     /// \brief Cast operator
     template<typename NewScalar>
-    NullSetTpl<NewScalar, Options> cast() const
+    ZeroConeTpl<NewScalar, Options> cast() const
     {
-      typedef NullSetTpl<NewScalar, Options> ReturnType;
+      typedef ZeroConeTpl<NewScalar, Options> ReturnType;
       return ReturnType(this->size());
     }
 
     /// \brief Comparison operator
-    bool operator==(const NullSetTpl & other) const
+    bool operator==(const ZeroConeTpl & other) const
     {
       return base() == other.base() && m_size == other.m_size;
     }
 
     /// \brief Difference  operator
-    bool operator!=(const NullSetTpl & other) const
+    bool operator!=(const ZeroConeTpl & other) const
     {
       return !(*this == other);
     }
@@ -142,8 +142,8 @@ namespace pinocchio
 
   protected:
     Eigen::DenseIndex m_size;
-  }; // NullSetTpl
+  }; // ZeroConeTpl
 
 } // namespace pinocchio
 
-#endif // __pinocchio_algorithm_constraints_null_set_hpp__
+#endif // __pinocchio_algorithm_constraints_zero_cone_hpp__

@@ -2,8 +2,8 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_unbounded_set_hpp__
-#define __pinocchio_algorithm_constraints_unbounded_set_hpp__
+#ifndef __pinocchio_algorithm_constraints_full_space_cone_hpp__
+#define __pinocchio_algorithm_constraints_full_space_cone_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/cone-base.hpp"
@@ -26,7 +26,7 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef NullSetTpl<Scalar, _Options> DualCone;
+    typedef ZeroConeTpl<Scalar, _Options> DualCone;
   };
 
   ///  \brief Unbounded set covering the whole space
@@ -147,4 +147,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_constraints_unbounded_set_hpp__
+#endif // ifndef __pinocchio_algorithm_constraints_full_space_cone_hpp__

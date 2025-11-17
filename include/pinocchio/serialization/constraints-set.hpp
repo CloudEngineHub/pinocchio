@@ -86,22 +86,22 @@ namespace boost
     namespace internal
     {
       template<typename Scalar, int Options>
-      struct NullSetAccessor : public ::pinocchio::NullSetTpl<Scalar, Options>
+      struct ZeroConeAccessor : public ::pinocchio::ZeroConeTpl<Scalar, Options>
       {
-        typedef ::pinocchio::NullSetTpl<Scalar, Options> Base;
+        typedef ::pinocchio::ZeroConeTpl<Scalar, Options> Base;
         using Base::m_size;
       };
     } // namespace internal
 
     template<typename Archive, typename Scalar, int Options>
     void serialize(
-      Archive & ar, ::pinocchio::NullSetTpl<Scalar, Options> & set, const unsigned int /*version*/)
+      Archive & ar, ::pinocchio::ZeroConeTpl<Scalar, Options> & set, const unsigned int /*version*/)
     {
-      typedef ::pinocchio::NullSetTpl<Scalar, Options> Self;
+      typedef ::pinocchio::ZeroConeTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(set));
 
-      typedef internal::NullSetAccessor<Scalar, Options> Accessor;
+      typedef internal::ZeroConeAccessor<Scalar, Options> Accessor;
       auto & set_ = reinterpret_cast<Accessor &>(set);
       ar & make_nvp("m_size", set_.m_size);
     }

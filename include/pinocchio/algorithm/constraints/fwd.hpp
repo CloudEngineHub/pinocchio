@@ -86,8 +86,8 @@ namespace pinocchio
   typedef FullSpaceConeTpl<context::Scalar> FullSpaceCone;
 
   template<typename Scalar, int Options = 0>
-  struct NullSetTpl;
-  typedef NullSetTpl<context::Scalar> NullSet;
+  struct ZeroConeTpl;
+  typedef ZeroConeTpl<context::Scalar> ZeroCone;
 
   template<typename Scalar>
   struct CoulombFrictionConeTpl;

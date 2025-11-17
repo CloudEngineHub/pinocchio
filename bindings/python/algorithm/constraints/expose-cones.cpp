@@ -33,8 +33,8 @@ namespace pinocchio
       // #endif
 
       BoxSetPythonVisitor<context::BoxSet>::expose();
-      TrivialConePythonVisitor<context::NullSet>::expose(
-        "NullSet", "Set reduce to 0 singleton in R^d.");
+      TrivialConePythonVisitor<context::ZeroCone>::expose(
+        "ZeroCone", "Set reduce to 0 singleton in R^d.");
       TrivialConePythonVisitor<context::FullSpaceCone>::expose("FullSpaceCone", "Set R^d.");
       TrivialConePythonVisitor<context::NonNegativeOrthantCone>::expose(
         "NonNegativeOrthantCone", "Set R_+^d.");

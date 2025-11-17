@@ -5,7 +5,7 @@
 #ifndef __pinocchio_python_algorithm_constraints_set_trivial_cones_hpp__
 #define __pinocchio_python_algorithm_constraints_set_trivial_cones_hpp__
 
-#include "pinocchio/algorithm/constraints/null-set.hpp"
+#include "pinocchio/algorithm/constraints/zero-cone.hpp"
 #include "pinocchio/algorithm/constraints/full-space-cone.hpp"
 #include "pinocchio/algorithm/constraints/orthant-cone.hpp"
 
