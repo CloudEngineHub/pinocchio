@@ -92,7 +92,6 @@ namespace pinocchio
         const auto lhs_map = make_map<PlainLhs>(lhs);
         const auto rhs_map = make_map<PlainRhs>(rhs);
         const auto matrix_map_product = lhs_map * rhs_map;
-        typedef decltype(matrix_map_product) OtherDerived;
 
         if constexpr (helper::is_eigen_noalias_v<ExpressionType>)
         {
@@ -101,22 +100,15 @@ namespace pinocchio
             PlainExpression;
           auto result_matrix_map = make_map<PlainExpression>(expression().expression());
 
-          // result_matrix_map.noalias() = matrix_map_product;
-          Eigen::internal::call_assignment_no_alias(
-            result_matrix_map, matrix_map_product,
-            Eigen::internal::assign_op<
-              typename PlainExpression::Scalar, typename OtherDerived::Scalar>());
+          call_assignment_no_alias<Eigen::internal::assign_op>(
+            result_matrix_map, matrix_map_product);
         }
         else
         {
           typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(ExpressionType) PlainExpression;
           auto result_matrix_map = make_map<PlainExpression>(expression());
 
-          // result_matrix_map = matrix_map_product;
-          Eigen::internal::call_assignment(
-            result_matrix_map, matrix_map_product,
-            Eigen::internal::assign_op<
-              typename PlainExpression::Scalar, typename OtherDerived::Scalar>());
+          call_assignment<Eigen::internal::assign_op>(result_matrix_map, matrix_map_product);
         }
 
         return m_expression;
@@ -157,7 +149,26 @@ namespace pinocchio
         const DynamicStride stride = {plain_object.outerStride(), plain_object.innerStride()};
         return {plain_object.data(), plain_object.rows(), plain_object.cols(), stride};
       }
-    };
+
+      template<template<typename, typename> class Op, typename Dst, typename Src>
+      inline constexpr void call_assignment_no_alias(Dst & dst, const Src & src)
+      {
+        typedef typename Dst::Scalar S1;
+        typedef typename Src::Scalar S2;
+
+        Eigen::internal::call_assignment_no_alias(dst, src, Op<S1, S2>());
+      }
+
+      template<template<typename, typename> class Op, typename Dst, typename Src>
+      inline constexpr void call_assignment(Dst & dst, const Src & src)
+      {
+        typedef typename Dst::Scalar S1;
+        typedef typename Src::Scalar S2;
+
+        Eigen::internal::call_assignment(dst, src, Op<S1, S2>());
+      }
+
+    }; // struct PromoteStaticOp
 
   } // namespace internal
 
