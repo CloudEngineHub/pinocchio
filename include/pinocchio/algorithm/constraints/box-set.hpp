@@ -12,12 +12,6 @@
 namespace pinocchio
 {
 
-  template<typename NewScalar, typename Scalar, int Options>
-  struct CastType<NewScalar, BoxSetTpl<Scalar, Options>>
-  {
-    typedef BoxSetTpl<NewScalar, Options> type;
-  };
-
   template<typename _Scalar, int _Options>
   struct traits<BoxSetTpl<_Scalar, _Options>>
   {
@@ -29,6 +23,9 @@ namespace pinocchio
   };
 
   ///  \brief Box set defined by a lower and an upper bounds [lb;ub].
+  ///  This operator does not own any data.
+  ///  Instead, it points to the data owned by some other struct.
+  ///  Creating and copying an instance of this struct is free.
   template<typename _Scalar, int _Options>
   struct BoxSetTpl : SetBase<BoxSetTpl<_Scalar, _Options>>
   {
@@ -40,40 +37,36 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
     typedef SetBase<BoxSetTpl> Base;
 
-    /// \brief Default constructor
     ///
-    BoxSetTpl()
-    {
-    }
-
-    /// \brief Constructor from a given size
+    /// \brief Constructor lb and ub.
+    /// Internally, a const reference to these vectors is kept.
     ///
-    explicit BoxSetTpl(const Eigen::DenseIndex size)
-    : m_lb(Vector::Constant(size, -std::numeric_limits<Scalar>::infinity()))
-    , m_ub(Vector::Constant(size, +std::numeric_limits<Scalar>::infinity()))
+    /// \param[in] lb box lower bound
+    /// \param[in] ub box upper bound
+    ///
+    BoxSetTpl(const Vector & lb, const Vector & ub)
+    : lb(lb)
+    , ub(ub)
     {
-    }
-
-    template<typename V1, typename V2>
-    BoxSetTpl(const Eigen::MatrixBase<V1> & lb, const Eigen::MatrixBase<V2> & ub)
-    : m_lb(lb)
-    , m_ub(ub)
-    {
+      assert(lb.size() == ub.size());
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        (m_lb.array() <= m_ub.array()).all(), "Some components of lb are greater than ub");
+        (lb.array() <= ub.array()).all(), "Some components of lb are greater than ub");
+    }
+
+    ///
+    /// \brief Generic constructor which can take any `Parameter` struct.
+    /// Creates a link between the `mu` in `Parameter` and this->mu.
+    ///
+    /// \param[in] params Generic parameters, must contain the field `mu`.
+    ///
+    template<typename Parameters>
+    BoxSetTpl(const Parameters & params)
+    : BoxSetTpl(params.lb, params.ub)
+    {
     }
 
     /// \brief Copy constructor.
     BoxSetTpl(const BoxSetTpl & other) = default;
-
-    /// \brief Cast operator
-    template<typename NewScalar>
-    BoxSetTpl<NewScalar, Options> cast() const
-    {
-      typedef BoxSetTpl<NewScalar, Options> ReturnType;
-      return ReturnType(
-        this->m_lb.template cast<NewScalar>(), this->m_ub.template cast<NewScalar>());
-    }
 
     /// \brief Cast to base class.
     Base & base()
@@ -93,27 +86,13 @@ namespace pinocchio
     /// \brief Comparison operator
     bool operator==(const BoxSetTpl & other) const
     {
-      return base() == other.base() && m_lb == other.m_lb && m_ub == other.m_ub;
+      return base() == other.base() && lb == other.lb && ub == other.ub;
     }
 
     /// \brief Difference  operator
     bool operator!=(const BoxSetTpl & other) const
     {
       return !(*this == other);
-    }
-
-    /// \brief Resize by calling the resize method of Eigen.
-    void resize(Eigen::DenseIndex new_size)
-    {
-      m_lb.resize(new_size);
-      m_ub.resize(new_size);
-    }
-
-    /// \brief Resize by calling the conservativeResize method of Eigen.
-    void conservativeResize(Eigen::DenseIndex new_size)
-    {
-      m_lb.conservativeResize(new_size);
-      m_ub.conservativeResize(new_size);
     }
 
     using Base::isInside;
@@ -139,7 +118,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLikeIn> & x,
       const Eigen::MatrixBase<VectorLikeOut> & res_) const
     {
-      res_.const_cast_derived() = x.array().max(m_lb.array()).min(m_ub.array());
+      res_.const_cast_derived() = x.array().max(lb.array()).min(ub.array());
     }
 
     using Base::scaledProject;
@@ -158,54 +137,27 @@ namespace pinocchio
       PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
       assert((scale.array() > 0).all() && "scale vector should be positive");
       res_.const_cast_derived() =
-        x.array().max(m_lb.array() / scale.array()).min(m_ub.array() / scale.array());
+        x.array().max(lb.array() / scale.array()).min(ub.array() / scale.array());
       PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    }
-
-    /// \brief Returns the dimension of the box.
-    Eigen::DenseIndex dim() const
-    {
-      return m_lb.size();
-    }
-
-    Eigen::DenseIndex size() const
-    {
-      return m_lb.size();
-    }
-
-    const Vector & lb() const
-    {
-      return m_lb;
-    }
-    Vector & lb()
-    {
-      return m_lb;
-    }
-
-    const Vector & ub() const
-    {
-      return m_ub;
-    }
-    Vector & ub()
-    {
-      return m_ub;
     }
 
     /// \brief Check whether lb <= ub for all components
     bool isValid() const
     {
-      return (m_lb.array() <= m_ub.array()).all();
+      return (lb.array() <= ub.array()).all();
     }
 
     /// \brief Project the value given as input for the given row index.
     Scalar rowiseProject(const Eigen::DenseIndex row_id, const Scalar value) const
     {
-      assert(row_id < size());
-      return math::max(m_lb[row_id], math::min(m_ub[row_id], value));
+      assert(row_id < lb.size());
+      return math::max(lb[row_id], math::min(ub[row_id], value));
     }
 
-  protected:
-    Vector m_lb, m_ub;
+    /// \brief Reference to the lower bound of the box.
+    const Vector & lb;
+    /// \brief Reference to the upper bound of the box.
+    const Vector & ub;
   }; // BoxSetTpl
 
 } // namespace pinocchio

@@ -72,9 +72,9 @@ namespace pinocchio
     {
       typedef typename ConstraintModel::ConstraintSet ConstraintSet;
 
-      PGSConstraintProjectionStep<ConstraintSet> step(
-        over_relax_value,
-        cmodel.derived().set()); // TODO(jcarpent): change cmodel.derived().set() -> cmodel.set()
+      // TODO(jcarpent): change cmodel.derived().set() -> cmodel.set()
+      auto set = cmodel.derived().set();
+      PGSConstraintProjectionStep<ConstraintSet> step(over_relax_value, set);
       step.project(G_block.derived(), impulse.const_cast_derived(), velocity.const_cast_derived());
       step.computeFeasibility(impulse, velocity);
 
@@ -234,7 +234,10 @@ namespace pinocchio
       const Eigen::MatrixBase<DualVectorType> & dual_vector_) const
     {
 
-      const Eigen::DenseIndex size = set.size();
+      const Eigen::DenseIndex size = primal_vector_.size();
+      assert(G_block_.rows() == size);
+      assert(dual_vector_.size() == size);
+
       auto & G_block = G_block_.derived();
       auto & primal_vector = primal_vector_.const_cast_derived();
       auto & dual_vector = dual_vector_.const_cast_derived();
@@ -263,7 +266,10 @@ namespace pinocchio
       const Eigen::MatrixBase<DualVectorType> & dual_vector_) const
     {
 
-      const Eigen::DenseIndex size = set.size();
+      const Eigen::DenseIndex size = primal_vector_.size();
+      assert(G_block_.rows() == size);
+      assert(dual_vector_.size() == size);
+
       auto & G_block = G_block_.derived();
       auto & primal_vector = primal_vector_.const_cast_derived();
       auto & dual_vector = dual_vector_.const_cast_derived();
@@ -337,21 +343,13 @@ namespace pinocchio
       const Eigen::MatrixBase<PrimalVectorType> & primal_vector_,
       const Eigen::MatrixBase<DualVectorType> & dual_vector_)
     {
+      const Eigen::DenseIndex size = primal_vector_.size();
+      assert(G_block_.rows() == size);
+      assert(dual_vector_.size() == size);
+
       const auto & G_block = G_block_.derived();
       auto & primal_vector = primal_vector_.const_cast_derived();
       auto & dual_vector = dual_vector_.const_cast_derived();
-
-      assert(
-        primal_vector.size() == dual_vector.size()
-        && "The two primal/dual vectors should be of the same size.");
-      assert(
-        primal_vector.size() == set.size()
-        && "The the primal vector should be of the same size than the box set.");
-      assert(
-        dual_vector.size() == set.size()
-        && "The the dual vector should be of the same size than the box set.");
-
-      const Eigen::DenseIndex size = set.size();
 
       for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
       {
@@ -400,21 +398,13 @@ namespace pinocchio
       const Eigen::MatrixBase<PrimalVectorType> & primal_vector_,
       const Eigen::MatrixBase<DualVectorType> & dual_vector_)
     {
+      const Eigen::DenseIndex size = primal_vector_.size();
+      assert(G_block_.rows() == size);
+      assert(dual_vector_.size() == size);
+
       const auto & G_block = G_block_.derived();
       auto & primal_vector = primal_vector_.const_cast_derived();
       auto & dual_vector = dual_vector_.const_cast_derived();
-
-      assert(
-        primal_vector.size() == dual_vector.size()
-        && "The two primal/dual vectors should be of the same size.");
-      assert(
-        primal_vector.size() == set.size()
-        && "The the primal vector should be of the same size than the box set.");
-      assert(
-        dual_vector.size() == set.size()
-        && "The the dual vector should be of the same size than the box set.");
-
-      const Eigen::DenseIndex size = set.size();
 
       for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
       {
@@ -441,11 +431,12 @@ namespace pinocchio
       this->dual_feasibility =
         Scalar(0); // always zero as the dual variable belongs to the constraint set.
 
-      const Eigen::DenseIndex size = set.size();
+      const Eigen::DenseIndex size = primal_vector.size();
+      assert(dual_vector.size() == size);
       Scalar complementarity = Scalar(0);
 
-      const auto & lb = set.lb();
-      const auto & ub = set.ub();
+      const auto & lb = set.lb;
+      const auto & ub = set.ub;
       for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
       {
         const Scalar dual_positive_part = math::max(Scalar(0), dual_vector[row_id]);
@@ -524,7 +515,8 @@ namespace pinocchio
       this->primal_feasibility =
         Scalar(0); // always zero as the primal variable belongs to the constraint set.
 
-      const Eigen::DenseIndex size = set.size();
+      const Eigen::DenseIndex size = primal_vector.size();
+      assert(dual_vector.size() == size);
       Scalar complementarity = Scalar(0);
       Scalar dual_feasibility = Scalar(0);
 

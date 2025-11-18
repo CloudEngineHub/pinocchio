@@ -20,7 +20,6 @@ namespace pinocchio
     typedef SetBase<Derived> Base;
 
     using Base::derived;
-    using Base::dim;
     using Base::isInside;
     using Base::project;
 

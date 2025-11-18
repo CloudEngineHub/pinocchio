@@ -25,9 +25,16 @@ namespace pinocchio
       return static_cast<const Derived &>(*this);
     }
 
-    Eigen::DenseIndex dim() const
+    template<typename OtherDerived>
+    bool operator==(const SetBase<OtherDerived> &) const
     {
-      return derived().dim();
+      return true;
+    }
+
+    template<typename OtherDerived>
+    bool operator!=(const SetBase<OtherDerived> & other) const
+    {
+      return !(*this == other);
     }
 
     template<typename VectorLike>
@@ -62,18 +69,6 @@ namespace pinocchio
     bool isInside(const Eigen::MatrixBase<Vector> & x, Scalar prec = Scalar(0)) const
     {
       return derived().isInsideImpl(x, prec);
-    }
-
-    template<typename OtherDerived>
-    bool operator==(const SetBase<OtherDerived> &) const
-    {
-      return true;
-    }
-
-    template<typename OtherDerived>
-    bool operator!=(const SetBase<OtherDerived> & other) const
-    {
-      return !(*this == other);
     }
   }; // struct SetBase
 

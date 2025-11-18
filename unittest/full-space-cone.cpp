@@ -16,9 +16,7 @@ BOOST_AUTO_TEST_CASE(test_proj)
   const int num_tests = int(1e6);
   const int dim = 10;
 
-  const FullSpaceCone set(dim);
-
-  BOOST_CHECK(set.dim() == dim);
+  const FullSpaceCone set;
 
   BOOST_CHECK(set.isInside(FullSpaceCone::Vector::Zero(dim)));
   BOOST_CHECK(set.project(FullSpaceCone::Vector::Zero(dim)) == FullSpaceCone::Vector::Zero(dim));

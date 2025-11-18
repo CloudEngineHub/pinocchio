@@ -29,22 +29,15 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::init<Eigen::DenseIndex>(
-                 bp::args("self", "size"),
-                 "Default constructor. By default, the bounds are set to ±inf."))
-          .def(bp::init<const Self &>(bp::args("self", "other"), "Copy constructor."))
+        cl.def(bp::init<const Self &>(bp::args("self", "other"), "Copy constructor."))
           .def(bp::init<context::VectorXs, context::VectorXs>(
             bp::args("self", "lb", "ub"), "Constructor from lower and upper bounds."))
-          .def(
-            "lb", (Vector & (Self::*)()) & Self::lb,
-            "Returns a reference to the vector of lower bounds", bp::return_internal_reference<>())
-          .def(
-            "ub", (Vector & (Self::*)()) & Self::ub,
-            "Returns a reference to the vector of upper bounds", bp::return_internal_reference<>())
-          .def("resize", &BoxSet::resize, bp::args("self", "size"), "Resize the set.")
-          .def(
-            "conservativeResize", &BoxSet::conservativeResize, bp::args("self", "size"),
-            "Resize the set following Eigen convention.");
+          .add_property(
+            "lb", bp::make_function(+[](Self & self) { return self.lb; }),
+            "Returns a copy of the vector of lower bounds")
+          .add_property(
+            "ub", bp::make_function(+[](Self & self) { return self.ub; }),
+            "Returns a copy of the vector of upper bounds");
       }
 
       static void expose()

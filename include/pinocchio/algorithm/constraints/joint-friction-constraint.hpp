@@ -119,8 +119,8 @@ namespace pinocchio
       typename traits<Self>::ActiveComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
     typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
 
-    typedef JointFrictionConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef BoxSetTpl<Scalar, Options> ConstraintSet;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
+    typedef typename traits<Self>::ConstraintSet ConstraintSet;
 
     using RootBase::jacobian;
     using typename Base::BooleanVector;
@@ -158,8 +158,8 @@ namespace pinocchio
       res.active_dofs = active_dofs;
       res.row_sparsity_pattern = row_sparsity_pattern;
       res.row_active_indexes = row_active_indexes;
-
-      res.m_set = m_set.template cast<NewScalar>();
+      res.m_friction_lower_limit = m_friction_lower_limit.template cast<NewScalar>();
+      res.m_friction_upper_limit = m_friction_upper_limit.template cast<NewScalar>();
       return res;
     }
 
@@ -293,14 +293,56 @@ namespace pinocchio
       return active_dofs;
     }
 
-    const ConstraintSet & set() const
+    /// \brief Returns a const reference to `lower_friction_limit`
+    /// \note The upper/lower friction limits units should be coherent with the algos.
+    /// If an algo works with forces, limits should be expressed in Newtons.
+    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
+    /// Typically, constraint solvers work on impulses.
+    const VectorXs & getFrictionLowerLimit() const
     {
-      return m_set;
+      return m_friction_lower_limit;
     }
 
-    ConstraintSet & set()
+    /// \brief Set the lower friction limit.
+    /// \note The upper/lower friction limits units should be coherent with the algos.
+    /// If an algo works with forces, limits should be expressed in Newtons.
+    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
+    /// Typically, constraint solvers work on impulses.
+    template<typename VectorLike>
+    void setFrictionLowerLimit(const Eigen::MatrixBase<VectorLike> & lb)
     {
-      return m_set;
+      PINOCCHIO_THROW_IF(
+        lb.size() != size(), std::runtime_error, "lb should be the same as size()");
+      m_friction_lower_limit = lb;
+    }
+
+    /// \brief Returns a const reference to `upper_friction_limit`
+    /// \note The upper/lower friction limits units should be coherent with the algos.
+    /// If an algo works with forces, limits should be expressed in Newtons.
+    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
+    /// Typically, constraint solvers work on impulses.
+    const VectorXs & getFrictionUpperLimit() const
+    {
+      return m_friction_upper_limit;
+    }
+
+    /// \brief Set the upper friction limit.
+    /// \note The upper/lower friction limits units should be coherent with the algos.
+    /// If an algo works with forces, limits should be expressed in Newtons.
+    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
+    /// Typically, constraint solvers work on impulses.
+    template<typename VectorLike>
+    void setFrictionUpperLimit(const Eigen::MatrixBase<VectorLike> & ub)
+    {
+      PINOCCHIO_THROW_IF(
+        ub.size() != size(), std::runtime_error, "ub should be the same as size()");
+      m_friction_upper_limit = ub;
+    }
+
+    /// \copydoc Base::set
+    ConstraintSet setImpl() const
+    {
+      return ConstraintSet(m_friction_lower_limit, m_friction_upper_limit);
     }
 
     template<
@@ -353,7 +395,9 @@ namespace pinocchio
       return base() == other.base() && base_common_parameters() == other.base_common_parameters()
              && active_dofs == other.active_dofs
              && row_sparsity_pattern == other.row_sparsity_pattern
-             && row_active_indexes == other.row_active_indexes && m_set == other.m_set;
+             && row_active_indexes == other.row_active_indexes
+             && m_friction_lower_limit == other.m_friction_lower_limit
+             && m_friction_upper_limit == other.m_friction_upper_limit;
     }
 
     static std::string classname()
@@ -381,7 +425,9 @@ namespace pinocchio
     VectorOfBooleanVector row_sparsity_pattern;
     VectofOfEigenIndexVector row_active_indexes;
 
-    ConstraintSet m_set;
+    VectorXs m_friction_lower_limit;
+    VectorXs m_friction_upper_limit;
+
     using BaseCommonParameters::m_compliance;
   };
 

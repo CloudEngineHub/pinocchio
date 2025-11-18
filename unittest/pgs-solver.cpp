@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(ball)
   {
     const SE3 local_placement_ball(SE3::Matrix3::Identity(), SE3::Vector3(0, 0, -ball_dim));
     ConstraintModel cm(model, 0, SE3::Identity(), 1, local_placement_ball);
-    cm.set() = CoulombFrictionCone(friction_value);
+    cm.setFriction(friction_value);
     constraint_models.push_back(cm);
   }
 
@@ -238,7 +238,7 @@ void buildStackOfCubesModel(
         SE3::Matrix3::Identity(), rot * local_placement_box_2.translation());
       PointContactConstraintModel cm(
         model, (JointIndex)i, local_placement_1, (JointIndex)i + 1, local_placement_2);
-      cm.set() = CoulombFrictionCone(friction_value);
+      cm.setFriction(friction_value);
       constraint_models.push_back(cm);
       rot = Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ()).toRotationMatrix() * rot;
     }
@@ -275,7 +275,7 @@ BOOST_AUTO_TEST_CASE(box)
 #ifdef NDEBUG
     100
 #else
-    1
+    100
 #endif
     ;
 
@@ -407,7 +407,7 @@ BOOST_AUTO_TEST_CASE(point_anchor_box)
 #ifdef NDEBUG
     100
 #else
-    1
+    100
 #endif
     ;
 
@@ -507,7 +507,6 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   typedef JointFrictionConstraintModel ConstraintModel;
   typedef ConstraintModel::ConstraintData ConstraintData;
-  typedef ConstraintModel::ConstraintSet ConstraintSet;
   std::vector<ConstraintModel> constraint_models;
   std::vector<ConstraintData> constraint_datas;
 
@@ -517,12 +516,9 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   for (const auto & cm : constraint_models)
     constraint_datas.push_back(cm.createData());
 
-  std::vector<ConstraintSet> constraint_sets;
-  constraint_sets.push_back(
-    BoxSet(Eigen::VectorXd::Constant(6, -1.), Eigen::VectorXd::Constant(6, +1.)));
-
-  const auto & box_set = constraint_sets[0];
-  constraint_models[0].set() = box_set;
+  constraint_models[0].setFrictionLowerLimit(Eigen::VectorXd::Constant(6, -1.));
+  constraint_models[0].setFrictionUpperLimit(Eigen::VectorXd::Constant(6, +1.));
+  const auto box_set = constraint_models[0].set();
 
   const Eigen::VectorXd v_free = v0 + dt * aba(model, data, q0, v0, tau0, Convention::WORLD);
 
@@ -586,7 +582,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
     BOOST_CHECK(!test.primal_solution.isZero(2e-10));
     BOOST_CHECK(!test.v_next.isZero(2e-10));
     BOOST_CHECK(box_set.isInside(test.primal_solution));
-    BOOST_CHECK(std::fabs(test.primal_solution[i] - box_set.lb()[i]) < 1e-8);
+    BOOST_CHECK(std::fabs(test.primal_solution[i] - box_set.lb[i]) < 1e-8);
   }
 
   // Sign reversed
@@ -599,7 +595,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
     BOOST_CHECK(!test.dual_solution.isZero(2e-10));
     BOOST_CHECK(!test.v_next.isZero(2e-10));
     BOOST_CHECK(box_set.isInside(test.primal_solution));
-    BOOST_CHECK(std::fabs(test.primal_solution[i] - box_set.ub()[i]) < 1e-8);
+    BOOST_CHECK(std::fabs(test.primal_solution[i] - box_set.ub[i]) < 1e-8);
   }
 }
 

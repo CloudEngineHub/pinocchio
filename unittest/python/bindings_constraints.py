@@ -177,9 +177,11 @@ class TestJointsAlgo(TestCase):
 
         # Joint friction
         jfc = pin.JointFrictionConstraintModel(model, [1, 3])
-        jfc.set = pin.BoxSet(
-            np.array([model.lowerDryFrictionLimit[i] for i in jfc.getActiveDofs()]),
-            np.array([model.upperDryFrictionLimit[i] for i in jfc.getActiveDofs()]),
+        jfc.setFrictionLowerLimit(
+            np.array([model.lowerDryFrictionLimit[i] for i in jfc.getActiveDofs()])
+        )
+        jfc.setFrictionUpperLimit(
+            np.array([model.upperDryFrictionLimit[i] for i in jfc.getActiveDofs()])
         )
         constraints_std_vec.append(pin.ConstraintModel(jfc))
         constraints_list.append(jfc)
@@ -350,7 +352,6 @@ class TestJointsAlgo(TestCase):
             gcm.compliance = dummy_compliance
             self.assertTrue(np.all(dummy_compliance == gcm.compliance))
             self.assertTrue(len(ccm.getActiveCompliance(ccd)) == ccm.activeSize(ccd))
-            self.assertTrue(ccm.activeSize(ccd) == ccm.set.size() == ccm.set.dim())
             if not hasattr(ccm, "baumgarte_corrector_parameters"):
                 self.assertTrue(isinstance(ccm, pin.JointFrictionConstraintModel))
                 do_except = False
@@ -414,59 +415,60 @@ class TestJointsAlgo(TestCase):
         # Test projection
         # bilat
         force = np.array([1] * 3)
-        p_force = self.bilat.set.project(force)
-        self.assertTrue(self.bilat.set.isInside(force))
+        p_force = self.bilat.set().project(force)
+        self.assertTrue(self.bilat.set().isInside(force))
         self.assertTrue(np.all(p_force == force))
 
         # fac
         force = np.array([1] * 6)
-        p_force = self.facm.set.project(force)
-        self.assertTrue(self.facm.set.isInside(force))
+        p_force = self.facm.set().project(force)
+        self.assertTrue(self.facm.set().isInside(force))
         self.assertTrue(np.all(p_force == force))
 
         # jlc
         jld = self.jlc.createData()
         self.jlc.calc(self.model, self.data, jld)
         force_out = np.array([1] * self.jlc.activeSize(jld))
-        p_force_out = self.jlc.set.project(force_out)
-        self.assertTrue(self.jlc.set.isInside(force_out))
+        p_force_out = self.jlc.set().project(force_out)
+        self.assertTrue(self.jlc.set().isInside(force_out))
         force_out = np.array([-1] * self.jlc.activeSize(jld))
-        p_force_out = self.jlc.set.project(force_out)
-        self.assertTrue(not self.jlc.set.isInside(force_out))
-        p2_force_out = self.jlc.set.project(p_force_out)
-        self.assertTrue(self.jlc.set.isInside(p_force_out))
+        p_force_out = self.jlc.set().project(force_out)
+        self.assertTrue(not self.jlc.set().isInside(force_out))
+        p2_force_out = self.jlc.set().project(p_force_out)
+        self.assertTrue(self.jlc.set().isInside(p_force_out))
         self.assertTrue(np.all(p_force_out == p2_force_out))
         force_in = np.array([0] * self.jlc.activeSize(jld))
-        p_force_in = self.jlc.set.project(force_in)
-        self.assertTrue(self.jlc.set.isInside(p_force_in))
+        p_force_in = self.jlc.set().project(force_in)
+        self.assertTrue(self.jlc.set().isInside(p_force_in))
         self.assertTrue(np.all(p_force_in == force_in))
 
         # jfc
         jfd = self.jfc.createData()
         self.jfc.calc(self.model, self.data, jfd)
         force_out = np.array([2] * self.jfc.activeSize(jfd))
-        p_force_out = self.jfc.set.project(force_out)
-        self.assertTrue(not self.jfc.set.isInside(force_out))
-        p2_force_out = self.jfc.set.project(p_force_out)
-        self.assertTrue(self.jfc.set.isInside(p_force_out))
+        p_force_out = self.jfc.set().project(force_out)
+        self.assertTrue(not self.jfc.set().isInside(force_out))
+        p2_force_out = self.jfc.set().project(p_force_out)
+        self.assertTrue(self.jfc.set().isInside(p_force_out))
         self.assertTrue(np.all(p2_force_out == p_force_out))
         force_in = np.array([0] * self.jfc.activeSize(jfd))
-        p_force_in = self.jfc.set.project(force_in)
-        self.assertTrue(self.jfc.set.isInside(p_force_in))
+        p_force_in = self.jfc.set().project(force_in)
+        self.assertTrue(self.jfc.set().isInside(p_force_in))
         self.assertTrue(np.all(p_force_in == force_in))
 
         # fp
-        self.fp.set.mu = 2.0
+        self.fp.setFriction(2.0)
+        self.assertTrue(self.fp.set().mu == 2.0)
         force_out = np.array([0.0, 3.0, 1.0])
-        p_force_out = self.fp.set.project(force_out)
-        self.assertTrue(not self.fp.set.isInside(force_out))
-        p2_force_out = self.fp.set.project(p_force_out)
-        self.assertTrue(self.fp.set.isInside(p_force_out))
+        p_force_out = self.fp.set().project(force_out)
+        self.assertTrue(not self.fp.set().isInside(force_out))
+        p2_force_out = self.fp.set().project(p_force_out)
+        self.assertTrue(self.fp.set().isInside(p_force_out))
         self.assertTrue(np.all(p2_force_out == p_force_out))
 
         force_in = np.array([0.0, 1.0, 1.0])
-        p_force_in = self.fp.set.project(force_in)
-        self.assertTrue(self.fp.set.isInside(force_in))
+        p_force_in = self.fp.set().project(force_in)
+        self.assertTrue(self.fp.set().isInside(force_in))
         self.assertTrue(np.all(p_force_in == force_in))
 
     def test_constraints_data(self):

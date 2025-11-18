@@ -190,7 +190,6 @@ namespace pinocchio
       typedef typename CastType<NewScalar, PointAnchorConstraintModelTpl>::type ReturnType;
       ReturnType res;
       Base::template cast<NewScalar>(res);
-      res.m_set = m_set.template cast<NewScalar>();
       return res;
     }
 
@@ -204,11 +203,11 @@ namespace pinocchio
     ///
     bool operator==(const PointAnchorConstraintModelTpl & other) const
     {
-      return base() == other.base() && m_set == other.m_set;
+      return base() == other.base();
     }
 
     ///
-    ///  \brief Oposite of the comparison operator.
+    /// \brief Opposite of the comparison operator.
     ///
     /// \param[in] other Other PointAnchorConstraintModelTpl to compare with.
     ///
@@ -220,14 +219,10 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    const ConstraintSet & set() const
+    /// \copydoc Base::set
+    ConstraintSet setImpl() const
     {
-      return m_set;
-    }
-
-    ConstraintSet & set()
-    {
-      return m_set;
+      return ConstraintSet();
     }
 
     static std::string classname()
@@ -238,9 +233,6 @@ namespace pinocchio
     {
       return classname();
     }
-
-  protected:
-    ConstraintSet m_set = ConstraintSet(3);
 
   }; // struct PointAnchorConstraintModelTpl<_Scalar,_Options>
 

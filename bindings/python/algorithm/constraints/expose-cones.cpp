@@ -19,19 +19,7 @@ namespace pinocchio
     void exposeCones()
     {
       CoulombFrictionConePythonVisitor<context::CoulombFrictionCone>::expose();
-      StdVectorPythonVisitor<context::CoulombFrictionConeVector>::expose(
-        "StdVec_CoulombFrictionCone");
-      // #ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION
-      //       serialize<StdAlignedVectorPythonVisitor<context::CoulombFrictionCone>::vector_type>();
-      // #endif
-
       DualCoulombFrictionConePythonVisitor<context::DualCoulombFrictionCone>::expose();
-      StdVectorPythonVisitor<context::DualCoulombFrictionConeVector>::expose(
-        "StdVec_DualCoulombFrictionCone");
-      // #ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION
-      //       serialize<StdAlignedVectorPythonVisitor<context::DualCoulombFrictionCone>::vector_type>();
-      // #endif
-
       BoxSetPythonVisitor<context::BoxSet>::expose();
       TrivialConePythonVisitor<context::ZeroCone>::expose(
         "ZeroCone", "Set reduce to 0 singleton in R^d.");

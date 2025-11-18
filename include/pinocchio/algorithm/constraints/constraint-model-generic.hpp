@@ -388,15 +388,7 @@ namespace pinocchio
       return ::pinocchio::visitors::activeSize(*this, constraint_data);
     }
 
-    boost::blank & set()
-    {
-      static boost::blank val;
-      PINOCCHIO_THROW_PRETTY(
-        std::runtime_error, "Set method is not accessible for ConstraintModelTpl.");
-      return val;
-    }
-
-    const boost::blank & set() const
+    boost::blank setImpl() const
     {
       static boost::blank val;
       PINOCCHIO_THROW_PRETTY(

@@ -27,11 +27,12 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::init<>(bp::arg("self"), "Default constructor"))
-          .def(bp::init<const Scalar &>(
-            bp::args("self", "mu"), "Constructor from a given friction coefficient"))
+        cl.def(bp::init<const Scalar &>(
+                 bp::args("self", "mu"), "Constructor from a given friction coefficient"))
           .def(bp::init<const Self &>(bp::args("self", "other"), "Copy constructor"))
-          .def_readwrite("mu", &Self::mu, "Friction coefficient.")
+          .add_property(
+            "mu", bp::make_function(+[](Self & self) -> Scalar { return self.mu; }),
+            "Friction coefficient.")
           .def(
             "weightedProject",
             &Self::template weightedProject<context::Vector3s, context::Vector3s>,
@@ -44,8 +45,7 @@ namespace pinocchio
           .def(
             "computeRadialProjection", &Self::template computeRadialProjection<context::Vector3s>,
             bp::args("self", "f"),
-            "Compute the radial projection associted to the Coulomb friction cone.")
-          .staticmethod("dim");
+            "Compute the radial projection associted to the Coulomb friction cone.");
       }
 
       static void expose()
@@ -72,12 +72,12 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::init<>(bp::arg("self"), "Default constructor"))
-          .def(bp::init<const Scalar &>(
-            bp::args("self", "mu"), "Constructor from a given friction coefficient"))
+        cl.def(bp::init<const Scalar &>(
+                 bp::args("self", "mu"), "Constructor from a given friction coefficient"))
           .def(bp::init<const Self &>(bp::args("self", "other"), "Copy constructor"))
-          .def_readwrite("mu", &Self::mu, "Friction coefficient.")
-          .staticmethod("dim");
+          .add_property(
+            "mu", bp::make_function(+[](Self & self) -> Scalar { return self.mu; }),
+            "Friction coefficient.");
       }
 
       static void expose()

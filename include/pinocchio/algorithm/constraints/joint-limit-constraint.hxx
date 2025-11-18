@@ -195,7 +195,7 @@ namespace pinocchio
   void JointLimitConstraintModelTpl<Scalar, Options>::resize(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & /* model */,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    ConstraintData & cdata)
+    ConstraintData & cdata) const
   {
     // Compute notably the constraint constraint_residual
     // This allows to compute which limits are active in the current configuration (data.q_in) which
@@ -267,9 +267,6 @@ namespace pinocchio
         Eigen::DenseIndex(active_set_indexes[std::size_t(active_row_index)]);
       cdata.active_compliance[active_row_index] = m_compliance[extended_index];
     }
-
-    // Resize the constraint set so it corresponds to the active set.
-    m_set.resize(activeSize(cdata));
   }
 
   template<typename Scalar, int Options>
@@ -282,9 +279,7 @@ namespace pinocchio
     auto & activable_constraint_residual = cdata.activable_constraint_residual;
     auto & constraint_residual = cdata.constraint_residual;
 
-    // TODO: the const cast is only needed because resize touches `m_set`.
-    // Introduce set model/data to avoid that.
-    const_cast<JointLimitConstraintModelTpl &>(*this).resize(model, data, cdata);
+    resize(model, data, cdata);
     const std::size_t active_size = static_cast<std::size_t>(this->activeSize(cdata));
 
     assert(

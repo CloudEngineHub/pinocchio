@@ -975,7 +975,8 @@ struct initConstraint<pinocchio::JointFrictionConstraintModel>
       JointLimitAndFrictionConstraintModelInitializer<ConstraintModel>::run(model);
     Eigen::VectorXd lb = -Eigen::VectorXd::Random(cmodel.size()).array().abs();
     Eigen::VectorXd ub = Eigen::VectorXd::Random(cmodel.size()).array().abs();
-    cmodel.set() = pinocchio::BoxSet(lb, ub);
+    cmodel.setFrictionLowerLimit(lb);
+    cmodel.setFrictionUpperLimit(ub);
     return cmodel;
   }
 };
@@ -1005,7 +1006,7 @@ struct initConstraint<pinocchio::PointContactConstraintModel>
     // Note: For PointContact constraints, the friction coeff of the coulomb cone needs to be
     // set.
     ConstraintModel cmodel = PointAndFrameConstraintModelInitializer<ConstraintModel>::run(model);
-    cmodel.set() = pinocchio::CoulombFrictionCone(0.1234);
+    cmodel.setFriction(0.1234);
     return cmodel;
   }
 };

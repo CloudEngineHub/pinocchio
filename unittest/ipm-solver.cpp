@@ -52,7 +52,7 @@ void buildStackOfCubesModel(
         SE3::Matrix3::Identity(), rot * local_placement_box_2.translation());
       PointContactConstraintModel cm(
         model, (JointIndex)i, local_placement_1, (JointIndex)i + 1, local_placement_2);
-      cm.set() = CoulombFrictionCone(friction_value);
+      cm.setFriction(friction_value);
       constraint_models.push_back(cm);
       rot = Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ()).toRotationMatrix() * rot;
     }
@@ -90,7 +90,6 @@ struct TestBoxTpl
     for (const auto & cm : constraint_models)
     {
       constraint_datas.push_back(cm.createData());
-      constraint_sets.push_back(cm.set());
     }
 
     const Eigen::DenseIndex constraint_size = getTotalConstraintSize(constraint_models);
@@ -193,7 +192,6 @@ struct TestBoxTpl
   Data data;
   std::vector<ConstraintModel> constraint_models;
   std::vector<ConstraintData> constraint_datas;
-  std::vector<ConstraintSet> constraint_sets;
   Eigen::VectorXd v_next;
 
   Eigen::VectorXd primal_solution, dual_solution, dual_solution_sparse;
@@ -231,7 +229,7 @@ BOOST_AUTO_TEST_CASE(ball)
   {
     const SE3 local_placement_ball(SE3::Matrix3::Identity(), SE3::Vector3(0, 0, -ball_dim));
     ConstraintModel cm(model, 0, SE3::Identity(), 1, local_placement_ball);
-    cm.set() = CoulombFrictionCone(friction_value);
+    cm.setFriction(friction_value);
     constraint_models.push_back(cm);
   }
 

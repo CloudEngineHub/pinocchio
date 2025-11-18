@@ -11,12 +11,6 @@
 namespace pinocchio
 {
 
-  template<typename NewScalar, typename Scalar, int Options>
-  struct CastType<NewScalar, ZeroConeTpl<Scalar, Options>>
-  {
-    typedef ZeroConeTpl<NewScalar, Options> type;
-  };
-
   template<typename _Scalar, int _Options>
   struct traits<ZeroConeTpl<_Scalar, _Options>>
   {
@@ -42,27 +36,6 @@ namespace pinocchio
     typedef ConeBase<ZeroConeTpl> Base;
     typedef typename traits<ZeroConeTpl>::DualCone DualCone;
 
-    /// \brief Constructor from a given size
-    ///
-    explicit ZeroConeTpl(const Eigen::DenseIndex size)
-    : m_size(size)
-    {
-    }
-
-    /// \brief Copy constructor.
-    ZeroConeTpl(const ZeroConeTpl & other) = default;
-
-    /// \brief Copy operator
-    ZeroConeTpl & operator=(const ZeroConeTpl & other) = default;
-
-    /// \brief Cast operator
-    template<typename NewScalar>
-    ZeroConeTpl<NewScalar, Options> cast() const
-    {
-      typedef ZeroConeTpl<NewScalar, Options> ReturnType;
-      return ReturnType(this->size());
-    }
-
     /// \brief Cast to base class.
     Base & base()
     {
@@ -78,13 +51,19 @@ namespace pinocchio
     /// \brief Comparison operator
     bool operator==(const ZeroConeTpl & other) const
     {
-      return base() == other.base() && m_size == other.m_size;
+      return base() == other.base();
     }
 
     /// \brief Difference  operator
     bool operator!=(const ZeroConeTpl & other) const
     {
       return !(*this == other);
+    }
+
+    /// \brief Returns the dual cone of this.
+    DualCone dual() const
+    {
+      return DualCone();
     }
 
     using Base::isInside;
@@ -115,36 +94,6 @@ namespace pinocchio
       res.setZero();
     }
 
-    /// \brief Returns the dimension of the ambiant space.
-    Eigen::DenseIndex dim() const
-    {
-      return m_size;
-    }
-
-    Eigen::DenseIndex size() const
-    {
-      return m_size;
-    }
-
-    /// \brief Resize by calling the resize method of Eigen.
-    void resize(Eigen::DenseIndex new_size)
-    {
-      m_size = new_size;
-    }
-
-    /// \brief Resize by calling the conservativeResize method of Eigen.
-    void conservativeResize(Eigen::DenseIndex new_size)
-    {
-      this->resize(new_size);
-    }
-
-    DualCone dual() const
-    {
-      return DualCone(m_size);
-    }
-
-  protected:
-    Eigen::DenseIndex m_size;
   }; // ZeroConeTpl
 
 } // namespace pinocchio

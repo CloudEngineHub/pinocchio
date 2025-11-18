@@ -16,18 +16,6 @@ namespace pinocchio
   template<typename Scalar>
   struct DualCoulombFrictionConeTpl;
 
-  template<typename NewScalar, typename Scalar>
-  struct CastType<NewScalar, CoulombFrictionConeTpl<Scalar>>
-  {
-    typedef CoulombFrictionConeTpl<NewScalar> type;
-  };
-
-  template<typename NewScalar, typename Scalar>
-  struct CastType<NewScalar, DualCoulombFrictionConeTpl<Scalar>>
-  {
-    typedef DualCoulombFrictionConeTpl<NewScalar> type;
-  };
-
   template<typename _Scalar>
   struct traits<CoulombFrictionConeTpl<_Scalar>>
   {
@@ -42,7 +30,10 @@ namespace pinocchio
     typedef CoulombFrictionConeTpl<Scalar> DualCone;
   };
 
-  ///  \brief 3d Coulomb friction cone.
+  ///  \brief 3d Coulomb friction cone operator.
+  ///  This operator does not own any data.
+  ///  Instead, it points to the data owned by some other struct.
+  ///  Creating and copying an instance of this struct is free.
   template<typename _Scalar>
   struct CoulombFrictionConeTpl : ConeBase<CoulombFrictionConeTpl<_Scalar>>
   {
@@ -52,20 +43,25 @@ namespace pinocchio
     typedef ConeBase<CoulombFrictionConeTpl> Base;
 
     ///
-    /// \brief Default constructor
-    ///
-    CoulombFrictionConeTpl()
-    : mu(+std::numeric_limits<Scalar>::infinity())
-    {
-    }
-
-    ///
-    /// \brief Constructor from a friction coefficient mu
+    /// \brief Constructor from a reference to a friction coefficient mu.
     ///
     /// \param[in] mu Friction coefficient.
     ///
-    explicit CoulombFrictionConeTpl(const Scalar mu)
+    explicit CoulombFrictionConeTpl(const Scalar & mu)
     : mu(mu)
+    {
+      assert(mu >= 0 && "mu must be positive");
+    }
+
+    ///
+    /// \brief Generic constructor which can take any `Parameter` struct.
+    /// Creates a link between the `mu` in `Parameter` and this->mu.
+    ///
+    /// \param[in] params Generic parameters, must contain the field `mu`.
+    ///
+    template<typename Parameters>
+    CoulombFrictionConeTpl(const Parameters & params)
+    : CoulombFrictionConeTpl(params.mu)
     {
       assert(mu >= 0 && "mu must be positive");
     }
@@ -75,14 +71,6 @@ namespace pinocchio
 
     /// \brief Copy operator
     CoulombFrictionConeTpl & operator=(const CoulombFrictionConeTpl & other) = default;
-
-    /// \brief Cast operator
-    template<typename NewScalar>
-    CoulombFrictionConeTpl<NewScalar> cast() const
-    {
-      typedef CoulombFrictionConeTpl<NewScalar> ReturnType;
-      return ReturnType(NewScalar(this->mu));
-    }
 
     /// \brief Cast to base class
     Base & base()
@@ -106,6 +94,12 @@ namespace pinocchio
     bool operator!=(const CoulombFrictionConeTpl & other) const
     {
       return !(*this == other);
+    }
+
+    /// \brief Returns the dual cone associated to this.
+    DualCone dual() const
+    {
+      return DualCone(mu);
     }
 
     using Base::isInside;
@@ -257,28 +251,18 @@ namespace pinocchio
       return math::fabs(f.dot(v));
     }
 
-    /// \brief Returns the dual cone associated to this.
-    DualCone dual() const
-    {
-      return DualCone(mu);
-    }
+    /// \var Friction coefficient.
+    /// This is a const reference to some memory owning mu.
+    /// Thus, `CoulombFrictionConeTpl` DOES NOT own mu.
+    /// This makes `CoulombFrictionConeTpl` an operator, not a data-holding class.
+    const Scalar & mu;
 
-    /// \brief Returns the dimension of the cone.
-    static int dim()
-    {
-      return 3;
-    }
-
-    int size() const
-    {
-      return dim();
-    }
-
-    /// \var Friction coefficient
-    Scalar mu;
   }; // CoulombFrictionConeTpl
 
-  ///  \brief Dual of the 3d Coulomb friction cone.
+  /// \brief Dual of the 3d Coulomb friction cone.
+  /// This is an operator and does not own any data.
+  /// Instead, it points to the data owned by some other struct.
+  /// Creating and copying an instance of this struct is free.
   template<typename _Scalar>
   struct DualCoulombFrictionConeTpl : ConeBase<DualCoulombFrictionConeTpl<_Scalar>>
   {
@@ -288,22 +272,26 @@ namespace pinocchio
     typedef ConeBase<DualCoulombFrictionConeTpl> Base;
 
     ///
-    /// \brief Default constructor
-    ///
-    DualCoulombFrictionConeTpl()
-    : mu(+std::numeric_limits<Scalar>::infinity())
-    {
-    }
-
-    ///
     /// \brief Constructor from a friction coefficient mu
     ///
     /// \param[in] mu Friction coefficient.
     ///
-    explicit DualCoulombFrictionConeTpl(const Scalar mu)
+    explicit DualCoulombFrictionConeTpl(const Scalar & mu)
     : mu(mu)
     {
       assert(mu >= 0 && "mu must be positive");
+    }
+
+    ///
+    /// \brief Generic constructor which can take any `Parameter` struct.
+    /// Creates a link between the `mu` in `Parameter` and this->mu.
+    ///
+    /// \param[in] params Generic parameters, must contain the field `mu`.
+    ///
+    template<typename Parameters>
+    DualCoulombFrictionConeTpl(const Parameters & params)
+    : DualCoulombFrictionConeTpl(params.mu)
+    {
     }
 
     /// \brief Copy constructor.
@@ -334,6 +322,12 @@ namespace pinocchio
     const Base & base() const
     {
       return static_cast<const Base &>(*this);
+    }
+
+    /// \brief Returns the dual cone associated to this.
+    DualCone dual() const
+    {
+      return DualCone(mu);
     }
 
     using Base::isInside;
@@ -389,25 +383,8 @@ namespace pinocchio
       }
     }
 
-    /// \brief Returns the dimension of the cone.
-    static int dim()
-    {
-      return 3;
-    }
-
-    int size() const
-    {
-      return dim();
-    }
-
-    /// \brief Returns the dual cone associated to this.    ///
-    DualCone dual() const
-    {
-      return DualCone(mu);
-    }
-
     /// \var Friction coefficient
-    Scalar mu;
+    const Scalar & mu;
 
   }; // DualCoulombFrictionConeTpl
 

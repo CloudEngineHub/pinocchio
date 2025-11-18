@@ -76,14 +76,15 @@ namespace pinocchio
       Options = _Options
     };
 
+    typedef FrameAnchorConstraintModelTpl Self;
     typedef FrameConstraintModelBase<FrameAnchorConstraintModelTpl> Base;
     typedef ConstraintModelBase<FrameAnchorConstraintModelTpl> RootBase;
 
     template<typename NewScalar, int NewOptions>
     friend struct FrameAnchorConstraintModelTpl;
 
-    typedef FrameAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
+    typedef typename traits<Self>::ConstraintSet ConstraintSet;
 
     using typename Base::SE3;
 
@@ -189,7 +190,6 @@ namespace pinocchio
       typedef typename CastType<NewScalar, FrameAnchorConstraintModelTpl>::type ReturnType;
       ReturnType res;
       Base::template cast<NewScalar>(res);
-      res.m_set = m_set.template cast<NewScalar>();
       return res;
     }
 
@@ -203,7 +203,7 @@ namespace pinocchio
     ///
     bool operator==(const FrameAnchorConstraintModelTpl & other) const
     {
-      return base() == other.base() && m_set == other.m_set;
+      return base() == other.base();
     }
 
     ///
@@ -219,14 +219,10 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    const ConstraintSet & set() const
+    /// \copydoc Base::set
+    ConstraintSet setImpl() const
     {
-      return m_set;
-    }
-
-    ConstraintSet & set()
-    {
-      return m_set;
+      return ConstraintSet();
     }
 
     static std::string classname()
@@ -237,9 +233,6 @@ namespace pinocchio
     {
       return classname();
     }
-
-  protected:
-    ConstraintSet m_set = ConstraintSet(6);
 
   }; // struct FrameAnchorConstraintModelTpl<_Scalar,_Options>
 

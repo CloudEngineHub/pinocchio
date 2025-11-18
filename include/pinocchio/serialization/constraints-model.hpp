@@ -117,7 +117,6 @@ namespace boost
         using Base::joint_nqs;
         using Base::joint_nvs;
         using Base::lower_activable_size;
-        using Base::m_set;
         using Base::nq_reduce;
         using Base::nv_max_atom;
         using Base::position_limit;
@@ -156,7 +155,6 @@ namespace boost
       ar & make_nvp("joint_nqs", cmodel_.joint_nqs);
       ar & make_nvp("joint_nvs", cmodel_.joint_nvs);
       ar & make_nvp("joint_idx_vs", cmodel_.joint_idx_vs);
-      ar & make_nvp("m_set", cmodel_.m_set);
     }
 
     namespace internal
@@ -168,7 +166,8 @@ namespace boost
         typedef ::pinocchio::JointFrictionConstraintModelTpl<Scalar, Options> Base;
         using Base::active_dofs;
         using Base::active_joints;
-        using Base::m_set;
+        using Base::m_friction_lower_limit;
+        using Base::m_friction_upper_limit;
         using Base::row_active_indexes;
         using Base::row_sparsity_pattern;
       };
@@ -193,7 +192,8 @@ namespace boost
       ar & make_nvp("active_dofs", cmodel_.active_dofs);
       ar & make_nvp("row_sparsity_pattern", cmodel_.row_sparsity_pattern);
       ar & make_nvp("row_active_indexes", cmodel_.row_active_indexes);
-      ar & make_nvp("m_set", cmodel_.m_set);
+      ar & make_nvp("friction_lower_limit", cmodel_.m_friction_lower_limit);
+      ar & make_nvp("friction_upper_limit", cmodel_.m_friction_upper_limit);
     }
 
     template<typename Archive, typename Derived>
@@ -237,17 +237,6 @@ namespace boost
       ar & make_nvp("base", boost::serialization::base_object<Base>(cmodel));
     }
 
-    namespace internal
-    {
-      template<typename Scalar, int Options>
-      struct PointAnchorConstraintModelAccessor
-      : public ::pinocchio::PointAnchorConstraintModelTpl<Scalar, Options>
-      {
-        typedef ::pinocchio::PointAnchorConstraintModelTpl<Scalar, Options> Base;
-        using Base::m_set;
-      };
-    } // namespace internal
-
     template<typename Archive, typename Scalar, int Options>
     void serialize(
       Archive & ar,
@@ -257,22 +246,7 @@ namespace boost
       typedef ::pinocchio::PointAnchorConstraintModelTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cmodel));
-
-      typedef internal::PointAnchorConstraintModelAccessor<Scalar, Options> Accessor;
-      auto & cmodel_ = reinterpret_cast<Accessor &>(cmodel);
-      ar & make_nvp("m_set", cmodel_.m_set);
     }
-
-    namespace internal
-    {
-      template<typename Scalar, int Options>
-      struct PointContactConstraintModelAccessor
-      : public ::pinocchio::PointContactConstraintModelTpl<Scalar, Options>
-      {
-        typedef ::pinocchio::PointContactConstraintModelTpl<Scalar, Options> Base;
-        using Base::m_set;
-      };
-    } // namespace internal
 
     template<typename Archive, typename Scalar, int Options>
     void serialize(
@@ -283,10 +257,6 @@ namespace boost
       typedef ::pinocchio::PointContactConstraintModelTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cmodel));
-
-      typedef internal::PointContactConstraintModelAccessor<Scalar, Options> Accessor;
-      auto & cmodel_ = reinterpret_cast<Accessor &>(cmodel);
-      ar & make_nvp("m_set", cmodel_.m_set);
     }
 
     template<typename Archive, typename Derived>
@@ -300,17 +270,6 @@ namespace boost
       ar & make_nvp("base", boost::serialization::base_object<Base>(cmodel));
     }
 
-    namespace internal
-    {
-      template<typename Scalar, int Options>
-      struct FrameAnchorConstraintModelAccessor
-      : public ::pinocchio::FrameAnchorConstraintModelTpl<Scalar, Options>
-      {
-        typedef ::pinocchio::FrameAnchorConstraintModelTpl<Scalar, Options> Base;
-        using Base::m_set;
-      };
-    } // namespace internal
-
     template<typename Archive, typename Scalar, int Options>
     void serialize(
       Archive & ar,
@@ -320,10 +279,6 @@ namespace boost
       typedef ::pinocchio::FrameAnchorConstraintModelTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cmodel));
-
-      typedef internal::FrameAnchorConstraintModelAccessor<Scalar, Options> Accessor;
-      auto & cmodel_ = reinterpret_cast<Accessor &>(cmodel);
-      ar & make_nvp("m_set", cmodel_.m_set);
     }
 
     template<

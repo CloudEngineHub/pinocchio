@@ -133,8 +133,8 @@ namespace pinocchio
       typename traits<Self>::BaumgarteCorrectorVectorParameters BaumgarteCorrectorVectorParameters;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
-    typedef JointLimitConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef NonNegativeOrthantConeTpl<Scalar> ConstraintSet;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
+    typedef typename traits<Self>::ConstraintSet ConstraintSet;
 
     using RootBase::jacobian;
     using typename Base::BooleanVector;
@@ -229,7 +229,6 @@ namespace pinocchio
       res.joint_nqs = joint_nqs;
       res.joint_nvs = joint_nvs;
       res.joint_idx_vs = joint_idx_vs;
-      res.m_set = m_set.template cast<NewScalar>();
 
       return res;
     }
@@ -283,7 +282,7 @@ namespace pinocchio
     void resize(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata);
+      ConstraintData & cdata) const;
 
     /// \brief Returns the sparsity associated with a given row
     const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
@@ -330,14 +329,10 @@ namespace pinocchio
       return constraint_data.active_compliance;
     }
 
-    const ConstraintSet & set() const
+    /// \copydoc Base::set
+    ConstraintSet setImpl() const
     {
-      return m_set;
-    }
-
-    ConstraintSet & set()
-    {
-      return m_set;
+      return ConstraintSet();
     }
 
     template<
@@ -489,7 +484,6 @@ namespace pinocchio
         joint_nqs = other.joint_nqs;
         joint_nvs = other.joint_nvs;
         joint_idx_vs = other.joint_idx_vs;
-        m_set = other.m_set;
       }
       return *this;
     }
@@ -618,7 +612,6 @@ namespace pinocchio
 
     std::vector<int> joint_nqs, joint_nvs, joint_idx_vs;
 
-    ConstraintSet m_set;
     using BaseCommonParameters::m_baumgarte_parameters;
     using BaseCommonParameters::m_compliance;
   };

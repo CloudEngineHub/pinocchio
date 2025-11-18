@@ -30,12 +30,12 @@ void init(Model & model, PointContactConstraintModelVector & constraint_models)
 
   const std::string RF = "rleg6_joint";
   PointContactConstraintModel ci_RF(model, model.getJointId(RF));
-  ci_RF.set().mu = 0.4;
+  ci_RF.setFriction(0.4);
   constraint_models.push_back(ci_RF);
 
   const std::string LF = "lleg6_joint";
   PointContactConstraintModel ci_LF(model, model.getJointId(LF));
-  ci_LF.set().mu = 0.4;
+  ci_LF.setFriction(0.4);
   constraint_models.push_back(ci_LF);
 }
 

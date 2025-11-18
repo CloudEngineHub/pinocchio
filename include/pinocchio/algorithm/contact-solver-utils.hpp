@@ -5,6 +5,7 @@
 #ifndef __pinocchio_algorithm_contact_solver_utils_hpp__
 #define __pinocchio_algorithm_contact_solver_utils_hpp__
 
+#include "pinocchio/macros.hpp"
 #include "pinocchio/math/fwd.hpp"
 #include "pinocchio/math/comparison-operators.hpp"
 #include "pinocchio/algorithm/constraints/constraints.hpp"
@@ -373,11 +374,13 @@ namespace pinocchio
         const Eigen::MatrixBase<Vector1Like> & velocity,
         const Eigen::MatrixBase<Vector2Like> & force)
       {
-        Scalar complementarity = Scalar(0);
+        Eigen::Index size = velocity.size();
+        assert(force.size() == velocity.size());
 
-        const auto & lb = set.lb();
-        const auto & ub = set.ub();
-        for (Eigen::DenseIndex row_id = 0; row_id < set.size(); ++row_id)
+        const auto & lb = set.lb;
+        const auto & ub = set.ub;
+        Scalar complementarity = Scalar(0);
+        for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
         {
           const Scalar velocity_positive_part = math::max(Scalar(0), velocity[row_id]);
           const Scalar velocity_negative_part = velocity_positive_part - velocity[row_id];
@@ -397,9 +400,12 @@ namespace pinocchio
         const Eigen::MatrixBase<Vector1Like> & velocity,
         const Eigen::MatrixBase<Vector2Like> & force)
       {
-        Scalar complementarity = Scalar(0);
+        PINOCCHIO_UNUSED_VARIABLE(cone);
+        Eigen::Index size = velocity.size();
+        assert(force.size() == velocity.size());
 
-        for (Eigen::DenseIndex row_id = 0; row_id < cone.size(); ++row_id)
+        Scalar complementarity = Scalar(0);
+        for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
         {
           const Scalar row_complementarity = math::fabs(Scalar(velocity[row_id] * force[row_id]));
           complementarity = math::max(complementarity, row_complementarity);

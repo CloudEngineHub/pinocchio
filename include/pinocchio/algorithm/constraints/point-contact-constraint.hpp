@@ -190,7 +190,6 @@ namespace pinocchio
       typedef typename CastType<NewScalar, PointContactConstraintModelTpl>::type ReturnType;
       ReturnType res;
       Base::template cast<NewScalar>(res);
-      res.m_set = m_set.template cast<NewScalar>();
       return res;
     }
 
@@ -204,7 +203,7 @@ namespace pinocchio
     ///
     bool operator==(const PointContactConstraintModelTpl & other) const
     {
-      return base() == other.base() && m_set == other.m_set;
+      return base() == other.base();
     }
 
     ///
@@ -220,14 +219,24 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    const ConstraintSet & set() const
+    /// \brief Get the friction coefficient of this contact constraint.
+    Scalar getFriction() const
     {
-      return m_set;
+      return m_friction;
     }
 
-    ConstraintSet & set()
+    /// \brief Set the friction coefficient of this contact constraint.
+    void setFriction(Scalar friction)
     {
-      return m_set;
+      PINOCCHIO_THROW_IF(
+        friction < 0, std::runtime_error, "friction must be > 0 for contact constraints.");
+      m_friction = friction;
+    }
+
+    /// \copydoc Base::set
+    ConstraintSet setImpl() const
+    {
+      return ConstraintSet(m_friction);
     }
 
     static std::string classname()
@@ -240,7 +249,7 @@ namespace pinocchio
     }
 
   protected:
-    ConstraintSet m_set = ConstraintSet();
+    Scalar m_friction = Scalar(0.5);
 
   }; // struct PointContactConstraintModelTpl<_Scalar,_Options>
 

@@ -90,7 +90,7 @@ namespace pinocchio
         const ConstraintModel & cmodel = constraint_models[constraint_id];
         const auto constraint_size = cmodel.size();
 
-        const auto & cone = cmodel.set();
+        const auto cone = cmodel.set();
         auto lambda_segment = lambda.segment(row_id, constraint_size);
         const Vector3 lambda_c_previous = lambda_segment;
 

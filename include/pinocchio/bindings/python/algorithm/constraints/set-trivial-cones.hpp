@@ -24,24 +24,11 @@ namespace pinocchio
     : public boost::python::def_visitor<TrivialConePythonVisitor<TrivialCone>>
     {
 
-      template<class PyClass>
-      void visit(PyClass & cl) const
-      {
-        cl.def(bp::init<Eigen::DenseIndex>(bp::args("self", "size"), "Default constructor."))
-          .def("resize", &TrivialCone::resize, bp::args("self", "size"), "Resize the set.")
-          .def(
-            "conservativeResize", &TrivialCone::conservativeResize, bp::args("self", "size"),
-            "Resize the set following Eigen convention.");
-      }
-
       static void expose(const std::string & class_name, const std::string & doc_string = "")
       {
         bp::class_<TrivialCone>(class_name.c_str(), doc_string.c_str(), bp::no_init)
           .def(SetPythonVisitor<TrivialCone, context::VectorXs>())
           .def(ConeSetPythonVisitor<TrivialCone>())
-          .def(TrivialConePythonVisitor())
-          // .def(CastVisitor<TrivialCone>())
-          // .def(ExposeConstructorByCastVisitor<TrivialCone,::pinocchio::TrivialCone>())
           .def(CopyableVisitor<TrivialCone>());
       }
     };

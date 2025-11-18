@@ -35,7 +35,9 @@ namespace pinocchio
     bp::class_<context::PointContactConstraintModel> &
     expose_constraint_model(bp::class_<context::PointContactConstraintModel> & cl)
     {
-      return cl;
+      typedef context::PointContactConstraintModel Self;
+      return cl.def("getFriction", &Self::getFriction, "Get coulomb friction coefficient.")
+        .def("setFriction", &Self::setFriction, "Set coulomb friction coefficient.");
     }
 
     template<>
@@ -50,13 +52,31 @@ namespace pinocchio
     expose_constraint_model(bp::class_<context::JointFrictionConstraintModel> & cl)
     {
       typedef typename context::JointFrictionConstraintModel::JointIndexVector JointIndexVector;
+      typedef context::JointFrictionConstraintModel Self;
+      typedef context::VectorXs VectorXs;
       cl.def(bp::init<const context::Model &, const JointIndexVector &>(
                (bp::arg("self"), bp::arg("model"), bp::arg("active_joints")),
                "Contructor from given joint index vector "
                "implied in the constraint."))
         .def(
-          "getActiveDofs", &context::JointFrictionConstraintModel::getActiveDofs,
-          bp::return_value_policy<bp::copy_const_reference>());
+          "getActiveDofs", &Self::getActiveDofs,
+          bp::return_value_policy<bp::copy_const_reference>())
+        .def(
+          "getFrictionLowerLimit", &Self::getFrictionLowerLimit,
+          bp::return_value_policy<bp::copy_const_reference>(), "Get friction lower limit.")
+        .def(
+          "setFrictionLowerLimit", bp::make_function(+[](Self & self, const VectorXs & lb) {
+            self.setFrictionLowerLimit(lb);
+          }),
+          "Set friction lower limit.")
+        .def(
+          "getFrictionUpperLimit", &Self::getFrictionUpperLimit,
+          bp::return_value_policy<bp::copy_const_reference>(), "Get friction upper limit.")
+        .def(
+          "setFrictionUpperLimit", bp::make_function(+[](Self & self, const VectorXs & ub) {
+            self.setFrictionUpperLimit(ub);
+          }),
+          "Set friction upper limit.");
       return cl;
     }
 

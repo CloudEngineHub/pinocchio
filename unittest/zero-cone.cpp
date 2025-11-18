@@ -16,9 +16,7 @@ BOOST_AUTO_TEST_CASE(test_proj)
   const int num_tests = int(1000);
   const int dim = 10;
 
-  const ZeroCone set(dim);
-
-  BOOST_CHECK(set.dim() == dim);
+  const ZeroCone set;
 
   BOOST_CHECK(set.isInside(ZeroCone::Vector::Zero(dim)));
   BOOST_CHECK(!set.isInside(ZeroCone::Vector::Ones(dim)));

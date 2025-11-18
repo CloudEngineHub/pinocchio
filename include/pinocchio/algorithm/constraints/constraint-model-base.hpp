@@ -360,13 +360,10 @@ namespace pinocchio
       }
     }
 
-    ConstraintSet & set()
+    /// \brief Returns an instance of the associated constraint set operator.
+    ConstraintSet set() const
     {
-      return derived().set();
-    }
-    const ConstraintSet & set() const
-    {
-      return derived().set();
+      return derived().setImpl();
     }
 
     template<

@@ -51,14 +51,7 @@ namespace pinocchio
           .def("shortname", &Self::shortname, "Short name of the class.")
           .def(
             "createData", &Self::createData, "Create a Data object for the given constraint model.")
-          .add_property(
-            "set",
-            bp::make_function( //
-              +[](const Self & self) -> const ConstraintSet & { return self.set(); },
-              bp::return_internal_reference<>()),
-            bp::make_function( //
-              +[](Self & self, const ConstraintSet & new_set) { self.set() = new_set; }),
-            "Constraint set.")
+          .def("set", &Self::set, "Constraint set.")
           .add_property(
             "compliance",
             bp::make_function( //

@@ -17,16 +17,17 @@ BOOST_AUTO_TEST_CASE(test_proj)
   const int num_tests = int(1e6);
   const int dim = 10;
 
-  const BoxSet box_constraint(-BoxSet::Vector::Ones(dim), BoxSet::Vector::Ones(dim));
+  using Vector = BoxSet::Vector;
+  const Vector lb = -Vector::Ones(dim);
+  const Vector ub = Vector::Ones(dim);
+  const BoxSet box_constraint(lb, ub);
 
-  BOOST_CHECK(box_constraint.dim() == dim);
-
-  BOOST_CHECK(box_constraint.isInside(BoxSet::Vector::Zero(dim)));
-  BOOST_CHECK(box_constraint.project(BoxSet::Vector::Zero(dim)) == BoxSet::Vector::Zero(dim));
+  BOOST_CHECK(box_constraint.isInside(Vector::Zero(dim)));
+  BOOST_CHECK(box_constraint.project(Vector::Zero(dim)) == Vector::Zero(dim));
 
   for (int k = 0; k < num_tests; ++k)
   {
-    const BoxSet::Vector x = BoxSet::Vector::Random(dim);
+    const Vector x = Vector::Random(dim);
 
     // Cone
     const auto proj_x = box_constraint.project(x);
@@ -47,24 +48,25 @@ BOOST_AUTO_TEST_CASE(test_scaled_proj)
   const int num_tests = int(1e6);
   const int dim = 10;
 
-  BoxSet box_constraint(-BoxSet::Vector::Ones(dim), BoxSet::Vector::Ones(dim));
-  BoxSet::Vector scale = BoxSet::Vector::Random(dim);
-  scale.array() =
-    scale.array().max(BoxSet::Vector::Ones(dim).array() * 0.1); // ensure scale is positive
-  const BoxSet scaled_box_constraint(
-    -BoxSet::Vector::Ones(dim).cwiseQuotient(scale),
-    BoxSet::Vector::Ones(dim).cwiseQuotient(scale));
+  using Vector = BoxSet::Vector;
+  const Vector lb = -Vector::Ones(dim);
+  const Vector ub = Vector::Ones(dim);
+  BoxSet box_constraint(lb, ub);
 
-  BOOST_CHECK(box_constraint.dim() == dim);
+  Vector scale = Vector::Random(dim);
+  scale.array() = scale.array().max(Vector::Ones(dim).array() * 0.1); // ensure scale is positive
+  Vector lb_scaled = lb.cwiseQuotient(scale);
+  Vector ub_scaled = ub.cwiseQuotient(scale);
+  const BoxSet scaled_box_constraint(lb, ub);
 
-  BOOST_CHECK(box_constraint.isInside(BoxSet::Vector::Zero(dim)));
-  BoxSet::Vector res(dim);
-  box_constraint.scaledProject(BoxSet::Vector::Zero(dim), scale, res);
-  BOOST_CHECK(res == BoxSet::Vector::Zero(dim));
+  BOOST_CHECK(box_constraint.isInside(Vector::Zero(dim)));
+  Vector res(dim);
+  box_constraint.scaledProject(Vector::Zero(dim), scale, res);
+  BOOST_CHECK(res == Vector::Zero(dim));
 
   for (int k = 0; k < num_tests; ++k)
   {
-    const BoxSet::Vector x = BoxSet::Vector::Random(dim);
+    const Vector x = Vector::Random(dim);
 
     // Cone
     box_constraint.scaledProject(x, scale, res);

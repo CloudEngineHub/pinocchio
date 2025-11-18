@@ -179,7 +179,7 @@ void buildStackOfCubeModel(
         SE3::Matrix3::Identity(), rot * local_placement_box_2.translation());
       PointContactConstraintModel cm(
         model, (JointIndex)i, local_placement_1, (JointIndex)i + 1, local_placement_2);
-      cm.set() = CoulombFrictionCone(friction_value);
+      cm.setFriction(friction_value);
       constraint_models.push_back(cm);
       rot = Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ()).toRotationMatrix() * rot;
     }

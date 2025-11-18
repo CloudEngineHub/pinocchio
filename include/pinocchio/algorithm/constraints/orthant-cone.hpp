@@ -11,12 +11,6 @@
 namespace pinocchio
 {
 
-  template<typename NewScalar, typename Scalar>
-  struct CastType<NewScalar, NonNegativeOrthantConeTpl<Scalar>>
-  {
-    typedef NonNegativeOrthantConeTpl<NewScalar> type;
-  };
-
   template<typename _Scalar>
   struct traits<NonNegativeOrthantConeTpl<_Scalar>>
   {
@@ -44,67 +38,25 @@ namespace pinocchio
       return static_cast<Base &>(*this);
     }
 
-    /// \brief Default constructor
+    using Base::derived;
+    /// \brief Returns the dual cone associated with this.
     ///
-    NonNegativeOrthantConeTpl()
-    : m_size(0)
+    /// \remarks Orthant cone are by definition self dual.
+    DualCone dual() const
     {
+      return derived();
     }
-
-    /// \brief Constructor from a given size
-    ///
-    explicit NonNegativeOrthantConeTpl(const Eigen::DenseIndex size)
-    : m_size(size)
-    {
-    }
-
-    /// \brief Copy constructor.
-    NonNegativeOrthantConeTpl(const NonNegativeOrthantConeTpl & other) = default;
-
-    /// \brief Cast operator
-    template<typename NewScalar>
-    typename CastType<NewScalar, NonNegativeOrthantConeTpl>::type cast() const
-    {
-      typedef typename CastType<NewScalar, NonNegativeOrthantConeTpl>::type ReturnType;
-      return ReturnType(size());
-    }
-
-    /// \brief Copy operator
-    NonNegativeOrthantConeTpl & operator=(const NonNegativeOrthantConeTpl & other) = default;
 
     /// \brief Comparison operator
     bool operator==(const NonNegativeOrthantConeTpl & other) const
     {
-      return base() == other.base() && m_size == other.m_size;
+      return base() == other.base();
     }
 
     /// \brief Difference  operator
     bool operator!=(const NonNegativeOrthantConeTpl & other) const
     {
       return !(*this == other);
-    }
-
-    /// \brief Returns the dimension of the box.
-    Eigen::DenseIndex dim() const
-    {
-      return m_size;
-    }
-
-    Eigen::DenseIndex size() const
-    {
-      return m_size;
-    }
-
-    /// \brief Resize by calling the resize method of Eigen.
-    void resize(Eigen::DenseIndex new_size)
-    {
-      m_size = new_size;
-    }
-
-    /// \brief Resize by calling the conservativeResize method of Eigen.
-    void conservativeResize(Eigen::DenseIndex new_size)
-    {
-      this->resize(new_size);
     }
 
     using Base::isInside;
@@ -139,17 +91,6 @@ namespace pinocchio
       return math::max(Scalar(0), value);
     }
 
-    using Base::derived;
-    /// \brief Returns the dual cone associated with this.
-    ///
-    /// \remarks Orthant cone are by definition self dual.
-    DualCone dual() const
-    {
-      return derived();
-    }
-
-  protected:
-    Eigen::DenseIndex m_size;
   }; // struct NonNegativeOrthantConeTpl
 
 } // namespace pinocchio

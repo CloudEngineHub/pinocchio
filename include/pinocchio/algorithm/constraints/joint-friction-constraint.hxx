@@ -69,8 +69,21 @@ namespace pinocchio
         sparsity_pattern[val] = true;
     }
 
+    {
+      // Fill lower/upper bound based on input model
+      // These values can be changed later if needed
+      m_friction_lower_limit.resize(static_cast<Eigen::Index>(active_dofs.size()));
+      m_friction_upper_limit.resize(static_cast<Eigen::Index>(active_dofs.size()));
+      Eigen::Index idx = 0;
+      for (const auto dof : active_dofs)
+      {
+        m_friction_lower_limit.coeffRef(idx) = model.lowerDryFrictionLimit.coeff(dof);
+        m_friction_upper_limit.coeffRef(idx) = model.upperDryFrictionLimit.coeff(dof);
+        ++idx;
+      }
+    }
+
     m_compliance = ComplianceVectorType::Zero(size());
-    m_set = ConstraintSet(size());
   }
 
   template<typename Scalar, int Options>

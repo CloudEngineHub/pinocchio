@@ -17,10 +17,8 @@ BOOST_AUTO_TEST_CASE(test_orthant)
   const int num_tests = int(1e6);
   const int dim = 10;
 
-  const NonNegativeOrthantCone orthant(dim);
+  const NonNegativeOrthantCone orthant;
   typedef typename NonNegativeOrthantCone::Vector Vector;
-
-  BOOST_CHECK(orthant.dim() == dim);
 
   BOOST_CHECK(orthant.isInside(Vector::Zero(dim)));
   BOOST_CHECK(orthant.project(Vector::Zero(dim)) == Vector::Zero(dim));
