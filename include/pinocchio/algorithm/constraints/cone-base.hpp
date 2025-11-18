@@ -24,6 +24,19 @@ namespace pinocchio
     using Base::isInside;
     using Base::project;
 
+    /// \brief Cast to base class.
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to base class.
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
+    }
+
+    /// \brief Returns the dual cone.
     DualCone dual() const
     {
       return derived().dual();
@@ -52,15 +65,6 @@ namespace pinocchio
     bool operator!=(const ConeBase & other) const
     {
       return !(*this == other);
-    }
-
-    Base & base()
-    {
-      return static_cast<Base &>(*this);
-    }
-    const Base & base() const
-    {
-      return static_cast<const Base &>(*this);
     }
 
   }; // struct ConeBase

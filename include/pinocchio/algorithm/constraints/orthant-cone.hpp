@@ -32,10 +32,13 @@ namespace pinocchio
     typedef ConeBase<NonNegativeOrthantConeTpl> Base;
     typedef typename traits<NonNegativeOrthantConeTpl>::DualCone DualCone;
 
+    /// \brief Cast to base class.
     const Base & base() const
     {
       return static_cast<const Base &>(*this);
     }
+
+    /// \brief Const cast to base class.
     Base & base()
     {
       return static_cast<Base &>(*this);

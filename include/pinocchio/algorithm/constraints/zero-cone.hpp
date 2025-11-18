@@ -63,6 +63,18 @@ namespace pinocchio
       return ReturnType(this->size());
     }
 
+    /// \brief Cast to base class.
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to base class.
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
+    }
+
     /// \brief Comparison operator
     bool operator==(const ZeroConeTpl & other) const
     {
@@ -129,15 +141,6 @@ namespace pinocchio
     DualCone dual() const
     {
       return DualCone(m_size);
-    }
-
-    Base & base()
-    {
-      return static_cast<Base &>(*this);
-    }
-    const Base & base() const
-    {
-      return static_cast<const Base &>(*this);
     }
 
   protected:

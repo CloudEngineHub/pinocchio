@@ -84,6 +84,18 @@ namespace pinocchio
       return ReturnType(NewScalar(this->mu));
     }
 
+    /// \brief Cast to base class
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to base class
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
+    }
+
     /// \brief Comparison operator
     bool operator==(const CoulombFrictionConeTpl & other) const
     {
@@ -262,15 +274,6 @@ namespace pinocchio
       return dim();
     }
 
-    Base & base()
-    {
-      return static_cast<Base &>(*this);
-    }
-    const Base & base() const
-    {
-      return static_cast<const Base &>(*this);
-    }
-
     /// \var Friction coefficient
     Scalar mu;
   }; // CoulombFrictionConeTpl
@@ -319,6 +322,18 @@ namespace pinocchio
     bool operator!=(const DualCoulombFrictionConeTpl & other) const
     {
       return !(*this == other);
+    }
+
+    /// \brief Cast to base class
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to base class
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
     }
 
     using Base::isInside;
@@ -389,15 +404,6 @@ namespace pinocchio
     DualCone dual() const
     {
       return DualCone(mu);
-    }
-
-    Base & base()
-    {
-      return static_cast<Base &>(*this);
-    }
-    const Base & base() const
-    {
-      return static_cast<const Base &>(*this);
     }
 
     /// \var Friction coefficient

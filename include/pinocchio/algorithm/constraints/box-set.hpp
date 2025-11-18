@@ -75,6 +75,18 @@ namespace pinocchio
         this->m_lb.template cast<NewScalar>(), this->m_ub.template cast<NewScalar>());
     }
 
+    /// \brief Cast to base class.
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to base class.
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
+    }
+
     /// \brief Copy operator
     BoxSetTpl & operator=(const BoxSetTpl & other) = default;
 
@@ -190,15 +202,6 @@ namespace pinocchio
     {
       assert(row_id < size());
       return math::max(m_lb[row_id], math::min(m_ub[row_id], value));
-    }
-
-    Base & base()
-    {
-      return static_cast<Base &>(*this);
-    }
-    const Base & base() const
-    {
-      return static_cast<const Base &>(*this);
     }
 
   protected:
