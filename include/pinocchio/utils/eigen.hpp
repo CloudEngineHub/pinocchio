@@ -27,6 +27,20 @@ namespace pinocchio
     inline constexpr bool is_eigen_noalias_v =
       is_eigen_noalias<std::remove_cv_t<std::remove_reference_t<T>>>::value;
 
+    template<class T>
+    struct is_eigen_product : std::false_type
+    {
+    };
+
+    template<typename Lhs, typename Rhs, int Option>
+    struct is_eigen_product<Eigen::Product<Lhs, Rhs, Option>> : std::true_type
+    {
+    };
+
+    template<class T>
+    inline constexpr bool is_eigen_product_v =
+      is_eigen_product<std::remove_cv_t<std::remove_reference_t<T>>>::value;
+
     template<typename T>
     struct remove_eigen_noalias
     {
