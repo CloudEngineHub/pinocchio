@@ -179,9 +179,13 @@ namespace pinocchio
         Eigen::internal::call_assignment(dst.const_cast_derived(), src, Op<S1, S2>());
       }
 
-      template<typename Lhs, typename Rhs>
+      template<typename Product>
       static constexpr bool is_static_size_product()
       {
+        static_assert(helper::is_eigen_product_v<Product>);
+        using Lhs = typename Product::Lhs;
+        using Rhs = typename Product::Rhs;
+
         constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
                                             ? static_cast<int>(Lhs::RowsAtCompileTime)
                                             : static_cast<int>(PlainExpression::RowsAtCompileTime);
@@ -200,7 +204,8 @@ namespace pinocchio
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        if constexpr (is_static_size_product<Lhs, Rhs>())
+        typedef Eigen::Product<Lhs, Rhs, Option> ProductType;
+        if constexpr (is_static_size_product<ProductType>())
         {
           static_dispatch<EigenOp>(matrix_product);
         }
