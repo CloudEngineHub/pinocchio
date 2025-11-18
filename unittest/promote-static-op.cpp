@@ -11,6 +11,13 @@
 
 using namespace pinocchio;
 
+template<typename Base>
+struct Accessor : Base
+{
+  using Base::is_partial_static_size_product;
+  using Base::is_static_size_product;
+};
+
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 BOOST_AUTO_TEST_CASE(test_helpers)
@@ -49,7 +56,11 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   BOOST_CHECK(C_expression.cols() == B.cols());
 
   auto C_op = promote_static_op(C);
+  typedef decltype(C_op) PromotedType;
   BOOST_CHECK(&C_op.expression() == &C);
+
+  BOOST_CHECK(!Accessor<PromotedType>::is_static_size_product<decltype(C_expression)>());
+  BOOST_CHECK(!Accessor<PromotedType>::is_partial_static_size_product<decltype(C_expression)>());
 
   C_op = A * B;
   const auto res_aliasing = C_expression.eval();
@@ -60,7 +71,12 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   B.setConstant(4);
 
   auto C_noalias_op = promote_static_op(C.noalias());
+  typedef decltype(C_noalias_op) NoAliasPromotedType;
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
+
+  BOOST_CHECK(!Accessor<NoAliasPromotedType>::is_static_size_product<decltype(C_expression)>());
+  BOOST_CHECK(
+    !Accessor<NoAliasPromotedType>::is_partial_static_size_product<decltype(C_expression)>());
 
   C_noalias_op = A * B;
   const auto res_noaliasing = C_expression.eval();
@@ -85,7 +101,11 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   BOOST_CHECK(C_expression.cols() == B.cols());
 
   auto C_op = promote_static_op(C);
+  typedef decltype(C_op) PromotedType;
   BOOST_CHECK(&C_op.expression() == &C);
+
+  BOOST_CHECK(Accessor<PromotedType>::is_static_size_product<decltype(C_expression)>());
+  BOOST_CHECK(Accessor<PromotedType>::is_partial_static_size_product<decltype(C_expression)>());
 
   C_op = A * B;
   const auto res_aliasing = C_expression.eval();
@@ -96,7 +116,12 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   B.setConstant(4);
 
   auto C_noalias_op = promote_static_op(C.noalias());
+  typedef decltype(C_noalias_op) NoAliasPromotedType;
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
+
+  BOOST_CHECK(Accessor<NoAliasPromotedType>::is_static_size_product<decltype(C_expression)>());
+  BOOST_CHECK(
+    Accessor<NoAliasPromotedType>::is_partial_static_size_product<decltype(C_expression)>());
 
   C_noalias_op = A * B;
   const auto res_noaliasing = C_expression.eval();
