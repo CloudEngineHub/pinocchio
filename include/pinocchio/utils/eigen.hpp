@@ -73,6 +73,9 @@ namespace pinocchio
     public:
       typedef typename ExpressionType::Scalar Scalar;
 
+      typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(
+        typename helper::remove_eigen_noalias<ExpressionType>::type) PlainExpression;
+
       EIGEN_DEVICE_FUNC PromoteStaticOp(ExpressionType & expression)
       : m_expression(expression)
       {
@@ -96,21 +99,21 @@ namespace pinocchio
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       operator=(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        return static_dispatch<Eigen::internal::assign_op>(matrix_product.derived());
+        return dispatch<Eigen::internal::assign_op>(matrix_product.derived());
       }
 
       template<typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       operator+=(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        return static_dispatch<Eigen::internal::add_assign_op>(matrix_product.derived());
+        return dispatch<Eigen::internal::add_assign_op>(matrix_product.derived());
       }
 
       template<typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       operator-=(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        return static_dispatch<Eigen::internal::sub_assign_op>(matrix_product.derived());
+        return dispatch<Eigen::internal::sub_assign_op>(matrix_product.derived());
       }
 
       EIGEN_DEVICE_FUNC ExpressionType & expression() const
@@ -132,6 +135,13 @@ namespace pinocchio
         return {plain_object.data(), plain_object.rows(), plain_object.cols(), stride};
       }
 
+      template<typename MatrixLike, typename MatrixDerived, template<typename> class _StorageBase>
+      static Eigen::Map<MatrixLike, 0, DynamicStride>
+      make_map(const Eigen::NoAlias<MatrixDerived, _StorageBase> & _plain_object_noalias)
+      {
+        return make_map<MatrixLike>(_plain_object_noalias.expression().const_cast_derived());
+      }
+
       template<
         template<typename, typename> class Op,
         typename Dst,
@@ -147,45 +157,107 @@ namespace pinocchio
       }
 
       template<template<typename, typename> class Op, typename Dst, typename Src>
-      inline constexpr void call_assignment(Dst & dst, const Src & src)
+      inline constexpr void call_assignment(const Eigen::MatrixBase<Dst> & dst, const Src & src)
       {
         typedef typename Dst::Scalar S1;
         typedef typename Src::Scalar S2;
 
-        Eigen::internal::call_assignment(dst, src, Op<S1, S2>());
+        Eigen::internal::call_assignment(dst.const_cast_derived(), src, Op<S1, S2>());
+      }
+
+      template<typename Lhs, typename Rhs>
+      static constexpr bool is_static_size_product()
+      {
+        constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
+                                            ? static_cast<int>(Lhs::RowsAtCompileTime)
+                                            : static_cast<int>(PlainExpression::RowsAtCompileTime);
+        constexpr int ColsAtCompileTime = Rhs::ColsAtCompileTime != Eigen::Dynamic
+                                            ? static_cast<int>(Rhs::ColsAtCompileTime)
+                                            : static_cast<int>(PlainExpression::ColsAtCompileTime);
+        constexpr int InnerDimensionAtCompileTime = Lhs::ColsAtCompileTime != Eigen::Dynamic
+                                                      ? static_cast<int>(Lhs::ColsAtCompileTime)
+                                                      : static_cast<int>(Rhs::RowsAtCompileTime);
+
+        return RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic
+               && InnerDimensionAtCompileTime != Eigen::Dynamic;
       }
 
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
+      dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      {
+        if constexpr (is_static_size_product<Lhs, Rhs>())
+        {
+          static_dispatch<EigenOp>(matrix_product);
+        }
+        else
+        {
+          dynamic_dispatch<EigenOp>(matrix_product);
+        }
+        return m_expression;
+      }
+
+      template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
+      EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
+      dynamic_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      {
+        static_dispatch<EigenOp>(matrix_product);
+      }
+
+      template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
+      EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
       static_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
         const auto & lhs = matrix_product.lhs();
         const auto & rhs = matrix_product.rhs();
 
+        constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
+                                            ? static_cast<int>(Lhs::RowsAtCompileTime)
+                                            : static_cast<int>(PlainExpression::RowsAtCompileTime);
+        constexpr int ColsAtCompileTime = Rhs::ColsAtCompileTime != Eigen::Dynamic
+                                            ? static_cast<int>(Rhs::ColsAtCompileTime)
+                                            : static_cast<int>(PlainExpression::ColsAtCompileTime);
+        constexpr int InnerDimensionAtCompileTime = Lhs::ColsAtCompileTime != Eigen::Dynamic
+                                                      ? static_cast<int>(Lhs::ColsAtCompileTime)
+                                                      : static_cast<int>(Rhs::RowsAtCompileTime);
+
         typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Lhs) PlainLhs;
         typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Rhs) PlainRhs;
-        const auto lhs_map = make_map<PlainLhs>(lhs);
-        const auto rhs_map = make_map<PlainRhs>(rhs);
+
+        typedef Eigen::Matrix<
+          typename PlainLhs::Scalar, RowsAtCompileTime, InnerDimensionAtCompileTime,
+          PlainLhs::Options>
+          PlainLhsStaticSize;
+        typedef Eigen::Matrix<
+          typename PlainRhs::Scalar, InnerDimensionAtCompileTime, ColsAtCompileTime,
+          PlainRhs::Options>
+          PlainRhsStaticSize;
+
+        const auto lhs_map = make_map<PlainLhsStaticSize>(lhs);
+        const auto rhs_map = make_map<PlainRhsStaticSize>(rhs);
         const auto matrix_map_product = lhs_map * rhs_map;
+        // typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE((Eigen::Product<Lhs, Rhs, Option>))
+        // PlainProductResult;
+
+        // std::cout << "PlainProductResult: " << typeid(PlainProductResult).name() << std::endl;
+        // std::cout << "RowsAtCompileTime: " << RowsAtCompileTime << std::endl;
+        // std::cout << "ColsAtCompileTime: " << ColsAtCompileTime << std::endl;
+        // std::cout << "InnerDimensionAtCompileTime: " << InnerDimensionAtCompileTime << std::endl;
+
+        typedef Eigen::Matrix<
+          typename PlainExpression::Scalar, RowsAtCompileTime, ColsAtCompileTime,
+          PlainExpression::Options>
+          PlainExpressionStaticSize;
+        auto result_matrix_map = make_map<PlainExpressionStaticSize>(expression());
 
         if constexpr (helper::is_eigen_noalias_v<ExpressionType>)
         {
-          typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(
-            std::remove_cv_t<std::remove_reference_t<decltype(expression().expression())>>)
-            PlainExpression;
-          auto result_matrix_map = make_map<PlainExpression>(expression().expression());
-
           call_assignment<EigenOp>(result_matrix_map.noalias(), matrix_map_product);
         }
         else
         {
-          typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(ExpressionType) PlainExpression;
-          auto result_matrix_map = make_map<PlainExpression>(expression());
-
           call_assignment<EigenOp>(result_matrix_map, matrix_map_product);
         }
-
-        return m_expression;
       }
 
     }; // struct PromoteStaticOp
