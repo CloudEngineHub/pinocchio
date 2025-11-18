@@ -179,6 +179,20 @@ namespace pinocchio
         Eigen::internal::call_assignment(dst.const_cast_derived(), src, Op<S1, S2>());
       }
 
+      template<typename Result, typename Lhs, typename Rhs>
+      struct MatrixDimensions
+      {
+        static constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
+                                                   ? static_cast<int>(Lhs::RowsAtCompileTime)
+                                                   : static_cast<int>(Result::RowsAtCompileTime);
+        static constexpr int ColsAtCompileTime = Rhs::ColsAtCompileTime != Eigen::Dynamic
+                                                   ? static_cast<int>(Rhs::ColsAtCompileTime)
+                                                   : static_cast<int>(Result::ColsAtCompileTime);
+        static constexpr int InnerDimensionAtCompileTime =
+          Lhs::ColsAtCompileTime != Eigen::Dynamic ? static_cast<int>(Lhs::ColsAtCompileTime)
+                                                   : static_cast<int>(Rhs::RowsAtCompileTime);
+      };
+
       template<typename Product>
       static constexpr bool is_static_size_product()
       {
@@ -186,15 +200,10 @@ namespace pinocchio
         using Lhs = typename Product::Lhs;
         using Rhs = typename Product::Rhs;
 
-        constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
-                                            ? static_cast<int>(Lhs::RowsAtCompileTime)
-                                            : static_cast<int>(PlainExpression::RowsAtCompileTime);
-        constexpr int ColsAtCompileTime = Rhs::ColsAtCompileTime != Eigen::Dynamic
-                                            ? static_cast<int>(Rhs::ColsAtCompileTime)
-                                            : static_cast<int>(PlainExpression::ColsAtCompileTime);
-        constexpr int InnerDimensionAtCompileTime = Lhs::ColsAtCompileTime != Eigen::Dynamic
-                                                      ? static_cast<int>(Lhs::ColsAtCompileTime)
-                                                      : static_cast<int>(Rhs::RowsAtCompileTime);
+        typedef MatrixDimensions<PlainExpression, Lhs, Rhs> Dims;
+        constexpr int RowsAtCompileTime = Dims::RowsAtCompileTime;
+        constexpr int ColsAtCompileTime = Dims::ColsAtCompileTime;
+        constexpr int InnerDimensionAtCompileTime = Dims::InnerDimensionAtCompileTime;
 
         return RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic
                && InnerDimensionAtCompileTime != Eigen::Dynamic;
@@ -207,15 +216,10 @@ namespace pinocchio
         using Lhs = typename Product::Lhs;
         using Rhs = typename Product::Rhs;
 
-        constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
-                                            ? static_cast<int>(Lhs::RowsAtCompileTime)
-                                            : static_cast<int>(PlainExpression::RowsAtCompileTime);
-        constexpr int ColsAtCompileTime = Rhs::ColsAtCompileTime != Eigen::Dynamic
-                                            ? static_cast<int>(Rhs::ColsAtCompileTime)
-                                            : static_cast<int>(PlainExpression::ColsAtCompileTime);
-        constexpr int InnerDimensionAtCompileTime = Lhs::ColsAtCompileTime != Eigen::Dynamic
-                                                      ? static_cast<int>(Lhs::ColsAtCompileTime)
-                                                      : static_cast<int>(Rhs::RowsAtCompileTime);
+        typedef MatrixDimensions<PlainExpression, Lhs, Rhs> Dims;
+        constexpr int RowsAtCompileTime = Dims::RowsAtCompileTime;
+        constexpr int ColsAtCompileTime = Dims::ColsAtCompileTime;
+        constexpr int InnerDimensionAtCompileTime = Dims::InnerDimensionAtCompileTime;
 
         return (RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic)
                || (ColsAtCompileTime != Eigen::Dynamic && InnerDimensionAtCompileTime != Eigen::Dynamic)
@@ -252,15 +256,10 @@ namespace pinocchio
         const auto & lhs = matrix_product.lhs();
         const auto & rhs = matrix_product.rhs();
 
-        constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
-                                            ? static_cast<int>(Lhs::RowsAtCompileTime)
-                                            : static_cast<int>(PlainExpression::RowsAtCompileTime);
-        constexpr int ColsAtCompileTime = Rhs::ColsAtCompileTime != Eigen::Dynamic
-                                            ? static_cast<int>(Rhs::ColsAtCompileTime)
-                                            : static_cast<int>(PlainExpression::ColsAtCompileTime);
-        constexpr int InnerDimensionAtCompileTime = Lhs::ColsAtCompileTime != Eigen::Dynamic
-                                                      ? static_cast<int>(Lhs::ColsAtCompileTime)
-                                                      : static_cast<int>(Rhs::RowsAtCompileTime);
+        typedef MatrixDimensions<PlainExpression, Lhs, Rhs> Dims;
+        constexpr int RowsAtCompileTime = Dims::RowsAtCompileTime;
+        constexpr int ColsAtCompileTime = Dims::ColsAtCompileTime;
+        constexpr int InnerDimensionAtCompileTime = Dims::InnerDimensionAtCompileTime;
 
         typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Lhs) PlainLhs;
         typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Rhs) PlainRhs;
