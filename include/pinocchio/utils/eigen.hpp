@@ -200,6 +200,28 @@ namespace pinocchio
                && InnerDimensionAtCompileTime != Eigen::Dynamic;
       }
 
+      template<typename Product>
+      static constexpr bool is_partial_static_size_product()
+      {
+        static_assert(helper::is_eigen_product_v<Product>);
+        using Lhs = typename Product::Lhs;
+        using Rhs = typename Product::Rhs;
+
+        constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
+                                            ? static_cast<int>(Lhs::RowsAtCompileTime)
+                                            : static_cast<int>(PlainExpression::RowsAtCompileTime);
+        constexpr int ColsAtCompileTime = Rhs::ColsAtCompileTime != Eigen::Dynamic
+                                            ? static_cast<int>(Rhs::ColsAtCompileTime)
+                                            : static_cast<int>(PlainExpression::ColsAtCompileTime);
+        constexpr int InnerDimensionAtCompileTime = Lhs::ColsAtCompileTime != Eigen::Dynamic
+                                                      ? static_cast<int>(Lhs::ColsAtCompileTime)
+                                                      : static_cast<int>(Rhs::RowsAtCompileTime);
+
+        return (RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic)
+               || (ColsAtCompileTime != Eigen::Dynamic && InnerDimensionAtCompileTime != Eigen::Dynamic)
+               || (InnerDimensionAtCompileTime != Eigen::Dynamic && RowsAtCompileTime != Eigen::Dynamic);
+      }
+
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
