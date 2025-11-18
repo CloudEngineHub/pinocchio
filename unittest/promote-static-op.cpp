@@ -2,6 +2,8 @@
 // Copyright (c) 2025 INRIA
 //
 
+#include <iostream>
+
 #include "pinocchio/utils/eigen.hpp"
 
 #include <boost/test/unit_test.hpp>
@@ -40,6 +42,42 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   Eigen::MatrixXd A = Eigen::MatrixXd::Constant(n, n, 1);
   Eigen::MatrixXd B = Eigen::MatrixXd::Constant(n, m, 2);
   Eigen::MatrixXd C = Eigen::MatrixXd::Random(n, m);
+
+  const auto C_expression = A * B;
+
+  BOOST_CHECK(C_expression.rows() == A.rows());
+  BOOST_CHECK(C_expression.cols() == B.cols());
+
+  auto C_op = promote_static_op(C);
+  BOOST_CHECK(&C_op.expression() == &C);
+
+  C_op = A * B;
+  const auto res_aliasing = C_expression.eval();
+  BOOST_CHECK(C == res_aliasing);
+
+  // Test with noalias
+  A.setConstant(3);
+  B.setConstant(4);
+
+  auto C_noalias_op = promote_static_op(C.noalias());
+  BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
+
+  C_noalias_op = A * B;
+  const auto res_noaliasing = C_expression.eval();
+  BOOST_CHECK(res_noaliasing != res_aliasing);
+  BOOST_CHECK(C == res_noaliasing);
+}
+
+BOOST_AUTO_TEST_CASE(test_static_matrix)
+{
+  constexpr Eigen::DenseIndex Rows = 10, Cols = 5, InnerDim = 8;
+  typedef Eigen::Matrix<double, Rows, InnerDim> LhsType;
+  typedef Eigen::Matrix<double, InnerDim, Cols> RhsType;
+  typedef Eigen::Matrix<double, Rows, Cols> ResType;
+
+  LhsType A = LhsType::Constant(1);
+  RhsType B = RhsType::Constant(2);
+  ResType C = ResType::Random();
 
   const auto C_expression = A * B;
 
