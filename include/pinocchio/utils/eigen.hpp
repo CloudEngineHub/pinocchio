@@ -246,7 +246,7 @@ namespace pinocchio
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
       dynamic_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        static_dispatch<EigenOp>(matrix_product);
+        call_assignment<EigenOp>(expression(), matrix_product);
       }
 
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
