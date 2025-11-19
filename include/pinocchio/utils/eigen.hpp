@@ -162,7 +162,7 @@ namespace pinocchio
         template<typename> class _StorageBase,
         typename Src>
       inline constexpr void
-      call_assignment(Eigen::NoAlias<Dst, _StorageBase> && dst, const Src & src)
+      call_assignment(Eigen::NoAlias<Dst, _StorageBase> & dst, const Src & src)
       {
         typedef typename Dst::Scalar S1;
         typedef typename Src::Scalar S2;
@@ -292,7 +292,8 @@ namespace pinocchio
 
         if constexpr (helper::is_eigen_noalias_v<ExpressionType>)
         {
-          call_assignment<EigenOp>(result_matrix_map.noalias(), matrix_map_product);
+          auto result_matrix_map_noalias = result_matrix_map.noalias();
+          call_assignment<EigenOp>(result_matrix_map_noalias, matrix_map_product);
         }
         else
         {
