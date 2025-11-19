@@ -59,21 +59,26 @@ namespace pinocchio
 
     using Base::createData;
 
+    /// \brief Cast to derived class.
     Derived & derived()
     {
       return static_cast<Derived &>(*this);
     }
+
+    /// \brief Const cast to derived class.
     const Derived & derived() const
     {
       return static_cast<const Derived &>(*this);
     }
 
+    /// \brief Cast to NewScalar.
     template<typename NewScalar>
     typename CastType<NewScalar, Derived>::type cast() const
     {
       return derived().template cast<NewScalar>();
     }
 
+    /// \brief Cast to NewScalar.
     template<typename OtherDerived>
     void cast(ConstraintModelBase<OtherDerived> & other) const
     {

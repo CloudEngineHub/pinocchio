@@ -20,8 +20,10 @@ namespace pinocchio
     typedef SetBase<Derived> Base;
 
     using Base::derived;
-    using Base::isInside;
-    using Base::project;
+    using Base::scaledProject;
+
+    // ------------------------------
+    // Method specific to class
 
     /// \brief Cast to base class.
     Base & base()
@@ -35,13 +37,28 @@ namespace pinocchio
       return static_cast<const Base &>(*this);
     }
 
-    /// \brief Returns the dual cone.
-    DualCone dual() const
+    /// \brief Equality comparison operator.
+    bool operator==(const ConeBase & other) const
     {
-      return derived().dual();
+      return base() == other.base();
     }
 
-    using Base::scaledProject;
+    /// \brief Difference comparison operator.
+    bool operator!=(const ConeBase & other) const
+    {
+      return !(*this == other);
+    }
+
+    /// \brief Returns the dual cone of this.
+    DualCone dual() const
+    {
+      return derived().dualImpl();
+    }
+
+    // ------------------------------
+    // Implementation of base methods
+
+    /// \copydoc Base::scaledProj
     template<typename VectorLikeIn, typename VectorLikeIn2, typename VectorLikeOut>
     void scaledProjectImpl(
       const Eigen::MatrixBase<VectorLikeIn> & x,
@@ -54,16 +71,6 @@ namespace pinocchio
         && "Only scalar scaling are supported.");
       PINOCCHIO_UNUSED_VARIABLE(scale); // the cone is preserved when scaled by a scalar
       return project(x, x_proj);
-    }
-
-    bool operator==(const ConeBase & other) const
-    {
-      return base() == other.base();
-    }
-
-    bool operator!=(const ConeBase & other) const
-    {
-      return !(*this == other);
     }
 
   }; // struct ConeBase

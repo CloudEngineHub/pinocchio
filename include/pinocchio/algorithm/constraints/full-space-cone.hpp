@@ -36,13 +36,12 @@ namespace pinocchio
     typedef ConeBase<FullSpaceConeTpl> Base;
     typedef typename traits<FullSpaceConeTpl>::DualCone DualCone;
 
-    /// \brief Cast operator
-    template<typename NewScalar>
-    FullSpaceConeTpl<NewScalar, Options> cast() const
-    {
-      typedef FullSpaceConeTpl<NewScalar, Options> ReturnType;
-      return ReturnType();
-    }
+    using Base::dual;
+    using Base::isInside;
+    using Base::project;
+
+    // ------------------------------
+    // Methods specific to class
 
     /// \brief Cast to base class
     Base & base()
@@ -54,12 +53,6 @@ namespace pinocchio
     const Base & base() const
     {
       return static_cast<const Base &>(*this);
-    }
-
-    /// \brief Returns the dual cone of this.
-    DualCone dual() const
-    {
-      return DualCone();
     }
 
     /// \brief Comparison operator
@@ -74,12 +67,16 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    using Base::isInside;
-    /// \brief Check whether a vector x lies within the set.
-    /// Any vector x always belong the the unbounded set.
-    ///
-    /// \param[in] f vector to check (assimilated to a  force vector).
-    ///
+    // ------------------------------
+    // Implementations of base methods
+
+    /// \copydoc Base::dual
+    DualCone dualImpl() const
+    {
+      return DualCone();
+    }
+
+    /// \copydoc Base::isInside
     template<typename VectorLike>
     bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
@@ -89,12 +86,7 @@ namespace pinocchio
       return true;
     }
 
-    using Base::project;
-    /// \brief Project a vector x into the set.
-    ///
-    /// \param[in] x a vector to project.
-    /// \param[in] res result of the projection.
-    ///
+    /// \copydoc Base::project
     template<typename VectorLikeIn, typename VectorLikeOut>
     void projectImpl(
       const Eigen::MatrixBase<VectorLikeIn> & x,

@@ -42,23 +42,26 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
     typedef ConeBase<CoulombFrictionConeTpl> Base;
 
-    ///
+    using Base::dual;
+    using Base::isInside;
+    using Base::project;
+
+    // ------------------------------
+    // Methods specific to class
+
     /// \brief Constructor from a reference to a friction coefficient mu.
     ///
     /// \param[in] mu Friction coefficient.
-    ///
     explicit CoulombFrictionConeTpl(const Scalar & mu)
     : mu(mu)
     {
       assert(mu >= 0 && "mu must be positive");
     }
 
-    ///
     /// \brief Generic constructor which can take any `Parameter` struct.
     /// Creates a link between the `mu` in `Parameter` and this->mu.
     ///
     /// \param[in] params Generic parameters, must contain the field `mu`.
-    ///
     template<typename Parameters>
     CoulombFrictionConeTpl(const Parameters & params)
     : CoulombFrictionConeTpl(params.mu)
@@ -96,78 +99,11 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    /// \brief Returns the dual cone associated to this.
-    DualCone dual() const
-    {
-      return DualCone(mu);
-    }
-
-    using Base::isInside;
-    /// \brief Check whether a vector x lies within the cone.
-    ///
-    /// \param[in] f vector to check (assimilated to a  force vector).
-    ///
-    template<typename Vector3Like>
-    bool isInsideImpl(const Eigen::MatrixBase<Vector3Like> & f, const Scalar prec = Scalar(0)) const
-    {
-      assert(mu >= 0 && "mu must be positive");
-      assert(prec >= 0 && "prec should be positive");
-      //      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3);
-      assert(f.size() == 3 && "The input vector is of wrong size.");
-      const Vector3 f_normalized = f.normalized();
-      return f_normalized.template head<2>().norm() <= mu * f_normalized[2] + prec;
-    }
-
-    using Base::project;
-    /// \brief Project a vector x onto the cone.
-    ///
-    /// \param[in] x a 3d vector to project.
-    ///
-    template<typename Vector3LikeIn, typename Vector3LikeOut>
-    void projectImpl(
-      const Eigen::MatrixBase<Vector3LikeIn> & x,
-      const Eigen::MatrixBase<Vector3LikeOut> & res_) const
-    {
-      assert(mu >= 0 && "mu must be positive");
-      //      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3);
-      assert(x.size() == 3 && "The input vector is of wrong size.");
-      typedef Eigen::Matrix<Scalar, 2, 1> Vector2Plain;
-
-      const Scalar & z = x[2];
-      const Scalar mu_z = mu * z;
-
-      auto & res = res_.const_cast_derived();
-
-      const Vector2Plain t = x.template head<2>();
-      const Scalar t_norm = t.norm();
-
-      if (mu * t_norm <= -z)
-      {
-        res.setZero();
-        return;
-      }
-      else if (t_norm <= mu_z)
-      {
-        res = x;
-        return;
-      }
-      else
-      {
-        res.template head<2>() = (mu / t_norm) * t;
-        res[2] = 1;
-        res.normalize();
-        const Scalar scale = x.dot(res);
-        res *= scale;
-        return;
-      }
-    }
-
     /// \brief Project a vector x onto the cone with a matric specified by the diagonal matrix R.
     ///
     /// \param[in] x a 3d vector to project.
     /// \param[in] R a 3d vector representing the diagonal of the weight matrix. The tangential
     /// components (the first two) of R should be equal, assuming an isotropic scaling.
-    ///
     template<typename Vector3Like1, typename Vector3Like2>
     typename PINOCCHIO_EIGEN_PLAIN_TYPE(Vector3Like1) weightedProject(
       const Eigen::MatrixBase<Vector3Like1> & x, const Eigen::MatrixBase<Vector3Like2> & R) const
@@ -192,7 +128,6 @@ namespace pinocchio
     /// complementarity satisfaction in complementary problems.
     ///
     /// \param[in] v a dual vector.
-    ///
     template<typename Vector3Like>
     typename Eigen::Matrix<Scalar, 3, 1>
     computeNormalCorrection(const Eigen::MatrixBase<Vector3Like> & v) const
@@ -211,7 +146,6 @@ namespace pinocchio
     /// \brief Compute the radial projection associted to the Coulomb friction cone.
     ///
     /// \param[in] f a force vector.
-    ///
     template<typename Vector3Like>
     typename PINOCCHIO_EIGEN_PLAIN_TYPE(Vector3Like)
       computeRadialProjection(const Eigen::MatrixBase<Vector3Like> & f) const
@@ -251,7 +185,71 @@ namespace pinocchio
       return math::fabs(f.dot(v));
     }
 
-    /// \var Friction coefficient.
+    // ------------------------------
+    // Implementations of base methods
+
+    /// \copydoc Base::dual
+    DualCone dualImpl() const
+    {
+      return DualCone(mu);
+    }
+
+    /// \copydoc Base::isInside
+    template<typename Vector3Like>
+    bool isInsideImpl(const Eigen::MatrixBase<Vector3Like> & f, const Scalar prec = Scalar(0)) const
+    {
+      assert(mu >= 0 && "mu must be positive");
+      assert(prec >= 0 && "prec should be positive");
+      //      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3);
+      assert(f.size() == 3 && "The input vector is of wrong size.");
+      const Vector3 f_normalized = f.normalized();
+      return f_normalized.template head<2>().norm() <= mu * f_normalized[2] + prec;
+    }
+
+    /// \copydoc Base::project
+    template<typename Vector3LikeIn, typename Vector3LikeOut>
+    void projectImpl(
+      const Eigen::MatrixBase<Vector3LikeIn> & x,
+      const Eigen::MatrixBase<Vector3LikeOut> & res_) const
+    {
+      assert(mu >= 0 && "mu must be positive");
+      //      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3);
+      assert(x.size() == 3 && "The input vector is of wrong size.");
+      typedef Eigen::Matrix<Scalar, 2, 1> Vector2Plain;
+
+      const Scalar & z = x[2];
+      const Scalar mu_z = mu * z;
+
+      auto & res = res_.const_cast_derived();
+
+      const Vector2Plain t = x.template head<2>();
+      const Scalar t_norm = t.norm();
+
+      if (mu * t_norm <= -z)
+      {
+        res.setZero();
+        return;
+      }
+      else if (t_norm <= mu_z)
+      {
+        res = x;
+        return;
+      }
+      else
+      {
+        res.template head<2>() = (mu / t_norm) * t;
+        res[2] = 1;
+        res.normalize();
+        const Scalar scale = x.dot(res);
+        res *= scale;
+        return;
+      }
+    }
+
+    // ------------------------------
+    // Members
+
+    /// \brief Reference to a friction coefficient.
     /// This is a const reference to some memory owning mu.
     /// Thus, `CoulombFrictionConeTpl` DOES NOT own mu.
     /// This makes `CoulombFrictionConeTpl` an operator, not a data-holding class.
@@ -271,23 +269,25 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
     typedef ConeBase<DualCoulombFrictionConeTpl> Base;
 
-    ///
+    using Base::isInside;
+    using Base::project;
+
+    // ------------------------------
+    // Methods specific to class
+
     /// \brief Constructor from a friction coefficient mu
     ///
     /// \param[in] mu Friction coefficient.
-    ///
     explicit DualCoulombFrictionConeTpl(const Scalar & mu)
     : mu(mu)
     {
       assert(mu >= 0 && "mu must be positive");
     }
 
-    ///
     /// \brief Generic constructor which can take any `Parameter` struct.
     /// Creates a link between the `mu` in `Parameter` and this->mu.
     ///
     /// \param[in] params Generic parameters, must contain the field `mu`.
-    ///
     template<typename Parameters>
     DualCoulombFrictionConeTpl(const Parameters & params)
     : DualCoulombFrictionConeTpl(params.mu)
@@ -324,17 +324,18 @@ namespace pinocchio
       return static_cast<const Base &>(*this);
     }
 
+    // ------------------------------
+    // Implementations of base methods
+
     /// \brief Returns the dual cone associated to this.
-    DualCone dual() const
+    DualCone dualImpl() const
     {
       return DualCone(mu);
     }
 
-    using Base::isInside;
     /// \brief Check whether a vector v lies within the cone.
     ///
     /// \param[in] v vector to check (assimilated to a linear velocity).
-    ///
     template<typename Vector3Like>
     bool isInsideImpl(const Eigen::MatrixBase<Vector3Like> & v, const Scalar prec = Scalar(0)) const
     {
@@ -345,7 +346,6 @@ namespace pinocchio
       return mu * v_normalized.template head<2>().norm() <= v_normalized[2] + prec;
     }
 
-    using Base::project;
     /// \brief Project a vector x onto the cone
     template<typename Vector3LikeIn, typename Vector3LikeOut>
     void projectImpl(
@@ -383,7 +383,10 @@ namespace pinocchio
       }
     }
 
-    /// \var Friction coefficient
+    // ------------------------------
+    // Members
+
+    /// \var Reference to a friction coefficient
     const Scalar & mu;
 
   }; // DualCoulombFrictionConeTpl

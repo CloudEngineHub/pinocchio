@@ -36,6 +36,12 @@ namespace pinocchio
     typedef ConeBase<ZeroConeTpl> Base;
     typedef typename traits<ZeroConeTpl>::DualCone DualCone;
 
+    using Base::isInside;
+    using Base::project;
+
+    // ------------------------------
+    // Method specific to class
+
     /// \brief Cast to base class.
     Base & base()
     {
@@ -60,17 +66,16 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    /// \brief Returns the dual cone of this.
-    DualCone dual() const
+    /// \copydoc Base::dual
+    DualCone dualImpl() const
     {
       return DualCone();
     }
 
-    using Base::isInside;
-    /// \brief Check whether a vector x is zero.
-    ///
-    /// \param[in] f vector to check (assimilated to a  force vector).
-    ///
+    // ------------------------------
+    // Implementation of base methods
+
+    /// \copydoc Base::isInside
     template<typename VectorLike>
     bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
@@ -78,12 +83,7 @@ namespace pinocchio
       return x.isZero(prec);
     }
 
-    using Base::project;
-    /// \brief Project a vector x into set.
-    ///
-    /// \param[in] x a vector to project.
-    /// \param[in] res result of the projection.
-    ///
+    /// \copydoc Base::project
     template<typename VectorLikeIn, typename VectorLikeOut>
     void projectImpl(
       const Eigen::MatrixBase<VectorLikeIn> & x,
