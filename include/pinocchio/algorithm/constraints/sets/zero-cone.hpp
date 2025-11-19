@@ -36,15 +36,9 @@ namespace pinocchio
     typedef ConeBase<ZeroConeTpl> Base;
     typedef typename traits<ZeroConeTpl>::DualCone DualCone;
 
-    // ------------------------------
-    // Methods inherited from base
-
-    using Base::dual;
-    using Base::isInside;
-    using Base::project;
-
-    // ------------------------------
-    // Method specific to class
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
 
     /// \brief Cast to base class.
     Base & base()
@@ -70,14 +64,15 @@ namespace pinocchio
       return !(*this == other);
     }
 
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
     /// \copydoc Base::dual
     DualCone dualImpl() const
     {
       return DualCone();
     }
-
-    // ------------------------------
-    // Implementation of base methods
 
     /// \copydoc Base::isInside
     template<typename VectorLike>

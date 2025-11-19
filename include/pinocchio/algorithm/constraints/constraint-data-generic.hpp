@@ -49,16 +49,23 @@ namespace pinocchio
     typedef typename ConstraintCollection::ConstraintDataVariant ConstraintDataVariant;
     typedef typename ConstraintCollection::ConstraintModelVariant ConstraintModelVariant;
 
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    /// \brief Default constructor
     ConstraintDataTpl()
     : ConstraintDataVariant()
     {
     }
 
+    /// \brief Constructor from a variant.
     ConstraintDataTpl(const ConstraintDataVariant & cdata_variant)
     : ConstraintDataVariant(cdata_variant)
     {
     }
 
+    /// \brief Constructor from a constraint data.
     template<typename ContraintDataDerived>
     ConstraintDataTpl(const ConstraintDataBase<ContraintDataDerived> & cdata)
     : ConstraintDataVariant((ConstraintDataVariant)cdata.derived())
@@ -67,44 +74,57 @@ namespace pinocchio
         (boost::mpl::contains<typename ConstraintDataVariant::types, ContraintDataDerived>));
     }
 
+    /// \brief Cast to variant.
     ConstraintDataVariant & toVariant()
     {
       return static_cast<ConstraintDataVariant &>(*this);
     }
 
+    /// \brief Const cast to variant.
     const ConstraintDataVariant & toVariant() const
     {
       return static_cast<const ConstraintDataVariant &>(*this);
     }
 
-    static std::string classname()
-    {
-      return "ConstraintData";
-    }
-    std::string shortname() const
-    {
-      return ::pinocchio::visitors::shortname(*this);
-    }
-
+    /// \brief Is this equal to other?
     template<typename ConstraintDataDerived>
     bool isEqual(const ConstraintDataBase<ConstraintDataDerived> & other) const
     {
       return ::pinocchio::isEqual(*this, other.derived());
     }
 
+    /// \brief Is this equal to other?
     bool isEqual(const ConstraintDataTpl & other) const
     {
       return /*Base::isEqual(other) &&*/ toVariant() == other.toVariant();
     }
 
+    /// \brief Comparison operator
     bool operator==(const ConstraintDataTpl & other) const
     {
       return isEqual(other);
     }
 
+    /// \brief Comparison operator
     bool operator!=(const ConstraintDataTpl & other) const
     {
       return !(*this == other);
+    }
+
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    /// \copydoc Base::classname
+    static std::string classnameImpl()
+    {
+      return "ConstraintData";
+    }
+
+    /// \copydoc Base::shortname
+    std::string shortnameImpl() const
+    {
+      return ::pinocchio::visitors::shortname(*this);
     }
   };
 

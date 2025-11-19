@@ -122,9 +122,8 @@ namespace pinocchio
     typedef typename traits<Self>::ConstraintData ConstraintData;
     typedef typename traits<Self>::ConstraintSet ConstraintSet;
 
-    using RootBase::jacobian;
-    using typename Base::BooleanVector;
-    using typename Base::EigenIndexVector;
+    using typename RootBase::BooleanVector;
+    using typename RootBase::EigenIndexVector;
 
     typedef std::vector<BooleanVector> VectorOfBooleanVector;
     typedef std::vector<EigenIndexVector> VectofOfEigenIndexVector;
@@ -132,10 +131,46 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef VectorXs VectorConstraintSize;
 
+    using RootBase::activeSize;
+    using RootBase::classname;
+    using RootBase::jacobianMatrixProduct;
+    using RootBase::jacobianTransposeMatrixProduct;
+    using RootBase::size;
+
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    /// \brief Cast to Base
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to Base
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
+    }
+
+    /// \brief Cast to BaseCommonParameters
+    BaseCommonParameters & base_common_parameters()
+    {
+      return static_cast<BaseCommonParameters &>(*this);
+    }
+
+    /// \brief Const cast to BaseCommonParameters
+    const BaseCommonParameters & base_common_parameters() const
+    {
+      return static_cast<const BaseCommonParameters &>(*this);
+    }
+
+    /// \brief Default constructor
     JointFrictionConstraintModelTpl()
     {
     }
 
+    /// \brief Constructor from model and active_joints.
     template<template<typename, int> class JointCollectionTpl>
     JointFrictionConstraintModelTpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -143,6 +178,32 @@ namespace pinocchio
     : active_joints(active_joints)
     {
       init(model, active_joints);
+    }
+
+    ///
+    ///  \brief Comparison operator
+    ///
+    /// \param[in] other Other JointFrictionConstraintModelTpl to compare with.
+    ///
+    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
+    /// must be the same).
+    ///
+    bool operator==(const JointFrictionConstraintModelTpl & other) const
+    {
+      if (this == &other)
+        return true;
+      return base() == other.base() && base_common_parameters() == other.base_common_parameters()
+             && active_dofs == other.active_dofs
+             && row_sparsity_pattern == other.row_sparsity_pattern
+             && row_active_indexes == other.row_active_indexes
+             && m_friction_lower_limit == other.m_friction_lower_limit
+             && m_friction_upper_limit == other.m_friction_upper_limit;
+    }
+
+    ///  \brief Comparison operator
+    bool operator!=(const JointFrictionConstraintModelTpl & other) const
+    {
+      return !(*this == other);
     }
 
     /// \brief Cast operator
@@ -161,124 +222,6 @@ namespace pinocchio
       res.m_friction_lower_limit = m_friction_lower_limit.template cast<NewScalar>();
       res.m_friction_upper_limit = m_friction_upper_limit.template cast<NewScalar>();
       return res;
-    }
-
-    ConstraintData createData() const
-    {
-      return ConstraintData(*this);
-    }
-
-    int size() const
-    {
-      return int(active_dofs.size());
-    }
-    using Base::activeSize;
-
-    Base & base()
-    {
-      return static_cast<Base &>(*this);
-    }
-    const Base & base() const
-    {
-      return static_cast<const Base &>(*this);
-    }
-
-    BaseCommonParameters & base_common_parameters()
-    {
-      return static_cast<BaseCommonParameters &>(*this);
-    }
-    const BaseCommonParameters & base_common_parameters() const
-    {
-      return static_cast<const BaseCommonParameters &>(*this);
-    }
-
-    template<template<typename, int> class JointCollectionTpl>
-    void calc(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata) const
-    {
-      PINOCCHIO_UNUSED_VARIABLE(model);
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-    }
-
-    template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
-    void jacobian(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const;
-
-    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
-    typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
-    jacobianMatrixProduct(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<InputMatrix> & mat) const
-    {
-      typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
-        ReturnType;
-      ReturnType res(size(), mat.cols());
-      jacobianMatrixProduct(model, data, cdata, mat.derived(), res);
-      return res;
-    }
-
-    template<
-      typename InputMatrix,
-      typename OutputMatrix,
-      template<typename, int> class JointCollectionTpl,
-      AssignmentOperatorType op = SETTO>
-    void jacobianMatrixProduct(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<InputMatrix> & mat,
-      const Eigen::MatrixBase<OutputMatrix> & _res,
-      AssignmentOperatorTag<op> aot = SetTo()) const;
-
-    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
-    typename traits<Self>::template JacobianTransposeMatrixProductReturnType<InputMatrix>::type
-    jacobianTransposeMatrixProduct(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<InputMatrix> & mat) const
-    {
-      typedef
-        typename traits<Self>::template JacobianTransposeMatrixProductReturnType<InputMatrix>::type
-          ReturnType;
-      ReturnType res(model.nv, mat.cols());
-      jacobianTransposeMatrixProduct(model, data, cdata, mat.derived(), res);
-      return res;
-    }
-
-    template<
-      typename InputMatrix,
-      typename OutputMatrix,
-      template<typename, int> class JointCollectionTpl,
-      AssignmentOperatorType op = SETTO>
-    void jacobianTransposeMatrixProduct(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<InputMatrix> & mat,
-      const Eigen::MatrixBase<OutputMatrix> & _res,
-      AssignmentOperatorTag<op> aot = SetTo()) const;
-
-    /// \brief Returns the sparsity associated with a given row
-    const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
-      return row_sparsity_pattern[size_t(row_id)];
-    }
-
-    /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
-      return row_active_indexes[size_t(row_id)];
     }
 
     /// \brief Returns the vector of active joints
@@ -339,17 +282,141 @@ namespace pinocchio
       m_friction_upper_limit = ub;
     }
 
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    /// \copydoc RootBase::classname
+    static std::string classnameImpl()
+    {
+      return std::string("JointFrictionConstraintModel");
+    }
+
+    /// \copydoc RootBase::shortname
+    std::string shortnameImpl() const
+    {
+      return classname();
+    }
+
     /// \copydoc Base::set
     ConstraintSet setImpl() const
     {
       return ConstraintSet(m_friction_lower_limit, m_friction_upper_limit);
     }
 
+    /// \copydoc RootBase::createData
+    ConstraintData createDataImpl() const
+    {
+      return ConstraintData(*this);
+    }
+
+    /// \copydoc RootBase::size
+    int sizeImpl() const
+    {
+      return int(active_dofs.size());
+    }
+
+    /// \copydoc RootBase::calc
+    template<template<typename, int> class JointCollectionTpl>
+    void calcImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      ConstraintData & cdata) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+    }
+
+    /// \copydoc RootBase::jacobian
+    template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
+    void jacobianImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const;
+
+    /// \copydoc RootBase::jacobianMatrixProduct
+    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
+    typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
+    jacobianMatrixProductImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<InputMatrix> & mat) const
+    {
+      typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
+        ReturnType;
+      ReturnType res(size(), mat.cols());
+      jacobianMatrixProduct(model, data, cdata, mat.derived(), res);
+      return res;
+    }
+
+    /// \copydoc RootBase::jacobianMatrixProduct
+    template<
+      typename InputMatrix,
+      typename OutputMatrix,
+      template<typename, int> class JointCollectionTpl,
+      AssignmentOperatorType op = SETTO>
+    void jacobianMatrixProductImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<InputMatrix> & mat,
+      const Eigen::MatrixBase<OutputMatrix> & _res,
+      AssignmentOperatorTag<op> aot = SetTo()) const;
+
+    /// \copydoc RootBase::jacobianTransposeMatrixProduct
+    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
+    typename traits<Self>::template JacobianTransposeMatrixProductReturnType<InputMatrix>::type
+    jacobianTransposeMatrixProductImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<InputMatrix> & mat) const
+    {
+      typedef
+        typename traits<Self>::template JacobianTransposeMatrixProductReturnType<InputMatrix>::type
+          ReturnType;
+      ReturnType res(model.nv, mat.cols());
+      jacobianTransposeMatrixProduct(model, data, cdata, mat.derived(), res);
+      return res;
+    }
+
+    /// \copydoc RootBase::jacobianTransposeMatrixProduct
+    template<
+      typename InputMatrix,
+      typename OutputMatrix,
+      template<typename, int> class JointCollectionTpl,
+      AssignmentOperatorType op = SETTO>
+    void jacobianTransposeMatrixProductImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<InputMatrix> & mat,
+      const Eigen::MatrixBase<OutputMatrix> & _res,
+      AssignmentOperatorTag<op> aot = SetTo()) const;
+
+    /// \copydoc RootBase::getRowSparsityPattern
+    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      return row_sparsity_pattern[size_t(row_id)];
+    }
+
+    /// \copydoc RootBase::getActivableRowIndexes
+    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      return row_active_indexes[size_t(row_id)];
+    }
+
+    /// \copydoc RootBase::appendCouplingConstraintInertias
     template<
       template<typename, int> class JointCollectionTpl,
       typename VectorNLike,
       ReferenceFrame rf>
-    void appendCouplingConstraintInertias(
+    void appendCouplingConstraintInertiasImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -361,7 +428,7 @@ namespace pinocchio
       template<typename, int> class JointCollectionTpl,
       typename ConstraintForcesLike,
       typename JointTorquesLike>
-    void mapConstraintForceToJointTorques(
+    void mapConstraintForceToJointTorquesImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -373,52 +440,23 @@ namespace pinocchio
       template<typename, int> class JointCollectionTpl,
       typename JointMotionsLike,
       typename ConstraintMotionsLike>
-    void mapJointMotionsToConstraintMotion(
+    void mapJointMotionsToConstraintMotionImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
       const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions) const;
 
-    ///
-    ///  \brief Comparison operator
-    ///
-    /// \param[in] other Other JointFrictionConstraintModelTpl to compare with.
-    ///
-    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
-    /// must be the same).
-    ///
-    bool operator==(const JointFrictionConstraintModelTpl & other) const
-    {
-      if (this == &other)
-        return true;
-      return base() == other.base() && base_common_parameters() == other.base_common_parameters()
-             && active_dofs == other.active_dofs
-             && row_sparsity_pattern == other.row_sparsity_pattern
-             && row_active_indexes == other.row_active_indexes
-             && m_friction_lower_limit == other.m_friction_lower_limit
-             && m_friction_upper_limit == other.m_friction_upper_limit;
-    }
-
-    static std::string classname()
-    {
-      return std::string("JointFrictionConstraintModel");
-    }
-    std::string shortname() const
-    {
-      return classname();
-    }
-
-    bool operator!=(const JointFrictionConstraintModelTpl & other) const
-    {
-      return !(*this == other);
-    }
-
   protected:
     template<template<typename, int> class JointCollectionTpl>
     void init(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const JointIndexVector & active_joints);
+
+  protected:
+    // ------------------------------
+    // MEMBERS
+    // ------------------------------
 
     JointIndexVector active_joints;
     EigenIndexVector active_dofs;
@@ -445,29 +483,46 @@ namespace pinocchio
 
     typedef JointFrictionConstraintModelTpl<Scalar, Options> ConstraintModel;
 
+    using Base::classname;
+
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    /// \brief Default constructor
     JointFrictionConstraintDataTpl()
     {
     }
 
+    /// \brief Constructor from a constraint_model
     explicit JointFrictionConstraintDataTpl(const ConstraintModel & /*constraint_model*/)
     {
     }
 
+    /// \brief Comparison operator
     bool operator==(const JointFrictionConstraintDataTpl & /*other*/) const
     {
       return true;
     }
 
+    /// \brief Comparison operator
     bool operator!=(const JointFrictionConstraintDataTpl & other) const
     {
       return !(*this == other);
     }
 
-    static std::string classname()
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    /// \copydoc Base::classname
+    static std::string classnameImpl()
     {
       return std::string("JointFrictionConstraintData");
     }
-    std::string shortname() const
+
+    /// \copydoc Base::shortname
+    std::string shortnameImpl() const
     {
       return classname();
     }

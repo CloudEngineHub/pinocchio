@@ -40,7 +40,89 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> Matrix6x;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixX;
 
-    // data
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    /// \brief Cast to Base
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to Base
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
+    }
+
+    /// \brief Default constructor
+    FrameConstraintDataBase()
+    {
+    }
+
+    /// \brief Constructor from a constraint_model
+    explicit FrameConstraintDataBase(const ConstraintModel & constraint_model)
+    : constraint_force(Vector6::Zero())
+    , oMc1(SE3::Identity())
+    , oMc2(SE3::Identity())
+    , c1Mc2(SE3::Identity())
+    , constraint_position_error(Vector6::Zero())
+    , constraint_velocity_error(Vector6::Zero())
+    , constraint_acceleration_error(Vector6::Zero())
+    , constraint_acceleration_biais_term(Vector6::Zero())
+    //    , extended_motion_propagators_joint1(constraint_model.depth_joint1, Matrix6::Zero())
+    //    , lambdas_joint1(constraint_model.depth_joint1, Matrix6::Zero())
+    //    , extended_motion_propagators_joint2(constraint_model.depth_joint2, Matrix6::Zero())
+    //    , dv1_dq(6, constraint_model.nv)
+    //    , da1_dq(6, constraint_model.nv)
+    //    , da1_dv(6, constraint_model.nv)
+    //    , da1_da(6, constraint_model.nv)
+    //    , dv2_dq(6, constraint_model.nv)
+    //    , da2_dq(6, constraint_model.nv)
+    //    , da2_dv(6, constraint_model.nv)
+    //    , da2_da(6, constraint_model.nv)
+    //    , dvc_dq(constraint_model.size(), constraint_model.nv)
+    //    , dac_dq(constraint_model.size(), constraint_model.nv)
+    //    , dac_dv(constraint_model.size(), constraint_model.nv)
+    //    , dac_da(constraint_model.size(), constraint_model.nv)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(constraint_model);
+    }
+
+    /// \brief Comparison operator
+    bool operator==(const FrameConstraintDataBase & other) const
+    {
+      return constraint_force == other.constraint_force && oMc1 == other.oMc1 && oMc2 == other.oMc2
+             && c1Mc2 == other.c1Mc2 && constraint_position_error == other.constraint_position_error
+             && constraint_velocity_error == other.constraint_velocity_error
+             && constraint_acceleration_error == other.constraint_acceleration_error
+             && constraint_acceleration_biais_term == other.constraint_acceleration_biais_term
+        //      && extended_motion_propagators_joint1 == other.extended_motion_propagators_joint1
+        //      && lambdas_joint1 == other.lambdas_joint1
+        //      && extended_motion_propagators_joint2 == other.extended_motion_propagators_joint2
+        //
+        //      && dv1_dq == other.dv1_dq && da1_dq == other.da1_dq && da1_dv == other.da1_dv
+        //      && da1_da == other.da1_da
+        //        //
+        //      && dv2_dq == other.dv2_dq && da2_dq == other.da2_dq && da2_dv == other.da2_dv
+        //      && da2_da == other.da2_da
+        //        //
+        //      && dvc_dq == other.dvc_dq && dac_dq == other.dac_dq && dac_dv == other.dac_dv
+        //      && dac_da == other.dac_da
+        ;
+    }
+
+    /// \brief Comparison operator
+    bool operator!=(const FrameConstraintDataBase & other) const
+    {
+      return !(*this == other);
+    }
+
+    // ------------------------------
+    // MEMBERS
+    // ------------------------------
+    // note: data is always public - use at your own risk
 
     /// \brief Resulting contact forces
     Vector6 constraint_force;
@@ -81,77 +163,6 @@ namespace pinocchio
     //    Matrix6x dv1_dq, da1_dq, da1_dv, da1_da;
     //    Matrix6x dv2_dq, da2_dq, da2_dv, da2_da;
     //    MatrixX dvc_dq, dac_dq, dac_dv, dac_da;
-
-    /// \brief Default constructor
-    FrameConstraintDataBase()
-    {
-    }
-
-    explicit FrameConstraintDataBase(const ConstraintModel & constraint_model)
-    : constraint_force(Vector6::Zero())
-    , oMc1(SE3::Identity())
-    , oMc2(SE3::Identity())
-    , c1Mc2(SE3::Identity())
-    , constraint_position_error(Vector6::Zero())
-    , constraint_velocity_error(Vector6::Zero())
-    , constraint_acceleration_error(Vector6::Zero())
-    , constraint_acceleration_biais_term(Vector6::Zero())
-    //    , extended_motion_propagators_joint1(constraint_model.depth_joint1, Matrix6::Zero())
-    //    , lambdas_joint1(constraint_model.depth_joint1, Matrix6::Zero())
-    //    , extended_motion_propagators_joint2(constraint_model.depth_joint2, Matrix6::Zero())
-    //    , dv1_dq(6, constraint_model.nv)
-    //    , da1_dq(6, constraint_model.nv)
-    //    , da1_dv(6, constraint_model.nv)
-    //    , da1_da(6, constraint_model.nv)
-    //    , dv2_dq(6, constraint_model.nv)
-    //    , da2_dq(6, constraint_model.nv)
-    //    , da2_dv(6, constraint_model.nv)
-    //    , da2_da(6, constraint_model.nv)
-    //    , dvc_dq(constraint_model.size(), constraint_model.nv)
-    //    , dac_dq(constraint_model.size(), constraint_model.nv)
-    //    , dac_dv(constraint_model.size(), constraint_model.nv)
-    //    , dac_da(constraint_model.size(), constraint_model.nv)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(constraint_model);
-    }
-
-    bool operator==(const FrameConstraintDataBase & other) const
-    {
-      return constraint_force == other.constraint_force && oMc1 == other.oMc1 && oMc2 == other.oMc2
-             && c1Mc2 == other.c1Mc2 && constraint_position_error == other.constraint_position_error
-             && constraint_velocity_error == other.constraint_velocity_error
-             && constraint_acceleration_error == other.constraint_acceleration_error
-             && constraint_acceleration_biais_term == other.constraint_acceleration_biais_term
-        //      && extended_motion_propagators_joint1 == other.extended_motion_propagators_joint1
-        //      && lambdas_joint1 == other.lambdas_joint1
-        //      && extended_motion_propagators_joint2 == other.extended_motion_propagators_joint2
-        //
-        //      && dv1_dq == other.dv1_dq && da1_dq == other.da1_dq && da1_dv == other.da1_dv
-        //      && da1_da == other.da1_da
-        //        //
-        //      && dv2_dq == other.dv2_dq && da2_dq == other.da2_dq && da2_dv == other.da2_dv
-        //      && da2_da == other.da2_da
-        //        //
-        //      && dvc_dq == other.dvc_dq && dac_dq == other.dac_dq && dac_dv == other.dac_dv
-        //      && dac_da == other.dac_da
-        ;
-    }
-
-    bool operator!=(const FrameConstraintDataBase & other) const
-    {
-      return !(*this == other);
-    }
-
-    using Base::derived;
-
-    Base & base()
-    {
-      return static_cast<Base &>(*this);
-    }
-    const Base & base() const
-    {
-      return static_cast<const Base &>(*this);
-    }
   };
 
 } // namespace pinocchio

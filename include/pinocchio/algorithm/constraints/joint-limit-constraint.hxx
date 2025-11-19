@@ -271,7 +271,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<template<typename, int> class JointCollectionTpl>
-  void JointLimitConstraintModelTpl<Scalar, Options>::calc(
+  void JointLimitConstraintModelTpl<Scalar, Options>::calcImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     ConstraintData & cdata) const
@@ -315,7 +315,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
-  void JointLimitConstraintModelTpl<Scalar, Options>::jacobian(
+  void JointLimitConstraintModelTpl<Scalar, Options>::jacobianImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & /*data*/,
     const ConstraintData & cdata,
@@ -366,7 +366,7 @@ namespace pinocchio
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
-  void JointLimitConstraintModelTpl<Scalar, Options>::jacobianMatrixProduct(
+  void JointLimitConstraintModelTpl<Scalar, Options>::jacobianMatrixProductImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -434,7 +434,7 @@ namespace pinocchio
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
-  void JointLimitConstraintModelTpl<Scalar, Options>::jacobianTransposeMatrixProduct(
+  void JointLimitConstraintModelTpl<Scalar, Options>::jacobianTransposeMatrixProductImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -501,7 +501,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename VectorNLike,
     ReferenceFrame rf>
-  void JointLimitConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertias(
+  void JointLimitConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertiasImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -575,7 +575,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConstraintForcesLike,
     typename JointTorquesLike>
-  void JointLimitConstraintModelTpl<Scalar, Options>::mapConstraintForceToJointTorques(
+  void JointLimitConstraintModelTpl<Scalar, Options>::mapConstraintForceToJointTorquesImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -630,7 +630,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename JointMotionsLike,
     typename ConstraintMotionsLike>
-  void JointLimitConstraintModelTpl<Scalar, Options>::mapJointMotionsToConstraintMotion(
+  void JointLimitConstraintModelTpl<Scalar, Options>::mapJointMotionsToConstraintMotionImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,

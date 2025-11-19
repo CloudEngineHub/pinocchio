@@ -87,30 +87,39 @@ namespace pinocchio
       BaumgarteCorrectorVectorParameters;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
-    using Base::activeSize;
-    using Base::derived;
-    using typename Base::BooleanVector;
-    using typename Base::EigenIndexVector;
-
     typedef SE3Tpl<Scalar, Options> SE3;
     typedef MotionTpl<Scalar, Options> Motion;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Vector6 VectorConstraintSize;
 
+    using Base::activeSize;
+    using Base::jacobianMatrixProduct;
+    using Base::jacobianTransposeMatrixProduct;
+
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    /// \brief Cast to Base
     Base & base()
     {
       return static_cast<Base &>(*this);
     }
+
+    /// \brief Const cast to Base
     const Base & base() const
     {
       return static_cast<const Base &>(*this);
     }
 
+    /// \brief Cast to BaseCommonParameters.
     BaseCommonParameters & base_common_parameters()
     {
       return static_cast<BaseCommonParameters &>(*this);
     }
+
+    /// \brief Const cast to BaseCommonParameters.
     const BaseCommonParameters & base_common_parameters() const
     {
       return static_cast<const BaseCommonParameters &>(*this);
@@ -118,7 +127,7 @@ namespace pinocchio
 
   public:
     ///
-    ///  \brief Default constructor
+    /// \brief Default constructor
     ///
     FrameConstraintModelBase()
     : Base()
@@ -126,7 +135,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type, joint indexes and placements.
+    /// \brief Contructor from joint indexes and placements.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] model Model associated to the constraint.
@@ -149,7 +158,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type, joint1_id and placement.
+    /// \brief Contructor from joint1_id and placement.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -167,7 +176,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type and the joint ids.
+    /// \brief Contructor from joint ids.
     ///
     /// \param[in] model Kinematic tree.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -183,7 +192,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type and .
+    /// \brief Contructor from joint1_id.
     ///
     /// \param[in] model Kinematic tree.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -196,28 +205,6 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
     : Base(model, joint1_id)
     {
-    }
-
-    ///
-    /// \brief Create data storage associated to the constraint
-    ///
-    ConstraintData createData() const
-    {
-      return ConstraintData(*this);
-    }
-
-    /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
-      return this->colwise_sparsity;
-    }
-
-    /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
-      return this->colwise_span_indexes;
     }
 
     ///
@@ -246,6 +233,23 @@ namespace pinocchio
       return Base::operator!=(other);
     }
 
+    /// \returns An expression of *this with the Scalar type casted to NewScalar.
+    template<typename NewScalar, typename OtherDerived>
+    void cast(FrameConstraintModelBase<OtherDerived> & res) const
+    {
+      Base::template cast<NewScalar>(res);
+    }
+
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    /// \copydoc RootBase::size
+    static constexpr int sizeImpl()
+    {
+      return 6;
+    }
+
     /// \brief Evaluate the constraint values at the current state given by data and store the
     /// results in cdata.
     /// \note data must be populated by results of a `forwardKinematic(model, data, q, v, a)`.
@@ -253,7 +257,7 @@ namespace pinocchio
     /// velocity error, on a the constraint acceleration error.
     /// Typically, a call to `aba` will fill all the necessary fields of data.
     template<template<typename, int> class JointCollectionTpl>
-    void calc(
+    void calcImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       ConstraintData & cdata) const
@@ -419,11 +423,12 @@ namespace pinocchio
         I12.const_cast_derived().setZero();
     }
 
+    /// \copydoc RootBase::appendCouplingConstraintInertiasImpl
     template<
       template<typename, int> class JointCollectionTpl,
       typename Vector6Like,
       ReferenceFrame rf>
-    void appendCouplingConstraintInertias(
+    void appendCouplingConstraintInertiasImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -543,9 +548,10 @@ namespace pinocchio
     //      }
     //    }
 
+    /// \copydoc RootBase::jacobianMatrixProduct
     template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
     typename traits<Derived>::template JacobianMatrixProductReturnType<InputMatrix>::type
-    jacobianMatrixProduct(
+    jacobianMatrixProductImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -558,12 +564,13 @@ namespace pinocchio
       return res;
     }
 
+    /// \copydoc RootBase::jacobianMatrixProduct
     template<
       typename InputMatrix,
       typename OutputMatrix,
       template<typename, int> class JointCollectionTpl,
       AssignmentOperatorType op = SETTO>
-    void jacobianMatrixProduct(
+    void jacobianMatrixProductImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -577,7 +584,7 @@ namespace pinocchio
 
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), size());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), activeSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(aot);
 
       if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
@@ -614,9 +621,10 @@ namespace pinocchio
       }
     }
 
+    /// \copydoc RootBase::jacobianTransposeMatrixProduct
     template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
     typename traits<Derived>::template JacobianTransposeMatrixProductReturnType<InputMatrix>::type
-    jacobianTransposeMatrixProduct(
+    jacobianTransposeMatrixProductImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -629,12 +637,13 @@ namespace pinocchio
       return res;
     }
 
+    /// \copydoc RootBase::jacobianTransposeMatrixProduct
     template<
       typename InputMatrix,
       typename OutputMatrix,
       template<typename, int> class JointCollectionTpl,
       AssignmentOperatorType op = SETTO>
-    void jacobianTransposeMatrixProduct(
+    void jacobianTransposeMatrixProductImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -646,7 +655,7 @@ namespace pinocchio
       typedef typename Data::Vector6 Vector6;
       OutputMatrix & res = _res.const_cast_derived();
 
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), size());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), activeSize(cdata));
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), mat.cols());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), model.nv);
       PINOCCHIO_UNUSED_VARIABLE(aot);
@@ -679,14 +688,9 @@ namespace pinocchio
       }
     }
 
-    using RootBase::jacobian;
-
-    ///  \brief Evaluate the Jacobian associated to the constraint at the given state stored in data
-    /// and cdata.
-    /// The results Jacobian is evaluated in the jacobian input/output matrix.
-    /// This method assumes that the constrained data is up-to-date.
+    /// \copydoc RootBase::jacobian
     template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
-    void jacobian(
+    void jacobianImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -723,7 +727,7 @@ namespace pinocchio
     }
 
     ///
-    /// \copydoc Base::mapConstraintForceToJointForces(const ModelTpl<Scalar, Options,
+    /// \copydoc RootBase::mapConstraintForceToJointForces(const ModelTpl<Scalar, Options,
     /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> &, const
     /// ConstraintData &, const Eigen::MatrixBase<ForceLike> &, std::vector<ForceTpl<Scalar,
     /// Options>, ForceAllocator> &, ReferenceFrameTag<rf>)
@@ -733,7 +737,7 @@ namespace pinocchio
       typename ForceLike,
       typename ForceAllocator,
       ReferenceFrame rf>
-    void mapConstraintForceToJointForces(
+    void mapConstraintForceToJointForcesImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -742,7 +746,7 @@ namespace pinocchio
       ReferenceFrameTag<rf> reference_frame) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), size());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), activeSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
@@ -759,7 +763,7 @@ namespace pinocchio
     }
 
     ///
-    /// \copydoc Base::mapJointMotionsToConstraintMotion(const ModelTpl<Scalar, Options,
+    /// \copydoc RootBase::mapJointMotionsToConstraintMotion(const ModelTpl<Scalar, Options,
     /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> &, const
     /// ConstraintData &, const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> &, const
     /// Eigen::MatrixBase<VectorLike> &, ReferenceFrameTag<rf>)
@@ -769,7 +773,7 @@ namespace pinocchio
       typename MotionAllocator,
       typename VectorLike,
       ReferenceFrame rf>
-    void mapJointMotionsToConstraintMotion(
+    void mapJointMotionsToConstraintMotionImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -801,17 +805,6 @@ namespace pinocchio
         constraint_motion.const_cast_derived().setZero();
     }
 
-    static constexpr int size()
-    {
-      return 6;
-    }
-
-    /// \returns An expression of *this with the Scalar type casted to NewScalar.
-    template<typename NewScalar, typename OtherDerived>
-    void cast(FrameConstraintModelBase<OtherDerived> & res) const
-    {
-      Base::template cast<NewScalar>(res);
-    }
   }; // FrameConstraintModelBase<Derived>
 
 } // namespace pinocchio

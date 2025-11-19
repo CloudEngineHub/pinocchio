@@ -26,7 +26,6 @@ struct TestBoxTpl
   typedef _ConstraintModel ConstraintModel;
 
   typedef typename ConstraintModel::ConstraintData ConstraintData;
-  typedef typename ConstraintModel::ConstraintSet ConstraintSet;
 
   TestBoxTpl(const Model & model, const std::vector<ConstraintModel> & constraint_models)
   : model(model)
@@ -509,7 +508,6 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   typedef JointFrictionConstraintModel ConstraintModel;
   typedef ConstraintModel::ConstraintData ConstraintData;
-  typedef ConstraintModel::ConstraintSet ConstraintSet;
   std::vector<ConstraintModel> constraint_models;
   std::vector<ConstraintData> constraint_datas;
 

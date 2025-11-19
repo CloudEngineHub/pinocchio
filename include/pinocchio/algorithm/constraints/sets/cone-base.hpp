@@ -19,14 +19,12 @@ namespace pinocchio
 
     typedef SetBase<Derived> Base;
 
-    // ------------------------------
-    // Methods inherited from base
-
     using Base::derived;
-    using Base::scaledProject;
+    using Base::project;
 
-    // ------------------------------
-    // Methods specific to class
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
 
     /// \brief Cast to base class.
     Base & base()
@@ -58,8 +56,9 @@ namespace pinocchio
       return derived().dualImpl();
     }
 
-    // ------------------------------
-    // Implementations of base methods
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
 
     /// \copydoc Base::scaledProj
     template<typename VectorLikeIn, typename VectorLikeIn2, typename VectorLikeOut>

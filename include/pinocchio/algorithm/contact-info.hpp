@@ -397,20 +397,20 @@ namespace pinocchio
     ///
     /// \brief Create data storage associated to the constraint
     ///
-    ConstraintData createData() const
+    ConstraintData createDataImpl() const
     {
       return ConstraintData(*this);
     }
 
     /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowSparsityPattern(const Eigen::DenseIndex row_id) const
+    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return colwise_sparsity;
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
+    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
       return colwise_span_indexes;
@@ -494,7 +494,7 @@ namespace pinocchio
     /// \brief Evaluate the constraint values at the current state given by data and store the
     /// results in cdata.
     template<template<typename, int> class JointCollectionTpl>
-    void calc(
+    void calcImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       RigidConstraintDataTpl<Scalar, Options> & cdata) const
@@ -644,7 +644,7 @@ namespace pinocchio
       typename Vector3Like,
       typename Matrix6Like,
       typename Matrix6LikeAllocator>
-    void appendCouplingConstraintInertias(
+    void appendCouplingConstraintInertiasImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const RigidConstraintDataTpl<Scalar, Options> & cdata,
@@ -730,7 +730,7 @@ namespace pinocchio
     /// and cdata.  The results Jacobian is evaluated in the jacobian input/output matrix.
     /// \remarks This method assumes `calc` has been called on this contraint model.
     template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
-    void jacobian(
+    void jacobianImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const RigidConstraintDataTpl<Scalar, Options> & cdata,
@@ -854,7 +854,7 @@ namespace pinocchio
       template<typename, int> class JointCollectionTpl,
       typename ForceLike,
       typename ForceAllocator>
-    void mapConstraintForceToJointForces(
+    void mapConstraintForceToJointForcesImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const RigidConstraintDataTpl<Scalar, Options> & cdata,
@@ -878,7 +878,7 @@ namespace pinocchio
       template<typename, int> class JointCollectionTpl,
       typename MotionAllocator,
       typename VectorLike>
-    void mapJointMotionsToConstraintMotion(
+    void mapJointMotionsToConstraintMotionImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const RigidConstraintDataTpl<Scalar, Options> & cdata,
@@ -916,7 +916,7 @@ namespace pinocchio
         constraint_value.const_cast_derived().setZero();
     }
 
-    int size() const
+    int sizeImpl() const
     {
       switch (type)
       {
@@ -930,6 +930,7 @@ namespace pinocchio
       return -1;
     }
     using Base::activeSize;
+    using Base::size;
 
     /// \returns An expression of *this with the Scalar type casted to NewScalar.
     template<typename NewScalar>

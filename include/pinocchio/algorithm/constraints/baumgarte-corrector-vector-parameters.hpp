@@ -44,6 +44,10 @@ namespace pinocchio
     template<typename OtherVectorType>
     friend struct BaumgarteCorrectorVectorParametersTpl;
 
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
     /// \brief Default constructor with 0-size Kp and Kd.
     /// It is needed for constraints that don't have baumgarte correction.
     BaumgarteCorrectorVectorParametersTpl()
@@ -113,13 +117,6 @@ namespace pinocchio
       return *this;
     }
 
-    // parameters
-    /// \brief Proportional corrector values.
-    VectorType Kp;
-
-    /// \brief Damping corrector values.
-    VectorType Kd;
-
     template<typename NewScalar>
     typename CastType<NewScalar, BaumgarteCorrectorVectorParametersTpl>::type cast() const
     {
@@ -129,6 +126,16 @@ namespace pinocchio
       res.Kd = Kd.template cast<NewScalar>();
       return res;
     }
+
+    // ------------------------------
+    // MEMBERS
+    // ------------------------------
+
+    /// \brief Proportional corrector values.
+    VectorType Kp;
+
+    /// \brief Damping corrector values.
+    VectorType Kd;
 
   }; // struct BaumgarteCorrectorVectorParametersTpl
 } // namespace pinocchio

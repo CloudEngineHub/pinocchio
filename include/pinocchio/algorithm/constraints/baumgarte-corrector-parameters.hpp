@@ -30,6 +30,10 @@ namespace pinocchio
   {
     typedef _Scalar Scalar;
 
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
     /// \brief Default constructor initializes Kp and Kd to 0 (no correction).
     /// It is needed for constraints that don't have baumgarte correction.
     BaumgarteCorrectorParametersTpl()
@@ -45,6 +49,7 @@ namespace pinocchio
     {
     }
 
+    /// \brief Comparison operator
     bool operator==(const BaumgarteCorrectorParametersTpl & other) const
     {
       if (this == &other)
@@ -52,18 +57,13 @@ namespace pinocchio
       return Kp == other.Kp && Kd == other.Kd;
     }
 
+    /// \brief Comparison operator
     bool operator!=(const BaumgarteCorrectorParametersTpl & other) const
     {
       return !(*this == other);
     }
 
-    // parameters
-    /// \brief Proportional corrector values.
-    Scalar Kp;
-
-    /// \brief Damping corrector values.
-    Scalar Kd;
-
+    /// \brief Cast to NewScalar
     template<typename NewScalar>
     typename CastType<NewScalar, BaumgarteCorrectorParametersTpl>::type cast() const
     {
@@ -73,6 +73,16 @@ namespace pinocchio
       res.Kd = NewScalar(Kd);
       return res;
     }
+
+    // ------------------------------
+    // MEMBERS
+    // ------------------------------
+
+    /// \brief Proportional corrector values.
+    Scalar Kp;
+
+    /// \brief Damping corrector values.
+    Scalar Kd;
 
   }; // struct BaumgarteCorrectorParametersTpl
 } // namespace pinocchio

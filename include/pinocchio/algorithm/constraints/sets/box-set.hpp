@@ -37,15 +37,11 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
     typedef SetBase<BoxSetTpl> Base;
 
-    // ------------------------------
-    // Methods inherited from base
-
-    using Base::isInside;
     using Base::project;
-    using Base::scaledProject;
 
-    // ------------------------------
-    // Methods specific to class
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
 
     /// \brief Constructor lb and ub.
     /// Internally, a const reference to these vectors is kept.
@@ -114,8 +110,9 @@ namespace pinocchio
       return math::max(lb[row_id], math::min(ub[row_id], value));
     }
 
-    // ------------------------------
-    // Implementation of base methods
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
 
     /// \copydoc Base::isInside
     template<typename VectorLike>
@@ -149,12 +146,14 @@ namespace pinocchio
     }
 
     // ------------------------------
-    // Members
+    // MEMBERS
+    // ------------------------------
 
     /// \brief Reference to the lower bound of the box.
     const Vector & lb;
     /// \brief Reference to the upper bound of the box.
     const Vector & ub;
+
   }; // BoxSetTpl
 
 } // namespace pinocchio

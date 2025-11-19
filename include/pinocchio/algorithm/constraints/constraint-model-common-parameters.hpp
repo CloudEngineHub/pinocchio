@@ -39,6 +39,10 @@ namespace pinocchio
     //   BaumgarteCorrectorVectorParametersConstRef;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
     /// \brief Cast to NewScalar
     template<typename NewScalar, typename OtherDerived>
     void cast(ConstraintModelCommonParameters<OtherDerived> & other) const
@@ -109,6 +113,10 @@ namespace pinocchio
     ConstraintModelCommonParameters()
     {
     }
+
+    // ------------------------------
+    // MEMBERS
+    // ------------------------------
 
     ComplianceVectorType m_compliance;
     // CHOICE: right now we use the scalar Baumgarte

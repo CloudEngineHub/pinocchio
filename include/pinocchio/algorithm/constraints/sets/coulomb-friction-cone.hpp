@@ -42,15 +42,9 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
     typedef ConeBase<CoulombFrictionConeTpl> Base;
 
-    // ------------------------------
-    // Methods inherited from base
-
-    using Base::dual;
-    using Base::isInside;
-    using Base::project;
-
-    // ------------------------------
-    // Methods specific to class
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
 
     /// \brief Constructor from a reference to a friction coefficient mu.
     ///
@@ -188,8 +182,9 @@ namespace pinocchio
       return math::fabs(f.dot(v));
     }
 
-    // ------------------------------
-    // Implementations of base methods
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
 
     /// \copydoc Base::dual
     DualCone dualImpl() const
@@ -250,7 +245,8 @@ namespace pinocchio
     }
 
     // ------------------------------
-    // Members
+    // MEMBERS
+    // ------------------------------
 
     /// \brief Reference to a friction coefficient.
     /// This is a const reference to some memory owning mu.
@@ -272,14 +268,9 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
     typedef ConeBase<DualCoulombFrictionConeTpl> Base;
 
-    // ------------------------------
-    // Methods inherited from base
-
-    using Base::isInside;
-    using Base::project;
-
-    // ------------------------------
-    // Methods specific to class
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
 
     /// \brief Constructor from a friction coefficient mu
     ///
@@ -330,8 +321,9 @@ namespace pinocchio
       return static_cast<const Base &>(*this);
     }
 
-    // ------------------------------
-    // Implementations of base methods
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
 
     /// \brief Returns the dual cone associated to this.
     DualCone dualImpl() const
@@ -390,7 +382,8 @@ namespace pinocchio
     }
 
     // ------------------------------
-    // Members
+    // MEMBERS
+    // ------------------------------
 
     /// \var Reference to a friction coefficient
     const Scalar & mu;

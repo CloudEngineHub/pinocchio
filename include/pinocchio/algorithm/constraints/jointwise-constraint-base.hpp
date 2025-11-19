@@ -21,34 +21,50 @@ namespace pinocchio
     };
     typedef ConstraintModelBase<Derived> Base;
 
-    using Base::derived;
-    using typename Base::BooleanVector;
-    using typename Base::EigenIndexVector;
-
     typedef typename traits<Derived>::ConstraintData ConstraintData;
     typedef typename traits<Derived>::ConstraintSet ConstraintSet;
 
+    using Base::derived;
+
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    /// \brief Cast to Base
     Base & base()
     {
       return static_cast<Base &>(*this);
     }
+
+    /// \brief Const cast to Base
     const Base & base() const
     {
       return static_cast<const Base &>(*this);
     }
 
+  protected:
+    /// \brief Default constructor
+    /// Protected so can't be used
+    JointWiseConstraintModelBase()
+    {
+    }
+
+  public:
+    /// \brief Default constructor from model
     template<int Options, template<typename, int> class JointCollectionTpl>
     JointWiseConstraintModelBase(const ModelTpl<Scalar, Options, JointCollectionTpl> & model)
     : Base(model)
     {
     }
 
+    /// \brief Comparison operator
     template<typename OtherDerived>
     bool operator==(const JointWiseConstraintModelBase<OtherDerived> & other) const
     {
       return base() == other.base();
     }
 
+    /// \brief Comparison operator
     template<typename OtherDerived>
     bool operator!=(const JointWiseConstraintModelBase<OtherDerived> & other) const
     {
@@ -78,35 +94,8 @@ namespace pinocchio
       const Eigen::MatrixBase<ConstraintForcesLike> & constraint_forces,
       const Eigen::MatrixBase<JointTorquesLike> & joint_torques) const
     {
-      derived().mapConstraintForceToJointTorques(
+      derived().mapConstraintForceToJointTorquesImpl(
         model, data, cdata, constraint_forces, joint_torques.const_cast_derived());
-    }
-
-    ///
-    /// \copydoc Base::mapConstraintForceToJointSpace(const ModelTpl<Scalar, Options,
-    /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> , const
-    /// ConstraintData &, const Eigen::MatrixBase<ConstraintForceLike> &,
-    /// std::vector<ForceTpl<Scalar, Options>, ForceAllocator> &, const
-    /// Eigen::MatrixBase<JointTorquesLike> &,ReferenceFrameTag<rf>)
-    ///
-    template<
-      template<typename, int> class JointCollectionTpl,
-      typename ConstraintForceLike,
-      typename ForceAllocator,
-      typename JointTorquesLike,
-      ReferenceFrame rf>
-    void mapConstraintForceToJointSpace(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<ConstraintForceLike> & constraint_forces,
-      std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces,
-      const Eigen::MatrixBase<JointTorquesLike> & joint_torques,
-      ReferenceFrameTag<rf> reference_frame) const
-    {
-      PINOCCHIO_UNUSED_VARIABLE(joint_forces);
-      PINOCCHIO_UNUSED_VARIABLE(reference_frame);
-      mapConstraintForceToJointTorques(model, data, cdata, constraint_forces, joint_torques);
     }
 
     /// \brief Map the joint motions to the constraint motions.
@@ -129,25 +118,52 @@ namespace pinocchio
       const Eigen::MatrixBase<JointMotionsLike> & joint_generalized_velocity,
       const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions) const
     {
-      derived().mapJointMotionsToConstraintMotion(
+      derived().mapJointMotionsToConstraintMotionImpl(
         model, data, cdata, joint_generalized_velocity, constraint_motions.const_cast_derived());
     }
 
-    ///
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    /// \copydoc Base::mapConstraintForceToJointSpace(const ModelTpl<Scalar, Options,
+    /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> , const
+    /// ConstraintData &, const Eigen::MatrixBase<ConstraintForceLike> &,
+    /// std::vector<ForceTpl<Scalar, Options>, ForceAllocator> &, const
+    /// Eigen::MatrixBase<JointTorquesLike> &,ReferenceFrameTag<rf>)
+    template<
+      template<typename, int> class JointCollectionTpl,
+      typename ConstraintForceLike,
+      typename ForceAllocator,
+      typename JointTorquesLike,
+      ReferenceFrame rf>
+    void mapConstraintForceToJointSpaceImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<ConstraintForceLike> & constraint_forces,
+      std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces,
+      const Eigen::MatrixBase<JointTorquesLike> & joint_torques,
+      ReferenceFrameTag<rf> reference_frame) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(joint_forces);
+      PINOCCHIO_UNUSED_VARIABLE(reference_frame);
+      mapConstraintForceToJointTorques(model, data, cdata, constraint_forces, joint_torques);
+    }
+
     ///\copydoc Base::mapJointSpaceToConstraintMotion(const ModelTpl<Scalar, Options,
     /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> , const
     /// ConstraintData &,
     /// std::vector<MotionTpl<Scalar, Options>, MotionAllocator> &, const
     /// Eigen::MatrixBase<JointMotionsLike> &, const Eigen::MatrixBase<VectorLike>
     /// &,ReferenceFrameTag<rf>)
-    ///
     template<
       template<typename, int> class JointCollectionTpl,
       typename MotionAllocator,
       typename JointMotionsLike,
       typename VectorLike,
       ReferenceFrame rf>
-    void mapJointSpaceToConstraintMotion(
+    void mapJointSpaceToConstraintMotionImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const ConstraintData & cdata,
@@ -160,12 +176,6 @@ namespace pinocchio
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
       mapJointMotionsToConstraintMotion(
         model, data, cdata, joint_generalized_velocity, constraint_motions.const_cast_derived());
-    }
-
-  protected:
-    /// \brief Default constructor
-    JointWiseConstraintModelBase()
-    {
     }
   }; // struct JointWiseConstraintModelBase
 } // namespace pinocchio

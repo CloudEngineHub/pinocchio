@@ -88,7 +88,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
-  void JointFrictionConstraintModelTpl<Scalar, Options>::jacobian(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & /*data*/,
     const ConstraintData & cdata,
@@ -118,7 +118,7 @@ namespace pinocchio
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
-  void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianMatrixProduct(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianMatrixProductImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -155,7 +155,7 @@ namespace pinocchio
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
-  void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianTransposeMatrixProduct(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianTransposeMatrixProductImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -191,7 +191,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename VectorNLike,
     ReferenceFrame rf>
-  void JointFrictionConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertias(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertiasImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -223,7 +223,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConstraintForcesLike,
     typename JointTorquesLike>
-  void JointFrictionConstraintModelTpl<Scalar, Options>::mapConstraintForceToJointTorques(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::mapConstraintForceToJointTorquesImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,
@@ -250,7 +250,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename JointMotionsLike,
     typename ConstraintMotionsLike>
-  void JointFrictionConstraintModelTpl<Scalar, Options>::mapJointMotionsToConstraintMotion(
+  void JointFrictionConstraintModelTpl<Scalar, Options>::mapJointMotionsToConstraintMotionImpl(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const ConstraintData & cdata,

@@ -26,13 +26,12 @@ namespace pinocchio
     typedef ConeBase<NonNegativeOrthantConeTpl> Base;
     typedef typename traits<NonNegativeOrthantConeTpl>::DualCone DualCone;
 
-    // ------------------------------
-    // Methods inherited from base
-
     using Base::derived;
-    using Base::dual;
-    using Base::isInside;
     using Base::project;
+
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
 
     /// \brief Cast to base class.
     const Base & base() const
@@ -64,8 +63,9 @@ namespace pinocchio
       return math::max(Scalar(0), value);
     }
 
-    // ------------------------------
-    // Implementations of base methods
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
 
     /// \copydoc Base::dual
     DualCone dualImpl() const

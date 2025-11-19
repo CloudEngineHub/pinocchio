@@ -85,6 +85,96 @@ namespace pinocchio
       other.name = name;
     }
 
+    /// \brief Cast to base.
+    ConstraintModelBase & base()
+    {
+      return *this;
+    }
+
+    /// \brief Const cast to base.
+    const ConstraintModelBase & base() const
+    {
+      return *this;
+    }
+
+    /// \brief Copy operator.
+    template<typename OtherDerived>
+    ConstraintModelBase & operator=(const ConstraintModelBase<OtherDerived> & other)
+    {
+      name = other.name;
+
+      return *this;
+    }
+
+    /// \brief Equality comparison operator.
+    template<typename OtherDerived>
+    bool operator==(const ConstraintModelBase<OtherDerived> & other) const
+    {
+      return name == other.name;
+    }
+
+    /// \brief Difference comparison operator.
+    template<typename OtherDerived>
+    bool operator!=(const ConstraintModelBase<OtherDerived> & other) const
+    {
+      return !(*this == other);
+    }
+
+    /// \brief Returns a constraint data associated to this constraint model.
+    ConstraintData createData() const
+    {
+      return derived().createDataImpl();
+    }
+
+    /// \brief Returns the name of the underlying class if this is a variant.
+    std::string shortname() const
+    {
+      return derived().shortnameImpl();
+    }
+
+    /// \brief Returns the name of the underlying class if this is a variant.
+    static std::string classname()
+    {
+      return Derived::classnameImpl();
+    }
+
+    /// \brief Prints the shortname of the constraint.
+    void disp(std::ostream & os) const
+    {
+      using namespace std;
+      os << shortname() << endl;
+    }
+
+    /// \copydoc disp
+    friend std::ostream &
+    operator<<(std::ostream & os, const ConstraintModelBase<Derived> & constraint)
+    {
+      constraint.disp(os);
+      return os;
+    }
+
+    /// \brief Returns the (maximum) size of the constraint.
+    int size() const
+    {
+      return derived().sizeImpl();
+    }
+
+    /// \brief Returns the current size of the constraint, typically after `calc` has been called.
+    /// \note If constraints are dynamic (e.g. joint limits), activeSize is computed when
+    /// calling the calc method.
+    template<typename ConstraintDataDerived>
+    int activeSize(const ConstraintDataBase<ConstraintDataDerived> & constraint_data) const
+    {
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return size();
+      }
+      else
+      {
+        return derived().activeSizeImpl(constraint_data.derived());
+      }
+    }
+
     /// \brief Evaluate the constraint values at the current state given by data and store the
     /// results in cdata.
     template<int Options, template<typename, int> class JointCollectionTpl>
@@ -93,13 +183,13 @@ namespace pinocchio
       const DataTpl<Scalar, Options, JointCollectionTpl> & data,
       ConstraintData & cdata) const
     {
-      derived().calc(model, data, cdata);
+      derived().calcImpl(model, data, cdata);
     }
 
     /// \brief Evaluate the Jacobian associated to the constraint at the given state stored in data
     /// and cdata.
     /// The results Jacobian is evaluated in the jacobian input/output matrix.
-    /// This method assumes that the constrained data is up-to-date.
+    /// This method assumes that the constrained data is up-to-date (calc has been called).
     template<int Options, template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
     void jacobian(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -107,9 +197,10 @@ namespace pinocchio
       const ConstraintData & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & jacobian_matrix) const
     {
-      derived().jacobian(model, data, cdata, jacobian_matrix.const_cast_derived());
+      derived().jacobianImpl(model, data, cdata, jacobian_matrix.const_cast_derived());
     }
 
+    /// \copydoc jacobian
     template<int Options, template<typename, int> class JointCollectionTpl>
     typename traits<Derived>::JacobianMatrixType jacobian(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -124,6 +215,7 @@ namespace pinocchio
       return res;
     }
 
+    /// \brief Evaluates the constraint jacobian against an input matrix mat.
     template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
     typename traits<Derived>::template JacobianMatrixProductReturnType<InputMatrix>::type
     jacobianMatrixProduct(
@@ -132,9 +224,10 @@ namespace pinocchio
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat) const
     {
-      return derived().jacobianMatrixProduct(model, data, cdata, mat.derived());
+      return derived().jacobianMatrixProductImpl(model, data, cdata, mat.derived());
     }
 
+    /// \brief Evaluates the constraint jacobian against an input matrix mat.
     template<
       typename InputMatrix,
       typename OutputMatrix,
@@ -148,10 +241,11 @@ namespace pinocchio
       const Eigen::MatrixBase<OutputMatrix> & res,
       AssignmentOperatorTag<op> aot = SetTo()) const
     {
-      derived().jacobianMatrixProduct(
+      derived().jacobianMatrixProductImpl(
         model, data, cdata, mat.derived(), res.const_cast_derived(), aot);
     }
 
+    /// \brief Evaluates the transpose of the constraint jacobian against an input matrix mat.
     template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
     typename traits<Derived>::template JacobianTransposeMatrixProductReturnType<InputMatrix>::type
     jacobianTransposeMatrixProduct(
@@ -160,9 +254,10 @@ namespace pinocchio
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat) const
     {
-      return derived().jacobianTransposeMatrixProduct(model, data, cdata, mat.derived());
+      return derived().jacobianTransposeMatrixProductImpl(model, data, cdata, mat.derived());
     }
 
+    /// \brief Evaluates the transpose of the constraint jacobian against an input matrix mat.
     template<
       typename InputMatrix,
       typename OutputMatrix,
@@ -176,11 +271,10 @@ namespace pinocchio
       const Eigen::MatrixBase<OutputMatrix> & res,
       AssignmentOperatorTag<op> aot = SetTo()) const
     {
-      derived().jacobianTransposeMatrixProduct(
+      derived().jacobianTransposeMatrixProductImpl(
         model, data, cdata, mat.derived(), res.const_cast_derived(), aot);
     }
 
-    ///
     /// \brief Map the constraint forces (aka constraint Lagrange multipliers) to joint space (e.g.,
     /// joint forces, joint torque vector).
     ///
@@ -194,7 +288,6 @@ namespace pinocchio
     /// \param[in] reference_frame Input reference frame in which the forces are expressed.
     ///
     /// \note The results will be added to the joint_forces and joint_torques ouput argument.
-    ///
     template<
       template<typename, int> class JointCollectionTpl,
       typename ConstraintForceLike,
@@ -210,12 +303,11 @@ namespace pinocchio
       const Eigen::MatrixBase<JointTorquesLike> & joint_torques,
       ReferenceFrameTag<rf> reference_frame) const
     {
-      derived().mapConstraintForceToJointSpace(
+      derived().mapConstraintForceToJointSpaceImpl(
         model, data, cdata, constraint_forces, joint_forces, joint_torques.const_cast_derived(),
         reference_frame);
     }
 
-    ///
     /// \brief Map the joint space quantities (e.g.,
     /// joint motions, joint motion vector) to the constraint motions.
     ///
@@ -226,7 +318,6 @@ namespace pinocchio
     /// \param[in] joint_generalized_velocity Input joint motions associated with the model.
     /// \param[out] constraint_motions Output constraint motions.
     /// \param[in] reference_frame Input reference frame in which the joint motions are expressed.
-    ///
     template<
       template<typename, int> class JointCollectionTpl,
       typename MotionAllocator,
@@ -242,135 +333,12 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & constraint_motions,
       ReferenceFrameTag<rf> reference_frame) const
     {
-      derived().mapJointSpaceToConstraintMotion(
+      derived().mapJointSpaceToConstraintMotionImpl(
         model, data, cdata, joint_motions, joint_generalized_velocity, constraint_motions,
         reference_frame);
     }
 
-    // Attributes common to all constraints
-
-    /// \brief Name of the constraint
-    std::string name;
-
-    template<typename OtherDerived>
-    bool operator==(const ConstraintModelBase<OtherDerived> & other) const
-    {
-      return name == other.name;
-    }
-
-    template<typename OtherDerived>
-    bool operator!=(const ConstraintModelBase<OtherDerived> & other) const
-    {
-      return !(*this == other);
-    }
-
-    template<typename OtherDerived>
-    ConstraintModelBase & operator=(const ConstraintModelBase<OtherDerived> & other)
-    {
-      name = other.name;
-
-      return *this;
-    }
-
-    ConstraintData createData() const
-    {
-      return derived().createData();
-    }
-
-    /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowSparsityPattern(const Eigen::Index row_id) const
-    {
-      return derived().getRowSparsityPattern(row_id);
-    }
-
-    /// \brief Returns the colwise sparsity associated with a given row of the active set of
-    /// the constraints
-    const BooleanVector & getActiveRowSparsityPattern(
-      const ConstraintData & constraint_data, const Eigen::Index row_id) const
-    {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return getRowSparsityPattern(row_id);
-      }
-      else
-      {
-        return derived().getActiveRowSparsityPattern(constraint_data, row_id);
-      }
-    }
-
-    /// \brief Returns the vector of the activable indexes associated with a given row
-    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
-    {
-      return derived().getActivableRowIndexes(row_id);
-    }
-
-    /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getActiveRowIndexes(
-      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
-    {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return getActivableRowIndexes(row_id);
-      }
-      else
-      {
-        return derived().getActiveRowIndexes(constraint_data, row_id);
-      }
-    }
-
-    /// \brief Returns the active compliance internally stored in the constraint and corresponding
-    /// to the active set contained in cdata
-    ActiveComplianceVectorTypeConstRef
-    getActiveCompliance(const ConstraintData & constraint_data) const
-    {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return compliance();
-      }
-      else
-      {
-        return derived().getActivecompliance(constraint_data);
-      }
-    }
-
-    /// \brief Returns the active compliance internally stored in the constraint and corresponding
-    /// to the active set contained in cdata
-    ActiveComplianceVectorTypeRef getActiveCompliance(ConstraintData & constraint_data) const
-    {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return compliance();
-      }
-      else
-      {
-        return derived().getActivecompliance(constraint_data);
-      }
-    }
-
-    int size() const
-    {
-      return derived().size();
-    }
-
-    template<typename ConstraintDataDerived>
-    int activeSize(const ConstraintDataBase<ConstraintDataDerived> & constraint_data) const
-    {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return size();
-      }
-      else
-      {
-        return derived().activeSize(constraint_data.derived());
-      }
-    }
-
-    /// \brief Returns an instance of the associated constraint set operator.
-    ConstraintSet set() const
-    {
-      return derived().setImpl();
-    }
-
+    /// \brief Append to data the apparent inertia due to the constraint.
     template<
       template<typename, int> class JointCollectionTpl,
       typename VectorNLike,
@@ -382,8 +350,86 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const
     {
-      derived().appendCouplingConstraintInertias(
+      derived().appendCouplingConstraintInertiasImpl(
         model, data, cdata, diagonal_constraint_inertia.derived(), reference_frame);
+    }
+
+    /// \brief Returns the colwise sparsity associated with a given row
+    const BooleanVector & getRowSparsityPattern(const Eigen::Index row_id) const
+    {
+      return derived().getRowSparsityPatternImpl(row_id);
+    }
+
+    /// \brief Returns the colwise sparsity associated with a given row of the active set of
+    /// the constraints.
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    const BooleanVector & getActiveRowSparsityPattern(
+      const ConstraintData & constraint_data, const Eigen::Index row_id) const
+    {
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return getRowSparsityPattern(row_id);
+      }
+      else
+      {
+        return derived().getActiveRowSparsityPatternImpl(constraint_data, row_id);
+      }
+    }
+
+    /// \brief Returns the vector of the activable indexes associated with a given row
+    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
+    {
+      return derived().getActivableRowIndexesImpl(row_id);
+    }
+
+    /// \brief Returns the vector of the active indexes associated with a given row
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    const EigenIndexVector & getActiveRowIndexes(
+      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
+    {
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return getActivableRowIndexes(row_id);
+      }
+      else
+      {
+        return derived().getActiveRowIndexesImpl(constraint_data, row_id);
+      }
+    }
+
+    /// \brief Returns the active compliance internally stored in the constraint and corresponding
+    /// to the active set contained in cdata
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    ActiveComplianceVectorTypeConstRef
+    getActiveCompliance(const ConstraintData & constraint_data) const
+    {
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return compliance();
+      }
+      else
+      {
+        return derived().getActivecomplianceImpl(constraint_data);
+      }
+    }
+
+    /// \brief Returns the active compliance internally stored in the constraint and corresponding
+    /// to the active set contained in cdata
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    ActiveComplianceVectorTypeRef getActiveCompliance(ConstraintData & constraint_data) const
+    {
+      if constexpr (traits<Derived>::constant_size)
+      {
+        return compliance();
+      }
+      else
+      {
+        return derived().getActivecomplianceImpl(constraint_data);
+      }
     }
 
     /// \brief Returns the compliance internally stored in the constraint model.
@@ -423,45 +469,27 @@ namespace pinocchio
       return derived().baumgarte_corrector_parameters_impl();
     }
 
-    ConstraintModelBase & base()
+    /// \brief Returns an instance of the associated constraint set operator.
+    ConstraintSet set() const
     {
-      return *this;
+      return derived().setImpl();
     }
 
-    const ConstraintModelBase & base() const
-    {
-      return *this;
-    }
+    // Attributes common to all constraints
 
-    std::string shortname() const
-    {
-      return derived().shortname();
-    }
-    static std::string classname()
-    {
-      return Derived::classname();
-    }
-
-    void disp(std::ostream & os) const
-    {
-      using namespace std;
-      os << shortname() << endl;
-    }
-
-    friend std::ostream &
-    operator<<(std::ostream & os, const ConstraintModelBase<Derived> & constraint)
-    {
-      constraint.disp(os);
-      return os;
-    }
+    /// \brief Name of the constraint
+    std::string name;
 
   protected:
+    /// \brief Constructor from model.
+    /// Protected so that ConstraintModelBase cannot be constructed.
     template<int Options, template<typename, int> class JointCollectionTpl>
     explicit ConstraintModelBase(const ModelTpl<Scalar, Options, JointCollectionTpl> & /*model*/)
     {
     }
 
     /// \brief Default constructor
+    /// Protected so that ConstraintModelBase cannot be constructed.
     ConstraintModelBase()
     {
     }

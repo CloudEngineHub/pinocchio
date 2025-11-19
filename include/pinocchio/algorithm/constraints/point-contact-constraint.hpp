@@ -87,17 +87,22 @@ namespace pinocchio
 
     using typename Base::SE3;
 
+    using RootBase::classname;
+
+    /// \brief Cast to Base
     Base & base()
     {
       return static_cast<Base &>(*this);
     }
+
+    /// \brief Const cast to Base
     const Base & base() const
     {
       return static_cast<const Base &>(*this);
     }
 
     ///
-    ///  \brief Default constructor
+    /// \brief Default constructor
     ///
     PointContactConstraintModelTpl()
     : Base()
@@ -105,7 +110,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type, joint indexes and placements.
+    /// \brief Contructor from joint indexes and placements.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] model Model associated to the constraint.
@@ -127,7 +132,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type, joint1_id and placement.
+    ///  \brief Contructor from joint1_id and placement.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -144,7 +149,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type and the joint ids.
+    /// \brief Contructor from joint ids.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -160,7 +165,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type and .
+    /// \brief Contructor from joint1_id.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -173,14 +178,6 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
     : Base(model, joint1_id)
     {
-    }
-
-    ///
-    /// \brief Create data storage associated to the constraint
-    ///
-    ConstraintData createData() const
-    {
-      return ConstraintData(*this);
     }
 
     /// \brief Cast operator
@@ -233,17 +230,26 @@ namespace pinocchio
       m_friction = friction;
     }
 
-    /// \copydoc Base::set
+    /// \copydoc RootBase::createData
+    ConstraintData createDataImpl() const
+    {
+      return ConstraintData(*this);
+    }
+
+    /// \copydoc RootBase::set
     ConstraintSet setImpl() const
     {
       return ConstraintSet(m_friction);
     }
 
-    static std::string classname()
+    /// \copydoc RootBase::classname
+    static std::string classnameImpl()
     {
       return std::string("PointContactConstraintModel");
     }
-    std::string shortname() const
+
+    /// \copydoc RootBase::shortname
+    std::string shortnameImpl() const
     {
       return classname();
     }
@@ -274,40 +280,59 @@ namespace pinocchio
 
     using typename Base::SE3;
 
-    /// \brief Default constructor
-    PointContactConstraintDataTpl()
-    {
-    }
+    using Base::classname;
 
-    explicit PointContactConstraintDataTpl(const ConstraintModel & constraint_model)
-    : Base(constraint_model)
-    {
-    }
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
 
-    bool operator==(const PointContactConstraintDataTpl & other) const
-    {
-      return base() == other.base();
-    }
-
-    bool operator!=(const PointContactConstraintDataTpl & other) const
-    {
-      return !(*this == other);
-    }
-
+    /// \brief Cast to base class
     Base & base()
     {
       return static_cast<Base &>(*this);
     }
+
+    /// \brief Const cast to base class
     const Base & base() const
     {
       return static_cast<const Base &>(*this);
     }
 
-    static std::string classname()
+    /// \brief Default constructor
+    PointContactConstraintDataTpl()
+    {
+    }
+
+    /// \brief Constructor from a constraint_model
+    explicit PointContactConstraintDataTpl(const ConstraintModel & constraint_model)
+    : Base(constraint_model)
+    {
+    }
+
+    /// \brief Comparison operator
+    bool operator==(const PointContactConstraintDataTpl & other) const
+    {
+      return base() == other.base();
+    }
+
+    /// \brief Comparison operator
+    bool operator!=(const PointContactConstraintDataTpl & other) const
+    {
+      return !(*this == other);
+    }
+
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    /// \copydoc Base::classname
+    static std::string classnameImpl()
     {
       return std::string("PointContactConstraintData");
     }
-    std::string shortname() const
+
+    /// \copydoc Base::shortname
+    std::string shortnameImpl() const
     {
       return classname();
     }

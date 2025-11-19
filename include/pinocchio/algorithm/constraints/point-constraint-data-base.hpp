@@ -41,44 +41,6 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> Matrix6x;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixX;
 
-    // data
-
-    /// \brief Resulting contact forces
-    Vector3 constraint_force;
-
-    /// \brief Placement of the constraint frame 1 with respect to the WORLD frame
-    SE3 oMc1;
-
-    /// \brief Placement of the constraint frame 2 with respect to the WORLD frame
-    SE3 oMc2;
-
-    /// \brief Relative displacement between the two frames
-    SE3 c1Mc2;
-
-    /// \brief Constraint position error
-    Vector3 constraint_position_error;
-
-    /// \brief Constraint velocity error
-    Vector3 constraint_velocity_error;
-
-    /// \brief Constraint acceleration error
-    Vector3 constraint_acceleration_error;
-
-    /// \brief Constraint acceleration biais
-    Vector3 constraint_acceleration_biais_term;
-
-    Vector3 & contraint_residual = constraint_position_error;
-    Vector3 & dcontraint_residual = constraint_velocity_error;
-    Vector3 & ddcontraint_residual = constraint_acceleration_error;
-
-    Matrix36 A1_world;
-    Matrix36 A2_world;
-    Matrix36 A_world; // A1 + A2
-
-    Matrix36 A1_local;
-    Matrix36 A2_local;
-    Matrix36 A_local; // A1 + A2
-
     //    VectorOfMatrix6 extended_motion_propagators_joint1;
     //    VectorOfMatrix6 lambdas_joint1;
     //    VectorOfMatrix6 extended_motion_propagators_joint2;
@@ -86,6 +48,22 @@ namespace pinocchio
     //    Matrix6x dv1_dq, da1_dq, da1_dv, da1_da;
     //    Matrix6x dv2_dq, da2_dq, da2_dv, da2_da;
     //    MatrixX dvc_dq, dac_dq, dac_dv, dac_da;
+
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    /// \brief Cast to base
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to base
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
+    }
 
     /// \brief Default constructor
     PointConstraintDataBase()
@@ -145,6 +123,7 @@ namespace pinocchio
       return *this;
     }
 
+    /// \brief Comparison operator
     bool operator==(const PointConstraintDataBase & other) const
     {
       return constraint_force == other.constraint_force && oMc1 == other.oMc1 && oMc2 == other.oMc2
@@ -167,21 +146,52 @@ namespace pinocchio
         ;
     }
 
+    /// \brief Comparison operator
     bool operator!=(const PointConstraintDataBase & other) const
     {
       return !(*this == other);
     }
 
-    using Base::derived;
+    // ------------------------------
+    // MEMBERS
+    // ------------------------------
+    // note: data is always public - use at your own risk
 
-    Base & base()
-    {
-      return static_cast<Base &>(*this);
-    }
-    const Base & base() const
-    {
-      return static_cast<const Base &>(*this);
-    }
+    /// \brief Resulting contact forces
+    Vector3 constraint_force;
+
+    /// \brief Placement of the constraint frame 1 with respect to the WORLD frame
+    SE3 oMc1;
+
+    /// \brief Placement of the constraint frame 2 with respect to the WORLD frame
+    SE3 oMc2;
+
+    /// \brief Relative displacement between the two frames
+    SE3 c1Mc2;
+
+    /// \brief Constraint position error
+    Vector3 constraint_position_error;
+
+    /// \brief Constraint velocity error
+    Vector3 constraint_velocity_error;
+
+    /// \brief Constraint acceleration error
+    Vector3 constraint_acceleration_error;
+
+    /// \brief Constraint acceleration biais
+    Vector3 constraint_acceleration_biais_term;
+
+    Vector3 & contraint_residual = constraint_position_error;
+    Vector3 & dcontraint_residual = constraint_velocity_error;
+    Vector3 & ddcontraint_residual = constraint_acceleration_error;
+
+    Matrix36 A1_world;
+    Matrix36 A2_world;
+    Matrix36 A_world; // A1 + A2
+
+    Matrix36 A1_local;
+    Matrix36 A2_local;
+    Matrix36 A_local; // A1 + A2
   };
 
 } // namespace pinocchio
