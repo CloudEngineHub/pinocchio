@@ -180,7 +180,7 @@ namespace pinocchio
       }
 
       template<typename Result, typename Lhs, typename Rhs>
-      struct MatrixDimensions
+      struct MatrixProductDimensions
       {
         static constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
                                                    ? static_cast<int>(Lhs::RowsAtCompileTime)
@@ -200,7 +200,7 @@ namespace pinocchio
         using Lhs = typename Product::Lhs;
         using Rhs = typename Product::Rhs;
 
-        typedef MatrixDimensions<PlainExpression, Lhs, Rhs> Dims;
+        typedef MatrixProductDimensions<PlainExpression, Lhs, Rhs> Dims;
         constexpr int RowsAtCompileTime = Dims::RowsAtCompileTime;
         constexpr int ColsAtCompileTime = Dims::ColsAtCompileTime;
         constexpr int InnerDimensionAtCompileTime = Dims::InnerDimensionAtCompileTime;
@@ -216,7 +216,7 @@ namespace pinocchio
         using Lhs = typename Product::Lhs;
         using Rhs = typename Product::Rhs;
 
-        typedef MatrixDimensions<PlainExpression, Lhs, Rhs> Dims;
+        typedef MatrixProductDimensions<PlainExpression, Lhs, Rhs> Dims;
         constexpr int RowsAtCompileTime = Dims::RowsAtCompileTime;
         constexpr int ColsAtCompileTime = Dims::ColsAtCompileTime;
         constexpr int InnerDimensionAtCompileTime = Dims::InnerDimensionAtCompileTime;
@@ -256,7 +256,7 @@ namespace pinocchio
         const auto & lhs = matrix_product.lhs();
         const auto & rhs = matrix_product.rhs();
 
-        typedef MatrixDimensions<PlainExpression, Lhs, Rhs> Dims;
+        typedef MatrixProductDimensions<PlainExpression, Lhs, Rhs> Dims;
         constexpr int RowsAtCompileTime = Dims::RowsAtCompileTime;
         constexpr int ColsAtCompileTime = Dims::ColsAtCompileTime;
         constexpr int InnerDimensionAtCompileTime = Dims::InnerDimensionAtCompileTime;
