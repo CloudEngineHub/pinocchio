@@ -8,7 +8,7 @@
 #include <limits>
 
 #include "pinocchio/algorithm/contact-solver-utils.hpp"
-#include "pinocchio/algorithm/constraints/coulomb-friction-cone.hpp"
+#include "pinocchio/algorithm/constraints/sets/sets.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 #include "pinocchio/algorithm/delassus-operator-preconditioned.hpp"
 #include "pinocchio/utils/reference.hpp"

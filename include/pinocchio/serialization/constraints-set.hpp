@@ -5,7 +5,7 @@
 #ifndef __pinocchio_serialization_constraints_set_hpp__
 #define __pinocchio_serialization_constraints_set_hpp__
 
-#include "pinocchio/algorithm/constraints/sets.hpp"
+#include "pinocchio/algorithm/constraints/sets/sets.hpp"
 #include "pinocchio/serialization/eigen.hpp"
 
 #include <boost/serialization/variant.hpp>

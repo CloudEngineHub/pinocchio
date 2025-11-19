@@ -5,7 +5,7 @@
 #ifndef __pinocchio_algorithm_pgs_solver_hxx__
 #define __pinocchio_algorithm_pgs_solver_hxx__
 
-#include "pinocchio/algorithm/constraints/sets.hpp"
+#include "pinocchio/algorithm/constraints/sets/sets.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 #include "pinocchio/algorithm/contact-solver-utils.hpp"
 #include "pinocchio/utils/std-vector.hpp"

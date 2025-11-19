@@ -5,7 +5,7 @@
 #ifndef __pinocchio_python_algorithm_constraints_set_coulomb_friction_cone_hpp__
 #define __pinocchio_python_algorithm_constraints_set_coulomb_friction_cone_hpp__
 
-#include "pinocchio/algorithm/constraints/coulomb-friction-cone.hpp"
+#include "pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp"
 
 #include "pinocchio/bindings/python/algorithm/constraints/set-base.hpp"
 #include "pinocchio/bindings/python/utils/cast.hpp"

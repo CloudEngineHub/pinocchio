@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "pinocchio/algorithm/constraints/coulomb-friction-cone.hpp"
+#include "pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

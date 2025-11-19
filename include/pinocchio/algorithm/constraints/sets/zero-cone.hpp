@@ -1,31 +1,31 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_full_space_cone_hpp__
-#define __pinocchio_algorithm_constraints_full_space_cone_hpp__
+#ifndef __pinocchio_algorithm_constraints_sets_zero_cone_hpp__
+#define __pinocchio_algorithm_constraints_sets_zero_cone_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/cone-base.hpp"
+#include "pinocchio/algorithm/constraints/sets/cone-base.hpp"
 
 namespace pinocchio
 {
 
   template<typename _Scalar, int _Options>
-  struct traits<FullSpaceConeTpl<_Scalar, _Options>>
+  struct traits<ZeroConeTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
+
     enum
     {
       Options = _Options
     };
-
-    typedef ZeroConeTpl<Scalar, _Options> DualCone;
+    typedef FullSpaceConeTpl<Scalar, _Options> DualCone;
   };
 
-  ///  \brief Unbounded set covering the whole space
+  ///  \brief Null set containing (0 singleton).
   template<typename _Scalar, int _Options>
-  struct FullSpaceConeTpl : ConeBase<FullSpaceConeTpl<_Scalar, _Options>>
+  struct ZeroConeTpl : ConeBase<ZeroConeTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     enum
@@ -33,42 +33,38 @@ namespace pinocchio
       Options = _Options
     };
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
-    typedef ConeBase<FullSpaceConeTpl> Base;
-    typedef typename traits<FullSpaceConeTpl>::DualCone DualCone;
+    typedef ConeBase<ZeroConeTpl> Base;
+    typedef typename traits<ZeroConeTpl>::DualCone DualCone;
 
-    using Base::dual;
     using Base::isInside;
     using Base::project;
 
     // ------------------------------
-    // Methods specific to class
+    // Method specific to class
 
-    /// \brief Cast to base class
+    /// \brief Cast to base class.
     Base & base()
     {
       return static_cast<Base &>(*this);
     }
 
-    /// \brief Const cast to base class
+    /// \brief Const cast to base class.
     const Base & base() const
     {
       return static_cast<const Base &>(*this);
     }
 
     /// \brief Comparison operator
-    bool operator==(const FullSpaceConeTpl & other) const
+    bool operator==(const ZeroConeTpl & other) const
     {
       return base() == other.base();
     }
 
     /// \brief Difference  operator
-    bool operator!=(const FullSpaceConeTpl & other) const
+    bool operator!=(const ZeroConeTpl & other) const
     {
       return !(*this == other);
     }
-
-    // ------------------------------
-    // Implementations of base methods
 
     /// \copydoc Base::dual
     DualCone dualImpl() const
@@ -76,14 +72,15 @@ namespace pinocchio
       return DualCone();
     }
 
+    // ------------------------------
+    // Implementation of base methods
+
     /// \copydoc Base::isInside
     template<typename VectorLike>
     bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
       assert(prec >= 0 && "prec should be positive");
-      PINOCCHIO_UNUSED_VARIABLE(x);
-      PINOCCHIO_UNUSED_VARIABLE(prec);
-      return true;
+      return x.isZero(prec);
     }
 
     /// \copydoc Base::project
@@ -92,11 +89,13 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLikeIn> & x,
       const Eigen::MatrixBase<VectorLikeOut> & res_) const
     {
-      res_.const_cast_derived() = x;
+      PINOCCHIO_UNUSED_VARIABLE(x);
+      auto & res = res_.const_cast_derived();
+      res.setZero();
     }
 
-  }; // FullSpaceConeTpl
+  }; // ZeroConeTpl
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_constraints_full_space_cone_hpp__
+#endif // __pinocchio_algorithm_constraints_sets_zero_cone_hpp__

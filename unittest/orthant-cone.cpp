@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "pinocchio/algorithm/constraints/orthant-cone.hpp"
+#include "pinocchio/algorithm/constraints/sets/orthant-cone.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

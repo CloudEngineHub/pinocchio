@@ -8,10 +8,10 @@
 #include "pinocchio/math/fwd.hpp"
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/box-set.hpp"
 #include "pinocchio/algorithm/constraints/jointwise-constraint-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
+#include "pinocchio/algorithm/constraints/sets/box-set.hpp"
 
 namespace pinocchio
 {

@@ -6,9 +6,9 @@
 #define __pinocchio_algorithm_constraints_frame_anchor_constraint_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/full-space-cone.hpp"
 #include "pinocchio/algorithm/constraints/frame-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/frame-constraint-data-base.hpp"
+#include "pinocchio/algorithm/constraints/sets/full-space-cone.hpp"
 
 namespace pinocchio
 {

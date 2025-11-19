@@ -6,9 +6,9 @@
 #define __pinocchio_algorithm_constraints_point_contact_constraint_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/coulomb-friction-cone.hpp"
 #include "pinocchio/algorithm/constraints/point-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/point-constraint-data-base.hpp"
+#include "pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp"
 
 namespace pinocchio
 {

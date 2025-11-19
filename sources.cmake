@@ -40,9 +40,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-ordering.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-anchor-constraint.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-anchor-constraint.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/box-set.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/cone-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/coulomb-friction-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraints.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-collection-default.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-data-base.hpp
@@ -58,14 +55,17 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-limit-constraint.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-friction-constraint.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-friction-constraint.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/zero-cone.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/orthant-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-constraint-model-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-constraint-data-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/set-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/box-set.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/cone-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/full-space-cone.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/orthant-cone.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/set-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/sets.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/zero-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/jointwise-constraint-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/full-space-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hpp
