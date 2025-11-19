@@ -204,6 +204,22 @@ namespace pinocchio
                  || (ColsAtCompileTime != Eigen::Dynamic && InnerDimensionAtCompileTime != Eigen::Dynamic)
                  || (InnerDimensionAtCompileTime != Eigen::Dynamic && RowsAtCompileTime != Eigen::Dynamic);
         }
+
+        static Eigen::DenseIndex
+        dynamic_size(const Eigen::MatrixBase<Lhs> & lhs, const Eigen::MatrixBase<Rhs> & rhs)
+        {
+          if constexpr (is_static_size_product())
+            return -1;
+
+          if constexpr (RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic)
+            return lhs.cols();
+          else if constexpr (
+            ColsAtCompileTime != Eigen::Dynamic && InnerDimensionAtCompileTime != Eigen::Dynamic)
+            return lhs.rows();
+          else /*if constexpr (InnerDimensionAtCompileTime != Eigen::Dynamic && RowsAtCompileTime !=
+                  Eigen::Dynamic)*/
+            return rhs.cols();
+        }
       };
 
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
