@@ -8,6 +8,8 @@
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/contact-info.hpp"
 
+#include "pinocchio/algorithm/constraints/utils.hpp"
+
 #include "pinocchio/algorithm/constraints/joint-limit-constraint.hpp"
 #include "pinocchio/algorithm/constraints/joint-friction-constraint.hpp"
 #include "pinocchio/algorithm/constraints/point-contact-constraint.hpp"
