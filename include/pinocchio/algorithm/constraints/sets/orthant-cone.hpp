@@ -26,6 +26,9 @@ namespace pinocchio
     typedef ConeBase<NonNegativeOrthantConeTpl> Base;
     typedef typename traits<NonNegativeOrthantConeTpl>::DualCone DualCone;
 
+    // ------------------------------
+    // Methods inherited from base
+
     using Base::derived;
     using Base::dual;
     using Base::isInside;

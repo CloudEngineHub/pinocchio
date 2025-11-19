@@ -42,6 +42,9 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
     typedef ConeBase<CoulombFrictionConeTpl> Base;
 
+    // ------------------------------
+    // Methods inherited from base
+
     using Base::dual;
     using Base::isInside;
     using Base::project;
@@ -268,6 +271,9 @@ namespace pinocchio
     typedef typename traits<DualCoulombFrictionConeTpl>::DualCone DualCone;
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
     typedef ConeBase<DualCoulombFrictionConeTpl> Base;
+
+    // ------------------------------
+    // Methods inherited from base
 
     using Base::isInside;
     using Base::project;

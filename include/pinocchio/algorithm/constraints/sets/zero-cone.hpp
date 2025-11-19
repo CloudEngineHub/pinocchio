@@ -36,6 +36,10 @@ namespace pinocchio
     typedef ConeBase<ZeroConeTpl> Base;
     typedef typename traits<ZeroConeTpl>::DualCone DualCone;
 
+    // ------------------------------
+    // Methods inherited from base
+
+    using Base::dual;
     using Base::isInside;
     using Base::project;
 

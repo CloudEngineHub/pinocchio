@@ -37,13 +37,21 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
     typedef SetBase<BoxSetTpl> Base;
 
-    ///
+    // ------------------------------
+    // Methods inherited from base
+
+    using Base::isInside;
+    using Base::project;
+    using Base::scaledProject;
+
+    // ------------------------------
+    // Methods specific to class
+
     /// \brief Constructor lb and ub.
     /// Internally, a const reference to these vectors is kept.
     ///
     /// \param[in] lb box lower bound
     /// \param[in] ub box upper bound
-    ///
     BoxSetTpl(const Vector & lb, const Vector & ub)
     : lb(lb)
     , ub(ub)
@@ -53,12 +61,10 @@ namespace pinocchio
         (lb.array() <= ub.array()).all(), "Some components of lb are greater than ub");
     }
 
-    ///
     /// \brief Generic constructor which can take any `Parameter` struct.
     /// Creates a link between the `mu` in `Parameter` and this->mu.
     ///
     /// \param[in] params Generic parameters, must contain the field `mu`.
-    ///
     template<typename Parameters>
     BoxSetTpl(const Parameters & params)
     : BoxSetTpl(params.lb, params.ub)
@@ -89,56 +95,10 @@ namespace pinocchio
       return base() == other.base() && lb == other.lb && ub == other.ub;
     }
 
-    /// \brief Difference  operator
+    /// \brief Difference operator
     bool operator!=(const BoxSetTpl & other) const
     {
       return !(*this == other);
-    }
-
-    using Base::isInside;
-    /// \brief Check whether a vector x lies within the box.
-    ///
-    /// \param[in] f vector to check (assimilated to a  force vector).
-    ///
-    template<typename VectorLike>
-    bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
-    {
-      assert(prec >= 0 && "prec should be positive");
-      return (x - project(x)).norm() <= prec;
-    }
-
-    using Base::project;
-    /// \brief Project a vector x into the box.
-    ///
-    /// \param[in] x a vector to project.
-    /// \param[in] res result of the projection.
-    ///
-    template<typename VectorLikeIn, typename VectorLikeOut>
-    void projectImpl(
-      const Eigen::MatrixBase<VectorLikeIn> & x,
-      const Eigen::MatrixBase<VectorLikeOut> & res_) const
-    {
-      res_.const_cast_derived() = x.array().max(lb.array()).min(ub.array());
-    }
-
-    using Base::scaledProject;
-    /// \brief Project a vector x such that scale * res is in the box.
-    ///
-    /// \param[in] x a vector to project.
-    /// \param[in] scale the scaling vector.
-    /// \param[in] res result of the projection.
-    ///
-    template<typename VectorLikeIn, typename VectorLikeIn2, typename VectorLikeOut>
-    void scaledProjectImpl(
-      const Eigen::MatrixBase<VectorLikeIn> & x,
-      const Eigen::MatrixBase<VectorLikeIn2> & scale,
-      const Eigen::MatrixBase<VectorLikeOut> & res_) const
-    {
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      assert((scale.array() > 0).all() && "scale vector should be positive");
-      res_.const_cast_derived() =
-        x.array().max(lb.array() / scale.array()).min(ub.array() / scale.array());
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
     }
 
     /// \brief Check whether lb <= ub for all components
@@ -153,6 +113,43 @@ namespace pinocchio
       assert(row_id < lb.size());
       return math::max(lb[row_id], math::min(ub[row_id], value));
     }
+
+    // ------------------------------
+    // Implementation of base methods
+
+    /// \copydoc Base::isInside
+    template<typename VectorLike>
+    bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
+    {
+      assert(prec >= 0 && "prec should be positive");
+      return (x - project(x)).norm() <= prec;
+    }
+
+    /// \copydoc Base::project
+    template<typename VectorLikeIn, typename VectorLikeOut>
+    void projectImpl(
+      const Eigen::MatrixBase<VectorLikeIn> & x,
+      const Eigen::MatrixBase<VectorLikeOut> & res_) const
+    {
+      res_.const_cast_derived() = x.array().max(lb.array()).min(ub.array());
+    }
+
+    /// \copydoc Base::scaledProject
+    template<typename VectorLikeIn, typename VectorLikeIn2, typename VectorLikeOut>
+    void scaledProjectImpl(
+      const Eigen::MatrixBase<VectorLikeIn> & x,
+      const Eigen::MatrixBase<VectorLikeIn2> & scale,
+      const Eigen::MatrixBase<VectorLikeOut> & res_) const
+    {
+      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
+      assert((scale.array() > 0).all() && "scale vector should be positive");
+      res_.const_cast_derived() =
+        x.array().max(lb.array() / scale.array()).min(ub.array() / scale.array());
+      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
+    }
+
+    // ------------------------------
+    // Members
 
     /// \brief Reference to the lower bound of the box.
     const Vector & lb;
