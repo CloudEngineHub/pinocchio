@@ -11,14 +11,6 @@
 
 using namespace pinocchio;
 
-template<typename Base>
-struct Accessor : Base
-{
-  template<typename ResultType, typename LhsType, typename RhsType>
-  using MatrixProductDimensions =
-    typename Base::template MatrixProductDimensions<ResultType, LhsType, RhsType>;
-};
-
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 BOOST_AUTO_TEST_CASE(test_helpers)
@@ -58,16 +50,14 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   BOOST_CHECK(C_expression.cols() == B.cols());
 
   auto C_op = promote_static_op(C);
-  typedef decltype(C_op) PromotedType;
   BOOST_CHECK(&C_op.expression() == &C);
 
-  BOOST_CHECK((!Accessor<PromotedType>::MatrixProductDimensions<
-               Matrix, Matrix, Matrix>::is_static_size_product()));
-  BOOST_CHECK((!Accessor<PromotedType>::MatrixProductDimensions<
-               Matrix, Matrix, Matrix>::is_partial_static_size_product()));
   BOOST_CHECK(
-    (Accessor<PromotedType>::MatrixProductDimensions<Matrix, Matrix, Matrix>::dynamic_size(A, B))
-    == B.cols());
+    (!internal::MatrixProductDimensions<Matrix, Matrix, Matrix>::is_static_size_product()));
+  BOOST_CHECK(
+    (!internal::MatrixProductDimensions<Matrix, Matrix, Matrix>::is_partial_static_size_product()));
+  BOOST_CHECK(
+    (internal::MatrixProductDimensions<Matrix, Matrix, Matrix>::dynamic_size(A, B)) == B.cols());
 
   C_op = A * B;
   const auto res_aliasing = C_expression.eval();
@@ -78,17 +68,14 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   B.setConstant(4);
 
   auto C_noalias_op = promote_static_op(C.noalias());
-  typedef decltype(C_noalias_op) NoAliasPromotedType;
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
-  BOOST_CHECK((!Accessor<NoAliasPromotedType>::MatrixProductDimensions<
-               Matrix, Matrix, Matrix>::is_static_size_product()));
-  BOOST_CHECK((!Accessor<NoAliasPromotedType>::MatrixProductDimensions<
-               Matrix, Matrix, Matrix>::is_partial_static_size_product()));
   BOOST_CHECK(
-    (Accessor<NoAliasPromotedType>::MatrixProductDimensions<Matrix, Matrix, Matrix>::dynamic_size(
-      A, B))
-    == B.cols());
+    (!internal::MatrixProductDimensions<Matrix, Matrix, Matrix>::is_static_size_product()));
+  BOOST_CHECK(
+    (!internal::MatrixProductDimensions<Matrix, Matrix, Matrix>::is_partial_static_size_product()));
+  BOOST_CHECK(
+    (internal::MatrixProductDimensions<Matrix, Matrix, Matrix>::dynamic_size(A, B)) == B.cols());
 
   C_noalias_op = A * B;
   const auto res_noaliasing = C_expression.eval();
@@ -113,16 +100,14 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   BOOST_CHECK(C_expression.cols() == B.cols());
 
   auto C_op = promote_static_op(C);
-  typedef decltype(C_op) PromotedType;
   BOOST_CHECK(&C_op.expression() == &C);
 
-  BOOST_CHECK((Accessor<PromotedType>::MatrixProductDimensions<
-               ResType, LhsType, RhsType>::is_static_size_product()));
-  BOOST_CHECK((Accessor<PromotedType>::MatrixProductDimensions<
+  BOOST_CHECK(
+    (internal::MatrixProductDimensions<ResType, LhsType, RhsType>::is_static_size_product()));
+  BOOST_CHECK((internal::MatrixProductDimensions<
                ResType, LhsType, RhsType>::is_partial_static_size_product()));
   BOOST_CHECK(
-    (Accessor<PromotedType>::MatrixProductDimensions<ResType, LhsType, RhsType>::dynamic_size(A, B))
-    == -1);
+    (internal::MatrixProductDimensions<ResType, LhsType, RhsType>::dynamic_size(A, B)) == -1);
 
   C_op = A * B;
   const auto res_aliasing = C_expression.eval();
@@ -133,17 +118,14 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   B.setConstant(4);
 
   auto C_noalias_op = promote_static_op(C.noalias());
-  typedef decltype(C_noalias_op) NoAliasPromotedType;
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
-  BOOST_CHECK((Accessor<NoAliasPromotedType>::MatrixProductDimensions<
-               ResType, LhsType, RhsType>::is_static_size_product()));
-  BOOST_CHECK((Accessor<NoAliasPromotedType>::MatrixProductDimensions<
+  BOOST_CHECK(
+    (internal::MatrixProductDimensions<ResType, LhsType, RhsType>::is_static_size_product()));
+  BOOST_CHECK((internal::MatrixProductDimensions<
                ResType, LhsType, RhsType>::is_partial_static_size_product()));
   BOOST_CHECK(
-    (Accessor<NoAliasPromotedType>::MatrixProductDimensions<
-      ResType, LhsType, RhsType>::dynamic_size(A, B))
-    == -1);
+    (internal::MatrixProductDimensions<ResType, LhsType, RhsType>::dynamic_size(A, B)) == -1);
 
   C_noalias_op = A * B;
   const auto res_noaliasing = C_expression.eval();
@@ -169,16 +151,14 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   BOOST_CHECK(C_expression.cols() == B.cols());
 
   auto C_op = promote_static_op(C);
-  typedef decltype(C_op) PromotedType;
   BOOST_CHECK(&C_op.expression() == &C);
 
-  BOOST_CHECK((!Accessor<PromotedType>::MatrixProductDimensions<
-               ResType, LhsType, ResType>::is_static_size_product()));
-  BOOST_CHECK((Accessor<PromotedType>::MatrixProductDimensions<
+  BOOST_CHECK(
+    (!internal::MatrixProductDimensions<ResType, LhsType, ResType>::is_static_size_product()));
+  BOOST_CHECK((internal::MatrixProductDimensions<
                ResType, LhsType, ResType>::is_partial_static_size_product()));
   BOOST_CHECK(
-    (Accessor<PromotedType>::MatrixProductDimensions<ResType, LhsType, RhsType>::dynamic_size(A, B))
-    == m);
+    (internal::MatrixProductDimensions<ResType, LhsType, RhsType>::dynamic_size(A, B)) == m);
 
   C_op = A * B;
   const auto res_aliasing = C_expression.eval();
@@ -189,17 +169,14 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   B.setConstant(4);
 
   auto C_noalias_op = promote_static_op(C.noalias());
-  typedef decltype(C_noalias_op) NoAliasPromotedType;
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
-  BOOST_CHECK((!Accessor<NoAliasPromotedType>::MatrixProductDimensions<
-               ResType, LhsType, ResType>::is_static_size_product()));
-  BOOST_CHECK((Accessor<NoAliasPromotedType>::MatrixProductDimensions<
+  BOOST_CHECK(
+    (!internal::MatrixProductDimensions<ResType, LhsType, ResType>::is_static_size_product()));
+  BOOST_CHECK((internal::MatrixProductDimensions<
                ResType, LhsType, ResType>::is_partial_static_size_product()));
   BOOST_CHECK(
-    (Accessor<NoAliasPromotedType>::MatrixProductDimensions<
-      ResType, LhsType, RhsType>::dynamic_size(A, B))
-    == m);
+    (internal::MatrixProductDimensions<ResType, LhsType, RhsType>::dynamic_size(A, B)) == m);
 
   C_noalias_op = A * B;
   const auto res_noaliasing = C_expression.eval();

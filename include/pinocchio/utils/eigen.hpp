@@ -81,6 +81,65 @@ namespace pinocchio
   namespace internal
   {
 
+    template<typename Result, typename Lhs, typename Rhs>
+    struct MatrixProductDimensions
+    {
+      static constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
+                                                 ? static_cast<int>(Lhs::RowsAtCompileTime)
+                                                 : static_cast<int>(Result::RowsAtCompileTime);
+      static constexpr int ColsAtCompileTime = Rhs::ColsAtCompileTime != Eigen::Dynamic
+                                                 ? static_cast<int>(Rhs::ColsAtCompileTime)
+                                                 : static_cast<int>(Result::ColsAtCompileTime);
+      static constexpr int InnerDimensionAtCompileTime =
+        Lhs::ColsAtCompileTime != Eigen::Dynamic ? static_cast<int>(Lhs::ColsAtCompileTime)
+                                                 : static_cast<int>(Rhs::RowsAtCompileTime);
+
+      static constexpr bool is_static_size_product()
+      {
+        return RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic
+               && InnerDimensionAtCompileTime != Eigen::Dynamic;
+      }
+
+      static constexpr bool is_partial_static_size_product()
+      {
+        return (RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic)
+               || (ColsAtCompileTime != Eigen::Dynamic && InnerDimensionAtCompileTime != Eigen::Dynamic)
+               || (InnerDimensionAtCompileTime != Eigen::Dynamic && RowsAtCompileTime != Eigen::Dynamic);
+      }
+
+      static Eigen::DenseIndex
+      dynamic_size(const Eigen::MatrixBase<Lhs> & lhs, const Eigen::MatrixBase<Rhs> & rhs)
+      {
+        if constexpr (is_static_size_product())
+          return -1;
+
+        if constexpr (RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic)
+          return lhs.cols();
+        else if constexpr (
+          ColsAtCompileTime != Eigen::Dynamic && InnerDimensionAtCompileTime != Eigen::Dynamic)
+          return lhs.rows();
+        else /*if constexpr (InnerDimensionAtCompileTime != Eigen::Dynamic && RowsAtCompileTime !=
+                Eigen::Dynamic)*/
+          return rhs.cols();
+      }
+    };
+
+    template<int N>
+    struct partial_static_dispatch_impl
+    {
+      template<
+        template<typename, typename> class EigenOp,
+        typename Result,
+        typename Lhs,
+        typename Rhs,
+        int Option>
+      static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
+      run(Result & result, const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      {
+        // if ()
+      }
+    };
+
     template<typename ExpressionType, template<typename> class StorageBase>
     class PromoteStaticOp
     {
@@ -179,49 +238,6 @@ namespace pinocchio
         Eigen::internal::call_assignment(dst.const_cast_derived(), src, Op<S1, S2>());
       }
 
-      template<typename Result, typename Lhs, typename Rhs>
-      struct MatrixProductDimensions
-      {
-        static constexpr int RowsAtCompileTime = Lhs::RowsAtCompileTime != Eigen::Dynamic
-                                                   ? static_cast<int>(Lhs::RowsAtCompileTime)
-                                                   : static_cast<int>(Result::RowsAtCompileTime);
-        static constexpr int ColsAtCompileTime = Rhs::ColsAtCompileTime != Eigen::Dynamic
-                                                   ? static_cast<int>(Rhs::ColsAtCompileTime)
-                                                   : static_cast<int>(Result::ColsAtCompileTime);
-        static constexpr int InnerDimensionAtCompileTime =
-          Lhs::ColsAtCompileTime != Eigen::Dynamic ? static_cast<int>(Lhs::ColsAtCompileTime)
-                                                   : static_cast<int>(Rhs::RowsAtCompileTime);
-
-        static constexpr bool is_static_size_product()
-        {
-          return RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic
-                 && InnerDimensionAtCompileTime != Eigen::Dynamic;
-        }
-
-        static constexpr bool is_partial_static_size_product()
-        {
-          return (RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic)
-                 || (ColsAtCompileTime != Eigen::Dynamic && InnerDimensionAtCompileTime != Eigen::Dynamic)
-                 || (InnerDimensionAtCompileTime != Eigen::Dynamic && RowsAtCompileTime != Eigen::Dynamic);
-        }
-
-        static Eigen::DenseIndex
-        dynamic_size(const Eigen::MatrixBase<Lhs> & lhs, const Eigen::MatrixBase<Rhs> & rhs)
-        {
-          if constexpr (is_static_size_product())
-            return -1;
-
-          if constexpr (RowsAtCompileTime != Eigen::Dynamic && ColsAtCompileTime != Eigen::Dynamic)
-            return lhs.cols();
-          else if constexpr (
-            ColsAtCompileTime != Eigen::Dynamic && InnerDimensionAtCompileTime != Eigen::Dynamic)
-            return lhs.rows();
-          else /*if constexpr (InnerDimensionAtCompileTime != Eigen::Dynamic && RowsAtCompileTime !=
-                  Eigen::Dynamic)*/
-            return rhs.cols();
-        }
-      };
-
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
@@ -230,6 +246,10 @@ namespace pinocchio
         if constexpr (Dims::is_static_size_product())
         {
           static_dispatch<EigenOp>(matrix_product);
+        }
+        else if constexpr (Dims::is_partial_static_size_product())
+        {
+          partial_static_dispatch<10, EigenOp>(matrix_product);
         }
         else
         {
@@ -241,6 +261,18 @@ namespace pinocchio
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
       dynamic_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      {
+        call_assignment<EigenOp>(expression(), matrix_product);
+      }
+
+      template<
+        int N,
+        template<typename, typename> class EigenOp,
+        typename Lhs,
+        typename Rhs,
+        int Option>
+      EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
+      partial_static_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
         call_assignment<EigenOp>(expression(), matrix_product);
       }
