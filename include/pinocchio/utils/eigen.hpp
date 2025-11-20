@@ -6,6 +6,7 @@
 #define __pinocchio_utils_eigen_hpp__
 
 #include "pinocchio/utils/fwd.hpp"
+#include <ratio>
 #include <type_traits>
 
 namespace pinocchio
@@ -81,6 +82,93 @@ namespace pinocchio
   namespace internal
   {
 
+    template<int MinRowsAtCompileTime, int MinColsAtCompileTime, typename PlainMatrix>
+    struct make_static_matrix
+    {
+      typedef Eigen::Matrix<
+        typename PlainMatrix::Scalar,
+        PlainMatrix::RowsAtCompileTime == Eigen::Dynamic ? MinRowsAtCompileTime
+                                                         : PlainMatrix::RowsAtCompileTime,
+        PlainMatrix::ColsAtCompileTime == Eigen::Dynamic ? MinColsAtCompileTime
+                                                         : PlainMatrix::ColsAtCompileTime,
+        PlainMatrix::Options,
+        PlainMatrix::MaxRowsAtCompileTime == Eigen::Dynamic ? MinRowsAtCompileTime
+                                                            : PlainMatrix::MaxRowsAtCompileTime,
+        PlainMatrix::MaxColsAtCompileTime == Eigen::Dynamic ? MinColsAtCompileTime
+                                                            : PlainMatrix::MaxColsAtCompileTime>
+        type;
+    };
+
+    typedef Eigen::Stride<Eigen::Dynamic, Eigen::Dynamic> DynamicStride;
+
+    template<typename MatrixLike, typename MatrixDerived>
+    static Eigen::Map<MatrixLike, 0, DynamicStride>
+    make_eigen_map(const Eigen::MatrixBase<MatrixDerived> & _plain_object)
+    {
+      auto & plain_object = _plain_object.const_cast_derived();
+      const DynamicStride stride = {plain_object.outerStride(), plain_object.innerStride()};
+      return {plain_object.data(), plain_object.rows(), plain_object.cols(), stride};
+    }
+
+    template<typename MatrixLike, typename MatrixDerived, template<typename> class _StorageBase>
+    static Eigen::Map<MatrixLike, 0, DynamicStride>
+    make_eigen_map(const Eigen::NoAlias<MatrixDerived, _StorageBase> & _plain_object_noalias)
+    {
+      return make_eigen_map<MatrixLike>(_plain_object_noalias.expression().const_cast_derived());
+    }
+
+    template<
+      template<typename, typename> class Op,
+      typename Dst,
+      template<typename> class _StorageBase,
+      typename Src>
+    inline constexpr void
+    call_eigen_assignment(Eigen::NoAlias<Dst, _StorageBase> & dst, const Src & src)
+    {
+      typedef typename Dst::Scalar S1;
+      typedef typename Src::Scalar S2;
+
+      Eigen::internal::call_assignment_no_alias(dst.expression(), src, Op<S1, S2>());
+    }
+
+    template<template<typename, typename> class Op, typename Dst, typename Src>
+    inline constexpr void call_eigen_assignment(const Eigen::MatrixBase<Dst> & dst, const Src & src)
+    {
+      typedef typename Dst::Scalar S1;
+      typedef typename Src::Scalar S2;
+
+      Eigen::internal::call_assignment(dst.const_cast_derived(), src, Op<S1, S2>());
+    }
+
+    template<
+      template<typename, typename> class EigenOp,
+      typename PlainResult,
+      typename PlainLhs,
+      typename PlainRhs,
+      typename Dst,
+      typename Src>
+    inline constexpr void call_eigen_static_map_assignment(Dst & dst, const Src & src)
+    {
+      const auto & lhs = src.lhs();
+      const auto & rhs = src.rhs();
+
+      const auto lhs_map = make_eigen_map<PlainLhs>(lhs);
+      const auto rhs_map = make_eigen_map<PlainRhs>(rhs);
+      auto result_matrix_map = make_eigen_map<PlainResult>(dst);
+
+      const auto matrix_map_product = lhs_map * rhs_map;
+
+      if constexpr (helper::is_eigen_noalias_v<Dst>)
+      {
+        auto result_matrix_map_noalias = result_matrix_map.noalias();
+        call_eigen_assignment<EigenOp>(result_matrix_map_noalias, matrix_map_product);
+      }
+      else
+      {
+        call_eigen_assignment<EigenOp>(result_matrix_map, matrix_map_product);
+      }
+    }
+
     template<typename Result, typename Lhs, typename Rhs>
     struct MatrixProductDimensions
     {
@@ -122,6 +210,27 @@ namespace pinocchio
                 Eigen::Dynamic)*/
           return rhs.cols();
       }
+
+    private:
+      typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Lhs) LhsPlain_;
+      typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Rhs) RhsPlain_;
+
+    public:
+      typedef Eigen::Matrix<
+        typename Lhs::Scalar,
+        RowsAtCompileTime,
+        InnerDimensionAtCompileTime,
+        LhsPlain_::Options>
+        PlainLhs;
+      typedef Eigen::Matrix<
+        typename Rhs::Scalar,
+        InnerDimensionAtCompileTime,
+        ColsAtCompileTime,
+        RhsPlain_::Options>
+        PlainRhs;
+      typedef Eigen::
+        Matrix<typename Result::Scalar, RowsAtCompileTime, ColsAtCompileTime, Result::Options>
+          PlainResult;
     };
 
     template<int N>
@@ -129,21 +238,61 @@ namespace pinocchio
     {
       template<
         template<typename, typename> class EigenOp,
-        typename Result,
+        typename Dst,
         typename Lhs,
         typename Rhs,
         int Option>
       static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
-      run(Result & result, const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      run(Dst & result, const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        // if ()
+        const auto & lhs = matrix_product.lhs();
+        const auto & rhs = matrix_product.rhs();
+
+        typedef typename helper::remove_eigen_noalias<Dst>::type Result;
+        typedef MatrixProductDimensions<Result, Lhs, Rhs> Dims;
+        if (Dims::dynamic_size(lhs, rhs) == N)
+        {
+          using LhsPlainStatic = typename make_static_matrix<N, N, typename Dims::PlainLhs>::type;
+          using RhsPlainStatic = typename make_static_matrix<N, N, typename Dims::PlainRhs>::type;
+          using PlainResultStatic =
+            typename make_static_matrix<N, N, typename Dims::PlainResult>::type;
+
+          call_eigen_static_map_assignment<
+            EigenOp, PlainResultStatic, LhsPlainStatic, RhsPlainStatic>(result, matrix_product);
+        }
+        else
+        {
+          partial_static_dispatch_impl<N - 1>::template run<EigenOp>(result, matrix_product);
+        }
       }
     };
 
-    template<typename ExpressionType, template<typename> class StorageBase>
+    template<>
+    struct partial_static_dispatch_impl<0>
+    {
+      template<
+        template<typename, typename> class EigenOp,
+        typename Dst,
+        typename Lhs,
+        typename Rhs,
+        int Option>
+      static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
+      run(Dst & result, const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(result);
+        PINOCCHIO_UNUSED_VARIABLE(matrix_product);
+      }
+    };
+
+    template<int _MaxStaticUnfolding, typename ExpressionType, template<typename> class StorageBase>
     class PromoteStaticOp
     {
     public:
+      enum
+      {
+        MaxStaticUnfolding = _MaxStaticUnfolding
+      };
+
       typedef typename ExpressionType::Scalar Scalar;
 
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(
@@ -156,16 +305,6 @@ namespace pinocchio
       EIGEN_DEVICE_FUNC PromoteStaticOp(ExpressionType && expression)
       : m_expression(expression)
       {
-      }
-
-      template<typename OtherDerived>
-      EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
-      operator=(const StorageBase<OtherDerived> & other)
-      {
-        call_assignment_no_alias(
-          m_expression, other.derived(),
-          Eigen::internal::assign_op<Scalar, typename OtherDerived::Scalar>());
-        return m_expression;
       }
 
       template<typename Lhs, typename Rhs, int Option>
@@ -197,47 +336,6 @@ namespace pinocchio
     protected:
       ExpressionType & m_expression;
 
-      typedef Eigen::Stride<Eigen::Dynamic, Eigen::Dynamic> DynamicStride;
-
-      template<typename MatrixLike, typename MatrixDerived>
-      static Eigen::Map<MatrixLike, 0, DynamicStride>
-      make_map(const Eigen::MatrixBase<MatrixDerived> & _plain_object)
-      {
-        auto & plain_object = _plain_object.const_cast_derived();
-        const DynamicStride stride = {plain_object.outerStride(), plain_object.innerStride()};
-        return {plain_object.data(), plain_object.rows(), plain_object.cols(), stride};
-      }
-
-      template<typename MatrixLike, typename MatrixDerived, template<typename> class _StorageBase>
-      static Eigen::Map<MatrixLike, 0, DynamicStride>
-      make_map(const Eigen::NoAlias<MatrixDerived, _StorageBase> & _plain_object_noalias)
-      {
-        return make_map<MatrixLike>(_plain_object_noalias.expression().const_cast_derived());
-      }
-
-      template<
-        template<typename, typename> class Op,
-        typename Dst,
-        template<typename> class _StorageBase,
-        typename Src>
-      inline constexpr void
-      call_assignment(Eigen::NoAlias<Dst, _StorageBase> & dst, const Src & src)
-      {
-        typedef typename Dst::Scalar S1;
-        typedef typename Src::Scalar S2;
-
-        Eigen::internal::call_assignment_no_alias(dst.expression(), src, Op<S1, S2>());
-      }
-
-      template<template<typename, typename> class Op, typename Dst, typename Src>
-      inline constexpr void call_assignment(const Eigen::MatrixBase<Dst> & dst, const Src & src)
-      {
-        typedef typename Dst::Scalar S1;
-        typedef typename Src::Scalar S2;
-
-        Eigen::internal::call_assignment(dst.const_cast_derived(), src, Op<S1, S2>());
-      }
-
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
@@ -249,7 +347,7 @@ namespace pinocchio
         }
         else if constexpr (Dims::is_partial_static_size_product())
         {
-          partial_static_dispatch<10, EigenOp>(matrix_product);
+          partial_static_dispatch<MaxStaticUnfolding, EigenOp>(matrix_product);
         }
         else
         {
@@ -262,7 +360,7 @@ namespace pinocchio
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
       dynamic_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        call_assignment<EigenOp>(expression(), matrix_product);
+        call_eigen_assignment<EigenOp>(expression(), matrix_product);
       }
 
       template<
@@ -274,74 +372,48 @@ namespace pinocchio
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
       partial_static_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        call_assignment<EigenOp>(expression(), matrix_product);
+        // call_eigen_assignment<EigenOp>(expression(), matrix_product);
+        const auto & lhs = matrix_product.lhs();
+        const auto & rhs = matrix_product.rhs();
+
+        typedef typename helper::remove_eigen_noalias<ExpressionType>::type Result;
+        typedef MatrixProductDimensions<Result, Lhs, Rhs> Dims;
+        if (Dims::dynamic_size(lhs, rhs) > N)
+          dynamic_dispatch<EigenOp>(matrix_product);
+        else
+          partial_static_dispatch_impl<N>::template run<EigenOp>(expression(), matrix_product);
       }
 
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
       static_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        const auto & lhs = matrix_product.lhs();
-        const auto & rhs = matrix_product.rhs();
-
         typedef MatrixProductDimensions<PlainExpression, Lhs, Rhs> Dims;
-        constexpr int RowsAtCompileTime = Dims::RowsAtCompileTime;
-        constexpr int ColsAtCompileTime = Dims::ColsAtCompileTime;
-        constexpr int InnerDimensionAtCompileTime = Dims::InnerDimensionAtCompileTime;
 
-        typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Lhs) PlainLhs;
-        typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Rhs) PlainRhs;
+        typedef typename Dims::PlainLhs PlainLhs;
+        typedef typename Dims::PlainRhs PlainRhs;
+        typedef typename Dims::PlainResult PlainResult;
 
-        typedef Eigen::Matrix<
-          typename PlainLhs::Scalar, RowsAtCompileTime, InnerDimensionAtCompileTime,
-          PlainLhs::Options>
-          PlainLhsStaticSize;
-        typedef Eigen::Matrix<
-          typename PlainRhs::Scalar, InnerDimensionAtCompileTime, ColsAtCompileTime,
-          PlainRhs::Options>
-          PlainRhsStaticSize;
-
-        const auto lhs_map = make_map<PlainLhsStaticSize>(lhs);
-        const auto rhs_map = make_map<PlainRhsStaticSize>(rhs);
-        const auto matrix_map_product = lhs_map * rhs_map;
-        // typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE((Eigen::Product<Lhs, Rhs, Option>))
-        // PlainProductResult;
-
-        // std::cout << "PlainProductResult: " << typeid(PlainProductResult).name() << std::endl;
-        // std::cout << "RowsAtCompileTime: " << RowsAtCompileTime << std::endl;
-        // std::cout << "ColsAtCompileTime: " << ColsAtCompileTime << std::endl;
-        // std::cout << "InnerDimensionAtCompileTime: " << InnerDimensionAtCompileTime << std::endl;
-
-        typedef Eigen::Matrix<
-          typename PlainExpression::Scalar, RowsAtCompileTime, ColsAtCompileTime,
-          PlainExpression::Options>
-          PlainExpressionStaticSize;
-        auto result_matrix_map = make_map<PlainExpressionStaticSize>(expression());
-
-        if constexpr (helper::is_eigen_noalias_v<ExpressionType>)
-        {
-          auto result_matrix_map_noalias = result_matrix_map.noalias();
-          call_assignment<EigenOp>(result_matrix_map_noalias, matrix_map_product);
-        }
-        else
-        {
-          call_assignment<EigenOp>(result_matrix_map, matrix_map_product);
-        }
+        call_eigen_static_map_assignment<EigenOp, PlainResult, PlainLhs, PlainRhs>(
+          expression(), matrix_product);
       }
 
     }; // struct PromoteStaticOp
 
   } // namespace internal
 
-  template<typename MatrixExpression>
-  internal::PromoteStaticOp<MatrixExpression, Eigen::MatrixBase>
+  template<int MaxStaticUnfolding, typename MatrixExpression>
+  internal::PromoteStaticOp<MaxStaticUnfolding, MatrixExpression, Eigen::MatrixBase>
   promote_static_op(const Eigen::MatrixBase<MatrixExpression> & matrix_expression)
   {
     return {matrix_expression.const_cast_derived()};
   }
 
-  template<typename MatrixExpression, template<typename> class StorageBase>
-  internal::PromoteStaticOp<Eigen::NoAlias<MatrixExpression, StorageBase>, Eigen::MatrixBase>
+  template<int MaxStaticUnfolding, typename MatrixExpression, template<typename> class StorageBase>
+  internal::PromoteStaticOp<
+    MaxStaticUnfolding,
+    Eigen::NoAlias<MatrixExpression, StorageBase>,
+    Eigen::MatrixBase>
   promote_static_op(Eigen::NoAlias<MatrixExpression, StorageBase> && matrix_expression)
   {
     return {std::forward<Eigen::NoAlias<MatrixExpression, StorageBase>>(matrix_expression)};

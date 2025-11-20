@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   BOOST_CHECK(C_expression.rows() == A.rows());
   BOOST_CHECK(C_expression.cols() == B.cols());
 
-  auto C_op = promote_static_op(C);
+  auto C_op = promote_static_op<10>(C);
   BOOST_CHECK(&C_op.expression() == &C);
 
   BOOST_CHECK(
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   A.setConstant(3);
   B.setConstant(4);
 
-  auto C_noalias_op = promote_static_op(C.noalias());
+  auto C_noalias_op = promote_static_op<10>(C.noalias());
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
   BOOST_CHECK(
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   BOOST_CHECK(C_expression.rows() == A.rows());
   BOOST_CHECK(C_expression.cols() == B.cols());
 
-  auto C_op = promote_static_op(C);
+  auto C_op = promote_static_op<10>(C);
   BOOST_CHECK(&C_op.expression() == &C);
 
   BOOST_CHECK(
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   A.setConstant(3);
   B.setConstant(4);
 
-  auto C_noalias_op = promote_static_op(C.noalias());
+  auto C_noalias_op = promote_static_op<10>(C.noalias());
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
   BOOST_CHECK(
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   BOOST_CHECK(C_expression.rows() == A.rows());
   BOOST_CHECK(C_expression.cols() == B.cols());
 
-  auto C_op = promote_static_op(C);
+  auto C_op = promote_static_op<10>(C);
   BOOST_CHECK(&C_op.expression() == &C);
 
   BOOST_CHECK(
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   A.setConstant(3);
   B.setConstant(4);
 
-  auto C_noalias_op = promote_static_op(C.noalias());
+  auto C_noalias_op = promote_static_op<10>(C.noalias());
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
   BOOST_CHECK(
