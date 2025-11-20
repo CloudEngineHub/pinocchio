@@ -78,7 +78,7 @@ namespace pinocchio
     bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
       assert(prec >= 0 && "prec should be positive");
-      return (x - project(x)).norm() <= prec;
+      return x.minCoeff() >= -prec;
     }
 
     /// \copydoc Base::project
