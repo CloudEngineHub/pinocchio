@@ -36,6 +36,39 @@ BOOST_AUTO_TEST_CASE(test_helpers)
   BOOST_CHECK(helper::has_fixed_size_v<Matrix33>);
 }
 
+BOOST_AUTO_TEST_CASE(test_size_product)
+{
+  {
+    typedef Eigen::MatrixXd ResType;
+    typedef Eigen::Matrix3d LhsType;
+    typedef Eigen::Matrix3d RhsType;
+    BOOST_CHECK(
+      (internal::MatrixProductDimensions<ResType, LhsType, RhsType>::is_static_size_product()));
+    BOOST_CHECK((internal::MatrixProductDimensions<
+                 ResType, LhsType, RhsType>::is_partial_static_size_product()));
+  }
+
+  {
+    typedef Eigen::MatrixXd ResType;
+    typedef Eigen::MatrixXd LhsType;
+    typedef Eigen::MatrixXd RhsType;
+    BOOST_CHECK(
+      (!internal::MatrixProductDimensions<ResType, LhsType, RhsType>::is_static_size_product()));
+    BOOST_CHECK((!internal::MatrixProductDimensions<
+                 ResType, LhsType, RhsType>::is_partial_static_size_product()));
+  }
+
+  {
+    typedef Eigen::Matrix<double, 3, Eigen::Dynamic> ResType;
+    typedef Eigen::Matrix3d LhsType;
+    typedef Eigen::Matrix<double, 3, Eigen::Dynamic> RhsType;
+    BOOST_CHECK(
+      (!internal::MatrixProductDimensions<ResType, LhsType, RhsType>::is_static_size_product()));
+    BOOST_CHECK((internal::MatrixProductDimensions<
+                 ResType, LhsType, RhsType>::is_partial_static_size_product()));
+  }
+}
+
 BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
 {
   const Eigen::DenseIndex n = 10, m = 5;
