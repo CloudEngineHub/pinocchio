@@ -96,6 +96,15 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   const auto res_aliasing = C_expression.eval();
   BOOST_CHECK(C == res_aliasing);
 
+  // Specific case where MaxUnfolding == 0
+  {
+    auto C_op = promote_static_eval(C);
+    BOOST_CHECK(&C_op.expression() == &C);
+
+    C_op = A * B;
+    BOOST_CHECK(C == res_aliasing);
+  }
+
   // Test with noalias
   A.setConstant(3);
   B.setConstant(4);
@@ -114,6 +123,15 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   const auto res_noaliasing = C_expression.eval();
   BOOST_CHECK(res_noaliasing != res_aliasing);
   BOOST_CHECK(C == res_noaliasing);
+
+  // Specific case where MaxUnfolding == 0
+  {
+    auto C_noalias_op = promote_static_eval(C.noalias());
+    BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
+
+    C_noalias_op = A * B;
+    BOOST_CHECK(C == res_noaliasing);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(test_static_matrix)
@@ -146,6 +164,15 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   const auto res_aliasing = C_expression.eval();
   BOOST_CHECK(C == res_aliasing);
 
+  // Specific case where MaxUnfolding == 0
+  {
+    auto C_op = promote_static_eval(C);
+    BOOST_CHECK(&C_op.expression() == &C);
+
+    C_op = A * B;
+    BOOST_CHECK(C == res_aliasing);
+  }
+
   // Test with noalias
   A.setConstant(3);
   B.setConstant(4);
@@ -164,6 +191,15 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   const auto res_noaliasing = C_expression.eval();
   BOOST_CHECK(res_noaliasing != res_aliasing);
   BOOST_CHECK(C == res_noaliasing);
+
+  // Specific case where MaxUnfolding == 0
+  {
+    auto C_noalias_op = promote_static_eval(C.noalias());
+    BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
+
+    C_noalias_op = A * B;
+    BOOST_CHECK(C == res_noaliasing);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
@@ -197,6 +233,15 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   const auto res_aliasing = C_expression.eval();
   BOOST_CHECK(C == res_aliasing);
 
+  // Specific case where MaxUnfolding == 0
+  {
+    auto C_op = promote_static_eval(C);
+    BOOST_CHECK(&C_op.expression() == &C);
+
+    C_op = A * B;
+    BOOST_CHECK(C == res_aliasing);
+  }
+
   // Test with noalias
   A.setConstant(3);
   B.setConstant(4);
@@ -215,6 +260,16 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   const auto res_noaliasing = C_expression.eval();
   BOOST_CHECK(res_noaliasing != res_aliasing);
   BOOST_CHECK(C == res_noaliasing);
+
+  // Specific case where MaxUnfolding == 0
+  {
+    auto C_noalias_op = promote_static_eval(C.noalias());
+    BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
+
+    C_noalias_op = A * B;
+    BOOST_CHECK(C == res_noaliasing);
+  }
+}
 }
 
 BOOST_AUTO_TEST_SUITE_END()
