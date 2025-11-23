@@ -162,7 +162,7 @@ add_pinocchio_unit_test(eigenvalues)
 add_pinocchio_unit_test(tridiagonal-matrix)
 add_pinocchio_unit_test(lanczos-decomposition)
 add_pinocchio_unit_test(gram-schmidt-orthonormalisation)
-add_pinocchio_unit_test(promote-static-op)
+add_pinocchio_unit_test(promote-static-eval)
 
 # Derivatives algo
 add_pinocchio_unit_test(kinematics-derivatives)

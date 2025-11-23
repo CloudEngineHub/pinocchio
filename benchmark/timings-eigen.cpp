@@ -297,7 +297,7 @@ static void Static_MatrixMatrixProduct_StaticOp(benchmark::State & st)
   M3S lhs(M3::Random(MSIZE, RHSCOLS));
   for (auto _ : st)
   {
-    pinocchio::promote_static_op<10>(lhs.noalias()) = m * rhs;
+    pinocchio::promote_static_eval<10>(lhs.noalias()) = m * rhs;
     benchmark::DoNotOptimize(lhs);
   }
 
@@ -330,7 +330,7 @@ static void PartialStatic_MatrixMatrixProduct_StaticOp(benchmark::State & st)
   M3 lhs(M3::Random(MSIZE, RHSCOLS));
   for (auto _ : st)
   {
-    pinocchio::promote_static_op<10>(lhs.noalias()) = m * rhs;
+    pinocchio::promote_static_eval<10>(lhs.noalias()) = m * rhs;
     benchmark::DoNotOptimize(lhs);
   }
 
