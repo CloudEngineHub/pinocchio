@@ -102,16 +102,19 @@ namespace pinocchio
     typedef Eigen::Stride<Eigen::Dynamic, Eigen::Dynamic> DynamicStride;
 
     template<typename MatrixLike, typename MatrixDerived>
-    static Eigen::Map<MatrixLike, 0, DynamicStride>
+    // static Eigen::Map<MatrixLike, 0, DynamicStride>
+    static Eigen::Map<MatrixLike>
     make_eigen_map(const Eigen::MatrixBase<MatrixDerived> & _plain_object)
     {
       auto & plain_object = _plain_object.const_cast_derived();
-      const DynamicStride stride = {plain_object.outerStride(), plain_object.innerStride()};
-      return {plain_object.data(), plain_object.rows(), plain_object.cols(), stride};
+      // const DynamicStride stride = {plain_object.outerStride(), plain_object.innerStride()};
+      // return {plain_object.data(), plain_object.rows(), plain_object.cols(), stride};
+      return {plain_object.data(), plain_object.rows(), plain_object.cols()};
     }
 
     template<typename MatrixLike, typename MatrixDerived, template<typename> class _StorageBase>
-    static Eigen::Map<MatrixLike, 0, DynamicStride>
+    // static Eigen::Map<MatrixLike, 0, DynamicStride>
+    static Eigen::Map<MatrixLike>
     make_eigen_map(const Eigen::NoAlias<MatrixDerived, _StorageBase> & _plain_object_noalias)
     {
       return make_eigen_map<MatrixLike>(_plain_object_noalias.expression().const_cast_derived());
