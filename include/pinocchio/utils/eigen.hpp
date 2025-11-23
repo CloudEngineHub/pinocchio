@@ -314,21 +314,21 @@ namespace pinocchio
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       operator=(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        return dispatch<Eigen::internal::assign_op>(matrix_product.derived());
+        return dispatch<Eigen::internal::assign_op>(matrix_product);
       }
 
       template<typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       operator+=(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        return dispatch<Eigen::internal::add_assign_op>(matrix_product.derived());
+        return dispatch<Eigen::internal::add_assign_op>(matrix_product);
       }
 
       template<typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
       operator-=(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        return dispatch<Eigen::internal::sub_assign_op>(matrix_product.derived());
+        return dispatch<Eigen::internal::sub_assign_op>(matrix_product);
       }
 
       EIGEN_DEVICE_FUNC ExpressionType & expression() const
