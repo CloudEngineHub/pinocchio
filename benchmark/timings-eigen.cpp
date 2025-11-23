@@ -8,7 +8,10 @@
 #include <iostream>
 #include <benchmark/benchmark.h>
 
+#include "pinocchio/utils/eigen.hpp"
+
 using namespace Eigen;
+// using namespace pinocchio;
 
 static void CustomArguments(benchmark::internal::Benchmark * b)
 {
@@ -92,7 +95,7 @@ static void quaternionMultVectorX(benchmark::State & st)
 }
 BENCHMARK(quaternionMultVectorX)->Apply(CustomArguments);
 
-// Static_MatrixMultMatrix
+// Static_MatrixMatrixProduct
 
 template<typename M1, typename M2, typename Mout>
 PINOCCHIO_DONT_INLINE void matrix_mult_matrix_call(
@@ -101,7 +104,7 @@ PINOCCHIO_DONT_INLINE void matrix_mult_matrix_call(
   lhs.const_cast_derived().noalias() = m * rhs;
 }
 template<int MSIZE, int OptionM1, int OptionM2, int OptionM3>
-static void Static_MatrixMultMatrix(benchmark::State & st)
+static void Static_MatrixMatrixProduct(benchmark::State & st)
 {
   Matrix<double, MSIZE, MSIZE, OptionM1> m(Matrix<double, MSIZE, MSIZE, OptionM1>::Random());
   Matrix<double, MSIZE, MSIZE, OptionM2> rhs(Matrix<double, MSIZE, MSIZE, OptionM2>::Random());
@@ -112,22 +115,29 @@ static void Static_MatrixMultMatrix(benchmark::State & st)
   }
 }
 
-#define BENCH_STATIC_MATRIX_MULT_MATRIX(dim)                                                       \
-  BENCHMARK(Static_MatrixMultMatrix<dim, ColMajor, ColMajor, ColMajor>)->Apply(CustomArguments);   \
-  BENCHMARK(Static_MatrixMultMatrix<dim, RowMajor, ColMajor, ColMajor>)->Apply(CustomArguments);   \
-  BENCHMARK(Static_MatrixMultMatrix<dim, ColMajor, RowMajor, ColMajor>)->Apply(CustomArguments);   \
-  BENCHMARK(Static_MatrixMultMatrix<dim, RowMajor, RowMajor, ColMajor>)->Apply(CustomArguments);   \
-  BENCHMARK(Static_MatrixMultMatrix<dim, ColMajor, ColMajor, RowMajor>)->Apply(CustomArguments);   \
-  BENCHMARK(Static_MatrixMultMatrix<dim, RowMajor, ColMajor, RowMajor>)->Apply(CustomArguments);   \
-  BENCHMARK(Static_MatrixMultMatrix<dim, ColMajor, RowMajor, RowMajor>)->Apply(CustomArguments);   \
-  BENCHMARK(Static_MatrixMultMatrix<dim, RowMajor, RowMajor, RowMajor>)->Apply(CustomArguments);
+#define BENCH_STATIC_MATRIX_MATRIX_PRODUCT(dim)                                                    \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, ColMajor, ColMajor, ColMajor>)                         \
+    ->Apply(CustomArguments);                                                                      \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, RowMajor, ColMajor, ColMajor>)                         \
+    ->Apply(CustomArguments);                                                                      \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, ColMajor, RowMajor, ColMajor>)                         \
+    ->Apply(CustomArguments);                                                                      \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, RowMajor, RowMajor, ColMajor>)                         \
+    ->Apply(CustomArguments);                                                                      \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, ColMajor, ColMajor, RowMajor>)                         \
+    ->Apply(CustomArguments);                                                                      \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, RowMajor, ColMajor, RowMajor>)                         \
+    ->Apply(CustomArguments);                                                                      \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, ColMajor, RowMajor, RowMajor>)                         \
+    ->Apply(CustomArguments);                                                                      \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, RowMajor, RowMajor, RowMajor>)->Apply(CustomArguments);
 
-BENCH_STATIC_MATRIX_MULT_MATRIX(3)
-BENCH_STATIC_MATRIX_MULT_MATRIX(4)
-BENCH_STATIC_MATRIX_MULT_MATRIX(6)
-BENCH_STATIC_MATRIX_MULT_MATRIX(10)
-BENCH_STATIC_MATRIX_MULT_MATRIX(20)
-BENCH_STATIC_MATRIX_MULT_MATRIX(50)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(3)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(4)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(6)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(10)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(20)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(50)
 
 // matrixTransposeMultMatrix
 
@@ -186,7 +196,7 @@ BENCHMARK(matrixMultVector<3>)->Apply(CustomArguments);
 BENCHMARK(matrixMultVector<4>)->Apply(CustomArguments);
 BENCHMARK(matrixMultVector<6>)->Apply(CustomArguments);
 
-// Dynamic_MatrixMultMatrix
+// Dynamic_MatrixMatrixProduct
 
 // static void CustomArgumentsDynamicMatrix(benchmark::internal::Benchmark * b)
 // {
@@ -194,7 +204,7 @@ BENCHMARK(matrixMultVector<6>)->Apply(CustomArguments);
 // }
 
 template<int MSIZE, int RHSCOLS, int OptionM1, int OptionM2, int OptionM3>
-static void Dynamic_MatrixMultMatrix(benchmark::State & st)
+static void Dynamic_MatrixMatrixProduct(benchmark::State & st)
 {
   // const auto MSIZE = st.range(0);
   Matrix<double, Dynamic, Dynamic, OptionM1> m(
@@ -210,7 +220,7 @@ static void Dynamic_MatrixMultMatrix(benchmark::State & st)
 }
 
 template<int MSIZE, int RHSCOLS, int OptionM1, int OptionM2, int OptionM3>
-static void Dynamic_MatrixMultMatrix_Block(benchmark::State & st)
+static void Dynamic_MatrixMatrixProduct_Block(benchmark::State & st)
 {
   // const auto MSIZE = st.range(0);
   Matrix<double, Dynamic, Dynamic, OptionM1> m(
@@ -235,7 +245,7 @@ Eigen::Map<MatrixMap> make_map(const Eigen::PlainObjectBase<Matrix> & _mat)
 }
 
 template<int MSIZE, int RHSCOLS, int _OptionM1, int _OptionM2, int _OptionM3>
-static void Dynamic_MatrixMultMatrix_Map(benchmark::State & st)
+static void Dynamic_MatrixMatrixProduct_StaticMap(benchmark::State & st)
 {
   // const auto MSIZE = st.range(0);
   static constexpr int OptionM1 = _OptionM1;
@@ -255,16 +265,84 @@ static void Dynamic_MatrixMultMatrix_Map(benchmark::State & st)
   M3 lhs(M3::Random(MSIZE, RHSCOLS));
   for (auto _ : st)
   {
+    // matrix_mult_matrix_call(m,rhs,lhs);
     matrix_mult_matrix_call(make_map<M1S>(m), make_map<M2S>(rhs), make_map<M3S>(lhs));
     // matrix_mult_matrix_call(m, make_map<M2S>(rhs), make_map<M3S>(lhs));
     // matrix_mult_matrix_call(make_map<M1S>(m), make_map<M2S>(rhs), lhs);
     // matrix_mult_matrix_call(m, rhs, make_map<M3S>(lhs));
     // matrix_mult_matrix_call(m, make_map<M2S>(rhs), make_map<M3S>(lhs));
     // matrix_mult_matrix_call(m, make_map<M2S>(rhs), lhs);
+    benchmark::DoNotOptimize(lhs);
   }
 }
 
-#define BENCH_DYNAMIC_MATRIX_MULT_MATRIX_TPL(rows, cols, func)                                     \
+template<int MSIZE, int RHSCOLS, int _OptionM1, int _OptionM2, int _OptionM3>
+static void Static_MatrixMatrixProduct_StaticOp(benchmark::State & st)
+{
+  // const auto MSIZE = st.range(0);
+  static constexpr int OptionM1 = _OptionM1;
+  typedef Matrix<double, Dynamic, Dynamic, OptionM1> M1;
+  typedef Matrix<double, MSIZE, MSIZE, OptionM1> M1S;
+
+  static constexpr int OptionM2 = RHSCOLS == 1 ? Eigen::ColMajor : _OptionM2;
+  typedef Matrix<double, Dynamic, Dynamic, OptionM2> M2;
+  typedef Matrix<double, MSIZE, RHSCOLS, OptionM2> M2S;
+
+  static constexpr int OptionM3 = RHSCOLS == 1 ? Eigen::ColMajor : _OptionM3;
+  typedef Matrix<double, Dynamic, Dynamic, OptionM3> M3;
+  typedef Matrix<double, MSIZE, RHSCOLS, OptionM3> M3S;
+
+  M1S m(M1::Random(MSIZE, MSIZE));
+  M2S rhs(M2::Random(MSIZE, RHSCOLS));
+  M3S lhs(M3::Random(MSIZE, RHSCOLS));
+  for (auto _ : st)
+  {
+    pinocchio::promote_static_op<10>(lhs.noalias()) = m * rhs;
+    benchmark::DoNotOptimize(lhs);
+  }
+
+  if (!lhs.isApprox((m * rhs).eval()))
+  {
+    std::cout << "lhs != m * rhs" << std::endl;
+    std::cout << "lhs:\n" << lhs << std::endl;
+    std::cout << "m * rhs:\n" << m * rhs << std::endl;
+  }
+}
+
+template<int MSIZE, int RHSCOLS, int _OptionM1, int _OptionM2, int _OptionM3>
+static void PartialStatic_MatrixMatrixProduct_StaticOp(benchmark::State & st)
+{
+  // const auto MSIZE = st.range(0);
+  static constexpr int OptionM1 = _OptionM1;
+  typedef Matrix<double, Dynamic, Dynamic, OptionM1> M1;
+  typedef Matrix<double, MSIZE, MSIZE, OptionM1> M1S;
+
+  static constexpr int OptionM2 = RHSCOLS == 1 ? Eigen::ColMajor : _OptionM2;
+  typedef Matrix<double, Dynamic, Dynamic, OptionM2> M2;
+  typedef Matrix<double, MSIZE, RHSCOLS, OptionM2> M2S;
+
+  static constexpr int OptionM3 = RHSCOLS == 1 ? Eigen::ColMajor : _OptionM3;
+  typedef Matrix<double, Dynamic, Dynamic, OptionM3> M3;
+  // typedef Matrix<double, MSIZE, RHSCOLS, OptionM3> M3S;
+
+  M1S m(M1::Random(MSIZE, MSIZE));
+  M2S rhs(M2::Random(MSIZE, RHSCOLS));
+  M3 lhs(M3::Random(MSIZE, RHSCOLS));
+  for (auto _ : st)
+  {
+    pinocchio::promote_static_op<10>(lhs.noalias()) = m * rhs;
+    benchmark::DoNotOptimize(lhs);
+  }
+
+  if (!lhs.isApprox((m * rhs).eval()))
+  {
+    std::cout << "lhs != m * rhs" << std::endl;
+    std::cout << "lhs:\n" << lhs << std::endl;
+    std::cout << "m * rhs:\n" << m * rhs << std::endl;
+  }
+}
+
+#define BENCH_MATRIX_MATRIX_PRODUCT_TPL(rows, cols, func)                                          \
   BENCHMARK(func<rows, cols, ColMajor, ColMajor, ColMajor>)->Apply(CustomArguments);               \
   BENCHMARK(func<rows, cols, RowMajor, ColMajor, ColMajor>)->Apply(CustomArguments);               \
   BENCHMARK(func<rows, cols, ColMajor, RowMajor, ColMajor>)->Apply(CustomArguments);               \
@@ -274,44 +352,70 @@ static void Dynamic_MatrixMultMatrix_Map(benchmark::State & st)
   BENCHMARK(func<rows, cols, ColMajor, RowMajor, RowMajor>)->Apply(CustomArguments);               \
   BENCHMARK(func<rows, cols, RowMajor, RowMajor, RowMajor>)->Apply(CustomArguments);
 
-#define BENCH_DYNAMIC_MATRIX_MULT_MATRIX(dim)                                                      \
-  BENCH_DYNAMIC_MATRIX_MULT_MATRIX_TPL(dim, dim, Dynamic_MatrixMultMatrix)
+#define BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT(dim)                                                   \
+  BENCH_MATRIX_MATRIX_PRODUCT_TPL(dim, dim, Dynamic_MatrixMatrixProduct)
 
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX(3)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX(4)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX(6)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX(10)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX(20)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX(50)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT(3)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT(4)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT(6)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT(10)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT(20)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT(50)
 
 #define BENCH_DYNAMIC_MATRIX_MULT_VECTOR(dim)                                                      \
-  BENCH_DYNAMIC_MATRIX_MULT_MATRIX_TPL(dim, 1, Dynamic_MatrixMultMatrix)
+  BENCH_MATRIX_MATRIX_PRODUCT_TPL(dim, 1, Dynamic_MatrixMatrixProduct)
 BENCH_DYNAMIC_MATRIX_MULT_VECTOR(3)
 BENCH_DYNAMIC_MATRIX_MULT_VECTOR(4)
 BENCH_DYNAMIC_MATRIX_MULT_VECTOR(6)
 
-#define BENCH_DYNAMIC_MATRIX_MULT_MATRIX_BLOCK(dim, rhs_col)                                       \
-  BENCH_DYNAMIC_MATRIX_MULT_MATRIX_TPL(dim, rhs_col, Dynamic_MatrixMultMatrix_Block)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_BLOCK(3, 1)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_BLOCK(4, 1)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_BLOCK(6, 1)
+#define BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_BLOCK(dim, rhs_col)                                    \
+  BENCH_MATRIX_MATRIX_PRODUCT_TPL(dim, rhs_col, Dynamic_MatrixMatrixProduct_Block)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_BLOCK(3, 1)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_BLOCK(4, 1)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_BLOCK(6, 1)
 
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_BLOCK(3, 3)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_BLOCK(4, 3)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_BLOCK(6, 3)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_BLOCK(3, 3)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_BLOCK(4, 3)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_BLOCK(6, 3)
 
-#define BENCH_DYNAMIC_MATRIX_MULT_MATRIX_MAP(dim, rhs_col)                                         \
-  BENCH_DYNAMIC_MATRIX_MULT_MATRIX_TPL(dim, rhs_col, Dynamic_MatrixMultMatrix_Map)
+#define BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_MAP(dim, rhs_col)                                      \
+  BENCH_MATRIX_MATRIX_PRODUCT_TPL(dim, rhs_col, Dynamic_MatrixMatrixProduct_StaticMap)
 
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_MAP(3, 1)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_MAP(4, 1)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_MAP(6, 1)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_MAP(3, 1)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_MAP(4, 1)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_MAP(6, 1)
 
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_MAP(3, 3)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_MAP(4, 3)
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_MAP(6, 3)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_MAP(3, 3)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_MAP(4, 3)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_MAP(6, 3)
 
-BENCH_DYNAMIC_MATRIX_MULT_MATRIX_MAP(6, 6)
+BENCH_DYNAMIC_MATRIX_MATRIX_PRODUCT_MAP(6, 6)
+
+#define BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(dim, rhs_col)                                  \
+  BENCH_MATRIX_MATRIX_PRODUCT_TPL(dim, rhs_col, Static_MatrixMatrixProduct_StaticOp)
+
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(3, 1)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(4, 1)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(6, 1)
+
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(3, 3)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(4, 3)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(6, 3)
+
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(6, 6)
+
+#define BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(dim, rhs_col)                          \
+  BENCH_MATRIX_MATRIX_PRODUCT_TPL(dim, rhs_col, PartialStatic_MatrixMatrixProduct_StaticOp)
+
+BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(3, 1)
+BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(4, 1)
+BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(6, 1)
+
+BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(3, 3)
+BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(4, 3)
+BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(6, 3)
+
+BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(6, 6)
 
 // matrixDynamicTransposeMultMatrix
 
