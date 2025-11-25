@@ -270,6 +270,5 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
     BOOST_CHECK(C == res_noaliasing);
   }
 }
-}
 
 BOOST_AUTO_TEST_SUITE_END()
