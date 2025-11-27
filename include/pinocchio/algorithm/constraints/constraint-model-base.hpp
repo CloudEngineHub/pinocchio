@@ -48,12 +48,16 @@ namespace pinocchio
     typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
     typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
       ActiveComplianceVectorTypeConstRef;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersRef
-      BaumgarteCorrectorVectorParametersRef;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersConstRef
-      BaumgarteCorrectorVectorParametersConstRef;
+
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
+    // Not used anymore:
+    // typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersRef
+    //   BaumgarteCorrectorVectorParametersRef;
+    // typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersConstRef
+    //   BaumgarteCorrectorVectorParametersConstRef;
+
+    // Usefull types ------------------------------------------------
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
     typedef std::vector<Eigen::DenseIndex> EigenIndexVector;
 

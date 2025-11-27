@@ -22,16 +22,6 @@ namespace boost
     template<typename Archive, typename Scalar>
     void serialize(
       Archive & ar,
-      ::pinocchio::BaumgarteCorrectorVectorParametersTpl<Scalar> & baumgarte_vector_parameters,
-      const unsigned int /*version*/)
-    {
-      ar & make_nvp("Kp", baumgarte_vector_parameters.Kp);
-      ar & make_nvp("Kd", baumgarte_vector_parameters.Kd);
-    }
-
-    template<typename Archive, typename Scalar>
-    void serialize(
-      Archive & ar,
       ::pinocchio::BaumgarteCorrectorParametersTpl<Scalar> & baumgarte_parameters,
       const unsigned int /*version*/)
     {
@@ -301,6 +291,15 @@ namespace boost
         "base_variant", boost::serialization::base_object<ConstraintModelVariant>(cmodel));
     }
 
+    // template<typename Archive, typename Scalar>
+    // void serialize(
+    //   Archive & ar,
+    //   ::pinocchio::BaumgarteCorrectorVectorParametersTpl<Scalar> & baumgarte_vector_parameters,
+    //   const unsigned int /*version*/)
+    // {
+    //   ar & make_nvp("Kp", baumgarte_vector_parameters.Kp);
+    //   ar & make_nvp("Kd", baumgarte_vector_parameters.Kd);
+    // }
   } // namespace serialization
 } // namespace boost
 

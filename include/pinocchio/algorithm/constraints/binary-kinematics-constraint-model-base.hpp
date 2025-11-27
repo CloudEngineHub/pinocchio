@@ -48,8 +48,6 @@ namespace pinocchio
     typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
     typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
       ActiveComplianceVectorTypeConstRef;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParameters
-      BaumgarteCorrectorVectorParameters;
 
     typedef SE3Tpl<Scalar, Options> SE3;
     typedef MotionTpl<Scalar, Options> Motion;

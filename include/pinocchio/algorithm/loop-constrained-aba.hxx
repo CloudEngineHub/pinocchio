@@ -445,16 +445,16 @@ namespace pinocchio
 
           // Baumgarte
           if (check_expression_if_real<Scalar, false>(
-                isZero(corrector.Kp, static_cast<Scalar>(0.))
-                && isZero(corrector.Kd, static_cast<Scalar>(0.))))
+                (corrector.Kp == static_cast<Scalar>(0.))
+                && (corrector.Kd == static_cast<Scalar>(0.))))
           {
             cdata.contact_acceleration_desired.setZero();
           }
           else
           {
             cdata.contact_acceleration_desired.toVector().noalias() =
-              -(corrector.Kd.asDiagonal() * contact_velocity_error.toVector())
-              - (corrector.Kp.asDiagonal() * cdata.contact_placement_error.toVector());
+              -(corrector.Kd * contact_velocity_error.toVector())
+              - (corrector.Kp * cdata.contact_placement_error.toVector());
           }
 
           cdata.contact_acceleration_desired -= oMc1.actInv(data.oa[joint1_id]);
@@ -498,16 +498,16 @@ namespace pinocchio
           data.oYaba_augmented[joint1_id].noalias() += mu * A1.transpose() * A1;
 
           if (check_expression_if_real<Scalar, false>(
-                isZero(corrector.Kp, static_cast<Scalar>(0.))
-                && isZero(corrector.Kd, static_cast<Scalar>(0.))))
+                (corrector.Kp == static_cast<Scalar>(0.))
+                && (corrector.Kd == static_cast<Scalar>(0.))))
           {
             cdata.contact_acceleration_desired.setZero();
           }
           else
           {
             cdata.contact_acceleration_desired.linear().noalias() =
-              -(corrector.Kd.asDiagonal() * contact_velocity_error.linear())
-              - (corrector.Kp.asDiagonal() * cdata.contact_placement_error.linear());
+              -(corrector.Kd * contact_velocity_error.linear())
+              - (corrector.Kp * cdata.contact_placement_error.linear());
             cdata.contact_acceleration_desired.angular().setZero();
           }
 

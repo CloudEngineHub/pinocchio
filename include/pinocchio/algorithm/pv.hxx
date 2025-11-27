@@ -426,7 +426,7 @@ namespace pinocchio
     for (std::size_t i = 0; i < contact_models.size(); ++i)
     {
       if (!check_expression_if_real<Scalar, false>(
-            contact_models[i].corrector.Kp.isZero(Scalar(0))))
+            contact_models[i].corrector.Kp == static_cast<Scalar>(0.)))
         baumgarte_position = true;
     }
 
@@ -473,7 +473,7 @@ namespace pinocchio
       const JointIndex & joint_id = contact_model.joint1_id;
       int con_dim = contact_model.size();
 
-      const typename RigidConstraintModel::BaumgarteCorrectorVectorParameters & corrector =
+      const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
         contact_model.corrector;
       typename RigidConstraintData::Motion & contact_acc_err =
         contact_datas[i].contact_acceleration_error;
@@ -487,26 +487,24 @@ namespace pinocchio
         vc2.setZero();
 
       contact_acc_err.setZero();
-      if (!check_expression_if_real<Scalar, false>(corrector.Kd.isZero(Scalar(0))))
+      if (!check_expression_if_real<Scalar, false>(corrector.Kd == static_cast<Scalar>(0.)))
       {
 
         // TODO: modify for closed loops by subtracting vc2_in_frame1
         if (contact_model.type == CONTACT_6D)
         {
           contact_vel_err = vc1;
-          contact_acc_err.toVector().noalias() -=
-            corrector.Kd.asDiagonal() * contact_vel_err.toVector();
+          contact_acc_err.toVector().noalias() -= corrector.Kd * contact_vel_err.toVector();
         }
         else
         {
           contact_vel_err = vc1;
           contact_vel_err.angular().setZero();
-          contact_acc_err.linear().noalias() -=
-            corrector.Kd.asDiagonal() * contact_vel_err.linear();
+          contact_acc_err.linear().noalias() -= corrector.Kd * contact_vel_err.linear();
         }
       }
 
-      if (!check_expression_if_real<Scalar, false>(corrector.Kp.isZero(Scalar(0))))
+      if (!check_expression_if_real<Scalar, false>(corrector.Kp == static_cast<Scalar>(0.)))
       {
         RigidConstraintData & contact_data = contact_datas[i];
         const typename RigidConstraintData::SE3 & c1Mc2 = contact_data.c1Mc2;
@@ -515,14 +513,14 @@ namespace pinocchio
         {
           contact_data.contact_placement_error = -log6(c1Mc2);
           contact_acc_err.toVector().noalias() -=
-            corrector.Kp.asDiagonal() * contact_data.contact_placement_error.toVector();
+            corrector.Kp * contact_data.contact_placement_error.toVector();
         }
         else if (contact_model.type == CONTACT_3D)
         {
           contact_data.contact_placement_error.linear() = -c1Mc2.translation();
           contact_data.contact_acceleration_error.angular().setZero();
           contact_acc_err.linear().noalias() -=
-            corrector.Kp.asDiagonal() * contact_data.contact_placement_error.linear();
+            corrector.Kp * contact_data.contact_placement_error.linear();
         }
       }
 
@@ -624,7 +622,7 @@ namespace pinocchio
     for (std::size_t i = 0; i < contact_models.size(); ++i)
     {
       if (!check_expression_if_real<Scalar, false>(
-            contact_models[i].corrector.Kp.isZero(Scalar(0))))
+            contact_models[i].corrector.Kp == static_cast<Scalar>(0.)))
       {
         baumgarte_position = true;
         break;
@@ -672,7 +670,7 @@ namespace pinocchio
       typename RigidConstraintData::Motion & vc2 = contact_datas[i].contact2_velocity;
       const JointIndex & joint_id = contact_model.joint1_id;
       int con_dim = contact_model.size();
-      const typename RigidConstraintModel::BaumgarteCorrectorVectorParameters & corrector =
+      const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
         contact_model.corrector;
       typename RigidConstraintData::Motion & contact_acc_err =
         contact_datas[i].contact_acceleration_error;
@@ -686,26 +684,24 @@ namespace pinocchio
         vc2.setZero();
 
       contact_acc_err.setZero();
-      if (!check_expression_if_real<Scalar, false>(corrector.Kd.isZero(Scalar(0))))
+      if (!check_expression_if_real<Scalar, false>(corrector.Kd == static_cast<Scalar>(0.)))
       {
 
         // TODO: modify for closed loops by subtracting vc2_in_frame1
         if (contact_model.type == CONTACT_6D)
         {
           contact_vel_err = vc1;
-          contact_acc_err.toVector().noalias() -=
-            corrector.Kd.asDiagonal() * contact_vel_err.toVector();
+          contact_acc_err.toVector().noalias() -= corrector.Kd * contact_vel_err.toVector();
         }
         else
         {
           contact_vel_err = vc1;
           contact_vel_err.angular().setZero();
-          contact_acc_err.linear().noalias() -=
-            corrector.Kd.asDiagonal() * contact_vel_err.linear();
+          contact_acc_err.linear().noalias() -= corrector.Kd * contact_vel_err.linear();
         }
       }
 
-      if (!check_expression_if_real<Scalar, false>(corrector.Kp.isZero(Scalar(0))))
+      if (!check_expression_if_real<Scalar, false>(corrector.Kp == static_cast<Scalar>(0.)))
       {
         RigidConstraintData & contact_data = contact_datas[i];
         const typename RigidConstraintData::SE3 & c1Mc2 = contact_data.c1Mc2;
@@ -714,14 +710,14 @@ namespace pinocchio
         {
           contact_data.contact_placement_error = -log6(c1Mc2);
           contact_acc_err.toVector().noalias() -=
-            corrector.Kp.asDiagonal() * contact_data.contact_placement_error.toVector();
+            corrector.Kp * contact_data.contact_placement_error.toVector();
         }
         else if (contact_model.type == CONTACT_3D)
         {
           contact_data.contact_placement_error.linear() = -c1Mc2.translation();
           contact_data.contact_acceleration_error.angular().setZero();
           contact_acc_err.linear().noalias() -=
-            corrector.Kp.asDiagonal() * contact_data.contact_placement_error.linear();
+            corrector.Kp * contact_data.contact_placement_error.linear();
         }
       }
 

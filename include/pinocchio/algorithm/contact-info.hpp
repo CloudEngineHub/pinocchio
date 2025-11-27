@@ -162,12 +162,6 @@ namespace pinocchio
     typedef typename traits<Self>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
     typedef
       typename traits<Self>::ActiveComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
-    typedef
-      typename traits<Self>::BaumgarteCorrectorVectorParameters BaumgarteCorrectorVectorParameters;
-    typedef typename traits<Self>::BaumgarteCorrectorVectorParametersRef
-      BaumgarteCorrectorVectorParametersRef;
-    typedef typename traits<Self>::BaumgarteCorrectorVectorParametersConstRef
-      BaumgarteCorrectorVectorParametersConstRef;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     using typename Base::BooleanVector;
@@ -234,7 +228,7 @@ namespace pinocchio
 
     // ///  \brief Corrector parameters
     // Reference for retrocompatibility
-    BaumgarteCorrectorVectorParameters corrector;
+    BaumgarteCorrectorParameters corrector;
     // For the new API it is either one of:
     // BaumgarteCorrectorParameters m_baumgarte_parameters;
     // BaumgarteCorrectorVectorParameters m_baumgarte_vector_parameters;
@@ -287,7 +281,7 @@ namespace pinocchio
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
     , m_compliance(VectorXs::Zero(size()))
-    , corrector(size())
+    , corrector()
     {
       init(model);
     }
@@ -322,7 +316,7 @@ namespace pinocchio
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
     , m_compliance(VectorXs::Zero(size()))
-    , corrector(size())
+    , corrector()
     {
       init(model);
     }
@@ -355,7 +349,7 @@ namespace pinocchio
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
     , m_compliance(VectorXs::Zero(size()))
-    , corrector(size())
+    , corrector()
     {
       init(model);
     }
@@ -389,7 +383,7 @@ namespace pinocchio
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
     , m_compliance(VectorXs::Zero(size()))
-    , corrector(size())
+    , corrector()
     {
       init(model);
     }
@@ -429,13 +423,13 @@ namespace pinocchio
     }
 
     /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    BaumgarteCorrectorVectorParametersConstRef baumgarte_corrector_vector_parameters_impl() const
+    const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_impl() const
     {
       return corrector;
     }
 
     /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    BaumgarteCorrectorVectorParametersRef baumgarte_corrector_vector_parameters_impl()
+    BaumgarteCorrectorParameters & baumgarte_corrector_parameters_impl()
     {
       return corrector;
     }
