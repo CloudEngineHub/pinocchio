@@ -98,7 +98,19 @@ namespace pinocchio
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
     typedef std::vector<Eigen::DenseIndex> EigenIndexVector;
 
+    // --------------------------------------------------------------
+    // Methods
+    // --------------------------------------------------------------
+
     using Base::createData;
+
+    /// \brief Returns a constraint data associated to this constraint model.
+    ConstraintData createData() const
+    {
+      return derived().createDataImpl();
+    }
+
+    // CRTP classics and operators ----------------------------------
 
     /// \brief Cast to derived class.
     Derived & derived()
@@ -110,6 +122,18 @@ namespace pinocchio
     const Derived & derived() const
     {
       return static_cast<const Derived &>(*this);
+    }
+
+    /// \brief Cast to base.
+    ConstraintModelBase & base()
+    {
+      return *this;
+    }
+
+    /// \brief Const cast to base.
+    const ConstraintModelBase & base() const
+    {
+      return *this;
     }
 
     /// \brief Cast to NewScalar.
@@ -124,18 +148,6 @@ namespace pinocchio
     void cast(ConstraintModelBase<OtherDerived> & other) const
     {
       other.name = name;
-    }
-
-    /// \brief Cast to base.
-    ConstraintModelBase & base()
-    {
-      return *this;
-    }
-
-    /// \brief Const cast to base.
-    const ConstraintModelBase & base() const
-    {
-      return *this;
     }
 
     /// \brief Copy operator.
@@ -161,11 +173,7 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    /// \brief Returns a constraint data associated to this constraint model.
-    ConstraintData createData() const
-    {
-      return derived().createDataImpl();
-    }
+    // Aesthetics methods --------------------------------------------
 
     /// \brief Returns the name of the underlying class if this is a variant.
     std::string shortname() const
@@ -194,7 +202,23 @@ namespace pinocchio
       return os;
     }
 
-    /// \brief Returns the (maximum) size of the constraint.
+    // Size management ----------------------------------------------
+
+    /// \brief Returns the estimated maxSize of the constraint.
+    /// \note This method is intended to be a helper for pre-allocation.
+    int capacitySize() const
+    {
+      if constexpr (bounded_size)
+      {
+        return size();
+      }
+      else
+      {
+        return derived().capacitySizeImpl();
+      }
+    }
+
+    /// \brief Returns the maximum size of the constraint.
     int size() const
     {
       if constexpr (static_size)
@@ -206,6 +230,8 @@ namespace pinocchio
         return derived().sizeImpl();
       }
     }
+
+    // Current state methods for algorithm --------------------------
 
     /// \brief Returns the current size of the constraint, typically after `calc` has been called.
     /// \note If constraints are dynamic (e.g. joint limits), activeSize is computed when
@@ -220,6 +246,78 @@ namespace pinocchio
       else
       {
         return derived().activeSizeImpl(constraint_data.derived());
+      }
+    }
+
+    /// \brief Returns the colwise sparsity associated with a given row of the active set of
+    /// the constraints.
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    const BooleanVector & getActiveRowSparsityPattern(
+      const ConstraintData & constraint_data, const Eigen::Index row_id) const
+    {
+      if constexpr (constant_size)
+      {
+        return getRowSparsityPattern(row_id);
+      }
+      else
+      {
+        return derived().getActiveRowSparsityPatternImpl(constraint_data, row_id);
+      }
+    }
+
+    /// \brief Returns the vector of the active indexes associated with a given row
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    const EigenIndexVector & getActiveRowIndexes(
+      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
+    {
+      if constexpr (constant_size)
+      {
+        return getActivableRowIndexes(row_id);
+      }
+      else
+      {
+        return derived().getActiveRowIndexesImpl(constraint_data, row_id);
+      }
+    }
+
+    /// \brief Returns an instance of the associated constraint set operator.
+    ConstraintSet set() const
+    {
+      return derived().setImpl();
+    }
+
+    /// \brief Returns the active compliance internally stored in the constraint and corresponding
+    /// to the active set contained in cdata
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    ActiveComplianceVectorTypeConstRef
+    getActiveCompliance(const ConstraintData & constraint_data) const
+    {
+      if constexpr (constant_size)
+      {
+        return compliance();
+      }
+      else
+      {
+        return derived().getActivecomplianceImpl(constraint_data);
+      }
+    }
+
+    /// \brief Returns the active compliance internally stored in the constraint and corresponding
+    /// to the active set contained in cdata
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    ActiveComplianceVectorTypeRef getActiveCompliance(ConstraintData & constraint_data) const
+    {
+      if constexpr (constant_size)
+      {
+        return compliance();
+      }
+      else
+      {
+        return derived().getActivecomplianceImpl(constraint_data);
       }
     }
 
@@ -402,82 +500,18 @@ namespace pinocchio
         model, data, cdata, diagonal_constraint_inertia.derived(), reference_frame);
     }
 
+    // Handling data metods -----------------------------------------
+
     /// \brief Returns the colwise sparsity associated with a given row
     const BooleanVector & getRowSparsityPattern(const Eigen::Index row_id) const
     {
       return derived().getRowSparsityPatternImpl(row_id);
     }
 
-    /// \brief Returns the colwise sparsity associated with a given row of the active set of
-    /// the constraints.
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    const BooleanVector & getActiveRowSparsityPattern(
-      const ConstraintData & constraint_data, const Eigen::Index row_id) const
-    {
-      if constexpr (constant_size)
-      {
-        return getRowSparsityPattern(row_id);
-      }
-      else
-      {
-        return derived().getActiveRowSparsityPatternImpl(constraint_data, row_id);
-      }
-    }
-
     /// \brief Returns the vector of the activable indexes associated with a given row
     const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
     {
       return derived().getActivableRowIndexesImpl(row_id);
-    }
-
-    /// \brief Returns the vector of the active indexes associated with a given row
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    const EigenIndexVector & getActiveRowIndexes(
-      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
-    {
-      if constexpr (constant_size)
-      {
-        return getActivableRowIndexes(row_id);
-      }
-      else
-      {
-        return derived().getActiveRowIndexesImpl(constraint_data, row_id);
-      }
-    }
-
-    /// \brief Returns the active compliance internally stored in the constraint and corresponding
-    /// to the active set contained in cdata
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    ActiveComplianceVectorTypeConstRef
-    getActiveCompliance(const ConstraintData & constraint_data) const
-    {
-      if constexpr (constant_size)
-      {
-        return compliance();
-      }
-      else
-      {
-        return derived().getActivecomplianceImpl(constraint_data);
-      }
-    }
-
-    /// \brief Returns the active compliance internally stored in the constraint and corresponding
-    /// to the active set contained in cdata
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    ActiveComplianceVectorTypeRef getActiveCompliance(ConstraintData & constraint_data) const
-    {
-      if constexpr (constant_size)
-      {
-        return compliance();
-      }
-      else
-      {
-        return derived().getActivecomplianceImpl(constraint_data);
-      }
     }
 
     /// \brief Returns the compliance internally stored in the constraint model.
@@ -502,12 +536,6 @@ namespace pinocchio
     BaumgarteCorrectorParameters & baumgarte_corrector_parameters()
     {
       return derived().baumgarte_corrector_parameters_impl();
-    }
-
-    /// \brief Returns an instance of the associated constraint set operator.
-    ConstraintSet set() const
-    {
-      return derived().setImpl();
     }
 
     // Attributes common to all constraints
