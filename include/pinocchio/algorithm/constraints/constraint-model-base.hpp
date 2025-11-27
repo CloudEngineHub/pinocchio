@@ -9,7 +9,6 @@
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/common/model-entity.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 
 namespace pinocchio
 {
@@ -94,12 +93,6 @@ namespace pinocchio
       ActiveComplianceVectorTypeConstRef;
 
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
-
-    // Not used anymore:
-    // typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersRef
-    //   BaumgarteCorrectorVectorParametersRef;
-    // typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersConstRef
-    //   BaumgarteCorrectorVectorParametersConstRef;
 
     // Usefull types ------------------------------------------------
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
@@ -498,19 +491,6 @@ namespace pinocchio
     {
       return derived().compliance_impl();
     }
-
-    // CHOICE: right now we use the scalar Baumgarte
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersConstRef baumgarte_corrector_vector_parameters() const
-    // {
-    //   return derived().baumgarte_corrector_vector_parameters_impl();
-    // }
-
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersRef baumgarte_corrector_vector_parameters()
-    // {
-    //   return derived().baumgarte_corrector_vector_parameters_impl();
-    // }
 
     /// \brief Returns the Baumgarte parameters internally stored in the constraint model
     const BaumgarteCorrectorParameters & baumgarte_corrector_parameters() const

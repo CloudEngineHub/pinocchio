@@ -12,7 +12,6 @@
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/kinematics-constraint-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 
 namespace pinocchio
@@ -284,10 +283,8 @@ namespace pinocchio
     size_t depth_joint1, depth_joint2;
 
   protected:
-    using BaseCommonParameters::m_compliance;
-    // CHOICE: right now we use the scalar Baumgarte.
-    // using BaseCommonParameters::m_baumgarte_vector_parameters;
     using BaseCommonParameters::m_baumgarte_parameters;
+    using BaseCommonParameters::m_compliance;
   }; // struct BinaryKinematicsConstraintBase<Derived>
 
   template<typename Derived>
@@ -376,8 +373,6 @@ namespace pinocchio
 
     // Set compliance and Baumgarte parameters.
     m_compliance = ComplianceVectorType::Zero(size());
-    // CHOICE: right now we use the scalar Baumgarte.
-    // m_baumgarte_vector_parameters = BaumgarteCorrectorVectorParameters(size());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
   }
 

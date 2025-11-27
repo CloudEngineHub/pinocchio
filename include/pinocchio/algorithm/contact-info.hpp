@@ -14,7 +14,6 @@
 #include "pinocchio/algorithm/constraints/kinematics-constraint-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/utils/reference.hpp"
 
 namespace pinocchio
@@ -249,10 +248,6 @@ namespace pinocchio
     // ///  \brief Corrector parameters
     // Reference for retrocompatibility
     BaumgarteCorrectorParameters corrector;
-    // For the new API it is either one of:
-    // BaumgarteCorrectorParameters m_baumgarte_parameters;
-    // BaumgarteCorrectorVectorParameters m_baumgarte_vector_parameters;
-    // Actually it is the scalar one
 
   protected:
     ///
@@ -453,18 +448,6 @@ namespace pinocchio
     {
       return corrector;
     }
-
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersConstRef baumgarte_corrector_vector_parameters_impl() const
-    // {
-    //   return m_baumgarte_vector_parameters;
-    // }
-
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersRef baumgarte_corrector_vector_parameters_impl()
-    // {
-    //   return m_baumgarte_vector_parameters;
-    // }
 
     ///
     ///  \brief Comparison operator

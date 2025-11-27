@@ -11,7 +11,6 @@
 #include "pinocchio/algorithm/constraints/jointwise-constraint-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/sets/orthant-cone.hpp"
 
@@ -108,14 +107,6 @@ namespace pinocchio
     typedef EigenStorageTpl<VectorXs> EigenStorageVector;
     typedef typename EigenStorageVector::RefMapType ActiveComplianceVectorTypeRef;
     typedef typename EigenStorageVector::ConstRefMapType ActiveComplianceVectorTypeConstRef;
-
-    // Not used anymore
-    // typedef VectorXs BaumgarteVectorType;
-    // typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
-    //   BaumgarteCorrectorVectorParameters;
-    // typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
-    // typedef const BaumgarteCorrectorVectorParameters &
-    // BaumgarteCorrectorVectorParametersConstRef;
   };
 
   template<typename _Scalar, int _Options>

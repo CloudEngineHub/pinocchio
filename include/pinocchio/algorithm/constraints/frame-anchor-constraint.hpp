@@ -60,14 +60,6 @@ namespace pinocchio
     // Will be removed
     typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
     typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
-
-    // Not needed anymore
-    // typedef Vector3 BaumgarteVectorType;
-    // typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
-    //   BaumgarteCorrectorVectorParameters;
-    // typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
-    // typedef const BaumgarteCorrectorVectorParameters &
-    // BaumgarteCorrectorVectorParametersConstRef;
   };
 
   template<typename _Scalar, int _Options>

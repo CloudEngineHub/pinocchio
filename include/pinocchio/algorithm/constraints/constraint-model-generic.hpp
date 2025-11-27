@@ -8,7 +8,6 @@
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 
@@ -93,16 +92,6 @@ namespace pinocchio
     // Will be removed
     typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
     typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
-
-    // Not needed anymore
-    // typedef VectorXs BaumgarteVectorType;
-    // typedef Eigen::Ref<VectorXs> BaumgarteVectorTypeRef;
-    // typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorTypeRef>
-    //   BaumgarteCorrectorVectorParameters;
-    // typedef BaumgarteCorrectorVectorParameters BaumgarteCorrectorVectorParametersRef;
-    // typedef Eigen::Ref<const VectorXs> BaumgarteVectorTypeConstRef;
-    // typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorTypeConstRef>
-    //   BaumgarteCorrectorVectorParametersConstRef;
   };
 
   template<
@@ -441,19 +430,6 @@ namespace pinocchio
     {
       return ::pinocchio::visitors::compliance(*this);
     }
-
-    // CHOICE: right now we use the scalar Baumgarte
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersConstRef baumgarte_corrector_vector_parameters_impl() const
-    // {
-    //   return ::pinocchio::visitors::getBaumgarteCorrectorVectorParameters(*this);
-    // }
-
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersRef baumgarte_corrector_vector_parameters_impl()
-    // {
-    //   return ::pinocchio::visitors::getBaumgarteCorrectorVectorParameters(*this);
-    // }
 
     /// \copydoc RootBase::baumgarte_corrector_parameters
     const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_impl() const

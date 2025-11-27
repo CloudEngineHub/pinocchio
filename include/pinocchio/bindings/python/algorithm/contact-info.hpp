@@ -14,7 +14,6 @@
 #include "pinocchio/bindings/python/utils/comparable.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/bindings/python/utils/eigen.hpp"
 
 namespace pinocchio
@@ -114,13 +113,6 @@ namespace pinocchio
             },
             bp::return_internal_reference<>()),
           "Baumgarte parameters associated with the constraint.");
-
-        // typedef typename BaumgarteCorrectorVectorParameters::VectorType BaumgarteVectorType;
-        // const std::string BaumgarteVectorType_name = getEigenTypeName<BaumgarteVectorType>();
-        // const std::string BaumgarteCorrectorVectorParameter_classname =
-        //   "BaumgarteCorrectorVectorParameters_" + BaumgarteVectorType_name;
-        // BaumgarteCorrectorVectorParametersPythonVisitor<BaumgarteCorrectorVectorParameters>::expose(
-        //   BaumgarteCorrectorVectorParameter_classname);
       }
 
       static void expose()

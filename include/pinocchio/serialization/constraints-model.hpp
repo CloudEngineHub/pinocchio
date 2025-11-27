@@ -69,10 +69,8 @@ namespace boost
       : public ::pinocchio::ConstraintModelCommonParameters<Derived>
       {
         typedef ::pinocchio::ConstraintModelCommonParameters<Derived> Base;
-        using Base::m_compliance;
-        // CHOICE: right now we use the scalar Baumgarte
-        // using Base::m_baumgarte_vector_parameters;
         using Base::m_baumgarte_parameters;
+        using Base::m_compliance;
       };
     } // namespace internal
 
@@ -86,8 +84,6 @@ namespace boost
       typedef internal::ConstraintModelCommonParametersAccessor<Derived> Accessor;
       auto & cmodel_ = reinterpret_cast<Accessor &>(cmodel);
       ar & make_nvp("m_compliance", cmodel_.m_compliance);
-      // CHOICE: right now we use the scalar Baumgarte
-      // ar & make_nvp("m_baumgarte_vector_parameters", cmodel_.m_baumgarte_vector_parameters);
       ar & make_nvp("m_baumgarte_parameters", cmodel_.m_baumgarte_parameters);
     }
 
@@ -291,15 +287,6 @@ namespace boost
         "base_variant", boost::serialization::base_object<ConstraintModelVariant>(cmodel));
     }
 
-    // template<typename Archive, typename Scalar>
-    // void serialize(
-    //   Archive & ar,
-    //   ::pinocchio::BaumgarteCorrectorVectorParametersTpl<Scalar> & baumgarte_vector_parameters,
-    //   const unsigned int /*version*/)
-    // {
-    //   ar & make_nvp("Kp", baumgarte_vector_parameters.Kp);
-    //   ar & make_nvp("Kd", baumgarte_vector_parameters.Kd);
-    // }
   } // namespace serialization
 } // namespace boost
 
