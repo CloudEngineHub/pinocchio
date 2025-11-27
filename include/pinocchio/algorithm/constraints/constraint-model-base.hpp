@@ -27,12 +27,13 @@ namespace pinocchio
     ACCELERATION_LEVEL // scaling 1
   };
 
-  enum struct ConstraintBehaviour
+  enum struct ConstraintSizeType
   {
-    ATOMIC,           // A minimal entity of constraint, size is static
-    CONSTANT_SIZE,    // A composite with constant size
-    CONSTANT_MAXSIZE, // A composite with a maxSize
-    GENERAL           // A composite with a maxSize more like a capacity
+    STATIC,   // The size is static, fixed at compile time
+    CONSTANT, // The size is constant, fixed at build time
+    BOUNDED,  // The size is bounded, a maxSize is fixed at build time and 0 <= size <= maxSize
+    GENERAL   // The size is not guaranteed to be bounded, capacitySize gives an estimated max size
+              // for allocation
   };
 
   template<class Derived>
@@ -56,11 +57,14 @@ namespace pinocchio
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       traits<Derived>::constraint_formulation_level;
-    static constexpr ConstraintBehaviour constraint_behaviour =
-      traits<Derived>::constraint_behaviour;
-    static constexpr bool is_atomic = constraint_behaviour == ConstraintBehaviour::ATOMIC;
+    static constexpr ConstraintSizeType constraint_size_type =
+      traits<Derived>::constraint_size_type;
+    // {STATIC} \subset {CONSTANT} \subset {BOUNDED} \subset {GENERAL}
+    static constexpr bool static_size = constraint_size_type == ConstraintSizeType::STATIC;
     static constexpr bool constant_size =
-      is_atomic || (constraint_behaviour == ConstraintBehaviour::CONSTANT_SIZE);
+      static_size || (constraint_size_type == ConstraintSizeType::CONSTANT);
+    static constexpr bool bounded_size =
+      constant_size || (constraint_size_type == ConstraintSizeType::BOUNDED);
 
     static constexpr bool has_baumgarte_corrector =
       traits<Derived>::has_baumgarte_corrector; // Baumgarte make sense and exist directly for the
@@ -200,7 +204,7 @@ namespace pinocchio
     /// \brief Returns the (maximum) size of the constraint.
     int size() const
     {
-      if constexpr (is_atomic)
+      if constexpr (static_size)
       {
         return Size;
       }

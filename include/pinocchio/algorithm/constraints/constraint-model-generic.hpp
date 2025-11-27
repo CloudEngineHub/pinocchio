@@ -32,9 +32,10 @@ namespace pinocchio
     };
 
     // static constexpr ConstraintFormulationLevel NOT USED;
-    static constexpr ConstraintBehaviour constraint_behaviour = ConstraintBehaviour::GENERAL;
+    static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::GENERAL;
 
-    // The generic behave as if it has those elements but raise an error if underlying type do not
+    // The generic behave as if it has those elements but raise an error if the underlying class
+    // does not
     static constexpr bool has_baumgarte_corrector = true;
     static constexpr bool has_compliance_member = true;
     static constexpr bool has_set = true;

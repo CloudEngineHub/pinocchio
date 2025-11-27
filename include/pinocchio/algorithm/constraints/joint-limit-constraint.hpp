@@ -42,8 +42,7 @@ namespace pinocchio
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::POSITION_LEVEL;
-    static constexpr ConstraintBehaviour constraint_behaviour =
-      ConstraintBehaviour::CONSTANT_MAXSIZE;
+    static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::BOUNDED;
 
     static constexpr bool has_baumgarte_corrector =
       true; // Baumgarte make sense and exist directly for the constraint
