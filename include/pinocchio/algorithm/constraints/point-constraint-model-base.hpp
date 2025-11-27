@@ -26,19 +26,37 @@ namespace pinocchio
   template<typename Derived>
   struct traits<PointConstraintModelBase<Derived>>
   {
+    enum
+    {
+      Size = 3
+    };
+
+    // --------------------------------------------------------------
+    // Traits characterizing the constraint behaviour in CRTP
+    // --------------------------------------------------------------
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::VELOCITY_LEVEL;
-    static constexpr bool has_baumgarte_corrector = true;
-    static constexpr bool has_baumgarte_corrector_vector = true;
-    static constexpr bool constant_size = true;
+    static constexpr ConstraintBehaviour constraint_behaviour = ConstraintBehaviour::ATOMIC;
 
+    static constexpr bool has_baumgarte_corrector =
+      true; // Baumgarte make sense and exist directly for the constraint
+    static constexpr bool has_compliance_member =
+      true; // The constraint itself posses a member m_compliance which can be set by the user
+    static constexpr bool has_set = true; // The constraint itself defines the set, otherwise must
+                                          // have a mechanism for set-related visitors
+
+    // --------------------------------------------------------------
+    // Traits for the algorithmic methods on current state
+    // --------------------------------------------------------------
+    // Template to generate type
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType
     {
       typedef typename InputMatrix::Scalar Scalar;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(InputMatrix) InputMatrixPlain;
-      typedef Eigen::Matrix<Scalar, 3, InputMatrix::ColsAtCompileTime, InputMatrixPlain::Options>
-        type;
+      typedef Eigen::
+        Matrix<Scalar, Size, InputMatrixPlain::ColsAtCompileTime, InputMatrixPlain::Options>
+          type;
     };
 
     template<typename InputMatrix>

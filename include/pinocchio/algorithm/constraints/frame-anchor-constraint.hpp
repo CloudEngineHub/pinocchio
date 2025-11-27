@@ -27,32 +27,47 @@ namespace pinocchio
 
     enum
     {
-      Options = _Options
+      Options = _Options,
+      Size = 6
     };
 
+    // --------------------------------------------------------------
+    // Traits referencing the constraint and associated types
+    // --------------------------------------------------------------
     typedef FrameAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef FrameAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
-
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
 
-    typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
-    typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> JacobianMatrixType;
-    typedef Vector6 VectorConstraintSize;
+    // --------------------------------------------------------------
+    // Traits for the algorithmic methods on current state
+    // --------------------------------------------------------------
+    // Elementary types
+    typedef Eigen::Matrix<Scalar, Size, Eigen::Dynamic, Options> JacobianMatrixType;
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> VectorConstraintSize;
 
-    typedef Vector6 ComplianceVectorType;
+    typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
+    typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
+
+    // -------------------------------
+    // Traits for holded Data
+    // -------------------------------
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> ComplianceVectorType;
     typedef ComplianceVectorType & ComplianceVectorTypeRef;
     typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
 
+    // Will be removed
     typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
     typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
 
-    typedef Vector6 BaumgarteVectorType;
-    typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
-      BaumgarteCorrectorVectorParameters;
-    typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
-    typedef const BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersConstRef;
+    // Not needed anymore
+    // typedef Vector3 BaumgarteVectorType;
+    // typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
+    //   BaumgarteCorrectorVectorParameters;
+    // typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
+    // typedef const BaumgarteCorrectorVectorParameters &
+    // BaumgarteCorrectorVectorParametersConstRef;
   };
 
   template<typename _Scalar, int _Options>

@@ -30,18 +30,31 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<JointLimitConstraintModelTpl<_Scalar, _Options>>
   {
+    // --------------------------------------------------------------
+    // Traits characterizing the constraint behaviour in CRTP
+    // --------------------------------------------------------------
     typedef _Scalar Scalar;
     enum
     {
-      Options = _Options
+      Options = _Options,
+      Size = Eigen::Dynamic
     };
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::POSITION_LEVEL;
-    static constexpr bool has_baumgarte_corrector = true;
-    static constexpr bool has_baumgarte_corrector_vector = false;
-    static constexpr bool constant_size = false;
+    static constexpr ConstraintBehaviour constraint_behaviour =
+      ConstraintBehaviour::CONSTANT_MAXSIZE;
 
+    static constexpr bool has_baumgarte_corrector =
+      true; // Baumgarte make sense and exist directly for the constraint
+    static constexpr bool has_compliance_member =
+      true; // The constraint itself posses a member m_compliance which can be set by the user
+    static constexpr bool has_set = true; // The constraint itself defines the set, otherwise must
+                                          // have a mechanism for set-related visitors
+
+    // --------------------------------------------------------------
+    // Traits referencing the constraint and associated types
+    // --------------------------------------------------------------
     typedef JointLimitConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef JointLimitConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef NonNegativeOrthantConeTpl<Scalar> ConstraintSet;
@@ -49,32 +62,24 @@ namespace pinocchio
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
 
+    // --------------------------------------------------------------
+    // Traits for the algorithmic methods on current state
+    // --------------------------------------------------------------
+    // Elementary types
+    typedef Eigen::Matrix<Scalar, Size, Eigen::Dynamic, Options> JacobianMatrixType;
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> VectorConstraintSize;
+
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Matrix<Scalar, 1, Eigen::Dynamic, Eigen::RowMajor> RowVectorXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> JacobianMatrixType;
-    typedef VectorXs VectorConstraintSize;
 
-    typedef VectorXs ComplianceVectorType;
-    typedef ComplianceVectorType & ComplianceVectorTypeRef;
-    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
-
-    typedef EigenStorageTpl<VectorXs> EigenStorageVector;
-    typedef typename EigenStorageVector::RefMapType ActiveComplianceVectorTypeRef;
-    typedef typename EigenStorageVector::ConstRefMapType ActiveComplianceVectorTypeConstRef;
-
-    typedef VectorXs BaumgarteVectorType;
-    typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
-      BaumgarteCorrectorVectorParameters;
-    typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
-    typedef const BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersConstRef;
-
+    // Template to generate type
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType
     {
       typedef typename InputMatrix::Scalar Scalar;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(InputMatrix) InputMatrixPlain;
       typedef Eigen::
-        Matrix<Scalar, Eigen::Dynamic, InputMatrix::ColsAtCompileTime, InputMatrixPlain::Options>
+        Matrix<Scalar, Size, InputMatrixPlain::ColsAtCompileTime, InputMatrixPlain::Options>
           type;
     };
 
@@ -90,6 +95,28 @@ namespace pinocchio
         InputMatrixPlain::Options>
         type;
     };
+
+    // -------------------------------
+    // Traits for holded Data
+    // -------------------------------
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> ComplianceVectorType;
+    typedef ComplianceVectorType & ComplianceVectorTypeRef;
+    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
+
+    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+
+    // Will be removed
+    typedef EigenStorageTpl<VectorXs> EigenStorageVector;
+    typedef typename EigenStorageVector::RefMapType ActiveComplianceVectorTypeRef;
+    typedef typename EigenStorageVector::ConstRefMapType ActiveComplianceVectorTypeConstRef;
+
+    // Not used anymore
+    // typedef VectorXs BaumgarteVectorType;
+    // typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
+    //   BaumgarteCorrectorVectorParameters;
+    // typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
+    // typedef const BaumgarteCorrectorVectorParameters &
+    // BaumgarteCorrectorVectorParametersConstRef;
   };
 
   template<typename _Scalar, int _Options>

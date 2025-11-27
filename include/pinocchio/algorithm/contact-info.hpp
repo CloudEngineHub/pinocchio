@@ -66,50 +66,53 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<RigidConstraintModelTpl<_Scalar, _Options>>
   {
+    // --------------------------------------------------------------
+    // Traits characterizing the constraint behaviour in CRTP
+    // --------------------------------------------------------------
     typedef _Scalar Scalar;
     enum
     {
-      Options = _Options
+      Options = _Options,
+      Size = Eigen::Dynamic
     };
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::VELOCITY_LEVEL;
-    static constexpr bool has_baumgarte_corrector = true;
-    static constexpr bool has_baumgarte_corrector_vector = true;
-    static constexpr bool constant_size = true; // constant size at compile time
+    static constexpr ConstraintBehaviour constraint_behaviour = ConstraintBehaviour::CONSTANT_SIZE;
 
+    static constexpr bool has_baumgarte_corrector =
+      true; // Baumgarte make sense and exist directly for the constraint
+    static constexpr bool has_compliance_member =
+      true; // The constraint itself posses a member m_compliance which can be set by the user
+    static constexpr bool has_set = true; // The constraint itself defines the set, otherwise must
+                                          // have a mechanism for set-related visitors
+
+    // --------------------------------------------------------------
+    // Traits referencing the constraint and associated types
+    // --------------------------------------------------------------
     typedef RigidConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef RigidConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef boost::blank ConstraintSet;
-
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
 
+    // --------------------------------------------------------------
+    // Traits for the algorithmic methods on current state
+    // --------------------------------------------------------------
+    // Elementary types
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options, 6, Eigen::Dynamic>
-      JacobianMatrixType;
-    typedef VectorXs VectorConstraintSize;
-
-    typedef VectorXs ComplianceVectorType;
-    typedef ComplianceVectorType & ComplianceVectorTypeRef;
-    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
-
-    typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
-
-    typedef Eigen::Matrix<Scalar, -1, 1, Eigen::ColMajor, 6> Vector6Max;
-    typedef Vector6Max BaumgarteVectorType;
-    typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
-      BaumgarteCorrectorVectorParameters;
-    typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
-    typedef const BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersConstRef;
-
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> JacobianMatrixType;
+    // Template to generate type
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType
     {
       typedef typename InputMatrix::Scalar Scalar;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(InputMatrix) InputMatrixPlain;
-      typedef Eigen::Matrix<Scalar, 3, InputMatrix::ColsAtCompileTime, InputMatrixPlain::Options>
+      typedef Eigen::Matrix<
+        Scalar,
+        Eigen::Dynamic,
+        InputMatrixPlain::ColsAtCompileTime,
+        InputMatrixPlain::Options>
         type;
     };
 
@@ -118,8 +121,25 @@ namespace pinocchio
     {
       typedef typename InputMatrix::Scalar Scalar;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(InputMatrix) InputMatrixPlain;
-      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 3, InputMatrixPlain::Options> type;
+      typedef Eigen::Matrix<
+        Scalar,
+        Eigen::Dynamic,
+        InputMatrixPlain::ColsAtCompileTime,
+        InputMatrixPlain::Options>
+        type;
     };
+
+    // -------------------------------
+    // Traits for holded Data
+    // -------------------------------
+    typedef VectorXs VectorConstraintSize;
+    typedef VectorXs ComplianceVectorType;
+    typedef ComplianceVectorType & ComplianceVectorTypeRef;
+    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
+
+    // Will be removed
+    typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
+    typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
   };
 
   template<typename _Scalar, int _Options>

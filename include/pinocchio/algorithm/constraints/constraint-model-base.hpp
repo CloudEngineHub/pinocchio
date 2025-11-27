@@ -27,24 +27,64 @@ namespace pinocchio
     ACCELERATION_LEVEL // scaling 1
   };
 
+  enum struct ConstraintBehaviour
+  {
+    ATOMIC,           // A minimal entity of constraint, size is static
+    CONSTANT_SIZE,    // A composite with constant size
+    CONSTANT_MAXSIZE, // A composite with a maxSize
+    GENERAL           // A composite with a maxSize more like a capacity
+  };
+
   template<class Derived>
   struct ConstraintModelBase
   : NumericalBase<Derived>
   , ModelEntity<Derived>
   {
-    typedef typename traits<Derived>::Scalar Scalar;
-    enum
-    {
-      Options = traits<Derived>::Options
-    };
-    static constexpr bool constant_size = traits<Derived>::constant_size;
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
 
     typedef ModelEntity<Derived> Base;
 
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Derived>::Scalar Scalar;
+    enum
+    {
+      Options = traits<Derived>::Options,
+      Size = traits<Derived>::Size
+    };
+
+    static constexpr ConstraintFormulationLevel constraint_formulation_level =
+      traits<Derived>::constraint_formulation_level;
+    static constexpr ConstraintBehaviour constraint_behaviour =
+      traits<Derived>::constraint_behaviour;
+    static constexpr bool is_atomic = constraint_behaviour == ConstraintBehaviour::ATOMIC;
+    static constexpr bool constant_size =
+      is_atomic || (constraint_behaviour == ConstraintBehaviour::CONSTANT_SIZE);
+
+    static constexpr bool has_baumgarte_corrector =
+      traits<Derived>::has_baumgarte_corrector; // Baumgarte make sense and exist directly for the
+                                                // constraint
+    static constexpr bool has_compliance_member =
+      traits<Derived>::has_compliance_member; // The constraint itself possesses a member
+                                              // m_compliance which can be set by the user
+    static constexpr bool has_set =
+      traits<Derived>::has_set; // The constraint itself defines the set, otherwise must have a
+                                // mechanism for set-related methods
+
+    typedef typename traits<Derived>::ConstraintModel ConstraintModel;
     typedef typename traits<Derived>::ConstraintData ConstraintData;
     typedef typename traits<Derived>::ConstraintSet ConstraintSet;
+
+    typedef typename traits<Derived>::JacobianMatrixType JacobianMatrixType;
+    typedef typename traits<Derived>::VectorConstraintSize VectorConstraintSize;
+    // JacobianMatrixProductReturnType / JacobianTransposeMatrixProductReturnType Tpl
+
+    typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
     typedef typename traits<Derived>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Derived>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
+
+    // Will disapear
     typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
     typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
       ActiveComplianceVectorTypeConstRef;
@@ -160,7 +200,14 @@ namespace pinocchio
     /// \brief Returns the (maximum) size of the constraint.
     int size() const
     {
-      return derived().sizeImpl();
+      if constexpr (is_atomic)
+      {
+        return Size;
+      }
+      else
+      {
+        return derived().sizeImpl();
+      }
     }
 
     /// \brief Returns the current size of the constraint, typically after `calc` has been called.
@@ -169,7 +216,7 @@ namespace pinocchio
     template<typename ConstraintDataDerived>
     int activeSize(const ConstraintDataBase<ConstraintDataDerived> & constraint_data) const
     {
-      if constexpr (traits<Derived>::constant_size)
+      if constexpr (constant_size)
       {
         return size();
       }
@@ -371,7 +418,7 @@ namespace pinocchio
     const BooleanVector & getActiveRowSparsityPattern(
       const ConstraintData & constraint_data, const Eigen::Index row_id) const
     {
-      if constexpr (traits<Derived>::constant_size)
+      if constexpr (constant_size)
       {
         return getRowSparsityPattern(row_id);
       }
@@ -393,7 +440,7 @@ namespace pinocchio
     const EigenIndexVector & getActiveRowIndexes(
       const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      if constexpr (traits<Derived>::constant_size)
+      if constexpr (constant_size)
       {
         return getActivableRowIndexes(row_id);
       }
@@ -410,7 +457,7 @@ namespace pinocchio
     ActiveComplianceVectorTypeConstRef
     getActiveCompliance(const ConstraintData & constraint_data) const
     {
-      if constexpr (traits<Derived>::constant_size)
+      if constexpr (constant_size)
       {
         return compliance();
       }
@@ -426,7 +473,7 @@ namespace pinocchio
     /// calling the calc method.
     ActiveComplianceVectorTypeRef getActiveCompliance(ConstraintData & constraint_data) const
     {
-      if constexpr (traits<Derived>::constant_size)
+      if constexpr (constant_size)
       {
         return compliance();
       }
