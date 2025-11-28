@@ -98,7 +98,7 @@ BENCHMARK(quaternionMultVectorX)->Apply(CustomArguments);
 // Static_MatrixMatrixProduct
 
 template<typename M1, typename M2, typename Mout>
-PINOCCHIO_DONT_INLINE void matrix_mult_matrix_call(
+void matrix_mult_matrix_call(
   const MatrixBase<M1> & m, const MatrixBase<M2> & rhs, const MatrixBase<Mout> & lhs)
 {
   lhs.const_cast_derived().noalias() = m * rhs;
@@ -112,6 +112,7 @@ static void Static_MatrixMatrixProduct(benchmark::State & st)
   for (auto _ : st)
   {
     matrix_mult_matrix_call(m, rhs, lhs);
+    benchmark::DoNotOptimize(lhs);
   }
 }
 
@@ -189,6 +190,7 @@ static void matrixMultVector(benchmark::State & st)
   for (auto _ : st)
   {
     matrix_mult_matrix_call(m, rhs, lhs);
+    benchmark::DoNotOptimize(lhs);
   }
 }
 
@@ -216,6 +218,7 @@ static void Dynamic_MatrixMatrixProduct(benchmark::State & st)
   for (auto _ : st)
   {
     matrix_mult_matrix_call(m, rhs, lhs);
+    benchmark::DoNotOptimize(lhs);
   }
 }
 
@@ -234,6 +237,7 @@ static void Dynamic_MatrixMatrixProduct_Block(benchmark::State & st)
     matrix_mult_matrix_call(
       m.template block<MSIZE, MSIZE>(0, 0), rhs.template block<MSIZE, RHSCOLS>(0, 0),
       lhs.template block<MSIZE, RHSCOLS>(0, 0));
+    benchmark::DoNotOptimize(lhs);
   }
 }
 
