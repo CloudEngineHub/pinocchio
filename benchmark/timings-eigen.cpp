@@ -103,12 +103,15 @@ void matrix_mult_matrix_call(
 {
   lhs.const_cast_derived().noalias() = m * rhs;
 }
-template<int MSIZE, int OptionM1, int OptionM2, int OptionM3>
+template<int MSIZE, int RHSCOLS, int OptionM1, int _OptionM2, int _OptionM3>
 static void Static_MatrixMatrixProduct(benchmark::State & st)
 {
+  static constexpr int OptionM2 = RHSCOLS == 1 ? Eigen::ColMajor : _OptionM2;
+  static constexpr int OptionM3 = RHSCOLS == 1 ? Eigen::ColMajor : _OptionM2;
+
   Matrix<double, MSIZE, MSIZE, OptionM1> m(Matrix<double, MSIZE, MSIZE, OptionM1>::Random());
-  Matrix<double, MSIZE, MSIZE, OptionM2> rhs(Matrix<double, MSIZE, MSIZE, OptionM2>::Random());
-  Matrix<double, MSIZE, MSIZE, OptionM3> lhs(Matrix<double, MSIZE, MSIZE, OptionM3>::Random());
+  Matrix<double, MSIZE, RHSCOLS, OptionM2> rhs(Matrix<double, MSIZE, RHSCOLS, OptionM2>::Random());
+  Matrix<double, MSIZE, RHSCOLS, OptionM3> lhs(Matrix<double, MSIZE, RHSCOLS, OptionM3>::Random());
   for (auto _ : st)
   {
     matrix_mult_matrix_call(m, rhs, lhs);
@@ -116,29 +119,31 @@ static void Static_MatrixMatrixProduct(benchmark::State & st)
   }
 }
 
-#define BENCH_STATIC_MATRIX_MATRIX_PRODUCT(dim)                                                    \
-  BENCHMARK(Static_MatrixMatrixProduct<dim, ColMajor, ColMajor, ColMajor>)                         \
+#define BENCH_STATIC_MATRIX_MATRIX_PRODUCT(dim, cols)                                              \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, cols, ColMajor, ColMajor, ColMajor>)                   \
     ->Apply(CustomArguments);                                                                      \
-  BENCHMARK(Static_MatrixMatrixProduct<dim, RowMajor, ColMajor, ColMajor>)                         \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, cols, RowMajor, ColMajor, ColMajor>)                   \
     ->Apply(CustomArguments);                                                                      \
-  BENCHMARK(Static_MatrixMatrixProduct<dim, ColMajor, RowMajor, ColMajor>)                         \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, cols, ColMajor, RowMajor, ColMajor>)                   \
     ->Apply(CustomArguments);                                                                      \
-  BENCHMARK(Static_MatrixMatrixProduct<dim, RowMajor, RowMajor, ColMajor>)                         \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, cols, RowMajor, RowMajor, ColMajor>)                   \
     ->Apply(CustomArguments);                                                                      \
-  BENCHMARK(Static_MatrixMatrixProduct<dim, ColMajor, ColMajor, RowMajor>)                         \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, cols, ColMajor, ColMajor, RowMajor>)                   \
     ->Apply(CustomArguments);                                                                      \
-  BENCHMARK(Static_MatrixMatrixProduct<dim, RowMajor, ColMajor, RowMajor>)                         \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, cols, RowMajor, ColMajor, RowMajor>)                   \
     ->Apply(CustomArguments);                                                                      \
-  BENCHMARK(Static_MatrixMatrixProduct<dim, ColMajor, RowMajor, RowMajor>)                         \
+  BENCHMARK(Static_MatrixMatrixProduct<dim, cols, ColMajor, RowMajor, RowMajor>)                   \
     ->Apply(CustomArguments);                                                                      \
-  BENCHMARK(Static_MatrixMatrixProduct<dim, RowMajor, RowMajor, RowMajor>)->Apply(CustomArguments);
+  BENCHMARK(Static_MatrixMatrixProduct<dim, cols, RowMajor, RowMajor, RowMajor>)                   \
+    ->Apply(CustomArguments);
 
-BENCH_STATIC_MATRIX_MATRIX_PRODUCT(3)
-BENCH_STATIC_MATRIX_MATRIX_PRODUCT(4)
-BENCH_STATIC_MATRIX_MATRIX_PRODUCT(6)
-BENCH_STATIC_MATRIX_MATRIX_PRODUCT(10)
-BENCH_STATIC_MATRIX_MATRIX_PRODUCT(20)
-BENCH_STATIC_MATRIX_MATRIX_PRODUCT(50)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(3, 3)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(4, 4)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(6, 1)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(6, 6)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(10, 10)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(20, 20)
+BENCH_STATIC_MATRIX_MATRIX_PRODUCT(50, 50)
 
 // matrixTransposeMultMatrix
 

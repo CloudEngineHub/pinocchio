@@ -270,5 +270,29 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
     BOOST_CHECK(C == res_noaliasing);
   }
 }
+<<<<<<< Updated upstream
+=======
+
+BOOST_AUTO_TEST_CASE(test_specitic_6x6_case)
+{
+  constexpr Eigen::DenseIndex Rows = 6, Cols = Rows, InnerDim = Rows;
+  const Eigen::DenseIndex n = Rows, m = Cols;
+  typedef Eigen::Matrix<double, Rows, InnerDim> LhsType;
+  typedef Eigen::Matrix<double, InnerDim, Cols> RhsType;
+  typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> ResType;
+
+  typedef internal::MatrixProductDimensions<ResType, LhsType, RhsType> Dims;
+
+  typedef Dims::PlainResult PlainResType;
+
+  BOOST_CHECK(Dims::is_static_size_product());
+  BOOST_CHECK(PlainResType::RowsAtCompileTime == Rows);
+  BOOST_CHECK(PlainResType::ColsAtCompileTime == Cols);
+
+  const LhsType A = LhsType::Constant(n, n, 1);
+  const RhsType B = RhsType::Constant(n, m, 2);
+  ResType res = ResType::Random(n, m);
+}
+>>>>>>> Stashed changes
 
 BOOST_AUTO_TEST_SUITE_END()
