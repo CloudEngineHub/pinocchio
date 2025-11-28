@@ -88,20 +88,12 @@ namespace pinocchio
             bp::args("self", "model", "data", "constraint_data", "matrix"),
             "Backward chain rule: return product between the jacobian transpose and a matrix.")
           .def(
-            "getRowSparsityPattern", &Self::getRowSparsityPattern, bp::args("self", "row_id"),
+            "getRowSparsityPattern", &Self::getRowSparsityPattern,
+            bp::args("self", "constraint_data", "row_id"),
             bp::return_value_policy<bp::copy_const_reference>(),
-            "Colwise sparsity associated with a given row.")
-          .def(
-            "getActiveRowSparsityPattern", &Self::getActiveRowSparsityPattern,
-            bp::args("self", "row_id"), bp::return_value_policy<bp::copy_const_reference>(),
             "Active colwise sparsity associated with a given row.")
           .def(
-            "getActivableRowIndexes", &Self::getActivableRowIndexes, bp::args("self", "row_id"),
-            bp::return_value_policy<bp::copy_const_reference>(),
-            "Vector of the activable indexes associated with a given row.")
-          .def(
-            "getActiveRowIndexes", &Self::getActiveRowIndexes,
-            bp::args("self", "constraint_data", "row_id"),
+            "getRowIndexes", &Self::getRowIndexes, bp::args("self", "constraint_data", "row_id"),
             bp::return_value_policy<bp::copy_const_reference>(),
             "Vector of the active indexes associated with a given row.")
           .def(

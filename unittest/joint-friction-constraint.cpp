@@ -69,9 +69,9 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
     {
       const Eigen::DenseIndex dof_id = active_dofs[row_id];
       const BooleanVector & row_sparsity_pattern =
-        constraint.getRowSparsityPattern(Eigen::DenseIndex(row_id));
+        constraint.getRowSparsityPattern(constraint_data, Eigen::DenseIndex(row_id));
       const EigenIndexVector & row_active_indexes =
-        constraint.getActiveRowIndexes(constraint_data, Eigen::DenseIndex(row_id));
+        constraint.getRowIndexes(constraint_data, Eigen::DenseIndex(row_id));
 
       // Check that the rest of the indexes greater than dof_id are not active.
       BOOST_CHECK((row_sparsity_pattern.tail(model.nv - 1 - dof_id).array() == false).all());

@@ -412,16 +412,20 @@ namespace pinocchio
     }
 
     /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
+    const BooleanVector &
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_sparsity;
     }
 
-    /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
+    /// \brief Returns the vector of the indexes associated with a given row
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_span_indexes;
     }
 

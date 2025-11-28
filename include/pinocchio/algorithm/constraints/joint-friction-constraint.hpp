@@ -415,16 +415,21 @@ namespace pinocchio
       AssignmentOperatorTag<op> aot = SetTo()) const;
 
     /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
+    const BooleanVector &
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+
       return row_sparsity_pattern[size_t(row_id)];
     }
 
-    /// \copydoc RootBase::getActivableRowIndexes
-    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
+    /// \copydoc RootBase::getRowIndexes
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return row_active_indexes[size_t(row_id)];
     }
 

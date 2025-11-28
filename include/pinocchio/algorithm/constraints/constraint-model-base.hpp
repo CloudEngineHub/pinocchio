@@ -204,20 +204,6 @@ namespace pinocchio
 
     // Size management ----------------------------------------------
 
-    /// \brief Returns the estimated maxSize of the constraint.
-    /// \note This method is intended to be a helper for pre-allocation.
-    int capacitySize() const
-    {
-      if constexpr (bounded_size)
-      {
-        return size();
-      }
-      else
-      {
-        return derived().capacitySizeImpl();
-      }
-    }
-
     /// \brief Returns the maximum size of the constraint.
     int size() const
     {
@@ -253,33 +239,19 @@ namespace pinocchio
     /// the constraints.
     /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
     /// calling the calc method.
-    const BooleanVector & getActiveRowSparsityPattern(
-      const ConstraintData & constraint_data, const Eigen::Index row_id) const
+    const BooleanVector &
+    getRowSparsityPattern(const ConstraintData & constraint_data, const Eigen::Index row_id) const
     {
-      if constexpr (constant_size)
-      {
-        return getRowSparsityPattern(row_id);
-      }
-      else
-      {
-        return derived().getActiveRowSparsityPatternImpl(constraint_data, row_id);
-      }
+      return derived().getRowSparsityPatternImpl(constraint_data, row_id);
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
     /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
     /// calling the calc method.
-    const EigenIndexVector & getActiveRowIndexes(
-      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
+    const EigenIndexVector &
+    getRowIndexes(const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      if constexpr (constant_size)
-      {
-        return getActivableRowIndexes(row_id);
-      }
-      else
-      {
-        return derived().getActiveRowIndexesImpl(constraint_data, row_id);
-      }
+      return derived().getRowIndexesImpl(constraint_data, row_id);
     }
 
     /// \brief Returns an instance of the associated constraint set operator.
@@ -501,18 +473,6 @@ namespace pinocchio
     }
 
     // Handling data metods -----------------------------------------
-
-    /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowSparsityPattern(const Eigen::Index row_id) const
-    {
-      return derived().getRowSparsityPatternImpl(row_id);
-    }
-
-    /// \brief Returns the vector of the activable indexes associated with a given row
-    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
-    {
-      return derived().getActivableRowIndexesImpl(row_id);
-    }
 
     /// \brief Returns the compliance internally stored in the constraint model.
     ComplianceVectorTypeConstRef compliance() const

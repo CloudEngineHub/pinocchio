@@ -466,30 +466,16 @@ namespace pinocchio
       ConstraintData & cdata) const;
 
     /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
-      return row_sparsity_pattern[activable_idx_rows[static_cast<size_t>(row_id)]];
-    }
-
-    /// \copydoc RootBase::getActiveRowSparsityPattern
-    const BooleanVector & getActiveRowSparsityPatternImpl(
+    const BooleanVector & getRowSparsityPatternImpl(
       const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < activeSize(constraint_data));
       return row_sparsity_pattern[constraint_data.active_idx_rows[static_cast<size_t>(row_id)]];
     }
 
-    /// \copydoc RootBase::getActivableRowIndexes
-    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
-      return row_indexes[activable_idx_rows[static_cast<size_t>(row_id)]];
-    }
-
-    /// \copydoc RootBase::getActivableRowIndexes
-    const EigenIndexVector & getActiveRowIndexesImpl(
-      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
+    /// \copydoc RootBase::getRowIndexes
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < activeSize(constraint_data));
       return row_indexes[constraint_data.active_idx_rows[static_cast<size_t>(row_id)]];

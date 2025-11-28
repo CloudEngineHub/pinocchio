@@ -654,43 +654,12 @@ namespace pinocchio
     }
 
     /**
-     * @brief      ConstraintModelGetRowActivableIndexesVisitor visitor
+     * @brief      ConstraintModelgetRowIndexesVisitor visitor
      */
     template<typename Scalar, int Options>
-    struct ConstraintModelGetRowActivableIndexesVisitor
+    struct ConstraintModelgetRowIndexesVisitor
     : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelGetRowActivableIndexesVisitor<Scalar, Options>,
-        const std::vector<Eigen::DenseIndex> &>
-    {
-      typedef const std::vector<Eigen::DenseIndex> & ReturnType;
-
-      typedef boost::fusion::vector<const Eigen::DenseIndex> ArgsType;
-
-      template<typename ConstraintModel>
-      static ReturnType algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const Eigen::DenseIndex row_id)
-      {
-        return cmodel.getActivableRowIndexes(row_id);
-      }
-    };
-
-    template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
-    const std::vector<Eigen::DenseIndex> & getActivableRowIndexes(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const Eigen::DenseIndex row_id)
-    {
-      typedef ConstraintModelGetRowActivableIndexesVisitor<Scalar, Options> Algo;
-      return Algo::run(cmodel, typename Algo::ArgsType(row_id));
-    }
-
-    /**
-     * @brief      ConstraintModelgetActiveRowIndexesVisitor visitor
-     */
-    template<typename Scalar, int Options>
-    struct ConstraintModelgetActiveRowIndexesVisitor
-    : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelgetActiveRowIndexesVisitor<Scalar, Options>,
+        ConstraintModelgetRowIndexesVisitor<Scalar, Options>,
         const std::vector<Eigen::DenseIndex> &>
     {
       typedef const std::vector<Eigen::DenseIndex> & ReturnType;
@@ -703,17 +672,17 @@ namespace pinocchio
         const typename ConstraintModel::ConstraintData & cdata,
         const Eigen::DenseIndex row_id)
       {
-        return cmodel.getActiveRowIndexes(cdata, row_id);
+        return cmodel.getRowIndexes(cdata, row_id);
       }
     };
 
     template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
-    const std::vector<Eigen::DenseIndex> & getActiveRowIndexes(
+    const std::vector<Eigen::DenseIndex> & getRowIndexes(
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
       const Eigen::DenseIndex row_id)
     {
-      typedef ConstraintModelgetActiveRowIndexesVisitor<Scalar, Options> Algo;
+      typedef ConstraintModelgetRowIndexesVisitor<Scalar, Options> Algo;
       return Algo::run(cmodel, cdata, typename Algo::ArgsType(row_id));
     }
 
@@ -733,51 +702,20 @@ namespace pinocchio
       template<typename ConstraintModel>
       static ReturnType algo(
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const Eigen::DenseIndex row_id)
       {
-        return cmodel.getRowSparsityPattern(row_id);
+        return cmodel.getRowSparsityPattern(cdata, row_id);
       }
     };
 
     template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
     const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & getRowSparsityPattern(
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const Eigen::DenseIndex row_id)
-    {
-      typedef ConstraintModelgetRowSparsityPatternVisitor<Scalar, Options> Algo;
-      return Algo::run(cmodel, typename Algo::ArgsType(row_id));
-    }
-
-    /**
-     * @brief      ConstraintModelgetActiveRowSparsityPatternVisitor visitor
-     */
-    template<typename Scalar, int Options>
-    struct ConstraintModelgetActiveRowSparsityPatternVisitor
-    : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelgetActiveRowSparsityPatternVisitor<Scalar, Options>,
-        const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> &>
-    {
-      typedef const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & ReturnType;
-
-      typedef boost::fusion::vector<const Eigen::DenseIndex> ArgsType;
-
-      template<typename ConstraintModel>
-      static ReturnType algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Eigen::DenseIndex row_id)
-      {
-        return cmodel.getActiveRowSparsityPattern(cdata, row_id);
-      }
-    };
-
-    template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
-    const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & getActiveRowSparsityPattern(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
       const Eigen::DenseIndex row_id)
     {
-      typedef ConstraintModelgetActiveRowSparsityPatternVisitor<Scalar, Options> Algo;
+      typedef ConstraintModelgetRowSparsityPatternVisitor<Scalar, Options> Algo;
       return Algo::run(cmodel, cdata, typename Algo::ArgsType(row_id));
     }
 

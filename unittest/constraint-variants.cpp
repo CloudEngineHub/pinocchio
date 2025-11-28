@@ -86,24 +86,25 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
     BOOST_CHECK(jacobian_matrix2 == jacobian_matrix_ref);
   }
 
-  // Test getActiveRowIndexes
+  // Test getRowIndexes
   {
     ConstraintData constraint_data(rcm.createData());
     rcm.calc(model, data, rcd);
-    for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.size(); ++row_id)
+    for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.activeSize(rcd); ++row_id)
     {
       BOOST_CHECK(
-        constraint_model.getActiveRowIndexes(constraint_data, row_id)
-        == rcm.getActiveRowIndexes(rcd, row_id));
+        constraint_model.getRowIndexes(constraint_data, row_id) == rcm.getRowIndexes(rcd, row_id));
     }
   }
 
   // Test getRowSparsityPattern
   {
-    for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.size(); ++row_id)
+    ConstraintData constraint_data(rcm.createData());
+    for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.activeSize(rcd); ++row_id)
     {
       BOOST_CHECK(
-        constraint_model.getRowSparsityPattern(row_id) == rcm.getRowSparsityPattern(row_id));
+        constraint_model.getRowSparsityPattern(constraint_data, row_id)
+        == rcm.getRowSparsityPattern(rcd, row_id));
     }
   }
 

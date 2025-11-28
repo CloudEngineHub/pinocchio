@@ -97,7 +97,7 @@ namespace pinocchio
       const auto & cdata = helper::get_ref(constraint_datas[i]);
       for (Eigen::DenseIndex k = 0; k < cmodel.activeSize(cdata); ++k, row_id++)
       {
-        const auto & row_active_indexes = cmodel.getActiveRowIndexes(cdata, k);
+        const auto & row_active_indexes = cmodel.getRowIndexes(cdata, k);
         nv_subtree_fromRow[row_id] =
           num_total_constraints - row_id + 1
           + (row_active_indexes.size() > 0 ? row_active_indexes.back() : 0);
@@ -254,8 +254,7 @@ namespace pinocchio
         for (Eigen::DenseIndex constraint_row_id = constraint_dim - 1; constraint_row_id >= 0;
              --constraint_row_id, --current_row)
         {
-          const auto & colwise_sparsity =
-            cmodel.getActiveRowSparsityPattern(cdata, constraint_row_id);
+          const auto & colwise_sparsity = cmodel.getRowSparsityPattern(cdata, constraint_row_id);
           if (colwise_sparsity[j])
           {
             U(current_row, jj) -= U.row(current_row).segment(jj + 1, NVT).dot(DUt_partial);
@@ -283,7 +282,7 @@ namespace pinocchio
       computeDelassusFromU();
       updateDampingDelassus(mus);
     }
-    
+
     else
     {
       updateDamping(mus, false);
@@ -331,11 +330,11 @@ namespace pinocchio
     //       Delassus(_i, j) = UtopRight.row(_i).dot(DUt_partial);
     //     }
     //   }
-    
+
     // typedef Eigen::Map<RowMatrix> MapRowMatrix;
-    // MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraints_dim, nv));
-    // OSIMinv.noalias() = UtopRight * Dtail.asDiagonal();
-    // Delassus.noalias() = OSIMinv * UtopRight.transpose();
+    // MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraints_dim,
+    // nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal(); Delassus.noalias() = OSIMinv *
+    // UtopRight.transpose();
 
     Delassus.noalias() = (UtopRight * Dtail.asDiagonal()) * UtopRight.transpose();
   }
@@ -350,7 +349,7 @@ namespace pinocchio
     const Eigen::DenseIndex total_dim = size();
     const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
     U.topLeftCorner(total_constraints_dim, total_constraints_dim).setIdentity();
-    
+
     // Upper left triangular part of U
     for (Eigen::DenseIndex j = total_constraints_dim - 1; j >= 0; --j)
     {
@@ -358,9 +357,11 @@ namespace pinocchio
       auto DUt_partial = DUt.head(slice_dim);
       DUt_partial.noalias() =
         U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
-      
-      D[j] = -Delassus(j,j) - damping[j] - compliance[j] - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
-      // std::cout << "j = " << j << ", slice_dim = " << slice_dim << " D[j] = " << D[j] << std::endl;
+
+      D[j] = -Delassus(j, j) - damping[j] - compliance[j]
+             - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
+      // std::cout << "j = " << j << ", slice_dim = " << slice_dim << " D[j] = " << D[j] <<
+      // std::endl;
 
       assert(
         check_expression_if_real<Scalar>(D[j] != Scalar(0))
@@ -369,7 +370,8 @@ namespace pinocchio
 
       for (Eigen::DenseIndex _i = j - 1; _i >= 0; _i--)
       {
-        U(_i, j) = (-Delassus(_i,j) -U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial)) * Dinv[j];
+        U(_i, j) =
+          (-Delassus(_i, j) - U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial)) * Dinv[j];
       }
     }
   }
@@ -413,7 +415,8 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(const Scalar & mu, bool use_explicit_delassus)
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+    const Scalar & mu, bool use_explicit_delassus)
   {
     //      PINOCCHIO_CHECK_INPUT_ARGUMENT(check_expression_if_real<Scalar>(mu >= 0), "mu should be
     //      positive.");

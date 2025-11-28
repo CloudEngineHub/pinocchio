@@ -505,7 +505,7 @@ namespace pinocchio
           if (cmodel.reference_frame == LOCAL)
           {
             Eigen::DenseIndex col_id(0);
-            const auto & colwise_span_indexes = cmodel.getActiveRowIndexes(cdata, 0);
+            const auto & colwise_span_indexes = cmodel.getRowIndexes(cdata, 0);
             for (Eigen::DenseIndex k = 0; k < Eigen::DenseIndex(colwise_span_indexes.size()); k++)
             {
               col_id = colwise_span_indexes[size_t(k)];
@@ -633,7 +633,7 @@ namespace pinocchio
           }
 
           // d./dq
-          const auto & colwise_span_indexes = cmodel.getActiveRowIndexes(cdata, 0);
+          const auto & colwise_span_indexes = cmodel.getRowIndexes(cdata, 0);
           for (size_t k = 0; k < colwise_span_indexes.size(); ++k)
           {
             const Eigen::DenseIndex col_id = colwise_span_indexes[k];
@@ -767,7 +767,7 @@ namespace pinocchio
           contact_dac_dq += cmodel.corrector.Kd * contact_dvc_dq;
           contact_dac_dv += cmodel.corrector.Kd * contact_dac_da;
           // d./dq
-          const auto & colwise_span_indexes = cmodel.getActiveRowIndexes(cdata, 0);
+          const auto & colwise_span_indexes = cmodel.getRowIndexes(cdata, 0);
           for (size_t k = 0; k < colwise_span_indexes.size(); ++k)
           {
             const Eigen::DenseIndex row_id = cmodel.colwise_span_indexes[k];

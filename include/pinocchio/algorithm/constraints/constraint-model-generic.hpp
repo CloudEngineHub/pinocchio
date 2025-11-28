@@ -248,30 +248,18 @@ namespace pinocchio
         *this, model, data, cdata, jacobian_matrix.const_cast_derived());
     }
 
-    /// \copydoc RootBase::getActivableRowIndexes
-    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
+    /// \copydoc RootBase::getRowIndexes
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      return ::pinocchio::visitors::getActivableRowIndexes(*this, row_id);
-    }
-
-    /// \copydoc RootBase::getActiveRowIndexes
-    const EigenIndexVector & getActiveRowIndexesImpl(
-      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
-    {
-      return ::pinocchio::visitors::getActiveRowIndexes(*this, constraint_data, row_id);
+      return ::pinocchio::visitors::getRowIndexes(*this, constraint_data, row_id);
     }
 
     /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
-    {
-      return ::pinocchio::visitors::getRowSparsityPattern(*this, row_id);
-    }
-
-    /// \copydoc RootBase::getActiveRowSparsityPattern
-    const BooleanVector & getActiveRowSparsityPatternImpl(
+    const BooleanVector & getRowSparsityPatternImpl(
       const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      return ::pinocchio::visitors::getActiveRowSparsityPattern(*this, constraint_data, row_id);
+      return ::pinocchio::visitors::getRowSparsityPattern(*this, constraint_data, row_id);
     }
 
     /// \copydoc RootBase::getActiveCompliance
