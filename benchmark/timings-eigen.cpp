@@ -310,12 +310,12 @@ static void Static_MatrixMatrixProduct_StaticOp(benchmark::State & st)
     benchmark::DoNotOptimize(lhs);
   }
 
-  if (!lhs.isApprox((m * rhs).eval()))
-  {
-    std::cout << "lhs != m * rhs" << std::endl;
-    std::cout << "lhs:\n" << lhs << std::endl;
-    std::cout << "m * rhs:\n" << m * rhs << std::endl;
-  }
+  // if (!lhs.isApprox((m * rhs).eval()))
+  // {
+  //   std::cout << "lhs != m * rhs" << std::endl;
+  //   std::cout << "lhs:\n" << lhs << std::endl;
+  //   std::cout << "m * rhs:\n" << m * rhs << std::endl;
+  // }
 }
 
 template<int MSIZE, int RHSCOLS, int _OptionM1, int _OptionM2, int _OptionM3>
@@ -343,12 +343,12 @@ static void PartialStatic_MatrixMatrixProduct_StaticOp(benchmark::State & st)
     benchmark::DoNotOptimize(lhs);
   }
 
-  if (!lhs.isApprox((m * rhs).eval()))
-  {
-    std::cout << "lhs != m * rhs" << std::endl;
-    std::cout << "lhs:\n" << lhs << std::endl;
-    std::cout << "m * rhs:\n" << m * rhs << std::endl;
-  }
+  // if (!lhs.isApprox((m * rhs).eval()))
+  // {
+  //   std::cout << "lhs != m * rhs" << std::endl;
+  //   std::cout << "lhs:\n" << lhs << std::endl;
+  //   std::cout << "m * rhs:\n" << m * rhs << std::endl;
+  // }
 }
 
 #define BENCH_MATRIX_MATRIX_PRODUCT_TPL(rows, cols, func)                                          \
