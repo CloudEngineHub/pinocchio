@@ -270,8 +270,6 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
     BOOST_CHECK(C == res_noaliasing);
   }
 }
-<<<<<<< Updated upstream
-=======
 
 BOOST_AUTO_TEST_CASE(test_specitic_6x6_case)
 {
@@ -293,6 +291,5 @@ BOOST_AUTO_TEST_CASE(test_specitic_6x6_case)
   const RhsType B = RhsType::Constant(n, m, 2);
   ResType res = ResType::Random(n, m);
 }
->>>>>>> Stashed changes
 
 BOOST_AUTO_TEST_SUITE_END()
