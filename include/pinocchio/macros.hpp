@@ -341,4 +341,6 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
 
 PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
+#define PINOCCHIO_DECLTYPE(value) std::remove_cv_t<std::remove_reference_t<decltype(value)>>
+
 #endif // ifndef __pinocchio_macros_hpp__
