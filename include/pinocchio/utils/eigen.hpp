@@ -85,17 +85,33 @@ namespace pinocchio
     template<int MinRowsAtCompileTime, int MinColsAtCompileTime, typename PlainMatrix>
     struct make_static_matrix
     {
+      enum
+      {
+        RowsAtCompileTime = PlainMatrix::RowsAtCompileTime == Eigen::Dynamic
+                              ? MinRowsAtCompileTime
+                              : PlainMatrix::RowsAtCompileTime,
+        ColsAtCompileTime = PlainMatrix::ColsAtCompileTime == Eigen::Dynamic
+                              ? MinColsAtCompileTime
+                              : PlainMatrix::ColsAtCompileTime,
+
+        MaxRowsAtCompileTime = PlainMatrix::MaxRowsAtCompileTime == Eigen::Dynamic
+                                 ? MinRowsAtCompileTime
+                                 : PlainMatrix::MaxRowsAtCompileTime,
+        MaxColsAtCompileTime = PlainMatrix::MaxColsAtCompileTime == Eigen::Dynamic
+                                 ? MinColsAtCompileTime
+                                 : PlainMatrix::MaxColsAtCompileTime
+      };
+
       typedef Eigen::Matrix<
         typename PlainMatrix::Scalar,
-        PlainMatrix::RowsAtCompileTime == Eigen::Dynamic ? MinRowsAtCompileTime
-                                                         : PlainMatrix::RowsAtCompileTime,
-        PlainMatrix::ColsAtCompileTime == Eigen::Dynamic ? MinColsAtCompileTime
-                                                         : PlainMatrix::ColsAtCompileTime,
-        PlainMatrix::Options,
-        PlainMatrix::MaxRowsAtCompileTime == Eigen::Dynamic ? MinRowsAtCompileTime
-                                                            : PlainMatrix::MaxRowsAtCompileTime,
-        PlainMatrix::MaxColsAtCompileTime == Eigen::Dynamic ? MinColsAtCompileTime
-                                                            : PlainMatrix::MaxColsAtCompileTime>
+        RowsAtCompileTime,
+        ColsAtCompileTime,
+        ((ColsAtCompileTime == 1 && RowsAtCompileTime == 1) || ColsAtCompileTime == 1)
+          ? Eigen::ColMajor
+        : RowsAtCompileTime == 1 ? Eigen::RowMajor
+                                 : PlainMatrix::Options,
+        MaxRowsAtCompileTime,
+        MaxColsAtCompileTime>
         type;
     };
 
@@ -235,23 +251,27 @@ namespace pinocchio
     private:
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Lhs) LhsPlain_;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Rhs) RhsPlain_;
+      typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Result) ResultPlain_;
 
     public:
       typedef Eigen::Matrix<
         typename Lhs::Scalar,
         RowsAtCompileTime,
         InnerDimensionAtCompileTime,
-        LhsPlain_::Options>
+        ColsAtCompileTime == 1 ? Eigen::ColMajor : LhsPlain_::Options>
         PlainLhs;
       typedef Eigen::Matrix<
         typename Rhs::Scalar,
         InnerDimensionAtCompileTime,
         ColsAtCompileTime,
-        RhsPlain_::Options>
+        ColsAtCompileTime == 1 ? Eigen::ColMajor : RhsPlain_::Options>
         PlainRhs;
-      typedef Eigen::
-        Matrix<typename Result::Scalar, RowsAtCompileTime, ColsAtCompileTime, Result::Options>
-          PlainResult;
+      typedef Eigen::Matrix<
+        typename Result::Scalar,
+        RowsAtCompileTime,
+        ColsAtCompileTime,
+        ColsAtCompileTime == 1 ? Eigen::ColMajor : ResultPlain_::Options>
+        PlainResult;
     };
 
     template<int N>
