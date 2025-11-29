@@ -38,6 +38,34 @@ namespace pinocchio
     updateComplianceFromConstraintModels();
 
     computeJointMinimalOrdering(model(), data(), helper::get_ref(constraint_models_ref));
+
+    // Allocate memory for coupling terms
+    typedef std::pair<JointIndex, JointIndex> JointPair;
+    const auto & neighbours = data().joint_neighbours;
+    auto & projected_joint_cross_coupling = data().projected_joint_cross_coupling;
+    projected_joint_cross_coupling.clear();
+    for (const JointIndex joint_i : data().elimination_order)
+    {
+      const auto & joint_neighbours = neighbours[joint_i];
+      if (joint_neighbours.size() == 0)
+        continue;
+
+      const auto joint_nv = model().nvs[joint_i];
+      for (size_t j = 0; j < joint_neighbours.size(); j++)
+      {
+        const auto joint_j = joint_neighbours[j];
+
+        const auto res =
+          projected_joint_cross_coupling.insert(JointPair(joint_j, joint_i), 6, joint_nv);
+        PINOCCHIO_ONLY_USED_FOR_DEBUG(res);
+        assert(res && "must never happened");
+        for (size_t k = j + 1; k < joint_neighbours.size(); ++k)
+        {
+          const auto joint_k = joint_neighbours[k];
+          projected_joint_cross_coupling.insert(JointPair(joint_k, joint_i), 6, joint_nv);
+        }
+      }
+    }
     m_dirty = true;
   }
 
