@@ -287,6 +287,13 @@ namespace pinocchio
       }
     };
 
+    enum class DispatchType
+    {
+      STATIC,
+      PARTIAL_STATIC,
+      DYNAMIC
+    };
+
     template<int _MaxStaticUnfolding, typename ExpressionType, template<typename> class StorageBase>
     class PromoteStaticEval
     {
@@ -334,6 +341,19 @@ namespace pinocchio
       EIGEN_DEVICE_FUNC ExpressionType & expression() const
       {
         return m_expression;
+      }
+
+      template<typename Lhs, typename Rhs, int Option>
+      DispatchType dispatch_type(const Eigen::Product<Lhs, Rhs, Option> & matrix_product) const
+      {
+        PINOCCHIO_UNUSED_VARIABLE(matrix_product);
+        typedef MatrixProductDimensions<PlainExpression, Lhs, Rhs> Dims;
+        if constexpr (Dims::is_static_size_product())
+          return DispatchType::STATIC;
+        else if constexpr (Dims::is_partial_static_size_product())
+          return DispatchType::PARTIAL_STATIC;
+        else
+          return DispatchType::DYNAMIC;
       }
 
     protected:
