@@ -189,20 +189,45 @@ namespace pinocchio
       const auto & lhs = src.lhs();
       const auto & rhs = src.rhs();
 
-      const auto lhs_map = make_eigen_map<PlainLhs>(lhs);
-      const auto rhs_map = make_eigen_map<PlainRhs>(rhs);
-      auto result_matrix_map = make_eigen_map<PlainResult>(dst);
+      // typedef typename PINOCCHIO_DECLTYPE(rhs) Rhs;
 
+      auto get_lhs = [&]() -> decltype(auto) {
+        typedef typename PINOCCHIO_DECLTYPE(lhs) Lhs;
+        if constexpr (helper::has_fixed_size_v<Lhs>)
+          return (lhs); // reference
+        else
+          return make_eigen_map<PlainLhs>(lhs);
+      };
+
+      auto get_rhs = [&]() -> decltype(auto) {
+        typedef typename PINOCCHIO_DECLTYPE(rhs) Rhs;
+        if constexpr (helper::has_fixed_size_v<Rhs>)
+          return (rhs); // reference
+        else
+          return make_eigen_map<PlainRhs>(rhs);
+      };
+
+      const auto & lhs_map = get_lhs();
+      const auto & rhs_map = get_rhs();
       const auto matrix_map_product = lhs_map * rhs_map;
 
-      if constexpr (helper::is_eigen_noalias_v<Dst>)
+      using ExpressionType = typename helper::remove_eigen_noalias<Dst>::type;
+      if constexpr (helper::has_fixed_size_v<ExpressionType>)
       {
-        auto result_matrix_map_noalias = result_matrix_map.noalias();
-        call_eigen_assignment<EigenOp>(result_matrix_map_noalias, matrix_map_product);
+        call_eigen_assignment<EigenOp>(dst, matrix_map_product);
       }
       else
       {
-        call_eigen_assignment<EigenOp>(result_matrix_map, matrix_map_product);
+        auto result_matrix_map = make_eigen_map<PlainResult>(dst);
+        if constexpr (helper::is_eigen_noalias_v<Dst>)
+        {
+          auto result_matrix_map_noalias = result_matrix_map.noalias();
+          call_eigen_assignment<EigenOp>(result_matrix_map_noalias, matrix_map_product);
+        }
+        else
+        {
+          call_eigen_assignment<EigenOp>(result_matrix_map, matrix_map_product);
+        }
       }
     }
 
