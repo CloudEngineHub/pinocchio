@@ -17,7 +17,8 @@ enum class EvaluationMode
 {
   EIGEN,
   BLOCK,
-  STATIC_OP
+  STATIC_OP,
+  MANUAL
 };
 
 static void CustomArguments(benchmark::internal::Benchmark * b)
@@ -104,12 +105,37 @@ BENCHMARK(quaternionMultVectorX)->Apply(CustomArguments);
 
 // Static_MatrixMatrixProduct
 
+template<typename Scalar>
+void manual_matrix_product(
+  const Scalar * m,
+  const Scalar * rhs,
+  Scalar * lhs,
+  Eigen::DenseIndex rows,
+  Eigen::DenseIndex cols,
+  Eigen::DenseIndex inner_dim)
+{
+// A: MxK, B: KxN, C: MxN
+#pragma omp simd // (optional) explicit hint
+  for (int i = 0; i < rows; ++i)
+    for (int j = 0; j < cols; ++j)
+    {
+      Scalar sum = Scalar(0);
+      for (int k = 0; k < inner_dim; ++k)
+        sum += m[i * inner_dim + k] * rhs[k * rows + j];
+      lhs[i * rows + j] = sum;
+    }
+}
+
 template<EvaluationMode evaluation_mode, typename M1, typename M2, typename Mout>
 void matrix_mult_matrix_call(
   const MatrixBase<M1> & m, const MatrixBase<M2> & rhs, const MatrixBase<Mout> & lhs)
 {
   if constexpr (evaluation_mode == EvaluationMode::STATIC_OP)
     pinocchio::promote_static_eval<10>(lhs.const_cast_derived().noalias()) = m * rhs;
+  else if constexpr (evaluation_mode == EvaluationMode::MANUAL)
+    manual_matrix_product(
+      m.derived().data(), rhs.derived().data(), lhs.const_cast_derived().data(), m.rows(),
+      rhs.cols(), m.cols());
   else
     lhs.const_cast_derived().noalias() = m * rhs;
 }
@@ -464,13 +490,18 @@ BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(6, 6)
   BENCH_GENERAL_MATRIX_MATRIX_PRODUCT(                                                             \
     rows, cols, static_res, static_lhs, static_rhs, EvaluationMode::STATIC_OP)
 
+#define BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_MANUAL(rows, cols, static_res, static_lhs, static_rhs) \
+  BENCH_GENERAL_MATRIX_MATRIX_PRODUCT(                                                             \
+    rows, cols, static_res, static_lhs, static_rhs, EvaluationMode::MANUAL)
+
 #define BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_EIGEN(rows, cols, static_res, static_lhs, static_rhs)  \
   BENCH_GENERAL_MATRIX_MATRIX_PRODUCT(                                                             \
     rows, cols, static_res, static_lhs, static_rhs, EvaluationMode::EIGEN)
 
 #define BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_CASE(rows, cols, static_res, static_lhs, static_rhs)   \
   BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_EIGEN(rows, cols, static_res, static_lhs, static_rhs)        \
-  BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_STATICOP(rows, cols, static_res, static_lhs, static_rhs)
+  BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_STATICOP(rows, cols, static_res, static_lhs, static_rhs)     \
+  BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_MANUAL(rows, cols, static_res, static_lhs, static_rhs)
 
 #define BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_ALL(rows, cols)                                        \
   BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_CASE(rows, cols, true, true, true)                           \
