@@ -455,15 +455,15 @@ namespace pinocchio
       static_dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
         // static_dispatch<EigenOp>(matrix_product);
-        expression() = matrix_product;
-        // typedef MatrixProductDimensions<PlainExpression, Lhs, Rhs> Dims;
+        // expression() = matrix_product;
+        typedef MatrixProductDimensions<PlainExpression, Lhs, Rhs> Dims;
 
-        // typedef typename Dims::PlainLhs PlainLhs;
-        // typedef typename Dims::PlainRhs PlainRhs;
-        // typedef typename Dims::PlainResult PlainResult;
+        typedef typename Dims::PlainLhs PlainLhs;
+        typedef typename Dims::PlainRhs PlainRhs;
+        typedef typename Dims::PlainResult PlainResult;
 
-        // call_eigen_static_map_assignment<EigenOp, PlainResult, PlainLhs, PlainRhs>(
-        //   expression(), matrix_product);
+        call_eigen_static_map_assignment<EigenOp, PlainResult, PlainLhs, PlainRhs>(
+          expression(), matrix_product);
       }
 
     }; // struct PromoteStaticEval
