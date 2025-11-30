@@ -61,14 +61,14 @@ namespace pinocchio
               }),
             "Compliance of the constraint.")
           .def(
-            "size", +[](const Self & self) -> int { return self.size(); }, bp::arg("self"),
-            "Constraint size.")
+            "maxSize", +[](const Self & self) -> int { return self.maxSize(); }, bp::arg("self"),
+            "Constraint max size.")
           .def(
             "activeSize",
             +[](const Self & self, const ConstraintData & cdata) -> int {
               return self.activeSize(cdata);
             },
-            bp::args("self", "constraint_data"), "Constraint active size.")
+            bp::args("self", "constraint_data"), "Constraint state size.")
           .def(
             "calc", &calc, bp::args("self", "model", "data", "constraint_data"),
             "Evaluate the constraint values at the current state given by data and store the "

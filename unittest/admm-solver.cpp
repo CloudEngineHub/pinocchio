@@ -38,7 +38,7 @@ struct TestBoxTpl
       constraint_datas.push_back(cm.createData());
     }
 
-    const Eigen::DenseIndex constraint_size = getTotalConstraintSize(constraint_models);
+    const Eigen::DenseIndex constraint_size = getTotalConstraintMaxSize(constraint_models);
     primal_solution = dual_solution = dual_solution_sparse = Eigen::VectorXd::Zero(constraint_size);
   }
 
@@ -78,7 +78,7 @@ struct TestBoxTpl
     const Eigen::VectorXd g = constraint_jacobian * v_free;
 
     // Configure the member ADMM solver
-    ADMMConstraintSolverTpl<double> admm_solver(int(getTotalConstraintSize(constraint_models)));
+    ADMMConstraintSolverTpl<double> admm_solver(int(getTotalConstraintMaxSize(constraint_models)));
     admm_solver.setMaxIterations(10000);
     admm_solver.setAbsolutePrecision(1e-10);
     admm_solver.setRelativePrecision(1e-12);
@@ -536,7 +536,8 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   const auto & G = delassus_matrix_plain;
   //    std::cout << "G:\n" << delassus_matrix_plain << std::endl;
 
-  Eigen::MatrixXd constraint_jacobian(dry_friction_free_flyer.size(), model.nv);
+  // Here we jnow that dry_friction_free_flyer is of constant size
+  Eigen::MatrixXd constraint_jacobian(dry_friction_free_flyer.maxSize(), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 

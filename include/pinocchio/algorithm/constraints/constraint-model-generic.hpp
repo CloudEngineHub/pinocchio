@@ -200,9 +200,9 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::size
-    int sizeImpl() const
+    int maxSizeImpl() const
     {
-      return ::pinocchio::visitors::size(*this);
+      return ::pinocchio::visitors::maxSize(*this);
     }
 
     /// \copydoc RootBase::activeSize

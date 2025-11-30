@@ -604,25 +604,25 @@ namespace pinocchio
     }
 
     /**
-     * @brief      ConstraintModelSizeVisitor visitor
+     * @brief      ConstraintModelMaxSizeVisitor visitor
      */
     template<typename Scalar, int Options>
-    struct ConstraintModelSizeVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelSizeVisitor<Scalar, Options>, int>
+    struct ConstraintModelMaxSizeVisitor
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelMaxSizeVisitor<Scalar, Options>, int>
     {
       typedef NoArg ArgsType;
 
       template<typename ConstraintModel>
       static int algo(const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel)
       {
-        return cmodel.size();
+        return cmodel.maxSize();
       }
     };
 
     template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
-    int size(const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
+    int maxSize(const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
     {
-      typedef ConstraintModelSizeVisitor<Scalar, Options> Algo;
+      typedef ConstraintModelMaxSizeVisitor<Scalar, Options> Algo;
       return Algo::run(cmodel);
     }
 

@@ -130,16 +130,16 @@ namespace pinocchio
    */
   template<typename ConstraintModel, class ConstraintModelAllocator>
   Eigen::DenseIndex
-  size(const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
+  maxSize(const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
-    Eigen::DenseIndex size = 0;
+    Eigen::DenseIndex max_size = 0;
     for (const ConstraintModel & cm : constraint_models)
     {
       const auto & cmodel = helper::get_ref(cm);
-      size += cmodel.size();
+      max_size += cmodel.maxSize();
     }
 
-    return size;
+    return max_size;
   }
 
   /**

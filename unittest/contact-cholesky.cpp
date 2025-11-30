@@ -1693,7 +1693,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_joint_friction_constraint)
   const double mu = 1e-10;
   contact_chol_decomposition.compute(model, data, constraint_models, constraint_datas, mu);
 
-  const int constraint_dim = constraint_model.size();
+  const int constraint_dim = constraint_model.activeSize(constraint_data);
   const int total_dim = model.nv + constraint_dim;
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
@@ -1798,7 +1798,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     JointLimitConstraintModel joint_limit_constraint_model(model, joint_indices);
     constraint_models.push_back(joint_limit_constraint_model);
     // No activable joint limits because min/max position limit is infinity
-    BOOST_CHECK(constraint_models[0].size() == 0);
+    BOOST_CHECK(constraint_models[0].maxSize() == 0);
 
     const std::string RF_name = "rleg6_joint";
     const std::string LF_name = "lleg6_joint";
@@ -1857,7 +1857,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     JointLimitConstraintModel joint_limit_constraint_model(model, joint_indices);
     constraint_models.push_back(joint_limit_constraint_model);
     // Activable joint limits (only the rotation part of the freeflyer is not activable)
-    BOOST_CHECK(constraint_models[0].size() == 2 * (model.nv - 3));
+    BOOST_CHECK(constraint_models[0].maxSize() == 2 * (model.nv - 3));
 
     const std::string RF_name = "rleg6_joint";
     const std::string LF_name = "lleg6_joint";
@@ -1913,7 +1913,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     JointLimitConstraintModel joint_limit_constraint_model(model, joint_indices);
     constraint_models.push_back(joint_limit_constraint_model);
     // Activable joint limits (only the rotation part of the freeflyer is not activable)
-    BOOST_CHECK(constraint_models[0].size() == 2 * (model.nv - 3));
+    BOOST_CHECK(constraint_models[0].maxSize() == 2 * (model.nv - 3));
 
     const std::string RF_name = "rleg6_joint";
     const std::string LF_name = "lleg6_joint";

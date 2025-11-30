@@ -205,7 +205,7 @@ namespace pinocchio
     // Size management ----------------------------------------------
 
     /// \brief Returns the maximum size of the constraint.
-    int size() const
+    int maxSize() const
     {
       if constexpr (static_size)
       {
@@ -213,7 +213,7 @@ namespace pinocchio
       }
       else
       {
-        return derived().sizeImpl();
+        return derived().maxSizeImpl();
       }
     }
 
@@ -227,7 +227,7 @@ namespace pinocchio
     {
       if constexpr (constant_size)
       {
-        return size();
+        return maxSize();
       }
       else
       {

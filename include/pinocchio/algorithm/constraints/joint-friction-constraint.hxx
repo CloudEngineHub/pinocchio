@@ -83,7 +83,7 @@ namespace pinocchio
       }
     }
 
-    m_compliance = ComplianceVectorType::Zero(size());
+    m_compliance = ComplianceVectorType::Zero(maxSize());
   }
 
   template<typename Scalar, int Options>

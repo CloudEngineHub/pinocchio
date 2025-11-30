@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_derivatives)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -297,7 +297,7 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_WORLD_ALIGNED_fd)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);

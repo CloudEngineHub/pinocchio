@@ -156,13 +156,13 @@ namespace pinocchio
       activable_idx_qs_reduce_upper.end());
     activable_idx_qs.insert(
       activable_idx_qs.end(), activable_idx_qs_upper.begin(), activable_idx_qs_upper.end());
-    assert(size() == activable_size);
+    assert(maxSize() == activable_size);
 
     // Fill bound limit and margin for lower and upper constraints
     // Another strategy could be to query the model again but it is not coherent with the existing
     // constructors.
-    position_limit = VectorXs::Zero(Eigen::DenseIndex(size()));
-    position_margin = VectorXs::Zero(Eigen::DenseIndex(size()));
+    position_limit = VectorXs::Zero(Eigen::DenseIndex(maxSize()));
+    position_margin = VectorXs::Zero(Eigen::DenseIndex(maxSize()));
     Eigen::DenseIndex bound_row_id = 0;
     for (bound_row_id = 0; bound_row_id < lowerSize(); ++bound_row_id)
     {
@@ -171,7 +171,7 @@ namespace pinocchio
       assert(margin[activable_idx_q] >= 0);
       position_margin[bound_row_id] = margin[activable_idx_q];
     }
-    for (; bound_row_id < size(); ++bound_row_id)
+    for (; bound_row_id < maxSize(); ++bound_row_id)
     {
       const auto activable_idx_q = activable_idx_qs[size_t(bound_row_id)];
       position_limit[bound_row_id] = ub[activable_idx_q];
@@ -186,7 +186,7 @@ namespace pinocchio
       nv_max_atom = std::max(nv_max_atom, joint_nv);
     }
 
-    m_compliance = ComplianceVectorType::Zero(size());
+    m_compliance = ComplianceVectorType::Zero(maxSize());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
   }
 
@@ -242,7 +242,7 @@ namespace pinocchio
 
     // Upper bounds
     for (std::size_t i = static_cast<std::size_t>(lowerSize());
-         i < static_cast<std::size_t>(size()); i++)
+         i < static_cast<std::size_t>(maxSize()); i++)
     {
       const Eigen::DenseIndex i_ = static_cast<Eigen::DenseIndex>(i);
       const Eigen::DenseIndex idx_q = activable_idx_qs[i];

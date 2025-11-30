@@ -259,12 +259,6 @@ namespace pinocchio
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
 
-    /// \copydoc RootBase::size
-    static constexpr int sizeImpl()
-    {
-      return 6;
-    }
-
     /// \brief Evaluate the constraint values at the current state given by data and store the
     /// results in cdata.
     /// \note data must be populated by results of a `forwardKinematic(model, data, q, v, a)`.

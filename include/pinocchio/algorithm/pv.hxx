@@ -471,7 +471,7 @@ namespace pinocchio
       typename RigidConstraintData::Motion & vc1 = contact_datas[i].contact1_velocity;
       typename RigidConstraintData::Motion & vc2 = contact_datas[i].contact2_velocity;
       const JointIndex & joint_id = contact_model.joint1_id;
-      int con_dim = contact_model.size();
+      int con_dim = contact_model.maxSize();
 
       const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
         contact_model.corrector;
@@ -669,7 +669,7 @@ namespace pinocchio
       typename RigidConstraintData::Motion & vc1 = contact_datas[i].contact1_velocity;
       typename RigidConstraintData::Motion & vc2 = contact_datas[i].contact2_velocity;
       const JointIndex & joint_id = contact_model.joint1_id;
-      int con_dim = contact_model.size();
+      int con_dim = contact_model.maxSize();
       const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
         contact_model.corrector;
       typename RigidConstraintData::Motion & contact_acc_err =
@@ -765,12 +765,14 @@ namespace pinocchio
     {
       const RigidConstraintModelTpl<Scalar, Options> & contact_model = contact_models[j];
       const JointIndex & joint_id = contact_model.joint1_id;
-      data.lambda_c_prox.segment(lambda_ind, contact_model.size()).noalias() =
-        (data.lA[joint_id].segment(condim_counter[joint_id], contact_model.size())
-         + data.KA[joint_id].middleCols(condim_counter[joint_id], contact_model.size()).transpose()
+      data.lambda_c_prox.segment(lambda_ind, contact_model.maxSize()).noalias() =
+        (data.lA[joint_id].segment(condim_counter[joint_id], contact_model.maxSize())
+         + data.KA[joint_id]
+               .middleCols(condim_counter[joint_id], contact_model.maxSize())
+               .transpose()
              * data.a[joint_id].toVector());
-      lambda_ind += contact_model.size();
-      condim_counter[joint_id] += contact_model.size();
+      lambda_ind += contact_model.maxSize();
+      condim_counter[joint_id] += contact_model.maxSize();
     }
 
     typedef cAbaForwardStep2<Scalar, Options, JointCollectionTpl> Pass3;
@@ -797,10 +799,10 @@ namespace pinocchio
         const RigidConstraintModelTpl<Scalar, Options> & contact_model = contact_models[j];
         const JointIndex & joint_id = contact_model.joint1_id;
         data.f[joint_id].toVector().noalias() +=
-          data.KA[joint_id].middleCols(condim_counter[joint_id], contact_model.size())
-          * (1 / settings.mu) * (data.lambda_c_prox.segment(lambda_ind, contact_model.size()));
-        lambda_ind += contact_model.size();
-        condim_counter[joint_id] += contact_model.size();
+          data.KA[joint_id].middleCols(condim_counter[joint_id], contact_model.maxSize())
+          * (1 / settings.mu) * (data.lambda_c_prox.segment(lambda_ind, contact_model.maxSize()));
+        lambda_ind += contact_model.maxSize();
+        condim_counter[joint_id] += contact_model.maxSize();
       }
       // reduced backward sweep
       for (JointIndex j = (JointIndex)model.njoints - 1; j > 0; --j)
@@ -820,14 +822,14 @@ namespace pinocchio
       {
         const RigidConstraintModelTpl<Scalar, Options> & contact_model = contact_models[j];
         const JointIndex & joint_id = contact_model.joint1_id;
-        data.lambda_c_prox.segment(lambda_ind, contact_model.size()).noalias() =
-          (data.lA[joint_id].segment(condim_counter[joint_id], contact_model.size())
+        data.lambda_c_prox.segment(lambda_ind, contact_model.maxSize()).noalias() =
+          (data.lA[joint_id].segment(condim_counter[joint_id], contact_model.maxSize())
            + data.KA[joint_id]
-                 .middleCols(condim_counter[joint_id], contact_model.size())
+                 .middleCols(condim_counter[joint_id], contact_model.maxSize())
                  .transpose()
                * data.a[joint_id].toVector());
-        lambda_ind += contact_model.size();
-        condim_counter[joint_id] += contact_model.size();
+        lambda_ind += contact_model.maxSize();
+        condim_counter[joint_id] += contact_model.maxSize();
       }
       settings.absolute_residual = (data.lambda_c_prox).template lpNorm<Eigen::Infinity>();
       if (check_expression_if_real<Scalar, false>(

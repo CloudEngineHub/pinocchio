@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_constraint_dynamics_derivatives)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_fd)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -462,7 +462,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
   constraint_datas = createData(constraint_models);
@@ -646,7 +646,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -766,7 +766,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd_prox)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 1e-4;
   ProximalSettings prox_settings(1e-12, mu0, 20);
@@ -899,7 +899,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_loop_closure_3D_
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 1e-4;
   ProximalSettings prox_settings(1e-12, mu0, 20);
@@ -1036,7 +1036,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -1189,7 +1189,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 100);
@@ -1371,7 +1371,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 100);
@@ -1552,7 +1552,7 @@ BOOST_AUTO_TEST_CASE(
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -1680,7 +1680,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -1810,7 +1810,7 @@ BOOST_AUTO_TEST_CASE(
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -1931,7 +1931,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_6D
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -2049,7 +2049,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_3D
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -2190,7 +2190,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -2252,7 +2252,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
   {
     const RigidConstraintModel & cmodel = constraint_models[k];
     const RigidConstraintData & cdata = constraint_data[k];
-    const Eigen::DenseIndex size = cmodel.size();
+    const Eigen::DenseIndex size = cmodel.activeSize(cdata);
 
     const Motion contact_acc = getContactAcceleration(model, data, cmodel);
 
@@ -2283,7 +2283,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
     {
       const RigidConstraintModel & cmodel = constraint_models[k];
       const RigidConstraintData & cdata = constraint_data[k];
-      const Eigen::DenseIndex size = cmodel.size();
+      const Eigen::DenseIndex size = cmodel.activeSize(cdata);
 
       const Motion contact_acc = getContactAcceleration(model, data_fd, cmodel);
 
@@ -2370,7 +2370,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -2416,7 +2416,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
   {
     const RigidConstraintModel & cmodel = constraint_models[k];
     const RigidConstraintData & cdata = constraint_data[k];
-    const Eigen::DenseIndex size = cmodel.size();
+    const Eigen::DenseIndex size = cmodel.activeSize(cdata);
 
     const Motion contact_acc = getContactAcceleration(model, data, cmodel, cdata.c1Mc2);
 
@@ -2442,7 +2442,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
     {
       const RigidConstraintModel & cmodel = constraint_models[k];
       const RigidConstraintData & cdata = constraint_data[k];
-      const Eigen::DenseIndex size = cmodel.size();
+      const Eigen::DenseIndex size = cmodel.activeSize(cdata);
 
       const Motion contact_acc = getContactAcceleration(model, data_fd, cmodel, cdata.c1Mc2);
 
@@ -2502,7 +2502,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_dirty_data)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -2578,7 +2578,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_cassie_proximal)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].size();
+    constraint_dim += constraint_models[k].maxSize();
 
   initConstraintDynamics(model, data, constraint_models, constraint_data);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_datas, prox_settings);

@@ -152,7 +152,7 @@ namespace pinocchio
     using RootBase::classname;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
-    using RootBase::size;
+    using RootBase::maxSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -272,7 +272,7 @@ namespace pinocchio
     void setFrictionLowerLimit(const Eigen::MatrixBase<VectorLike> & lb)
     {
       PINOCCHIO_THROW_IF(
-        lb.size() != size(), std::runtime_error, "lb should be the same as size()");
+        lb.size() != maxSize(), std::runtime_error, "lb should be the same as size()");
       m_friction_lower_limit = lb;
     }
 
@@ -295,7 +295,7 @@ namespace pinocchio
     void setFrictionUpperLimit(const Eigen::MatrixBase<VectorLike> & ub)
     {
       PINOCCHIO_THROW_IF(
-        ub.size() != size(), std::runtime_error, "ub should be the same as size()");
+        ub.size() != maxSize(), std::runtime_error, "ub should be the same as size()");
       m_friction_upper_limit = ub;
     }
 
@@ -328,7 +328,7 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::size
-    int sizeImpl() const
+    int maxSizeImpl() const
     {
       return int(active_dofs.size());
     }
@@ -364,7 +364,7 @@ namespace pinocchio
     {
       typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
         ReturnType;
-      ReturnType res(size(), mat.cols());
+      ReturnType res(maxSize(), mat.cols());
       jacobianMatrixProduct(model, data, cdata, mat.derived(), res);
       return res;
     }
@@ -418,7 +418,7 @@ namespace pinocchio
     const BooleanVector &
     getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
 
       return row_sparsity_pattern[size_t(row_id)];
@@ -428,7 +428,7 @@ namespace pinocchio
     const EigenIndexVector &
     getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
       return row_active_indexes[size_t(row_id)];
     }

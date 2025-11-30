@@ -260,7 +260,7 @@ namespace pinocchio
     // -------------------------------
 
     /// \copydoc RootBase::size
-    static constexpr int sizeImpl()
+    static constexpr int maxSizeImpl()
     {
       return 3;
     }

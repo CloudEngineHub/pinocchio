@@ -987,15 +987,15 @@ void test_apply_on_the_right(
   data.q_in = q_neutral;
   calc(model, data, constraint_models, constraint_datas);
 
-  int size = 0, active_size = 0;
+  int max_size = 0, active_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
   {
     const auto & constraint_model = constraint_models[k];
     const auto & constraint_data = constraint_datas[k];
-    size += constraint_model.size();
+    max_size += constraint_model.maxSize();
     active_size += constraint_model.activeSize(constraint_data);
   }
-  BOOST_CHECK(active_size <= size);
+  BOOST_CHECK(active_size <= max_size);
 
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
@@ -1031,7 +1031,7 @@ void test_apply_on_the_right(
   {
     const auto & cmodel = constraint_models[i];
     const auto & cdata = constraint_datas_gt[i];
-    size += cmodel.size();
+    max_size += cmodel.maxSize();
     active_size_gt += cmodel.activeSize(cdata);
   }
   BOOST_CHECK(active_size_gt == active_size);
@@ -1278,7 +1278,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
 
   {
     ConstraintModel constraint_model(model, activable_joint_ids);
-    BOOST_CHECK(constraint_model.size() == 2 * (model.nv - 6));
+    BOOST_CHECK(constraint_model.maxSize() == 2 * (model.nv - 6));
 
     constraint_models.push_back(constraint_model);
     constraint_datas.push_back(constraint_model.createData());

@@ -135,7 +135,7 @@ namespace pinocchio
       contact_models.size(), contact_data.size(), "contact models and data size are not the same");
 
     MatrixType & delassus = delassus_.const_cast_derived();
-    const Eigen::DenseIndex constraint_total_size = getTotalConstraintSize(contact_models);
+    const Eigen::DenseIndex constraint_total_size = getTotalConstraintMaxSize(contact_models);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(delassus_.rows(), constraint_total_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(delassus_.cols(), constraint_total_size);
 
@@ -244,7 +244,7 @@ namespace pinocchio
 
       // Fill the delassus matrix block-wise
       {
-        const int size = cmodel.size();
+        const int size = cmodel.maxSize();
 
         const VectorOfMatrix6 & propagators = cdata.extended_motion_propagators_joint1;
         const VectorOfMatrix6 & lambdas = cdata.lambdas_joint1;
@@ -254,7 +254,7 @@ namespace pinocchio
         {
           const RigidConstraintModel & cmodel_other = contact_models[i];
           const RigidConstraintData & cdata_other = contact_data[i];
-          const int size_other = cmodel_other.size();
+          const int size_other = cmodel_other.maxSize();
           const IndexVector & support1_other = model.supports[cmodel_other.joint1_id];
 
           const VectorOfMatrix6 & propagators_other =
@@ -490,7 +490,7 @@ namespace pinocchio
       contact_models.size(), contact_data.size(), "contact models and data size are not the same");
 
     MatrixType & delassus = delassus_.const_cast_derived();
-    const Eigen::DenseIndex constraint_total_size = getTotalConstraintSize(contact_models);
+    const Eigen::DenseIndex constraint_total_size = getTotalConstraintMaxSize(contact_models);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(delassus_.rows(), constraint_total_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(delassus_.cols(), constraint_total_size);
 
@@ -692,7 +692,7 @@ namespace pinocchio
       size_t counter = 1;
       while (an_i > 1)
       {
-        if (contact_models[k].size() != 3)
+        if (contact_models[k].maxSize() != 3)
           cemp[counter].noalias() = cemp[counter - 1] * data.extended_motion_propagator2[an_i];
         else
           cemp[counter].template topRows<3>().noalias() =
@@ -714,14 +714,14 @@ namespace pinocchio
 
       // Fill the delassus matrix block-wise
       {
-        const int size = cmodel.size();
+        const int size = cmodel.maxSize();
 
         Eigen::DenseIndex current_row_id_other = 0;
         for (size_t i = 0; i < k; ++i)
         {
           RigidConstraintData & cdata_other = contact_data[i];
           const RigidConstraintModel & cmodel_other = contact_models[i];
-          const int size_other = cmodel_other.size();
+          const int size_other = cmodel_other.maxSize();
           const JointIndex joint1_id_other = cmodel_other.joint1_id;
 
           const VectorOfMatrix6 & cemp_other = cdata_other.extended_motion_propagators_joint1;

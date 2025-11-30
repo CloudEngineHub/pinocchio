@@ -58,14 +58,14 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
     {
       total_size += model.joints[joint_id].nv();
     }
-    BOOST_CHECK(constraint.size() == total_size);
+    BOOST_CHECK(constraint.maxSize() == total_size);
     BOOST_CHECK(constraint.getActiveDofs().size() == size_t(total_size));
   }
 
   // Check sparsity pattern
   {
     const EigenIndexVector & active_dofs = constraint.getActiveDofs();
-    for (size_t row_id = 0; row_id < size_t(constraint.size()); ++row_id)
+    for (size_t row_id = 0; row_id < size_t(constraint.maxSize()); ++row_id)
     {
       const Eigen::DenseIndex dof_id = active_dofs[row_id];
       const BooleanVector & row_sparsity_pattern =
@@ -133,11 +133,11 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
   JointFrictionConstraintModel constraint_model(model, active_joint_ids);
   JointFrictionConstraintData constraint_data(constraint_model);
 
-  Eigen::MatrixXd jacobian_matrix(constraint_model.size(), model.nv);
+  Eigen::MatrixXd jacobian_matrix(constraint_model.maxSize(), model.nv);
   constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
 
   const EigenIndexVector & active_dofs = constraint_model.getActiveDofs();
-  for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.size(); ++row_id)
+  for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.maxSize(); ++row_id)
   {
     const Eigen::DenseIndex dof_id = active_dofs[size_t(row_id)];
     BOOST_CHECK(jacobian_matrix.row(row_id).sum() == 1.);
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
 
   constraint_model.calc(model, data, constraint_data);
   const Eigen::VectorXd diagonal_inertia =
-    Eigen::VectorXd::Random(constraint_model.size()).array().square();
+    Eigen::VectorXd::Random(constraint_model.activeSize(constraint_data)).array().square();
   constraint_model.appendCouplingConstraintInertias(
     model, data, constraint_data, diagonal_inertia, WorldFrameTag());
 
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
     //    std::cout << "----" << std::endl;
   }
 
-  Eigen::MatrixXd jacobian_matrix(constraint_model.size(), model.nv);
+  Eigen::MatrixXd jacobian_matrix(constraint_model.activeSize(constraint_data), model.nv);
   constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
 
   const Eigen::MatrixXd joint_space_constraint_inertia =

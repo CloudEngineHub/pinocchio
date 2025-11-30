@@ -167,7 +167,7 @@ namespace pinocchio
     using RootBase::classname;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
-    using RootBase::size;
+    using RootBase::maxSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -380,7 +380,7 @@ namespace pinocchio
     }
     int upperSize() const
     {
-      return size() - lowerSize();
+      return maxSize() - lowerSize();
     }
     int upperActiveSize(const ConstraintData & constraint_data) const
     {
@@ -444,7 +444,7 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::size
-    int sizeImpl() const
+    int maxSizeImpl() const
     {
       return int(activable_idx_rows.size());
     }
@@ -551,7 +551,7 @@ namespace pinocchio
     {
       typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
         ReturnType;
-      ReturnType res(size(), mat.cols());
+      ReturnType res(activeSize(cdata), mat.cols());
       jacobianMatrixProduct(model, data, cdata, mat.derived(), res);
       return res;
     }
@@ -721,8 +721,8 @@ namespace pinocchio
         CompactTangentMap::Zero(constraint_model.getNqReduce(), constraint_model.getNvMaxAtom()))
     , rowise_tangent_map(
         size_t(constraint_model.getNqReduce()), size_t(constraint_model.getNvMaxAtom()))
-    , activable_constraint_residual(constraint_model.size())
-    , constraint_residual_storage(constraint_model.size())
+    , activable_constraint_residual(constraint_model.maxSize())
+    , constraint_residual_storage(constraint_model.maxSize())
     , constraint_residual(constraint_residual_storage.map())
     , active_compliance(active_compliance_storage.map())
     {

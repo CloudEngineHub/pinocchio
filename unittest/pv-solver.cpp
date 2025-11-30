@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_3D_humanoid)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxSize();
   Eigen::MatrixXd J_ref(constraint_dim, model.nv);
   J_ref.setZero();
   Data::Matrix6x Jtmp = Data::Matrix6x::Zero(6, model.nv);

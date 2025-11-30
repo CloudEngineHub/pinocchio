@@ -282,7 +282,7 @@ class TestJointsAlgo(TestCase):
         # Check size
         for b in self.bilats_list:
             bd = b.createData()
-            self.assertTrue(b.size() == b.activeSize(bd) == 3)
+            self.assertTrue(b.maxSize() == b.activeSize(bd) == 3)
 
     def test_frame_anchor(self):
         # Coherence between all inits
@@ -292,16 +292,18 @@ class TestJointsAlgo(TestCase):
         # Check size
         for w in self.facms_list:
             wd = w.createData()
-            self.assertTrue(w.size() == w.activeSize(wd) == 6)
+            self.assertTrue(w.maxSize() == w.activeSize(wd) == 6)
 
     def test_point_contact(self):
         for fp in self.point_contact_list:
             fpd = fp.createData()
-            self.assertTrue(fp.size() == fp.activeSize(fpd) == 3)
+            self.assertTrue(fp.maxSize() == fp.activeSize(fpd) == 3)
 
     def test_joint_friction(self):
         jfcd = self.jfc.createData()
-        self.assertTrue(self.jfc.activeSize(jfcd) == self.jfc.size() <= self.model.nv)
+        self.assertTrue(
+            self.jfc.activeSize(jfcd) == self.jfc.maxSize() <= self.model.nv
+        )
 
     def test_joint_limit(self):
         jld_raw = self.jlc.createData()
@@ -309,13 +311,15 @@ class TestJointsAlgo(TestCase):
         jld = self.jlc.createData()
         self.jlc.calc(self.model, self.data, jld)
         self.assertTrue(
-            self.jlc_raw.activeSize(jld_raw) <= self.jlc_raw.size() <= 2 * self.model.nq
+            self.jlc_raw.activeSize(jld_raw)
+            <= self.jlc_raw.maxSize()
+            <= 2 * self.model.nq
         )
         jld_raw_not_calc = self.jlc_raw.createData()
         self.assertTrue(self.jlc_raw.activeSize(jld_raw_not_calc) == 0)
         self.assertTrue(self.jlc.activeSize(jld) > 0)
         self.assertTrue(
-            self.jlc.activeSize(jld) <= self.jlc.size() <= 2 * self.model.nq
+            self.jlc.activeSize(jld) <= self.jlc.maxSize() <= 2 * self.model.nq
         )
 
     def test_generic_methods(self):
@@ -347,8 +351,8 @@ class TestJointsAlgo(TestCase):
                     <= set(gcm.getRowIndexes(gcd, i))
                     <= ref_set
                 )
-                self.assertTrue(gcm.activeSize(gcd) <= gcm.size())
-            dummy_compliance = 0.1 * np.ones(gcm.size())
+                self.assertTrue(gcm.activeSize(gcd) <= gcm.maxSize())
+            dummy_compliance = 0.1 * np.ones(gcm.maxSize())
             gcm.compliance = dummy_compliance
             self.assertTrue(np.all(dummy_compliance == gcm.compliance))
             self.assertTrue(len(ccm.getActiveCompliance(ccd)) == ccm.activeSize(ccd))

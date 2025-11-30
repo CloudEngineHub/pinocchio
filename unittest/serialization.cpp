@@ -970,8 +970,8 @@ struct initConstraint<pinocchio::JointFrictionConstraintModel>
     // need to be set after constructing the constraint model.
     ConstraintModel cmodel =
       JointLimitAndFrictionConstraintModelInitializer<ConstraintModel>::run(model);
-    Eigen::VectorXd lb = -Eigen::VectorXd::Random(cmodel.size()).array().abs();
-    Eigen::VectorXd ub = Eigen::VectorXd::Random(cmodel.size()).array().abs();
+    Eigen::VectorXd lb = -Eigen::VectorXd::Random(cmodel.maxSize()).array().abs();
+    Eigen::VectorXd ub = Eigen::VectorXd::Random(cmodel.maxSize()).array().abs();
     cmodel.setFrictionLowerLimit(lb);
     cmodel.setFrictionUpperLimit(ub);
     return cmodel;

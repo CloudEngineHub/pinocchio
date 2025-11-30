@@ -295,7 +295,7 @@ namespace pinocchio
     , joint1_span_indexes((size_t)model.njoints)
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
-    , m_compliance(VectorXs::Zero(size()))
+    , m_compliance(VectorXs::Zero(maxSize()))
     , corrector()
     {
       init(model);
@@ -330,7 +330,7 @@ namespace pinocchio
     , joint1_span_indexes((size_t)model.njoints)
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
-    , m_compliance(VectorXs::Zero(size()))
+    , m_compliance(VectorXs::Zero(maxSize()))
     , corrector()
     {
       init(model);
@@ -363,7 +363,7 @@ namespace pinocchio
     , joint1_span_indexes((size_t)model.njoints)
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
-    , m_compliance(VectorXs::Zero(size()))
+    , m_compliance(VectorXs::Zero(maxSize()))
     , corrector()
     {
       init(model);
@@ -397,7 +397,7 @@ namespace pinocchio
     , joint1_span_indexes((size_t)model.njoints)
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
-    , m_compliance(VectorXs::Zero(size()))
+    , m_compliance(VectorXs::Zero(maxSize()))
     , corrector()
     {
       init(model);
@@ -415,7 +415,7 @@ namespace pinocchio
     const BooleanVector &
     getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_sparsity;
     }
@@ -424,7 +424,7 @@ namespace pinocchio
     const EigenIndexVector &
     getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_span_indexes;
     }
@@ -692,7 +692,7 @@ namespace pinocchio
 
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), size());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), maxSize()); // We know it is constant
       res.setZero();
 
       //      const Eigen::DenseIndex constraint_dim = size();
@@ -863,7 +863,7 @@ namespace pinocchio
       std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), size());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), maxSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
 
       assert(this->type == CONTACT_3D);
@@ -887,7 +887,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & constraint_value) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_accelerations.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_value.rows(), size());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_value.rows(), maxSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
 
       assert(this->type == CONTACT_3D);
@@ -917,7 +917,7 @@ namespace pinocchio
         constraint_value.const_cast_derived().setZero();
     }
 
-    int sizeImpl() const
+    int maxSizeImpl() const
     {
       switch (type)
       {
@@ -931,7 +931,7 @@ namespace pinocchio
       return -1;
     }
     using Base::activeSize;
-    using Base::size;
+    using Base::maxSize;
 
     /// \returns An expression of *this with the Scalar type casted to NewScalar.
     template<typename NewScalar>
@@ -1084,14 +1084,14 @@ namespace pinocchio
   /// \brief Computes the sum of the sizes of the constraints contained in the input
   /// `constraint_models` vector.
   template<class ConstraintModel, class ConstraintModelAllocator>
-  Eigen::DenseIndex getTotalConstraintSize(
+  Eigen::DenseIndex getTotalConstraintMaxSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
     Eigen::DenseIndex total_size = 0;
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);
-      total_size += cmodel.size();
+      total_size += cmodel.maxSize();
     }
 
     return total_size;
@@ -1236,10 +1236,10 @@ namespace pinocchio
     , da2_dq(Matrix6x::Zero(6, constraint_model.nv))
     , da2_dv(Matrix6x::Zero(6, constraint_model.nv))
     , da2_da(Matrix6x::Zero(6, constraint_model.nv))
-    , dvc_dq(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
-    , dac_dq(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
-    , dac_dv(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
-    , dac_da(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
+    , dvc_dq(MatrixX::Zero(constraint_model.maxSize(), constraint_model.nv))
+    , dac_dq(MatrixX::Zero(constraint_model.maxSize(), constraint_model.nv))
+    , dac_dv(MatrixX::Zero(constraint_model.maxSize(), constraint_model.nv))
+    , dac_da(MatrixX::Zero(constraint_model.maxSize(), constraint_model.nv))
     {
     }
 

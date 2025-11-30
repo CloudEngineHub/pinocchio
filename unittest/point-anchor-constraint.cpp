@@ -66,13 +66,13 @@ BOOST_AUTO_TEST_CASE(basic_constructor)
   PointAnchorConstraintModel cmodel2(model, 0, M);
   BOOST_CHECK(cmodel2.joint1_id == 0);
   BOOST_CHECK(cmodel2.joint1_placement == M);
-  BOOST_CHECK(cmodel2.size() == 3);
+  BOOST_CHECK(cmodel2.maxSize() == 3);
 
   // Check contructor with two arguments
   PointAnchorConstraintModel cmodel2prime(model, 0);
   BOOST_CHECK(cmodel2prime.joint1_id == 0);
   BOOST_CHECK(cmodel2prime.joint1_placement.isIdentity(0.));
-  BOOST_CHECK(cmodel2prime.size() == 3);
+  BOOST_CHECK(cmodel2prime.maxSize() == 3);
 
   // Check default copy constructor
   PointAnchorConstraintModel cmodel3(cmodel2);

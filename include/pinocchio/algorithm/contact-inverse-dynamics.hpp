@@ -88,7 +88,9 @@ namespace pinocchio
       for (std::size_t constraint_id = 0; constraint_id < n_constraints; ++constraint_id)
       {
         const ConstraintModel & cmodel = constraint_models[constraint_id];
-        const auto constraint_size = cmodel.size();
+        const ConstraintData & cdata = constraint_datas[constraint_id];
+
+        const auto constraint_size = cmodel.activeSize(cdata);
 
         const auto cone = cmodel.set();
         auto lambda_segment = lambda.segment(row_id, constraint_size);
@@ -280,7 +282,7 @@ namespace pinocchio
       {
         const ConstraintModel & cmodel = constraint_models[i];
         ConstraintData & cdata = constraint_datas[i];
-        const auto constraint_size = cmodel.size();
+        const auto constraint_size = cmodel.activeSize(cdata);
 
         const auto lambda_segment = lambda_sol.segment(row_id, constraint_size);
         cmodel.jacobianTransposeMatrixProduct(model, data, cdata, lambda_segment, tau, RmTo());

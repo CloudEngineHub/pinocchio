@@ -46,7 +46,7 @@ struct TestBoxTpl
       constraint_datas.push_back(cm.createData());
     }
 
-    const Eigen::DenseIndex constraint_size = getTotalConstraintSize(constraint_models);
+    const Eigen::DenseIndex constraint_size = getTotalConstraintMaxSize(constraint_models);
     dual_solution = primal_solution = primal_solution_sparse =
       Eigen::VectorXd::Zero(constraint_size);
   }
@@ -535,7 +535,8 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   const auto & G = delassus_matrix_plain;
   //    std::cout << "G:\n" << delassus_matrix_plain << std::endl;
 
-  Eigen::MatrixXd constraint_jacobian(dry_friction_free_flyer.size(), model.nv);
+  // We know dry friction is of constant size
+  Eigen::MatrixXd constraint_jacobian(dry_friction_free_flyer.maxSize(), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
