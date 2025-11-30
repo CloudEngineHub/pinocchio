@@ -283,15 +283,14 @@ namespace pinocchio
         typename Lhs,
         typename Rhs,
         int Option>
-      static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
-      run(Dst & result, const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void run(
+        const Eigen::DenseIndex leading_size,
+        Dst & result,
+        const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
-        const auto & lhs = matrix_product.lhs();
-        const auto & rhs = matrix_product.rhs();
-
         typedef typename helper::remove_eigen_noalias<Dst>::type Result;
         typedef MatrixProductDimensions<Result, Lhs, Rhs> Dims;
-        if (Dims::dynamic_size(lhs, rhs) == N)
+        if (leading_size == N)
         {
           using LhsPlainStatic = typename make_static_matrix<N, N, typename Dims::PlainLhs>::type;
           using RhsPlainStatic = typename make_static_matrix<N, N, typename Dims::PlainRhs>::type;
@@ -303,7 +302,8 @@ namespace pinocchio
         }
         else
         {
-          partial_static_dispatch_impl<N - 1>::template run<EigenOp>(result, matrix_product);
+          partial_static_dispatch_impl<N - 1>::template run<EigenOp>(
+            leading_size, result, matrix_product);
         }
       }
     };
@@ -317,9 +317,12 @@ namespace pinocchio
         typename Lhs,
         typename Rhs,
         int Option>
-      static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
-      run(Dst & result, const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void run(
+        const Eigen::DenseIndex leading_size,
+        Dst & result,
+        const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
+        PINOCCHIO_UNUSED_VARIABLE(leading_size);
         PINOCCHIO_UNUSED_VARIABLE(result);
         PINOCCHIO_UNUSED_VARIABLE(matrix_product);
       }
@@ -439,10 +442,12 @@ namespace pinocchio
 
         typedef typename helper::remove_eigen_noalias<ExpressionType>::type Result;
         typedef MatrixProductDimensions<Result, Lhs, Rhs> Dims;
-        if (Dims::dynamic_size(lhs, rhs) > N)
+        const auto leading_size = Dims::dynamic_size(lhs, rhs);
+        if (leading_size > N)
           dynamic_dispatch<EigenOp>(matrix_product);
         else
-          partial_static_dispatch_impl<N>::template run<EigenOp>(expression(), matrix_product);
+          partial_static_dispatch_impl<N>::template run<EigenOp>(
+            leading_size, expression(), matrix_product);
       }
 
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
