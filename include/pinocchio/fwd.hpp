@@ -211,6 +211,29 @@ namespace pinocchio
     struct is_specialization_of<Template<Args...>, Template> : std::true_type
     {
     };
+
+    /**
+     * @brief Helper variable template for @ref is_specialization_of.
+     *
+     * Provides a `constexpr bool` that simplifies access to the result of
+     * `is_specialization_of<T, Template>::value`.
+     *
+     * This is analogous to standard library variable templates like
+     * `std::is_same_v` or `std::is_base_of_v`.
+     *
+     * @tparam T The type to test (e.g., `std::vector<int>`).
+     * @tparam Template The class template to test against (e.g., `std::vector`).
+     *
+     * ### Example
+     * @code
+     * static_assert(is_specialization_of_v<std::vector<int>, std::vector>);
+     * static_assert(!is_specialization_of_v<int, std::vector>);
+     * @endcode
+     *
+     * @see is_specialization_of
+     */
+    template<typename T, template<typename...> class Template>
+    inline constexpr bool is_specialization_of_v = is_specialization_of<T, Template>::value;
   } // namespace internal
 } // namespace pinocchio
 
