@@ -149,6 +149,7 @@ namespace pinocchio
     std::vector<size_t> num_children(size_t(model.njoints), 0);
     std::list<JointIndex> leaf_vertices;
 
+    // Collect all the tree leaves
     for (JointIndex joint_id = JointIndex(model.njoints - 1); joint_id > 0; --joint_id)
     {
       num_children[joint_id] = model.children[joint_id].size();
@@ -156,11 +157,13 @@ namespace pinocchio
         leaf_vertices.push_back(joint_id);
     }
 
+    // While there is still some leaves
     while (leaf_vertices.size() > 0)
     {
       JointIndex joint_id_with_least_neighbors = std::numeric_limits<JointIndex>::max();
       size_t least_neighbours = std::numeric_limits<size_t>::max();
 
+      // Retrieve the joint_id with the minimum number of neighbors
       for (const auto joint_id : leaf_vertices)
       {
         assert(joint_id != 0);
