@@ -1370,12 +1370,46 @@ namespace pinocchio
       template<typename S, int O> class ConstraintCollectionTpl,
       typename InputVector>
     void setCompliance(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       const Eigen::MatrixBase<InputVector> & input_vector)
     {
       typedef ConstraintModelSetComplianceVisitor<InputVector> Algo;
 
       typename Algo::ArgsType args(input_vector.derived());
+      Algo::run(cmodel, args);
+    }
+
+    /**
+     * @brief      ConstraintModelSetBaumgarteCorrectorParameters visitor
+     */
+    template<typename _BaumgarteCorrectorParameters>
+    struct ConstraintModelSetBaumgarteCorrectorParameters
+    : visitors::ConstraintUnaryVisitorBase<
+        ConstraintModelSetBaumgarteCorrectorParameters<_BaumgarteCorrectorParameters>>
+    {
+      typedef boost::fusion::vector<const _BaumgarteCorrectorParameters &> ArgsType;
+
+      template<typename ConstraintModel>
+      static void algo(
+        pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const _BaumgarteCorrectorParameters & baumgarte_corrector_parameters_in)
+      {
+        cmodel.setBaumgarteCorrectorParameters(baumgarte_corrector_parameters_in);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      template<typename S, int O> class ConstraintCollectionTpl>
+    void setBaumgarteCorrectorParameters(
+      ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const BaumgarteCorrectorParametersTpl<Scalar> & baumgarte_corrector_parameters_in)
+    {
+      typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+      typedef ConstraintModelSetBaumgarteCorrectorParameters<BaumgarteCorrectorParameters> Algo;
+
+      typename Algo::ArgsType args(baumgarte_corrector_parameters_in);
       Algo::run(cmodel, args);
     }
 

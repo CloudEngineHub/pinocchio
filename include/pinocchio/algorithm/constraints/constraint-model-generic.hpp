@@ -431,6 +431,21 @@ namespace pinocchio
       return ::pinocchio::visitors::getBaumgarteCorrectorParameters(*this);
     }
 
+    /// \copydoc RootBase::setCompliance
+    template<typename VectorLike>
+    void setComplianceImpl(const Eigen::MatrixBase<VectorLike> & vector)
+    {
+      ::pinocchio::visitors::setCompliance(*this, vector);
+    }
+
+    /// \copydoc RootBase::setBaumgarteCorrectorParameters
+    void setBaumgarteCorrectorParametersImpl(
+      const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_in)
+    {
+      ::pinocchio::visitors::setBaumgarteCorrectorParameters(
+        *this, baumgarte_corrector_parameters_in);
+    }
+
   }; // struct ConstraintModelTpl
 } // namespace pinocchio
 

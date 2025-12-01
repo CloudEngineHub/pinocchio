@@ -503,6 +503,22 @@ namespace pinocchio
       return derived().baumgarte_corrector_parameters_impl();
     }
 
+    // Standard setters --------------------------------------------
+
+    /// \brief Set the compliance
+    template<typename VectorLike>
+    void setCompliance(const Eigen::MatrixBase<VectorLike> & vector)
+    {
+      derived().setComplianceImpl(vector);
+    }
+
+    /// \brief Set baumgarte corrector
+    void setBaumgarteCorrectorParameters(
+      const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_in)
+    {
+      derived().setBaumgarteCorrectorParametersImpl(baumgarte_corrector_parameters_in);
+    }
+
     // Implementation ------------------------------------------------
 
     // // general
@@ -530,6 +546,22 @@ namespace pinocchio
     // // Data handing
     // compliance_impl()
     // baumgarte_corrector_parameters_impl()
+    // setComplianceImpl()  // Default to using the accessor
+    // setBaumgarteCorrectorParametersImpl()  // Default to using the accessor
+
+    /// \copydoc setCompliance
+    template<typename VectorLike>
+    void setComplianceImpl(const Eigen::MatrixBase<VectorLike> & vector)
+    {
+      compliance() = vector;
+    }
+
+    /// \copydoc setBaumgarteCorrectorParameters
+    void setBaumgarteCorrectorParametersImpl(
+      const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_in)
+    {
+      baumgarte_corrector_parameters() = baumgarte_corrector_parameters_in;
+    }
 
     // Attributes common to all constraints --------------------------
 
