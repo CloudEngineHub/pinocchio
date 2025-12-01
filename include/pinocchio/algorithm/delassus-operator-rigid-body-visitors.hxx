@@ -83,7 +83,7 @@ namespace pinocchio
           return; // We can return from this point as this joint has no neighbours
 
         using Matrix6xNV = typename std::remove_reference<typename JointData::UDTypeRef>::type;
-        typedef Eigen::Map<Matrix6xNV> MapMatrix6xNV;
+        typedef Eigen::Map<Matrix6xNV, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix6xNV;
         MapMatrix6xNV mat1_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
         MapMatrix6xNV mat2_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
 
@@ -286,7 +286,7 @@ namespace pinocchio
       if (joint_neighbours.size())
       {
         using VectorNV = typename std::remove_reference<typename JointData::TangentVector_t>::type;
-        typedef Eigen::Map<VectorNV> MapVectorNV;
+        typedef Eigen::Map<VectorNV, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorNV;
         MapVectorNV res = MapVectorNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, jmodel.nv(), 1));
         res.noalias() = (jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u));
 
