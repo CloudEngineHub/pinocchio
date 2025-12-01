@@ -10,7 +10,7 @@
 namespace pinocchio
 {
 
-  template<typename Lhs, typename Rhs, typename Res>
+  template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, typename Res>
   void matrix_product(
     const Eigen::MatrixBase<Lhs> & lhs,
     const Eigen::MatrixBase<Rhs> & rhs,
@@ -57,7 +57,19 @@ namespace pinocchio
         {
           sum += lhs_data[lhs_index(i, k)] * rhs_data[rhs_index(k, j)];
         }
-        res_data[res_index(i, j)] = sum;
+        typedef EigenOp<typename Res::Scalar, typename Lhs::Scalar> Op;
+        if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::assign_op>)
+        {
+          res_data[res_index(i, j)] = sum;
+        }
+        else if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::add_assign_op>)
+        {
+          res_data[res_index(i, j)] += sum;
+        }
+        else if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::sub_assign_op>)
+        {
+          res_data[res_index(i, j)] -= sum;
+        }
       }
     }
   }
