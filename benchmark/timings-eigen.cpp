@@ -9,6 +9,7 @@
 #include <benchmark/benchmark.h>
 
 #include "pinocchio/utils/eigen.hpp"
+#include "pinocchio/math/matrix-product.hpp"
 
 using namespace Eigen;
 // using namespace pinocchio;
@@ -105,27 +106,6 @@ BENCHMARK(quaternionMultVectorX)->Apply(CustomArguments);
 
 // Static_MatrixMatrixProduct
 
-template<typename Scalar>
-void manual_matrix_product(
-  const Scalar * m,
-  const Scalar * rhs,
-  Scalar * lhs,
-  Eigen::DenseIndex rows,
-  Eigen::DenseIndex cols,
-  Eigen::DenseIndex inner_dim)
-{
-// A: MxK, B: KxN, C: MxN
-#pragma omp simd // (optional) explicit hint
-  for (int i = 0; i < rows; ++i)
-    for (int j = 0; j < cols; ++j)
-    {
-      Scalar sum = Scalar(0);
-      for (int k = 0; k < inner_dim; ++k)
-        sum += m[i * inner_dim + k] * rhs[k * rows + j];
-      lhs[i * rows + j] = sum;
-    }
-}
-
 template<EvaluationMode evaluation_mode, typename M1, typename M2, typename Mout>
 void matrix_mult_matrix_call(
   const MatrixBase<M1> & m, const MatrixBase<M2> & rhs, const MatrixBase<Mout> & lhs)
@@ -133,9 +113,8 @@ void matrix_mult_matrix_call(
   if constexpr (evaluation_mode == EvaluationMode::STATIC_OP)
     pinocchio::promote_static_eval<10>(lhs.const_cast_derived().noalias()) = m * rhs;
   else if constexpr (evaluation_mode == EvaluationMode::MANUAL)
-    manual_matrix_product(
-      m.derived().data(), rhs.derived().data(), lhs.const_cast_derived().data(), m.rows(),
-      rhs.cols(), m.cols());
+    pinocchio::matrix_product<Eigen::internal::assign_op>(
+      m.derived(), rhs.derived(), lhs.const_cast_derived());
   else
     lhs.const_cast_derived().noalias() = m * rhs;
 }
@@ -514,6 +493,8 @@ BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(6, 6)
   BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_CASE(rows, cols, false, false, false)
 
 BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_ALL(6, 6)
+BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_ALL(3, 6)
+BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_ALL(3, 3)
 // BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_STATICOP(6, 6, true, true, true)
 // BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_EIGEN(6, 6, true, true, true)
 
