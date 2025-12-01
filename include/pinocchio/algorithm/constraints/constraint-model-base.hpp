@@ -28,11 +28,14 @@ namespace pinocchio
 
   enum struct ConstraintSizeType
   {
-    STATIC,   // The size is static, fixed at compile time
-    CONSTANT, // The size is constant, fixed at build time
-    BOUNDED,  // The size is bounded, a maxSize is fixed at build time and 0 <= size <= maxSize
+    STATIC,   // The size is static, fixed at compile time. activeSize = maxSize = sizeCapacity ->
+              // fixed
+    CONSTANT, // The size is constant, fixed at build time. activeSize = maxSize = sizeCapacity ->
+              // maxSizeImpl to implement
+    BOUNDED,  // The size is bounded, a maxSize is fixed at build time and 0 <= size <= maxSize =
+              // capacity -> activeSizeImpl and maxSizeImpl to implement
     GENERAL   // The size is not guaranteed to be bounded, capacitySize gives an estimated max size
-              // for allocation
+              // for allocation -> activeSizeImpl and sizeCapacityImpl to implement
   };
 
   template<class Derived>
@@ -101,14 +104,6 @@ namespace pinocchio
     // --------------------------------------------------------------
     // Methods
     // --------------------------------------------------------------
-
-    using Base::createData;
-
-    /// \brief Returns a constraint data associated to this constraint model.
-    ConstraintData createData() const
-    {
-      return derived().createDataImpl();
-    }
 
     // CRTP classics and operators ----------------------------------
 
@@ -200,6 +195,16 @@ namespace pinocchio
     {
       constraint.disp(os);
       return os;
+    }
+
+    // Relation to data ---------------------------------------------
+
+    using Base::createData;
+
+    /// \brief Returns a constraint data associated to this constraint model.
+    ConstraintData createData() const
+    {
+      return derived().createDataImpl();
     }
 
     // Size management ----------------------------------------------
@@ -498,7 +503,35 @@ namespace pinocchio
       return derived().baumgarte_corrector_parameters_impl();
     }
 
-    // Attributes common to all constraints
+    // Implementation ------------------------------------------------
+
+    // // general
+    // shortnameImpl()
+    // classnameImpl()
+
+    // createDataImpl()
+
+    // // Size management
+    // maxSizeImpl()  // Not needed for STATIC
+
+    // // State related
+    // activeSizeImpl(const cdata)  // Not needed for < CONSTANT
+    // getRowSparsityPatternImpl(const cdata)
+    // getRowIndexesImpl(const cdata)
+    // setImpl()  // Not needed if has_set=False
+    // calcImpl(const model, const data, cdata) // The only one mutating cdata
+    // jacobianImpl(const model, const data, const cdata, ...)
+    // jacobianMatrixProductImpl(const model, const data, const cdata, ...)
+    // jacobianTransposeMatrixProductImpl(const model, const data, const cdata, ...)
+    // mapConstraintForceToJointSpaceImpl(const model, const data, const cdata, ...)
+    // mapJointSpaceToConstraintMotionImpl(const model, const data, const cdata, ...)
+    // appendCouplingConstraintInertiasImpl(const model, const data, const cdata, ...)
+
+    // // Data handing
+    // compliance_impl()
+    // baumgarte_corrector_parameters_impl()
+
+    // Attributes common to all constraints --------------------------
 
     /// \brief Name of the constraint
     std::string name;

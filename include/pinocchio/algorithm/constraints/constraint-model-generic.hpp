@@ -410,13 +410,13 @@ namespace pinocchio
     /// \copydoc RootBase::compliance_impl
     ComplianceVectorTypeConstRef compliance_impl() const
     {
-      return ::pinocchio::visitors::compliance(*this);
+      return ::pinocchio::visitors::getCompliance(*this);
     }
 
     /// \copydoc RootBase::compliance_impl
     ComplianceVectorTypeRef compliance_impl()
     {
-      return ::pinocchio::visitors::compliance(*this);
+      return ::pinocchio::visitors::getCompliance(*this);
     }
 
     /// \copydoc RootBase::baumgarte_corrector_parameters
