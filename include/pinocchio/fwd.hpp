@@ -173,6 +173,45 @@ namespace pinocchio
   struct UndefinedReturnType;
 
   typedef Eigen::Matrix<bool, Eigen::Dynamic, 1> VectorXb;
+
+  namespace internal
+  {
+    /**
+     * @brief Type trait to determine whether a type is a specialization of a given class template.
+     *
+     * This trait evaluates to `std::true_type` if the first argument is an instantiation of
+     * the template provided as the second argument. Otherwise, it evaluates to `std::false_type`.
+     *
+     * @tparam T The type to test (e.g., `std::vector<int>`).
+     * @tparam Template The class template to test against (e.g., `std::vector`).
+     *
+     * ### Example
+     * @code
+     * static_assert(is_specialization_of<std::vector<int>, std::vector>::value, "Should be true");
+     * static_assert(!is_specialization_of<int, std::vector>::value, "Should be false");
+     * @endcode
+     *
+     * This works for any template that can be expressed as `template<typename...> class`.
+     */
+    template<typename T, template<typename...> class Template>
+    struct is_specialization_of : std::false_type
+    {
+    };
+
+    /**
+     * @brief Partial specialization: case when @p T is an instantiation of @p Template.
+     *
+     * This specialization activates when the first template parameter is of the form
+     * `Template<Args...>`, making the trait derive from `std::true_type`.
+     *
+     * @tparam Template The class template to test against.
+     * @tparam Args Template argument pack used in the specialization being tested.
+     */
+    template<template<typename...> class Template, typename... Args>
+    struct is_specialization_of<Template<Args...>, Template> : std::true_type
+    {
+    };
+  } // namespace internal
 } // namespace pinocchio
 
 #include "pinocchio/context.hpp"
