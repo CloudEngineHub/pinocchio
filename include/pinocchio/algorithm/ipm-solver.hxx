@@ -578,7 +578,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);
       const auto & cdata = helper::get_ref(constraint_datas[k]);
-      const auto csize = cmodel.activeSize(cdata);
+      const auto csize = cmodel.residualSize(cdata);
 
       SegmentType x_segment = x.segment(cindex, csize);
       typedef NormalizeConeVariablesVisitor<SegmentType> Algo;
@@ -660,7 +660,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);
       const auto & cdata = helper::get_ref(constraint_datas[k]);
-      const auto csize = cmodel.activeSize(cdata);
+      const auto csize = cmodel.residualSize(cdata);
 
       SegmentType x_segment = x.segment(cindex, csize);
       typedef DenormalizeConeVariablesVisitor<SegmentType> Algo;

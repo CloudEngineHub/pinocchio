@@ -156,13 +156,13 @@ namespace pinocchio
       activable_idx_qs_reduce_upper.end());
     activable_idx_qs.insert(
       activable_idx_qs.end(), activable_idx_qs_upper.begin(), activable_idx_qs_upper.end());
-    assert(maxSize() == activable_size);
+    assert(maxResidualSize() == activable_size);
 
     // Fill bound limit and margin for lower and upper constraints
     // Another strategy could be to query the model again but it is not coherent with the existing
     // constructors.
-    position_limit = VectorXs::Zero(Eigen::DenseIndex(maxSize()));
-    position_margin = VectorXs::Zero(Eigen::DenseIndex(maxSize()));
+    position_limit = VectorXs::Zero(Eigen::DenseIndex(maxResidualSize()));
+    position_margin = VectorXs::Zero(Eigen::DenseIndex(maxResidualSize()));
     Eigen::DenseIndex bound_row_id = 0;
     for (bound_row_id = 0; bound_row_id < lowerSize(); ++bound_row_id)
     {
@@ -171,7 +171,7 @@ namespace pinocchio
       assert(margin[activable_idx_q] >= 0);
       position_margin[bound_row_id] = margin[activable_idx_q];
     }
-    for (; bound_row_id < maxSize(); ++bound_row_id)
+    for (; bound_row_id < maxResidualSize(); ++bound_row_id)
     {
       const auto activable_idx_q = activable_idx_qs[size_t(bound_row_id)];
       position_limit[bound_row_id] = ub[activable_idx_q];
@@ -186,7 +186,7 @@ namespace pinocchio
       nv_max_atom = std::max(nv_max_atom, joint_nv);
     }
 
-    m_compliance = ComplianceVectorType::Zero(maxSize());
+    m_compliance = ComplianceVectorType::Zero(maxResidualSize());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
   }
 
@@ -242,7 +242,7 @@ namespace pinocchio
 
     // Upper bounds
     for (std::size_t i = static_cast<std::size_t>(lowerSize());
-         i < static_cast<std::size_t>(maxSize()); i++)
+         i < static_cast<std::size_t>(maxResidualSize()); i++)
     {
       const Eigen::DenseIndex i_ = static_cast<Eigen::DenseIndex>(i);
       const Eigen::DenseIndex idx_q = activable_idx_qs[i];
@@ -256,7 +256,7 @@ namespace pinocchio
     }
 
     // Resize the constraint residual/compliance storage to the active set size.
-    const int active_size = activeSize(cdata);
+    const int active_size = residualSize(cdata);
     cdata.constraint_residual_storage.resize(active_size);
 
     // Update the active compliance
@@ -280,7 +280,7 @@ namespace pinocchio
     auto & constraint_residual = cdata.constraint_residual;
 
     resize(model, data, cdata);
-    const std::size_t active_size = static_cast<std::size_t>(this->activeSize(cdata));
+    const std::size_t active_size = static_cast<std::size_t>(this->residualSize(cdata));
 
     assert(
       constraint_residual.size() == static_cast<int>(active_size)
@@ -301,7 +301,7 @@ namespace pinocchio
     auto & rowise_tangent_map = cdata.rowise_tangent_map;
     assert(rowise_tangent_map.size() == size_t(compact_tangent_map.rows()));
 
-    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(activeSize(cdata));
+    for (size_t constraint_id = 0; constraint_id < static_cast<std::size_t>(residualSize(cdata));
          ++constraint_id)
     {
       const JointIndex joint_id =
@@ -324,7 +324,7 @@ namespace pinocchio
     JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      jacobian_matrix.rows(), this->activeSize(cdata),
+      jacobian_matrix.rows(), this->residualSize(cdata),
       "The input/output Jacobian matrix does not have the right number of rows.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       jacobian_matrix.cols(), model.nv,
@@ -335,7 +335,7 @@ namespace pinocchio
 
     // Lower bounds
     for (std::size_t constraint_id = 0;
-         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata)); constraint_id++)
+         constraint_id < static_cast<std::size_t>(lowerResidualSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -347,8 +347,8 @@ namespace pinocchio
     }
 
     // Upper bounds
-    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
-         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++)
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerResidualSize(cdata));
+         constraint_id < static_cast<std::size_t>(residualSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -378,7 +378,7 @@ namespace pinocchio
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), activeSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize(cdata));
     PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(aot);
 
@@ -390,7 +390,7 @@ namespace pinocchio
 
     // Lower bounds
     for (std::size_t constraint_id = 0;
-         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id < static_cast<std::size_t>(lowerResidualSize(cdata));
          constraint_id++, ++row_id)
     {
       const JointIndex joint_id =
@@ -409,8 +409,8 @@ namespace pinocchio
     }
 
     // Upper bounds
-    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
-         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++, ++row_id)
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerResidualSize(cdata));
+         constraint_id < static_cast<std::size_t>(residualSize(cdata)); constraint_id++, ++row_id)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -444,7 +444,7 @@ namespace pinocchio
   {
     OutputMatrix & res = _res.const_cast_derived();
 
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), activeSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), residualSize(cdata));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), mat.cols());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
@@ -458,7 +458,7 @@ namespace pinocchio
 
     // Lower bounds
     for (std::size_t constraint_id = 0;
-         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata));
+         constraint_id < static_cast<std::size_t>(lowerResidualSize(cdata));
          constraint_id++, ++row_id)
     {
       const JointIndex joint_id =
@@ -477,8 +477,8 @@ namespace pinocchio
     }
 
     // Upper bounds
-    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
-         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++, ++row_id)
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerResidualSize(cdata));
+         constraint_id < static_cast<std::size_t>(residualSize(cdata)); constraint_id++, ++row_id)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -512,14 +512,14 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      diagonal_constraint_inertia.size(), activeSize(cdata),
+      diagonal_constraint_inertia.size(), residualSize(cdata),
       "The diagonal_constraint_inertia is of wrong size.");
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
 
     // Lower bounds
     for (std::size_t constraint_id = 0;
-         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata)); constraint_id++)
+         constraint_id < static_cast<std::size_t>(lowerResidualSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -544,8 +544,8 @@ namespace pinocchio
     }
 
     // Upper bounds
-    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
-         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++)
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerResidualSize(cdata));
+         constraint_id < static_cast<std::size_t>(residualSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -582,7 +582,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConstraintForcesLike> & constraint_forces,
     const Eigen::MatrixBase<JointTorquesLike> & joint_torques_) const
   {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), activeSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize(cdata));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_torques_.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
 
@@ -592,7 +592,7 @@ namespace pinocchio
 
     // Lower bounds
     for (std::size_t constraint_id = 0;
-         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata)); constraint_id++)
+         constraint_id < static_cast<std::size_t>(lowerResidualSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -608,8 +608,8 @@ namespace pinocchio
     }
 
     // Upper bounds
-    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
-         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++)
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerResidualSize(cdata));
+         constraint_id < static_cast<std::size_t>(residualSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -637,7 +637,7 @@ namespace pinocchio
     const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
     const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions_) const
   {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions_.rows(), activeSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions_.rows(), residualSize(cdata));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_motions.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
 
@@ -648,7 +648,7 @@ namespace pinocchio
 
     // Lower bounds
     for (std::size_t constraint_id = 0;
-         constraint_id < static_cast<std::size_t>(lowerActiveSize(cdata)); constraint_id++)
+         constraint_id < static_cast<std::size_t>(lowerResidualSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the
@@ -664,8 +664,8 @@ namespace pinocchio
     }
 
     // Upper bounds
-    for (std::size_t constraint_id = static_cast<std::size_t>(lowerActiveSize(cdata));
-         constraint_id < static_cast<std::size_t>(activeSize(cdata)); constraint_id++)
+    for (std::size_t constraint_id = static_cast<std::size_t>(lowerResidualSize(cdata));
+         constraint_id < static_cast<std::size_t>(residualSize(cdata)); constraint_id++)
     {
       const JointIndex joint_id =
         activable_joints[cdata.active_idx_rows[constraint_id]]; // joint index associated with the

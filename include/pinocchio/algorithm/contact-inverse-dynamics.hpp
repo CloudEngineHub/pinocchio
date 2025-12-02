@@ -48,7 +48,7 @@ namespace pinocchio
     typedef PointContactConstraintDataTpl<Scalar, Options> ConstraintData;
 
     const Eigen::Index problem_size =
-      getTotalConstraintActiveSize(constraint_models, constraint_datas);
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
     const std::size_t n_constraints = constraint_models.size();
     VectorXs R(problem_size);
     Eigen::Index constraint_index = 0;
@@ -56,7 +56,7 @@ namespace pinocchio
     {
       const ConstraintModel & cmodel = constraint_models[i];
       const ConstraintData & cdata = constraint_datas[i];
-      const auto active_size = cmodel.activeSize(cdata);
+      const auto active_size = cmodel.residualSize(cdata);
 
       R.segment(constraint_index, active_size) = cmodel.getActiveCompliance(cdata);
       constraint_index += active_size;
@@ -90,7 +90,7 @@ namespace pinocchio
         const ConstraintModel & cmodel = constraint_models[constraint_id];
         const ConstraintData & cdata = constraint_datas[constraint_id];
 
-        const auto constraint_size = cmodel.activeSize(cdata);
+        const auto constraint_size = cmodel.residualSize(cdata);
 
         const auto cone = cmodel.set();
         auto lambda_segment = lambda.segment(row_id, constraint_size);
@@ -261,7 +261,7 @@ namespace pinocchio
 
     auto & lambda_sol = _lambda_sol.const_cast_derived();
 
-    const Eigen::Index problem_size = getTotalConstraintActiveSize(constraint_models);
+    const Eigen::Index problem_size = getTotalConstraintResidualSize(constraint_models);
     const std::size_t n_constraints = constraint_models.size();
 
     MatrixXs J = MatrixXs::Zero(problem_size, model.nv); // TODO: malloc
@@ -282,7 +282,7 @@ namespace pinocchio
       {
         const ConstraintModel & cmodel = constraint_models[i];
         ConstraintData & cdata = constraint_datas[i];
-        const auto constraint_size = cmodel.activeSize(cdata);
+        const auto constraint_size = cmodel.residualSize(cdata);
 
         const auto lambda_segment = lambda_sol.segment(row_id, constraint_size);
         cmodel.jacobianTransposeMatrixProduct(model, data, cdata, lambda_segment, tau, RmTo());

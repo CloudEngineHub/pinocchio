@@ -63,7 +63,7 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
 
     const Eigen::DenseIndex constraint_size =
-      getTotalConstraintActiveSize(constraint_models, constraint_datas);
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), constraint_size);
 
     for (auto & force : joint_forces)
@@ -74,7 +74,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
-      const auto constraint_size = cmodel.activeSize(cdata);
+      const auto constraint_size = cmodel.residualSize(cdata);
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
       cmodel.mapConstraintForceToJointForces(
@@ -111,7 +111,7 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_torques_.size(), model.nv);
 
     const Eigen::DenseIndex constraint_size =
-      getTotalConstraintActiveSize(constraint_models, constraint_datas);
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
     assert(constraint_forces.rows() == constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), constraint_size);
 
@@ -127,7 +127,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
-      const auto constraint_size = cmodel.activeSize(cdata);
+      const auto constraint_size = cmodel.residualSize(cdata);
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
       cmodel.mapConstraintForceToJointSpace(
@@ -162,7 +162,7 @@ namespace pinocchio
 
     auto & constraint_motions = constraint_motions_.const_cast_derived();
     const Eigen::DenseIndex constraint_size =
-      getTotalConstraintActiveSize(constraint_models, constraint_datas);
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), constraint_size);
 
     Eigen::Index row_id = 0;
@@ -170,7 +170,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
-      const auto constraint_size = cmodel.activeSize(cdata);
+      const auto constraint_size = cmodel.residualSize(cdata);
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);
       cmodel.mapJointMotionsToConstraintMotion(
@@ -208,7 +208,7 @@ namespace pinocchio
 
     auto & constraint_motions = constraint_motions_.const_cast_derived();
     const Eigen::DenseIndex constraint_active_size =
-      getTotalConstraintActiveSize(constraint_models, constraint_datas);
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), constraint_active_size);
 
     Eigen::Index row_id = 0;
@@ -216,7 +216,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
-      const auto constraint_size = cmodel.activeSize(cdata);
+      const auto constraint_size = cmodel.residualSize(cdata);
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);
       cmodel.mapJointSpaceToConstraintMotion(
@@ -246,7 +246,7 @@ namespace pinocchio
     const auto & constraint_data = helper::get_ref(constraint_data_.derived());
 
     assert(model.check(data) && "data is not consistent with model.");
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_model.activeSize(constraint_data));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_model.residualSize(constraint_data));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.cols(), model.nv);
 
     constraint_model.jacobian(model, data, constraint_data, J);
@@ -269,7 +269,7 @@ namespace pinocchio
     const Eigen::MatrixBase<DynamicMatrixLike> & J_)
   {
     const Eigen::DenseIndex constraint_size =
-      getTotalConstraintActiveSize(constraint_models, constraint_datas);
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
     assert(J_.rows() == constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.cols(), model.nv);
@@ -284,7 +284,7 @@ namespace pinocchio
       const auto & cmodel = helper::get_ref(constraint_models[k]);
       const auto & cdata = helper::get_ref(constraint_datas[k]);
 
-      const auto active_size = cmodel.activeSize(cdata);
+      const auto active_size = cmodel.residualSize(cdata);
       getConstraintJacobian(model, data, cmodel, cdata, J.middleRows(row_id, active_size));
 
       row_id += active_size;
@@ -308,7 +308,8 @@ namespace pinocchio
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
     typedef typename Data::MatrixXs ReturnType;
 
-    const auto constraint_size = getTotalConstraintActiveSize(constraint_models, constraint_datas);
+    const auto constraint_size =
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
 
     ReturnType res = ReturnType::Zero(constraint_size, model.nv);
     getConstraintsJacobian(model, data, constraint_models, constraint_datas, res);
@@ -336,7 +337,7 @@ namespace pinocchio
   {
 
     const Eigen::DenseIndex constraint_size =
-      getTotalConstraintActiveSize(constraint_models, constraint_datas);
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
     ResultMatrixType & res = res_.const_cast_derived();
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(rhs.rows(), constraint_size);
@@ -349,7 +350,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-      const auto constraint_size = cmodel.activeSize(cdata);
+      const auto constraint_size = cmodel.residualSize(cdata);
 
       const auto rhs_block = rhs.middleRows(row_id, constraint_size);
       cmodel.jacobianTransposeMatrixProduct(model, data, cdata, rhs_block, res, AddTo());

@@ -526,34 +526,35 @@ namespace pinocchio
     }
 
     /**
-     * @brief      ConstraintModelMaxSizeVisitor visitor
+     * @brief      ConstraintModelMaxResidualSizeVisitor visitor
      */
     template<typename Scalar, int Options>
-    struct ConstraintModelMaxSizeVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelMaxSizeVisitor<Scalar, Options>, int>
+    struct ConstraintModelMaxResidualSizeVisitor
+    : visitors::
+        ConstraintUnaryVisitorBase<ConstraintModelMaxResidualSizeVisitor<Scalar, Options>, int>
     {
       typedef NoArg ArgsType;
 
       template<typename ConstraintModel>
       static int algo(const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel)
       {
-        return cmodel.maxSize();
+        return cmodel.maxResidualSize();
       }
     };
 
     template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
-    int maxSize(const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
+    int maxResidualSize(const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
     {
-      typedef ConstraintModelMaxSizeVisitor<Scalar, Options> Algo;
+      typedef ConstraintModelMaxResidualSizeVisitor<Scalar, Options> Algo;
       return Algo::run(cmodel);
     }
 
     /**
-     * @brief      ConstraintModelActiveSizeVisitor visitor
+     * @brief      ConstraintModelResidualSizeVisitor visitor
      */
     template<typename Scalar, int Options>
-    struct ConstraintModelActiveSizeVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelActiveSizeVisitor<Scalar, Options>, int>
+    struct ConstraintModelResidualSizeVisitor
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelResidualSizeVisitor<Scalar, Options>, int>
     {
       typedef NoArg ArgsType;
 
@@ -562,16 +563,16 @@ namespace pinocchio
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
         const typename ConstraintModel::ConstraintData & cdata)
       {
-        return cmodel.activeSize(cdata);
+        return cmodel.residualSize(cdata);
       }
     };
 
     template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
-    int activeSize(
+    int residualSize(
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
     {
-      typedef ConstraintModelActiveSizeVisitor<Scalar, Options> Algo;
+      typedef ConstraintModelResidualSizeVisitor<Scalar, Options> Algo;
       return Algo::run(cmodel, cdata);
     }
 

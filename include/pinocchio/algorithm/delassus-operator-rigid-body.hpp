@@ -132,7 +132,7 @@ namespace pinocchio
       const Scalar min_damping_value = Scalar(1e-8))
     : Base()
     , m_size(
-        activeSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref)))
+        residualSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref)))
     , m_model_ref(model_ref)
     , m_data_ref(data_ref)
     , m_constraint_models_ref(constraint_models_ref)
@@ -395,7 +395,7 @@ namespace pinocchio
         const auto & cmodel = helper::get_ref(constraint_models_ref[i]);
         const auto & cdata = helper::get_ref(constraint_datas_ref[i]);
 
-        const auto csize = cmodel.activeSize(cdata);
+        const auto csize = cmodel.residualSize(cdata);
         m_compliance.segment(cindex, csize) = cmodel.getActiveCompliance(cdata);
 
         cindex += csize;

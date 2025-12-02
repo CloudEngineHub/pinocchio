@@ -56,7 +56,7 @@ namespace pinocchio
     typedef typename traits<Derived>::VectorConstraintSize VectorConstraintSize;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
-    using RootBase::maxSize;
+    using RootBase::maxResidualSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -226,7 +226,7 @@ namespace pinocchio
     const BooleanVector &
     getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxSize());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_sparsity;
     }
@@ -235,7 +235,7 @@ namespace pinocchio
     const EigenIndexVector &
     getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxSize());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_span_indexes;
     }
@@ -376,7 +376,7 @@ namespace pinocchio
     }
 
     // Set compliance and Baumgarte parameters.
-    m_compliance = ComplianceVectorType::Zero(maxSize());
+    m_compliance = ComplianceVectorType::Zero(maxResidualSize());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
   }
 

@@ -163,11 +163,11 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
       CompactTangentMap;
 
-    using RootBase::activeSize;
     using RootBase::classname;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
-    using RootBase::maxSize;
+    using RootBase::maxResidualSize;
+    using RootBase::residualSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -374,17 +374,17 @@ namespace pinocchio
     {
       return lower_activable_size;
     }
-    int lowerActiveSize(const ConstraintData & constraint_data) const
+    int lowerResidualSize(const ConstraintData & constraint_data) const
     {
       return constraint_data.lower_active_size;
     }
     int upperSize() const
     {
-      return maxSize() - lowerSize();
+      return maxResidualSize() - lowerSize();
     }
-    int upperActiveSize(const ConstraintData & constraint_data) const
+    int upperResidualSize(const ConstraintData & constraint_data) const
     {
-      return activeSize(constraint_data) - lowerActiveSize(constraint_data);
+      return residualSize(constraint_data) - lowerResidualSize(constraint_data);
     }
 
     const VectorXs & getBoundPositionLimit() const
@@ -437,14 +437,14 @@ namespace pinocchio
       return ConstraintData(*this);
     }
 
-    /// \copydoc RootBase::activeSize
-    int activeSizeImpl(const ConstraintData & constraint_data) const
+    /// \copydoc RootBase::residualSize
+    int residualSizeImpl(const ConstraintData & constraint_data) const
     {
       return int(constraint_data.active_idx_rows.size());
     }
 
     /// \copydoc RootBase::size
-    int maxSizeImpl() const
+    int maxResidualSizeImpl() const
     {
       return int(activable_idx_rows.size());
     }
@@ -469,7 +469,7 @@ namespace pinocchio
     const BooleanVector & getRowSparsityPatternImpl(
       const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < activeSize(constraint_data));
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize(constraint_data));
       return row_sparsity_pattern[constraint_data.active_idx_rows[static_cast<size_t>(row_id)]];
     }
 
@@ -477,7 +477,7 @@ namespace pinocchio
     const EigenIndexVector &
     getRowIndexesImpl(const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < activeSize(constraint_data));
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize(constraint_data));
       return row_indexes[constraint_data.active_idx_rows[static_cast<size_t>(row_id)]];
     }
 
@@ -551,7 +551,7 @@ namespace pinocchio
     {
       typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
         ReturnType;
-      ReturnType res(activeSize(cdata), mat.cols());
+      ReturnType res(residualSize(cdata), mat.cols());
       jacobianMatrixProduct(model, data, cdata, mat.derived(), res);
       return res;
     }
@@ -721,8 +721,8 @@ namespace pinocchio
         CompactTangentMap::Zero(constraint_model.getNqReduce(), constraint_model.getNvMaxAtom()))
     , rowise_tangent_map(
         size_t(constraint_model.getNqReduce()), size_t(constraint_model.getNvMaxAtom()))
-    , activable_constraint_residual(constraint_model.maxSize())
-    , constraint_residual_storage(constraint_model.maxSize())
+    , activable_constraint_residual(constraint_model.maxResidualSize())
+    , constraint_residual_storage(constraint_model.maxResidualSize())
     , constraint_residual(constraint_residual_storage.map())
     , active_compliance(active_compliance_storage.map())
     {
@@ -735,8 +735,8 @@ namespace pinocchio
       active_idx_qs_reduce.reserve(max_size);
       active_compliance_storage.reserve(int(max_size));
       assert(
-        constraint_model.activeSize(*this) == constraint_model.lowerActiveSize(*this)
-        == constraint_model.upperActiveSize(*this) == 0);
+        constraint_model.residualSize(*this) == constraint_model.lowerResidualSize(*this)
+        == constraint_model.upperResidualSize(*this) == 0);
 
       constraint_residual_storage.resize(0);
 

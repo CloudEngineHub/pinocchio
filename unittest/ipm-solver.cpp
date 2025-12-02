@@ -92,7 +92,7 @@ struct TestBoxTpl
       constraint_datas.push_back(cm.createData());
     }
 
-    const Eigen::DenseIndex constraint_size = getTotalConstraintMaxSize(constraint_models);
+    const Eigen::DenseIndex constraint_size = getTotalConstraintMaxResidualSize(constraint_models);
     primal_solution = dual_solution = dual_solution_sparse = Eigen::VectorXd::Zero(constraint_size);
   }
 
@@ -121,7 +121,7 @@ struct TestBoxTpl
     const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix();
     auto delassus_dense = chol.getDelassusCholeskyExpression().dense();
     Eigen::VectorXd compliance =
-      Eigen::VectorXd::Zero(int(activeSize(constraint_models, constraint_datas)));
+      Eigen::VectorXd::Zero(int(residualSize(constraint_models, constraint_datas)));
     delassus_dense.updateCompliance(compliance);
     delassus_dense.updateDamping(0.);
 
@@ -136,7 +136,8 @@ struct TestBoxTpl
     const Eigen::VectorXd g = constraint_jacobian * v_free;
 
     // Configure the IP solver
-    IPMConstraintSolverTpl<double> ip_solver(int(activeSize(constraint_models, constraint_datas)));
+    IPMConstraintSolverTpl<double> ip_solver(
+      int(residualSize(constraint_models, constraint_datas)));
     ip_solver.setMaxIterations(10000);
     ip_solver.setAbsolutePrecision(tol_abs);
     ip_solver.setRelativePrecision(tol_rel);
@@ -155,7 +156,7 @@ struct TestBoxTpl
 
     // Run ADMM
     ADMMConstraintSolverTpl<double> admm_solver(
-      int(activeSize(constraint_models, constraint_datas)));
+      int(residualSize(constraint_models, constraint_datas)));
     admm_solver.setMaxIterations(10000);
     admm_solver.setAbsolutePrecision(tol_abs);
     admm_solver.setRelativePrecision(tol_rel);
@@ -166,7 +167,7 @@ struct TestBoxTpl
 #ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
     // Run CLARABEL
     ClarabelContactSolverTpl<double> clarabel_solver(
-      int(activeSize(constraint_models, constraint_datas)));
+      int(residualSize(constraint_models, constraint_datas)));
     clarabel_solver.setMaxIterations(10000);
     clarabel_solver.setAbsolutePrecision(tol_abs);
     clarabel_solver.setRelativePrecision(tol_rel);

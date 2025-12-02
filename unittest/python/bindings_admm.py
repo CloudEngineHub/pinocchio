@@ -86,7 +86,7 @@ class TestADMM(TestCase):
         active_size = 0
         for i, cm in enumerate(constraint_models):
             cd = constraint_datas[i]
-            active_size += cm.activeSize(cd)
+            active_size += cm.residualSize(cd)
         self.assertTrue(
             delassus.matrix().shape[0] == active_size,
             "constraint problem is of wrong size.",

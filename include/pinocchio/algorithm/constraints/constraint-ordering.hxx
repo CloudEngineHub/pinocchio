@@ -49,7 +49,7 @@ namespace pinocchio
       auto & neighbours = data.joint_neighbours;
 
       // Here we suppose all KinematicsConstraintModelBase<ConstraintModel> are constant size
-      const auto constraint_size = cmodel.maxSize();
+      const auto constraint_size = cmodel.maxResidualSize();
       data.constraints_supported_dim[joint1_id] += constraint_size;
       data.constraints_supported_dim[joint2_id] += constraint_size;
 

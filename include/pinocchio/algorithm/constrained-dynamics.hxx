@@ -297,7 +297,7 @@ namespace pinocchio
     {
       const RigidConstraintModel & contact_model = constraint_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
-      const int contact_dim = contact_model.activeSize(contact_data);
+      const int contact_dim = contact_model.residualSize(contact_data);
 
       const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
         contact_model.corrector;
@@ -497,7 +497,7 @@ namespace pinocchio
       const RigidConstraintModel & contact_model = constraint_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
       typename RigidConstraintData::Force & fext = contact_data.contact_force;
-      const int contact_dim = contact_model.activeSize(contact_data);
+      const int contact_dim = contact_model.residualSize(contact_data);
 
       switch (contact_model.type)
       {

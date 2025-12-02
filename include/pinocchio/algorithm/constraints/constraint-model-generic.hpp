@@ -200,15 +200,15 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::size
-    int maxSizeImpl() const
+    int maxResidualSizeImpl() const
     {
-      return ::pinocchio::visitors::maxSize(*this);
+      return ::pinocchio::visitors::maxResidualSize(*this);
     }
 
-    /// \copydoc RootBase::activeSize
-    int activeSizeImpl(const ConstraintData & constraint_data) const
+    /// \copydoc RootBase::residualSize
+    int residualSizeImpl(const ConstraintData & constraint_data) const
     {
-      return ::pinocchio::visitors::activeSize(*this, constraint_data);
+      return ::pinocchio::visitors::residualSize(*this, constraint_data);
     }
 
     /// \copydoc RootBase::set
@@ -288,7 +288,7 @@ namespace pinocchio
     {
       typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
         ReturnType;
-      ReturnType res(activeSize(cdata), input_matrix.cols());
+      ReturnType res(residualSize(cdata), input_matrix.cols());
       jacobianMatrixProduct(model, data, cdata, input_matrix.derived(), res);
       return res;
     }

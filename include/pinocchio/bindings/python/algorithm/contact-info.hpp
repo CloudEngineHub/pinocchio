@@ -88,7 +88,7 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY(
             Self, colwise_sparsity, "Sparsity pattern associated to the constraint.")
 
-          .def("maxSize", &RigidConstraintModel::maxSize, "Size of the constraint")
+          .def("maxResidualSize", &RigidConstraintModel::maxResidualSize, "Size of the constraint")
 
           .def(
             "createData", &RigidConstraintModelPythonVisitor::createData,
@@ -134,7 +134,7 @@ namespace pinocchio
       static context::MatrixXs jacobian(
         const Self & self, const Model & model, const Data & data, ContactData & constraint_data)
       {
-        context::MatrixXs res(self.activeSize(constraint_data), model.nv);
+        context::MatrixXs res(self.residualSize(constraint_data), model.nv);
         self.jacobian(model, data, constraint_data, res);
         return res;
       }

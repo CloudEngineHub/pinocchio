@@ -159,7 +159,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);
       const auto & cdata = helper::get_ref(constraint_datas[k]);
-      const auto csize = cmodel.activeSize(cdata);
+      const auto csize = cmodel.residualSize(cdata);
 
       SegmentType drift_segment = drift.segment(cindex, csize);
       typedef ZeroInitialGuessMaxConstraintViolationVisitor<SegmentType, Scalar> Algo;

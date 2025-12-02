@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(default_constructor_reference_wrapper)
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref);
 
   const auto active_constraint_size =
-    activeSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref));
+    residualSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref));
   BOOST_CHECK(delassus_operator.size() == active_constraint_size);
 
   BOOST_CHECK(delassus_operator.size() == 0);
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(default_constructor_const_reference_wrapper)
     helper::make_ref(constraint_datas));
 
   const auto active_constraint_size =
-    activeSize(helper::get_ref(constraint_models), helper::get_ref(constraint_datas));
+    residualSize(helper::get_ref(constraint_models), helper::get_ref(constraint_datas));
 
   BOOST_CHECK(delassus_operator.size() == active_constraint_size);
   BOOST_CHECK(&delassus_operator.model() == &model);
@@ -992,8 +992,8 @@ void test_apply_on_the_right(
   {
     const auto & constraint_model = constraint_models[k];
     const auto & constraint_data = constraint_datas[k];
-    max_size += constraint_model.maxSize();
-    active_size += constraint_model.activeSize(constraint_data);
+    max_size += constraint_model.maxResidualSize();
+    active_size += constraint_model.residualSize(constraint_data);
   }
   BOOST_CHECK(active_size <= max_size);
 
@@ -1031,8 +1031,8 @@ void test_apply_on_the_right(
   {
     const auto & cmodel = constraint_models[i];
     const auto & cdata = constraint_datas_gt[i];
-    max_size += cmodel.maxSize();
-    active_size_gt += cmodel.activeSize(cdata);
+    max_size += cmodel.maxResidualSize();
+    active_size_gt += cmodel.residualSize(cdata);
   }
   BOOST_CHECK(active_size_gt == active_size);
 
@@ -1278,7 +1278,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
 
   {
     ConstraintModel constraint_model(model, activable_joint_ids);
-    BOOST_CHECK(constraint_model.maxSize() == 2 * (model.nv - 6));
+    BOOST_CHECK(constraint_model.maxResidualSize() == 2 * (model.nv - 6));
 
     constraint_models.push_back(constraint_model);
     constraint_datas.push_back(constraint_model.createData());
@@ -1290,7 +1290,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
   const Eigen::VectorXd q = model.lowerPositionLimit;
   data.q_in = q;
   calc(model, data, constraint_models, constraint_datas);
-  BOOST_CHECK(constraint_model.activeSize(constraint_data) == model.nv - 6);
+  BOOST_CHECK(constraint_model.residualSize(constraint_data) == model.nv - 6);
 
   std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
   std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;

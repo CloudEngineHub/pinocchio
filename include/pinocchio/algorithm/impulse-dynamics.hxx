@@ -93,7 +93,7 @@ namespace pinocchio
     {
       const RigidConstraintModel & contact_model = contact_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
-      const int contact_dim = contact_model.activeSize(contact_data);
+      const int contact_dim = contact_model.residualSize(contact_data);
 
       const JointIndex joint1_id = contact_model.joint1_id;
       const typename Data::SE3 & oMi = data.oMi[joint1_id];
@@ -159,7 +159,7 @@ namespace pinocchio
       const RigidConstraintModel & contact_model = contact_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
       typename RigidConstraintData::Force & impulse = contact_data.contact_force;
-      const int contact_dim = contact_model.activeSize(contact_data);
+      const int contact_dim = contact_model.residualSize(contact_data);
 
       switch (contact_model.type)
       {

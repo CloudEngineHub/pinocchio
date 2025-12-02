@@ -102,7 +102,7 @@ class ContactSolverTestCase(PinocchioTestCase):
         idx_cm = 0
         for i, cm in enumerate(constraint_models):
             cd = constraint_datas[i]
-            cm_active_size = cm.activeSize(cd)
+            cm_active_size = cm.residualSize(cd)
             if cm.shortname() == "PointContactConstraintModel":
                 continue
             elif cm.shortname() == "JointFrictionConstraintModel":

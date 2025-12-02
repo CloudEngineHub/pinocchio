@@ -46,7 +46,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[i]);
       const auto & cdata = helper::get_ref(constraint_datas[i]);
-      num_total_constraints += cmodel.activeSize(cdata);
+      num_total_constraints += cmodel.residualSize(cdata);
     }
 
     const Eigen::DenseIndex total_dim = nv + num_total_constraints;
@@ -95,7 +95,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[i]);
       const auto & cdata = helper::get_ref(constraint_datas[i]);
-      for (Eigen::DenseIndex k = 0; k < cmodel.activeSize(cdata); ++k, row_id++)
+      for (Eigen::DenseIndex k = 0; k < cmodel.residualSize(cdata); ++k, row_id++)
       {
         const auto & row_active_indexes = cmodel.getRowIndexes(cdata, k);
         nv_subtree_fromRow[row_id] =
@@ -212,7 +212,7 @@ namespace pinocchio
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
 
-      const Eigen::DenseIndex constraint_dim = cmodel.activeSize(cdata);
+      const Eigen::DenseIndex constraint_dim = cmodel.residualSize(cdata);
       auto U_block = U.block(current_row, total_constraints_dim, constraint_dim, model.nv);
       cmodel.jacobian(model, data, cdata, U_block);
       current_row += constraint_dim;
@@ -249,7 +249,7 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[num_ee - 1 - ee_id]);
         const auto & cdata = helper::get_ref(constraint_datas[num_ee - 1 - ee_id]);
-        const Eigen::DenseIndex constraint_dim = cmodel.activeSize(cdata);
+        const Eigen::DenseIndex constraint_dim = cmodel.residualSize(cdata);
 
         for (Eigen::DenseIndex constraint_row_id = constraint_dim - 1; constraint_row_id >= 0;
              --constraint_row_id, --current_row)
@@ -271,7 +271,7 @@ namespace pinocchio
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
       // TODO use active compliance
-      const int cdim = cmodel.activeSize(cdata);
+      const int cdim = cmodel.residualSize(cdata);
       compliance.segment(cindex, cdim) = cmodel.getActiveCompliance(cdata);
       cindex += cdim;
     }

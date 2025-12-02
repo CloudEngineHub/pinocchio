@@ -28,14 +28,14 @@ namespace pinocchio
 
   enum struct ConstraintSizeType
   {
-    STATIC,   // The size is static, fixed at compile time. activeSize = maxSize = sizeCapacity ->
-              // fixed
-    CONSTANT, // The size is constant, fixed at build time. activeSize = maxSize = sizeCapacity ->
-              // maxSizeImpl to implement
-    BOUNDED,  // The size is bounded, a maxSize is fixed at build time and 0 <= size <= maxSize =
-              // capacity -> activeSizeImpl and maxSizeImpl to implement
+    STATIC,   // The size is static, fixed at compile time. residualSize = maxResidualSize =
+              // sizeCapacity -> fixed
+    CONSTANT, // The size is constant, fixed at build time. residualSize = maxResidualSize =
+              // sizeCapacity -> maxResidualSizeImpl to implement
+    BOUNDED,  // The size is bounded, a maxResidualSize is fixed at build time and 0 <= size <=
+              // maxResidualSize = capacity -> residualSizeImpl and maxResidualSizeImpl to implement
     GENERAL   // The size is not guaranteed to be bounded, capacitySize gives an estimated max size
-              // for allocation -> activeSizeImpl and sizeCapacityImpl to implement
+              // for allocation -> residualSizeImpl and sizeCapacityImpl to implement
   };
 
   template<class Derived>
@@ -210,7 +210,7 @@ namespace pinocchio
     // Size management ----------------------------------------------
 
     /// \brief Returns the maximum size of the constraint.
-    int maxSize() const
+    int maxResidualSize() const
     {
       if constexpr (static_size)
       {
@@ -218,25 +218,25 @@ namespace pinocchio
       }
       else
       {
-        return derived().maxSizeImpl();
+        return derived().maxResidualSizeImpl();
       }
     }
 
     // Current state methods for algorithm --------------------------
 
     /// \brief Returns the current size of the constraint, typically after `calc` has been called.
-    /// \note If constraints are dynamic (e.g. joint limits), activeSize is computed when
+    /// \note If constraints are dynamic (e.g. joint limits), residualSize is computed when
     /// calling the calc method.
     template<typename ConstraintDataDerived>
-    int activeSize(const ConstraintDataBase<ConstraintDataDerived> & constraint_data) const
+    int residualSize(const ConstraintDataBase<ConstraintDataDerived> & constraint_data) const
     {
       if constexpr (constant_size)
       {
-        return maxSize();
+        return maxResidualSize();
       }
       else
       {
-        return derived().activeSizeImpl(constraint_data.derived());
+        return derived().residualSizeImpl(constraint_data.derived());
       }
     }
 
@@ -331,7 +331,7 @@ namespace pinocchio
       ConstraintData & cdata) const
     {
       typedef typename traits<Derived>::JacobianMatrixType ReturnType;
-      ReturnType res = ReturnType::Zero(activeSize(cdata), model.nv);
+      ReturnType res = ReturnType::Zero(residualSize(cdata), model.nv);
 
       jacobian(model, data, cdata, res);
 
@@ -528,10 +528,10 @@ namespace pinocchio
     // createDataImpl()
 
     // // Size management
-    // maxSizeImpl()  // Not needed for STATIC
+    // maxResidualSizeImpl()  // Not needed for STATIC
 
     // // State related
-    // activeSizeImpl(const cdata)  // Not needed for < CONSTANT
+    // residualSizeImpl(const cdata)  // Not needed for < CONSTANT
     // getRowSparsityPatternImpl(const cdata)
     // getRowIndexesImpl(const cdata)
     // setImpl()  // Not needed if has_set=False

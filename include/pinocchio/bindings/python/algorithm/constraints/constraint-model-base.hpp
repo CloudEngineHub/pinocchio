@@ -56,12 +56,12 @@ namespace pinocchio
           .def(
             "createData", &Self::createData, "Create a Data object for the given constraint model.")
           .def(
-            "maxSize", +[](const Self & self) -> int { return self.maxSize(); }, bp::arg("self"),
-            "Constraint max size.")
+            "maxResidualSize", +[](const Self & self) -> int { return self.maxResidualSize(); },
+            bp::arg("self"), "Constraint max size.")
           .def(
-            "activeSize",
+            "residualSize",
             +[](const Self & self, const ConstraintData & cdata) -> int {
-              return self.activeSize(cdata);
+              return self.residualSize(cdata);
             },
             bp::args("self", "constraint_data"), "Constraint state size.")
           .def(
@@ -156,7 +156,7 @@ namespace pinocchio
         const context::MatrixXs & matrix)
       {
         context::MatrixXs res =
-          context::MatrixXs::Zero(self.activeSize(constraint_data), matrix.cols());
+          context::MatrixXs::Zero(self.residualSize(constraint_data), matrix.cols());
         self.jacobianMatrixProduct(model, data, constraint_data, matrix, res);
         return res;
       }

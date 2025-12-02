@@ -109,9 +109,9 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Vector3 VectorConstraintSize;
 
-    using RootBase::activeSize;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
+    using RootBase::residualSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -260,7 +260,7 @@ namespace pinocchio
     // -------------------------------
 
     /// \copydoc RootBase::size
-    static constexpr int maxSizeImpl()
+    static constexpr int maxResidualSizeImpl()
     {
       return 3;
     }
@@ -623,7 +623,7 @@ namespace pinocchio
 
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), activeSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(aot);
 
       if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
@@ -698,7 +698,7 @@ namespace pinocchio
       typedef typename Data::Vector3 Vector3;
       OutputMatrix & res = _res.const_cast_derived();
 
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), activeSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), residualSize(cdata));
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), mat.cols());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), model.nv);
       PINOCCHIO_UNUSED_VARIABLE(aot);
@@ -798,7 +798,7 @@ namespace pinocchio
       ReferenceFrameTag<rf> reference_frame) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), activeSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
@@ -834,7 +834,7 @@ namespace pinocchio
       ReferenceFrameTag<rf> reference_frame) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_accelerations.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motion.rows(), activeSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motion.rows(), residualSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 

@@ -603,7 +603,7 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const Eigen::DenseIndex constraint_size = cmodel.activeSize(cdata);
+        const Eigen::DenseIndex constraint_size = cmodel.residualSize(cdata);
 
         auto G_block = G.block(row_id, row_id, constraint_size, constraint_size);
         auto impulse = x.segment(row_id, constraint_size);

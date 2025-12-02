@@ -94,12 +94,12 @@ namespace pinocchio
         .def("getNvMaxAtom", &Self::getNvMaxAtom, "Max nv of atomic joints in activable joints.")
         .def("lowerSize", &Self::lowerSize, "Part of size() that are lower bound limits.")
         .def(
-          "lowerActiveSize", &Self::lowerActiveSize,
-          "Part of activeSize() that are lower bound limits.")
+          "lowerResidualSize", &Self::lowerResidualSize,
+          "Part of residualSize() that are lower bound limits.")
         .def("upperSize", &Self::upperSize, "Part of size() that are upper bound limits.")
         .def(
-          "upperActiveSize", &Self::upperActiveSize,
-          "Part of activeSize() that are upper bound limits.")
+          "upperResidualSize", &Self::upperResidualSize,
+          "Part of residualSize() that are upper bound limits.")
         .def(
           "getBoundPositionLimit", &Self::getBoundPositionLimit,
           bp::return_value_policy<bp::copy_const_reference>(),

@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxSize();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
     {
     case pinocchio::CONTACT_3D: {
       BOOST_CHECK(cdata.contact_force.linear().isApprox(
-        data_ref.impulse_c.segment(constraint_id, cmodel.activeSize(cdata))));
+        data_ref.impulse_c.segment(constraint_id, cmodel.residualSize(cdata))));
       break;
     }
 
@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
       break;
     }
 
-    constraint_id += cmodel.maxSize();
+    constraint_id += cmodel.maxResidualSize();
   }
 }
 
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxSize();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -316,7 +316,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
     {
     case pinocchio::CONTACT_3D: {
       BOOST_CHECK(cdata.contact_force.linear().isApprox(
-        data_ref.impulse_c.segment(constraint_id, cmodel.activeSize(cdata))));
+        data_ref.impulse_c.segment(constraint_id, cmodel.residualSize(cdata))));
       break;
     }
 
@@ -331,7 +331,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
       break;
     }
 
-    constraint_id += cmodel.maxSize();
+    constraint_id += cmodel.maxResidualSize();
   }
 }
 
@@ -368,7 +368,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_3D)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxSize();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -453,7 +453,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_3D)
     {
     case pinocchio::CONTACT_3D: {
       BOOST_CHECK(cdata.contact_force.linear().isApprox(
-        data_ref.impulse_c.segment(constraint_id, cmodel.activeSize(cdata))));
+        data_ref.impulse_c.segment(constraint_id, cmodel.residualSize(cdata))));
       break;
     }
 
@@ -468,7 +468,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_3D)
       break;
     }
 
-    constraint_id += cmodel.activeSize(cdata);
+    constraint_id += cmodel.residualSize(cdata);
   }
 }
 
