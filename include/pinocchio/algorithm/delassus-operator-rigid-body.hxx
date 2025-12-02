@@ -90,8 +90,6 @@ namespace pinocchio
     const ConstraintModelVector & constraint_models_ref = constraint_models();
     const ConstraintDataVector & constraint_datas_ref = constraint_datas();
 
-    //      computeJointMinimalOrdering(model_ref, data_ref, constraint_models_ref);
-
     for (JointIndex i = 1; i < JointIndex(model_ref.njoints); ++i)
     {
       const auto & joint_inertia = model_ref.inertias[i];
