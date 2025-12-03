@@ -46,12 +46,28 @@ namespace pinocchio
     struct remove_eigen_noalias
     {
       typedef T type;
+      static T & get(T & t)
+      {
+        return t;
+      }
+      static const T & get(const T & t)
+      {
+        return t;
+      }
     };
 
     template<typename ExpressionType, template<typename> class StorageBase>
     struct remove_eigen_noalias<Eigen::NoAlias<ExpressionType, StorageBase>>
     {
       typedef ExpressionType type;
+      static ExpressionType & get(Eigen::NoAlias<ExpressionType, StorageBase> & t)
+      {
+        return t.expression();
+      }
+      static const ExpressionType & get(const Eigen::NoAlias<ExpressionType, StorageBase> & t)
+      {
+        return t.expression();
+      }
     };
 
     template<typename T, typename = void>
