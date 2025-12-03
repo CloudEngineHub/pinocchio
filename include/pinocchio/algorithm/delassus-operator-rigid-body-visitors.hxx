@@ -5,6 +5,12 @@
 #ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_visitors_hxx__
 #define __pinocchio_algorithm_delassus_operator_linear_complexity_visitors_hxx__
 
+#include "pinocchio/utils/eigen.hpp"
+
+#define PROMOTE_STATIC_EVAL(expression) promote_static_eval<0>(expression)
+// #define PROMOTE_STATIC_EVAL(expression) expression
+#define DO_NOT_PROMOTE_STATIC_EVAL(expression) expression
+
 namespace pinocchio
 {
 
@@ -58,25 +64,29 @@ namespace pinocchio
         auto Jcols = jmodel.jointCols(data.J);
         auto & Ia_augmented = data.oYaba_augmented[i];
 
-        jdata_augmented.U().noalias() = Ia_augmented * Jcols;
-        jdata_augmented.StU().noalias() = Jcols.transpose() * jdata_augmented.U();
+        DO_NOT_PROMOTE_STATIC_EVAL(jdata_augmented.U().noalias()) = Ia_augmented * Jcols;
+        DO_NOT_PROMOTE_STATIC_EVAL(jdata_augmented.StU().noalias()) =
+          Jcols.transpose() * jdata_augmented.U();
 
         // Account for the rotor inertia contribution
         jdata_augmented.StU() += data.joint_apparent_inertia[i];
 
         ::pinocchio::matrix_inversion(jdata_augmented.StU(), jdata_augmented.Dinv());
 
-        jdata_augmented.UDinv().noalias() = jdata_augmented.U() * jdata_augmented.Dinv();
+        DO_NOT_PROMOTE_STATIC_EVAL(jdata_augmented.UDinv().noalias()) =
+          jdata_augmented.U() * jdata_augmented.Dinv();
 
         if (parent > 0)
         {
-          Ia_augmented.noalias() -= jdata_augmented.UDinv() * jdata_augmented.U().transpose();
+          DO_NOT_PROMOTE_STATIC_EVAL(Ia_augmented.noalias()) -=
+            jdata_augmented.UDinv() * jdata_augmented.U().transpose();
           data.oYaba_augmented[parent] += Ia_augmented;
         }
 
         // End of the classic ABA backward pass - beginning of cross-coupling handling
         const auto & neighbours = data.joint_neighbours;
         auto & joint_cross_coupling = data.joint_cross_coupling;
+        auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
         const auto & joint_neighbours = neighbours[i];
 
         if (joint_neighbours.size() == 0)
@@ -88,7 +98,7 @@ namespace pinocchio
         MapMatrix6xNV mat2_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
 
         auto & JDinv = mat1_tmp;
-        JDinv.noalias() = Jcols * jdata_augmented.Dinv();
+        DO_NOT_PROMOTE_STATIC_EVAL(JDinv.noalias()) = Jcols * jdata_augmented.Dinv();
 
         // oL == data.oL[i]
         Matrix6 oL = -JDinv * jdata_augmented.U().transpose();
@@ -102,16 +112,26 @@ namespace pinocchio
               ? joint_cross_coupling.get(JointPair(vertex_j, i))
               : joint_cross_coupling.get(JointPair(i, vertex_j)).transpose(); // avoid memalloc
 
-          auto & crosscoupling_xi_Jcols = mat1_tmp;
-          crosscoupling_xi_Jcols.noalias() =
+          assert(projected_joint_cross_coupling.exists(JointPair(vertex_j, i)));
+          auto & crosscoupling_ji_Jcols = projected_joint_cross_coupling[JointPair(vertex_j, i)];
+          // auto & crosscoupling_ji_Jcols = mat1_tmp;
+
+          DO_NOT_PROMOTE_STATIC_EVAL(crosscoupling_ji_Jcols.noalias()) =
             crosscoupling_ji * Jcols; // Warning: UDinv() is actually edge_ij * J
 
-          auto & crosscoupling_ji_Jcols_Dinv = mat2_tmp;
-          crosscoupling_ji_Jcols_Dinv.noalias() = crosscoupling_xi_Jcols * jdata_augmented.Dinv();
+          static_assert(
+            !PINOCCHIO_DECLTYPE(crosscoupling_ji_Jcols)::IsRowMajor
+              && !PINOCCHIO_DECLTYPE(crosscoupling_ji)::IsRowMajor
+              && !PINOCCHIO_DECLTYPE(Jcols)::IsRowMajor,
+            "All the elements should be of same.");
 
-          data.oYaba_augmented[vertex_j].noalias() -=
+          auto & crosscoupling_ji_Jcols_Dinv = mat2_tmp;
+          DO_NOT_PROMOTE_STATIC_EVAL(crosscoupling_ji_Jcols_Dinv.noalias()) =
+            crosscoupling_ji_Jcols * jdata_augmented.Dinv();
+
+          DO_NOT_PROMOTE_STATIC_EVAL(data.oYaba_augmented[vertex_j].noalias()) -=
             crosscoupling_ji_Jcols_Dinv
-            * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ij * J, U()
+            * crosscoupling_ji_Jcols.transpose(); // Warning: UDinv() is actually edge_ij * J, U()
                                                   // is actually edge_ij * J_cols * Dinv
                                                   //          data.of[vertex_j].toVector().noalias()
                                                   //          += crosscoupling_ij * a_tmp;
@@ -143,21 +163,27 @@ namespace pinocchio
               (i > vertex_k) ? joint_cross_coupling.get(JointPair(vertex_k, i))
                              : joint_cross_coupling.get(JointPair(i, vertex_k)).transpose();
 
-            crosscoupling_xi_Jcols.noalias() = crosscoupling_ki * Jcols;
+            assert(projected_joint_cross_coupling.exists(JointPair(vertex_k, i)));
+            auto & crosscoupling_ki_Jcols = projected_joint_cross_coupling[JointPair(vertex_k, i)];
+            // auto & crosscoupling_ki_Jcols = mat1_tmp;
+
+            PROMOTE_STATIC_EVAL(crosscoupling_ki_Jcols.noalias()) = crosscoupling_ki * Jcols;
 
             assert(vertex_j != vertex_k && "Must never happen!");
             if (vertex_j < vertex_k)
             {
-              joint_cross_coupling.get({vertex_j, vertex_k}).noalias() -=
+              DO_NOT_PROMOTE_STATIC_EVAL(
+                joint_cross_coupling.get({vertex_j, vertex_k}).noalias()) -=
                 crosscoupling_ji_Jcols_Dinv
-                * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
+                * crosscoupling_ki_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
                                                       // J_col, U() is edge_ij * J_col * Dinv
             }
             else // if (vertex_k < vertex_j)
             {
-              joint_cross_coupling.get({vertex_k, vertex_j}).transpose().noalias() -=
+              DO_NOT_PROMOTE_STATIC_EVAL(
+                joint_cross_coupling.get({vertex_k, vertex_j}).transpose().noalias()) -=
                 crosscoupling_ji_Jcols_Dinv
-                * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
+                * crosscoupling_ki_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
                                                       // J_col, U() is edge_ij * J_col * Dinv
             }
           }
@@ -195,7 +221,8 @@ namespace pinocchio
       {
         auto & pa = custom_data.f[i];
         // Compare to ABA, the sign of f[i] is reversed
-        pa.toVector().noalias() -= jdata.UDinv() * jmodel.jointVelocitySelector(custom_data.u);
+        DO_NOT_PROMOTE_STATIC_EVAL(pa.toVector().noalias()) -=
+          jdata.UDinv() * jmodel.jointVelocitySelector(custom_data.u);
         custom_data.f[parent] += data.liMi[i].act(pa);
       }
     }
@@ -230,13 +257,16 @@ namespace pinocchio
       if (parent > 0)
       {
         custom_data.a[i] += data.liMi[i].actInv(custom_data.a[parent]);
-        ddq_joint = jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u)
-                    - jdata.UDinv().transpose() * custom_data.a[i].toVector();
+        PROMOTE_STATIC_EVAL(ddq_joint.noalias()) =
+          jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u);
+        PROMOTE_STATIC_EVAL(ddq_joint.noalias()) -=
+          jdata.UDinv().transpose() * custom_data.a[i].toVector();
         custom_data.a[i] += jdata.S() * ddq_joint;
       }
       else
       {
-        ddq_joint.noalias() = jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u);
+        PROMOTE_STATIC_EVAL(ddq_joint.noalias()) =
+          jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u);
         custom_data.a[i] = jdata.S() * ddq_joint;
       }
     }
@@ -264,13 +294,11 @@ namespace pinocchio
     {
       typedef typename Model::Scalar Scalar;
       typedef typename Data::Force Force;
-      typedef typename Data::Motion Motion;
-      typedef typename Motion::Vector6 Vector6;
-      typedef typename Data::Matrix6 Matrix6;
       typedef std::pair<JointIndex, JointIndex> JointPair;
 
       const auto & neighbours = data.joint_neighbours;
-      auto & joint_cross_coupling = data.joint_cross_coupling;
+      // auto & joint_cross_coupling = data.joint_cross_coupling;
+      const auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
 
       const JointIndex i = jmodel.id();
       const JointIndex parent = model.parents[i];
@@ -281,33 +309,41 @@ namespace pinocchio
       Force & ofi = custom_data.of_augmented[i];
 
       // Compare to ABA, the sign of ofi is reversed
-      jmodel.jointVelocitySelector(custom_data.u).noalias() += Jcols.transpose() * ofi.toVector();
+      PROMOTE_STATIC_EVAL(jmodel.jointVelocitySelector(custom_data.u).noalias()) +=
+        Jcols.transpose() * ofi.toVector();
 
       if (joint_neighbours.size())
       {
         using VectorNV = typename std::remove_reference<typename JointData::TangentVector_t>::type;
         typedef Eigen::Map<VectorNV, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorNV;
         MapVectorNV res = MapVectorNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, jmodel.nv(), 1));
-        res.noalias() = (jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u));
+        DO_NOT_PROMOTE_STATIC_EVAL(res.noalias()) =
+          (jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u));
 
-        const Vector6 Ji_res = Jcols * res;
+        // const Vector6 Ji_res = Jcols * res;
 
         for (JointIndex vertex_j : joint_neighbours)
         {
-          const Matrix6 & crosscoupling_ji =
-            (i > vertex_j) ? joint_cross_coupling.get(JointPair(vertex_j, i))
-                           : joint_cross_coupling.get(JointPair(i, vertex_j)).transpose();
+          // const Matrix6 & crosscoupling_ji =
+          //   (i > vertex_j) ? joint_cross_coupling.get(JointPair(vertex_j, i))
+          //                  : joint_cross_coupling.get(JointPair(i, vertex_j)).transpose();
+
+          assert(projected_joint_cross_coupling.exists(JointPair(vertex_j, i)));
+          const auto & projected_crosscoupling_ji_Jcols =
+            projected_joint_cross_coupling[JointPair(vertex_j, i)];
 
           Force & ofj = custom_data.of_augmented[vertex_j];
           // Compare to ABA, the sign of ofj is reversed
-          ofj.toVector().noalias() -= crosscoupling_ji * Ji_res;
+          DO_NOT_PROMOTE_STATIC_EVAL(ofj.toVector().noalias()) -=
+            projected_crosscoupling_ji_Jcols * res;
         }
       }
 
       if (parent > 0)
       {
         // Compare to ABA, the sign of ofi is reversed
-        ofi.toVector().noalias() -= jdata.UDinv() * jmodel.jointVelocitySelector(custom_data.u);
+        DO_NOT_PROMOTE_STATIC_EVAL(ofi.toVector().noalias()) -=
+          jdata.UDinv() * jmodel.jointVelocitySelector(custom_data.u);
         custom_data.of_augmented[parent] += ofi;
       }
     }
@@ -333,42 +369,60 @@ namespace pinocchio
       const Data & data,
       CustomData & custom_data)
     {
+      typedef typename Model::Scalar Scalar;
       typedef typename Model::JointIndex JointIndex;
-      typedef typename Data::Matrix6 Matrix6;
 
       const auto J_cols = jmodel.jointCols(data.J);
 
       const JointIndex i = jmodel.id();
       const JointIndex parent = model.parents[i];
       const auto & joint_neighbours = data.joint_neighbours[i];
+      const auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
 
       auto & oai = custom_data.oa_augmented[i];
       oai = custom_data.oa_augmented[parent];
 
       if (joint_neighbours.size())
       {
-        Force coupling_forces = Force::Zero();
+        using VectorNV = typename std::remove_reference<typename JointData::TangentVector_t>::type;
+        typedef Eigen::Map<VectorNV, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorNV;
+        MapVectorNV projected_coupling_forces =
+          MapVectorNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, jmodel.nv(), 1));
+        projected_coupling_forces.setZero();
+        // Force coupling_forces = Force::Zero();
+
         for (const JointIndex vertex_j : joint_neighbours)
         {
-          const Matrix6 & crosscoupling_ij =
-            (i > vertex_j) ? data.joint_cross_coupling.get(JointPair(vertex_j, i)).transpose()
-                           : data.joint_cross_coupling.get(JointPair(i, vertex_j));
+          // const Matrix6 & crosscoupling_ij =
+          //   (i > vertex_j) ? data.joint_cross_coupling.get(JointPair(vertex_j, i)).transpose()
+          //                  : data.joint_cross_coupling.get(JointPair(i, vertex_j));
+
+          assert(projected_joint_cross_coupling.exists(JointPair(vertex_j, i)));
+          const auto & projected_crosscoupling_ji_Jcols =
+            projected_joint_cross_coupling[JointPair(vertex_j, i)];
 
           const auto & oaj = custom_data.oa_augmented[vertex_j];
-          coupling_forces.toVector().noalias() += crosscoupling_ij * oaj.toVector();
+          // coupling_forces.toVector().noalias() += crosscoupling_ij * oaj.toVector();
+          DO_NOT_PROMOTE_STATIC_EVAL(projected_coupling_forces.noalias()) +=
+            projected_crosscoupling_ji_Jcols.transpose() * oaj.toVector();
         }
 
         jmodel.jointVelocitySelector(custom_data.u).noalias() -=
-          J_cols.transpose() * coupling_forces.toVector();
+          // J_cols.transpose() * coupling_forces.toVector();
+          projected_coupling_forces;
       }
 
-      jmodel.jointVelocitySelector(custom_data.ddq).noalias() =
-        jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u)
-        - jdata.UDinv().transpose() * oai.toVector();
-      oai.toVector().noalias() += J_cols * jmodel.jointVelocitySelector(custom_data.ddq);
+      auto ddq_segment = jmodel.jointVelocitySelector(custom_data.ddq);
+      PROMOTE_STATIC_EVAL(ddq_segment.noalias()) =
+        jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u);
+      PROMOTE_STATIC_EVAL(ddq_segment.noalias()) -= jdata.UDinv().transpose() * oai.toVector();
+      DO_NOT_PROMOTE_STATIC_EVAL(oai.toVector().noalias()) += J_cols * ddq_segment;
     }
   };
 
 } // namespace pinocchio
+
+#undef PROMOTE_STATIC_EVAL
+#undef DO_NOT_PROMOTE_STATIC_EVAL
 
 #endif // ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_visitors_hxx__
