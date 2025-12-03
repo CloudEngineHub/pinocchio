@@ -47,7 +47,7 @@ struct DelassusFixture : ModelFixture
     contact_data_6D6D.push_back(pinocchio::RigidConstraintData(*ci_RF_6D));
     contact_data_6D6D.push_back(pinocchio::RigidConstraintData(*ci_LF_6D));
 
-    contact_chol_6D6D = pinocchio::ContactCholeskyDecomposition(model, contact_models_6D6D);
+    contact_chol_6D6D = pinocchio::ContactCholeskyDecomposition(model);
 
     prox_settings.max_iter = 10;
     prox_settings.mu = 1e8;
@@ -99,6 +99,7 @@ PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionComputeCall(
 BENCHMARK_DEFINE_F(DelassusFixture, CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE)(benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
+  contact_chol_6D6D.allocate(model, contact_models_6D6D, contact_data_6D6D);
   for (auto _ : st)
   {
     contactCholeskyDecompositionComputeCall(
@@ -119,6 +120,7 @@ PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionInverseCall(
 BENCHMARK_DEFINE_F(DelassusFixture, CONTACT_CHOLESKY_DECOMPOSITION_INVERSE)(benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
+  contact_chol_6D6D.allocate(model, contact_models_6D6D, contact_data_6D6D);
   contact_chol_6D6D.compute(model, data, contact_models_6D6D, contact_data_6D6D);
   Eigen::MatrixXd H_inverse(contact_chol_6D6D.size(), contact_chol_6D6D.size());
   for (auto _ : st)
@@ -141,6 +143,7 @@ BENCHMARK_DEFINE_F(DelassusFixture, CONTACT_CHOLESKY_DECOMPOSITION_UPDATE_DAMPIN
   benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
+  contact_chol_6D6D.allocate(model, contact_models_6D6D, contact_data_6D6D);
   contact_chol_6D6D.compute(model, data, contact_models_6D6D, contact_data_6D6D);
   for (auto _ : st)
   {
@@ -162,6 +165,7 @@ BENCHMARK_DEFINE_F(DelassusFixture, CONTACT_CHOLESKY_DECOMPOSITION_SOLVE_IN_PLAC
   benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
+  contact_chol_6D6D.allocate(model, contact_models_6D6D, contact_data_6D6D);
   contact_chol_6D6D.compute(model, data, contact_models_6D6D, contact_data_6D6D);
   Eigen::VectorXd rhs_vector = Eigen::VectorXd::Random(num_constraints);
   for (auto _ : st)
@@ -224,6 +228,8 @@ PINOCCHIO_DONT_INLINE static void getKKTContactDynamicMatrixInverseCall(
 
 BENCHMARK_DEFINE_F(DelassusFixture, GET_KKT_CONTACT_DYNAMIC_MATRIX_INVERSE)(benchmark::State & st)
 {
+  pinocchio::computeAllTerms(model, data, q, v);
+  contact_chol_6D6D.allocate(model, contact_models_6D6D, contact_data_6D6D);
   Eigen::MatrixXd J(contact_chol_6D6D.constraintDim(), model.nv);
   J.setZero();
 
@@ -234,7 +240,6 @@ BENCHMARK_DEFINE_F(DelassusFixture, GET_KKT_CONTACT_DYNAMIC_MATRIX_INVERSE)(benc
   Eigen::VectorXd gamma(contact_chol_6D6D.constraintDim());
   gamma.setZero();
 
-  computeAllTerms(model, data, q, v);
   getJointJacobian(model, data, ci_RF_6D->joint1_id, ci_RF_6D->reference_frame, J.middleRows<6>(0));
   getJointJacobian(model, data, ci_LF_6D->joint1_id, ci_LF_6D->reference_frame, J.middleRows<6>(6));
   forwardDynamics(model, data, q, v, tau, J, gamma);
@@ -263,10 +268,10 @@ PINOCCHIO_DONT_INLINE static void computeDampedDelassusMatrixInverseCall(
 
 BENCHMARK_DEFINE_F(DelassusFixture, COMPUTE_DAMPED_DELASSUS_MATRIX_INVERSE)(benchmark::State & st)
 {
-  Eigen::MatrixXd H_inverse(contact_chol_6D6D.size(), contact_chol_6D6D.size());
-
   computeAllTerms(model, data, q, v);
+  contact_chol_6D6D.allocate(model, contact_models_6D6D, contact_data_6D6D);
   contact_chol_6D6D.compute(model, data, contact_models_6D6D, contact_data_6D6D, 1e-6);
+  Eigen::MatrixXd H_inverse(contact_chol_6D6D.size(), contact_chol_6D6D.size());
   contact_chol_6D6D.inverse(H_inverse);
 
   Eigen::MatrixXd damped_delassus_inverse;
@@ -301,10 +306,10 @@ PINOCCHIO_DONT_INLINE static void computeDampedDelassusMatrixInverseNoScaleNoPvC
 BENCHMARK_DEFINE_F(DelassusFixture, COMPUTE_DAMPED_DELASSUS_MATRIX_INVERSE_NO_SCALE_NO_PV)(
   benchmark::State & st)
 {
-  Eigen::MatrixXd H_inverse(contact_chol_6D6D.size(), contact_chol_6D6D.size());
-
   computeAllTerms(model, data, q, v);
+  contact_chol_6D6D.allocate(model, contact_models_6D6D, contact_data_6D6D);
   contact_chol_6D6D.compute(model, data, contact_models_6D6D, contact_data_6D6D, 1e-6);
+  Eigen::MatrixXd H_inverse(contact_chol_6D6D.size(), contact_chol_6D6D.size());
   contact_chol_6D6D.inverse(H_inverse);
 
   Eigen::MatrixXd damped_delassus_inverse;
