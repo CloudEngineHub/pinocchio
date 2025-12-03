@@ -22,10 +22,12 @@ const int N = int(1e4);
 #endif
 
 template<typename Matrix, template<typename, typename> class EigenOp>
-void test()
+void test(
+  const Eigen::DenseIndex rows = 10,
+  const Eigen::DenseIndex cols = 20,
+  const Eigen::DenseIndex inner_dim = 30)
 {
   using Scalar = typename Matrix::Scalar;
-  const Eigen::DenseIndex rows = 10, cols = 20, inner_dim = 30;
 
   for (int i = 0; i < N; ++i)
   {
@@ -51,18 +53,31 @@ void test()
 BOOST_AUTO_TEST_CASE(test_col_major)
 {
   typedef Eigen::MatrixXd Matrix;
-  test<Matrix, Eigen::internal::assign_op>();
-  test<Matrix, Eigen::internal::add_assign_op>();
-  test<Matrix, Eigen::internal::sub_assign_op>();
+
+  const Eigen::DenseIndex rows = 10, cols = 20, inner_dim = 30;
+  test<Matrix, Eigen::internal::assign_op>(rows, cols, inner_dim);
+  test<Matrix, Eigen::internal::add_assign_op>(rows, cols, inner_dim);
+  test<Matrix, Eigen::internal::sub_assign_op>(rows, cols, inner_dim);
 }
 
 BOOST_AUTO_TEST_CASE(test_row_major)
 {
   typedef PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(Eigen::MatrixXd) Matrix;
 
-  test<Matrix, Eigen::internal::assign_op>();
-  test<Matrix, Eigen::internal::add_assign_op>();
-  test<Matrix, Eigen::internal::sub_assign_op>();
+  const Eigen::DenseIndex rows = 10, cols = 20, inner_dim = 30;
+  test<Matrix, Eigen::internal::assign_op>(rows, cols, inner_dim);
+  test<Matrix, Eigen::internal::add_assign_op>(rows, cols, inner_dim);
+  test<Matrix, Eigen::internal::sub_assign_op>(rows, cols, inner_dim);
+}
+
+BOOST_AUTO_TEST_CASE(test_col_major_small)
+{
+  typedef Eigen::MatrixXd Matrix;
+
+  const Eigen::DenseIndex rows = 4, cols = 4, inner_dim = 4;
+  test<Matrix, Eigen::internal::assign_op>(rows, cols, inner_dim);
+  test<Matrix, Eigen::internal::add_assign_op>(rows, cols, inner_dim);
+  test<Matrix, Eigen::internal::sub_assign_op>(rows, cols, inner_dim);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
