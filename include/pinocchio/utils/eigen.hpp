@@ -6,6 +6,8 @@
 #define __pinocchio_utils_eigen_hpp__
 
 #include "pinocchio/utils/fwd.hpp"
+#include <pinocchio/math/matrix-product.hpp>
+
 #include <ratio>
 #include <type_traits>
 
@@ -443,20 +445,30 @@ namespace pinocchio
 
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
-      dispatch(const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
+      dispatch(const Eigen::Product<Lhs, Rhs, Option> & mat_prod)
       {
+        const auto & lhs = mat_prod.lhs();
+        const auto & rhs = mat_prod.rhs();
+
         typedef MatrixProductDimensions<PlainExpression, Lhs, Rhs> Dims;
         if constexpr (Dims::is_static_size_product())
         {
-          static_dispatch<EigenOp>(matrix_product);
+          static_dispatch<EigenOp>(mat_prod);
         }
         else if constexpr (Dims::is_partial_static_size_product())
         {
-          partial_static_dispatch<MaxStaticUnfolding, EigenOp>(matrix_product);
+          partial_static_dispatch<MaxStaticUnfolding, EigenOp>(mat_prod);
         }
         else
         {
-          dynamic_dispatch<EigenOp>(matrix_product);
+          const auto max_size = std::max(lhs.rows(), std::max(lhs.cols(), rhs.cols()));
+          if (max_size <= 6)
+          {
+            matrix_product<EigenOp>(
+              lhs, rhs, helper::remove_eigen_noalias<ExpressionType>::get(expression()));
+          }
+          else
+            dynamic_dispatch<EigenOp>(mat_prod);
         }
         return m_expression;
       }
