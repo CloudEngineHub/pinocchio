@@ -75,12 +75,14 @@ namespace pinocchio
             "Vector of the active indexes associated with a given row.")
           .def("set", &Self::set, "Constraint set.")
           .def(
-            "getActiveCompliance",
+            "retrieveCompliance",
             bp::make_function(
               +[](const Self & self, const ConstraintData & cdata) -> context::VectorXs {
-                return self.getActiveCompliance(cdata);
+                context::VectorXs res(self.residualSize(cdata));
+                self.retrieveCompliance(cdata, res);
+                return res;
               }),
-            "Vector of the active compliance internally stored in the constraint.")
+            "Vector of the compliance for the constraint in a given state.")
           .def(
             "calc", &calc, bp::args("self", "model", "data", "constraint_data"),
             "Evaluate the constraint values at the current state given by data and store the "

@@ -97,9 +97,6 @@ namespace pinocchio
       traits<PointConstraintModelBase>::constraint_formulation_level;
     typedef typename traits<Derived>::ConstraintData ConstraintData;
     typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
-      ActiveComplianceVectorTypeConstRef;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     typedef SE3Tpl<Scalar, Options> SE3;
@@ -745,8 +742,6 @@ namespace pinocchio
     {
       typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
       JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
-
-      //      const PointConstraintModelBase & cmodel = *this;
 
       const SE3 & oMc1 = cdata.oMc1;
       const SE3 & oMc2 = cdata.oMc2;

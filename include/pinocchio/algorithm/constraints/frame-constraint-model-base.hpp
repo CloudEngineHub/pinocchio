@@ -97,9 +97,6 @@ namespace pinocchio
       traits<FrameConstraintModelBase>::constraint_formulation_level;
     typedef typename traits<Derived>::ConstraintData ConstraintData;
     typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
-      ActiveComplianceVectorTypeConstRef;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     typedef SE3Tpl<Scalar, Options> SE3;

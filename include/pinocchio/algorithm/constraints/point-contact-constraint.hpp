@@ -55,10 +55,6 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Size, 1, Options> ComplianceVectorType;
     typedef ComplianceVectorType & ComplianceVectorTypeRef;
     typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
-
-    // Will be removed
-    typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
   };
 
   template<typename _Scalar, int _Options>

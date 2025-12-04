@@ -35,9 +35,9 @@ namespace pinocchio
       const ConstraintModelVector & constraint_models,
       const ConstraintDataVector & constraint_datas)
     {
-      const Eigen::DenseIndex constraint_active_size =
+      const Eigen::DenseIndex constraint_residual_size =
         getTotalConstraintResidualSize(constraint_models, constraint_datas);
-      context::MatrixXs J(constraint_active_size, model.nv);
+      context::MatrixXs J(constraint_residual_size, model.nv);
       J.setZero();
       getConstraintsJacobian(model, data, constraint_models, constraint_datas, J);
       return J;

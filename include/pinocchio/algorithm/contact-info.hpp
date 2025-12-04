@@ -135,10 +135,6 @@ namespace pinocchio
     typedef VectorXs ComplianceVectorType;
     typedef ComplianceVectorType & ComplianceVectorTypeRef;
     typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
-
-    // Will be removed
-    typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
   };
 
   template<typename _Scalar, int _Options>
@@ -178,9 +174,6 @@ namespace pinocchio
     typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
     typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef typename traits<Self>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef
-      typename traits<Self>::ActiveComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     using typename Base::BooleanVector;
@@ -1058,8 +1051,8 @@ namespace pinocchio
   };
 
   ///
-  /// \brief Computes the sum of the active sizes of the constraints contained in the input
-  /// `constraint_models` vector.
+  /// \brief Computes the sum of the sizes of the constraints contained in the input
+  /// `constraint_models` vector in the state given by `constraint_datas` vector.
   template<
     class ConstraintModel,
     class ConstraintModelAllocator,

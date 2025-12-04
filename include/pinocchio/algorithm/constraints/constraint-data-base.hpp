@@ -19,11 +19,6 @@ namespace pinocchio
     typedef typename traits<Derived>::Scalar Scalar;
     typedef typename traits<Derived>::ConstraintModel ConstraintModel;
 
-    typedef
-      typename traits<ConstraintModel>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef typename traits<ConstraintModel>::ActiveComplianceVectorTypeConstRef
-      ActiveComplianceVectorTypeConstRef;
-
     typedef DataEntity<Derived> Base;
 
     /// \brief Cast to Derived

@@ -270,9 +270,9 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
       const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
-      // TODO use active compliance
       const int cdim = cmodel.residualSize(cdata);
-      compliance.segment(cindex, cdim) = cmodel.getActiveCompliance(cdata);
+      auto segment = compliance.segment(cindex, cdim);
+      cmodel.retrieveCompliance(cdata, segment);
       cindex += cdim;
     }
 

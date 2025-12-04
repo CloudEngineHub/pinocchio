@@ -89,12 +89,6 @@ namespace pinocchio
     typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
     typedef typename traits<Derived>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Derived>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-
-    // Will disapear
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
-      ActiveComplianceVectorTypeConstRef;
-
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     // Usefull types ------------------------------------------------
@@ -222,13 +216,13 @@ namespace pinocchio
       }
     }
 
-    // Current state methods for algorithm --------------------------
+    // Methods for algorithm ----------------------------------------
 
     /// \brief Returns the current size of the constraint, typically after `calc` has been called.
     /// \note If constraints are dynamic (e.g. joint limits), residualSize is computed when
     /// calling the calc method.
     template<typename ConstraintDataDerived>
-    int residualSize(const ConstraintDataBase<ConstraintDataDerived> & constraint_data) const
+    int residualSize(const ConstraintDataBase<ConstraintDataDerived> & cdata) const
     {
       if constexpr (constant_size)
       {
@@ -236,7 +230,7 @@ namespace pinocchio
       }
       else
       {
-        return derived().residualSizeImpl(constraint_data.derived());
+        return derived().residualSizeImpl(cdata.derived());
       }
     }
 
@@ -245,18 +239,18 @@ namespace pinocchio
     /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
     /// calling the calc method.
     const BooleanVector &
-    getRowSparsityPattern(const ConstraintData & constraint_data, const Eigen::Index row_id) const
+    getRowSparsityPattern(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
-      return derived().getRowSparsityPatternImpl(constraint_data, row_id);
+      return derived().getRowSparsityPatternImpl(cdata, row_id);
     }
 
     /// \brief Returns the vector of the active indexes associated with a given row
     /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
     /// calling the calc method.
     const EigenIndexVector &
-    getRowIndexes(const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
+    getRowIndexes(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      return derived().getRowIndexesImpl(constraint_data, row_id);
+      return derived().getRowIndexesImpl(cdata, row_id);
     }
 
     /// \brief Returns an instance of the associated constraint set operator.
@@ -265,36 +259,19 @@ namespace pinocchio
       return derived().setImpl();
     }
 
-    /// \brief Returns the active compliance internally stored in the constraint and corresponding
-    /// to the active set contained in cdata
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    ActiveComplianceVectorTypeConstRef
-    getActiveCompliance(const ConstraintData & constraint_data) const
+    /// \brief Fill the compliance of size residualSize relted to the courant state of the
+    /// constraint
+    template<typename VectorLike>
+    void retrieveCompliance(
+      const ConstraintData & cdata, const Eigen::MatrixBase<VectorLike> & res) const
     {
-      if constexpr (constant_size)
+      if constexpr (constant_size && has_compliance_member)
       {
-        return compliance();
+        res.const_cast_derived() = compliance();
       }
       else
       {
-        return derived().getActivecomplianceImpl(constraint_data);
-      }
-    }
-
-    /// \brief Returns the active compliance internally stored in the constraint and corresponding
-    /// to the active set contained in cdata
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    ActiveComplianceVectorTypeRef getActiveCompliance(ConstraintData & constraint_data) const
-    {
-      if constexpr (constant_size)
-      {
-        return compliance();
-      }
-      else
-      {
-        return derived().getActivecomplianceImpl(constraint_data);
+        derived().retrieveComplianceImpl(cdata, res.const_cast_derived());
       }
     }
 
@@ -519,22 +496,23 @@ namespace pinocchio
       derived().setBaumgarteCorrectorParametersImpl(baumgarte_corrector_parameters_in);
     }
 
-    // Implementation ------------------------------------------------
-
-    // // general
+    // --------------------------------------------------------------
+    // Implementation
+    // --------------------------------------------------------------
+    // // General
     // shortnameImpl()
     // classnameImpl()
-
     // createDataImpl()
 
     // // Size management
     // maxResidualSizeImpl()  // Not needed for STATIC
 
-    // // State related
+    // // For algorithms
     // residualSizeImpl(const cdata)  // Not needed for < CONSTANT
     // getRowSparsityPatternImpl(const cdata)
     // getRowIndexesImpl(const cdata)
     // setImpl()  // Not needed if has_set=False
+    // retrieveComplianceImpl(cdata, ...)  //
     // calcImpl(const model, const data, cdata) // The only one mutating cdata
     // jacobianImpl(const model, const data, const cdata, ...)
     // jacobianMatrixProductImpl(const model, const data, const cdata, ...)
@@ -548,6 +526,8 @@ namespace pinocchio
     // baumgarte_corrector_parameters_impl()
     // setComplianceImpl()  // Default to using the accessor
     // setBaumgarteCorrectorParametersImpl()  // Default to using the accessor
+
+    // Default Implementation --------------------------------------
 
     /// \copydoc setCompliance
     template<typename VectorLike>
@@ -563,7 +543,9 @@ namespace pinocchio
       baumgarte_corrector_parameters() = baumgarte_corrector_parameters_in;
     }
 
-    // Attributes common to all constraints --------------------------
+    // --------------------------------------------------------------
+    // Attributes
+    // --------------------------------------------------------------
 
     /// \brief Name of the constraint
     std::string name;

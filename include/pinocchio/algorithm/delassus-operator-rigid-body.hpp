@@ -396,8 +396,7 @@ namespace pinocchio
         const auto & cdata = helper::get_ref(constraint_datas_ref[i]);
 
         const auto csize = cmodel.residualSize(cdata);
-        m_compliance.segment(cindex, csize) = cmodel.getActiveCompliance(cdata);
-
+        cmodel.retrieveCompliance(cdata, m_compliance.segment(cindex, csize));
         cindex += csize;
       }
     }

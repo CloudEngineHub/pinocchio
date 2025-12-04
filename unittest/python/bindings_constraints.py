@@ -357,7 +357,7 @@ class TestJointsAlgo(TestCase):
             dummy_compliance = 0.1 * np.ones(gcm.maxResidualSize())
             gcm.compliance = dummy_compliance
             self.assertTrue(np.all(dummy_compliance == gcm.compliance))
-            self.assertTrue(len(ccm.getActiveCompliance(ccd)) == ccm.residualSize(ccd))
+            self.assertTrue(len(ccm.retrieveCompliance(ccd)) == ccm.residualSize(ccd))
             if not hasattr(ccm, "baumgarte_corrector_parameters"):
                 self.assertTrue(isinstance(ccm, pin.JointFrictionConstraintModel))
                 do_except = False

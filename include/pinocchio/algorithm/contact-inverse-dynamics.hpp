@@ -56,10 +56,9 @@ namespace pinocchio
     {
       const ConstraintModel & cmodel = constraint_models[i];
       const ConstraintData & cdata = constraint_datas[i];
-      const auto active_size = cmodel.residualSize(cdata);
-
-      R.segment(constraint_index, active_size) = cmodel.getActiveCompliance(cdata);
-      constraint_index += active_size;
+      const auto csize = cmodel.residualSize(cdata);
+      cmodel.retrieveCompliance(cdata, R.segment(constraint_index, csize));
+      constraint_index += csize;
     }
     const VectorXs R_prox = R + VectorXs::Constant(problem_size, settings.mu);
 

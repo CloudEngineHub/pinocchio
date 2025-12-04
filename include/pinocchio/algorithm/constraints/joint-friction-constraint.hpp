@@ -96,10 +96,6 @@ namespace pinocchio
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-
-    // Will be removed
-    typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
   };
 
   template<typename _Scalar, int _Options>
@@ -131,9 +127,6 @@ namespace pinocchio
       traits<JointFrictionConstraintModelTpl>::constraint_formulation_level;
     typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef typename traits<Self>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef
-      typename traits<Self>::ActiveComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
     typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
 
     typedef typename traits<Self>::ConstraintData ConstraintData;

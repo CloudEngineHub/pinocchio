@@ -88,10 +88,6 @@ namespace pinocchio
     typedef Eigen::Ref<const ComplianceVectorType> ComplianceVectorTypeConstRef;
 
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
-
-    // Will be removed
-    typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
   };
 
   template<
@@ -120,9 +116,6 @@ namespace pinocchio
     typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
     typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef typename traits<Self>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef
-      typename traits<Self>::ActiveComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
     typedef typename Base::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
 
     using typename Base::BooleanVector;
@@ -262,16 +255,12 @@ namespace pinocchio
       return ::pinocchio::visitors::getRowSparsityPattern(*this, constraint_data, row_id);
     }
 
-    /// \copydoc RootBase::getActiveCompliance
-    ActiveComplianceVectorTypeConstRef getActivecomplianceImpl(const ConstraintData & cdata) const
+    /// \copydoc RootBase::retrieveCompliance
+    template<typename VectorLike>
+    void retrieveCompliance(
+      const ConstraintData & cdata, const Eigen::MatrixBase<VectorLike> & res) const
     {
-      return ::pinocchio::visitors::getActiveCompliance(*this, cdata);
-    }
-
-    /// \copydoc RootBase::getActiveCompliance
-    ActiveComplianceVectorTypeRef getActivecomplianceImpl(ConstraintData & cdata) const
-    {
-      return ::pinocchio::visitors::getActiveCompliance(*this, cdata);
+      return ::pinocchio::visitors::retrieveCompliance(*this, cdata, res);
     }
 
     /// \copydoc RootBase::jacobianMatrixProduct

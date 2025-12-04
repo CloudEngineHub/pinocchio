@@ -643,70 +643,37 @@ namespace pinocchio
     }
 
     /**
-     * @brief      ConstraintModelActiveComplianceVisitor visitor
+     * @brief      ConstraintModelRetriveComplianceVisitor visitor
      */
-    template<typename ReturnType>
-    struct ConstraintModelActiveComplianceConstVisitor
-    : ConstraintUnaryVisitorBase<
-        ConstraintModelActiveComplianceConstVisitor<ReturnType>,
-        ReturnType>
+    template<typename VectorLike>
+    struct ConstraintModelRetriveComplianceVisitor
+    : ConstraintUnaryVisitorBase<ConstraintModelRetriveComplianceVisitor<VectorLike>>
     {
-      typedef NoArg ArgsType;
+      typedef boost::fusion::vector<VectorLike &> ArgsType;
 
       template<typename ConstraintModel>
-      static ReturnType algo(
+      static void algo(
         const ::pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata)
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Eigen::MatrixBase<VectorLike> & res)
       {
-        return cmodel.getActiveCompliance(cdata);
+        return cmodel.retrieveCompliance(cdata.derived(), res.const_cast_derived());
       }
     };
 
     template<
       typename Scalar,
       int Options,
-      template<typename S, int O> class ConstraintCollectionTpl>
-    typename traits<
-      ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::ComplianceVectorTypeConstRef
-    getActiveCompliance(
+      template<typename S, int O> class ConstraintCollectionTpl,
+      typename VectorLike>
+    void retrieveCompliance(
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
+      const Eigen::MatrixBase<VectorLike> & res)
     {
-      typedef typename traits<ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::
-        ComplianceVectorTypeConstRef ReturnType;
-      typedef ConstraintModelActiveComplianceConstVisitor<ReturnType> Algo;
-      return Algo::run(cmodel, cdata);
-    }
-
-    template<typename ReturnType>
-    struct ConstraintModelActiveComplianceVisitor
-    : ConstraintUnaryVisitorBase<ConstraintModelActiveComplianceVisitor<ReturnType>, ReturnType>
-    {
-      typedef NoArg ArgsType;
-
-      template<typename ConstraintModel>
-      static ReturnType algo(
-        const ::pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        typename ConstraintModel::ConstraintData & cdata)
-      {
-        return cmodel.getActiveCompliance(cdata);
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class ConstraintCollectionTpl>
-    typename traits<
-      ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::ComplianceVectorTypeRef
-    getActiveCompliance(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
-    {
-      typedef typename traits<ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::
-        ComplianceVectorTypeRef ReturnType;
-      typedef ConstraintModelActiveComplianceVisitor<ReturnType> Algo;
-      return Algo::run(cmodel, cdata);
+      typedef ConstraintModelRetriveComplianceVisitor<VectorLike> Algo;
+      typename Algo::ArgsType args(res.const_cast_derived());
+      return Algo::run(cmodel, cdata, args);
     }
 
     /**
