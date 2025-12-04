@@ -167,24 +167,9 @@ namespace pinocchio
 
     assert(maxResidualSize() == max_residual_size);
 
-    // Fill bound limit and margin for lower and upper for activable constraints
-    activable_position_limit = VectorXs::Zero(Eigen::DenseIndex(maxResidualSize()));
-    activable_position_margin = VectorXs::Zero(Eigen::DenseIndex(maxResidualSize()));
-    Eigen::DenseIndex constraint_id = 0;
-    for (; constraint_id < lowerMaxResidualSize(); ++constraint_id)
-    {
-      const Eigen::DenseIndex idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
-      activable_position_limit[constraint_id] = lb[idx_q];
-      activable_position_margin[constraint_id] = margin[idx_q];
-      assert(margin[idx_q] >= 0);
-    }
-    for (; constraint_id < maxResidualSize(); ++constraint_id)
-    {
-      const Eigen::DenseIndex idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
-      activable_position_limit[constraint_id] = ub[idx_q];
-      activable_position_margin[constraint_id] = margin[idx_q];
-      assert(margin[idx_q] >= 0);
-    }
+    // Set activable_[position_limit|margin] of size maxResidualSize from lb, ub, margin of size
+    // model.nq
+    setPositionLimitAndMargin(lb, ub, margin);
 
     // Data member
     m_compliance = ComplianceVectorType::Zero(maxResidualSize());

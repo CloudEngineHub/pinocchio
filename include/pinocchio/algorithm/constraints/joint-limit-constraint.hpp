@@ -341,12 +341,12 @@ namespace pinocchio
       return max_of_nvs;
     }
     /// \copydoc activable_position_limit
-    const VectorXs & getActivableBoundPositionLimit() const
+    const VectorXs & getActivablePositionLimit() const
     {
       return activable_position_limit;
     }
     /// \copydoc activable_position_margin
-    const VectorXs & getActivableBoundPositionMargin() const
+    const VectorXs & getActivablePositionMargin() const
     {
       return activable_position_margin;
     }
@@ -376,6 +376,35 @@ namespace pinocchio
     VectorOfSize getActiveIdxInActivable(const ConstraintData & cdata) const
     {
       return cdata.active_idx_in_activable;
+    }
+
+    /// \brief Set activable_[position_limit|margin] of size maxResidualSize from lb, ub, margin of
+    /// size model.nq
+    /// \note Expect a limit or margin vector of size model.nq
+    template<typename VectorLike1, typename VectorLike2, typename VectorLike3>
+    void setPositionLimitAndMargin(
+      const Eigen::MatrixBase<VectorLike1> & lb,
+      const Eigen::MatrixBase<VectorLike2> & ub,
+      const Eigen::MatrixBase<VectorLike3> & margin)
+    {
+      // Fill bound limit and margin for lower and upper for activable constraints
+      activable_position_limit = VectorXs::Zero(Eigen::DenseIndex(maxResidualSize()));
+      activable_position_margin = VectorXs::Zero(Eigen::DenseIndex(maxResidualSize()));
+      Eigen::DenseIndex constraint_id = 0;
+      for (; constraint_id < lowerMaxResidualSize(); ++constraint_id)
+      {
+        const Eigen::DenseIndex idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
+        activable_position_limit[constraint_id] = lb[idx_q];
+        activable_position_margin[constraint_id] = margin[idx_q];
+        assert(margin[idx_q] >= 0);
+      }
+      for (; constraint_id < maxResidualSize(); ++constraint_id)
+      {
+        const Eigen::DenseIndex idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
+        activable_position_limit[constraint_id] = ub[idx_q];
+        activable_position_margin[constraint_id] = margin[idx_q];
+        assert(margin[idx_q] >= 0);
+      }
     }
 
     // selected_row_sparsity_pattern, selected_row_indexes,

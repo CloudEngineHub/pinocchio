@@ -86,6 +86,7 @@ namespace pinocchio
     {
       typedef typename context::JointLimitConstraintModel::JointIndexVector JointIndexVector;
       typedef typename context::JointLimitConstraintModel Self;
+      typedef typename context::JointLimitConstraintData ConstraintData;
       cl.def(bp::init<const context::Model &, const JointIndexVector &>(
                (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints")),
                "Contructor from given joint index vector "
@@ -97,11 +98,11 @@ namespace pinocchio
         .def("getNqReduce", &Self::getNqReduce, "Sum of nq of activable joints.")
         .def("getMaxOfNvs", &Self::getMaxOfNvs, "Max nv of atomic joints in activable joints.")
         .def(
-          "getActivableBoundPositionLimit", &Self::getActivableBoundPositionLimit,
+          "getActivablePositionLimit", &Self::getActivablePositionLimit,
           bp::return_value_policy<bp::copy_const_reference>(),
           "Position limit of the dof of the constraints.")
         .def(
-          "getActivableBoundPositionMargin", &Self::getActivableBoundPositionMargin,
+          "getActivablePositionMargin", &Self::getActivablePositionMargin,
           bp::return_value_policy<bp::copy_const_reference>(),
           "Position margin of the dof of the constraints.")
         .def(
@@ -110,13 +111,28 @@ namespace pinocchio
         .def(
           "upperMaxResidualSize", &Self::upperMaxResidualSize,
           "Part of maxResidualSize() that are upper bound limits.")
-        // ATTENTION SIGNATURE
         .def(
-          "lowerResidualSize", &Self::lowerResidualSize,
-          "Part of residualSize() that are lower bound limits.")
+          "setPositionLimitAndMargin",
+          bp::make_function(
+            +[](
+               Self & self, const context::VectorXs & lb, const context::VectorXs & ub,
+               const context::VectorXs & margin) -> void {
+              self.setPositionLimitAndMargin(lb, ub, margin);
+            }),
+          "Set position limit and margin for activable constraints from lower_bound, upper_bound "
+          "and margin of size model.nq.")
         .def(
-          "upperResidualSize", &Self::upperResidualSize,
-          "Part of residualSize() that are upper bound limits.");
+          "lowerResidualSize",
+          bp::make_function(+[](const Self & self, const ConstraintData & cdata) -> int {
+            return self.lowerResidualSize(cdata);
+          }),
+          "Give the size of constraint that are lower bound in a given state.")
+        .def(
+          "upperResidualSize",
+          bp::make_function(+[](const Self & self, const ConstraintData & cdata) -> int {
+            return self.upperResidualSize(cdata);
+          }),
+          "Give the size of constraint that are upper bound in a given state.");
       // .def(
       //   "getActiveIdxInActivable", &Self::getActiveIdxInActivable,
       //   bp::return_value_policy<bp::copy_const_reference>(),
