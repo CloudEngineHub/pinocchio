@@ -104,7 +104,6 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
   JointLimitConstraintData constraint_data(constraint);
   const Eigen::VectorXd q0 = randomConfiguration(model);
   data.q_in = q0;
-  constraint.resize(model, data, constraint_data);
   constraint.calc(model, data, constraint_data);
 
   // Check projection on force sets
@@ -173,7 +172,6 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
   {
     const Eigen::VectorXd q0 = randomConfiguration(model);
     data.q_in = q0;
-    constraint_model.resize(model, data, constraint_data);
     constraint_model.calc(model, data, constraint_data);
 
     Eigen::MatrixXd jacobian_matrix(constraint_model.residualSize(constraint_data), model.nv);
@@ -189,7 +187,6 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
       const Eigen::VectorXd q_plus = integrate(model, q0, v_eps);
       data_fd.q_in = q_plus;
 
-      constraint_model.resize(model, data_fd, constraint_data_fd);
       constraint_model.calc(model, data_fd, constraint_data_fd);
 
       jacobian_matrix_fd.col(k) =
@@ -239,7 +236,7 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
   for (int i = 0; i < 1e4; ++i)
   {
     const Eigen::VectorXd q0 = randomConfiguration(model, qmin, qmax);
-    std::size_t active_size = 0;
+    std::size_t csize = 0;
     std::vector<std::size_t> active_indexes;
     Eigen::VectorXd activable_residual(constraint_model.maxResidualSize());
 
@@ -259,7 +256,7 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
         activable_residual(set_idx) = q0(q_index) - model.lowerPositionLimit[q_index];
         if (activable_residual(set_idx) < model.positionLimitMargin[q_index])
         {
-          active_size++;
+          csize++;
           active_indexes.push_back((std::size_t)set_idx);
         }
         set_idx++;
@@ -267,20 +264,19 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
     }
     BOOST_CHECK(constraint_model.maxResidualSize() == set_idx);
 
-    Eigen::VectorXd residual(active_size);
-    for (std::size_t j = 0; j < active_size; j++)
+    Eigen::VectorXd residual(csize);
+    for (std::size_t j = 0; j < csize; j++)
     {
       residual((Eigen::Index)j) = activable_residual((Eigen::Index)active_indexes[j]);
     }
 
     data.q_in = q0;
-    constraint_model.resize(model, data, constraint_data);
     constraint_model.calc(model, data, constraint_data);
-    BOOST_CHECK((int)active_size == constraint_model.residualSize(constraint_data));
-    BOOST_CHECK((int)active_size == constraint_data.constraint_residual.size());
+    BOOST_CHECK((int)csize == constraint_model.residualSize(constraint_data));
+    BOOST_CHECK((int)csize == constraint_data.constraint_residual.size());
     BOOST_CHECK(constraint_data.constraint_residual.isApprox(residual));
     BOOST_CHECK(constraint_data.activable_constraint_residual.isApprox(activable_residual));
-    BOOST_CHECK(active_indexes == constraint_model.getActiveSetIndexes(constraint_data));
+    BOOST_CHECK(active_indexes == constraint_model.getActiveIdxInActivable(constraint_data));
   }
 }
 
@@ -323,7 +319,7 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
   for (int i = 0; i < num_tests; ++i)
   {
     const Eigen::VectorXd q0 = randomConfiguration(model, qmin, qmax);
-    int active_size = 0;
+    int csize = 0;
     std::vector<std::size_t> active_indexes;
     Eigen::VectorXd activable_residual(constraint_model.maxResidualSize());
 
@@ -343,7 +339,7 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
         activable_residual(set_idx) = -(q0(q_index) - model.lowerPositionLimit[q_index]);
         if (-activable_residual(set_idx) < model.positionLimitMargin[q_index])
         {
-          active_size++;
+          csize++;
           active_indexes.push_back((std::size_t)set_idx);
         }
         set_idx++;
@@ -352,13 +348,12 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
     BOOST_CHECK(constraint_model.maxResidualSize() == set_idx);
 
     data.q_in = q0;
-    constraint_model.resize(model, data, constraint_data);
     constraint_model.calc(model, data, constraint_data);
 
     std::vector<std::size_t> active_set_indexes =
-      constraint_model.getActiveSetIndexes(constraint_data);
-    BOOST_CHECK(active_size == constraint_model.residualSize(constraint_data));
-    BOOST_CHECK(active_size == constraint_data.constraint_residual.size());
+      constraint_model.getActiveIdxInActivable(constraint_data);
+    BOOST_CHECK(csize == constraint_model.residualSize(constraint_data));
+    BOOST_CHECK(csize == constraint_data.constraint_residual.size());
 
     Eigen::MatrixXd jacobian_matrix(constraint_model.residualSize(constraint_data), model.nv);
     constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
@@ -374,10 +369,9 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
       v_eps[k] = eps_fd;
       const Eigen::VectorXd q_plus = integrate(model, q0, v_eps);
       data_fd.q_in = q_plus;
-      constraint_model.resize(model, data_fd, constraint_data_fd);
       constraint_model.calc(model, data_fd, constraint_data_fd);
       bool same_active_set =
-        active_set_indexes == constraint_model.getActiveSetIndexes(constraint_data_fd);
+        active_set_indexes == constraint_model.getActiveIdxInActivable(constraint_data_fd);
       // if the active set is identical we can check the jacobian
       if (!same_active_set)
       {

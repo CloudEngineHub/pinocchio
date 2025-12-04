@@ -83,17 +83,17 @@ class TestADMM(TestCase):
         )
         delassus = pin.DelassusOperatorDense(delassus_matrix)
 
-        active_size = 0
+        csize = 0
         for i, cm in enumerate(constraint_models):
             cd = constraint_datas[i]
-            active_size += cm.residualSize(cd)
+            csize += cm.residualSize(cd)
         self.assertTrue(
-            delassus.matrix().shape[0] == active_size,
+            delassus.matrix().shape[0] == csize,
             "constraint problem is of wrong size.",
         )
 
         dim_pb = g.shape[0]
-        self.assertTrue(dim_pb == active_size, "constraint problem is of wrong size")
+        self.assertTrue(dim_pb == csize, "constraint problem is of wrong size")
         solver = pin.ADMMConstraintSolver(dim_pb)
         solver.setAbsolutePrecision(1e-10)
         solver.setRelativePrecision(1e-12)

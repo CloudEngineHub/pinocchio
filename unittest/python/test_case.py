@@ -102,20 +102,18 @@ class ContactSolverTestCase(PinocchioTestCase):
         idx_cm = 0
         for i, cm in enumerate(constraint_models):
             cd = constraint_datas[i]
-            cm_active_size = cm.residualSize(cd)
+            cm_csize = cm.residualSize(cd)
             if cm.shortname() == "PointContactConstraintModel":
                 continue
             elif cm.shortname() == "JointFrictionConstraintModel":
                 continue
             elif cm.shortname() == "JointLimitConstraintModel":
-                g[idx_cm : idx_cm + cm_active_size] *= dt
-                g[idx_cm : idx_cm + cm_active_size] += cd.extract().constraint_residual
+                g[idx_cm : idx_cm + cm_csize] *= dt
+                g[idx_cm : idx_cm + cm_csize] += cd.extract().constraint_residual
             elif cm.shortname() == "PointAnchorConstraintModel":
-                g[idx_cm : idx_cm + cm_active_size] *= dt
-                g[idx_cm : idx_cm + cm_active_size] += (
-                    cd.extract().constraint_position_error
-                )
-            idx_cm += cm_active_size
+                g[idx_cm : idx_cm + cm_csize] *= dt
+                g[idx_cm : idx_cm + cm_csize] += cd.extract().constraint_position_error
+            idx_cm += cm_csize
         return delassus_matrix, g, constraint_datas
 
     @unittest.skipUnless(coal_found, "Needs Coal.")

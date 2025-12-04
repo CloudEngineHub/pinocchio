@@ -207,9 +207,9 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(generalized_velocity.size(), model.nv);
 
     auto & constraint_motions = constraint_motions_.const_cast_derived();
-    const Eigen::DenseIndex constraint_active_size =
+    const Eigen::DenseIndex total_constraint_size =
       getTotalConstraintResidualSize(constraint_models, constraint_datas);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), constraint_active_size);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), total_constraint_size);
 
     Eigen::Index row_id = 0;
     for (size_t ee_id = 0; ee_id < constraint_models.size(); ++ee_id)
@@ -284,10 +284,10 @@ namespace pinocchio
       const auto & cmodel = helper::get_ref(constraint_models[k]);
       const auto & cdata = helper::get_ref(constraint_datas[k]);
 
-      const auto active_size = cmodel.residualSize(cdata);
-      getConstraintJacobian(model, data, cmodel, cdata, J.middleRows(row_id, active_size));
+      const auto csize = cmodel.residualSize(cdata);
+      getConstraintJacobian(model, data, cmodel, cdata, J.middleRows(row_id, csize));
 
-      row_id += active_size;
+      row_id += csize;
     }
   }
 
