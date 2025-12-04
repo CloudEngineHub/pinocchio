@@ -2500,10 +2500,6 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_dirty_data)
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_dim = 0;
-  for (size_t k = 0; k < constraint_models.size(); ++k)
-    constraint_dim += constraint_models[k].maxResidualSize();
-
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 

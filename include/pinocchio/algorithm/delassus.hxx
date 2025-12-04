@@ -256,7 +256,6 @@ namespace pinocchio
           const RigidConstraintModel & cmodel_other = contact_models[i];
           const RigidConstraintData & cdata_other = contact_data[i];
           const int size_other = cmodel_other.maxResidualSize();
-          const IndexVector & support1_other = model.supports[cmodel_other.joint1_id];
 
           const VectorOfMatrix6 & propagators_other =
             cdata_other.extended_motion_propagators_joint1;
@@ -820,6 +819,7 @@ namespace pinocchio
     MatrixType & damped_delassus_inverse = damped_delassus_inverse_.const_cast_derived();
 
     const Scalar mu_inv_square = mu_inv * mu_inv;
+    PINOCCHIO_ONLY_USED_FOR_DEBUG(mu_inv_square);
     assert(
       check_expression_if_real<Scalar>(mu_inv_square != std::numeric_limits<Scalar>::infinity())
       && "mu_inv**2 is equal to infinity.");
