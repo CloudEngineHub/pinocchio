@@ -90,46 +90,37 @@ namespace pinocchio
                (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints")),
                "Contructor from given joint index vector "
                "implied in the constraint."))
+        .def(
+          "getSelectedJoints", &Self::getSelectedJoints,
+          bp::return_value_policy<bp::copy_const_reference>(),
+          "Joints for which there is at least one position limit.")
         .def("getNqReduce", &Self::getNqReduce, "Sum of nq of activable joints.")
-        .def("getNvMaxAtom", &Self::getNvMaxAtom, "Max nv of atomic joints in activable joints.")
-        .def("lowerSize", &Self::lowerSize, "Part of size() that are lower bound limits.")
+        .def("getMaxOfNvs", &Self::getMaxOfNvs, "Max nv of atomic joints in activable joints.")
         .def(
-          "lowerResidualSize", &Self::lowerResidualSize,
-          "Part of residualSize() that are lower bound limits.")
-        .def("upperSize", &Self::upperSize, "Part of size() that are upper bound limits.")
-        .def(
-          "upperResidualSize", &Self::upperResidualSize,
-          "Part of residualSize() that are upper bound limits.")
-        .def(
-          "getBoundPositionLimit", &Self::getBoundPositionLimit,
+          "getActivableBoundPositionLimit", &Self::getActivableBoundPositionLimit,
           bp::return_value_policy<bp::copy_const_reference>(),
           "Position limit of the dof of the constraints.")
         .def(
-          "getBoundPositionMargin", &Self::getBoundPositionMargin,
+          "getActivableBoundPositionMargin", &Self::getActivableBoundPositionMargin,
           bp::return_value_policy<bp::copy_const_reference>(),
           "Position margin of the dof of the constraints.")
         .def(
-          "getActivableJoints", &Self::getActivableJoints,
-          bp::return_value_policy<bp::copy_const_reference>(),
-          "Joints for which there is at least one position limit.")
+          "lowerMaxResidualSize", &Self::lowerMaxResidualSize,
+          "Part of maxResidualSize() that are lower bound limits.")
         .def(
-          "getActivableIdxQs", &Self::getActivableIdxQs,
-          bp::return_value_policy<bp::copy_const_reference>(),
-          "Q index in configuration of each limit constraint.")
+          "upperMaxResidualSize", &Self::upperMaxResidualSize,
+          "Part of maxResidualSize() that are upper bound limits.")
+        // ATTENTION SIGNATURE
         .def(
-          "getActivableIdxQsReduce", &Self::getActivableIdxQsReduce,
-          bp::return_value_policy<bp::copy_const_reference>(),
-          "Q index in thre reduce configuration (about activable joints) of each activable limit "
-          "constraint.")
+          "lowerResidualSize", &Self::lowerResidualSize,
+          "Part of residualSize() that are lower bound limits.")
         .def(
-          "getActiveIdxQsReduce", &Self::getActiveIdxQsReduce,
-          bp::return_value_policy<bp::copy_const_reference>(),
-          "Q index in thre reduce configuration (about activable joints) of each active limit "
-          "constraint.")
-        .def(
-          "getActiveSetIndexes", &Self::getActiveSetIndexes,
-          bp::return_value_policy<bp::copy_const_reference>(),
-          "Indexes of the active constraints set.");
+          "upperResidualSize", &Self::upperResidualSize,
+          "Part of residualSize() that are upper bound limits.");
+      // .def(
+      //   "getActiveIdxInActivable", &Self::getActiveIdxInActivable,
+      //   bp::return_value_policy<bp::copy_const_reference>(),
+      //   "Indexes of the active constraints set.");
       return cl;
     }
   } // namespace python

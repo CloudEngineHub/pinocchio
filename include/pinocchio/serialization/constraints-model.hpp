@@ -95,20 +95,20 @@ namespace boost
       {
         typedef ::pinocchio::JointLimitConstraintModelTpl<Scalar, Options> Base;
 
+        using Base::activable_idx_in_selected;
         using Base::activable_idx_qs;
         using Base::activable_idx_qs_reduce;
-        using Base::activable_idx_rows;
-        using Base::activable_joints;
-        using Base::joint_idx_vs;
-        using Base::joint_nqs;
-        using Base::joint_nvs;
-        using Base::lower_activable_size;
+        using Base::activable_position_limit;
+        using Base::activable_position_margin;
+        using Base::lower_max_residual_size;
+        using Base::max_of_nvs;
         using Base::nq_reduce;
-        using Base::nv_max_atom;
-        using Base::position_limit;
-        using Base::position_margin;
-        using Base::row_indexes;
-        using Base::row_sparsity_pattern;
+        using Base::selected_joint_idx_vs;
+        using Base::selected_joint_nqs;
+        using Base::selected_joint_nvs;
+        using Base::selected_joints;
+        using Base::selected_row_indexes;
+        using Base::selected_row_sparsity_pattern;
       };
     } // namespace internal
 
@@ -127,20 +127,20 @@ namespace boost
 
       typedef internal::JointLimitConstraintModelAccessor<Scalar, Options> Accessor;
       auto & cmodel_ = reinterpret_cast<Accessor &>(cmodel);
-      ar & make_nvp("activable_joints", cmodel_.activable_joints);
+      ar & make_nvp("selected_joints", cmodel_.selected_joints);
+      ar & make_nvp("selected_row_sparsity_pattern", cmodel_.selected_row_sparsity_pattern);
+      ar & make_nvp("selected_row_indexes", cmodel_.selected_row_indexes);
+      ar & make_nvp("selected_joint_nqs", cmodel_.selected_joint_nqs);
+      ar & make_nvp("selected_joint_nvs", cmodel_.selected_joint_nvs);
+      ar & make_nvp("selected_joint_idx_vs", cmodel_.selected_joint_idx_vs);
       ar & make_nvp("nq_reduce", cmodel_.nq_reduce);
-      ar & make_nvp("nv_max_atom", cmodel_.nv_max_atom);
-      ar & make_nvp("lower_activable_size", cmodel_.lower_activable_size);
-      ar & make_nvp("row_sparsity_pattern", cmodel_.row_sparsity_pattern);
-      ar & make_nvp("row_indexes", cmodel_.row_indexes);
-      ar & make_nvp("position_limit", cmodel_.position_limit);
-      ar & make_nvp("position_margin", cmodel_.position_margin);
+      ar & make_nvp("max_of_nvs", cmodel_.max_of_nvs);
+      ar & make_nvp("activable_idx_in_selected", cmodel_.activable_idx_in_selected);
       ar & make_nvp("activable_idx_qs", cmodel_.activable_idx_qs);
-      ar & make_nvp("activable_idx_rows", cmodel_.activable_idx_rows);
       ar & make_nvp("activable_idx_qs_reduce", cmodel_.activable_idx_qs_reduce);
-      ar & make_nvp("joint_nqs", cmodel_.joint_nqs);
-      ar & make_nvp("joint_nvs", cmodel_.joint_nvs);
-      ar & make_nvp("joint_idx_vs", cmodel_.joint_idx_vs);
+      ar & make_nvp("activable_position_limit", cmodel_.activable_position_limit);
+      ar & make_nvp("activable_position_margin", cmodel_.activable_position_margin);
+      ar & make_nvp("lower_max_residual_size", cmodel_.lower_max_residual_size);
     }
 
     namespace internal
