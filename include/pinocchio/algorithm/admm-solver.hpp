@@ -23,8 +23,8 @@
 namespace pinocchio
 {
   template<typename Scalar>
-  struct ADMMContactSolverTpl;
-  typedef ADMMContactSolverTpl<context::Scalar> ADMMContactSolver;
+  struct ADMMConstraintSolverTpl;
+  typedef ADMMConstraintSolverTpl<context::Scalar> ADMMConstraintSolver;
 
   template<typename _Scalar>
   struct ADMMSpectralUpdateRuleTpl
@@ -206,7 +206,7 @@ namespace pinocchio
 
   template<typename _Scalar>
   struct PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
-    ADMMContactSolverTpl : ContactSolverBaseTpl<_Scalar>
+    ADMMConstraintSolverTpl : ContactSolverBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
     typedef ContactSolverBaseTpl<_Scalar> Base;
@@ -314,7 +314,7 @@ namespace pinocchio
     //      SolverStats stats;
     //    };
 
-    explicit ADMMContactSolverTpl(
+    explicit ADMMConstraintSolverTpl(
       int problem_dim,
       Scalar tau_prox = Scalar(1),
       Scalar tau = Scalar(0.5),
@@ -744,7 +744,7 @@ namespace pinocchio
 #ifdef PINOCCHIO_WITH_HPP_FCL
     using Base::timer;
 #endif // PINOCCHIO_WITH_HPP_FCL
-  }; // struct ADMMContactSolverTpl
+  }; // struct ADMMConstraintSolverTpl
 
 } // namespace pinocchio
 

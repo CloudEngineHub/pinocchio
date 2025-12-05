@@ -14,12 +14,12 @@ namespace pinocchio
 {
 
   template<typename Scalar>
-  struct PGSContactSolverTpl;
-  typedef PGSContactSolverTpl<context::Scalar> PGSContactSolver;
+  struct PGSConstraintSolverTpl;
+  typedef PGSConstraintSolverTpl<context::Scalar> PGSConstraintSolver;
 
   /// \brief Projected Gauss Siedel solver
   template<typename _Scalar>
-  struct PGSContactSolverTpl : ContactSolverBaseTpl<_Scalar>
+  struct PGSConstraintSolverTpl : ContactSolverBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
     typedef ContactSolverBaseTpl<Scalar> Base;
@@ -29,7 +29,7 @@ namespace pinocchio
 
     typedef typename Base::SolverStats SolverStats;
 
-    explicit PGSContactSolverTpl(const int problem_size)
+    explicit PGSConstraintSolverTpl(const int problem_size)
     : Base(problem_size)
     , x(problem_size)
     , x_previous(problem_size)
@@ -136,7 +136,7 @@ namespace pinocchio
     /// \brief Stats of the solver
     SolverStats stats;
 
-  }; // struct PGSContactSolverTpl
+  }; // struct PGSConstraintSolverTpl
 } // namespace pinocchio
 
 #include "pinocchio/algorithm/pgs-solver.hxx"

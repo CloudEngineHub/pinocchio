@@ -19,7 +19,7 @@ namespace pinocchio
 
     typedef context::Scalar Scalar;
     typedef context::VectorXs VectorXs;
-    typedef PGSContactSolverTpl<Scalar> Solver;
+    typedef PGSConstraintSolverTpl<Scalar> Solver;
     typedef Solver::SolverStats SolverStats;
     typedef typename Solver::RefConstVectorXs RefConstVectorXs;
 
@@ -108,11 +108,11 @@ namespace pinocchio
       expose.run(static_cast<ConstraintModel *>(nullptr));
     }
 
-    void exposePGSContactSolver()
+    void exposePGSConstraintSolver()
     {
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
       bp::class_<Solver> class_(
-        "PGSContactSolver", "Projected Gauss Siedel solver for contact dynamics.",
+        "PGSConstraintSolver", "Projected Gauss Siedel solver for contact dynamics.",
         bp::init<int>(bp::args("self", "problem_dim"), "Default constructor."));
       class_.def(ContactSolverBasePythonVisitor<Solver>())
         .def(

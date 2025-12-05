@@ -546,7 +546,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  bool PGSContactSolverTpl<_Scalar>::solve(
+  bool PGSConstraintSolverTpl<_Scalar>::solve(
     const Eigen::MatrixBase<MatrixType> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,

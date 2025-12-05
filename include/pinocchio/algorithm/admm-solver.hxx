@@ -173,14 +173,14 @@ namespace pinocchio
 
   template<typename _Scalar>
   template<typename DelassusDerived>
-  _Scalar ADMMContactSolverTpl<_Scalar>::computeDelassusLargestEigenvalue(
+  _Scalar ADMMConstraintSolverTpl<_Scalar>::computeDelassusLargestEigenvalue(
     const DelassusOperatorBase<DelassusDerived> & delassus)
   {
     const DelassusDerived & G = delassus.derived();
     Scalar L = Scalar(-1);
     if (this->problem_size > 1)
     {
-      PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - lanczos");
+      PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - lanczos");
       this->lanczos_decomposition.compute(G);
       L = ::pinocchio::computeLargestEigenvalue(this->lanczos_decomposition.Ts(), 1e-8);
 #ifndef NDEBUG
@@ -221,7 +221,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  bool ADMMContactSolverTpl<_Scalar>::solve(
+  bool ADMMConstraintSolverTpl<_Scalar>::solve(
     DelassusOperatorBase<DelassusDerived> & _delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -528,7 +528,8 @@ namespace pinocchio
         // If update is worse in terms of primal feas, it is rejected and the default
         // ADMM iterates are used to compute the y-update.
         {
-          PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop computeConeProjection");
+          PINOCCHIO_TRACY_ZONE_SCOPED_N(
+            "ADMMConstraintSolverTpl::solve - loop computeConeProjection");
           tmp = x_anderson_ - z_anderson_ / (tau * rho);
           internal::computeConeProjection(constraint_models, constraint_datas, tmp, y_);
 
@@ -567,7 +568,7 @@ namespace pinocchio
 
         // default (non-accelerated) x-update
         {
-          PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop solveInPlace");
+          PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop solveInPlace");
           rhs = -(g + s_ - (rho * tau) * y_ - (mu_prox * tau_prox) * x_previous_ - z_previous_);
           x_ = rhs;
           G.solveInPlace(x_);
@@ -730,7 +731,7 @@ namespace pinocchio
             prox_value = tau_prox * mu_prox + tau * rho;
             if (old_prox_value != prox_value)
             {
-              PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop updateDamping");
+              PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop updateDamping");
               rhs = VectorXs::Constant(this->problem_size, prox_value);
               G.updateDamping(rhs);
               this->delassus_decomposition_update_count++;
@@ -788,7 +789,7 @@ namespace pinocchio
   //     template<typename T> class Holder,
   //     typename ConstraintModel,
   //     typename ConstraintModelAllocator>
-  //   bool ADMMContactSolverTpl<_Scalar>::solve(
+  //   bool ADMMConstraintSolverTpl<_Scalar>::solve(
   //     DelassusOperatorBase<DelassusDerived> & _delassus,
   //     const Eigen::MatrixBase<VectorLike> & g,
   //     const std::vector<Holder<const ConstraintModel>, ConstraintModelAllocator> &
@@ -949,7 +950,7 @@ namespace pinocchio
   //       {
   //         {
   //           PINOCCHIO_TRACY_ZONE_SCOPED_N(
-  //             "ADMMContactSolverTpl::solve - second computeDeSaxeCorrection");
+  //             "ADMMConstraintSolverTpl::solve - second computeDeSaxeCorrection");
   //           internal::computeDeSaxeCorrection(constraint_models, z_, s_);
   //         }
   //         z_ += s_; // Add De Saxé shift
@@ -998,7 +999,7 @@ namespace pinocchio
   //       case (ADMMUpdateRule::SPECTRAL): {
   //         if (this->problem_size > 1)
   //         {
-  //           PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - lanczos");
+  //           PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - lanczos");
   //           m = rhs.minCoeff();
   //           this->lanczos_decomposition.compute(G_bar);
   //           L = ::pinocchio::computeLargestEigenvalue(this->lanczos_decomposition.Ts(), 1e-8);
@@ -1088,7 +1089,7 @@ namespace pinocchio
   //         // x-update
   //         rhs = -(g_bar_ + s_bar_ - (rho * tau) * y_bar_ - mu_prox * x_bar_ - z_bar_);
   //         {
-  //           PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop solveInPlace");
+  //           PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop solveInPlace");
   //           G_bar.solveInPlace(rhs);
   //         }
   //         x_bar_ = rhs;
@@ -1097,7 +1098,7 @@ namespace pinocchio
   //         rhs -= z_bar_ / (tau * rho);
   //         {
   //           PINOCCHIO_TRACY_ZONE_SCOPED_N(
-  //             "ADMMContactSolverTpl::solve - loop computeScaledConeProjection");
+  //             "ADMMConstraintSolverTpl::solve - loop computeScaledConeProjection");
   //           internal::computeScaledConeProjection(
   //             constraint_models, rhs, preconditioner_.getDiagonal(), y_bar_);
   //         }
@@ -1241,8 +1242,8 @@ namespace pinocchio
   //           prox_value = mu_prox + tau * rho;
   //           if (old_prox_value != prox_value)
   //           {
-  //             PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMContactSolverTpl::solve - loop updateDamping");
-  //             rhs = VectorXs::Constant(this->problem_size, prox_value);
+  //             PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop
+  //             updateDamping"); rhs = VectorXs::Constant(this->problem_size, prox_value);
   //             G_bar.updateDamping(rhs);
   //             cholesky_update_count++;
   //             old_prox_value = prox_value;

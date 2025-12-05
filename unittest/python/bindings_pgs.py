@@ -26,7 +26,7 @@ class TestPGS(TestCase):
         dt = 1e-3
         delassus, g = self.setupTest(model, constraint_models, q0, v0, tau0, fext, dt)
         dim_pb = g.shape[0]
-        solver = pin.PGSContactSolver(dim_pb)
+        solver = pin.PGSConstraintSolver(dim_pb)
         solver.setAbsolutePrecision(1e-13)
         solver.setRelativePrecision(1e-14)
         solver.solve(delassus, g, constraint_models, dt)
@@ -91,7 +91,7 @@ class TestPGS(TestCase):
         )
 
         dim_pb = g.shape[0]
-        solver = pin.PGSContactSolver(dim_pb)
+        solver = pin.PGSConstraintSolver(dim_pb)
         solver.setAbsolutePrecision(1e-13)
         solver.setRelativePrecision(1e-14)
 

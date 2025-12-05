@@ -78,13 +78,13 @@ struct TestBoxTpl
     const Eigen::VectorXd g = constraint_jacobian * v_free;
 
     // Configure the member ADMM solver
-    ADMMContactSolverTpl<double> admm_solver(int(getTotalConstraintSize(constraint_models)));
+    ADMMConstraintSolverTpl<double> admm_solver(int(getTotalConstraintSize(constraint_models)));
     admm_solver.setMaxIterations(10000);
     admm_solver.setAbsolutePrecision(1e-10);
     admm_solver.setRelativePrecision(1e-12);
     admm_solver.setLanczosSize((int)g.size());
 
-    PGSContactSolver pgs_solver(int(delassus_matrix_plain.rows()));
+    PGSConstraintSolver pgs_solver(int(delassus_matrix_plain.rows()));
     pgs_solver.setAbsolutePrecision(1e-10);
     pgs_solver.setRelativePrecision(1e-12);
 
@@ -549,7 +549,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   Eigen::VectorXd dual_solution(Eigen::VectorXd::Zero(g.size()));
   boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution(
     Eigen::VectorXd::Zero(g.size()));
-  ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+  ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
   admm_solver.setAbsolutePrecision(1e-13);
   admm_solver.setRelativePrecision(1e-14);
 
@@ -664,7 +664,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -698,7 +698,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -796,7 +796,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -835,7 +835,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -933,7 +933,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -972,7 +972,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -1061,7 +1061,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
     Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -1100,7 +1100,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -1189,7 +1189,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
     Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -1223,7 +1223,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -1315,7 +1315,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
     Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 
@@ -1352,7 +1352,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.activeSize(cdata));
-    ADMMContactSolver admm_solver(int(delassus_matrix_plain.rows()));
+    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
     admm_solver.setAbsolutePrecision(1e-13);
     admm_solver.setRelativePrecision(1e-14);
 

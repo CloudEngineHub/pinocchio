@@ -26,7 +26,7 @@ namespace pinocchio
     typedef context::Scalar Scalar;
     typedef context::VectorXs VectorXs;
 
-    typedef ADMMContactSolverTpl<Scalar> Solver;
+    typedef ADMMConstraintSolverTpl<Scalar> Solver;
     typedef Solver::ADMMSolverStats SolverStats;
     typedef typename Solver::ConstRefVectorXs ConstRefVectorXs;
     typedef typename Solver::RefConstVectorXs RefConstVectorXs;
@@ -304,7 +304,7 @@ namespace pinocchio
       expose.run(static_cast<ConstraintModel *>(nullptr));
     }
 
-    void exposeADMMContactSolver()
+    void exposeADMMConstraintSolver()
     {
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
 
@@ -315,7 +315,7 @@ namespace pinocchio
       //        ;
 
       bp::class_<Solver> cl(
-        "ADMMContactSolver",
+        "ADMMConstraintSolver",
         "Alternating Direction Method of Multi-pliers solver for contact dynamics.",
         bp::init<int, Scalar, Scalar, Scalar, Scalar, Scalar, Scalar, int>(
           (bp::arg("self"), bp::arg("problem_dim"), bp::arg("mu_prox") = Scalar(1e-6),

@@ -30,7 +30,7 @@ class TestADMM(TestCase):
         )
         delassus = pin.DelassusOperatorDense(delassus_matrix)
         dim_pb = g.shape[0]
-        solver = pin.ADMMContactSolver(dim_pb)
+        solver = pin.ADMMConstraintSolver(dim_pb)
         solver.setAbsolutePrecision(1e-13)
         solver.setRelativePrecision(1e-14)
         solver.setLanczosSize(g.size)
@@ -96,13 +96,13 @@ class TestADMM(TestCase):
 
         dim_pb = g.shape[0]
         self.assertTrue(dim_pb == active_size, "constraint problem is of wrong size")
-        solver = pin.ADMMContactSolver(dim_pb)
+        solver = pin.ADMMConstraintSolver(dim_pb)
         solver.setAbsolutePrecision(1e-10)
         solver.setRelativePrecision(1e-12)
         solver.setAndersonAccelerationCapacity(4)
         solver.setRhoMomentum(0.9)
         solver.setLanczosSize(g.size)
-        # solver = pin.PGSContactSolver(dim_pb)
+        # solver = pin.PGSConstraintSolver(dim_pb)
         # solver.setAbsolutePrecision(1e-10)
         # solver.setRelativePrecision(1e-12)
 

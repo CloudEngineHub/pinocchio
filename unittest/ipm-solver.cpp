@@ -154,7 +154,8 @@ struct TestBoxTpl
       + dt * aba(model, data, q0, v0, (tau0 + tau_ext).eval(), external_forces, Convention::WORLD);
 
     // Run ADMM
-    ADMMContactSolverTpl<double> admm_solver(int(activeSize(constraint_models, constraint_datas)));
+    ADMMConstraintSolverTpl<double> admm_solver(
+      int(activeSize(constraint_models, constraint_datas)));
     admm_solver.setMaxIterations(10000);
     admm_solver.setAbsolutePrecision(tol_abs);
     admm_solver.setRelativePrecision(tol_rel);

@@ -10,14 +10,14 @@ namespace pinocchio
   {
 
     // Forward declaration
-    void exposePGSContactSolver();
-    void exposeADMMContactSolver();
+    void exposePGSConstraintSolver();
+    void exposeADMMConstraintSolver();
     void exposeIPMConstraintSolver();
 
     void exposeContactSolvers()
     {
-      exposePGSContactSolver();
-      exposeADMMContactSolver();
+      exposePGSConstraintSolver();
+      exposeADMMConstraintSolver();
       exposeIPMConstraintSolver();
     }
 
