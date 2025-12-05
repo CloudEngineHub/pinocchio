@@ -16,9 +16,9 @@ namespace pinocchio
 {
 
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-  struct ConstraintCouplingCollectorStep
+  struct ConstraintCouplingInformationCollectorStep
   : visitors::ConstraintUnaryVisitorBase<
-      ConstraintCouplingCollectorStep<Scalar, Options, JointCollectionTpl>>
+      ConstraintCouplingInformationCollectorStep<Scalar, Options, JointCollectionTpl>>
   {
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
@@ -26,7 +26,7 @@ namespace pinocchio
     typedef boost::fusion::vector<const Model &, Data &> ArgsType;
 
     typedef visitors::ConstraintUnaryVisitorBase<
-      ConstraintCouplingCollectorStep<Scalar, Options, JointCollectionTpl>>
+      ConstraintCouplingInformationCollectorStep<Scalar, Options, JointCollectionTpl>>
       Base;
 
     template<typename ConstraintModel>
@@ -107,7 +107,7 @@ namespace pinocchio
       ArgsType args(model, data);
       run(cmodel.derived(), args);
     }
-  }; // struct ConstraintCouplingCollectorStep
+  }; // struct ConstraintCouplingInformationCollectorStep
 
   template<
     typename Scalar,
@@ -140,7 +140,8 @@ namespace pinocchio
 
     // Get links supporting constraints
     std::fill(data.constraints_supported_dim.begin(), data.constraints_supported_dim.end(), 0);
-    typedef ConstraintCouplingCollectorStep<Scalar, Options, JointCollectionTpl> CollectorStep;
+    typedef ConstraintCouplingInformationCollectorStep<Scalar, Options, JointCollectionTpl>
+      CollectorStep;
     for (std::size_t i = 0; i < constraint_models.size(); ++i)
     {
       const auto & cmodel = helper::get_ref(constraint_models[i]);
