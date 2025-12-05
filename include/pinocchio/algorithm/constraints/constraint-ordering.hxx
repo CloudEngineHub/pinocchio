@@ -126,6 +126,11 @@ namespace pinocchio
     typedef typename Model::JointIndex JointIndex;
     typedef std::pair<JointIndex, JointIndex> JointPair;
     typedef typename Data::Matrix6 Matrix6;
+    typedef Eigen::Array<bool, Eigen::Dynamic, Eigen::Dynamic> BooleanArray;
+    typedef Eigen::Map<BooleanArray> MapBooleanArray;
+
+    auto keys = MapBooleanArray(PINOCCHIO_EIGEN_MAP_ALLOCA(bool, model.njoints, model.njoints));
+    keys.setZero();
 
     // First step: for each joint, collect their neighbourds
     auto & neighbours = data.joint_neighbours;
@@ -198,9 +203,12 @@ namespace pinocchio
         {
           const JointPair jp_pair = neighbour_j < parent_id ? JointPair(neighbour_j, parent_id)
                                                             : JointPair(parent_id, neighbour_j);
-
-          if (!data.joint_cross_coupling.exists(jp_pair))
+#define EXIST_JOINT_PAIR(pair) keys(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second))
+#define REGISTER_JOINT_PAIR(pair)                                                                  \
+  keys(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second)) = true
+          if (!EXIST_JOINT_PAIR(jp_pair))
           {
+            REGISTER_JOINT_PAIR(jp_pair);
             data.joint_cross_coupling.insert(
               jp_pair, Matrix6::Zero()); // add edge (neighbour_j, parent_id) if neighbour_j <
                                          // parent_id else (parent_id, neighbour_j)
@@ -221,18 +229,21 @@ namespace pinocchio
           const JointIndex neighbour_k = joint_neighbours[k];
           auto & neighbour_k_neighbours = neighbours[neighbour_k];
           assert(neighbour_k != neighbour_j && "Must never happen!");
-          const JointPair cross_coupling_key = neighbour_j < neighbour_k
-                                                 ? JointPair{neighbour_j, neighbour_k}
-                                                 : JointPair{neighbour_k, neighbour_j};
+          const JointPair cross_coupling_pair = neighbour_j < neighbour_k
+                                                  ? JointPair{neighbour_j, neighbour_k}
+                                                  : JointPair{neighbour_k, neighbour_j};
 
-          if (!data.joint_cross_coupling.exists(cross_coupling_key))
+          if (!EXIST_JOINT_PAIR(cross_coupling_pair))
           {
-            data.joint_cross_coupling.insert(cross_coupling_key, Matrix6::Zero()); // add edge
+            REGISTER_JOINT_PAIR(cross_coupling_pair);
+            data.joint_cross_coupling.insert(cross_coupling_pair, Matrix6::Zero()); // add edge
 
             neighbour_j_neighbours.push_back(neighbour_k);
             neighbour_k_neighbours.push_back(neighbour_j);
           }
         }
+#undef EXIST_JOINT_PAIR
+#undef REGISTER_JOINT_PAIR
       }
     }
   }
