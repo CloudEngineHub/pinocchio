@@ -16,9 +16,9 @@ namespace pinocchio
 {
 
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-  struct MinimalOrderingConstraintStepVisitor
+  struct ConstraintCouplingCollectorStep
   : visitors::ConstraintUnaryVisitorBase<
-      MinimalOrderingConstraintStepVisitor<Scalar, Options, JointCollectionTpl>>
+      ConstraintCouplingCollectorStep<Scalar, Options, JointCollectionTpl>>
   {
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
@@ -26,7 +26,7 @@ namespace pinocchio
     typedef boost::fusion::vector<const Model &, Data &> ArgsType;
 
     typedef visitors::ConstraintUnaryVisitorBase<
-      MinimalOrderingConstraintStepVisitor<Scalar, Options, JointCollectionTpl>>
+      ConstraintCouplingCollectorStep<Scalar, Options, JointCollectionTpl>>
       Base;
 
     template<typename ConstraintModel>
@@ -107,7 +107,7 @@ namespace pinocchio
       ArgsType args(model, data);
       run(cmodel.derived(), args);
     }
-  }; // struct MinimalOrderingConstraintStepVisitor
+  }; // struct ConstraintCouplingCollectorStep
 
   template<
     typename Scalar,
@@ -135,11 +135,11 @@ namespace pinocchio
 
     // Get links supporting constraints
     std::fill(data.constraints_supported_dim.begin(), data.constraints_supported_dim.end(), 0);
-    typedef MinimalOrderingConstraintStepVisitor<Scalar, Options, JointCollectionTpl> Step;
+    typedef ConstraintCouplingCollectorStep<Scalar, Options, JointCollectionTpl> CollectorStep;
     for (std::size_t i = 0; i < constraint_models.size(); ++i)
     {
       const auto & cmodel = helper::get_ref(constraint_models[i]);
-      Step::run(cmodel, model, data);
+      CollectorStep::run(cmodel, model, data);
     }
 
     // Second step: order the joints according to the minimum degree heuristic
