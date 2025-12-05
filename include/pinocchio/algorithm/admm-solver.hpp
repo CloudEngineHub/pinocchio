@@ -604,7 +604,6 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
       const boost::optional<RefConstVectorXs> preconditioner = boost::none,
       const boost::optional<RefConstVectorXs> primal_guess = boost::none,
       const boost::optional<RefConstVectorXs> dual_guess = boost::none,
@@ -639,12 +638,11 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
       const Eigen::DenseBase<VectorLikeOut> & primal_guess,
       const bool solve_ncp = true)
     {
       return solve(
-        delassus.derived(), g.derived(), constraint_models, constraint_datas, dt, boost::none,
+        delassus.derived(), g.derived(), constraint_models, constraint_datas, boost::none,
         primal_guess.derived(), boost::none, solve_ncp);
     }
 

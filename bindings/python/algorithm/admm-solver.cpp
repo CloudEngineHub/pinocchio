@@ -47,7 +47,6 @@ namespace pinocchio
       const VectorXs & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
       const boost::optional<RefConstVectorXs> preconditioner = boost::none,
       const boost::optional<RefConstVectorXs> primal_solution = boost::none,
       const boost::optional<RefConstVectorXs> dual_solution = boost::none,
@@ -59,7 +58,7 @@ namespace pinocchio
       const bool stat_record = false)
     {
       return solver.solve(
-        delassus, g, constraint_models, constraint_datas, dt, preconditioner, primal_solution,
+        delassus, g, constraint_models, constraint_datas, preconditioner, primal_solution,
         dual_solution, solve_ncp, admm_update_rule, rho0, admm_proximal_rule, mu_prox0,
         stat_record);
     }
@@ -76,12 +75,11 @@ namespace pinocchio
       const VectorXs & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
       const VectorXs & primal_guess,
       const bool solve_ncp = true)
     {
       return solver.solve(
-        delassus, g, constraint_models, constraint_datas, dt, primal_guess, solve_ncp);
+        delassus, g, constraint_models, constraint_datas, primal_guess, solve_ncp);
     }
 #endif
 
@@ -207,7 +205,7 @@ namespace pinocchio
             solve_wrapper<
               ContactCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
               ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
-            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
+            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
@@ -219,7 +217,7 @@ namespace pinocchio
             solve_wrapper<
               context::DelassusOperatorDense, ConstraintModel, ConstraintModelAllocator,
               ConstraintData, ConstraintDataAllocator>,
-            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
+            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
@@ -231,7 +229,7 @@ namespace pinocchio
             solve_wrapper<
               context::DelassusOperatorSparse, ConstraintModel, ConstraintModelAllocator,
               ConstraintData, ConstraintDataAllocator>,
-            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
+            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
@@ -246,12 +244,14 @@ namespace pinocchio
           class_.def(
             "solve",
             solve_wrapper<
-              DelassusOperatorSparseAccelerate, ConstraintModel, ConstraintModelAllocator>,
-            (bp::args("self", "delassus", "g", "constraint_models", "dt"),
+              DelassusOperatorSparseAccelerate, ConstraintModel, ConstraintModelAllocator,
+              ConstraintData, ConstraintDataAllocator>,
+            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas"),
              bp::arg("preconditioner") = boost::none, bp::arg("primal_solution") = boost::none,
              bp::arg("dual_solution") = boost::none, bp::arg("solve_ncp") = true,
              bp::arg("admm_update_rule") = ADMMUpdateRule::SPECTRAL, bp::arg("rho0") = boost::none,
-             bp::arg("stat_record") = false),
+             bp::arg("admm_proximal_rule") = ADMMProximalRule::MANUAL,
+             bp::arg("mu_prox0") = boost::none, bp::arg("stat_record") = false),
             "Solve the constrained conic problem, starting from the optional initial guess.");
         }
 #endif

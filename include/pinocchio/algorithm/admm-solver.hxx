@@ -226,7 +226,6 @@ namespace pinocchio
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Scalar dt,
     const boost::optional<RefConstVectorXs> preconditioner,
     const boost::optional<RefConstVectorXs> primal_guess,
     const boost::optional<RefConstVectorXs> dual_guess,
@@ -251,7 +250,6 @@ namespace pinocchio
     DelassusDerived & G = _delassus.derived();
 
     const Scalar mu_R = G.getCompliance().minCoeff();
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(dt >= Scalar(0), "dt should be positive.");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(tau <= Scalar(1) && tau > Scalar(0), "tau should lie in ]0,1].");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       tau_prox <= Scalar(1) && tau_prox > Scalar(0), "tau_prox should lie in ]0,1].");

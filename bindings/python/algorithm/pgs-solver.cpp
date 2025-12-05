@@ -36,15 +36,13 @@ namespace pinocchio
       const VectorXs & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
       const boost::optional<RefConstVectorXs> x = boost::none,
       const Scalar over_relax = 1,
       const bool solve_ncp = true,
       const bool stat_record = false)
     {
       return solver.solve(
-        delassus, g, constraint_models, constraint_datas, dt, x, over_relax, solve_ncp,
-        stat_record);
+        delassus, g, constraint_models, constraint_datas, x, over_relax, solve_ncp, stat_record);
     }
 #endif
 
@@ -76,7 +74,7 @@ namespace pinocchio
             solve_wrapper<
               context::MatrixXs, ConstraintModel, ConstraintModelAllocator, ConstraintData,
               ConstraintDataAllocator>,
-            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
+            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas"),
              bp::arg("primal_solution") = boost::none, bp::arg("over_relax") = context::Scalar(1),
              bp::arg("solve_ncp") = true, bp::arg("stat_record") = false),
             "Solve the constrained conic problem composed of problem data (G,g,cones) and starting "
@@ -86,7 +84,7 @@ namespace pinocchio
             solve_wrapper<
               context::SparseMatrix, ConstraintModel, ConstraintModelAllocator, ConstraintData,
               ConstraintDataAllocator>,
-            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "dt"),
+            (bp::args("self", "delassus", "g", "constraint_models", "constraint_datas"),
              bp::arg("primal_solution") = boost::none, bp::arg("over_relax") = context::Scalar(1),
              bp::arg("solve_ncp") = true, bp::arg("stat_record") = false),
             "Solve the constrained conic problem composed of problem data (G,g,cones) and starting "

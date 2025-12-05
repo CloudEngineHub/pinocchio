@@ -117,7 +117,6 @@ namespace pinocchio
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const ConstraintDataVector & constraint_datas,
-    Scalar dt,
     const boost::optional<Eigen::Ref<const VectorXs>> & preconditioner,
     const boost::optional<Eigen::Ref<const VectorXs>> & primal_guess,
     const boost::optional<Eigen::Ref<const VectorXs>> & dual_guess,
@@ -265,7 +264,6 @@ namespace pinocchio
 
     // Suppress unused parameter and variable warnings
     (void)constraint_datas;
-    (void)dt;
     (void)preconditioner;
     (void)primal_guess;
     (void)dual_guess;

@@ -61,7 +61,6 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
       const boost::optional<RefConstVectorXs> x_guess = boost::none,
       const Scalar over_relax = Scalar(1),
       const bool solve_ncp = true,
@@ -89,15 +88,14 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Scalar dt,
       const boost::optional<RefConstVectorXs> x_guess = boost::none,
       const Scalar over_relax = Scalar(1),
       const bool solve_ncp = true,
       const bool stat_record = false)
     {
       return solve(
-        delassus.matrix(), g, constraint_models, constraint_datas, dt, x_guess, over_relax,
-        solve_ncp, stat_record);
+        delassus.matrix(), g, constraint_models, constraint_datas, x_guess, over_relax, solve_ncp,
+        stat_record);
     }
 
     /// \brief Reset the solver.

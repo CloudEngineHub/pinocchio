@@ -23,10 +23,9 @@ class TestADMM(TestCase):
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
         fext = [pin.Force.Zero() for _ in range(model.njoints)]
-        dt = 1e-3
 
         delassus_matrix, g, constraint_datas = self.setupTest(
-            model, constraint_models, q0, v0, tau0, fext, dt
+            model, constraint_models, q0, v0, tau0, fext
         )
         delassus = pin.DelassusOperatorDense(delassus_matrix)
         dim_pb = g.shape[0]
@@ -34,7 +33,7 @@ class TestADMM(TestCase):
         solver.setAbsolutePrecision(1e-13)
         solver.setRelativePrecision(1e-14)
         solver.setLanczosSize(g.size)
-        solver.solve(delassus, g, constraint_models, constraint_datas, dt)
+        solver.solve(delassus, g, constraint_models, constraint_datas)
 
     @unittest.skipUnless(coal_found, "Needs Coal.")
     def test_cassie(self, display=False, stat_record=True):
@@ -71,7 +70,6 @@ class TestADMM(TestCase):
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
         fext = [pin.Force.Zero() for _ in range(model.njoints)]
-        dt = 1e-3
         self.addFloor(geom_model, visual_model)
         self.addSystemCollisionPairs(model, geom_model, q0)
 
@@ -81,7 +79,7 @@ class TestADMM(TestCase):
             constraint_models.append(pin.ConstraintModel(fpcm))
 
         delassus_matrix, g, constraint_datas = self.setupTest(
-            model, constraint_models, q0, v0, tau0, fext, dt
+            model, constraint_models, q0, v0, tau0, fext
         )
         delassus = pin.DelassusOperatorDense(delassus_matrix)
 
@@ -106,9 +104,7 @@ class TestADMM(TestCase):
         # solver.setAbsolutePrecision(1e-10)
         # solver.setRelativePrecision(1e-12)
 
-        has_converged = solver.solve(
-            delassus, g, constraint_models, constraint_datas, dt
-        )
+        has_converged = solver.solve(delassus, g, constraint_models, constraint_datas)
 
         print(f"{solver.getIterationCount()=}")
         print(f"{solver.getAbsoluteConvergenceResidual()=}")

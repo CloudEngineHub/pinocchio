@@ -551,13 +551,11 @@ namespace pinocchio
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Scalar dt,
     const boost::optional<RefConstVectorXs> x_guess,
     const Scalar over_relax,
     const bool solve_ncp,
     const bool stat_record)
   {
-    PINOCCHIO_UNUSED_VARIABLE(dt);
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       over_relax < Scalar(2) && over_relax > Scalar(0), "over_relax should lie in ]0,2[.")
     const MatrixType & G = delassus.derived();

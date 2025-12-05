@@ -160,8 +160,8 @@ struct TestBoxTpl
     admm_solver.setAbsolutePrecision(tol_abs);
     admm_solver.setRelativePrecision(tol_rel);
     admm_solver.solve(
-      delassus_dense, g, constraint_models, constraint_datas, dt, boost::none, boost::none,
-      boost::none, solve_ncp, ADMMUpdateRule::OSQP);
+      delassus_dense, g, constraint_models, constraint_datas, boost::none, boost::none, boost::none,
+      solve_ncp, ADMMUpdateRule::OSQP);
 
 #ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
     // Run CLARABEL
@@ -172,8 +172,8 @@ struct TestBoxTpl
     clarabel_solver.setRelativePrecision(tol_rel);
     auto G_expression = chol.getDelassusCholeskyExpression();
     clarabel_solver.solve(
-      G_expression, g, constraint_models, constraint_datas, dt, boost::none, boost::none,
-      boost::none, solve_ncp, false, false /*verbose*/);
+      G_expression, g, constraint_models, constraint_datas, boost::none, boost::none, boost::none,
+      solve_ncp, false, false /*verbose*/);
 
     std::cout << "NUMIT CLARABEL: " << clarabel_solver.getIterationCount()
               << " / NUMIT IPSolver: " << ip_solver.getIterationCount()

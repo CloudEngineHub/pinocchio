@@ -155,7 +155,6 @@ namespace pinocchio
     /// \param[in] g The drift term
     /// \param[in] constraint_models Vector of constraint models
     /// \param[in] constraint_datas Vector of constraint data
-    /// \param[in] dt Time step
     /// \param[in] preconditioner Optional preconditioner
     /// \param[in] primal_guess Optional initial guess for primal variable
     /// \param[in] dual_guess Optional initial guess for dual variable
@@ -173,7 +172,6 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const ConstraintDataVector & constraint_datas,
-      Scalar dt,
       const boost::optional<Eigen::Ref<const VectorXs>> & preconditioner = boost::none,
       const boost::optional<Eigen::Ref<const VectorXs>> & primal_guess = boost::none,
       const boost::optional<Eigen::Ref<const VectorXs>> & dual_guess = boost::none,

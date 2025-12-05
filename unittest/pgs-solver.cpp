@@ -95,7 +95,7 @@ struct TestBoxTpl
     pgs_solver.setRelativePrecision(rel_prec);
     pgs_solver.setMaxIterations(maxit);
     has_converged = pgs_solver.solve(
-      delassus, g, constraint_models, constraint_datas, dt,
+      delassus, g, constraint_models, constraint_datas,
       boost::make_optional((Eigen::Ref<const Eigen::VectorXd>)primal_solution));
     primal_solution = pgs_solver.getPrimalSolution();
 
@@ -120,7 +120,7 @@ struct TestBoxTpl
       has_converged =
         has_converged
         && pgs_solver.solve(
-          delassus, g, constraint_models, constraint_datas, dt, primal_solution_warmstart);
+          delassus, g, constraint_models, constraint_datas, primal_solution_warmstart);
       primal_solution = pgs_solver.getPrimalSolution();
     }
 
@@ -550,7 +550,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   pgs_solver.setRelativePrecision(1e-14);
 
   const bool has_converged =
-    pgs_solver.solve(G, g, constraint_models, constraint_datas, dt, primal_solution);
+    pgs_solver.solve(G, g, constraint_models, constraint_datas, primal_solution);
   BOOST_CHECK(has_converged);
 
   Eigen::VectorXd dual_solution(Eigen::VectorXd::Zero(g.size()));
@@ -671,7 +671,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas,
       primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -705,8 +705,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_move_away, constraint_models, constraint_datas, dt,
-      primal_solution_constref);
+      G_plain, g_tilde_move_away, constraint_models, constraint_datas, primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -803,7 +802,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas,
       primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -842,8 +841,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_move_away, constraint_models, constraint_datas, dt,
-      primal_solution_constref);
+      G_plain, g_tilde_move_away, constraint_models, constraint_datas, primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -940,7 +938,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas,
       primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -979,8 +977,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_move_away, constraint_models, constraint_datas, dt,
-      primal_solution_constref);
+      G_plain, g_tilde_move_away, constraint_models, constraint_datas, primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -1068,7 +1065,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas,
       primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     // std::cout << " pgs_solver.getAbsoluteConvergenceResidual():   " <<
@@ -1107,8 +1104,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_move_away, constraint_models, constraint_datas, dt,
-      primal_solution_constref);
+      G_plain, g_tilde_move_away, constraint_models, constraint_datas, primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -1196,7 +1192,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas,
       primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -1230,8 +1226,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_move_away, constraint_models, constraint_datas, dt,
-      primal_solution_constref);
+      G_plain, g_tilde_move_away, constraint_models, constraint_datas, primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 
@@ -1322,7 +1317,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
       Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas, dt,
+      G_plain, g_tilde_against_lower_bound, constraint_models, constraint_datas,
       primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
@@ -1359,8 +1354,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
       Eigen::VectorXd::Ones(g_tilde_move_away.size()));
     boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
     const bool has_converged = pgs_solver.solve(
-      G_plain, g_tilde_move_away, constraint_models, constraint_datas, dt,
-      primal_solution_constref);
+      G_plain, g_tilde_move_away, constraint_models, constraint_datas, primal_solution_constref);
     primal_solution = pgs_solver.getPrimalSolution();
     BOOST_CHECK(has_converged);
 

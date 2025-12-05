@@ -23,13 +23,12 @@ class TestPGS(TestCase):
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
         fext = [pin.Force.Zero() for i in range(model.njoints)]
-        dt = 1e-3
-        delassus, g = self.setupTest(model, constraint_models, q0, v0, tau0, fext, dt)
+        delassus, g = self.setupTest(model, constraint_models, q0, v0, tau0, fext)
         dim_pb = g.shape[0]
         solver = pin.PGSConstraintSolver(dim_pb)
         solver.setAbsolutePrecision(1e-13)
         solver.setRelativePrecision(1e-14)
-        solver.solve(delassus, g, constraint_models, dt)
+        solver.solve(delassus, g, constraint_models)
 
     @unittest.skipUnless(coal_found, "Needs Coal.")
     def test_cassie(self, display=False, stat_record=True):
@@ -66,7 +65,6 @@ class TestPGS(TestCase):
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
         fext = [pin.Force.Zero() for i in range(model.njoints)]
-        dt = 1e-3
         self.addFloor(geom_model, visual_model)
         self.addSystemCollisionPairs(model, geom_model, q0)
 
@@ -75,7 +73,7 @@ class TestPGS(TestCase):
         for fpcm in contact_constraints:
             constraint_models.append(pin.ConstraintModel(fpcm))
 
-        delassus, g = self.setupTest(model, constraint_models, q0, v0, tau0, fext, dt)
+        delassus, g = self.setupTest(model, constraint_models, q0, v0, tau0, fext)
 
         self.assertTrue(
             delassus.shape[0]
@@ -95,7 +93,7 @@ class TestPGS(TestCase):
         solver.setAbsolutePrecision(1e-13)
         solver.setRelativePrecision(1e-14)
 
-        has_converged = solver.solve(delassus, g, constraint_models, dt)
+        has_converged = solver.solve(delassus, g, constraint_models)
         self.assertTrue(has_converged, "Solver did not converge.")
         print(solver.getIterationCount())
         print(solver.getAbsoluteConvergenceResidual())
