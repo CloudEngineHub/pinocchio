@@ -221,8 +221,8 @@ BOOST_AUTO_TEST_CASE(test_6D_descendants_reversed)
   std::cout << "|| data_reversed.ddq - data.ddq ||: " << (data_reversed.ddq - data.ddq).norm()
             << std::endl;
 
-  BOOST_CHECK(data_reversed.ddq.isApprox(data.ddq, 1e-8));
   BOOST_CHECK(data_ref.ddq.isApprox(data_reversed.ddq, 1e-8));
+  BOOST_CHECK(contact_datas_reversed.back().c1Mc2.isApprox(contact_datas.back().c1Mc2.inverse()));
 
   // Check
   for (JointIndex j = 1; j < size_t(model.njoints); ++j)
