@@ -39,37 +39,37 @@ namespace pinocchio
       typedef typename JointModel::JointDataDerived JointData;
       typedef std::pair<JointIndex, JointIndex> JointPair;
 
-      const JointIndex i = jmodel.id();
-      const JointIndex parent = model.parents[i];
+      const JointIndex joint_i = jmodel.id();
+      const JointIndex parent = model.parents[joint_i];
 
       // ApplyOnTheRight
       if (apply_on_the_right)
       {
-        auto & Ia = data.Yaba[i];
+        auto & Ia = data.Yaba[joint_i];
         jmodel.calc_aba(
           jdata.derived(), jmodel.jointVelocitySelector(model.armature), Ia, parent > 0);
         if (parent > 0)
         {
-          data.Yaba[parent] += impl::internal::SE3actOn<Scalar>::run(data.liMi[i], Ia);
+          data.Yaba[parent] += impl::internal::SE3actOn<Scalar>::run(data.liMi[joint_i], Ia);
         }
       }
 
       // SolveInPlace
       if (solve_in_place)
       {
-        JointData & _jdata_augmented = boost::get<JointData>(data.joints_augmented[i]);
+        JointData & _jdata_augmented = boost::get<JointData>(data.joints_augmented[joint_i]);
         JointDataBase<JointData> & jdata_augmented =
           static_cast<JointDataBase<JointData> &>(_jdata_augmented);
 
         auto Jcols = jmodel.jointCols(data.J);
-        auto & Ia_augmented = data.oYaba_augmented[i];
+        auto & Ia_augmented = data.oYaba_augmented[joint_i];
 
         DO_NOT_PROMOTE_STATIC_EVAL(jdata_augmented.U().noalias()) = Ia_augmented * Jcols;
         DO_NOT_PROMOTE_STATIC_EVAL(jdata_augmented.StU().noalias()) =
           Jcols.transpose() * jdata_augmented.U();
 
         // Account for the rotor inertia contribution
-        jdata_augmented.StU() += data.joint_apparent_inertia[i];
+        jdata_augmented.StU() += data.joint_apparent_inertia[joint_i];
 
         ::pinocchio::matrix_inversion(jdata_augmented.StU(), jdata_augmented.Dinv());
 
@@ -87,7 +87,7 @@ namespace pinocchio
         const auto & neighbours = data.joint_neighbours;
         auto & joint_cross_coupling = data.joint_cross_coupling;
         auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
-        const auto & joint_neighbours = neighbours[i];
+        const auto & joint_neighbours = neighbours[joint_i];
 
         if (joint_neighbours.size() == 0)
           return; // We can return from this point as this joint has no neighbours
@@ -100,20 +100,21 @@ namespace pinocchio
         auto & JDinv = mat1_tmp;
         DO_NOT_PROMOTE_STATIC_EVAL(JDinv.noalias()) = Jcols * jdata_augmented.Dinv();
 
-        // oL == data.oL[i]
+        // oL == data.oL[joint_i]
         Matrix6 oL = -JDinv * jdata_augmented.U().transpose();
         oL += Matrix6::Identity();
 
         for (size_t j = 0; j < joint_neighbours.size(); j++)
         {
-          const JointIndex vertex_j = joint_neighbours[j];
+          const JointIndex joint_j = joint_neighbours[j];
 
-          assert(joint_cross_coupling.exists(JointPair(vertex_j, i)));
-          const auto & crosscoupling_ji = joint_cross_coupling.get(JointPair(vertex_j, i));
+          assert(joint_cross_coupling.exists(JointPair(joint_j, joint_i)));
+          const auto & crosscoupling_ji = joint_cross_coupling.get(JointPair(joint_j, joint_i));
           // assert(crosscoupling_ji.isApprox(crosscoupling_ji2));
 
-          assert(projected_joint_cross_coupling.exists(JointPair(vertex_j, i)));
-          auto & crosscoupling_ji_Jcols = projected_joint_cross_coupling[JointPair(vertex_j, i)];
+          assert(projected_joint_cross_coupling.exists(JointPair(joint_j, joint_i)));
+          auto & crosscoupling_ji_Jcols =
+            projected_joint_cross_coupling[JointPair(joint_j, joint_i)];
 
           DO_NOT_PROMOTE_STATIC_EVAL(crosscoupling_ji_Jcols.noalias()) =
             crosscoupling_ji * Jcols; // Warning: UDinv() is actually edge_ij * J
@@ -128,15 +129,15 @@ namespace pinocchio
           DO_NOT_PROMOTE_STATIC_EVAL(crosscoupling_ji_Jcols_Dinv.noalias()) =
             crosscoupling_ji_Jcols * jdata_augmented.Dinv();
 
-          DO_NOT_PROMOTE_STATIC_EVAL(data.oYaba_augmented[vertex_j].noalias()) -=
+          DO_NOT_PROMOTE_STATIC_EVAL(data.oYaba_augmented[joint_j].noalias()) -=
             crosscoupling_ji_Jcols_Dinv
             * crosscoupling_ji_Jcols.transpose(); // Warning: UDinv() is actually edge_ij * J, U()
                                                   // is actually edge_ij * J_cols * Dinv
-                                                  //          data.of[vertex_j].toVector().noalias()
+                                                  //          data.of[joint_j].toVector().noalias()
                                                   //          += crosscoupling_ij * a_tmp;
 
           const Matrix6 crosscoupling_ji_oL = crosscoupling_ji * oL;
-          if (vertex_j == parent)
+          if (joint_j == parent)
           {
             data.oYaba_augmented[parent].noalias() +=
               crosscoupling_ji_oL + crosscoupling_ji_oL.transpose();
@@ -144,38 +145,39 @@ namespace pinocchio
           else
           {
             assert(
-              joint_cross_coupling.exists(JointPair(vertex_j, parent))
-              || joint_cross_coupling.exists(JointPair(parent, vertex_j)));
+              joint_cross_coupling.exists(JointPair(joint_j, parent))
+              || joint_cross_coupling.exists(JointPair(parent, joint_j)));
 
-            // In this particular case, the pair (vertex_j,parent) might not exist, but (parent,
-            // vertex_j) will
-            if (joint_cross_coupling.exists(JointPair(vertex_j, parent)))
+            // In this particular case, the pair (joint_j,parent) might not exist, but (parent,
+            // joint_j) will
+            if (joint_cross_coupling.exists(JointPair(joint_j, parent)))
             {
-              joint_cross_coupling.get({vertex_j, parent}).noalias() += crosscoupling_ji_oL;
+              joint_cross_coupling.get({joint_j, parent}).noalias() += crosscoupling_ji_oL;
             }
             else
             {
-              joint_cross_coupling.get({parent, vertex_j}).noalias() +=
+              joint_cross_coupling.get({parent, joint_j}).noalias() +=
                 crosscoupling_ji_oL.transpose();
             }
           }
 
           for (size_t k = j + 1; k < joint_neighbours.size(); ++k)
           {
-            const JointIndex vertex_k = joint_neighbours[k];
+            const JointIndex joint_k = joint_neighbours[k];
 
-            assert(joint_cross_coupling.exists(JointPair(vertex_k, i)));
-            auto & crosscoupling_ki = joint_cross_coupling.get(JointPair(vertex_k, i));
+            assert(joint_cross_coupling.exists(JointPair(joint_k, joint_i)));
+            auto & crosscoupling_ki = joint_cross_coupling.get(JointPair(joint_k, joint_i));
 
-            assert(projected_joint_cross_coupling.exists(JointPair(vertex_k, i)));
-            auto & crosscoupling_ki_Jcols = projected_joint_cross_coupling[JointPair(vertex_k, i)];
+            assert(projected_joint_cross_coupling.exists(JointPair(joint_k, joint_i)));
+            auto & crosscoupling_ki_Jcols =
+              projected_joint_cross_coupling[JointPair(joint_k, joint_i)];
 
             PROMOTE_STATIC_EVAL(crosscoupling_ki_Jcols.noalias()) = crosscoupling_ki * Jcols;
 
-            assert(vertex_j != vertex_k && "Must never happen!");
+            assert(joint_j != joint_k && "Must never happen!");
 
-            assert(joint_cross_coupling.exists(JointPair(vertex_j, vertex_k)));
-            auto & crosscoupling_jk = joint_cross_coupling.get(JointPair(vertex_j, vertex_k));
+            assert(joint_cross_coupling.exists(JointPair(joint_j, joint_k)));
+            auto & crosscoupling_jk = joint_cross_coupling.get(JointPair(joint_j, joint_k));
             DO_NOT_PROMOTE_STATIC_EVAL(crosscoupling_jk.noalias()) -=
               crosscoupling_ji_Jcols_Dinv * crosscoupling_ki_Jcols.transpose();
           }
@@ -203,19 +205,19 @@ namespace pinocchio
       const Data & data,
       CustomData & custom_data)
     {
-      const JointIndex i = jmodel.id();
-      const JointIndex parent = model.parents[i];
+      const JointIndex joint_i = jmodel.id();
+      const JointIndex parent = model.parents[joint_i];
 
-      // Compare to ABA, the sign of f[i] is reversed
-      jmodel.jointVelocitySelector(custom_data.u) += jdata.S().transpose() * custom_data.f[i];
+      // Compare to ABA, the sign of f[joint_i] is reversed
+      jmodel.jointVelocitySelector(custom_data.u) += jdata.S().transpose() * custom_data.f[joint_i];
 
       if (parent > 0)
       {
-        auto & pa = custom_data.f[i];
-        // Compare to ABA, the sign of f[i] is reversed
+        auto & pa = custom_data.f[joint_i];
+        // Compare to ABA, the sign of f[joint_i] is reversed
         DO_NOT_PROMOTE_STATIC_EVAL(pa.toVector().noalias()) -=
           jdata.UDinv() * jmodel.jointVelocitySelector(custom_data.u);
-        custom_data.f[parent] += data.liMi[i].act(pa);
+        custom_data.f[parent] += data.liMi[joint_i].act(pa);
       }
     }
   };
@@ -241,25 +243,25 @@ namespace pinocchio
     {
       typedef typename Model::JointIndex JointIndex;
 
-      const JointIndex i = jmodel.id();
-      const JointIndex parent = model.parents[i];
+      const JointIndex joint_i = jmodel.id();
+      const JointIndex parent = model.parents[joint_i];
 
       //      typename JointData::TangentVector_t ddq_joint;
       auto ddq_joint = jmodel.jointVelocitySelector(custom_data.ddq);
       if (parent > 0)
       {
-        custom_data.a[i] += data.liMi[i].actInv(custom_data.a[parent]);
+        custom_data.a[joint_i] += data.liMi[joint_i].actInv(custom_data.a[parent]);
         PROMOTE_STATIC_EVAL(ddq_joint.noalias()) =
           jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u);
         PROMOTE_STATIC_EVAL(ddq_joint.noalias()) -=
-          jdata.UDinv().transpose() * custom_data.a[i].toVector();
-        custom_data.a[i] += jdata.S() * ddq_joint;
+          jdata.UDinv().transpose() * custom_data.a[joint_i].toVector();
+        custom_data.a[joint_i] += jdata.S() * ddq_joint;
       }
       else
       {
         PROMOTE_STATIC_EVAL(ddq_joint.noalias()) =
           jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u);
-        custom_data.a[i] = jdata.S() * ddq_joint;
+        custom_data.a[joint_i] = jdata.S() * ddq_joint;
       }
     }
 
@@ -292,13 +294,13 @@ namespace pinocchio
       // auto & joint_cross_coupling = data.joint_cross_coupling;
       const auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
 
-      const JointIndex i = jmodel.id();
-      const JointIndex parent = model.parents[i];
-      const auto & joint_neighbours = neighbours[i];
+      const JointIndex joint_i = jmodel.id();
+      const JointIndex parent = model.parents[joint_i];
+      const auto & joint_neighbours = neighbours[joint_i];
 
       const auto Jcols = jmodel.jointCols(data.J);
 
-      Force & ofi = custom_data.of_augmented[i];
+      Force & ofi = custom_data.of_augmented[joint_i];
 
       // Compare to ABA, the sign of ofi is reversed
       PROMOTE_STATIC_EVAL(jmodel.jointVelocitySelector(custom_data.u).noalias()) +=
@@ -314,17 +316,17 @@ namespace pinocchio
 
         // const Vector6 Ji_res = Jcols * res;
 
-        for (JointIndex vertex_j : joint_neighbours)
+        for (JointIndex joint_j : joint_neighbours)
         {
           // const Matrix6 & crosscoupling_ji =
-          //   (i > vertex_j) ? joint_cross_coupling.get(JointPair(vertex_j, i))
-          //                  : joint_cross_coupling.get(JointPair(i, vertex_j)).transpose();
+          //   (i > joint_j) ? joint_cross_coupling.get(JointPair(joint_j, joint_i))
+          //                  : joint_cross_coupling.get(JointPair(i, joint_j)).transpose();
 
-          assert(projected_joint_cross_coupling.exists(JointPair(vertex_j, i)));
+          assert(projected_joint_cross_coupling.exists(JointPair(joint_j, joint_i)));
           const auto & projected_crosscoupling_ji_Jcols =
-            projected_joint_cross_coupling[JointPair(vertex_j, i)];
+            projected_joint_cross_coupling[JointPair(joint_j, joint_i)];
 
-          Force & ofj = custom_data.of_augmented[vertex_j];
+          Force & ofj = custom_data.of_augmented[joint_j];
           // Compare to ABA, the sign of ofj is reversed
           DO_NOT_PROMOTE_STATIC_EVAL(ofj.toVector().noalias()) -=
             projected_crosscoupling_ji_Jcols * res;
@@ -366,12 +368,12 @@ namespace pinocchio
 
       const auto J_cols = jmodel.jointCols(data.J);
 
-      const JointIndex i = jmodel.id();
-      const JointIndex parent = model.parents[i];
-      const auto & joint_neighbours = data.joint_neighbours[i];
+      const JointIndex joint_i = jmodel.id();
+      const JointIndex parent = model.parents[joint_i];
+      const auto & joint_neighbours = data.joint_neighbours[joint_i];
       const auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
 
-      auto & oai = custom_data.oa_augmented[i];
+      auto & oai = custom_data.oa_augmented[joint_i];
       oai = custom_data.oa_augmented[parent];
 
       if (joint_neighbours.size())
@@ -383,17 +385,18 @@ namespace pinocchio
         projected_coupling_forces.setZero();
         // Force coupling_forces = Force::Zero();
 
-        for (const JointIndex vertex_j : joint_neighbours)
+        for (const JointIndex joint_j : joint_neighbours)
         {
           // const Matrix6 & crosscoupling_ij =
-          //   (i > vertex_j) ? data.joint_cross_coupling.get(JointPair(vertex_j, i)).transpose()
-          //                  : data.joint_cross_coupling.get(JointPair(i, vertex_j));
+          //   (i > joint_j) ? data.joint_cross_coupling.get(JointPair(joint_j,
+          //   joint_i)).transpose()
+          //                  : data.joint_cross_coupling.get(JointPair(i, joint_j));
 
-          assert(projected_joint_cross_coupling.exists(JointPair(vertex_j, i)));
+          assert(projected_joint_cross_coupling.exists(JointPair(joint_j, joint_i)));
           const auto & projected_crosscoupling_ji_Jcols =
-            projected_joint_cross_coupling[JointPair(vertex_j, i)];
+            projected_joint_cross_coupling[JointPair(joint_j, joint_i)];
 
-          const auto & oaj = custom_data.oa_augmented[vertex_j];
+          const auto & oaj = custom_data.oa_augmented[joint_j];
           // coupling_forces.toVector().noalias() += crosscoupling_ij * oaj.toVector();
           DO_NOT_PROMOTE_STATIC_EVAL(projected_coupling_forces.noalias()) +=
             projected_crosscoupling_ji_Jcols.transpose() * oaj.toVector();
