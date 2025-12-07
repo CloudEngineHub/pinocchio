@@ -55,7 +55,7 @@ namespace pinocchio
       data.constraints_supported_dim[joint1_id] += constraint_size;
       data.constraints_supported_dim[joint2_id] += constraint_size;
 
-      if (joint2_id > 0 && joint1_id > 0)
+      if (joint1_id > 0 && joint2_id > 0)
       {
         const JointPair joint_pair =
           joint1_id > joint2_id ? JointPair{joint2_id, joint1_id} : JointPair{joint1_id, joint2_id};
@@ -63,11 +63,13 @@ namespace pinocchio
         if (!data.joint_cross_coupling.exists(joint_pair))
           data.joint_cross_coupling.insert(joint_pair, Matrix6::Zero());
 
-        auto & joint1_neighbours = neighbours[joint1_id];
-        auto & joint2_neighbours = neighbours[joint2_id];
+        data.joint_coupling_info(Eigen::DenseIndex(joint1_id), Eigen::DenseIndex(joint2_id)) = true;
+        data.joint_coupling_info(Eigen::DenseIndex(joint2_id), Eigen::DenseIndex(joint1_id)) = true;
 
+        auto & joint1_neighbours = neighbours[joint1_id];
         if (!helper::exists(joint1_neighbours, joint2_id))
           joint1_neighbours.push_back(joint2_id);
+        auto & joint2_neighbours = neighbours[joint2_id];
         if (!helper::exists(joint2_neighbours, joint1_id))
           joint2_neighbours.push_back(joint1_id);
       }
@@ -126,11 +128,9 @@ namespace pinocchio
     typedef typename Model::JointIndex JointIndex;
     typedef std::pair<JointIndex, JointIndex> JointPair;
     typedef typename Data::Matrix6 Matrix6;
-    typedef Eigen::Array<bool, Eigen::Dynamic, Eigen::Dynamic> BooleanArray;
-    typedef Eigen::Map<BooleanArray> MapBooleanArray;
 
-    auto keys = MapBooleanArray(PINOCCHIO_EIGEN_MAP_ALLOCA(bool, model.njoints, model.njoints));
-    keys.setZero();
+    auto & joint_coupling_info = data.joint_coupling_info;
+    joint_coupling_info.setZero();
 
     // First step: for each joint, collect their neighbourds
     auto & neighbours = data.joint_neighbours;
@@ -204,9 +204,12 @@ namespace pinocchio
         {
           const JointPair jp_pair = neighbour_j < parent_id ? JointPair(neighbour_j, parent_id)
                                                             : JointPair(parent_id, neighbour_j);
-#define EXIST_JOINT_PAIR(pair) keys(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second))
+#define EXIST_JOINT_PAIR(pair)                                                                     \
+  joint_coupling_info(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second))               \
+    && joint_coupling_info(Eigen::DenseIndex(pair.second), Eigen::DenseIndex(pair.first))
 #define REGISTER_JOINT_PAIR(pair)                                                                  \
-  keys(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second)) = true
+  joint_coupling_info(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second)) = true;       \
+  joint_coupling_info(Eigen::DenseIndex(pair.second), Eigen::DenseIndex(pair.first)) = true
           if (!EXIST_JOINT_PAIR(jp_pair))
           {
             REGISTER_JOINT_PAIR(jp_pair);
