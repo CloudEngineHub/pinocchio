@@ -160,7 +160,7 @@ namespace pinocchio
             const JointIndex joint_k = joint_neighbours[k];
 
             assert(joint_cross_coupling.exists(JointPair(joint_k, joint_i)));
-            auto & crosscoupling_ki = joint_cross_coupling.get(JointPair(joint_k, joint_i));
+            const auto & crosscoupling_ki = joint_cross_coupling.get(JointPair(joint_k, joint_i));
 
             assert(projected_joint_cross_coupling.exists(JointPair(joint_k, joint_i)));
             auto & crosscoupling_ki_Jcols =
