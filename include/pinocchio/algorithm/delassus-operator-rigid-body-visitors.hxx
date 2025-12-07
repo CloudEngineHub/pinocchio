@@ -107,14 +107,13 @@ namespace pinocchio
         for (size_t j = 0; j < joint_neighbours.size(); j++)
         {
           const JointIndex vertex_j = joint_neighbours[j];
-          const Matrix6 & crosscoupling_ji =
-            (i > vertex_j)
-              ? joint_cross_coupling.get(JointPair(vertex_j, i))
-              : joint_cross_coupling.get(JointPair(i, vertex_j)).transpose(); // avoid memalloc
+
+          assert(joint_cross_coupling.exists(JointPair(vertex_j, i)));
+          const auto & crosscoupling_ji = joint_cross_coupling.get(JointPair(vertex_j, i));
+          // assert(crosscoupling_ji.isApprox(crosscoupling_ji2));
 
           assert(projected_joint_cross_coupling.exists(JointPair(vertex_j, i)));
           auto & crosscoupling_ji_Jcols = projected_joint_cross_coupling[JointPair(vertex_j, i)];
-          // auto & crosscoupling_ji_Jcols = mat1_tmp;
 
           DO_NOT_PROMOTE_STATIC_EVAL(crosscoupling_ji_Jcols.noalias()) =
             crosscoupling_ji * Jcols; // Warning: UDinv() is actually edge_ij * J
@@ -144,7 +143,13 @@ namespace pinocchio
           }
           else
           {
-            if (vertex_j < parent)
+            assert(
+              joint_cross_coupling.exists(JointPair(vertex_j, parent))
+              || joint_cross_coupling.exists(JointPair(parent, vertex_j)));
+
+            // In this particular case, the pair (vertex_j,parent) might not exist, but (parent,
+            // vertex_j) will
+            if (joint_cross_coupling.exists(JointPair(vertex_j, parent)))
             {
               joint_cross_coupling.get({vertex_j, parent}).noalias() += crosscoupling_ji_oL;
             }
@@ -159,33 +164,20 @@ namespace pinocchio
           {
             const JointIndex vertex_k = joint_neighbours[k];
 
-            const Matrix6 & crosscoupling_ki =
-              (i > vertex_k) ? joint_cross_coupling.get(JointPair(vertex_k, i))
-                             : joint_cross_coupling.get(JointPair(i, vertex_k)).transpose();
+            assert(joint_cross_coupling.exists(JointPair(vertex_k, i)));
+            auto & crosscoupling_ki = joint_cross_coupling.get(JointPair(vertex_k, i));
 
             assert(projected_joint_cross_coupling.exists(JointPair(vertex_k, i)));
             auto & crosscoupling_ki_Jcols = projected_joint_cross_coupling[JointPair(vertex_k, i)];
-            // auto & crosscoupling_ki_Jcols = mat1_tmp;
 
             PROMOTE_STATIC_EVAL(crosscoupling_ki_Jcols.noalias()) = crosscoupling_ki * Jcols;
 
             assert(vertex_j != vertex_k && "Must never happen!");
-            if (vertex_j < vertex_k)
-            {
-              DO_NOT_PROMOTE_STATIC_EVAL(
-                joint_cross_coupling.get({vertex_j, vertex_k}).noalias()) -=
-                crosscoupling_ji_Jcols_Dinv
-                * crosscoupling_ki_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
-                                                      // J_col, U() is edge_ij * J_col * Dinv
-            }
-            else // if (vertex_k < vertex_j)
-            {
-              DO_NOT_PROMOTE_STATIC_EVAL(
-                joint_cross_coupling.get({vertex_k, vertex_j}).transpose().noalias()) -=
-                crosscoupling_ji_Jcols_Dinv
-                * crosscoupling_ki_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
-                                                      // J_col, U() is edge_ij * J_col * Dinv
-            }
+
+            assert(joint_cross_coupling.exists(JointPair(vertex_j, vertex_k)));
+            auto & crosscoupling_jk = joint_cross_coupling.get(JointPair(vertex_j, vertex_k));
+            DO_NOT_PROMOTE_STATIC_EVAL(crosscoupling_jk.noalias()) -=
+              crosscoupling_ji_Jcols_Dinv * crosscoupling_ki_Jcols.transpose();
           }
         }
       }
