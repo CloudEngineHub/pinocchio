@@ -42,9 +42,6 @@ namespace pinocchio
       const Model & model,
       Data & data)
     {
-      typedef std::pair<JointIndex, JointIndex> JointPair;
-      typedef typename Data::Matrix6 Matrix6;
-
       PINOCCHIO_UNUSED_VARIABLE(model);
 
       const JointIndex joint1_id = cmodel.joint1_id;
@@ -57,12 +54,6 @@ namespace pinocchio
 
       if (joint1_id > 0 && joint2_id > 0)
       {
-        const JointPair joint_pair =
-          joint1_id > joint2_id ? JointPair{joint2_id, joint1_id} : JointPair{joint1_id, joint2_id};
-
-        if (!data.joint_cross_coupling.exists(joint_pair))
-          data.joint_cross_coupling.insert(joint_pair, Matrix6::Zero());
-
         data.joint_coupling_info(Eigen::DenseIndex(joint1_id), Eigen::DenseIndex(joint2_id)) = true;
         data.joint_coupling_info(Eigen::DenseIndex(joint2_id), Eigen::DenseIndex(joint1_id)) = true;
 
@@ -123,11 +114,9 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
 
     typedef typename Model::JointIndex JointIndex;
     typedef std::pair<JointIndex, JointIndex> JointPair;
-    typedef typename Data::Matrix6 Matrix6;
 
     auto & joint_coupling_info = data.joint_coupling_info;
     joint_coupling_info.setZero();
@@ -196,6 +185,7 @@ namespace pinocchio
       data.constraints_supported_dim[parent_id] += data.constraints_supported_dim[joint_id];
       const auto & joint_neighbours = neighbours[joint_id];
       auto & parent_neighbours = neighbours[parent_id];
+
       for (size_t j = 0; j < joint_neighbours.size(); j++)
       {
         const JointIndex neighbour_j = joint_neighbours[j];
@@ -214,9 +204,6 @@ namespace pinocchio
           if (!EXIST_JOINT_PAIR(jp_pair))
           {
             REGISTER_JOINT_PAIR(jp_pair);
-            data.joint_cross_coupling.insert(
-              jp_pair, Matrix6::Zero()); // add edge (neighbour_j, parent_id) if neighbour_j <
-                                         // parent_id else (parent_id, neighbour_j)
 
             if (!helper::exists(parent_neighbours, neighbour_j))
             {
@@ -241,7 +228,6 @@ namespace pinocchio
           if (!EXIST_JOINT_PAIR(cross_coupling_pair))
           {
             REGISTER_JOINT_PAIR(cross_coupling_pair);
-            data.joint_cross_coupling.insert(cross_coupling_pair, Matrix6::Zero()); // add edge
 
             neighbour_j_neighbours.push_back(neighbour_k);
             neighbour_k_neighbours.push_back(neighbour_j);
