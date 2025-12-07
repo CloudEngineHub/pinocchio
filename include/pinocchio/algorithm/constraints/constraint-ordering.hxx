@@ -205,8 +205,9 @@ namespace pinocchio
           const JointPair jp_pair = neighbour_j < parent_id ? JointPair(neighbour_j, parent_id)
                                                             : JointPair(parent_id, neighbour_j);
 #define EXIST_JOINT_PAIR(pair)                                                                     \
-  joint_coupling_info(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second))               \
-    && joint_coupling_info(Eigen::DenseIndex(pair.second), Eigen::DenseIndex(pair.first))
+  bool(                                                                                            \
+    joint_coupling_info(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second))             \
+    && joint_coupling_info(Eigen::DenseIndex(pair.second), Eigen::DenseIndex(pair.first)))
 #define REGISTER_JOINT_PAIR(pair)                                                                  \
   joint_coupling_info(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second)) = true;       \
   joint_coupling_info(Eigen::DenseIndex(pair.second), Eigen::DenseIndex(pair.first)) = true
