@@ -148,68 +148,68 @@ namespace pinocchio
 
       for (size_t j = 0; j < joint_neighbours.size(); j++)
       {
-        const JointIndex vertex_j = joint_neighbours[j];
-        const Matrix6 & crosscoupling_ij =
-          (i > vertex_j)
-            ? joint_cross_coupling.get(JointPair(vertex_j, i))
-            : joint_cross_coupling.get(JointPair(i, vertex_j)).transpose(); // avoid memalloc
+        const JointIndex joint_j = joint_neighbours[j];
+        const Matrix6 & crosscoupling_ji =
+          (i > joint_j)
+            ? joint_cross_coupling.get(JointPair(joint_j, i))
+            : joint_cross_coupling.get(JointPair(i, joint_j)).transpose(); // avoid memalloc
 
-        auto & crosscoupling_ix_Jcols = mat1_tmp;
-        crosscoupling_ix_Jcols.noalias() =
-          crosscoupling_ij * Jcols; // Warning: UDinv() is actually edge_ij * J
+        auto & crosscoupling_xi_Jcols = mat1_tmp;
+        crosscoupling_xi_Jcols.noalias() =
+          crosscoupling_ji * Jcols; // Warning: UDinv() is actually edge_ji * J
 
-        auto & crosscoupling_ij_Jcols_Dinv = mat2_tmp;
-        crosscoupling_ij_Jcols_Dinv.noalias() = crosscoupling_ix_Jcols * jdata.Dinv();
+        auto & crosscoupling_ji_Jcols_Dinv = mat2_tmp;
+        crosscoupling_ji_Jcols_Dinv.noalias() = crosscoupling_xi_Jcols * jdata.Dinv();
 
-        data.oYaba_augmented[vertex_j].noalias() -=
-          crosscoupling_ij_Jcols_Dinv
-          * crosscoupling_ix_Jcols.transpose(); // Warning: UDinv() is actually edge_ij * J, U() is
-                                                // actually edge_ij * J_cols * Dinv
-        data.of[vertex_j].toVector().noalias() += crosscoupling_ij * a_tmp;
+        data.oYaba_augmented[joint_j].noalias() -=
+          crosscoupling_ji_Jcols_Dinv
+          * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ji * J, U() is
+                                                // actually edge_ji * J_cols * Dinv
+        data.of[joint_j].toVector().noalias() += crosscoupling_ji * a_tmp;
 
-        const Matrix6 crosscoupling_ij_oL = crosscoupling_ij * oL;
-        if (vertex_j == parent)
+        const Matrix6 crosscoupling_ji_oL = crosscoupling_ji * oL;
+        if (joint_j == parent)
         {
           data.oYaba_augmented[parent].noalias() +=
-            crosscoupling_ij_oL + crosscoupling_ij_oL.transpose();
+            crosscoupling_ji_oL + crosscoupling_ji_oL.transpose();
         }
         else
         {
-          if (vertex_j < parent)
+          if (joint_j < parent)
           {
-            joint_cross_coupling.get({vertex_j, parent}).noalias() += crosscoupling_ij_oL;
+            joint_cross_coupling.get({joint_j, parent}).noalias() += crosscoupling_ji_oL;
           }
           else
           {
-            joint_cross_coupling.get({parent, vertex_j}).noalias() +=
-              crosscoupling_ij_oL.transpose();
+            joint_cross_coupling.get({parent, joint_j}).noalias() +=
+              crosscoupling_ji_oL.transpose();
           }
         }
 
         for (size_t k = j + 1; k < joint_neighbours.size(); ++k)
         {
-          const JointIndex vertex_k = joint_neighbours[k];
+          const JointIndex joint_k = joint_neighbours[k];
 
-          const Matrix6 & edge_ik =
-            (i > vertex_k) ? joint_cross_coupling.get(JointPair(vertex_k, i))
-                           : joint_cross_coupling.get(JointPair(i, vertex_k)).transpose();
+          const Matrix6 & edge_ik = (i > joint_k)
+                                      ? joint_cross_coupling.get(JointPair(joint_k, i))
+                                      : joint_cross_coupling.get(JointPair(i, joint_k)).transpose();
 
-          crosscoupling_ix_Jcols.noalias() = edge_ik * Jcols;
+          crosscoupling_xi_Jcols.noalias() = edge_ik * Jcols;
 
-          assert(vertex_j != vertex_k && "Must never happen!");
-          if (vertex_j < vertex_k)
+          assert(joint_j != joint_k && "Must never happen!");
+          if (joint_j < joint_k)
           {
-            joint_cross_coupling.get({vertex_j, vertex_k}).noalias() -=
-              crosscoupling_ij_Jcols_Dinv
-              * crosscoupling_ix_Jcols.transpose(); // Warning: UDinv() is actually edge_ik * J_col,
-                                                    // U() is edge_ij * J_col * Dinv
+            joint_cross_coupling.get({joint_j, joint_k}).noalias() -=
+              crosscoupling_ji_Jcols_Dinv
+              * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ik * J_col,
+                                                    // U() is edge_ji * J_col * Dinv
           }
-          else // if (vertex_k < vertex_j)
+          else // if (joint_k < joint_j)
           {
-            joint_cross_coupling.get({vertex_k, vertex_j}).transpose().noalias() -=
-              crosscoupling_ij_Jcols_Dinv
-              * crosscoupling_ix_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
-                                                    // J_col, U() is edge_ij * J_col * Dinv
+            joint_cross_coupling.get({joint_k, joint_j}).transpose().noalias() -=
+              crosscoupling_ji_Jcols_Dinv
+              * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
+                                                    // J_col, U() is edge_ji * J_col * Dinv
           }
         }
       }
@@ -261,12 +261,12 @@ namespace pinocchio
 
       const Vector6 a_tmp = Jcols * jmodel.jointVelocitySelector(data.g);
 
-      for (JointIndex vertex_j : neighbours[i])
+      for (const JointIndex joint_j : neighbours[i])
       {
-        const Matrix6 & edge_ij = (i > vertex_j)
-                                    ? joint_cross_coupling.get(JointPair(vertex_j, i))
-                                    : joint_cross_coupling.get(JointPair(i, vertex_j)).transpose();
-        data.of[vertex_j].toVector().noalias() += edge_ij * a_tmp;
+        const Matrix6 & edge_ji = (i > joint_j)
+                                    ? joint_cross_coupling.get(JointPair(joint_j, i))
+                                    : joint_cross_coupling.get(JointPair(i, joint_j)).transpose();
+        data.of[joint_j].toVector().noalias() += edge_ji * a_tmp;
       }
 
       if (parent > 0)
@@ -309,12 +309,12 @@ namespace pinocchio
       data.oa_gf[i] += data.oa_gf[parent]; // does take into account the gravity field
 
       Force coupling_forces = Force::Zero();
-      for (JointIndex vertex_j : neighbours)
+      for (JointIndex joint_j : neighbours)
       {
-        const Matrix6 & edge_ij =
-          (i > vertex_j) ? data.joint_cross_coupling.get(JointPair(vertex_j, i)).transpose()
-                         : data.joint_cross_coupling.get(JointPair(i, vertex_j));
-        coupling_forces.toVector().noalias() += edge_ij * data.oa_gf[vertex_j].toVector();
+        const Matrix6 & coupling_ij =
+          (i > joint_j) ? data.joint_cross_coupling.get(JointPair(joint_j, i)).transpose()
+                        : data.joint_cross_coupling.get(JointPair(i, joint_j));
+        coupling_forces.toVector().noalias() += coupling_ij * data.oa_gf[joint_j].toVector();
       }
 
       jmodel.jointVelocitySelector(data.u).noalias() -=
@@ -365,13 +365,12 @@ namespace pinocchio
       data.oa_gf[i] = data.oa_gf[parent]; // does take into account the gravity field
 
       Force & fi = data.of[i];
-      for (JointIndex vertex_j : neighbours)
+      for (const JointIndex joint_j : neighbours)
       {
-
-        const Matrix6 & edge_ij =
-          (i > vertex_j) ? data.joint_cross_coupling.get(JointPair(vertex_j, i)).transpose()
-                         : data.joint_cross_coupling.get(JointPair(i, vertex_j));
-        fi.toVector().noalias() += edge_ij * data.oa_gf[vertex_j].toVector();
+        const Matrix6 & coupling_ij =
+          (i > joint_j) ? data.joint_cross_coupling.get(JointPair(joint_j, i)).transpose()
+                        : data.joint_cross_coupling.get(JointPair(i, joint_j));
+        fi.toVector().noalias() += coupling_ij * data.oa_gf[joint_j].toVector();
       }
 
       jmodel.jointVelocitySelector(data.u).noalias() = -J_cols.transpose() * fi.toVector();
