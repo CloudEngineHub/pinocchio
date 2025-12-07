@@ -558,7 +558,10 @@ namespace pinocchio
 
       if (this->joint1_id > 0 && this->joint2_id > 0)
       {
-        if (this->joint1_id < this->joint2_id)
+        assert(
+          data.joint_cross_coupling.exists({this->joint1_id, this->joint2_id})
+          || data.joint_cross_coupling.exists({this->joint2_id, this->joint1_id}));
+        if (data.joint_cross_coupling.exists({this->joint1_id, this->joint2_id}))
         {
           data.joint_cross_coupling.get({this->joint1_id, this->joint2_id}) += I12;
         }
