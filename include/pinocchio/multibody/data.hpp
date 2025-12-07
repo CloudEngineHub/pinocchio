@@ -81,6 +81,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 1, Eigen::Dynamic, Options | Eigen::RowMajor> RowVectorXs;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
+    typedef Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXb;
 
     /// \brief Dense vectorized version of a joint configuration vector.
     typedef VectorXs ConfigVectorType;
@@ -618,6 +619,9 @@ namespace pinocchio
     /// \brief Stores the cross-coupling inertias between links in LC-ABA
     container::DoubleEntryContainer<std::vector<Matrix6, Eigen::aligned_allocator<Matrix6>>>
       joint_cross_coupling;
+
+    /// \brief Coupling relation between joints in the presence of coupling constraints.
+    MatrixXb joint_coupling_info;
 
     /// \brief Stores the projected cross-coupling between links as
     /// `projected_joint_cross_coupling(j,i) = cross_coupling(j,i) * J_i`.
