@@ -610,12 +610,12 @@ namespace pinocchio
 
     typedef std::vector<JointIndex> JointIndexVector;
 
-    /// \brief Bookkeeping neighbouring vertices during CL-CABA or proxBBO
+    /// \brief Bookkeeping neighbouring vertices during LC-ABA or proxBBO
     std::vector<JointIndexVector> joint_neighbours;
 
     typedef std::pair<JointIndex, JointIndex> JointIndexPair;
 
-    /// \brief Stores the cross-coupling between links in CL-CABA
+    /// \brief Stores the cross-coupling inertias between links in LC-ABA
     container::DoubleEntryContainer<std::vector<Matrix6, Eigen::aligned_allocator<Matrix6>>>
       joint_cross_coupling;
 
@@ -623,7 +623,7 @@ namespace pinocchio
     /// `projected_joint_cross_coupling(j,i) = cross_coupling(j,i) * J_i`.
     container::DoubleEntryContainer<MatrixStackTpl<Matrix6x>> projected_joint_cross_coupling;
 
-    /// \brief Stores the elimination ordering of CL-CABA
+    /// \brief Stores the elimination ordering of LC-ABA
     std::vector<JointIndex> elimination_order;
 
     /// \brief Joint apparent inertia vector (related to model.armarture, joint-wise constraints,
