@@ -114,8 +114,10 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
+    typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
 
-    typedef typename Model::JointIndex JointIndex;
+    using JointIndex = typename Model::JointIndex;
+    using Matrix6 = typename Data::Matrix6;
     typedef std::pair<JointIndex, JointIndex> JointPair;
 
     auto & joint_coupling_info = data.joint_coupling_info;
@@ -125,7 +127,6 @@ namespace pinocchio
     auto & neighbours = data.joint_neighbours;
     for (auto & neighbour_elt : neighbours)
       neighbour_elt.clear();
-    data.joint_cross_coupling.clear();
 
     // Get links supporting constraints
     std::fill(data.constraints_supported_dim.begin(), data.constraints_supported_dim.end(), 0);
@@ -236,7 +237,54 @@ namespace pinocchio
 #undef EXIST_JOINT_PAIR
 #undef REGISTER_JOINT_PAIR
       }
+    } // while (leaf_vertices.size() > 0)
+
+    // Allocate memory for coupling terms
+
+    // Clear coupling terms
+    auto & joint_cross_coupling = data.joint_cross_coupling;
+    joint_cross_coupling.clear();
+
+    auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
+    projected_joint_cross_coupling.clear();
+
+#define INSERT_JOINT_INERTIA_COUPLING_TERM(pair)                                                   \
+  assert(!joint_cross_coupling.exists(pair));                                                      \
+  joint_cross_coupling.insert(pair, Matrix6::Zero());
+
+    for (const JointIndex joint_i : elimination_order)
+    {
+      const auto & joint_neighbours = neighbours[joint_i];
+      // const JointIndex parent_joint_i = model.parents[joint_i];
+
+      if (joint_neighbours.size() == 0)
+        continue;
+
+      const auto joint_nv = model.nvs[joint_i];
+      for (size_t j = 0; j < joint_neighbours.size(); j++)
+      {
+        const auto joint_j = joint_neighbours[j];
+        const auto pair_ji = JointPair(joint_j, joint_i);
+        INSERT_JOINT_INERTIA_COUPLING_TERM(pair_ji);
+
+        assert(!projected_joint_cross_coupling.exists(JointPair(joint_j, joint_i)));
+        const auto res =
+          projected_joint_cross_coupling.insert(JointPair(joint_j, joint_i), 6, joint_nv);
+        PINOCCHIO_ONLY_USED_FOR_DEBUG(res);
+        assert(res && "must never happened");
+
+        for (size_t k = j + 1; k < joint_neighbours.size(); ++k)
+        {
+          const auto joint_k = joint_neighbours[k];
+          const auto pair_kj = JointPair(joint_k, joint_j);
+          INSERT_JOINT_INERTIA_COUPLING_TERM(pair_kj);
+
+          assert(!projected_joint_cross_coupling.exists(JointPair(joint_k, joint_i)));
+          projected_joint_cross_coupling.insert(JointPair(joint_k, joint_i), 6, joint_nv);
+        }
+      }
     }
+#undef INSERT_JOINT_INERTIA_COUPLING_TERM
   }
 } // namespace pinocchio
 

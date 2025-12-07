@@ -33,63 +33,12 @@ namespace pinocchio
       const ConstraintModelVectorHolder & constraint_models_ref,
       const ConstraintDataVectorHolder & constraint_datas_ref)
   {
-    typedef typename Data::Matrix6 Matrix6;
-
     m_constraint_models_ref = constraint_models_ref;
     m_constraint_datas_ref = constraint_datas_ref;
     updateComplianceFromConstraintModels();
 
     computeJointMinimalOrdering(model(), data(), helper::get_ref(constraint_models_ref));
-
-    // Allocate memory for coupling terms
-    typedef std::pair<JointIndex, JointIndex> JointPair;
-    const auto & neighbours = data().joint_neighbours;
-
-    // Clear coupling terms
-    auto & joint_cross_coupling = data().joint_cross_coupling;
-    joint_cross_coupling.clear();
-
-    auto & projected_joint_cross_coupling = data().projected_joint_cross_coupling;
-    projected_joint_cross_coupling.clear();
-
-#define INSERT_JOINT_INERTIA_COUPLING_TERM(pair)                                                   \
-  assert(!joint_cross_coupling.exists(pair));                                                      \
-  joint_cross_coupling.insert(pair, Matrix6::Zero());
-
-    for (const JointIndex joint_i : data().elimination_order)
-    {
-      const auto & joint_neighbours = neighbours[joint_i];
-      // const JointIndex parent_joint_i = model().parents[joint_i];
-
-      if (joint_neighbours.size() == 0)
-        continue;
-
-      const auto joint_nv = model().nvs[joint_i];
-      for (size_t j = 0; j < joint_neighbours.size(); j++)
-      {
-        const auto joint_j = joint_neighbours[j];
-        const auto pair_ji = JointPair(joint_j, joint_i);
-        INSERT_JOINT_INERTIA_COUPLING_TERM(pair_ji);
-
-        assert(!projected_joint_cross_coupling.exists(JointPair(joint_j, joint_i)));
-        const auto res =
-          projected_joint_cross_coupling.insert(JointPair(joint_j, joint_i), 6, joint_nv);
-        PINOCCHIO_ONLY_USED_FOR_DEBUG(res);
-        assert(res && "must never happened");
-
-        for (size_t k = j + 1; k < joint_neighbours.size(); ++k)
-        {
-          const auto joint_k = joint_neighbours[k];
-          const auto pair_kj = JointPair(joint_k, joint_j);
-          INSERT_JOINT_INERTIA_COUPLING_TERM(pair_kj);
-
-          assert(!projected_joint_cross_coupling.exists(JointPair(joint_k, joint_i)));
-          projected_joint_cross_coupling.insert(JointPair(joint_k, joint_i), 6, joint_nv);
-        }
-      }
-    }
     m_dirty = true;
-#undef INSERT_JOINT_INERTIA_COUPLING_TERM
   }
 
   template<
