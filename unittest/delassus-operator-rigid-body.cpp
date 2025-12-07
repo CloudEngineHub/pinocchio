@@ -384,6 +384,36 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
     delassus_operator.updateCompliance(0);
     delassus_operator.compute();
 
+    // Check data allocation
+    {
+      // typedef std::pair<JointIndex, JointIndex> JointPair;
+      const auto & neighbours = data.joint_neighbours;
+      const auto & joint_cross_coupling = data.joint_cross_coupling;
+      // const auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
+      for (const auto joint_i : data.elimination_order)
+      {
+        const auto & joint_i_neighbours = neighbours[joint_i];
+        const auto parent_joint_i = model.parents[joint_i];
+        for (size_t j = 0; j < joint_i_neighbours.size(); j++)
+        {
+          const JointIndex joint_j = joint_i_neighbours[j];
+
+          if (joint_j != parent_joint_i)
+          {
+            BOOST_CHECK(
+              joint_cross_coupling.exists({joint_j, parent_joint_i})
+              || joint_cross_coupling.exists({parent_joint_i, joint_j}));
+          }
+
+          for (size_t k = j + 1; k < joint_i_neighbours.size(); ++k)
+          {
+            const JointIndex joint_k = joint_i_neighbours[k];
+            BOOST_CHECK(joint_cross_coupling.exists({joint_k, joint_i}));
+            BOOST_CHECK(joint_cross_coupling.exists({joint_j, joint_k}));
+          }
+        }
+      }
+    }
     Data data_crba(model);
     Eigen::MatrixXd M = crba(model, data_crba, q_neutral, Convention::WORLD);
     make_symmetric(M);
