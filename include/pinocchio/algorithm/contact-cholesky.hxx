@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2019-2024 INRIA
+// Copyright (c) 2019-2025 INRIA
 //
 
 #ifndef __pinocchio_algorithm_contact_cholesky_hxx__
@@ -33,7 +33,6 @@ namespace pinocchio
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
     typedef ModelTpl<S1, O1, JointCollectionTpl> Model;
-    typedef typename Model::JointModel JointModel;
 
     assert(
       constraint_models.size() == constraint_datas.size()
@@ -65,8 +64,8 @@ namespace pinocchio
     {
       const JointIndex parent_id = model.parents[joint_id];
 
-      const JointModel joint = model.joints[joint_id];
-      const JointModel parent_joint = model.joints[parent_id];
+      const auto & joint = model.joints[joint_id];
+      const auto & parent_joint = model.joints[parent_id];
       const int nvj = joint.nv();
       const int idx_vj = joint.idx_v();
 
