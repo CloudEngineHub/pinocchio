@@ -111,7 +111,7 @@ namespace pinocchio
     typedef DelassusOperatorRigidBodySystemsComputeBackwardPass<                                   \
       DelassusOperatorRigidBodySystemsTpl, apply_on_the_right_v, solve_in_place_v>                 \
       Pass2;                                                                                       \
-    for (const JointIndex i : data_ref.elimination_order)                                          \
+    for (const JointIndex i : data_ref.joint_elimination_order)                                    \
     {                                                                                              \
       typename Pass2::ArgsType args(model_ref, data_ref);                                          \
       Pass2::run(model_ref.joints[i], data_ref.joints[i], args);                                   \
@@ -370,7 +370,7 @@ namespace pinocchio
     const auto & model_ref = m_self.model();
     const auto & data_ref = m_self.data();
     auto & custom_data = const_cast<DelassusOperatorRigidBodySystemsTpl &>(m_self).getCustomData();
-    const auto & elimination_order = data_ref.elimination_order;
+    const auto & joint_elimination_order = data_ref.joint_elimination_order;
 
     if (reset_joint_force_vector)
     {
@@ -385,7 +385,7 @@ namespace pinocchio
         DelassusOperatorRigidBodySystemsTpl>
         Pass1;
       typename Pass1::ArgsType args1(model_ref, data_ref, custom_data);
-      for (const JointIndex i : elimination_order)
+      for (const JointIndex i : joint_elimination_order)
       {
         Pass1::run(model_ref.joints[i], data_ref.joints_augmented[i], args1);
       }
@@ -398,9 +398,9 @@ namespace pinocchio
         Pass2;
       custom_data.oa_augmented[0].setZero();
       typename Pass2::ArgsType args2(model_ref, data_ref, custom_data);
-      for (int it = int(elimination_order.size()) - 1; it >= 0; it--)
+      for (int it = int(joint_elimination_order.size()) - 1; it >= 0; it--)
       {
-        const JointIndex i = elimination_order[size_t(it)];
+        const JointIndex i = joint_elimination_order[size_t(it)];
         Pass2::run(model_ref.joints[i], data_ref.joints_augmented[i], args2);
       }
     }

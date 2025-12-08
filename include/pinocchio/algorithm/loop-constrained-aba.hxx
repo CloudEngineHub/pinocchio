@@ -628,9 +628,9 @@ namespace pinocchio
 
     typedef LCABABackwardStep<Scalar, Options, JointCollectionTpl> Pass2;
 
-    const auto & elimination_order = data.elimination_order;
+    const auto & joint_elimination_order = data.joint_elimination_order;
 
-    for (JointIndex joint_i : elimination_order)
+    for (JointIndex joint_i : joint_elimination_order)
     {
       Pass2::run(
         model.joints[joint_i], data.joints[joint_i], typename Pass2::ArgsType(model, data));
@@ -638,9 +638,9 @@ namespace pinocchio
 
     typedef LCABAForwardStep2<Scalar, Options, JointCollectionTpl> Pass3;
 
-    for (int it = int(elimination_order.size()) - 1; it >= 0; --it)
+    for (int it = int(joint_elimination_order.size()) - 1; it >= 0; --it)
     {
-      const JointIndex joint_i = elimination_order[size_t(it)];
+      const JointIndex joint_i = joint_elimination_order[size_t(it)];
       if (data.constraints_supported_dim[joint_i] > 0)
         Pass3::run(
           model.joints[joint_i], data.joints[joint_i], typename Pass3::ArgsType(model, data));
@@ -718,7 +718,7 @@ namespace pinocchio
         break;
 
       // reduced backward sweep
-      for (JointIndex j : elimination_order)
+      for (JointIndex j : joint_elimination_order)
       {
         if (data.constraints_supported_dim[j] > 0)
           ReducedPass2::run(
@@ -727,9 +727,9 @@ namespace pinocchio
 
       // reduced forward sweep
       data.oa_gf[0].setZero();
-      for (int it = int(elimination_order.size()) - 1; it >= 0; it--)
+      for (int it = int(joint_elimination_order.size()) - 1; it >= 0; it--)
       {
-        const JointIndex j = elimination_order[size_t(it)];
+        const JointIndex j = joint_elimination_order[size_t(it)];
         if (data.constraints_supported_dim[j] > 0)
         {
           ReducedPass3::run(
@@ -745,9 +745,9 @@ namespace pinocchio
 
     // outward sweep after convergence/timeout for joints not supporting a constraint
     data.oa_gf[0] = -model.gravity;
-    for (int it = int(elimination_order.size()) - 1; it >= 0; --it)
+    for (int it = int(joint_elimination_order.size()) - 1; it >= 0; --it)
     {
-      const JointIndex j = elimination_order[size_t(it)];
+      const JointIndex j = joint_elimination_order[size_t(it)];
       if (data.constraints_supported_dim[j] == 0)
         Pass3::run(model.joints[j], data.joints[j], typename Pass3::ArgsType(model, data));
       else

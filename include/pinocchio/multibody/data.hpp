@@ -628,7 +628,7 @@ namespace pinocchio
     container::DoubleEntryContainer<MatrixStackTpl<Matrix6x>> projected_joint_cross_coupling;
 
     /// \brief Stores the elimination ordering of LC-ABA
-    std::vector<JointIndex> elimination_order;
+    std::vector<JointIndex> joint_elimination_order;
 
     /// \brief Joint apparent inertia vector (related to model.armarture, joint-wise constraints,
     /// etc.)

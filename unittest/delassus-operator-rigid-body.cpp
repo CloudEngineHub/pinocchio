@@ -350,7 +350,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
       BOOST_CHECK(data.liMi == data2.liMi);
       BOOST_CHECK(data.J == data2.J);
       BOOST_CHECK(data.Yaba == data2.Yaba);
-      BOOST_CHECK(data.elimination_order == data2.elimination_order);
+      BOOST_CHECK(data.joint_elimination_order == data2.joint_elimination_order);
       BOOST_CHECK(data.constraints_supported_dim == data2.constraints_supported_dim);
       BOOST_CHECK(data.joint_neighbours == data2.joint_neighbours);
       BOOST_CHECK((data.joint_cross_coupling.keys() == data2.joint_cross_coupling.keys()).all());
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
       const auto & neighbours = data.joint_neighbours;
       const auto & joint_cross_coupling = data.joint_cross_coupling;
       // const auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
-      for (const auto joint_i : data.elimination_order)
+      for (const auto joint_i : data.joint_elimination_order)
       {
         const auto & joint_i_neighbours = neighbours[joint_i];
         const auto parent_joint_i = model.parents[joint_i];
@@ -505,7 +505,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
     BOOST_CHECK(delassus_operator.getCompliance() == delassus_operator2.getCompliance());
 
     BOOST_CHECK(data.J == data2.J);
-    BOOST_CHECK(data.elimination_order == data2.elimination_order);
+    BOOST_CHECK(data.joint_elimination_order == data2.joint_elimination_order);
     for (JointIndex joint_id = 1; joint_id < JointIndex(model.njoints); ++joint_id)
     {
       BOOST_CHECK(data.oMi[joint_id] == data2.oMi[joint_id]);
@@ -580,7 +580,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
   //    ProximalSettings prox_settings(1e-14, min_damping_value, 1);
   //    lcaba(model, data_lcaba, q_neutral, v, tau, rcm_vector, rcd_vector, prox_settings);
   //
-  //    BOOST_CHECK(data_lcaba.elimination_order == data.elimination_order);
+  //    BOOST_CHECK(data_lcaba.joint_elimination_order == data.joint_elimination_order);
   //
   //
   //
@@ -594,7 +594,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
   //    //      data_lcaba.oYaba_augmented[joint_id] << std::endl;
   //    //    }
   //    //    std::cout << "elimination ordering: ";
-  //    //    for(const auto val: data_lcaba.elimination_order)
+  //    //    for(const auto val: data_lcaba.joint_elimination_order)
   //    //      std::cout << val << ", ";
   //    std::cout << std::endl;
   //    std::cout << "---------" << std::endl;
@@ -856,16 +856,16 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
     delassus_operator.compute();
     delassus_operator.getAugmentedMassMatrixOperator().solveInPlace(res);
 
-    // Check elimination_order
-    const auto & elimination_order = data.elimination_order;
-    for (auto it = elimination_order.begin(); it != elimination_order.end(); ++it)
+    // Check joint_elimination_order
+    const auto & joint_elimination_order = data.joint_elimination_order;
+    for (auto it = joint_elimination_order.begin(); it != joint_elimination_order.end(); ++it)
     {
       const auto joint_id = *it;
       const auto & joint_support = model.supports[joint_id];
       for (const auto supporting_joint : joint_support)
       {
-        bool is_after =
-          std::find(it, elimination_order.end(), supporting_joint) != elimination_order.end();
+        bool is_after = std::find(it, joint_elimination_order.end(), supporting_joint)
+                        != joint_elimination_order.end();
         BOOST_CHECK(is_after || supporting_joint == 0);
       }
     }
@@ -1463,16 +1463,16 @@ BOOST_AUTO_TEST_CASE(general_test_no_constraints)
       BOOST_CHECK(res.isApprox(res_ref2));
     }
 
-    // Check elimination_order
-    const auto & elimination_order = data.elimination_order;
-    for (auto it = elimination_order.begin(); it != elimination_order.end(); ++it)
+    // Check joint_elimination_order
+    const auto & joint_elimination_order = data.joint_elimination_order;
+    for (auto it = joint_elimination_order.begin(); it != joint_elimination_order.end(); ++it)
     {
       const auto joint_id = *it;
       const auto & joint_support = model.supports[joint_id];
       for (const auto support_joint : joint_support)
       {
-        bool is_after =
-          std::find(it, elimination_order.end(), support_joint) != elimination_order.end();
+        bool is_after = std::find(it, joint_elimination_order.end(), support_joint)
+                        != joint_elimination_order.end();
         BOOST_CHECK(is_after || support_joint == 0);
       }
     }

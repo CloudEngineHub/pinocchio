@@ -139,8 +139,8 @@ namespace pinocchio
     }
 
     // Second step: order the joints according to the minimum degree heuristic
-    auto & elimination_order = data.elimination_order;
-    elimination_order.clear(); // clearing in case inited once more
+    auto & joint_elimination_order = data.joint_elimination_order;
+    joint_elimination_order.clear(); // clearing in case inited once more
 
     std::vector<size_t> num_children(size_t(model.njoints), 0);
     std::list<JointIndex> leaf_vertices;
@@ -174,7 +174,7 @@ namespace pinocchio
       const JointIndex joint_id = joint_id_with_least_neighbors;
       assert(joint_id != 0);
       leaf_vertices.remove(joint_id);
-      elimination_order.push_back(joint_id);
+      joint_elimination_order.push_back(joint_id);
 
       const JointIndex parent_id = model.parents[joint_id];
       num_children[parent_id]--;
@@ -242,9 +242,10 @@ namespace pinocchio
     // We need to reorder neighbours according to elimanation order.
     // This enables to properly allocate cross coupling terms
     {
-      std::vector<size_t> sort_ordering(elimination_order.size(), elimination_order.size());
+      std::vector<size_t> sort_ordering(
+        joint_elimination_order.size(), joint_elimination_order.size());
       size_t val = 0;
-      for (const JointIndex joint_i : elimination_order)
+      for (const JointIndex joint_i : joint_elimination_order)
       {
         sort_ordering[joint_i] = val++;
       }
@@ -272,7 +273,7 @@ namespace pinocchio
   assert(!joint_cross_coupling.exists(pair));                                                      \
   joint_cross_coupling.insert(pair, Matrix6::Zero());
 
-    for (const JointIndex joint_i : elimination_order)
+    for (const JointIndex joint_i : joint_elimination_order)
     {
       const auto & joint_neighbours = neighbours[joint_i];
 
