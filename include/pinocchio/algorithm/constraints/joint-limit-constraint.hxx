@@ -354,7 +354,7 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(aot);
 
-    if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
+    if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
@@ -370,7 +370,7 @@ namespace pinocchio
 
       const auto lazy_product_expression =
         rowise_tangent_map[idx_q_reduce] * mat.middleRows(idx_v, constraint_size);
-      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+      if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(Eigen::DenseIndex(constraint_id)).noalias() -= lazy_product_expression;
       else
         res.row(Eigen::DenseIndex(constraint_id)).noalias() += lazy_product_expression;
@@ -385,7 +385,7 @@ namespace pinocchio
 
       const auto lazy_product_expression =
         -rowise_tangent_map[idx_q_reduce] * mat.middleRows(idx_v, constraint_size);
-      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+      if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(Eigen::DenseIndex(constraint_id)).noalias() -= lazy_product_expression;
       else
         res.row(Eigen::DenseIndex(constraint_id)).noalias() += lazy_product_expression;
@@ -414,7 +414,7 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(aot);
 
-    if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
+    if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
@@ -430,7 +430,7 @@ namespace pinocchio
 
       const auto lazy_product_expression =
         rowise_tangent_map[idx_q_reduce].transpose() * mat.row(Eigen::DenseIndex(constraint_id));
-      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+      if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.middleRows(idx_v, constraint_size).noalias() -= lazy_product_expression;
       else
         res.middleRows(idx_v, constraint_size).noalias() += lazy_product_expression;
@@ -445,7 +445,7 @@ namespace pinocchio
 
       const auto lazy_product_expression =
         -rowise_tangent_map[idx_q_reduce].transpose() * mat.row(Eigen::DenseIndex(constraint_id));
-      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+      if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.middleRows(idx_v, constraint_size).noalias() -= lazy_product_expression;
       else
         res.middleRows(idx_v, constraint_size).noalias() += lazy_product_expression;

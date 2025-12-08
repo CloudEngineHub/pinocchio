@@ -326,7 +326,7 @@ namespace pinocchio
     {
       Matrix36 res;
 
-      if (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
       {
 #define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
   CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
@@ -347,7 +347,7 @@ namespace pinocchio
 
 #undef INTERNAL_LOOP
       }
-      else if (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
       {
 #define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
   CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
@@ -385,7 +385,7 @@ namespace pinocchio
       Matrix36 res;
       typedef typename SE3::Vector3 Vector3;
 
-      if (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
       {
 #define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
   CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
@@ -401,7 +401,7 @@ namespace pinocchio
 
 #undef INTERNAL_LOOP
       }
-      else if (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
       {
         const SE3 & j2Mc2 = this->joint2_placement;
         const SE3 & c1Mc2 = cdata.c1Mc2;
@@ -623,7 +623,7 @@ namespace pinocchio
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(aot);
 
-      if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
+      if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
         res.setZero();
 
       //      const Eigen::DenseIndex constraint_dim = size();
@@ -654,7 +654,7 @@ namespace pinocchio
         else
           AxSi.noalias() = A2 * Jcol;
 
-        if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+        if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
           res.noalias() -= AxSi * mat.row(jj);
         else // AddTo, SetTo
           res.noalias() += AxSi * mat.row(jj);
@@ -700,7 +700,7 @@ namespace pinocchio
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), model.nv);
       PINOCCHIO_UNUSED_VARIABLE(aot);
 
-      if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
+      if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
         res.setZero();
 
       const auto & A1 = cdata.A1_world;
@@ -725,7 +725,7 @@ namespace pinocchio
         else
           AxSi.noalias() = A2 * Jcol;
 
-        if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+        if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
           res.row(jj).noalias() -= AxSi.transpose() * mat;
         else
           res.row(jj).noalias() += AxSi.transpose() * mat;

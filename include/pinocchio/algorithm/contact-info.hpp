@@ -519,7 +519,7 @@ namespace pinocchio
       Matrix36 res;
       typedef typename SE3::Vector3 Vector3;
 
-      if (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
       {
 #define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
   CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
@@ -534,7 +534,7 @@ namespace pinocchio
 
 #undef INTERNAL_LOOP
       }
-      else if (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
       {
 #define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
   CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
@@ -563,7 +563,7 @@ namespace pinocchio
       Matrix36 res;
       typedef typename SE3::Vector3 Vector3;
 
-      if (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
       {
 #define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
   CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
@@ -579,7 +579,7 @@ namespace pinocchio
 
 #undef INTERNAL_LOOP
       }
-      else if (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
       {
         const SE3 & j2Mc2 = this->joint2_placement;
         const SE3 & c1Mc2 = cdata.c1Mc2;

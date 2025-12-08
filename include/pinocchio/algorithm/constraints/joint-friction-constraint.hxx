@@ -135,14 +135,14 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(cdata);
     PINOCCHIO_UNUSED_VARIABLE(aot);
 
-    if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
+    if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
     for (size_t row_id = 0; row_id < active_dofs.size(); ++row_id)
     {
       const auto col_id = active_dofs[row_id];
 
-      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+      if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(Eigen::DenseIndex(row_id)) -= mat.row(col_id);
       else
         res.row(Eigen::DenseIndex(row_id)) += mat.row(col_id);
@@ -172,14 +172,14 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(cdata);
     PINOCCHIO_UNUSED_VARIABLE(aot);
 
-    if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
+    if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
     for (size_t row_id = 0; row_id < active_dofs.size(); ++row_id)
     {
       const auto col_id = active_dofs[row_id];
 
-      if (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
+      if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(col_id) -= mat.row(Eigen::DenseIndex(row_id));
       else
         res.row(col_id) += mat.row(Eigen::DenseIndex(row_id));
