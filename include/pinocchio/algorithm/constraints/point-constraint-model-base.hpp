@@ -804,9 +804,11 @@ namespace pinocchio
         std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value ? cdata.A2_world : cdata.A2_local;
 
       if (this->joint1_id > 0)
-        joint_forces[this->joint1_id].toVector().noalias() += A1.transpose() * constraint_forces;
+        joint_forces[this->joint1_id].toVector().noalias() +=
+          A1.transpose() * constraint_forces.template head<3>();
       if (this->joint2_id > 0)
-        joint_forces[this->joint2_id].toVector().noalias() += A2.transpose() * constraint_forces;
+        joint_forces[this->joint2_id].toVector().noalias() +=
+          A2.transpose() * constraint_forces.template head<3>();
     }
 
     ///
@@ -839,14 +841,14 @@ namespace pinocchio
         std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value ? cdata.A2_world : cdata.A2_local;
 
       if (this->joint1_id > 0 && this->joint2_id > 0)
-        constraint_motion.const_cast_derived().noalias() =
+        constraint_motion.const_cast_derived().template head<3>().noalias() =
           A1 * joint_accelerations[this->joint1_id].toVector()
           + A2 * joint_accelerations[this->joint2_id].toVector();
       else if (this->joint1_id > 0)
-        constraint_motion.const_cast_derived().noalias() =
+        constraint_motion.const_cast_derived().template head<3>().noalias() =
           A1 * joint_accelerations[this->joint1_id].toVector();
       else if (this->joint2_id > 0)
-        constraint_motion.const_cast_derived().noalias() =
+        constraint_motion.const_cast_derived().template head<3>().noalias() =
           A2 * joint_accelerations[this->joint2_id].toVector();
       else
         constraint_motion.const_cast_derived().setZero();
