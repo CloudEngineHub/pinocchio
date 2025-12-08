@@ -23,9 +23,10 @@ class TestADMM(TestCase):
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
         fext = [pin.Force.Zero() for _ in range(model.njoints)]
+        dt = 1e-3
 
         delassus_matrix, g, constraint_datas = self.setupTest(
-            model, constraint_models, q0, v0, tau0, fext
+            model, constraint_models, q0, v0, tau0, fext, dt
         )
         delassus = pin.DelassusOperatorDense(delassus_matrix)
         dim_pb = g.shape[0]
@@ -72,6 +73,7 @@ class TestADMM(TestCase):
         fext = [pin.Force.Zero() for _ in range(model.njoints)]
         self.addFloor(geom_model, visual_model)
         self.addSystemCollisionPairs(model, geom_model, q0)
+        dt = 1e-3
 
         # Adding constraints from points contacts
         contact_constraints = self.computeContactConstraints(model, geom_model, q0)
@@ -79,7 +81,7 @@ class TestADMM(TestCase):
             constraint_models.append(pin.ConstraintModel(fpcm))
 
         delassus_matrix, g, constraint_datas = self.setupTest(
-            model, constraint_models, q0, v0, tau0, fext
+            model, constraint_models, q0, v0, tau0, fext, dt
         )
         delassus = pin.DelassusOperatorDense(delassus_matrix)
 
