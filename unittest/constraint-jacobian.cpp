@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian_operations)
     Eigen::VectorXd res(model.nv);
     const Eigen::VectorXd rhs = Eigen::VectorXd::Random(m);
 
-    evalConstraints(model, data, constraints_models, constraints_datas);
+    calc(model, data, constraints_models, constraints_datas);
     evalConstraintJacobianTransposeMatrixProduct(
       model, data, constraints_models, constraints_datas, rhs, res);
 

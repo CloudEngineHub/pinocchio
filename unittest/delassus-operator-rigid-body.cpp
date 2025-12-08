@@ -686,7 +686,7 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
 
   Eigen::MatrixXd constraints_jacobian_gt(delassus_operator.size(), model.nv);
   constraints_jacobian_gt.setZero();
-  evalConstraints(model, data_gt, constraint_models, constraint_datas_gt);
+  calc(model, data_gt, constraint_models, constraint_datas_gt);
   getConstraintsJacobian(
     model, data_gt, constraint_models, constraint_datas_gt, constraints_jacobian_gt);
 
@@ -710,7 +710,7 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
     const Eigen::VectorXd Jt_rhs_gt = constraints_jacobian_gt.transpose() * rhs;
     Eigen::VectorXd Jt_rhs(model.nv);
 
-    evalConstraints(model, data, constraint_models, constraint_datas);
+    calc(model, data, constraint_models, constraint_datas);
     evalConstraintJacobianTransposeMatrixProduct(
       model, data, constraint_models, constraint_datas, rhs, Jt_rhs);
 
