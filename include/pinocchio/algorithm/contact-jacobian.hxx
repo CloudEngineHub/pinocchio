@@ -328,6 +328,50 @@ namespace pinocchio
     typename RhsMatrixType,
     typename ResultMatrixType,
     AssignmentOperatorType op>
+  void evalConstraintJacobianMatrixProduct(
+    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const Eigen::MatrixBase<RhsMatrixType> & rhs,
+    const Eigen::MatrixBase<ResultMatrixType> & res_,
+    AssignmentOperatorTag<op> aot)
+  {
+
+    const Eigen::DenseIndex constraint_size =
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    ResultMatrixType & res = res_.const_cast_derived();
+
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(rhs.rows(), constraint_size);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(res_.rows(), model.nv);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(res_.cols(), rhs.cols());
+
+    Eigen::Index row_id = 0;
+    res.setZero();
+    for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+      const auto constraint_size = cmodel.residualSize(cdata);
+
+      const auto rhs_block = rhs.middleRows(row_id, constraint_size);
+      cmodel.jacobianMatrixProduct(model, data, cdata, rhs_block, res, aot);
+
+      row_id += constraint_size;
+    }
+  }
+
+  template<
+    typename Scalar,
+    int Options,
+    template<typename, int> class JointCollectionTpl,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator,
+    typename RhsMatrixType,
+    typename ResultMatrixType,
+    AssignmentOperatorType op>
   void evalConstraintJacobianTransposeMatrixProduct(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,

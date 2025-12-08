@@ -187,6 +187,40 @@ namespace pinocchio
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
   ///
+  /// \brief Evaluate the operation res = J * rhs
+  ///
+  /// \remarks This function assumes that the a computeJointJacobians has been called first or any
+  /// algorithms that computes data.J and data.oMi.
+  /// This function also assumes that the constrained datas are up-to-date.
+  ///
+  /// \param[in] model The model structure of the rigid body system.
+  /// \param[in] data The data structure of the rigid body system.
+  /// \param[in] constraint_models Vector of constraint models.
+  /// \param[in] constraint_datas Vector of constraint data.
+  /// \param[in] rhs Right-hand side term.
+  /// \param[out] res Results.
+  ///
+  template<
+    typename Scalar,
+    int Options,
+    template<typename, int> class JointCollectionTpl,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator,
+    typename RhsMatrixType,
+    typename ResultMatrixType,
+    AssignmentOperatorType op = SETTO>
+  void evalConstraintJacobianMatrixProduct(
+    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const Eigen::MatrixBase<RhsMatrixType> & rhs,
+    const Eigen::MatrixBase<ResultMatrixType> & res,
+    AssignmentOperatorTag<op> aot = SetTo());
+
+  ///
   /// \brief Evaluate the operation res = J.T * rhs
   ///
   /// \remarks This function assumes that the a computeJointJacobians has been called first or any
