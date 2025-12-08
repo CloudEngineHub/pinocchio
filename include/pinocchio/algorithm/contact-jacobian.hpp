@@ -11,30 +11,6 @@ namespace pinocchio
 {
 
   ///
-  /// \brief Evaluates all the constraints by calling cmodel.calc().
-  ///
-  /// \remarks This function assumes that data is up-to-date.
-  ///
-  /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] data The data structure of the rigid body system.
-  /// \param[in] constraint_models Vector of constraint models.
-  /// \param[in] constraint_datas Vector of constraint datas.
-  ///
-  template<
-    typename Scalar,
-    int Options,
-    template<typename, int> class JointCollectionTpl,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator>
-  void evalConstraints(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
-
-  ///
   /// \brief Maps the constraint forces expressed in the constraint space to joint forces expressed
   /// in the local frame.
   ///

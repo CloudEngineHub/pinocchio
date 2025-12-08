@@ -12,33 +12,6 @@
 
 namespace pinocchio
 {
-
-  template<
-    typename Scalar,
-    int Options,
-    template<typename, int> class JointCollectionTpl,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator>
-  void evalConstraints(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-  {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_models.size(), constraint_datas.size());
-    const size_t num_ee = constraint_models.size();
-
-    for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
-    {
-      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
-      auto & cdata = helper::get_ref(constraint_datas[ee_id]);
-
-      cmodel.calc(model, data, cdata);
-    }
-  }
-
   template<
     typename Scalar,
     int Options,
