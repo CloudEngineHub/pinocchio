@@ -235,15 +235,9 @@ namespace pinocchio
       Eigen::DenseIndex row_id = 0;
       for (std::size_t constraint_id = 0; constraint_id < n_constraints; constraint_id++)
       {
-<<<<<<< HEAD
-        const ConstraintModel & cmodel = constraint_models[i];
-        ConstraintData & cdata = constraint_datas[i];
+        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+        auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
         const auto constraint_size = cmodel.residualSize(cdata);
-=======
-        const ConstraintModel & cmodel = constraint_models[constraint_id];
-        ConstraintData & cdata = constraint_datas[constraint_id];
-        const auto constraint_size = cmodel.size();
->>>>>>> 425095b8b (algo/cid: remove useless signatures)
 
         const auto lambda_segment = lambda_sol.segment(row_id, constraint_size);
         cmodel.jacobianTransposeMatrixProduct(model, data, cdata, lambda_segment, tau, RmTo());
