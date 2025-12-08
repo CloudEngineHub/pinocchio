@@ -85,7 +85,6 @@ namespace pinocchio
       const Model & model,
       Data & data)
     {
-      std::cout << "START LCABABackwardStep" << std::endl;
       typedef typename JointModel::JointDataDerived JointData;
       typedef typename Model::JointIndex JointIndex;
       typedef typename Data::Force Force;
@@ -129,7 +128,6 @@ namespace pinocchio
       auto & joint_cross_coupling = data.joint_cross_coupling;
       const auto & joint_neighbours = neighbours[joint_i];
 
-      std::cout << "\t joint_i: " << joint_i << std::endl;
       if (joint_neighbours.size() == 0)
         return; // We can return from this point as this joint has no neighbours
 
@@ -152,7 +150,6 @@ namespace pinocchio
       for (size_t j = 0; j < joint_neighbours.size(); j++)
       {
         const JointIndex joint_j = joint_neighbours[j];
-        std::cout << "\t\t joint_j: " << joint_j << std::endl;
 
         assert(joint_cross_coupling.exists(JointPair(joint_j, joint_i)));
         const auto & crosscoupling_ji = joint_cross_coupling.get(JointPair(joint_j, joint_i));
@@ -199,7 +196,6 @@ namespace pinocchio
         {
           const JointIndex joint_k = joint_neighbours[k];
           assert(joint_j != joint_k && "Must never happen!");
-          std::cout << "\t\t\t joint_k: " << joint_k << std::endl;
 
           assert(joint_cross_coupling.exists(JointPair(joint_k, joint_i)));
           const auto & crosscoupling_ki = joint_cross_coupling.get(JointPair(joint_k, joint_i));
@@ -212,7 +208,6 @@ namespace pinocchio
             crosscoupling_ji_Jcols_Dinv * crosscoupling_xi_Jcols.transpose();
         }
       }
-      std::cout << "END LCABABackwardStep" << std::endl;
     }
   };
 
