@@ -51,12 +51,17 @@
   #define PINOCCHIO_PRAGMA_DEPRECATED_HEADER(old_header, new_header)                               \
     PINOCCHIO_PRAGMA_WARNING(Deprecated header file : #old_header has been replaced                \
                                by #new_header.\n Please use #new_header instead of #old_header.)
+  #define PINOCCHIO_PRAGMA_DEPRECATED_HEADER_PINOCCHIO4(old_header, new_header)                    \
+    PINOCCHIO_PRAGMA_WARNING(                                                                      \
+      Deprecated header file with Pinocchio 4 : #old_header has been replaced                      \
+        by #new_header.\n Please use #new_header instead of #old_header.)
 #else
   #define PINOCCHIO_PRAGMA(x)
   #define PINOCCHIO_PRAGMA_MESSAGE(the_message)
   #define PINOCCHIO_PRAGMA_WARNING(the_message)
   #define PINOCCHIO_PRAGMA_DEPRECATED(the_message)
   #define PINOCCHIO_PRAGMA_DEPRECATED_HEADER(old_header, new_header)
+  #define PINOCCHIO_PRAGMA_DEPRECATED_HEADER_PINOCCHIO4(old_header, new_header)
 #endif
 
 /// \brief Function attribute to forbid inlining.
