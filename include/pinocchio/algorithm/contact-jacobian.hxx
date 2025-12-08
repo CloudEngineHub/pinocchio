@@ -326,14 +326,16 @@ namespace pinocchio
     class ConstraintData,
     class ConstraintDataAllocator,
     typename RhsMatrixType,
-    typename ResultMatrixType>
+    typename ResultMatrixType,
+    AssignmentOperatorType op>
   void evalConstraintJacobianTransposeMatrixProduct(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<RhsMatrixType> & rhs,
-    const Eigen::MatrixBase<ResultMatrixType> & res_)
+    const Eigen::MatrixBase<ResultMatrixType> & res_,
+    AssignmentOperatorTag<op> aot)
   {
 
     const Eigen::DenseIndex constraint_size =
@@ -353,7 +355,7 @@ namespace pinocchio
       const auto constraint_size = cmodel.residualSize(cdata);
 
       const auto rhs_block = rhs.middleRows(row_id, constraint_size);
-      cmodel.jacobianTransposeMatrixProduct(model, data, cdata, rhs_block, res, AddTo());
+      cmodel.jacobianTransposeMatrixProduct(model, data, cdata, rhs_block, res, aot);
 
       row_id += constraint_size;
     }

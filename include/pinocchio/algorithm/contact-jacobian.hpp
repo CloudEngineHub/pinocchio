@@ -209,14 +209,16 @@ namespace pinocchio
     class ConstraintData,
     class ConstraintDataAllocator,
     typename RhsMatrixType,
-    typename ResultMatrixType>
+    typename ResultMatrixType,
+    AssignmentOperatorType op = SETTO>
   void evalConstraintJacobianTransposeMatrixProduct(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<RhsMatrixType> & rhs,
-    const Eigen::MatrixBase<ResultMatrixType> & res);
+    const Eigen::MatrixBase<ResultMatrixType> & res,
+    AssignmentOperatorTag<op> aot = SetTo());
 
 } // namespace pinocchio
 
