@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2024-2025 INRIA
 //
 
 #include <iostream>
@@ -15,7 +15,6 @@
 
 using namespace Eigen;
 using namespace pinocchio;
-using namespace pinocchio::internal;
 
 typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactConstraintModel)
   PointContactConstraintModelVector;
@@ -179,10 +178,6 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
 
     BOOST_CHECK(std::abs(constraint_velocity_projected.dot(x_sol)) <= 1e-10);
   }
-}
-
-BOOST_AUTO_TEST_CASE(test_contact_whole_body_inverse_dynamics_3D)
-{
 }
 
 BOOST_AUTO_TEST_SUITE_END()
