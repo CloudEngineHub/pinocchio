@@ -234,7 +234,6 @@ namespace pinocchio
       typedef typename Data::Force Force;
       typedef typename Data::Motion Motion;
       typedef typename Motion::Vector6 Vector6;
-      typedef typename Data::Matrix6 Matrix6;
       typedef std::pair<JointIndex, JointIndex> JointPair;
 
       const auto & neighbours = data.joint_neighbours;
@@ -346,7 +345,6 @@ namespace pinocchio
     {
       typedef typename Model::JointIndex JointIndex;
       typedef typename Data::Matrix6x Matrix6x;
-      typedef typename Data::Matrix6 Matrix6;
 
       typedef typename SizeDepType<JointModel::NV>::template ColsReturn<Matrix6x>::Type ColBlock;
       ColBlock J_cols = jmodel.jointCols(data.J);
@@ -409,7 +407,6 @@ namespace pinocchio
       {
         typedef typename Data::SE3 SE3;
         typedef typename Model::JointIndex JointIndex;
-        typedef std::pair<JointIndex, JointIndex> JointPair;
         typedef typename Data::Matrix6 Matrix6;
         typedef typename ConstraintModel::Matrix36 Matrix36;
 
