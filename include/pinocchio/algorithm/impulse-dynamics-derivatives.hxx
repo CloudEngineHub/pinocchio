@@ -363,7 +363,7 @@ namespace pinocchio
         assert(false && "must never happen");
         break;
       }
-      current_row_sol_id += cmodel.size();
+      current_row_sol_id += cmodel.maxResidualSize();
     }
 
     data.contact_chol.getOperationalSpaceInertiaMatrix(data.osim);
@@ -441,7 +441,7 @@ namespace pinocchio
         assert(false && "must never happen");
         break;
       }
-      current_row_sol_id += cmodel.size();
+      current_row_sol_id += cmodel.maxResidualSize();
     }
   }
 } // namespace pinocchio

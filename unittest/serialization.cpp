@@ -929,9 +929,6 @@ struct PointAndFrameConstraintModelInitializer
     DerivedConstraintModel cmodel(model, joint1_id, SE3::Random(), joint2_id, SE3::Random());
     cmodel.name = cmodel.classname();
     cmodel.compliance().setRandom();
-    // CHOICE: right now we use the scalar Baumgarte
-    // cmodel.baumgarte_corrector_vector_parameters().Kd.setRandom();
-    // cmodel.baumgarte_corrector_vector_parameters().Kp.setRandom();
     cmodel.baumgarte_corrector_parameters().Kd = 1.0;
     cmodel.baumgarte_corrector_parameters().Kp = 3.14;
 
@@ -973,8 +970,8 @@ struct initConstraint<pinocchio::JointFrictionConstraintModel>
     // need to be set after constructing the constraint model.
     ConstraintModel cmodel =
       JointLimitAndFrictionConstraintModelInitializer<ConstraintModel>::run(model);
-    Eigen::VectorXd lb = -Eigen::VectorXd::Random(cmodel.size()).array().abs();
-    Eigen::VectorXd ub = Eigen::VectorXd::Random(cmodel.size()).array().abs();
+    Eigen::VectorXd lb = -Eigen::VectorXd::Random(cmodel.maxResidualSize()).array().abs();
+    Eigen::VectorXd ub = Eigen::VectorXd::Random(cmodel.maxResidualSize()).array().abs();
     cmodel.setFrictionLowerLimit(lb);
     cmodel.setFrictionUpperLimit(ub);
     return cmodel;

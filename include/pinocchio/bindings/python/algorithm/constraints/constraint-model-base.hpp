@@ -17,7 +17,6 @@
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
 #include "pinocchio/bindings/python/utils/eigen.hpp"
-#include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 
 namespace pinocchio
@@ -40,6 +39,7 @@ namespace pinocchio
       typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
       typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
       typedef typename traits<Self>::JacobianMatrixType JacobianMatrixType;
+      typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     public:
       template<class PyClass>
@@ -48,28 +48,41 @@ namespace pinocchio
         cl.PINOCCHIO_ADD_PROPERTY(Self, name, "Name of the constraint.")
           .def("classname", &Self::classname)
           .staticmethod("classname")
+#ifndef PINOCCHIO_PYTHON_SKIP_COMPARISON_OPERATIONS
+          .def(bp::self == bp::self)
+          .def(bp::self != bp::self)
+#endif
           .def("shortname", &Self::shortname, "Short name of the class.")
           .def(
             "createData", &Self::createData, "Create a Data object for the given constraint model.")
-          .def("set", &Self::set, "Constraint set.")
-          .add_property(
-            "compliance",
-            bp::make_function( //
-              +[](const Self & self) -> context::VectorXs { return self.compliance(); }),
-            bp::make_function( //
-              +[](Self & self, const context::VectorXs & new_vector) {
-                self.compliance() = new_vector;
-              }),
-            "Compliance of the constraint.")
           .def(
-            "size", +[](const Self & self) -> int { return self.size(); }, bp::arg("self"),
-            "Constraint size.")
+            "maxResidualSize", +[](const Self & self) -> int { return self.maxResidualSize(); },
+            bp::arg("self"), "Constraint max size.")
           .def(
-            "activeSize",
+            "residualSize",
             +[](const Self & self, const ConstraintData & cdata) -> int {
-              return self.activeSize(cdata);
+              return self.residualSize(cdata);
             },
-            bp::args("self", "constraint_data"), "Constraint active size.")
+            bp::args("self", "constraint_data"), "Constraint state size.")
+          .def(
+            "getRowSparsityPattern", &Self::getRowSparsityPattern,
+            bp::args("self", "constraint_data", "row_id"),
+            bp::return_value_policy<bp::copy_const_reference>(),
+            "Active colwise sparsity associated with a given row.")
+          .def(
+            "getRowIndexes", &Self::getRowIndexes, bp::args("self", "constraint_data", "row_id"),
+            bp::return_value_policy<bp::copy_const_reference>(),
+            "Vector of the active indexes associated with a given row.")
+          .def("set", &Self::set, "Constraint set.")
+          .def(
+            "retrieveCompliance",
+            bp::make_function(
+              +[](const Self & self, const ConstraintData & cdata) -> context::VectorXs {
+                context::VectorXs res(self.residualSize(cdata));
+                self.retrieveCompliance(cdata, res);
+                return res;
+              }),
+            "Vector of the compliance for the constraint in a given state.")
           .def(
             "calc", &calc, bp::args("self", "model", "data", "constraint_data"),
             "Evaluate the constraint values at the current state given by data and store the "
@@ -87,80 +100,38 @@ namespace pinocchio
           .def(
             "jacobianTransposeMatrixProduct", &jacobianTransposeMatrixProduct,
             bp::args("self", "model", "data", "constraint_data", "matrix"),
-            "Backward chain rule: return product between the jacobian transpose and a matrix.")
+            "Backward chain rule: return product between the jacobian transpose and a matrix.");
+        // Rigid body methods: mapConstraintForceToJointSpaceImpl /
+        // mapJointSpaceToConstraintMotionImpl / appendCouplingConstraintInertiasImpl
+        cl.def(
+            "setCompliance", bp::make_function(+[](Self & self, const context::VectorXs & vector) {
+              self.setCompliance(vector);
+            }),
+            "Set the compliance.")
           .def(
-            "getRowSparsityPattern", &Self::getRowSparsityPattern, bp::args("self", "row_id"),
-            bp::return_value_policy<bp::copy_const_reference>(),
-            "Colwise sparsity associated with a given row.")
-          .def(
-            "getActiveRowSparsityPattern", &Self::getActiveRowSparsityPattern,
-            bp::args("self", "row_id"), bp::return_value_policy<bp::copy_const_reference>(),
-            "Active colwise sparsity associated with a given row.")
-          .def(
-            "getActivableRowIndexes", &Self::getActivableRowIndexes, bp::args("self", "row_id"),
-            bp::return_value_policy<bp::copy_const_reference>(),
-            "Vector of the activable indexes associated with a given row.")
-          .def(
-            "getActiveRowIndexes", &Self::getActiveRowIndexes,
-            bp::args("self", "constraint_data", "row_id"),
-            bp::return_value_policy<bp::copy_const_reference>(),
-            "Vector of the active indexes associated with a given row.")
-          .def(
-            "getActiveCompliance",
-            bp::make_function(
-              +[](const Self & self, const ConstraintData & cdata) -> context::VectorXs {
-                return self.getActiveCompliance(cdata);
-              }),
-            "Vector of the active compliance internally stored in the constraint.")
-#ifndef PINOCCHIO_PYTHON_SKIP_COMPARISON_OPERATIONS
-          .def(bp::self == bp::self)
-          .def(bp::self != bp::self)
-#endif
-          ;
-        // CHOICE: right now we use the scalar Baumgarte
-        // if (::pinocchio::traits<ConstraintModelDerived>::has_baumgarte_corrector_vector)
-        // {
-        //   typedef typename traits<ConstraintModelDerived>::BaumgarteCorrectorVectorParameters
-        //     BaumgarteCorrectorVectorParameters;
-        //   typedef typename traits<ConstraintModelDerived>::BaumgarteCorrectorVectorParametersRef
-        //     BaumgarteCorrectorVectorParametersRef;
-
-        //   typedef typename std::conditional<
-        //     std::is_reference<BaumgarteCorrectorVectorParametersRef>::value,
-        //     bp::return_internal_reference<>, bp::with_custodian_and_ward_postcall<0, 1>>::type
-        //     ReturnPolicy;
-
-        //   cl.add_property(
-        //     "baumgarte_corrector_vector_parameters",
-        //     bp::make_function( //
-        //       +[](Self & self) -> BaumgarteCorrectorVectorParametersRef {
-        //         return self.baumgarte_corrector_vector_parameters();
-        //       },
-        //       ReturnPolicy()),
-        //     bp::make_function( //
-        //       +[](Self & self, const BaumgarteCorrectorVectorParameters & copy) {
-        //         self.baumgarte_corrector_vector_parameters() = copy;
-        //       }),
-        //     "Baumgarte vector parameters associated with the constraint.");
-
-        //   typedef typename BaumgarteCorrectorVectorParameters::VectorType BaumgarteVectorType;
-        //   const std::string BaumgarteVectorType_name = getEigenTypeName<BaumgarteVectorType>();
-
-        //   const std::string BaumgarteCorrectorVectorParameter_classname =
-        //     "BaumgarteCorrectorVectorParameters_" + BaumgarteVectorType_name;
-
-        //   BaumgarteCorrectorVectorParametersPythonVisitor<BaumgarteCorrectorVectorParameters>::
-        //     expose(BaumgarteCorrectorVectorParameter_classname);
-        // }
+            "setBaumgarteCorrectorParameters",
+            bp::make_function(+[](Self & self, const BaumgarteCorrectorParameters & copy) {
+              self.setBaumgarteCorrectorParameters(copy);
+            }),
+            "Set the Baumgarte parameters.");
         if (::pinocchio::traits<ConstraintModelDerived>::has_baumgarte_corrector)
         {
-          typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
-          BaumgarteCorrectorParametersPythonVisitor<BaumgarteCorrectorParameters>::expose();
-
+          cl.add_property(
+            "compliance",
+            bp::make_function( //
+              +[](const Self & self) -> context::VectorXs { return self.compliance(); }),
+            bp::make_function( //
+              +[](Self & self, const context::VectorXs & new_vector) {
+                self.compliance() = new_vector;
+              }),
+            "Compliance of the constraint.");
+        }
+        if (::pinocchio::traits<ConstraintModelDerived>::has_baumgarte_corrector)
+        {
           cl.add_property(
             "baumgarte_corrector_parameters",
             bp::make_function( //
-              +[](Self & self) -> BaumgarteCorrectorParameters & {
+              +[](const Self & self) -> const BaumgarteCorrectorParameters & {
                 return self.baumgarte_corrector_parameters();
               },
               bp::return_internal_reference<>()),
@@ -171,12 +142,6 @@ namespace pinocchio
               bp::return_internal_reference<>()),
             "Baumgarte parameters associated with the constraint.");
         }
-      }
-
-      static void
-      resize(Self & self, const Model & model, const Data & data, ConstraintData & constraint_data)
-      {
-        self.resize(model, data, constraint_data);
       }
 
       static void calc(
@@ -193,7 +158,7 @@ namespace pinocchio
         const context::MatrixXs & matrix)
       {
         context::MatrixXs res =
-          context::MatrixXs::Zero(self.activeSize(constraint_data), matrix.cols());
+          context::MatrixXs::Zero(self.residualSize(constraint_data), matrix.cols());
         self.jacobianMatrixProduct(model, data, constraint_data, matrix, res);
         return res;
       }

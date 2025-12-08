@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
 
@@ -364,7 +364,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL)
     {
     case pinocchio::CONTACT_3D: {
       BOOST_CHECK(cdata.contact_force.linear().isApprox(
-        data_ref.lambda_c.segment(constraint_id, cmodel.size())));
+        data_ref.lambda_c.segment(constraint_id, cmodel.residualSize(cdata))));
       break;
     }
 
@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL)
       break;
     }
 
-    constraint_id += cmodel.size();
+    constraint_id += cmodel.maxResidualSize();
   }
 }
 
@@ -418,7 +418,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_3D)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
 
@@ -489,7 +489,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_3D)
     {
     case pinocchio::CONTACT_3D: {
       BOOST_CHECK(cdata.contact_force.linear().isApprox(
-        data_ref.lambda_c.segment(constraint_id, cmodel.size())));
+        data_ref.lambda_c.segment(constraint_id, cmodel.residualSize(cdata))));
       break;
     }
 
@@ -504,7 +504,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_3D)
       break;
     }
 
-    constraint_id += cmodel.size();
+    constraint_id += cmodel.maxResidualSize();
   }
 }
 
@@ -540,8 +540,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_LOCAL_6D_loop_closure_j1j2)
   // Add loop closure constraint
   RigidConstraintModel ci_closure(
     CONTACT_6D, model, LA_id, SE3::Random(), RA_id, SE3::Random(), LOCAL);
-  ci_closure.corrector.Kp.array() = KP;
-  ci_closure.corrector.Kd.array() = KD;
+  ci_closure.corrector.Kp = KP;
+  ci_closure.corrector.Kd = KD;
 
   constraint_models.push_back(ci_closure);
   constraint_data.push_back(RigidConstraintData(ci_closure));
@@ -598,7 +598,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
 
@@ -661,7 +661,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
     {
     case pinocchio::CONTACT_3D: {
       BOOST_CHECK(cdata.contact_force.linear().isApprox(
-        data_ref.lambda_c.segment(constraint_id, cmodel.size())));
+        data_ref.lambda_c.segment(constraint_id, cmodel.residualSize(cdata))));
       break;
     }
 
@@ -676,7 +676,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
       break;
     }
 
-    constraint_id += cmodel.size();
+    constraint_id += cmodel.maxResidualSize();
   }
 }
 
@@ -733,7 +733,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
 
@@ -895,7 +895,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
     {
     case pinocchio::CONTACT_3D: {
       BOOST_CHECK(cdata.contact_force.linear().isApprox(
-        data_ref.lambda_c.segment(constraint_id, cmodel.size())));
+        data_ref.lambda_c.segment(constraint_id, cmodel.residualSize(cdata))));
       break;
     }
 
@@ -910,7 +910,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
       break;
     }
 
-    constraint_id += cmodel.size();
+    constraint_id += cmodel.maxResidualSize();
   }
 
   // Contact models and data
@@ -1022,8 +1022,8 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
   RigidConstraintModel ci_RF(CONTACT_6D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setIdentity();
   ci_RF.joint2_placement.setIdentity();
-  ci_RF.corrector.Kp.setConstant(10.);
-  ci_RF.corrector.Kd = 2. * ci_RF.corrector.Kp.cwiseSqrt();
+  ci_RF.corrector.Kp = 10.;
+  ci_RF.corrector.Kd = 2. * math::sqrt(ci_RF.corrector.Kp);
   contact_models.push_back(ci_RF);
 
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
@@ -1133,29 +1133,29 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_3D)
   RigidConstraintModel ci_RF1(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF1.joint1_placement.translation() = SE3::Vector3(0.5, 0.5, -0.5);
   ci_RF1.joint2_placement.setRandom();
-  ci_RF1.corrector.Kp.setConstant(10.);
-  ci_RF1.corrector.Kd = 2. * ci_RF1.corrector.Kp.cwiseSqrt();
+  ci_RF1.corrector.Kp = 10.;
+  ci_RF1.corrector.Kd = 2. * math::sqrt(ci_RF1.corrector.Kp);
   contact_models.push_back(ci_RF1);
 
   RigidConstraintModel ci_RF2(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF2.joint1_placement.translation() = SE3::Vector3(-0.5, 0.5, -0.5);
   ci_RF2.joint2_placement.setRandom();
-  ci_RF2.corrector.Kp.setConstant(10.);
-  ci_RF2.corrector.Kd = 2. * ci_RF2.corrector.Kp.cwiseSqrt();
+  ci_RF2.corrector.Kp = 10.;
+  ci_RF2.corrector.Kd = 2. * math::sqrt(ci_RF2.corrector.Kp);
   contact_models.push_back(ci_RF2);
 
   RigidConstraintModel ci_RF3(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF3.joint1_placement.translation() = SE3::Vector3(-0.5, -0.5, -0.5);
   ci_RF3.joint2_placement.setRandom();
-  ci_RF3.corrector.Kp.setConstant(10.);
-  ci_RF3.corrector.Kd = 2. * ci_RF3.corrector.Kp.cwiseSqrt();
+  ci_RF3.corrector.Kp = 10.;
+  ci_RF3.corrector.Kd = 2. * math::sqrt(ci_RF3.corrector.Kp);
   contact_models.push_back(ci_RF3);
 
   RigidConstraintModel ci_RF4(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF4.joint1_placement.translation() = SE3::Vector3(0.5, -0.5, -0.5);
   ci_RF4.joint2_placement.setRandom();
-  ci_RF4.corrector.Kp.setConstant(10.);
-  ci_RF4.corrector.Kd = 2. * ci_RF4.corrector.Kp.cwiseSqrt();
+  ci_RF4.corrector.Kp = 10.;
+  ci_RF4.corrector.Kd = 2. * math::sqrt(ci_RF4.corrector.Kp);
   contact_models.push_back(ci_RF4);
 
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
@@ -1272,7 +1272,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
 
@@ -1407,7 +1407,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
     {
     case pinocchio::CONTACT_3D: {
       BOOST_CHECK(cdata.contact_force.linear().isApprox(
-        data_ref.lambda_c.segment(constraint_id, cmodel.size())));
+        data_ref.lambda_c.segment(constraint_id, cmodel.residualSize(cdata))));
       break;
     }
 
@@ -1422,7 +1422,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
       break;
     }
 
-    constraint_id += cmodel.size();
+    constraint_id += cmodel.maxResidualSize();
   }
 
   // Contact models and data
@@ -1658,7 +1658,7 @@ BOOST_AUTO_TEST_CASE(test_contact_ABA_6D)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
 
@@ -1830,7 +1830,7 @@ BOOST_AUTO_TEST_CASE(test_contact_ABA_3D)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxResidualSize();
 
   Eigen::MatrixXd J_ref(constraint_dim, model.nv);
   J_ref.setZero();

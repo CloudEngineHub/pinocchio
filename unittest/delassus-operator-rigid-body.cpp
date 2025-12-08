@@ -94,9 +94,9 @@ BOOST_AUTO_TEST_CASE(default_constructor_reference_wrapper)
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref);
 
-  const auto active_constraint_size =
-    activeSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref));
-  BOOST_CHECK(delassus_operator.size() == active_constraint_size);
+  const auto csize =
+    residualSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref));
+  BOOST_CHECK(delassus_operator.size() == csize);
 
   BOOST_CHECK(delassus_operator.size() == 0);
   BOOST_CHECK(&delassus_operator.model() == &model);
@@ -152,10 +152,10 @@ BOOST_AUTO_TEST_CASE(default_constructor_const_reference_wrapper)
     helper::make_ref(constraint_models), //
     helper::make_ref(constraint_datas));
 
-  const auto active_constraint_size =
-    activeSize(helper::get_ref(constraint_models), helper::get_ref(constraint_datas));
+  const auto csize =
+    residualSize(helper::get_ref(constraint_models), helper::get_ref(constraint_datas));
 
-  BOOST_CHECK(delassus_operator.size() == active_constraint_size);
+  BOOST_CHECK(delassus_operator.size() == csize);
   BOOST_CHECK(&delassus_operator.model() == &model);
   BOOST_CHECK(&delassus_operator.data() == &data);
   BOOST_CHECK(&delassus_operator.constraint_models() == &constraint_models);
@@ -987,25 +987,25 @@ void test_apply_on_the_right(
   data.q_in = q_neutral;
   calc(model, data, constraint_models, constraint_datas);
 
-  int size = 0, active_size = 0;
+  int max_csize = 0, csize = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
   {
     const auto & constraint_model = constraint_models[k];
     const auto & constraint_data = constraint_datas[k];
-    size += constraint_model.size();
-    active_size += constraint_model.activeSize(constraint_data);
+    max_csize += constraint_model.maxResidualSize();
+    csize += constraint_model.residualSize(constraint_data);
   }
-  BOOST_CHECK(active_size <= size);
+  BOOST_CHECK(csize <= max_csize);
 
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
 
-  BOOST_CHECK(delassus_operator.size() == active_size);
+  BOOST_CHECK(delassus_operator.size() == csize);
 
   delassus_operator.updateDamping(damping_value);
   delassus_operator.updateCompliance(0);
   delassus_operator.compute();
-  BOOST_CHECK(delassus_operator.size() == active_size);
+  BOOST_CHECK(delassus_operator.size() == csize);
 
   const Eigen::VectorXd rhs = Eigen::VectorXd::Random(delassus_operator.size());
   Eigen::VectorXd res(delassus_operator.size());
@@ -1026,15 +1026,14 @@ void test_apply_on_the_right(
   data_gt.q_in = q_neutral;
   BOOST_CHECK(data_gt.q_in == data.q_in);
   calc(model, data_gt, constraint_models, constraint_datas_gt);
-  int active_size_gt = 0;
+  int csize_gt = 0;
   for (std::size_t i = 0; i < constraint_models.size(); ++i)
   {
     const auto & cmodel = constraint_models[i];
     const auto & cdata = constraint_datas_gt[i];
-    size += cmodel.size();
-    active_size_gt += cmodel.activeSize(cdata);
+    csize_gt += cmodel.residualSize(cdata);
   }
-  BOOST_CHECK(active_size_gt == active_size);
+  BOOST_CHECK(csize_gt == csize);
 
   Eigen::MatrixXd constraints_jacobian_gt(delassus_operator.size(), model.nv);
   constraints_jacobian_gt.setZero();
@@ -1278,7 +1277,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
 
   {
     ConstraintModel constraint_model(model, activable_joint_ids);
-    BOOST_CHECK(constraint_model.size() == 2 * (model.nv - 6));
+    BOOST_CHECK(constraint_model.maxResidualSize() == 2 * (model.nv - 6));
 
     constraint_models.push_back(constraint_model);
     constraint_datas.push_back(constraint_model.createData());
@@ -1290,7 +1289,7 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
   const Eigen::VectorXd q = model.lowerPositionLimit;
   data.q_in = q;
   calc(model, data, constraint_models, constraint_datas);
-  BOOST_CHECK(constraint_model.activeSize(constraint_data) == model.nv - 6);
+  BOOST_CHECK(constraint_model.residualSize(constraint_data) == model.nv - 6);
 
   std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
   std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;

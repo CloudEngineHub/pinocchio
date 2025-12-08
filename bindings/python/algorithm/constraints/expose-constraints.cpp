@@ -4,6 +4,7 @@
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/algorithm/constraints/constraints.hpp"
+#include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraints-variant.hpp"
 #include "pinocchio/bindings/python/utils/std-aligned-vector.hpp"
 
@@ -13,6 +14,9 @@ namespace pinocchio
   {
     void exposeConstraints()
     {
+      typedef BaumgarteCorrectorParametersTpl<context::Scalar> BaumgarteCorrectorParameters;
+      BaumgarteCorrectorParametersPythonVisitor<BaumgarteCorrectorParameters>::expose();
+
       typedef context::ConstraintCollectionDefault::ConstraintModelVariant ConstraintModelVariant;
       boost::mpl::for_each<ConstraintModelVariant::types>(ConstraintModelExposer());
       boost::mpl::for_each<ConstraintModelVariant::types>(ConstraintStdVectorExposer());

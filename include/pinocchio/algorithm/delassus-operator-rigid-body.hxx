@@ -94,7 +94,7 @@ namespace pinocchio
         const auto & cmodel = helper::get_ref(constraint_models_ref[ee_id]);
         const auto & cdata = helper::get_ref(constraint_datas_ref[ee_id]);
 
-        const auto constraint_size = cmodel.activeSize(cdata);
+        const auto constraint_size = cmodel.residualSize(cdata);
 
         const auto constraint_diagonal_inertia =
           this->m_sum_compliance_damping_inverse.segment(row_id, constraint_size);

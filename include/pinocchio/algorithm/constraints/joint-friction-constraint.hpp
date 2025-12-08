@@ -25,49 +25,51 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<JointFrictionConstraintModelTpl<_Scalar, _Options>>
   {
+    // --------------------------------------------------------------
+    // Traits characterizing the constraint behaviour in CRTP
+    // --------------------------------------------------------------
     typedef _Scalar Scalar;
     enum
     {
-      Options = _Options
+      Options = _Options,
+      Size = Eigen::Dynamic
     };
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::VELOCITY_LEVEL;
-    static constexpr bool has_baumgarte_corrector = false;
-    static constexpr bool has_baumgarte_corrector_vector = false;
-    static constexpr bool constant_size = true;
+    static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::CONSTANT;
 
+    static constexpr bool has_baumgarte_corrector =
+      false; // Baumgarte make sense and exist directly for the constraint
+    static constexpr bool has_compliance_member =
+      true; // The constraint itself posses a member m_compliance which can be set by the user
+    static constexpr bool has_set = true; // The constraint itself defines the set, otherwise must
+                                          // have a mechanism for set-related visitors
+
+    // --------------------------------------------------------------
+    // Traits referencing the constraint and associated types
+    // --------------------------------------------------------------
     typedef JointFrictionConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef JointFrictionConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef BoxSetTpl<Scalar, Options> ConstraintSet;
-
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
 
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> JacobianMatrixType;
-    typedef VectorXs VectorConstraintSize;
+    // --------------------------------------------------------------
+    // Traits for the algorithmic methods on current state
+    // --------------------------------------------------------------
+    // Elementary types
+    typedef Eigen::Matrix<Scalar, Size, Eigen::Dynamic, Options> JacobianMatrixType;
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> VectorConstraintSize;
 
-    typedef VectorXs ComplianceVectorType;
-    typedef ComplianceVectorType & ComplianceVectorTypeRef;
-    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
-
-    typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
-
-    typedef Eigen::Matrix<Scalar, 0, 0> BaumgarteVectorType; // empty vector
-    typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
-      BaumgarteCorrectorVectorParameters;
-    typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
-    typedef const BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersConstRef;
-
+    // Template to generate type
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType
     {
       typedef typename InputMatrix::Scalar Scalar;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(InputMatrix) InputMatrixPlain;
       typedef Eigen::
-        Matrix<Scalar, Eigen::Dynamic, InputMatrix::ColsAtCompileTime, InputMatrixPlain::Options>
+        Matrix<Scalar, Size, InputMatrixPlain::ColsAtCompileTime, InputMatrixPlain::Options>
           type;
     };
 
@@ -83,6 +85,17 @@ namespace pinocchio
         InputMatrixPlain::Options>
         type;
     };
+
+    // -------------------------------
+    // Traits for holded Data
+    // -------------------------------
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> ComplianceVectorType;
+    typedef ComplianceVectorType & ComplianceVectorTypeRef;
+    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
+
+    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
   };
 
   template<typename _Scalar, int _Options>
@@ -114,9 +127,6 @@ namespace pinocchio
       traits<JointFrictionConstraintModelTpl>::constraint_formulation_level;
     typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef typename traits<Self>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef
-      typename traits<Self>::ActiveComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
     typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
 
     typedef typename traits<Self>::ConstraintData ConstraintData;
@@ -131,11 +141,11 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef VectorXs VectorConstraintSize;
 
-    using RootBase::activeSize;
     using RootBase::classname;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
-    using RootBase::size;
+    using RootBase::maxResidualSize;
+    using RootBase::residualSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -255,7 +265,7 @@ namespace pinocchio
     void setFrictionLowerLimit(const Eigen::MatrixBase<VectorLike> & lb)
     {
       PINOCCHIO_THROW_IF(
-        lb.size() != size(), std::runtime_error, "lb should be the same as size()");
+        lb.size() != maxResidualSize(), std::runtime_error, "lb should be the same as size()");
       m_friction_lower_limit = lb;
     }
 
@@ -278,7 +288,7 @@ namespace pinocchio
     void setFrictionUpperLimit(const Eigen::MatrixBase<VectorLike> & ub)
     {
       PINOCCHIO_THROW_IF(
-        ub.size() != size(), std::runtime_error, "ub should be the same as size()");
+        ub.size() != maxResidualSize(), std::runtime_error, "ub should be the same as size()");
       m_friction_upper_limit = ub;
     }
 
@@ -311,7 +321,7 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::size
-    int sizeImpl() const
+    int maxResidualSizeImpl() const
     {
       return int(active_dofs.size());
     }
@@ -347,7 +357,7 @@ namespace pinocchio
     {
       typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
         ReturnType;
-      ReturnType res(size(), mat.cols());
+      ReturnType res(maxResidualSize(), mat.cols());
       jacobianMatrixProduct(model, data, cdata, mat.derived(), res);
       return res;
     }
@@ -398,16 +408,21 @@ namespace pinocchio
       AssignmentOperatorTag<op> aot = SetTo()) const;
 
     /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
+    const BooleanVector &
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+
       return row_sparsity_pattern[size_t(row_id)];
     }
 
-    /// \copydoc RootBase::getActivableRowIndexes
-    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
+    /// \copydoc RootBase::getRowIndexes
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return row_active_indexes[size_t(row_id)];
     }
 

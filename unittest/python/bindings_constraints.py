@@ -282,7 +282,7 @@ class TestJointsAlgo(TestCase):
         # Check size
         for b in self.bilats_list:
             bd = b.createData()
-            self.assertTrue(b.size() == b.activeSize(bd) == 3)
+            self.assertTrue(b.maxResidualSize() == b.residualSize(bd) == 3)
 
     def test_frame_anchor(self):
         # Coherence between all inits
@@ -292,16 +292,18 @@ class TestJointsAlgo(TestCase):
         # Check size
         for w in self.facms_list:
             wd = w.createData()
-            self.assertTrue(w.size() == w.activeSize(wd) == 6)
+            self.assertTrue(w.maxResidualSize() == w.residualSize(wd) == 6)
 
     def test_point_contact(self):
         for fp in self.point_contact_list:
             fpd = fp.createData()
-            self.assertTrue(fp.size() == fp.activeSize(fpd) == 3)
+            self.assertTrue(fp.maxResidualSize() == fp.residualSize(fpd) == 3)
 
     def test_joint_friction(self):
         jfcd = self.jfc.createData()
-        self.assertTrue(self.jfc.activeSize(jfcd) == self.jfc.size() <= self.model.nv)
+        self.assertTrue(
+            self.jfc.residualSize(jfcd) == self.jfc.maxResidualSize() <= self.model.nv
+        )
 
     def test_joint_limit(self):
         jld_raw = self.jlc.createData()
@@ -309,13 +311,17 @@ class TestJointsAlgo(TestCase):
         jld = self.jlc.createData()
         self.jlc.calc(self.model, self.data, jld)
         self.assertTrue(
-            self.jlc_raw.activeSize(jld_raw) <= self.jlc_raw.size() <= 2 * self.model.nq
+            self.jlc_raw.residualSize(jld_raw)
+            <= self.jlc_raw.maxResidualSize()
+            <= 2 * self.model.nq
         )
         jld_raw_not_calc = self.jlc_raw.createData()
-        self.assertTrue(self.jlc_raw.activeSize(jld_raw_not_calc) == 0)
-        self.assertTrue(self.jlc.activeSize(jld) > 0)
+        self.assertTrue(self.jlc_raw.residualSize(jld_raw_not_calc) == 0)
+        self.assertTrue(self.jlc.residualSize(jld) > 0)
         self.assertTrue(
-            self.jlc.activeSize(jld) <= self.jlc.size() <= 2 * self.model.nq
+            self.jlc.residualSize(jld)
+            <= self.jlc.maxResidualSize()
+            <= 2 * self.model.nq
         )
 
     def test_generic_methods(self):
@@ -329,29 +335,29 @@ class TestJointsAlgo(TestCase):
             gcm.calc(self.model, self.data, gcd)
             ccd = ccm.createData()
             ccm.calc(self.model, self.data, ccd)
-            for i in range(gcm.activeSize(gcd)):
+            for i in range(gcm.residualSize(gcd)):
                 self.assertTrue(
                     np.all(
-                        np.where(gcm.getActiveRowSparsityPattern(gcd, i))[0]
-                        == np.array(gcm.getActiveRowIndexes(gcd, i))
+                        np.where(gcm.getRowSparsityPattern(gcd, i))[0]
+                        == np.array(gcm.getRowIndexes(gcd, i))
                     )
                 )
                 self.assertTrue(
                     np.all(
-                        np.where(gcm.getRowSparsityPattern(i))[0]
-                        == np.array(gcm.getActivableRowIndexes(i))
+                        np.where(gcm.getRowSparsityPattern(gcd, i))[0]
+                        == np.array(gcm.getRowIndexes(gcd, i))
                     )
                 )
                 self.assertTrue(
-                    set(gcm.getActiveRowIndexes(gcd, i))
-                    <= set(gcm.getActivableRowIndexes(i))
+                    set(gcm.getRowIndexes(gcd, i))
+                    <= set(gcm.getRowIndexes(gcd, i))
                     <= ref_set
                 )
-                self.assertTrue(gcm.activeSize(gcd) <= gcm.size())
-            dummy_compliance = 0.1 * np.ones(gcm.size())
+                self.assertTrue(gcm.residualSize(gcd) <= gcm.maxResidualSize())
+            dummy_compliance = 0.1 * np.ones(gcm.maxResidualSize())
             gcm.compliance = dummy_compliance
             self.assertTrue(np.all(dummy_compliance == gcm.compliance))
-            self.assertTrue(len(ccm.getActiveCompliance(ccd)) == ccm.activeSize(ccd))
+            self.assertTrue(len(ccm.retrieveCompliance(ccd)) == ccm.residualSize(ccd))
             if not hasattr(ccm, "baumgarte_corrector_parameters"):
                 self.assertTrue(isinstance(ccm, pin.JointFrictionConstraintModel))
                 do_except = False
@@ -388,8 +394,8 @@ class TestJointsAlgo(TestCase):
 
             lamb = np.stack(
                 [
-                    np.ones(cmodel.activeSize(cdata)),
-                    2 * np.ones(cmodel.activeSize(cdata)),
+                    np.ones(cmodel.residualSize(cdata)),
+                    2 * np.ones(cmodel.residualSize(cdata)),
                 ],
                 axis=1,
             )
@@ -428,16 +434,16 @@ class TestJointsAlgo(TestCase):
         # jlc
         jld = self.jlc.createData()
         self.jlc.calc(self.model, self.data, jld)
-        force_out = np.array([1] * self.jlc.activeSize(jld))
+        force_out = np.array([1] * self.jlc.residualSize(jld))
         p_force_out = self.jlc.set().project(force_out)
         self.assertTrue(self.jlc.set().isInside(force_out))
-        force_out = np.array([-1] * self.jlc.activeSize(jld))
+        force_out = np.array([-1] * self.jlc.residualSize(jld))
         p_force_out = self.jlc.set().project(force_out)
         self.assertTrue(not self.jlc.set().isInside(force_out))
         p2_force_out = self.jlc.set().project(p_force_out)
         self.assertTrue(self.jlc.set().isInside(p_force_out))
         self.assertTrue(np.all(p_force_out == p2_force_out))
-        force_in = np.array([0] * self.jlc.activeSize(jld))
+        force_in = np.array([0] * self.jlc.residualSize(jld))
         p_force_in = self.jlc.set().project(force_in)
         self.assertTrue(self.jlc.set().isInside(p_force_in))
         self.assertTrue(np.all(p_force_in == force_in))
@@ -445,13 +451,13 @@ class TestJointsAlgo(TestCase):
         # jfc
         jfd = self.jfc.createData()
         self.jfc.calc(self.model, self.data, jfd)
-        force_out = np.array([2] * self.jfc.activeSize(jfd))
+        force_out = np.array([2] * self.jfc.residualSize(jfd))
         p_force_out = self.jfc.set().project(force_out)
         self.assertTrue(not self.jfc.set().isInside(force_out))
         p2_force_out = self.jfc.set().project(p_force_out)
         self.assertTrue(self.jfc.set().isInside(p_force_out))
         self.assertTrue(np.all(p2_force_out == p_force_out))
-        force_in = np.array([0] * self.jfc.activeSize(jfd))
+        force_in = np.array([0] * self.jfc.residualSize(jfd))
         p_force_in = self.jfc.set().project(force_in)
         self.assertTrue(self.jfc.set().isInside(p_force_in))
         self.assertTrue(np.all(p_force_in == force_in))

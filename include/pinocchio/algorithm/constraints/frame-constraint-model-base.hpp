@@ -14,7 +14,6 @@
 #include "pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 
 namespace pinocchio
@@ -26,19 +25,37 @@ namespace pinocchio
   template<typename Derived>
   struct traits<FrameConstraintModelBase<Derived>>
   {
+    enum
+    {
+      Size = 6
+    };
+
+    // --------------------------------------------------------------
+    // Traits characterizing the constraint behaviour in CRTP
+    // --------------------------------------------------------------
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::VELOCITY_LEVEL;
-    static constexpr bool has_baumgarte_corrector = true;
-    static constexpr bool has_baumgarte_corrector_vector = true;
-    static constexpr bool constant_size = true;
+    static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::STATIC;
 
+    static constexpr bool has_baumgarte_corrector =
+      true; // Baumgarte make sense and exist directly for the constraint
+    static constexpr bool has_compliance_member =
+      true; // The constraint itself posses a member m_compliance which can be set by the user
+    static constexpr bool has_set = true; // The constraint itself defines the set, otherwise must
+                                          // have a mechanism for set-related visitors
+
+    // --------------------------------------------------------------
+    // Traits for the algorithmic methods on current state
+    // --------------------------------------------------------------
+    // Template to generate type
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType
     {
       typedef typename InputMatrix::Scalar Scalar;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(InputMatrix) InputMatrixPlain;
-      typedef Eigen::Matrix<Scalar, 6, InputMatrix::ColsAtCompileTime, InputMatrixPlain::Options>
-        type;
+      typedef Eigen::
+        Matrix<Scalar, Size, InputMatrixPlain::ColsAtCompileTime, InputMatrixPlain::Options>
+          type;
     };
 
     template<typename InputMatrix>
@@ -80,11 +97,6 @@ namespace pinocchio
       traits<FrameConstraintModelBase>::constraint_formulation_level;
     typedef typename traits<Derived>::ConstraintData ConstraintData;
     typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
-      ActiveComplianceVectorTypeConstRef;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParameters
-      BaumgarteCorrectorVectorParameters;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     typedef SE3Tpl<Scalar, Options> SE3;
@@ -93,9 +105,9 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Vector6 VectorConstraintSize;
 
-    using Base::activeSize;
     using Base::jacobianMatrixProduct;
     using Base::jacobianTransposeMatrixProduct;
+    using Base::residualSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -243,12 +255,6 @@ namespace pinocchio
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
-
-    /// \copydoc RootBase::size
-    static constexpr int sizeImpl()
-    {
-      return 6;
-    }
 
     /// \brief Evaluate the constraint values at the current state given by data and store the
     /// results in cdata.
@@ -587,7 +593,7 @@ namespace pinocchio
 
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), activeSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(aot);
 
       if (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
@@ -658,7 +664,7 @@ namespace pinocchio
       typedef typename Data::Vector6 Vector6;
       OutputMatrix & res = _res.const_cast_derived();
 
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), activeSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), residualSize(cdata));
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), mat.cols());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), model.nv);
       PINOCCHIO_UNUSED_VARIABLE(aot);
@@ -749,7 +755,7 @@ namespace pinocchio
       ReferenceFrameTag<rf> reference_frame) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), activeSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
@@ -785,7 +791,7 @@ namespace pinocchio
       ReferenceFrameTag<rf> reference_frame) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_accelerations.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motion.rows(), activeSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motion.rows(), residualSize(cdata));
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 

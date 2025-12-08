@@ -35,12 +35,14 @@ namespace boost
       {
         typedef ::pinocchio::JointLimitConstraintDataTpl<Scalar, Options> Base;
 
-        using Base::active_compliance;
-        using Base::active_compliance_storage;
+        using Base::activable_constraint_residual;
+        using Base::active_idx_in_activable;
+        using Base::active_idx_in_selected;
         using Base::active_idx_qs_reduce;
-        using Base::active_idx_rows;
-        using Base::active_set_indexes;
+        using Base::compact_tangent_map;
+        using Base::constraint_residual_storage;
         using Base::lower_active_size;
+        using Base::rowise_tangent_map;
       };
     } // namespace internal
 
@@ -54,8 +56,12 @@ namespace boost
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
 
-      // Public members
-      ar & make_nvp("rowise_tangent_map", cdata.rowise_tangent_map);
+      ar & make_nvp("active_idx_in_activable", cdata.active_idx_in_activable);
+      ar & make_nvp("active_idx_in_selected", cdata.active_idx_in_selected);
+      ar & make_nvp("active_idx_qs_reduce", cdata.active_idx_qs_reduce);
+
+      ar & make_nvp("lower_residual_size", cdata.lower_residual_size);
+
       ar & make_nvp("activable_constraint_residual", cdata.activable_constraint_residual);
       ar & make_nvp("constraint_residual_storage", cdata.constraint_residual_storage);
       if (Archive::is_loading::value)
@@ -63,19 +69,8 @@ namespace boost
         cdata.constraint_residual = cdata.constraint_residual_storage.map();
       }
 
-      // Protected members
-      typedef internal::JointLimitConstraintDataAccessor<Scalar, Options> Accessor;
-      auto & cdata_ = reinterpret_cast<Accessor &>(cdata);
-      ar & make_nvp("lower_active_size", cdata_.lower_active_size);
-      ar & make_nvp("active_set_indexes", cdata_.active_set_indexes);
-      ar & make_nvp("active_idx_rows", cdata_.active_idx_rows);
-      ar & make_nvp("active_idx_qs_reduce", cdata_.active_idx_qs_reduce);
-      ar & make_nvp("active_compliance_storage", cdata_.active_compliance_storage);
-
-      if (Archive::is_loading::value)
-      {
-        cdata_.active_compliance = cdata_.active_compliance_storage.map();
-      }
+      ar & make_nvp("compact_tangent_map", cdata.compact_tangent_map);
+      ar & make_nvp("rowise_tangent_map", cdata.rowise_tangent_map);
     }
 
     template<typename Archive, typename Scalar, int Options>

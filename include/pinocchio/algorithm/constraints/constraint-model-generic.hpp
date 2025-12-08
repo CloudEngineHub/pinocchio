@@ -8,7 +8,6 @@
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 
@@ -21,47 +20,49 @@ namespace pinocchio
     template<typename S, int O> class ConstraintCollectionTpl>
   struct traits<ConstraintModelTpl<_Scalar, _Options, ConstraintCollectionTpl>>
   {
+    // --------------------------------------------------------------
+    // Traits characterizing the constraint behaviour in CRTP
+    // --------------------------------------------------------------
     typedef _Scalar Scalar;
     enum
     {
-      Options = _Options
+      Options = _Options,
+      Size = Eigen::Dynamic
     };
 
+    // static constexpr ConstraintFormulationLevel NOT USED;
+    static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::GENERAL;
+
+    // The generic behave as if it has those elements but raise an error if the underlying class
+    // does not
     static constexpr bool has_baumgarte_corrector = true;
-    static constexpr bool has_baumgarte_corrector_vector = true;
-    static constexpr bool constant_size = false;
+    static constexpr bool has_compliance_member = true;
+    static constexpr bool has_set = true;
 
+    // --------------------------------------------------------------
+    // Traits referencing the constraint and associated types
+    // --------------------------------------------------------------
+    typedef ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> ConstraintModel;
     typedef ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> ConstraintData;
-    typedef ConstraintData Data;
     typedef boost::blank ConstraintSet;
+    typedef ConstraintModel Model;
+    typedef ConstraintData Data;
 
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> JacobianMatrixType;
-    typedef VectorXs VectorConstraintSize;
+    // --------------------------------------------------------------
+    // Traits for the algorithmic methods on current state
+    // --------------------------------------------------------------
+    // Elementary types
+    typedef Eigen::Matrix<Scalar, Size, Eigen::Dynamic, Options> JacobianMatrixType;
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> VectorConstraintSize;
 
-    typedef VectorXs ComplianceVectorType;
-    typedef Eigen::Ref<ComplianceVectorType> ComplianceVectorTypeRef;
-    typedef Eigen::Ref<const ComplianceVectorType> ComplianceVectorTypeConstRef;
-
-    typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
-
-    typedef VectorXs BaumgarteVectorType;
-    typedef Eigen::Ref<VectorXs> BaumgarteVectorTypeRef;
-    typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorTypeRef>
-      BaumgarteCorrectorVectorParameters;
-    typedef BaumgarteCorrectorVectorParameters BaumgarteCorrectorVectorParametersRef;
-    typedef Eigen::Ref<const VectorXs> BaumgarteVectorTypeConstRef;
-    typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorTypeConstRef>
-      BaumgarteCorrectorVectorParametersConstRef;
-
+    // Template to generate type
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType
     {
       typedef typename InputMatrix::Scalar Scalar;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(InputMatrix) InputMatrixPlain;
       typedef Eigen::
-        Matrix<Scalar, Eigen::Dynamic, InputMatrix::ColsAtCompileTime, InputMatrixPlain::Options>
+        Matrix<Scalar, Size, InputMatrixPlain::ColsAtCompileTime, InputMatrixPlain::Options>
           type;
     };
 
@@ -77,6 +78,16 @@ namespace pinocchio
         InputMatrixPlain::Options>
         type;
     };
+
+    // -------------------------------
+    // Traits for holded Data
+    // -------------------------------
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+    typedef VectorXs ComplianceVectorType;
+    typedef Eigen::Ref<ComplianceVectorType> ComplianceVectorTypeRef;
+    typedef Eigen::Ref<const ComplianceVectorType> ComplianceVectorTypeConstRef;
+
+    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
   };
 
   template<
@@ -105,16 +116,7 @@ namespace pinocchio
     typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
     typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef typename traits<Self>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef
-      typename traits<Self>::ActiveComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
-    typedef
-      typename traits<Self>::BaumgarteCorrectorVectorParameters BaumgarteCorrectorVectorParameters;
-    typedef typename traits<Self>::BaumgarteCorrectorVectorParametersRef
-      BaumgarteCorrectorVectorParametersRef;
-    typedef typename traits<Self>::BaumgarteCorrectorVectorParametersConstRef
-      BaumgarteCorrectorVectorParametersConstRef;
-    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+    typedef typename Base::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
 
     using typename Base::BooleanVector;
     using typename Base::EigenIndexVector;
@@ -191,15 +193,15 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::size
-    int sizeImpl() const
+    int maxResidualSizeImpl() const
     {
-      return ::pinocchio::visitors::size(*this);
+      return ::pinocchio::visitors::maxResidualSize(*this);
     }
 
-    /// \copydoc RootBase::activeSize
-    int activeSizeImpl(const ConstraintData & constraint_data) const
+    /// \copydoc RootBase::residualSize
+    int residualSizeImpl(const ConstraintData & constraint_data) const
     {
-      return ::pinocchio::visitors::activeSize(*this, constraint_data);
+      return ::pinocchio::visitors::residualSize(*this, constraint_data);
     }
 
     /// \copydoc RootBase::set
@@ -239,42 +241,26 @@ namespace pinocchio
         *this, model, data, cdata, jacobian_matrix.const_cast_derived());
     }
 
-    /// \copydoc RootBase::getActivableRowIndexes
-    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
+    /// \copydoc RootBase::getRowIndexes
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      return ::pinocchio::visitors::getActivableRowIndexes(*this, row_id);
-    }
-
-    /// \copydoc RootBase::getActiveRowIndexes
-    const EigenIndexVector & getActiveRowIndexesImpl(
-      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
-    {
-      return ::pinocchio::visitors::getActiveRowIndexes(*this, constraint_data, row_id);
+      return ::pinocchio::visitors::getRowIndexes(*this, constraint_data, row_id);
     }
 
     /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
-    {
-      return ::pinocchio::visitors::getRowSparsityPattern(*this, row_id);
-    }
-
-    /// \copydoc RootBase::getActiveRowSparsityPattern
-    const BooleanVector & getActiveRowSparsityPatternImpl(
+    const BooleanVector & getRowSparsityPatternImpl(
       const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
     {
-      return ::pinocchio::visitors::getActiveRowSparsityPattern(*this, constraint_data, row_id);
+      return ::pinocchio::visitors::getRowSparsityPattern(*this, constraint_data, row_id);
     }
 
-    /// \copydoc RootBase::getActiveCompliance
-    ActiveComplianceVectorTypeConstRef getActivecomplianceImpl(const ConstraintData & cdata) const
+    /// \copydoc RootBase::retrieveCompliance
+    template<typename VectorLike>
+    void retrieveCompliance(
+      const ConstraintData & cdata, const Eigen::MatrixBase<VectorLike> & res) const
     {
-      return ::pinocchio::visitors::getActiveCompliance(*this, cdata);
-    }
-
-    /// \copydoc RootBase::getActiveCompliance
-    ActiveComplianceVectorTypeRef getActivecomplianceImpl(ConstraintData & cdata) const
-    {
-      return ::pinocchio::visitors::getActiveCompliance(*this, cdata);
+      return ::pinocchio::visitors::retrieveCompliance(*this, cdata, res);
     }
 
     /// \copydoc RootBase::jacobianMatrixProduct
@@ -291,7 +277,7 @@ namespace pinocchio
     {
       typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
         ReturnType;
-      ReturnType res(activeSize(cdata), input_matrix.cols());
+      ReturnType res(residualSize(cdata), input_matrix.cols());
       jacobianMatrixProduct(model, data, cdata, input_matrix.derived(), res);
       return res;
     }
@@ -413,27 +399,14 @@ namespace pinocchio
     /// \copydoc RootBase::compliance_impl
     ComplianceVectorTypeConstRef compliance_impl() const
     {
-      return ::pinocchio::visitors::compliance(*this);
+      return ::pinocchio::visitors::getCompliance(*this);
     }
 
     /// \copydoc RootBase::compliance_impl
     ComplianceVectorTypeRef compliance_impl()
     {
-      return ::pinocchio::visitors::compliance(*this);
+      return ::pinocchio::visitors::getCompliance(*this);
     }
-
-    // CHOICE: right now we use the scalar Baumgarte
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersConstRef baumgarte_corrector_vector_parameters_impl() const
-    // {
-    //   return ::pinocchio::visitors::getBaumgarteCorrectorVectorParameters(*this);
-    // }
-
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersRef baumgarte_corrector_vector_parameters_impl()
-    // {
-    //   return ::pinocchio::visitors::getBaumgarteCorrectorVectorParameters(*this);
-    // }
 
     /// \copydoc RootBase::baumgarte_corrector_parameters
     const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_impl() const
@@ -445,6 +418,21 @@ namespace pinocchio
     BaumgarteCorrectorParameters & baumgarte_corrector_parameters_impl()
     {
       return ::pinocchio::visitors::getBaumgarteCorrectorParameters(*this);
+    }
+
+    /// \copydoc RootBase::setCompliance
+    template<typename VectorLike>
+    void setComplianceImpl(const Eigen::MatrixBase<VectorLike> & vector)
+    {
+      ::pinocchio::visitors::setCompliance(*this, vector);
+    }
+
+    /// \copydoc RootBase::setBaumgarteCorrectorParameters
+    void setBaumgarteCorrectorParametersImpl(
+      const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_in)
+    {
+      ::pinocchio::visitors::setBaumgarteCorrectorParameters(
+        *this, baumgarte_corrector_parameters_in);
     }
 
   }; // struct ConstraintModelTpl

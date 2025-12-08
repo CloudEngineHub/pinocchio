@@ -297,9 +297,9 @@ namespace pinocchio
     {
       const RigidConstraintModel & contact_model = constraint_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
-      const int contact_dim = contact_model.size();
+      const int contact_dim = contact_model.residualSize(contact_data);
 
-      const typename RigidConstraintModel::BaumgarteCorrectorVectorParameters & corrector =
+      const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
         contact_model.corrector;
       const typename RigidConstraintData::Motion & contact_acceleration_desired =
         contact_data.contact_acceleration_desired;
@@ -348,8 +348,7 @@ namespace pinocchio
       }
 
       if (check_expression_if_real<Scalar, false>(
-            isZero(corrector.Kp, static_cast<Scalar>(0.))
-            && isZero(corrector.Kd, static_cast<Scalar>(0.))))
+            (corrector.Kp == static_cast<Scalar>(0.)) && (corrector.Kd == static_cast<Scalar>(0.))))
       {
         contact_acceleration_error.setZero();
       }
@@ -357,14 +356,14 @@ namespace pinocchio
       {
         if (contact_model.type == CONTACT_6D)
           contact_acceleration_error.toVector().noalias() =
-            -(corrector.Kp.asDiagonal() /* * Jexp6(contact_data.contact_placement_error) */
+            -(corrector.Kp /* * Jexp6(contact_data.contact_placement_error) */
               * contact_data.contact_placement_error.toVector())
-            - (corrector.Kd.asDiagonal() * contact_data.contact_velocity_error.toVector());
+            - (corrector.Kd * contact_data.contact_velocity_error.toVector());
         else
         {
           contact_acceleration_error.linear().noalias() =
-            -(corrector.Kp.asDiagonal() * contact_data.contact_placement_error.linear())
-            - (corrector.Kd.asDiagonal() * contact_data.contact_velocity_error.linear());
+            -(corrector.Kp * contact_data.contact_placement_error.linear())
+            - (corrector.Kd * contact_data.contact_velocity_error.linear());
           contact_acceleration_error.angular().setZero();
         }
       }
@@ -498,7 +497,7 @@ namespace pinocchio
       const RigidConstraintModel & contact_model = constraint_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
       typename RigidConstraintData::Force & fext = contact_data.contact_force;
-      const int contact_dim = contact_model.size();
+      const int contact_dim = contact_model.residualSize(contact_data);
 
       switch (contact_model.type)
       {

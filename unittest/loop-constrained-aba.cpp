@@ -613,8 +613,8 @@ BOOST_AUTO_TEST_CASE(test_6D_cons_baumgarte)
     RigidConstraintModel(CONTACT_6D, model, model.getJointId("joint11"), LOCAL);
   rcm1.joint1_placement.setRandom();
   rcm1.joint2_placement.setRandom();
-  rcm1.corrector.Kd.setIdentity();
-  rcm1.corrector.Kp.setIdentity();
+  rcm1.corrector.Kd = 1.;
+  rcm1.corrector.Kp = 1.;
   contact_models.push_back(rcm1);
   contact_datas.push_back(rcm1.createData());
 
@@ -622,8 +622,8 @@ BOOST_AUTO_TEST_CASE(test_6D_cons_baumgarte)
     CONTACT_6D, model, model.getJointId("joint21"), model.getJointId("joint38"), LOCAL);
   rcm2.joint1_placement.setRandom();
   rcm2.joint2_placement.setRandom();
-  rcm2.corrector.Kd.setIdentity();
-  rcm2.corrector.Kp.setIdentity();
+  rcm2.corrector.Kd = 1.;
+  rcm2.corrector.Kp = 1.;
   contact_models.push_back(rcm2);
   contact_datas.push_back(rcm2.createData());
 
@@ -631,8 +631,8 @@ BOOST_AUTO_TEST_CASE(test_6D_cons_baumgarte)
     CONTACT_6D, model, model.getJointId("joint19"), model.getJointId("joint29"), LOCAL);
   rcm3.joint1_placement.setRandom();
   rcm3.joint2_placement.setRandom();
-  rcm3.corrector.Kd.setIdentity();
-  rcm3.corrector.Kp.setIdentity();
+  rcm3.corrector.Kd = 1.;
+  rcm3.corrector.Kp = 1.;
   contact_models.push_back(rcm3);
   contact_datas.push_back(rcm3.createData());
 
@@ -640,8 +640,8 @@ BOOST_AUTO_TEST_CASE(test_6D_cons_baumgarte)
     CONTACT_6D, model, model.getJointId("joint29"), model.getJointId("joint39"), LOCAL);
   rcm4.joint1_placement.setRandom();
   rcm4.joint2_placement.setRandom();
-  rcm4.corrector.Kd.setIdentity();
-  rcm4.corrector.Kp.setIdentity();
+  rcm4.corrector.Kd = 1.;
+  rcm4.corrector.Kp = 1.;
   contact_models.push_back(rcm4);
   contact_datas.push_back(rcm4.createData());
 
@@ -677,8 +677,8 @@ BOOST_AUTO_TEST_CASE(test_3D_cons_baumgarte)
     RigidConstraintModel(CONTACT_3D, model, model.getJointId("joint11"), LOCAL);
   rcm1.joint1_placement.setRandom();
   rcm1.joint2_placement.setRandom();
-  rcm1.corrector.Kd.setIdentity();
-  rcm1.corrector.Kp.setIdentity();
+  rcm1.corrector.Kd = 1.;
+  rcm1.corrector.Kp = 1.;
   contact_models.push_back(rcm1);
   contact_datas.push_back(rcm1.createData());
 
@@ -686,8 +686,8 @@ BOOST_AUTO_TEST_CASE(test_3D_cons_baumgarte)
     CONTACT_3D, model, model.getJointId("joint21"), model.getJointId("joint38"), LOCAL);
   rcm2.joint1_placement.setRandom();
   rcm2.joint2_placement.setRandom();
-  rcm2.corrector.Kd.setIdentity();
-  rcm2.corrector.Kp.setIdentity();
+  rcm2.corrector.Kd = 1.;
+  rcm2.corrector.Kp = 1.;
   contact_models.push_back(rcm2);
   contact_datas.push_back(rcm2.createData());
 
@@ -695,8 +695,8 @@ BOOST_AUTO_TEST_CASE(test_3D_cons_baumgarte)
     CONTACT_3D, model, model.getJointId("joint19"), model.getJointId("joint29"), LOCAL);
   rcm3.joint1_placement.setRandom();
   rcm3.joint2_placement.setRandom();
-  rcm3.corrector.Kd.setIdentity();
-  rcm3.corrector.Kp.setIdentity();
+  rcm3.corrector.Kd = 1.;
+  rcm3.corrector.Kp = 1.;
   contact_models.push_back(rcm3);
   contact_datas.push_back(rcm3.createData());
 
@@ -704,8 +704,8 @@ BOOST_AUTO_TEST_CASE(test_3D_cons_baumgarte)
     CONTACT_3D, model, model.getJointId("joint29"), model.getJointId("joint39"), LOCAL);
   rcm4.joint1_placement.setRandom();
   rcm4.joint2_placement.setRandom();
-  rcm4.corrector.Kd.setIdentity();
-  rcm4.corrector.Kp.setIdentity();
+  rcm4.corrector.Kd = 1.;
+  rcm4.corrector.Kp = 1.;
   contact_models.push_back(rcm4);
   contact_datas.push_back(rcm4.createData());
 

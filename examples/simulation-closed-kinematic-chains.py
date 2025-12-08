@@ -100,7 +100,7 @@ constraint_model = pin.RigidConstraintModel(
     constraint1_joint2_placement,
 )
 constraint_data = constraint_model.createData()
-constraint_dim = constraint_model.size()
+constraint_dim = constraint_model.maxResidualSize()
 
 # First, do an inverse geometry
 rho = 1e-10
@@ -156,8 +156,8 @@ dt = 5e-3
 T_sim = 10
 t = 0
 mu_sim = 1e-10
-constraint_model.corrector.Kp[:] = 10
-constraint_model.corrector.Kd[:] = 2.0 * np.sqrt(constraint_model.corrector.Kp)
+constraint_model.corrector.Kp = 10
+constraint_model.corrector.Kd = 2.0 * np.sqrt(constraint_model.corrector.Kp)
 pin.initConstraintDynamics(model, data, [constraint_model], [constraint_data])
 prox_settings = pin.ProximalSettings(1e-8, mu_sim, 10)
 

@@ -12,7 +12,6 @@
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/kinematics-constraint-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 
 namespace pinocchio
@@ -45,11 +44,6 @@ namespace pinocchio
 
     typedef typename traits<Derived>::ConstraintData ConstraintData;
     typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
-      ActiveComplianceVectorTypeConstRef;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParameters
-      BaumgarteCorrectorVectorParameters;
 
     typedef SE3Tpl<Scalar, Options> SE3;
     typedef MotionTpl<Scalar, Options> Motion;
@@ -59,7 +53,7 @@ namespace pinocchio
     typedef typename traits<Derived>::VectorConstraintSize VectorConstraintSize;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
-    using RootBase::size;
+    using RootBase::maxResidualSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -226,16 +220,20 @@ namespace pinocchio
     // -------------------------------
 
     /// \copydoc Base::getRowSparsityPattern
-    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
+    const BooleanVector &
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_sparsity;
     }
 
-    /// \copydoc Base::getActivableRowIndexes
-    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
+    /// \copydoc Base::getRowIndexes
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_span_indexes;
     }
 
@@ -286,10 +284,8 @@ namespace pinocchio
     size_t depth_joint1, depth_joint2;
 
   protected:
-    using BaseCommonParameters::m_compliance;
-    // CHOICE: right now we use the scalar Baumgarte.
-    // using BaseCommonParameters::m_baumgarte_vector_parameters;
     using BaseCommonParameters::m_baumgarte_parameters;
+    using BaseCommonParameters::m_compliance;
   }; // struct BinaryKinematicsConstraintBase<Derived>
 
   template<typename Derived>
@@ -377,9 +373,7 @@ namespace pinocchio
     }
 
     // Set compliance and Baumgarte parameters.
-    m_compliance = ComplianceVectorType::Zero(size());
-    // CHOICE: right now we use the scalar Baumgarte.
-    // m_baumgarte_vector_parameters = BaumgarteCorrectorVectorParameters(size());
+    m_compliance = ComplianceVectorType::Zero(maxResidualSize());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
   }
 

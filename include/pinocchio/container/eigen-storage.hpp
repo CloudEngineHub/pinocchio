@@ -39,7 +39,7 @@ namespace pinocchio
 
     enum
     {
-      MaxSizeAtCompileTime =
+      MaxResidualSizeAtCompileTime =
         ((PlainMatrixType::MaxRowsAtCompileTime != Eigen::Dynamic)
          && (PlainMatrixType::MaxRowsAtCompileTime != Eigen::Dynamic))
           ? PlainMatrixType::MaxRowsAtCompileTime * PlainMatrixType::MaxColsAtCompileTime
@@ -48,7 +48,7 @@ namespace pinocchio
       Options = PlainMatrixType::Options & ~Eigen::RowMajorBit
     };
 
-    typedef Eigen::Matrix<Scalar, MaxSizeAtCompileTime, 1, Options> StorageVector;
+    typedef Eigen::Matrix<Scalar, MaxResidualSizeAtCompileTime, 1, Options> StorageVector;
 
     /// \brief Default constructor from given matrix dimension (rows, cols) and maximum rows and
     /// columns

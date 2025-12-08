@@ -14,7 +14,6 @@
 #include "pinocchio/algorithm/constraints/kinematics-constraint-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/utils/reference.hpp"
 
 namespace pinocchio
@@ -66,50 +65,53 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<RigidConstraintModelTpl<_Scalar, _Options>>
   {
+    // --------------------------------------------------------------
+    // Traits characterizing the constraint behaviour in CRTP
+    // --------------------------------------------------------------
     typedef _Scalar Scalar;
     enum
     {
-      Options = _Options
+      Options = _Options,
+      Size = Eigen::Dynamic
     };
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::VELOCITY_LEVEL;
-    static constexpr bool has_baumgarte_corrector = true;
-    static constexpr bool has_baumgarte_corrector_vector = true;
-    static constexpr bool constant_size = true; // constant size at compile time
+    static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::CONSTANT;
 
+    static constexpr bool has_baumgarte_corrector =
+      true; // Baumgarte make sense and exist directly for the constraint
+    static constexpr bool has_compliance_member =
+      true; // The constraint itself posses a member m_compliance which can be set by the user
+    static constexpr bool has_set = true; // The constraint itself defines the set, otherwise must
+                                          // have a mechanism for set-related visitors
+
+    // --------------------------------------------------------------
+    // Traits referencing the constraint and associated types
+    // --------------------------------------------------------------
     typedef RigidConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef RigidConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef boost::blank ConstraintSet;
-
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
 
+    // --------------------------------------------------------------
+    // Traits for the algorithmic methods on current state
+    // --------------------------------------------------------------
+    // Elementary types
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options, 6, Eigen::Dynamic>
-      JacobianMatrixType;
-    typedef VectorXs VectorConstraintSize;
-
-    typedef VectorXs ComplianceVectorType;
-    typedef ComplianceVectorType & ComplianceVectorTypeRef;
-    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
-
-    typedef ComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef ComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
-
-    typedef Eigen::Matrix<Scalar, -1, 1, Eigen::ColMajor, 6> Vector6Max;
-    typedef Vector6Max BaumgarteVectorType;
-    typedef BaumgarteCorrectorVectorParametersTpl<BaumgarteVectorType>
-      BaumgarteCorrectorVectorParameters;
-    typedef BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersRef;
-    typedef const BaumgarteCorrectorVectorParameters & BaumgarteCorrectorVectorParametersConstRef;
-
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> JacobianMatrixType;
+    // Template to generate type
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType
     {
       typedef typename InputMatrix::Scalar Scalar;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(InputMatrix) InputMatrixPlain;
-      typedef Eigen::Matrix<Scalar, 3, InputMatrix::ColsAtCompileTime, InputMatrixPlain::Options>
+      typedef Eigen::Matrix<
+        Scalar,
+        Eigen::Dynamic,
+        InputMatrixPlain::ColsAtCompileTime,
+        InputMatrixPlain::Options>
         type;
     };
 
@@ -118,8 +120,21 @@ namespace pinocchio
     {
       typedef typename InputMatrix::Scalar Scalar;
       typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(InputMatrix) InputMatrixPlain;
-      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 3, InputMatrixPlain::Options> type;
+      typedef Eigen::Matrix<
+        Scalar,
+        Eigen::Dynamic,
+        InputMatrixPlain::ColsAtCompileTime,
+        InputMatrixPlain::Options>
+        type;
     };
+
+    // -------------------------------
+    // Traits for holded Data
+    // -------------------------------
+    typedef VectorXs VectorConstraintSize;
+    typedef VectorXs ComplianceVectorType;
+    typedef ComplianceVectorType & ComplianceVectorTypeRef;
+    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
   };
 
   template<typename _Scalar, int _Options>
@@ -159,15 +174,6 @@ namespace pinocchio
     typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
     typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef typename traits<Self>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef
-      typename traits<Self>::ActiveComplianceVectorTypeConstRef ActiveComplianceVectorTypeConstRef;
-    typedef
-      typename traits<Self>::BaumgarteCorrectorVectorParameters BaumgarteCorrectorVectorParameters;
-    typedef typename traits<Self>::BaumgarteCorrectorVectorParametersRef
-      BaumgarteCorrectorVectorParametersRef;
-    typedef typename traits<Self>::BaumgarteCorrectorVectorParametersConstRef
-      BaumgarteCorrectorVectorParametersConstRef;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     using typename Base::BooleanVector;
@@ -234,11 +240,7 @@ namespace pinocchio
 
     // ///  \brief Corrector parameters
     // Reference for retrocompatibility
-    BaumgarteCorrectorVectorParameters corrector;
-    // For the new API it is either one of:
-    // BaumgarteCorrectorParameters m_baumgarte_parameters;
-    // BaumgarteCorrectorVectorParameters m_baumgarte_vector_parameters;
-    // Actually it is the scalar one
+    BaumgarteCorrectorParameters corrector;
 
   protected:
     ///
@@ -286,8 +288,8 @@ namespace pinocchio
     , joint1_span_indexes((size_t)model.njoints)
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
-    , m_compliance(VectorXs::Zero(size()))
-    , corrector(size())
+    , m_compliance(VectorXs::Zero(maxResidualSize()))
+    , corrector()
     {
       init(model);
     }
@@ -321,8 +323,8 @@ namespace pinocchio
     , joint1_span_indexes((size_t)model.njoints)
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
-    , m_compliance(VectorXs::Zero(size()))
-    , corrector(size())
+    , m_compliance(VectorXs::Zero(maxResidualSize()))
+    , corrector()
     {
       init(model);
     }
@@ -354,8 +356,8 @@ namespace pinocchio
     , joint1_span_indexes((size_t)model.njoints)
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
-    , m_compliance(VectorXs::Zero(size()))
-    , corrector(size())
+    , m_compliance(VectorXs::Zero(maxResidualSize()))
+    , corrector()
     {
       init(model);
     }
@@ -388,8 +390,8 @@ namespace pinocchio
     , joint1_span_indexes((size_t)model.njoints)
     , joint2_span_indexes((size_t)model.njoints)
     , loop_span_indexes((size_t)model.nv)
-    , m_compliance(VectorXs::Zero(size()))
-    , corrector(size())
+    , m_compliance(VectorXs::Zero(maxResidualSize()))
+    , corrector()
     {
       init(model);
     }
@@ -403,16 +405,20 @@ namespace pinocchio
     }
 
     /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowSparsityPatternImpl(const Eigen::DenseIndex row_id) const
+    const BooleanVector &
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_sparsity;
     }
 
-    /// \brief Returns the vector of the active indexes associated with a given row
-    const EigenIndexVector & getActivableRowIndexesImpl(const Eigen::DenseIndex row_id) const
+    /// \brief Returns the vector of the indexes associated with a given row
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < size());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_span_indexes;
     }
 
@@ -429,28 +435,16 @@ namespace pinocchio
     }
 
     /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    BaumgarteCorrectorVectorParametersConstRef baumgarte_corrector_vector_parameters_impl() const
+    const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_impl() const
     {
       return corrector;
     }
 
     /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    BaumgarteCorrectorVectorParametersRef baumgarte_corrector_vector_parameters_impl()
+    BaumgarteCorrectorParameters & baumgarte_corrector_parameters_impl()
     {
       return corrector;
     }
-
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersConstRef baumgarte_corrector_vector_parameters_impl() const
-    // {
-    //   return m_baumgarte_vector_parameters;
-    // }
-
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersRef baumgarte_corrector_vector_parameters_impl()
-    // {
-    //   return m_baumgarte_vector_parameters;
-    // }
 
     ///
     ///  \brief Comparison operator
@@ -691,7 +685,7 @@ namespace pinocchio
 
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), size());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), maxResidualSize()); // We know it is constant
       res.setZero();
 
       //      const Eigen::DenseIndex constraint_dim = size();
@@ -862,7 +856,7 @@ namespace pinocchio
       std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), size());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
 
       assert(this->type == CONTACT_3D);
@@ -886,7 +880,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & constraint_value) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_accelerations.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_value.rows(), size());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_value.rows(), maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
 
       assert(this->type == CONTACT_3D);
@@ -916,7 +910,7 @@ namespace pinocchio
         constraint_value.const_cast_derived().setZero();
     }
 
-    int sizeImpl() const
+    int maxResidualSizeImpl() const
     {
       switch (type)
       {
@@ -929,8 +923,8 @@ namespace pinocchio
       }
       return -1;
     }
-    using Base::activeSize;
-    using Base::size;
+    using Base::maxResidualSize;
+    using Base::residualSize;
 
     /// \returns An expression of *this with the Scalar type casted to NewScalar.
     template<typename NewScalar>
@@ -1057,14 +1051,14 @@ namespace pinocchio
   };
 
   ///
-  /// \brief Computes the sum of the active sizes of the constraints contained in the input
-  /// `constraint_models` vector.
+  /// \brief Computes the sum of the sizes of the constraints contained in the input
+  /// `constraint_models` vector in the state given by `constraint_datas` vector.
   template<
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  Eigen::DenseIndex getTotalConstraintActiveSize(
+  Eigen::DenseIndex getTotalConstraintResidualSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
@@ -1073,7 +1067,7 @@ namespace pinocchio
     {
       const auto & constraint_model = helper::get_ref(constraint_models[k]);
       const auto & constraint_data = helper::get_ref(constraint_datas[k]);
-      total_size += constraint_model.activeSize(constraint_data);
+      total_size += constraint_model.residualSize(constraint_data);
     }
 
     return total_size;
@@ -1083,14 +1077,14 @@ namespace pinocchio
   /// \brief Computes the sum of the sizes of the constraints contained in the input
   /// `constraint_models` vector.
   template<class ConstraintModel, class ConstraintModelAllocator>
-  Eigen::DenseIndex getTotalConstraintSize(
+  Eigen::DenseIndex getTotalConstraintMaxResidualSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
     Eigen::DenseIndex total_size = 0;
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);
-      total_size += cmodel.size();
+      total_size += cmodel.maxResidualSize();
     }
 
     return total_size;
@@ -1235,10 +1229,10 @@ namespace pinocchio
     , da2_dq(Matrix6x::Zero(6, constraint_model.nv))
     , da2_dv(Matrix6x::Zero(6, constraint_model.nv))
     , da2_da(Matrix6x::Zero(6, constraint_model.nv))
-    , dvc_dq(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
-    , dac_dq(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
-    , dac_dv(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
-    , dac_da(MatrixX::Zero(constraint_model.size(), constraint_model.nv))
+    , dvc_dq(MatrixX::Zero(constraint_model.maxResidualSize(), constraint_model.nv))
+    , dac_dq(MatrixX::Zero(constraint_model.maxResidualSize(), constraint_model.nv))
+    , dac_dv(MatrixX::Zero(constraint_model.maxResidualSize(), constraint_model.nv))
+    , dac_da(MatrixX::Zero(constraint_model.maxResidualSize(), constraint_model.nv))
     {
     }
 

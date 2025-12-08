@@ -9,7 +9,6 @@
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/common/model-entity.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 
 namespace pinocchio
 {
@@ -27,37 +26,80 @@ namespace pinocchio
     ACCELERATION_LEVEL // scaling 1
   };
 
+  enum struct ConstraintSizeType
+  {
+    STATIC,   // The size is static, fixed at compile time. residualSize = maxResidualSize =
+              // sizeCapacity -> fixed
+    CONSTANT, // The size is constant, fixed at build time. residualSize = maxResidualSize =
+              // sizeCapacity -> maxResidualSizeImpl to implement
+    BOUNDED,  // The size is bounded, a maxResidualSize is fixed at build time and 0 <= size <=
+              // maxResidualSize = capacity -> residualSizeImpl and maxResidualSizeImpl to implement
+    GENERAL   // The size is not guaranteed to be bounded, capacitySize gives an estimated max size
+              // for allocation -> residualSizeImpl and sizeCapacityImpl to implement
+  };
+
   template<class Derived>
   struct ConstraintModelBase
   : NumericalBase<Derived>
   , ModelEntity<Derived>
   {
-    typedef typename traits<Derived>::Scalar Scalar;
-    enum
-    {
-      Options = traits<Derived>::Options
-    };
-    static constexpr bool constant_size = traits<Derived>::constant_size;
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
 
     typedef ModelEntity<Derived> Base;
 
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Derived>::Scalar Scalar;
+    enum
+    {
+      Options = traits<Derived>::Options,
+      Size = traits<Derived>::Size
+    };
+
+    static constexpr ConstraintFormulationLevel constraint_formulation_level =
+      traits<Derived>::constraint_formulation_level;
+    static constexpr ConstraintSizeType constraint_size_type =
+      traits<Derived>::constraint_size_type;
+    // {STATIC} \subset {CONSTANT} \subset {BOUNDED} \subset {GENERAL}
+    static constexpr bool static_size = constraint_size_type == ConstraintSizeType::STATIC;
+    static constexpr bool constant_size =
+      static_size || (constraint_size_type == ConstraintSizeType::CONSTANT);
+    static constexpr bool bounded_size =
+      constant_size || (constraint_size_type == ConstraintSizeType::BOUNDED);
+
+    static constexpr bool has_baumgarte_corrector =
+      traits<Derived>::has_baumgarte_corrector; // Baumgarte make sense and exist directly for the
+                                                // constraint
+    static constexpr bool has_compliance_member =
+      traits<Derived>::has_compliance_member; // The constraint itself possesses a member
+                                              // m_compliance which can be set by the user
+    static constexpr bool has_set =
+      traits<Derived>::has_set; // The constraint itself defines the set, otherwise must have a
+                                // mechanism for set-related methods
+
+    typedef typename traits<Derived>::ConstraintModel ConstraintModel;
     typedef typename traits<Derived>::ConstraintData ConstraintData;
     typedef typename traits<Derived>::ConstraintSet ConstraintSet;
+
+    typedef typename traits<Derived>::JacobianMatrixType JacobianMatrixType;
+    typedef typename traits<Derived>::VectorConstraintSize VectorConstraintSize;
+    // JacobianMatrixProductReturnType / JacobianTransposeMatrixProductReturnType Tpl
+
+    typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
     typedef typename traits<Derived>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
     typedef typename traits<Derived>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeRef ActiveComplianceVectorTypeRef;
-    typedef typename traits<Derived>::ActiveComplianceVectorTypeConstRef
-      ActiveComplianceVectorTypeConstRef;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersRef
-      BaumgarteCorrectorVectorParametersRef;
-    typedef typename traits<Derived>::BaumgarteCorrectorVectorParametersConstRef
-      BaumgarteCorrectorVectorParametersConstRef;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
+    // Usefull types ------------------------------------------------
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
     typedef std::vector<Eigen::DenseIndex> EigenIndexVector;
 
-    using Base::createData;
+    // --------------------------------------------------------------
+    // Methods
+    // --------------------------------------------------------------
+
+    // CRTP classics and operators ----------------------------------
 
     /// \brief Cast to derived class.
     Derived & derived()
@@ -69,6 +111,18 @@ namespace pinocchio
     const Derived & derived() const
     {
       return static_cast<const Derived &>(*this);
+    }
+
+    /// \brief Cast to base.
+    ConstraintModelBase & base()
+    {
+      return *this;
+    }
+
+    /// \brief Const cast to base.
+    const ConstraintModelBase & base() const
+    {
+      return *this;
     }
 
     /// \brief Cast to NewScalar.
@@ -83,18 +137,6 @@ namespace pinocchio
     void cast(ConstraintModelBase<OtherDerived> & other) const
     {
       other.name = name;
-    }
-
-    /// \brief Cast to base.
-    ConstraintModelBase & base()
-    {
-      return *this;
-    }
-
-    /// \brief Const cast to base.
-    const ConstraintModelBase & base() const
-    {
-      return *this;
     }
 
     /// \brief Copy operator.
@@ -120,11 +162,7 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    /// \brief Returns a constraint data associated to this constraint model.
-    ConstraintData createData() const
-    {
-      return derived().createDataImpl();
-    }
+    // Aesthetics methods --------------------------------------------
 
     /// \brief Returns the name of the underlying class if this is a variant.
     std::string shortname() const
@@ -153,25 +191,87 @@ namespace pinocchio
       return os;
     }
 
-    /// \brief Returns the (maximum) size of the constraint.
-    int size() const
+    // Relation to data ---------------------------------------------
+
+    using Base::createData;
+
+    /// \brief Returns a constraint data associated to this constraint model.
+    ConstraintData createData() const
     {
-      return derived().sizeImpl();
+      return derived().createDataImpl();
     }
 
-    /// \brief Returns the current size of the constraint, typically after `calc` has been called.
-    /// \note If constraints are dynamic (e.g. joint limits), activeSize is computed when
-    /// calling the calc method.
-    template<typename ConstraintDataDerived>
-    int activeSize(const ConstraintDataBase<ConstraintDataDerived> & constraint_data) const
+    // Size management ----------------------------------------------
+
+    /// \brief Returns the maximum size of the constraint.
+    int maxResidualSize() const
     {
-      if constexpr (traits<Derived>::constant_size)
+      if constexpr (static_size)
       {
-        return size();
+        return Size;
       }
       else
       {
-        return derived().activeSizeImpl(constraint_data.derived());
+        return derived().maxResidualSizeImpl();
+      }
+    }
+
+    // Methods for algorithm ----------------------------------------
+
+    /// \brief Returns the current size of the constraint, typically after `calc` has been called.
+    /// \note If constraints are dynamic (e.g. joint limits), residualSize is computed when
+    /// calling the calc method.
+    template<typename ConstraintDataDerived>
+    int residualSize(const ConstraintDataBase<ConstraintDataDerived> & cdata) const
+    {
+      if constexpr (constant_size)
+      {
+        return maxResidualSize();
+      }
+      else
+      {
+        return derived().residualSizeImpl(cdata.derived());
+      }
+    }
+
+    /// \brief Returns the colwise sparsity associated with a given row of the active set of
+    /// the constraints.
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    const BooleanVector &
+    getRowSparsityPattern(const ConstraintData & cdata, const Eigen::Index row_id) const
+    {
+      return derived().getRowSparsityPatternImpl(cdata, row_id);
+    }
+
+    /// \brief Returns the vector of the active indexes associated with a given row
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    const EigenIndexVector &
+    getRowIndexes(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    {
+      return derived().getRowIndexesImpl(cdata, row_id);
+    }
+
+    /// \brief Returns an instance of the associated constraint set operator.
+    ConstraintSet set() const
+    {
+      return derived().setImpl();
+    }
+
+    /// \brief Fill the compliance of size residualSize relted to the courant state of the
+    /// constraint
+    template<typename VectorLike>
+    void retrieveCompliance(
+      const ConstraintData & cdata, const Eigen::MatrixBase<VectorLike> & res) const
+    {
+      if constexpr (constant_size && has_compliance_member)
+      {
+        res.const_cast_derived() = compliance();
+      }
+      else
+      {
+        derived().retrieveComplianceImpl(cdata, res.const_cast_derived());
       }
     }
 
@@ -208,7 +308,7 @@ namespace pinocchio
       ConstraintData & cdata) const
     {
       typedef typename traits<Derived>::JacobianMatrixType ReturnType;
-      ReturnType res = ReturnType::Zero(activeSize(cdata), model.nv);
+      ReturnType res = ReturnType::Zero(residualSize(cdata), model.nv);
 
       jacobian(model, data, cdata, res);
 
@@ -354,83 +454,7 @@ namespace pinocchio
         model, data, cdata, diagonal_constraint_inertia.derived(), reference_frame);
     }
 
-    /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector & getRowSparsityPattern(const Eigen::Index row_id) const
-    {
-      return derived().getRowSparsityPatternImpl(row_id);
-    }
-
-    /// \brief Returns the colwise sparsity associated with a given row of the active set of
-    /// the constraints.
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    const BooleanVector & getActiveRowSparsityPattern(
-      const ConstraintData & constraint_data, const Eigen::Index row_id) const
-    {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return getRowSparsityPattern(row_id);
-      }
-      else
-      {
-        return derived().getActiveRowSparsityPatternImpl(constraint_data, row_id);
-      }
-    }
-
-    /// \brief Returns the vector of the activable indexes associated with a given row
-    const EigenIndexVector & getActivableRowIndexes(const Eigen::DenseIndex row_id) const
-    {
-      return derived().getActivableRowIndexesImpl(row_id);
-    }
-
-    /// \brief Returns the vector of the active indexes associated with a given row
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    const EigenIndexVector & getActiveRowIndexes(
-      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
-    {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return getActivableRowIndexes(row_id);
-      }
-      else
-      {
-        return derived().getActiveRowIndexesImpl(constraint_data, row_id);
-      }
-    }
-
-    /// \brief Returns the active compliance internally stored in the constraint and corresponding
-    /// to the active set contained in cdata
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    ActiveComplianceVectorTypeConstRef
-    getActiveCompliance(const ConstraintData & constraint_data) const
-    {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return compliance();
-      }
-      else
-      {
-        return derived().getActivecomplianceImpl(constraint_data);
-      }
-    }
-
-    /// \brief Returns the active compliance internally stored in the constraint and corresponding
-    /// to the active set contained in cdata
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    ActiveComplianceVectorTypeRef getActiveCompliance(ConstraintData & constraint_data) const
-    {
-      if constexpr (traits<Derived>::constant_size)
-      {
-        return compliance();
-      }
-      else
-      {
-        return derived().getActivecomplianceImpl(constraint_data);
-      }
-    }
+    // Handling data metods -----------------------------------------
 
     /// \brief Returns the compliance internally stored in the constraint model.
     ComplianceVectorTypeConstRef compliance() const
@@ -444,19 +468,6 @@ namespace pinocchio
       return derived().compliance_impl();
     }
 
-    // CHOICE: right now we use the scalar Baumgarte
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersConstRef baumgarte_corrector_vector_parameters() const
-    // {
-    //   return derived().baumgarte_corrector_vector_parameters_impl();
-    // }
-
-    // /// \brief Returns the Baumgarte vector parameters internally stored in the constraint model
-    // BaumgarteCorrectorVectorParametersRef baumgarte_corrector_vector_parameters()
-    // {
-    //   return derived().baumgarte_corrector_vector_parameters_impl();
-    // }
-
     /// \brief Returns the Baumgarte parameters internally stored in the constraint model
     const BaumgarteCorrectorParameters & baumgarte_corrector_parameters() const
     {
@@ -469,13 +480,72 @@ namespace pinocchio
       return derived().baumgarte_corrector_parameters_impl();
     }
 
-    /// \brief Returns an instance of the associated constraint set operator.
-    ConstraintSet set() const
+    // Standard setters --------------------------------------------
+
+    /// \brief Set the compliance
+    template<typename VectorLike>
+    void setCompliance(const Eigen::MatrixBase<VectorLike> & vector)
     {
-      return derived().setImpl();
+      derived().setComplianceImpl(vector);
     }
 
-    // Attributes common to all constraints
+    /// \brief Set baumgarte corrector
+    void setBaumgarteCorrectorParameters(
+      const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_in)
+    {
+      derived().setBaumgarteCorrectorParametersImpl(baumgarte_corrector_parameters_in);
+    }
+
+    // --------------------------------------------------------------
+    // Implementation
+    // --------------------------------------------------------------
+    // // General
+    // shortnameImpl()
+    // classnameImpl()
+    // createDataImpl()
+
+    // // Size management
+    // maxResidualSizeImpl()  // Not needed for STATIC
+
+    // // For algorithms
+    // residualSizeImpl(const cdata)  // Not needed for < CONSTANT
+    // getRowSparsityPatternImpl(const cdata)
+    // getRowIndexesImpl(const cdata)
+    // setImpl()  // Not needed if has_set=False
+    // retrieveComplianceImpl(cdata, ...)  //
+    // calcImpl(const model, const data, cdata) // The only one mutating cdata
+    // jacobianImpl(const model, const data, const cdata, ...)
+    // jacobianMatrixProductImpl(const model, const data, const cdata, ...)
+    // jacobianTransposeMatrixProductImpl(const model, const data, const cdata, ...)
+    // mapConstraintForceToJointSpaceImpl(const model, const data, const cdata, ...)
+    // mapJointSpaceToConstraintMotionImpl(const model, const data, const cdata, ...)
+    // appendCouplingConstraintInertiasImpl(const model, const data, const cdata, ...)
+
+    // // Data handing
+    // compliance_impl()
+    // baumgarte_corrector_parameters_impl()
+    // setComplianceImpl()  // Default to using the accessor
+    // setBaumgarteCorrectorParametersImpl()  // Default to using the accessor
+
+    // Default Implementation --------------------------------------
+
+    /// \copydoc setCompliance
+    template<typename VectorLike>
+    void setComplianceImpl(const Eigen::MatrixBase<VectorLike> & vector)
+    {
+      compliance() = vector;
+    }
+
+    /// \copydoc setBaumgarteCorrectorParameters
+    void setBaumgarteCorrectorParametersImpl(
+      const BaumgarteCorrectorParameters & baumgarte_corrector_parameters_in)
+    {
+      baumgarte_corrector_parameters() = baumgarte_corrector_parameters_in;
+    }
+
+    // --------------------------------------------------------------
+    // Attributes
+    // --------------------------------------------------------------
 
     /// \brief Name of the constraint
     std::string name;

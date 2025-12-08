@@ -66,13 +66,13 @@ BOOST_AUTO_TEST_CASE(basic_constructor)
   PointAnchorConstraintModel cmodel2(model, 0, M);
   BOOST_CHECK(cmodel2.joint1_id == 0);
   BOOST_CHECK(cmodel2.joint1_placement == M);
-  BOOST_CHECK(cmodel2.size() == 3);
+  BOOST_CHECK(cmodel2.maxResidualSize() == 3);
 
   // Check contructor with two arguments
   PointAnchorConstraintModel cmodel2prime(model, 0);
   BOOST_CHECK(cmodel2prime.joint1_id == 0);
   BOOST_CHECK(cmodel2prime.joint1_placement.isIdentity(0.));
-  BOOST_CHECK(cmodel2prime.size() == 3);
+  BOOST_CHECK(cmodel2prime.maxResidualSize() == 3);
 
   // Check default copy constructor
   PointAnchorConstraintModel cmodel3(cmodel2);
@@ -135,7 +135,7 @@ void check_A1_and_A2(
   const Eigen::DenseIndex m = 40;
   const Data::MatrixXs mat = Data::MatrixXs::Random(model.nv, m);
 
-  Data::MatrixXs res(cmodel.size(), m);
+  Data::MatrixXs res(cmodel.residualSize(cdata), m);
   res.setZero();
   cmodel.jacobianMatrixProduct(model, data, cdata, mat, res);
 
@@ -654,7 +654,7 @@ BOOST_AUTO_TEST_CASE(cholesky)
 
   crba(model, data_ref, q, Convention::WORLD);
   make_symmetric(data_ref.M);
-  const auto total_size = getTotalConstraintActiveSize(constraint_models, constraint_datas);
+  const auto total_size = getTotalConstraintResidualSize(constraint_models, constraint_datas);
   Eigen::MatrixXd J_constraints(total_size, model.nv);
   J_constraints.setZero();
   getConstraintsJacobian(model, data_ref, constraint_models, constraint_datas, J_constraints);

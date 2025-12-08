@@ -66,13 +66,13 @@ BOOST_AUTO_TEST_CASE(basic_constructor)
   FrameAnchorConstraintModel cmodel2(model, 0, M);
   BOOST_CHECK(cmodel2.joint1_id == 0);
   BOOST_CHECK(cmodel2.joint1_placement == M);
-  BOOST_CHECK(cmodel2.size() == 6);
+  BOOST_CHECK(cmodel2.maxResidualSize() == 6);
 
   // Check contructor with two arguments
   FrameAnchorConstraintModel cmodel2prime(model, 0);
   BOOST_CHECK(cmodel2prime.joint1_id == 0);
   BOOST_CHECK(cmodel2prime.joint1_placement.isIdentity(0.));
-  BOOST_CHECK(cmodel2prime.size() == 6);
+  BOOST_CHECK(cmodel2prime.maxResidualSize() == 6);
 
   // Check default copy constructor
   FrameAnchorConstraintModel cmodel3(cmodel2);
@@ -273,7 +273,7 @@ Eigen::MatrixXd compute_jacobian_fd(
   Data data_fd(model), data(model);
   FrameAnchorConstraintData cdata(cmodel), cdata_fd(cmodel);
 
-  Eigen::MatrixXd res(cmodel.size(), model.nv);
+  Eigen::MatrixXd res(cmodel.residualSize(cdata), model.nv);
   res.setZero();
 
   forwardKinematics(model, data, q),
@@ -603,7 +603,7 @@ BOOST_AUTO_TEST_CASE(cholesky)
 
   crba(model, data_ref, q, Convention::WORLD);
   make_symmetric(data_ref.M);
-  const auto total_size = getTotalConstraintActiveSize(constraint_models, constraint_datas);
+  const auto total_size = getTotalConstraintResidualSize(constraint_models, constraint_datas);
   Eigen::MatrixXd J_constraints(total_size, model.nv);
   J_constraints.setZero();
   getConstraintsJacobian(model, data_ref, constraint_models, constraint_datas, J_constraints);

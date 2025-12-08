@@ -28,7 +28,8 @@ namespace pinocchio
       ProximalSettingsTpl<Scalar> & settings,
       bool solve_ncp)
     {
-      const Eigen::Index problem_size = getTotalConstraintActiveSize(contact_models, contact_datas);
+      const Eigen::Index problem_size =
+        getTotalConstraintResidualSize(contact_models, contact_datas);
       VectorXs lambda_sol(problem_size);
       if (lambda_guess)
         lambda_sol = lambda_guess.get();

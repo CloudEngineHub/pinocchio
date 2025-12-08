@@ -14,7 +14,6 @@
 #include "pinocchio/bindings/python/utils/comparable.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-vector-parameters.hpp"
 #include "pinocchio/bindings/python/utils/eigen.hpp"
 
 namespace pinocchio
@@ -89,7 +88,7 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY(
             Self, colwise_sparsity, "Sparsity pattern associated to the constraint.")
 
-          .def("size", &RigidConstraintModel::size, "Size of the constraint")
+          .def("maxResidualSize", &RigidConstraintModel::maxResidualSize, "Size of the constraint")
 
           .def(
             "createData", &RigidConstraintModelPythonVisitor::createData,
@@ -99,35 +98,21 @@ namespace pinocchio
             "calc", (void(Self::*)(const Model &, const Data &, ContactData &) const) & Self::calc,
             bp::args("self", "model", "data", "constraint_data"))
           .def("jacobian", &jacobian, bp::args("self", "model", "data", "constraint_data"));
-
-        typedef typename traits<Self>::BaumgarteCorrectorVectorParameters
-          BaumgarteCorrectorVectorParameters;
-        typedef typename traits<Self>::BaumgarteCorrectorVectorParametersRef
-          BaumgarteCorrectorVectorParametersRef;
-        typedef typename std::conditional<
-          std::is_reference<BaumgarteCorrectorVectorParametersRef>::value,
-          bp::return_internal_reference<>, bp::with_custodian_and_ward_postcall<0, 1>>::type
-          ReturnPolicy;
-
+        typedef
+          typename RigidConstraintModel::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
         cl.add_property(
           "corrector",
           bp::make_function( //
-            +[](Self & self) -> BaumgarteCorrectorVectorParametersRef {
-              return self.baumgarte_corrector_vector_parameters_impl();
+            +[](Self & self) -> BaumgarteCorrectorParameters & {
+              return self.baumgarte_corrector_parameters_impl();
             },
-            ReturnPolicy()),
+            bp::return_internal_reference<>()),
           bp::make_function( //
-            +[](Self & self, const BaumgarteCorrectorVectorParameters & copy) {
-              self.baumgarte_corrector_vector_parameters_impl() = copy;
-            }),
-          "Baumgarte vector parameters associated with the constraint.");
-
-        typedef typename BaumgarteCorrectorVectorParameters::VectorType BaumgarteVectorType;
-        const std::string BaumgarteVectorType_name = getEigenTypeName<BaumgarteVectorType>();
-        const std::string BaumgarteCorrectorVectorParameter_classname =
-          "BaumgarteCorrectorVectorParameters_" + BaumgarteVectorType_name;
-        BaumgarteCorrectorVectorParametersPythonVisitor<BaumgarteCorrectorVectorParameters>::expose(
-          BaumgarteCorrectorVectorParameter_classname);
+            +[](Self & self, const BaumgarteCorrectorParameters & copy) {
+              self.baumgarte_corrector_parameters_impl() = copy;
+            },
+            bp::return_internal_reference<>()),
+          "Baumgarte parameters associated with the constraint.");
       }
 
       static void expose()
@@ -149,7 +134,7 @@ namespace pinocchio
       static context::MatrixXs jacobian(
         const Self & self, const Model & model, const Data & data, ContactData & constraint_data)
       {
-        context::MatrixXs res(self.size(), model.nv);
+        context::MatrixXs res(self.residualSize(constraint_data), model.nv);
         self.jacobian(model, data, constraint_data, res);
         return res;
       }

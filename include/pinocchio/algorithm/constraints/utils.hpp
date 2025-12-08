@@ -130,16 +130,16 @@ namespace pinocchio
    */
   template<typename ConstraintModel, class ConstraintModelAllocator>
   Eigen::DenseIndex
-  size(const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
+  maxResidualSize(const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
-    Eigen::DenseIndex size = 0;
+    Eigen::DenseIndex max_size = 0;
     for (const ConstraintModel & cm : constraint_models)
     {
       const auto & cmodel = helper::get_ref(cm);
-      size += cmodel.size();
+      max_size += cmodel.maxResidualSize();
     }
 
-    return size;
+    return max_size;
   }
 
   /**
@@ -148,7 +148,7 @@ namespace pinocchio
    * This function iterates through a list of constraint models together
    * with their corresponding constraint data and accumulates the number
    * of active constraint sizes. For each pair of constraint model and
-   * data, it calls `ConstraintModel::activeSize(const ConstraintData &)`
+   * data, it calls `ConstraintModel::residualSize(const ConstraintData &)`
    * to determine the number of currently active constraints, then sums
    * these values over all constraints in the input vectors.
    *
@@ -168,14 +168,14 @@ namespace pinocchio
    * @warning This function assumes that each constraint model and its associated data
    *          object correspond to the same type of constraint.
    *
-   * @sa ConstraintModelTpl::activeSize
+   * @sa ConstraintModelTpl::residualSize
    */
   template<
     typename ConstraintModel,
     class ConstraintModelAllocator,
     typename ConstraintData,
     class ConstraintDataAllocator>
-  Eigen::DenseIndex activeSize(
+  Eigen::DenseIndex residualSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
@@ -184,7 +184,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[i]);
       const auto & cdata = helper::get_ref(constraint_datas[i]);
-      active_size += cmodel.activeSize(cdata);
+      active_size += cmodel.residualSize(cdata);
     }
 
     return active_size;

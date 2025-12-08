@@ -67,7 +67,7 @@ void makeIsotropic(
   Eigen::Index row_id = 0;
   for (const auto & cmodel : constraint_models)
   {
-    const auto csize = cmodel.size();
+    const auto csize = cmodel.maxResidualSize();
 
     auto vec_seg = vec.segment(row_id, csize);
     vec_seg[1] = vec_seg[0];
@@ -101,7 +101,8 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
   Eigen::DenseIndex constraint_dim = 0;
   for (const auto & cmodel : constraint_models)
   {
-    constraint_dim += cmodel.size();
+    // We know that point contact is of constant size
+    constraint_dim += cmodel.maxResidualSize();
   }
 
   BOOST_CHECK(constraint_dim > 0);
@@ -115,8 +116,8 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     Eigen::Index constraint_index = 0;
     for (auto & cmodel : constraint_models)
     {
-      cmodel.compliance() = R.segment(constraint_index, cmodel.size());
-      constraint_index += cmodel.size();
+      cmodel.compliance() = R.segment(constraint_index, cmodel.maxResidualSize());
+      constraint_index += cmodel.maxResidualSize();
     }
 
     ProximalSettings prox_settings(1e-12, 1e-12, /*mu = */ 0, 100);

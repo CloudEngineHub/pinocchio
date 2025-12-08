@@ -1693,7 +1693,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_joint_friction_constraint)
   const double mu = 1e-10;
   contact_chol_decomposition.compute(model, data, constraint_models, constraint_datas, mu);
 
-  const int constraint_dim = constraint_model.size();
+  const int constraint_dim = constraint_model.residualSize(constraint_data);
   const int total_dim = model.nv + constraint_dim;
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
@@ -1798,7 +1798,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     JointLimitConstraintModel joint_limit_constraint_model(model, joint_indices);
     constraint_models.push_back(joint_limit_constraint_model);
     // No activable joint limits because min/max position limit is infinity
-    BOOST_CHECK(constraint_models[0].size() == 0);
+    BOOST_CHECK(constraint_models[0].maxResidualSize() == 0);
 
     const std::string RF_name = "rleg6_joint";
     const std::string LF_name = "lleg6_joint";
@@ -1819,10 +1819,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     calc(model, data, constraint_models, constraint_datas);
 
     // No active joint limits
-    BOOST_CHECK(constraint_models[0].activeSize(constraint_datas[0]) == 0);
+    BOOST_CHECK(constraint_models[0].residualSize(constraint_datas[0]) == 0);
     // Size of point anchor constraints should be 3
-    BOOST_CHECK(constraint_models[1].activeSize(constraint_datas[1]) == 3);
-    BOOST_CHECK(constraint_models[2].activeSize(constraint_datas[2]) == 3);
+    BOOST_CHECK(constraint_models[1].residualSize(constraint_datas[1]) == 3);
+    BOOST_CHECK(constraint_models[2].residualSize(constraint_datas[2]) == 3);
 
     ContactCholeskyDecomposition contact_chol_decomposition, contact_chol_decomposition_ref;
     contact_chol_decomposition.resize(model, constraint_models, constraint_datas);
@@ -1857,7 +1857,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     JointLimitConstraintModel joint_limit_constraint_model(model, joint_indices);
     constraint_models.push_back(joint_limit_constraint_model);
     // Activable joint limits (only the rotation part of the freeflyer is not activable)
-    BOOST_CHECK(constraint_models[0].size() == 2 * (model.nv - 3));
+    BOOST_CHECK(constraint_models[0].maxResidualSize() == 2 * (model.nv - 3));
 
     const std::string RF_name = "rleg6_joint";
     const std::string LF_name = "lleg6_joint";
@@ -1878,7 +1878,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     calc(model, data, constraint_models, constraint_datas);
 
     // No active joint limits
-    BOOST_CHECK(constraint_models[0].activeSize(constraint_datas[0]) == 0);
+    BOOST_CHECK(constraint_models[0].residualSize(constraint_datas[0]) == 0);
 
     ContactCholeskyDecomposition contact_chol_decomposition, contact_chol_decomposition_ref;
     contact_chol_decomposition.resize(model, constraint_models, constraint_datas);
@@ -1913,7 +1913,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     JointLimitConstraintModel joint_limit_constraint_model(model, joint_indices);
     constraint_models.push_back(joint_limit_constraint_model);
     // Activable joint limits (only the rotation part of the freeflyer is not activable)
-    BOOST_CHECK(constraint_models[0].size() == 2 * (model.nv - 3));
+    BOOST_CHECK(constraint_models[0].maxResidualSize() == 2 * (model.nv - 3));
 
     const std::string RF_name = "rleg6_joint";
     const std::string LF_name = "lleg6_joint";
@@ -1934,7 +1934,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     calc(model, data, constraint_models, constraint_datas);
 
     // Active joint limits (only the the rotation part of the freeflyer is not active)
-    BOOST_CHECK(constraint_models[0].activeSize(constraint_datas[0]) == (model.nv - 3));
+    BOOST_CHECK(constraint_models[0].residualSize(constraint_datas[0]) == (model.nv - 3));
 
     ContactCholeskyDecomposition contact_chol_decomposition, contact_chol_decomposition_ref;
     contact_chol_decomposition.resize(model, constraint_models, constraint_datas);

@@ -95,14 +95,14 @@ namespace pinocchio
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
 
-        const auto active_size = cmodel.activeSize(cdata);
-        SegmentType1 force_segment = x.derived().segment(index, active_size);
-        SegmentType2 res = x_proj.segment(index, active_size);
+        const auto csize = cmodel.residualSize(cdata);
+        SegmentType1 force_segment = x.derived().segment(index, csize);
+        SegmentType2 res = x_proj.segment(index, csize);
 
         typedef ProjectionVisitor<SegmentType1, SegmentType2> Algo;
         Algo::run(cmodel, force_segment, res);
 
-        index += active_size;
+        index += csize;
       }
     }
 
@@ -188,16 +188,16 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const auto active_size = cmodel.activeSize(cdata);
+        const auto csize = cmodel.residualSize(cdata);
 
-        SegmentType1 force_segment = x.derived().segment(index, active_size);
-        SegmentType2 scale_segment = scale.derived().segment(index, active_size);
-        SegmentType3 res = x_proj.segment(index, active_size);
+        SegmentType1 force_segment = x.derived().segment(index, csize);
+        SegmentType2 scale_segment = scale.derived().segment(index, csize);
+        SegmentType3 res = x_proj.segment(index, csize);
 
         typedef ScaledProjectionVisitor<SegmentType1, SegmentType2, SegmentType3> Algo;
         Algo::run(cmodel, force_segment, scale_segment, res);
 
-        index += active_size;
+        index += csize;
       }
     }
 
@@ -313,14 +313,14 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const auto active_size = cmodel.activeSize(cdata);
+        const auto csize = cmodel.residualSize(cdata);
 
-        SegmentType1 velocity_segment = x.segment(index, active_size);
-        SegmentType2 res_segment = x_proj.segment(index, active_size);
+        SegmentType1 velocity_segment = x.segment(index, csize);
+        SegmentType2 res_segment = x_proj.segment(index, csize);
 
         typedef DualProjectionVisitor<SegmentType1, SegmentType2> Algo;
         Algo::run(cmodel, velocity_segment, res_segment);
-        index += active_size;
+        index += csize;
       }
     }
 
@@ -460,17 +460,17 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const auto active_size = cmodel.activeSize(cdata);
+        const auto csize = cmodel.residualSize(cdata);
 
-        SegmentType1 velocity_segment = velocities.segment(index, active_size);
-        SegmentType2 force_segment = forces.segment(index, active_size);
+        SegmentType1 velocity_segment = velocities.segment(index, csize);
+        SegmentType2 force_segment = forces.segment(index, csize);
 
         typedef ComplementarityVisitor<Scalar, SegmentType1, SegmentType2> Algo;
         const Scalar constraint_complementarity =
           Algo::run(cmodel, velocity_segment, force_segment);
 
         complementarity = math::max(complementarity, constraint_complementarity);
-        index += active_size;
+        index += csize;
       }
     }
 
@@ -563,15 +563,15 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const auto active_size = cmodel.activeSize(cdata);
+        const auto csize = cmodel.residualSize(cdata);
 
-        SegmentType1 velocity_segment = velocities.segment(index, active_size);
-        SegmentType2 result_segment = correction.segment(index, active_size);
+        SegmentType1 velocity_segment = velocities.segment(index, csize);
+        SegmentType2 result_segment = correction.segment(index, csize);
         typedef DeSaxeCorrectionVisitor<SegmentType1, SegmentType2> Step;
 
         Step::run(cmodel, velocity_segment, result_segment);
 
-        index += active_size;
+        index += csize;
       }
     }
 
@@ -736,7 +736,7 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const auto csize = cmodel.activeSize(cdata);
+        const auto csize = cmodel.residualSize(cdata);
 
         SegmentType time_scaling_segment = time_scaling.segment(cindex, csize);
         typedef GetTimeScalingFromConstraint<Scalar, SegmentType> Algo;

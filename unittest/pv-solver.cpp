@@ -284,14 +284,14 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_3D_humanoid)
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setRandom();
-  ci_RF.corrector.Kd.setZero();
-  ci_RF.corrector.Kp.setZero();
+  ci_RF.corrector.Kd = 0.;
+  ci_RF.corrector.Kp = 0.;
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
   RigidConstraintModel ci_RF2(CONTACT_6D, model, model.getJointId("rleg5_joint"), LOCAL);
   ci_RF2.joint1_placement.setRandom();
-  ci_RF2.corrector.Kd.setZero();
-  ci_RF2.corrector.Kp.setZero();
+  ci_RF2.corrector.Kd = 0.;
+  ci_RF2.corrector.Kp = 0.;
   contact_models.push_back(ci_RF2);
   contact_datas.push_back(RigidConstraintData(ci_RF2));
 
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_3D_humanoid)
 
   Eigen::DenseIndex constraint_dim = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].size();
+    constraint_dim += contact_models[k].maxResidualSize();
   Eigen::MatrixXd J_ref(constraint_dim, model.nv);
   J_ref.setZero();
   Data::Matrix6x Jtmp = Data::Matrix6x::Zero(6, model.nv);
@@ -384,14 +384,14 @@ BOOST_AUTO_TEST_CASE(test_FD_humanoid_redundant_baumgarte)
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setRandom();
-  ci_RF.corrector.Kd.setIdentity();
-  ci_RF.corrector.Kp.setIdentity();
+  ci_RF.corrector.Kd = 1.;
+  ci_RF.corrector.Kp = 1.;
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
   RigidConstraintModel ci_RF2(CONTACT_6D, model, model.getJointId("rleg5_joint"), LOCAL);
   ci_RF2.joint1_placement.setRandom();
-  ci_RF2.corrector.Kd.setIdentity();
-  ci_RF2.corrector.Kp.setZero();
+  ci_RF2.corrector.Kd = 1.;
+  ci_RF2.corrector.Kp = 0.;
   contact_models.push_back(ci_RF2);
   contact_datas.push_back(RigidConstraintData(ci_RF2));
 
