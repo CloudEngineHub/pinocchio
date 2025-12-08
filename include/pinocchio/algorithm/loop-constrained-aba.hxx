@@ -39,32 +39,33 @@ namespace pinocchio
       typedef typename Model::JointIndex JointIndex;
       typedef typename Data::Motion Motion;
 
-      const JointIndex i = jmodel.id();
-      Motion & ov = data.ov[i];
+      const JointIndex joint_i = jmodel.id();
+      Motion & ov = data.ov[joint_i];
       jmodel.calc(jdata.derived(), q.derived(), v.derived());
 
-      const JointIndex parent = model.parents[i];
-      data.liMi[i] = model.jointPlacements[i] * jdata.M();
+      const JointIndex parent = model.parents[joint_i];
+      data.liMi[joint_i] = model.jointPlacements[joint_i] * jdata.M();
       if (parent > 0)
-        data.oMi[i] = data.oMi[parent] * data.liMi[i];
+        data.oMi[joint_i] = data.oMi[parent] * data.liMi[joint_i];
       else
-        data.oMi[i] = data.liMi[i];
+        data.oMi[joint_i] = data.liMi[joint_i];
 
-      jmodel.jointCols(data.J) = data.oMi[i].act(jdata.S());
+      jmodel.jointCols(data.J) = data.oMi[joint_i].act(jdata.S());
 
-      ov = data.oMi[i].act(jdata.v());
+      ov = data.oMi[joint_i].act(jdata.v());
       if (parent > 0)
         ov += data.ov[parent];
 
-      data.oa_gf[i] = data.oMi[i].act(jdata.c());
+      data.oa_gf[joint_i] = data.oMi[joint_i].act(jdata.c());
       if (parent > 0)
-        data.oa_gf[i] += (data.ov[parent] ^ ov);
+        data.oa_gf[joint_i] += (data.ov[parent] ^ ov);
 
-      data.oinertias[i] = data.oYcrb[i] = data.oMi[i].act(model.inertias[i]);
-      data.oYaba_augmented[i] = data.oYcrb[i].matrix();
+      data.oinertias[joint_i] = data.oYcrb[joint_i] =
+        data.oMi[joint_i].act(model.inertias[joint_i]);
+      data.oYaba_augmented[joint_i] = data.oYcrb[joint_i].matrix();
 
-      data.oh[i] = data.oYcrb[i] * ov; // necessary for ABA derivatives
-      data.of[i] = ov.cross(data.oh[i]);
+      data.oh[joint_i] = data.oYcrb[joint_i] * ov; // necessary for ABA derivatives
+      data.of[joint_i] = ov.cross(data.oh[joint_i]);
     }
   };
 
@@ -84,6 +85,7 @@ namespace pinocchio
       const Model & model,
       Data & data)
     {
+      std::cout << "START LCABABackwardStep" << std::endl;
       typedef typename JointModel::JointDataDerived JointData;
       typedef typename Model::JointIndex JointIndex;
       typedef typename Data::Force Force;
@@ -92,13 +94,13 @@ namespace pinocchio
 
       typedef std::pair<JointIndex, JointIndex> JointPair;
 
-      const JointIndex i = jmodel.id();
-      const JointIndex parent = model.parents[i];
-      auto & Ia = data.oYaba_augmented[i];
+      const JointIndex joint_i = jmodel.id();
+      const JointIndex parent = model.parents[joint_i];
+      auto & Ia = data.oYaba_augmented[joint_i];
 
       const auto Jcols = jmodel.jointCols(data.J);
 
-      Force & fi = data.of[i];
+      Force & fi = data.of[joint_i];
 
       jmodel.jointVelocitySelector(data.u).noalias() -= Jcols.transpose() * fi.toVector();
 
@@ -117,16 +119,17 @@ namespace pinocchio
         Ia.noalias() -= jdata.UDinv() * jdata.U().transpose();
         data.oYaba_augmented[parent] += Ia;
 
-        fi.toVector().noalias() +=
-          Ia * data.oa_gf[i].toVector() + jdata.UDinv() * jmodel.jointVelocitySelector(data.u);
+        fi.toVector().noalias() += Ia * data.oa_gf[joint_i].toVector()
+                                   + jdata.UDinv() * jmodel.jointVelocitySelector(data.u);
         data.of[parent] += fi;
       }
 
       // End of the classic ABA backward pass - beginning of cross-coupling handling
       const auto & neighbours = data.joint_neighbours;
       auto & joint_cross_coupling = data.joint_cross_coupling;
-      const auto & joint_neighbours = neighbours[i];
+      const auto & joint_neighbours = neighbours[joint_i];
 
+      std::cout << "\t joint_i: " << joint_i << std::endl;
       if (joint_neighbours.size() == 0)
         return; // We can return from this point as this joint has no neighbours
 
@@ -138,21 +141,21 @@ namespace pinocchio
       auto & JDinv = mat1_tmp;
       JDinv.noalias() = Jcols * jdata.Dinv();
 
-      // oL == data.oL[i]
+      // oL == data.oL[joint_i]
       Matrix6 oL = -JDinv * jdata.U().transpose();
       oL += Matrix6::Identity();
 
       // a_tmp is a Spatial Acceleration
-      Vector6 a_tmp = oL * data.oa_gf[i].toVector();
+      Vector6 a_tmp = oL * data.oa_gf[joint_i].toVector();
       a_tmp.noalias() += JDinv * jmodel.jointVelocitySelector(data.u);
 
       for (size_t j = 0; j < joint_neighbours.size(); j++)
       {
         const JointIndex joint_j = joint_neighbours[j];
-        const Matrix6 & crosscoupling_ji =
-          (i > joint_j)
-            ? joint_cross_coupling.get(JointPair(joint_j, i))
-            : joint_cross_coupling.get(JointPair(i, joint_j)).transpose(); // avoid memalloc
+        std::cout << "\t\t joint_j: " << joint_j << std::endl;
+
+        assert(joint_cross_coupling.exists(JointPair(joint_j, joint_i)));
+        const auto & crosscoupling_ji = joint_cross_coupling.get(JointPair(joint_j, joint_i));
 
         auto & crosscoupling_xi_Jcols = mat1_tmp;
         crosscoupling_xi_Jcols.noalias() =
@@ -175,7 +178,13 @@ namespace pinocchio
         }
         else
         {
-          if (joint_j < parent)
+          assert(
+            joint_cross_coupling.exists(JointPair(joint_j, parent))
+            || joint_cross_coupling.exists(JointPair(parent, joint_j)));
+
+          // In this particular case, the pair (joint_j,parent) might not exist, but (parent,
+          // joint_j) will
+          if (joint_cross_coupling.exists(JointPair(joint_j, parent)))
           {
             joint_cross_coupling.get({joint_j, parent}).noalias() += crosscoupling_ji_oL;
           }
@@ -189,30 +198,21 @@ namespace pinocchio
         for (size_t k = j + 1; k < joint_neighbours.size(); ++k)
         {
           const JointIndex joint_k = joint_neighbours[k];
-
-          const Matrix6 & edge_ik = (i > joint_k)
-                                      ? joint_cross_coupling.get(JointPair(joint_k, i))
-                                      : joint_cross_coupling.get(JointPair(i, joint_k)).transpose();
-
-          crosscoupling_xi_Jcols.noalias() = edge_ik * Jcols;
-
           assert(joint_j != joint_k && "Must never happen!");
-          if (joint_j < joint_k)
-          {
-            joint_cross_coupling.get({joint_j, joint_k}).noalias() -=
-              crosscoupling_ji_Jcols_Dinv
-              * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ik * J_col,
-                                                    // U() is edge_ji * J_col * Dinv
-          }
-          else // if (joint_k < joint_j)
-          {
-            joint_cross_coupling.get({joint_k, joint_j}).transpose().noalias() -=
-              crosscoupling_ji_Jcols_Dinv
-              * crosscoupling_xi_Jcols.transpose(); // Warning: UDinv() is actually edge_ik *
-                                                    // J_col, U() is edge_ji * J_col * Dinv
-          }
+          std::cout << "\t\t\t joint_k: " << joint_k << std::endl;
+
+          assert(joint_cross_coupling.exists(JointPair(joint_k, joint_i)));
+          const auto & crosscoupling_ki = joint_cross_coupling.get(JointPair(joint_k, joint_i));
+
+          crosscoupling_xi_Jcols.noalias() = crosscoupling_ki * Jcols;
+
+          assert(joint_cross_coupling.exists(JointPair(joint_j, joint_k)));
+          auto & crosscoupling_jk = joint_cross_coupling.get(JointPair(joint_j, joint_k));
+          crosscoupling_jk.noalias() -=
+            crosscoupling_ji_Jcols_Dinv * crosscoupling_xi_Jcols.transpose();
         }
       }
+      std::cout << "END LCABABackwardStep" << std::endl;
     }
   };
 
@@ -245,12 +245,12 @@ namespace pinocchio
       const auto & neighbours = data.joint_neighbours;
       auto & joint_cross_coupling = data.joint_cross_coupling;
 
-      const JointIndex i = jmodel.id();
-      const JointIndex parent = model.parents[i];
+      const JointIndex joint_i = jmodel.id();
+      const JointIndex parent = model.parents[joint_i];
 
       const auto Jcols = jmodel.jointCols(data.J);
 
-      Force & fi = data.of[i];
+      Force & fi = data.of[joint_i];
 
       jmodel.jointVelocitySelector(data.u).noalias() = -Jcols.transpose() * fi.toVector();
 
@@ -261,12 +261,10 @@ namespace pinocchio
 
       const Vector6 a_tmp = Jcols * jmodel.jointVelocitySelector(data.g);
 
-      for (const JointIndex joint_j : neighbours[i])
+      for (const JointIndex joint_j : neighbours[joint_i])
       {
-        const Matrix6 & edge_ji = (i > joint_j)
-                                    ? joint_cross_coupling.get(JointPair(joint_j, i))
-                                    : joint_cross_coupling.get(JointPair(i, joint_j)).transpose();
-        data.of[joint_j].toVector().noalias() += edge_ji * a_tmp;
+        const auto & coupling_ji = joint_cross_coupling.get(JointPair(joint_j, joint_i));
+        data.of[joint_j].toVector().noalias() += coupling_ji * a_tmp;
       }
 
       if (parent > 0)
@@ -302,19 +300,18 @@ namespace pinocchio
       typedef typename SizeDepType<JointModel::NV>::template ColsReturn<Matrix6x>::Type ColBlock;
       ColBlock J_cols = jmodel.jointCols(data.J);
 
-      const JointIndex i = jmodel.id();
-      const JointIndex parent = model.parents[i];
-      const std::vector<JointIndex> & neighbours = data.joint_neighbours[i];
+      const JointIndex joint_i = jmodel.id();
+      const JointIndex parent = model.parents[joint_i];
+      const std::vector<JointIndex> & neighbours = data.joint_neighbours[joint_i];
 
-      data.oa_gf[i] += data.oa_gf[parent]; // does take into account the gravity field
+      data.oa_gf[joint_i] += data.oa_gf[parent]; // does take into account the gravity field
 
       Force coupling_forces = Force::Zero();
       for (JointIndex joint_j : neighbours)
       {
-        const Matrix6 & coupling_ij =
-          (i > joint_j) ? data.joint_cross_coupling.get(JointPair(joint_j, i)).transpose()
-                        : data.joint_cross_coupling.get(JointPair(i, joint_j));
-        coupling_forces.toVector().noalias() += coupling_ij * data.oa_gf[joint_j].toVector();
+        const auto & coupling_ji = data.joint_cross_coupling.get(JointPair(joint_j, joint_i));
+        coupling_forces.toVector().noalias() +=
+          coupling_ji.transpose() * data.oa_gf[joint_j].toVector();
       }
 
       jmodel.jointVelocitySelector(data.u).noalias() -=
@@ -322,12 +319,13 @@ namespace pinocchio
 
       jmodel.jointVelocitySelector(data.ddq).noalias() =
         jdata.Dinv() * jmodel.jointVelocitySelector(data.u)
-        - jdata.UDinv().transpose() * data.oa_gf[i].toVector();
-      data.oa_gf[i].toVector().noalias() += J_cols * jmodel.jointVelocitySelector(data.ddq);
+        - jdata.UDinv().transpose() * data.oa_gf[joint_i].toVector();
+      data.oa_gf[joint_i].toVector().noalias() += J_cols * jmodel.jointVelocitySelector(data.ddq);
 
       // Handle consistent output
-      data.oa[i] = data.oa_gf[i]; // + model.gravity;
-      // data.of[i] = data.oinertias[i] * data.oa_gf[i] + data.ov[i].cross(data.oh[i]);
+      data.oa[joint_i] = data.oa_gf[joint_i]; // + model.gravity;
+      // data.of[joint_i] = data.oinertias[joint_i] * data.oa_gf[joint_i] +
+      // data.ov[joint_i].cross(data.oh[joint_i]);
     }
   };
 
@@ -358,19 +356,17 @@ namespace pinocchio
       typedef typename SizeDepType<JointModel::NV>::template ColsReturn<Matrix6x>::Type ColBlock;
       ColBlock J_cols = jmodel.jointCols(data.J);
 
-      const JointIndex i = jmodel.id();
-      const JointIndex parent = model.parents[i];
-      const auto & neighbours = data.joint_neighbours[i];
+      const JointIndex joint_i = jmodel.id();
+      const JointIndex parent = model.parents[joint_i];
+      const auto & neighbours = data.joint_neighbours[joint_i];
 
-      data.oa_gf[i] = data.oa_gf[parent]; // does take into account the gravity field
+      data.oa_gf[joint_i] = data.oa_gf[parent]; // does take into account the gravity field
 
-      Force & fi = data.of[i];
+      Force & fi = data.of[joint_i];
       for (const JointIndex joint_j : neighbours)
       {
-        const Matrix6 & coupling_ij =
-          (i > joint_j) ? data.joint_cross_coupling.get(JointPair(joint_j, i)).transpose()
-                        : data.joint_cross_coupling.get(JointPair(i, joint_j));
-        fi.toVector().noalias() += coupling_ij * data.oa_gf[joint_j].toVector();
+        const auto & coupling_ji = data.joint_cross_coupling.get(JointPair(joint_j, joint_i));
+        fi.toVector().noalias() += coupling_ji.transpose() * data.oa_gf[joint_j].toVector();
       }
 
       jmodel.jointVelocitySelector(data.u).noalias() = -J_cols.transpose() * fi.toVector();
@@ -378,10 +374,10 @@ namespace pinocchio
       // Abuse of notation using data.g for storing delta ddq
       jmodel.jointVelocitySelector(data.g).noalias() =
         jdata.Dinv()
-        * (jmodel.jointVelocitySelector(data.u) - jdata.U().transpose() * data.oa_gf[i].toVector());
-      data.oa_gf[i].toVector().noalias() += J_cols * jmodel.jointVelocitySelector(data.g);
+        * (jmodel.jointVelocitySelector(data.u) - jdata.U().transpose() * data.oa_gf[joint_i].toVector());
+      data.oa_gf[joint_i].toVector().noalias() += J_cols * jmodel.jointVelocitySelector(data.g);
 
-      data.oa[i] += data.oa_gf[i];
+      data.oa[joint_i] += data.oa_gf[joint_i];
     }
   };
 
@@ -483,10 +479,16 @@ namespace pinocchio
               A2.transpose()
               * (/*cdata.contact_force.toVector()*/ -mu * cdata.contact_acceleration_desired.toVector());
 
-            const JointPair jp = joint1_id < joint2_id ? JointPair{joint1_id, joint2_id}
-                                                       : JointPair{joint2_id, joint1_id};
-            assert(data.joint_cross_coupling.exists(jp) && "Must never happen");
-            data.joint_cross_coupling.get(jp) -= mu * A1tA1;
+            assert(
+              bool(
+                data.joint_cross_coupling.exists({joint1_id, joint2_id})
+                || data.joint_cross_coupling.exists({joint2_id, joint1_id}))
+              && "Must never happen");
+
+            if (data.joint_cross_coupling.exists({joint1_id, joint2_id}))
+              data.joint_cross_coupling.get({joint1_id, joint2_id}) -= mu * A1tA1;
+            else
+              data.joint_cross_coupling.get({joint2_id, joint1_id}) -= mu * A1tA1;
           }
           else
           {
@@ -532,7 +534,12 @@ namespace pinocchio
               A2.transpose()
               * (/*cdata.contact_force.toVector()*/ -mu * cdata.contact_acceleration_desired.linear());
 
-            if (joint1_id < joint2_id)
+            assert(
+              bool(
+                data.joint_cross_coupling.exists({joint1_id, joint2_id})
+                || data.joint_cross_coupling.exists({joint2_id, joint1_id}))
+              && "Must never happen");
+            if (data.joint_cross_coupling.exists({joint1_id, joint2_id}))
             {
               data.joint_cross_coupling.get({joint1_id, joint2_id}).noalias() +=
                 mu * A1.transpose() * A2;
@@ -599,6 +606,7 @@ namespace pinocchio
     data.oa[0] = data.oa_gf[0];
     data.of[0].setZero();
 
+    assert(settings.mu > 0 && "lcaba requires mu > 0.");
     const Scalar mu = Scalar(1) / settings.mu;
 
     for (auto & coupling : data.joint_cross_coupling)
@@ -607,17 +615,17 @@ namespace pinocchio
     typedef LCABAForwardStep1<
       Scalar, Options, JointCollectionTpl, ConfigVectorType, TangentVectorType1>
       Pass1;
-    for (JointIndex i = 1; i < (JointIndex)model.njoints; ++i)
+    for (JointIndex joint_i = 1; joint_i < (JointIndex)model.njoints; ++joint_i)
     {
       Pass1::run(
-        model.joints[i], data.joints[i],
+        model.joints[joint_i], data.joints[joint_i],
         typename Pass1::ArgsType(model, data, q.derived(), v.derived()));
     }
 
-    for (std::size_t i = 0; i < constraint_models.size(); ++i)
+    for (std::size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      ConstraintData & cdata = constraint_datas[i];
-      const ConstraintModel & cmodel = constraint_models[i];
+      ConstraintData & cdata = constraint_datas[constraint_id];
+      const ConstraintModel & cmodel = constraint_models[constraint_id];
 
       typedef internal::LCABAConstraintCalcStep<ConstraintModel> CalcStep;
       CalcStep::run(model, data, cmodel, cdata, mu);
@@ -627,20 +635,20 @@ namespace pinocchio
 
     const auto & elimination_order = data.elimination_order;
 
-    for (JointIndex i : elimination_order)
+    for (JointIndex joint_i : elimination_order)
     {
-      Pass2::run(model.joints[i], data.joints[i], typename Pass2::ArgsType(model, data));
+      Pass2::run(
+        model.joints[joint_i], data.joints[joint_i], typename Pass2::ArgsType(model, data));
     }
-
-    assert(settings.mu > 0 && "constrainedABA requires mu > 0.");
 
     typedef LCABAForwardStep2<Scalar, Options, JointCollectionTpl> Pass3;
 
     for (int it = int(elimination_order.size()) - 1; it >= 0; --it)
     {
-      const JointIndex i = elimination_order[size_t(it)];
-      if (data.constraints_supported_dim[i] > 0)
-        Pass3::run(model.joints[i], data.joints[i], typename Pass3::ArgsType(model, data));
+      const JointIndex joint_i = elimination_order[size_t(it)];
+      if (data.constraints_supported_dim[joint_i] > 0)
+        Pass3::run(
+          model.joints[joint_i], data.joints[joint_i], typename Pass3::ArgsType(model, data));
     }
 
     typedef LCABAReducedBackwardStep<Scalar, Options, JointCollectionTpl> ReducedPass2;
