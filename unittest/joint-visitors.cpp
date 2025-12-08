@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2024-2025 INRIA
 //
 
 #include "pinocchio/multibody/model.hpp"
@@ -11,6 +11,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
+#include <boost/mpl/vector.hpp>
 
 namespace bf = boost::fusion;
 
