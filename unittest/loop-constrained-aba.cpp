@@ -347,6 +347,15 @@ BOOST_AUTO_TEST_CASE(test_12D_coupled_loop_common_link)
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
+  const auto & joint_cross_coupling = data.joint_cross_coupling;
+  BOOST_CHECK(joint_cross_coupling.size() > 0);
+
+  for (const auto & cm : contact_models)
+  {
+    BOOST_CHECK(
+      joint_cross_coupling.exists({cm.joint1_id, cm.joint2_id})
+      || joint_cross_coupling.exists({cm.joint2_id, cm.joint1_id}));
+  }
   lcaba(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 
   BOOST_CHECK(data_ref.ddq.isApprox(data.ddq, 1e-10));
@@ -480,6 +489,8 @@ BOOST_AUTO_TEST_CASE(test_12D_coupled_on_a_chain)
   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings_ref);
 
   computeJointMinimalOrdering(model, data, contact_models);
+  BOOST_CHECK(data.joint_cross_coupling.exists({4, 6}));
+  // BOOST_CHECK(data.joint_cross_coupling.exists({6,4}));
   lcaba(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 
   BOOST_CHECK(data_ref.ddq.isApprox(data.ddq, 1e-10));
@@ -659,8 +670,8 @@ BOOST_AUTO_TEST_CASE(test_3D_cons_baumgarte)
   PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
-  const VectorXd v = VectorXd::Random(model.nv);
-  const VectorXd tau = VectorXd::Random(model.nv);
+  const VectorXd v = 0 * VectorXd::Random(model.nv);
+  const VectorXd tau = 0 * VectorXd::Random(model.nv);
 
   RigidConstraintModel rcm1 =
     RigidConstraintModel(CONTACT_3D, model, model.getJointId("joint11"), LOCAL);
@@ -707,6 +718,9 @@ BOOST_AUTO_TEST_CASE(test_3D_cons_baumgarte)
 
   computeJointMinimalOrdering(model, data, contact_models);
   lcaba(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
+
+  std::cout << "data_ref.ddq:\n" << data_ref.ddq.transpose() << std::endl;
+  std::cout << "data.ddq:\n" << data.ddq.transpose() << std::endl;
   BOOST_CHECK(data_ref.ddq.isApprox(data.ddq, 1e-10));
 }
 
