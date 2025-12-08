@@ -13,7 +13,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Eigen;
 using namespace pinocchio;
 
 typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactConstraintModel)
@@ -92,10 +91,10 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
   auto constraint_datas = createData(constraint_models);
 
   const double mu_prox = 1e-4;
-  VectorXd q = randomConfiguration(model);
-  VectorXd v = VectorXd::Random(model.nv);
-  VectorXd tau = VectorXd::Random(model.nv);
-  VectorXd a = Eigen::VectorXd::Zero(model.nv);
+  Eigen::VectorXd q = randomConfiguration(model);
+  Eigen::VectorXd v = Eigen::VectorXd::Random(model.nv);
+  Eigen::VectorXd tau = Eigen::VectorXd::Random(model.nv);
+  Eigen::VectorXd a = Eigen::VectorXd::Zero(model.nv);
 
   Eigen::DenseIndex constraint_dim = 0;
   for (const auto & cmodel : constraint_models)
@@ -124,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     const Eigen::VectorXd x_positive = abs(Eigen::VectorXd::Random(constraint_dim));
     const Eigen::VectorXd x_in_cone = Eigen::VectorXd::Zero(constraint_dim);
 
-    computeConeProjection(constraint_models, constraint_datas, x_positive, x_in_cone);
+    internal::computeConeProjection(constraint_models, constraint_datas, x_positive, x_in_cone);
 
     const Eigen::VectorXd constraint_velocity_ref = -(R.asDiagonal() * x_in_cone).eval();
     const Eigen::VectorXd sigma_ref = (constraint_velocity_ref + R.asDiagonal() * x_in_cone);
@@ -140,12 +139,13 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     Eigen::VectorXd sigma = constraint_velocity_ref + R.asDiagonal() * x_sol;
 
     Eigen::VectorXd sigma_correction(sigma);
-    computeDeSaxeCorrection(constraint_models, constraint_datas, sigma, sigma_correction);
+    internal::computeDeSaxeCorrection(constraint_models, constraint_datas, sigma, sigma_correction);
     sigma += sigma_correction;
 
     BOOST_CHECK(sigma.isZero(1e-8));
     Eigen::VectorXd sigma_projected(sigma);
-    computeDualConeProjection(constraint_models, constraint_datas, sigma, sigma_projected);
+    internal::computeDualConeProjection(
+      constraint_models, constraint_datas, sigma, sigma_projected);
     BOOST_CHECK((sigma_projected - sigma).lpNorm<Eigen::Infinity>() <= 1e-10);
   }
 
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
 
     const Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Random(constraint_dim);
     Eigen::VectorXd constraint_velocity_projected(constraint_velocity);
-    computeDualConeProjection(
+    internal::computeDualConeProjection(
       constraint_models, constraint_datas, constraint_velocity, constraint_velocity_projected);
 
     Eigen::VectorXd x_sol = Eigen::VectorXd::Zero(constraint_dim);
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     BOOST_CHECK(has_converged);
 
     Eigen::VectorXd x_sol_projected(x_sol);
-    computeConeProjection(constraint_models, constraint_datas, x_sol, x_sol_projected);
+    internal::computeConeProjection(constraint_models, constraint_datas, x_sol, x_sol_projected);
     BOOST_CHECK((x_sol_projected - x_sol).lpNorm<Eigen::Infinity>() <= 1e-10);
 
     BOOST_CHECK(std::abs(constraint_velocity_projected.dot(x_sol)) <= 1e-10);
