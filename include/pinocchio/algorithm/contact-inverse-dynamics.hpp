@@ -207,44 +207,28 @@ namespace pinocchio
       "PointContactConstraintDataVector should be a std::vector<T,Allocator>");
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename PointContactConstraintModelVector::type ConstraintModel;
-    typedef typename ConstraintModel::ConstraintData ConstraintData;
-
-    typedef typename Model::MatrixXs MatrixXs;
     typedef typename Model::VectorXs VectorXs;
 
     auto & lambda_sol = _lambda_sol.const_cast_derived();
 
-    const Eigen::Index problem_size = getTotalConstraintResidualSize(constraint_models);
-    const std::size_t n_constraints = constraint_models.size();
-
-    MatrixXs J = MatrixXs::Zero(problem_size, model.nv); // TODO: malloc
-    getConstraintsJacobian(model, data, constraint_models, constraint_datas, J);
-    VectorXs v_ref, c_ref, tau_c;
+    const Eigen::Index problem_size =
+      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    VectorXs v_ref(model.nv), c_ref(problem_size);
     v_ref = v + dt * a;
-    c_ref.noalias() = J * v_ref; // TODO should rather use the displacement
+
+    evalConstraintJacobianMatrixProduct(
+      model, data, constraint_models, constraint_datas, v_ref, c_ref, SetTo());
     c_ref += constraint_correction;
     c_ref /= dt; // we work with a formulation on forces
 
     const bool has_converged = computeInverseDynamicsConstraintForces(
-      constraint_models, c_ref, lambda_sol, settings, solve_ncp);
+      constraint_models, constraint_datas, c_ref, lambda_sol, settings, solve_ncp);
 
-    {
-      rnea(model, data, q, v, a);
-      const auto & tau = data.tau;
-      Eigen::DenseIndex row_id = 0;
-      for (std::size_t constraint_id = 0; constraint_id < n_constraints; constraint_id++)
-      {
-        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-        auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const auto constraint_size = cmodel.residualSize(cdata);
+    rnea(model, data, q, v, a);
+    auto & tau = data.tau;
+    evalConstraintJacobianTransposeMatrixProduct(
+      model, data, constraint_models, constraint_datas, lambda_sol, tau, RmTo());
 
-        const auto lambda_segment = lambda_sol.segment(row_id, constraint_size);
-        cmodel.jacobianTransposeMatrixProduct(model, data, cdata, lambda_segment, tau, RmTo());
-
-        row_id += constraint_size;
-      }
-    }
     return has_converged;
   }
 
