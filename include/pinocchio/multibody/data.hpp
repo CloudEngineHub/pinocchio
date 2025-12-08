@@ -20,7 +20,7 @@
 #include "pinocchio/container/aligned-vector.hpp"
 #include "pinocchio/container/double-entry-container.hpp"
 #include "pinocchio/container/matrix-stack.hpp"
-#include "pinocchio/algorithm/contact-cholesky.hpp"
+#include "pinocchio/algorithm/contact-cholesky.fwd.hpp"
 
 #include "pinocchio/serialization/serializable.hpp"
 

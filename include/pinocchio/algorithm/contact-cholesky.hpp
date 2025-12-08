@@ -5,655 +5,867 @@
 #ifndef __pinocchio_algorithm_contact_cholesky_hpp__
 #define __pinocchio_algorithm_contact_cholesky_hpp__
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/math/matrix-block.hpp"
-#include "pinocchio/math/triangular-matrix.hpp"
-#include "pinocchio/container/eigen-storage.hpp"
-#include "pinocchio/utils/std-vector.hpp"
+#include "pinocchio/algorithm/check.hpp"
+#include "pinocchio/multibody/data.hpp"
+#include "pinocchio/utils/reference.hpp"
 
-#include "pinocchio/algorithm/fwd.hpp"
-// #include "pinocchio/algorithm/constraints/constraints.hpp"
-#include <functional>
+#include "pinocchio/algorithm/contact-cholesky.fwd.hpp"
+#include "pinocchio/algorithm/constraints/constraints.hpp"
+
+#include <algorithm>
 
 namespace pinocchio
 {
 
-  // Forward declaration of algo
-  namespace details
+  // TODO Remove when API is stabilized
+  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
+
+  template<typename Scalar, int Options>
+  template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
+  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
+    const ModelTpl<S1, O1, JointCollectionTpl> & model)
+  : D(D_storage.map())
+  , Dinv(Dinv_storage.map())
+  , U(U_storage.map())
+  , DUt(DUt_storage.map())
+  , compliance(compliance_storage.map())
+  , damping(damping_storage.map())
+  , Delassus(Delassus_storage.map())
   {
-    template<typename MatrixLike, int ColsAtCompileTime = MatrixLike::ColsAtCompileTime>
-    struct UvAlgo;
+    std::vector<ConstraintModel> empty_constraint_models;
+    std::vector<ConstraintData> empty_constraint_datas;
+    resize(model, empty_constraint_models, empty_constraint_datas);
+  }
 
-    template<typename MatrixLike, int ColsAtCompileTime = MatrixLike::ColsAtCompileTime>
-    struct UtvAlgo;
-
-    template<typename MatrixLike, int ColsAtCompileTime = MatrixLike::ColsAtCompileTime>
-    struct UivAlgo;
-
-    template<typename MatrixLike, int ColsAtCompileTime = MatrixLike::ColsAtCompileTime>
-    struct UtivAlgo;
-
-    template<typename Scalar, int Options, typename VectorLike>
-    VectorLike & inverseAlgo(
-      const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
-      const Eigen::DenseIndex col,
-      const Eigen::MatrixBase<VectorLike> & vec);
-  } // namespace details
-
-  template<typename _ContactCholeskyDecomposition>
-  struct DelassusCholeskyExpressionTpl;
-
-  ///
-  ///  \brief Contact Cholesky decomposition structure. This structure allows
-  ///        to compute in a efficient and parsimonious way the Cholesky decomposition
-  ///        of the KKT matrix related to the contact dynamics.
-  ///        Such a decomposition is usefull when computing both the forward dynamics in contact
-  ///        or the related analytical derivatives.
-  ///
-  ///
-  /// \tparam _Scalar Scalar type.
-  ///  \tparam _Options Alignment Options of the Eigen objects contained in the data structure.
-  ///
-  template<typename _Scalar, int _Options>
-  struct PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
-    ContactCholeskyDecompositionTpl
+  template<typename Scalar, int Options>
+  template<
+    typename S1,
+    int O1,
+    template<typename, int> class JointCollectionTpl,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::resize(
+    const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    assert(
+      constraint_models.size() == constraint_datas.size()
+      && "Both std::vector should be of equal size.");
+    assert(model.check(MimicChecker()) && "Function does not support mimic joints");
 
-    typedef pinocchio::Index Index;
-    typedef _Scalar Scalar;
-    enum
+    nv = model.nv;
+    Eigen::DenseIndex num_total_constraints = 0;
+    for (std::size_t i = 0; i < constraint_models.size(); i++)
     {
-      LINEAR = 0,
-      ANGULAR = 3,
-      Options = _Options
-    };
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cdata = helper::get_ref(constraint_datas[i]);
+      num_total_constraints += cmodel.residualSize(cdata);
+    }
 
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> Matrix;
-    typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(Matrix) RowMatrix;
+    const Eigen::DenseIndex total_dim = nv + num_total_constraints;
 
-    typedef EigenStorageTpl<Vector> EigenStorageVector;
-    typedef EigenStorageTpl<Matrix> EigenStorageMatrix;
-    typedef EigenStorageTpl<RowMatrix> EigenStorageRowMatrix;
+    // Compute first parents_fromRow for all the joints.
+    // This code is very similar to the code of Data::computeParents_fromRow,
+    // but shifted with a value corresponding to the number of constraints.
+    parents_fromRow.resize(total_dim);
+    parents_fromRow.fill(-1);
 
-    // TODO Remove when API is stabilized
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-    typedef RigidConstraintModelTpl<Scalar, Options> RigidConstraintModel;
-    typedef RigidConstraintDataTpl<Scalar, Options> RigidConstraintData;
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
-    typedef Eigen::Matrix<Eigen::DenseIndex, Eigen::Dynamic, 1, Options> EigenIndexVector;
-    typedef
-      typename PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(EigenIndexVector) VectorOfEigenIndexVector;
-    typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
+    nv_subtree_fromRow.resize(total_dim);
+    //      nv_subtree_fromRow.fill(0);
 
-    ///@{
-    /// \brief Data information related to the Sparsity structure of the Cholesky decompostion
-    struct Slice
+    // Fill nv_subtree_fromRow for model
+    for (JointIndex joint_id = 1; joint_id < (JointIndex)(model.njoints); joint_id++)
     {
-      Slice(const Eigen::DenseIndex & first_index, const Eigen::DenseIndex & size)
-      : first_index(first_index)
-      , size(size)
+      const JointIndex parent_id = model.parents[joint_id];
+
+      const auto & joint = model.joints[joint_id];
+      const auto & parent_joint = model.joints[parent_id];
+      const int nvj = joint.nv();
+      const int idx_vj = joint.idx_v();
+
+      if (parent_id > 0)
+        parents_fromRow[idx_vj + num_total_constraints] =
+          parent_joint.idx_v() + parent_joint.nv() - 1 + num_total_constraints;
+      else
+        parents_fromRow[idx_vj + num_total_constraints] = -1;
+
+      const JointIndex last_child =
+        model.subtrees[joint_id].size() > 0 ? model.subtrees[joint_id].back() : JointIndex(0);
+      nv_subtree_fromRow[idx_vj + num_total_constraints] =
+        model.joints[last_child].idx_v() + model.joints[last_child].nv() - idx_vj;
+
+      for (int row = 1; row < nvj; ++row)
       {
+        parents_fromRow[idx_vj + num_total_constraints + row] =
+          idx_vj + row - 1 + num_total_constraints;
+        nv_subtree_fromRow[idx_vj + num_total_constraints + row] =
+          nv_subtree_fromRow[idx_vj + num_total_constraints] - row;
+      }
+    }
+
+    Eigen::DenseIndex row_id = 0;
+    for (std::size_t i = 0; i < constraint_models.size(); i++)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cdata = helper::get_ref(constraint_datas[i]);
+      for (Eigen::DenseIndex k = 0; k < cmodel.residualSize(cdata); ++k, row_id++)
+      {
+        const auto & row_active_indexes = cmodel.getRowIndexes(cdata, k);
+        nv_subtree_fromRow[row_id] =
+          num_total_constraints - row_id + 1
+          + (row_active_indexes.size() > 0 ? row_active_indexes.back() : 0);
+      }
+    }
+    assert(row_id == num_total_constraints);
+
+    // Fill the sparsity pattern for each Row of the Cholesky decomposition (matrix U)
+    /*
+          static const Slice default_slice_value(1,1);
+          static const SliceVector default_slice_vector(1,default_slice_value);
+
+          rowise_sparsity_pattern.clear();
+          rowise_sparsity_pattern.resize((size_t)num_total_constraints,default_slice_vector);
+          row_id = 0; size_t ee_id = 0;
+          for(typename RigidConstraintModelVector::const_iterator it = constraint_models.begin();
+              it != constraint_models.end();
+              ++it, ++ee_id)
+          {
+            const RigidConstraintModel & cmodel = *it;
+            const BooleanVector & joint1_indexes_ee = cmodel.colwise_joint1_sparsity;
+            const Eigen::DenseIndex contact_dim = cmodel.size();
+
+            for(Eigen::DenseIndex k = 0; k < contact_dim; ++k)
+            {
+              SliceVector & slice_vector = rowise_sparsity_pattern[(size_t)row_id];
+              slice_vector.clear();
+              slice_vector.push_back(Slice(row_id,num_total_constraints-row_id));
+
+              bool previous_index_was_true = true;
+              for(Eigen::DenseIndex joint1_indexes_ee_id = num_total_constraints;
+                  joint1_indexes_ee_id < total_dim;
+                  ++joint1_indexes_ee_id)
+              {
+                if(joint1_indexes_ee[joint1_indexes_ee_id])
+                {
+                  if(previous_index_was_true) // no discontinuity
+                    slice_vector.back().size++;
+                  else // discontinuity; need to create a new slice
+                  {
+                    const Slice new_slice(joint1_indexes_ee_id,1);
+                    slice_vector.push_back(new_slice);
+                  }
+                }
+
+                previous_index_was_true = joint1_indexes_ee[joint1_indexes_ee_id];
+              }
+
+              row_id++;
+            }
+          }
+     */
+
+    // Allocate Eigen memory if needed
+    compliance_storage.resize(num_total_constraints);
+    compliance.setZero();
+    damping_storage.resize(num_total_constraints);
+    damping.setZero();
+
+    D_storage.resize(total_dim);
+    Dinv_storage.resize(total_dim);
+    U_storage.resize(total_dim, total_dim);
+    Delassus_storage.resize(num_total_constraints, num_total_constraints);
+    U.setIdentity();
+    DUt_storage.resize(total_dim);
+  }
+
+  template<typename Scalar, int Options>
+  template<
+    typename S1,
+    int O1,
+    template<typename, int> class JointCollectionTpl,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator,
+    typename VectorLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::compute(
+    const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    DataTpl<S1, O1, JointCollectionTpl> & data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const Eigen::MatrixBase<VectorLike> & mus,
+    bool use_explicit_delassus)
+  {
+    assert(model.check(data) && "data is not consistent with model.");
+    assert(model.check(MimicChecker()) && "Function does not support mimic joints");
+
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(
+      constraint_models.size() == constraint_datas.size(),
+      "The number of constraints between constraint_models and constraint_datas vectors is "
+      "different.");
+    PINOCCHIO_ONLY_USED_FOR_DEBUG(model);
+
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+
+    typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
+    const typename Data::MatrixXs & M = data.M;
+
+    const size_t num_ee = constraint_models.size();
+
+    D.tail(model.nv) = M.diagonal();
+    U.bottomRightCorner(model.nv, model.nv).template triangularView<Eigen::StrictlyUpper>() =
+      M.template triangularView<Eigen::StrictlyUpper>();
+
+    // Constraint filling
+    Eigen::DenseIndex current_row = 0;
+    U.topRightCorner(total_constraints_dim, model.nv).setZero();
+    for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
+
+      const Eigen::DenseIndex constraint_dim = cmodel.residualSize(cdata);
+      auto U_block = U.block(current_row, total_constraints_dim, constraint_dim, model.nv);
+      cmodel.jacobian(model, data, cdata, U_block);
+      current_row += constraint_dim;
+    }
+
+    // Cholesky
+    for (Eigen::DenseIndex j = nv - 1; j >= 0; --j)
+    {
+      // Classic Cholesky decomposition related to the mass matrix
+      const Eigen::DenseIndex jj = total_constraints_dim + j; // shifted index
+      const Eigen::DenseIndex NVT = nv_subtree_fromRow[jj] - 1;
+      auto DUt_partial = DUt.head(NVT);
+
+      if (NVT)
+        DUt_partial.noalias() =
+          U.row(jj).segment(jj + 1, NVT).transpose().cwiseProduct(D.segment(jj + 1, NVT));
+
+      D[jj] -= U.row(jj).segment(jj + 1, NVT).dot(DUt_partial);
+      assert(
+        check_expression_if_real<Scalar>(D[jj] != Scalar(0))
+        && "The diagonal element is equal to zero.");
+      Dinv[jj] = Scalar(1) / D[jj];
+
+      for (Eigen::DenseIndex _ii = parents_fromRow[jj]; _ii >= total_constraints_dim;
+           _ii = parents_fromRow[_ii])
+      {
+        U(_ii, jj) -= U.row(_ii).segment(jj + 1, NVT).dot(DUt_partial);
+        U(_ii, jj) *= Dinv[jj];
       }
 
-      Eigen::DenseIndex first_index;
-      Eigen::DenseIndex size;
+      // Constraint part
+      Eigen::DenseIndex current_row = total_constraints_dim - 1;
+      for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
+      {
+        const auto & cmodel = helper::get_ref(constraint_models[num_ee - 1 - ee_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[num_ee - 1 - ee_id]);
+        const Eigen::DenseIndex constraint_dim = cmodel.residualSize(cdata);
+
+        for (Eigen::DenseIndex constraint_row_id = constraint_dim - 1; constraint_row_id >= 0;
+             --constraint_row_id, --current_row)
+        {
+          const auto & colwise_sparsity = cmodel.getRowSparsityPattern(cdata, constraint_row_id);
+          if (colwise_sparsity[j])
+          {
+            U(current_row, jj) -= U.row(current_row).segment(jj + 1, NVT).dot(DUt_partial);
+            U(current_row, jj) *= Dinv[jj];
+          }
+        }
+      }
+    }
+
+    // Setting physical compliance
+    int cindex = 0;
+    for (std::size_t ee_id = 0; ee_id < num_ee; ee_id++)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
+      const int cdim = cmodel.residualSize(cdata);
+      auto segment = compliance.segment(cindex, cdim);
+      cmodel.retrieveCompliance(cdata, segment);
+      cindex += cdim;
+    }
+
+    // Setting numerical damping
+    if (use_explicit_delassus)
+    {
+      computeDelassusFromU();
+      updateDampingDelassus(mus);
+    }
+
+    else
+    {
+      updateDamping(mus, false);
+    }
+  }
+
+  template<typename Scalar, int Options>
+  template<typename VectorLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(
+    const Eigen::MatrixBase<VectorLike> & vec)
+  {
+    EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
+    compliance = vec;
+
+    // The diagonal term of the KKT should be updated with the new compliance
+    updateDamping(getDamping());
+  }
+
+  template<typename Scalar, int Options>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(const Scalar & compliance)
+  {
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    updateCompliance(Vector::Constant(total_constraints_dim, compliance));
+  }
+
+  template<typename Scalar, int Options>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusFromU()
+  {
+    // Delassus.setZero();
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    const Matrix & UtopRight = U.topRightCorner(total_constraints_dim, nv);
+    const Vector & Dtail = D.tail(nv);
+
+    // // Upper left triangular part of U
+    //   for (Eigen::DenseIndex j = total_constraints_dim - 1; j >= 0; --j)
+    //   {
+    //     const Eigen::DenseIndex slice_dim = nv;
+    //     auto DUt_partial = DUt.head(slice_dim);
+    //     DUt_partial.noalias() =
+    //       UtopRight.row(j).transpose().cwiseProduct(Dtail);
+    //     for (Eigen::DenseIndex _i = j; _i >= 0; _i--)
+    //     {
+    //       Delassus(_i, j) = UtopRight.row(_i).dot(DUt_partial);
+    //     }
+    //   }
+
+    // typedef Eigen::Map<RowMatrix> MapRowMatrix;
+    // MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraints_dim,
+    // nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal(); Delassus.noalias() = OSIMinv *
+    // UtopRight.transpose();
+
+    Delassus.noalias() = (UtopRight * Dtail.asDiagonal()) * UtopRight.transpose();
+  }
+
+  template<typename Scalar, int Options>
+  template<typename VectorLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDampingDelassus(
+    const Eigen::MatrixBase<VectorLike> & vec)
+  {
+    EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
+    damping = vec;
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    U.topLeftCorner(total_constraints_dim, total_constraints_dim).setIdentity();
+
+    // Upper left triangular part of U
+    for (Eigen::DenseIndex j = total_constraints_dim - 1; j >= 0; --j)
+    {
+      const Eigen::DenseIndex slice_dim = total_constraints_dim - j - 1;
+      auto DUt_partial = DUt.head(slice_dim);
+      DUt_partial.noalias() =
+        U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
+
+      D[j] = -Delassus(j, j) - damping[j] - compliance[j]
+             - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
+      // std::cout << "j = " << j << ", slice_dim = " << slice_dim << " D[j] = " << D[j] <<
+      // std::endl;
+
+      assert(
+        check_expression_if_real<Scalar>(D[j] != Scalar(0))
+        && "The diagonal element is equal to zero.");
+      Dinv[j] = Scalar(1) / D[j];
+
+      for (Eigen::DenseIndex _i = j - 1; _i >= 0; _i--)
+      {
+        U(_i, j) =
+          (-Delassus(_i, j) - U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial)) * Dinv[j];
+      }
+    }
+  }
+
+  template<typename Scalar, int Options>
+  template<typename VectorLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+    const Eigen::MatrixBase<VectorLike> & vec, bool use_explicit_delasssus)
+  {
+    EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
+    damping = vec;
+    if (use_explicit_delasssus)
+    {
+      updateDampingDelassus(vec);
+    }
+    else
+    {
+      const Eigen::DenseIndex total_dim = size();
+      const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+
+      // Upper left triangular part of U
+      for (Eigen::DenseIndex j = total_constraints_dim - 1; j >= 0; --j)
+      {
+        const Eigen::DenseIndex slice_dim = total_dim - j - 1;
+        auto DUt_partial = DUt.head(slice_dim);
+        DUt_partial.noalias() =
+          U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
+
+        D[j] = -damping[j] - compliance[j] - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
+        assert(
+          check_expression_if_real<Scalar>(D[j] != Scalar(0))
+          && "The diagonal element is equal to zero.");
+        Dinv[j] = Scalar(1) / D[j];
+
+        for (Eigen::DenseIndex _i = j - 1; _i >= 0; _i--)
+        {
+          U(_i, j) = -U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial) * Dinv[j];
+        }
+      }
+    }
+  }
+
+  template<typename Scalar, int Options>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+    const Scalar & mu, bool use_explicit_delassus)
+  {
+    //      PINOCCHIO_CHECK_INPUT_ARGUMENT(check_expression_if_real<Scalar>(mu >= 0), "mu should be
+    //      positive.");
+
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    updateDamping(Vector::Constant(total_constraints_dim, mu), use_explicit_delassus);
+  }
+
+  template<typename Scalar, int Options>
+  template<typename MatrixLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::solveInPlace(
+    const Eigen::MatrixBase<MatrixLike> & mat) const
+  {
+    MatrixLike & mat_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixLike, mat);
+
+    Uiv(mat_);
+    mat_.array().colwise() *= Dinv.array();
+    Utiv(mat_);
+  }
+
+  template<typename Scalar, int Options>
+  template<typename MatrixLike>
+  typename ContactCholeskyDecompositionTpl<Scalar, Options>::Matrix
+  ContactCholeskyDecompositionTpl<Scalar, Options>::solve(
+    const Eigen::MatrixBase<MatrixLike> & mat) const
+  {
+    Matrix res(mat);
+    solveInPlace(res);
+    return res;
+  }
+
+  template<typename Scalar, int Options>
+  template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
+  ContactCholeskyDecompositionTpl<Scalar, Options>
+  ContactCholeskyDecompositionTpl<Scalar, Options>::getMassMatrixChoeslkyDecomposition(
+    const ModelTpl<S1, O1, JointCollectionTpl> & model) const
+  {
+    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ReturnType;
+    ReturnType res(model);
+
+    res.D = D.tail(nv);
+    res.Dinv = Dinv.tail(nv);
+    res.U = U.bottomRightCorner(nv, nv);
+
+    return res;
+  }
+
+  namespace details
+  {
+    template<typename MatrixLike, int ColsAtCompileTime>
+    struct UvAlgo
+    {
+      template<typename Scalar, int Options>
+      static void run(
+        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const Eigen::MatrixBase<MatrixLike> & mat)
+      {
+        MatrixLike & mat_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixLike, mat);
+
+        PINOCCHIO_CHECK_INPUT_ARGUMENT(
+          mat.rows() == chol.size(), "The input matrix is of wrong size");
+
+        for (Eigen::DenseIndex col_id = 0; col_id < mat_.cols(); ++col_id)
+          UvAlgo<typename MatrixLike::ColXpr>::run(chol, mat_.col(col_id));
+      }
     };
 
-    typedef DelassusCholeskyExpressionTpl<ContactCholeskyDecompositionTpl>
-      DelassusCholeskyExpression;
-    friend struct DelassusCholeskyExpressionTpl<ContactCholeskyDecompositionTpl>;
-
-    typedef std::vector<Slice> SliceVector;
-    typedef std::vector<SliceVector> VectorOfSliceVector;
-    ///@}
-
-    ///
-    /// \brief Default constructor
-    ///
-    ContactCholeskyDecompositionTpl()
-    : D(D_storage.map())
-    , Dinv(Dinv_storage.map())
-    , U(U_storage.map())
-    , DUt(DUt_storage.map())
-    , compliance(compliance_storage.map())
-    , damping(damping_storage.map())
-    , Delassus(Delassus_storage.map())
-    {
-    }
-
-    ///
-    /// \brief Constructor from a model.
-    ///
-    /// \param[in] model Model of the kinematic tree.
-    ///
-    template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
-    explicit ContactCholeskyDecompositionTpl(const ModelTpl<S1, O1, JointCollectionTpl> & model)
-    : D(D_storage.map())
-    , Dinv(Dinv_storage.map())
-    , U(U_storage.map())
-    , DUt(DUt_storage.map())
-    , compliance(compliance_storage.map())
-    , damping(damping_storage.map())
-    , Delassus(Delassus_storage.map())
-    {
-      // TODO Remove when API is stabilized
-      PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-      PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-      std::vector<ConstraintModel> empty_constraint_models;
-      std::vector<ConstraintData> empty_constraint_datas;
-      PINOCCHIO_COMPILER_DIAGNOSTIC_POP
-      resize(model, empty_constraint_models, empty_constraint_datas);
-    }
-
-    ///
-    /// \brief Constructor from a model and a collection of RigidConstraintModel objects.
-    ///
-    /// \param[in] model Model of the kinematic tree
-    /// \param[in] model Data associated with the kinematic tree
-    /// \param[in] constraint_models Vector of ConstraintModels
-    /// \param[in] constraint_datas Vector of constraint datas
-    /// information
-    ///
-    template<
-      typename S1,
-      int O1,
-      template<typename, int> class JointCollectionTpl,
-      class ConstraintModel,
-      class ConstraintModelAllocator,
-      class ConstraintData,
-      class ConstraintDataAllocator>
-    ContactCholeskyDecompositionTpl(
-      const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      const DataTpl<S1, O1, JointCollectionTpl> & data,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-    : D(D_storage.map())
-    , Dinv(Dinv_storage.map())
-    , U(U_storage.map())
-    , DUt(DUt_storage.map())
-    , compliance(compliance_storage.map())
-    , damping(damping_storage.map())
-    , Delassus(Delassus_storage.map())
-    {
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      resize(model, constraint_models, constraint_datas);
-    }
-
-    ///
-    /// \brief Copy constructor
-    ///
-    /// \param[in] other ContactCholeskyDecompositionTpl to copy
-    ///
-    ContactCholeskyDecompositionTpl(const ContactCholeskyDecompositionTpl & other)
-    : D(D_storage.map())
-    , Dinv(Dinv_storage.map())
-    , U(U_storage.map())
-    , DUt(DUt_storage.map())
-    , compliance(compliance_storage.map())
-    , damping(damping_storage.map())
-    , Delassus(Delassus_storage.map())
-    {
-      *this = other;
-    }
-
-    ContactCholeskyDecompositionTpl & operator=(const ContactCholeskyDecompositionTpl & other)
-    {
-      parents_fromRow = other.parents_fromRow;
-      nv_subtree_fromRow = other.nv_subtree_fromRow;
-      nv = other.nv;
-
-      rowise_sparsity_pattern = other.rowise_sparsity_pattern;
-
-      D_storage = other.D_storage;
-      Dinv_storage = other.Dinv_storage;
-      U_storage = other.U_storage;
-      DUt_storage = other.DUt_storage;
-      compliance_storage = other.compliance_storage;
-      damping_storage = other.damping_storage;
-
-      return *this;
-    }
-
-    ///
-    ///  \brief Internal memory allocation.
-    ///
-    /// \param[in] model Model of the kinematic tree
-    /// \param[in] constraint_models Vector of ConstraintModel
-    /// \param[in] constraint_datas Vector of ConstraintData
-    ///
-    template<
-      typename S1,
-      int O1,
-      template<typename, int> class JointCollectionTpl,
-      class ConstraintModel,
-      class ConstraintModelAllocator,
-      class ConstraintData,
-      class ConstraintDataAllocator>
-    PINOCCHIO_DEPRECATED void allocate(
-      const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-    {
-      resize(model, constraint_models, constraint_datas);
-    }
-
-    ///
-    ///  \brief Internal memory allocation.
-    ///
-    /// \param[in] model Model of the kinematic tree
-    /// \param[in] constraint_models Vector of constraint models
-    /// \param[in] constraint_datas Vector of constraint datas
-    ///
-    /// \note This method assumes that the constrained datas are up-to-date.
-    ///
-    template<
-      typename S1,
-      int O1,
-      template<typename, int> class JointCollectionTpl,
-      class ConstraintModel,
-      class ConstraintModelAllocator,
-      class ConstraintData,
-      class ConstraintDataAllocator>
-    void resize(
-      const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
-
-    ///
-    /// \brief Returns the Inverse of the Operational Space Inertia Matrix resulting from the
-    /// decomposition.
-    ///
-    Matrix getInverseOperationalSpaceInertiaMatrix(bool enforce_symmetry = false) const
-    {
-      Matrix res(constraintDim(), constraintDim());
-      getInverseOperationalSpaceInertiaMatrix(res, enforce_symmetry);
-      return res;
-    }
-
-    template<typename MatrixType>
-    void getInverseOperationalSpaceInertiaMatrix(
-      const Eigen::MatrixBase<MatrixType> & res, bool enforce_symmetry = false) const
-    {
-      const auto U1 = U.topLeftCorner(constraintDim(), constraintDim());
-
-      const auto dim = constraintDim();
-      typedef Eigen::Map<RowMatrix> MapRowMatrix;
-      MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
-
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      MatrixType & res_ = res.const_cast_derived();
-      OSIMinv.noalias() = D.head(dim).asDiagonal() * U1.adjoint();
-      res_.noalias() = -U1 * OSIMinv;
-      if (enforce_symmetry)
-        enforceSymmetry(res_);
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    }
-
-    /// \brief Returns the Cholesky decomposition expression associated to the underlying Delassus
-    /// matrix.
-    DelassusCholeskyExpression getDelassusCholeskyExpression() const
-    {
-      return DelassusCholeskyExpression(*this);
-    }
-
-    ///
-    /// \brief Returns the Operational Space Inertia Matrix resulting from the decomposition.
-    ///
-    Matrix getOperationalSpaceInertiaMatrix() const
-    {
-      Matrix res(constraintDim(), constraintDim());
-      getOperationalSpaceInertiaMatrix(res);
-      return res;
-    }
-
-    template<typename MatrixType>
-    void getOperationalSpaceInertiaMatrix(const Eigen::MatrixBase<MatrixType> & res_) const
-    {
-      MatrixType & res = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res_);
-      //        typedef typename RowMatrix::ConstBlockXpr ConstBlockXpr;
-      const auto U1 = U.topLeftCorner(constraintDim(), constraintDim())
-                        .template triangularView<Eigen::UnitUpper>();
-
-      const auto dim = constraintDim();
-      typedef Eigen::Map<RowMatrix> MapRowMatrix;
-      MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
-
-      typedef Eigen::Map<Matrix> MapMatrix;
-      MapMatrix U1inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
-
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      U1inv.setIdentity();
-      U1.solveInPlace(U1inv); // TODO: implement Sparse Inverse
-      OSIMinv.noalias() = -U1inv.adjoint() * Dinv.head(dim).asDiagonal();
-      res.noalias() = OSIMinv * U1inv;
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    }
-
-    Matrix getInverseMassMatrix() const
-    {
-      Matrix res(nv, nv);
-      getInverseMassMatrix(res);
-      return res;
-    }
-
-    template<typename MatrixType>
-    void getInverseMassMatrix(const Eigen::MatrixBase<MatrixType> & res_) const
-    {
-      MatrixType & res = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res_);
-      //        typedef typename RowMatrix::ConstBlockXpr ConstBlockXpr;
-      const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
-
-      typedef Eigen::Map<RowMatrix> MapRowMatrix;
-      MapRowMatrix Minv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
-
-      typedef Eigen::Map<Matrix> MapMatrix;
-      MapMatrix U4inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
-
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      U4inv.setIdentity();
-      U4.solveInPlace(U4inv); // TODO: implement Sparse Inverse
-      Minv.noalias() = U4inv.adjoint() * Dinv.tail(nv).asDiagonal();
-      res.noalias() = Minv * U4inv;
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    }
-
-    template<typename MatrixType>
-    void getJMinv(const Eigen::MatrixBase<MatrixType> & res_) const
-    {
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      MatrixType & res = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res_);
-      const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
-      auto U2 = U.topRightCorner(constraintDim(), nv);
-
-      typedef Eigen::Map<Matrix> MapMatrix;
-      MapMatrix U4inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
-
-      U4inv.setIdentity();
-      U4.solveInPlace(U4inv); // TODO: implement Sparse Inverse
-      res.noalias() = U2 * U4inv;
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    }
-
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-    ///
-    /// \brief Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix
-    ///        related to the system mass matrix and the Jacobians of the contact patches contained
-    ///        in the vector of ConstraintModel named constraint_models.
-    ///
-    /// \param[in] model Model of the dynamical system
-    /// \param[in] data Data related to model containing the computed mass matrix and the Jacobian
-    /// of the kinematic tree
-    /// \param[in] constraint_models Vector containing the contact models (which
-    /// frame is in contact and the type of contact: ponctual, 6D rigid, etc.)
-    /// \param[in,out] constraint_datas Vector containing the contact data related to the
-    /// constraint_models.
-    /// \param[in] mu Positive regularization factor allowing to enforce the definite property of
-    /// the KKT matrix.
-    ///
-    /// \remarks The mass matrix and the Jacobians of the dynamical system should have been computed
-    /// first. This can be achieved by simply calling pinocchio::crba.
-    /// This method assumes that the constrained datas are up-to-date.
-    ///
-    template<
-      typename S1,
-      int O1,
-      template<typename, int> class JointCollectionTpl,
-      class ConstraintModel,
-      class ConstraintModelAllocator,
-      class ConstraintData,
-      class ConstraintDataAllocator>
-    void compute(
-      const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      DataTpl<S1, O1, JointCollectionTpl> & data,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const S1 mu = S1(0.),
-      bool use_explicit_delassus = false)
-    {
-      compute(
-        model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu),
-        use_explicit_delassus);
-    }
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
-
-    ///
-    /// \brief Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix
-    ///        related to the system mass matrix and the Jacobians of the contact patches contained
-    ///        in the vector of onstraintModel named constraint_models.
-    ///
-    /// \param[in] model Model of the dynamical system
-    /// \param[in] data Data related to model containing the computed mass matrix and the Jacobian
-    /// of the kinematic tree
-    /// \param[in] constraint_models Vector containing the contact models (which
-    /// frame is in contact and the type of contact: ponctual, 6D rigid, etc.)
-    /// \param[in,out] constraint_datas Vector containing the contact data related to the
-    /// constraint_models.
-    /// \param[in] mu Positive regularization factor allowing to enforce the definite property of
-    /// the KKT matrix.
-    ///
-    /// \remarks The mass matrix and the Jacobians of the dynamical system should have been computed
-    /// first. This can be achieved by simply calling pinocchio::crba.
-    /// This method assumes that the constrained datas are up-to-date.
-    ///
-    template<
-      typename S1,
-      int O1,
-      template<typename, int> class JointCollectionTpl,
-      class ConstraintModel,
-      class ConstraintModelAllocator,
-      class ConstraintData,
-      class ConstraintDataAllocator,
-      typename VectorLike>
-    void compute(
-      const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      DataTpl<S1, O1, JointCollectionTpl> & data,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Eigen::MatrixBase<VectorLike> & mus,
-      bool use_explicit_delassus = false);
-
-    ///
-    /// \brief Update the compliance terms on the upper left block part of the KKT matrix. The
-    /// compliance terms should be all positives.
-    ///
-    /// \param[in] compliance Vector of physical compliance for the constraints.
-    ///
     template<typename VectorLike>
-    void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliance);
-
-    ///
-    /// \brief Update the compliance term on the upper left block part of the KKT matrix. The
-    /// compliance terms should be all positives.
-    ///
-    /// \param[in] compliance The physical compliance for the constraints.
-    ///
-    void updateCompliance(const Scalar & compliance);
-
-    ///
-    /// \brief Returns the current compliance vector.
-    ///
-    const typename EigenStorageVector::MapType getCompliance() const
+    struct UvAlgo<VectorLike, 1>
     {
-      return compliance;
-    }
+      template<typename Scalar, int Options>
+      static void run(
+        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const Eigen::MatrixBase<VectorLike> & vec)
+      {
+        EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
+        VectorLike & vec_ = PINOCCHIO_EIGEN_CONST_CAST(VectorLike, vec);
 
-    ///
-    /// \brief Update the damping terms on the upper left block part of the KKT matrix. The damping
-    /// terms should be all positives.
-    ///
-    /// \param[in] mus Vector of positive regularization factor allowing to enforce the definite
-    /// property of the KKT matrix.
-    ///
-    template<typename VectorLike>
-    void
-    updateDamping(const Eigen::MatrixBase<VectorLike> & mus, bool use_explicit_delassus = false);
+        PINOCCHIO_CHECK_INPUT_ARGUMENT(
+          vec.size() == chol.size(), "The input vector is of wrong size");
+        const Eigen::DenseIndex num_total_constraints = chol.size() - chol.nv;
 
-    ///
-    /// \brief Update the damping term on the upper left block part of the KKT matrix. The damping
-    /// terms should be all positives.
-    ///
-    /// \param[in] mu Regularization factor allowing to enforce the definite property of the KKT
-    /// matrix.
-    ///
-    void updateDamping(const Scalar & mu, bool use_explicit_delassus = false);
+        // TODO: exploit the Sparsity pattern of the first rows of U
+        for (Eigen::DenseIndex k = 0; k < num_total_constraints; ++k)
+        {
+          const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
+          vec_[k] += chol.U.row(k).tail(slice_dim).dot(vec_.tail(slice_dim));
+        }
 
-    void computeDelassusFromU();
+        for (Eigen::DenseIndex k = num_total_constraints; k <= chol.size() - 2; ++k)
+          vec_[k] += chol.U.row(k)
+                       .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
+                       .dot(vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
+      }
+    };
+  } // namespace details
+
+  template<typename Scalar, int Options>
+  template<typename MatrixLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::Uv(
+    const Eigen::MatrixBase<MatrixLike> & mat) const
+  {
+    details::UvAlgo<MatrixLike>::run(*this, mat.const_cast_derived());
+  }
+
+  namespace details
+  {
+    template<typename MatrixLike, int ColsAtCompileTime>
+    struct UtvAlgo
+    {
+      template<typename Scalar, int Options>
+      static void run(
+        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const Eigen::MatrixBase<MatrixLike> & mat)
+      {
+        MatrixLike & mat_ = mat.const_cast_derived();
+
+        PINOCCHIO_CHECK_INPUT_ARGUMENT(
+          mat.rows() == chol.size(), "The input matrix is of wrong size");
+
+        for (Eigen::DenseIndex col_id = 0; col_id < mat_.cols(); ++col_id)
+          UtvAlgo<typename MatrixLike::ColXpr>::run(chol, mat_.col(col_id));
+      }
+    };
 
     template<typename VectorLike>
-    void updateDampingDelassus(const Eigen::MatrixBase<VectorLike> & mus);
-
-    ///
-    /// \brief Returns the current damping vector.
-    ///
-    const typename EigenStorageVector::MapType getDamping() const
+    struct UtvAlgo<VectorLike, 1>
     {
-      return damping;
-    }
+      template<typename Scalar, int Options>
+      static void run(
+        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const Eigen::MatrixBase<VectorLike> & vec)
+      {
+        EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
+        VectorLike & vec_ = vec.const_cast_derived();
 
-    /// \brief Size of the decomposition
-    Eigen::DenseIndex size() const
+        PINOCCHIO_CHECK_INPUT_ARGUMENT(
+          vec.size() == chol.size(), "The input vector is of wrong size");
+        const Eigen::DenseIndex num_total_constraints = chol.constraintDim();
+
+        for (Eigen::DenseIndex k = chol.size() - 2; k >= num_total_constraints; --k)
+          vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1) +=
+            chol.U.row(k).segment(k + 1, chol.nv_subtree_fromRow[k] - 1).transpose() * vec_[k];
+
+        // TODO: exploit the Sparsity pattern of the first rows of U
+        for (Eigen::DenseIndex k = num_total_constraints - 1; k >= 0; --k)
+        {
+          const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
+          vec_.tail(slice_dim) += chol.U.row(k).tail(slice_dim).transpose() * vec_[k];
+        }
+      }
+    };
+  } // namespace details
+
+  template<typename Scalar, int Options>
+  template<typename MatrixLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::Utv(
+    const Eigen::MatrixBase<MatrixLike> & mat) const
+  {
+    details::UtvAlgo<MatrixLike>::run(*this, mat.const_cast_derived());
+  }
+
+  namespace details
+  {
+    template<typename MatrixLike, int ColsAtCompileTime>
+    struct UivAlgo
     {
-      return D.size();
-    }
+      template<typename Scalar, int Options>
+      static void run(
+        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const Eigen::MatrixBase<MatrixLike> & mat)
+      {
+        MatrixLike & mat_ = mat.const_cast_derived();
 
-    /// \brief Returns the total dimension of the constraints contained in the Cholesky
-    /// factorization
-    Eigen::DenseIndex constraintDim() const
+        PINOCCHIO_CHECK_INPUT_ARGUMENT(
+          mat.rows() == chol.size(), "The input matrix is of wrong size");
+
+        for (Eigen::DenseIndex col_id = 0; col_id < mat_.cols(); ++col_id)
+          UivAlgo<typename MatrixLike::ColXpr>::run(chol, mat_.col(col_id));
+      }
+    };
+
+    template<typename VectorLike>
+    struct UivAlgo<VectorLike, 1>
     {
-      return size() - nv;
-    }
+      template<typename Scalar, int Options>
+      static void run(
+        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const Eigen::MatrixBase<VectorLike> & vec)
+      {
+        EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
+        VectorLike & vec_ = vec.const_cast_derived();
 
-    ///
-    ///  \brief Computes the solution of \f$ A x = b \f$ where *this is the Cholesky decomposition
-    /// of A.         "in-place" version of ContactCholeskyDecompositionTpl::solve(b) where the
-    /// result is written in b.
-    ///        This functions takes as input the vector b, and returns the solution \f$ x = A^-1 b
-    ///        \f$.
-    ///
-    /// \param[inout] mat The right-and-side term which also contains the solution of the linear
-    /// system.
-    ///
-    /// \sa ContactCholeskyDecompositionTpl::solve
-    template<typename MatrixLike>
-    void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const;
+        PINOCCHIO_CHECK_INPUT_ARGUMENT(
+          vec.size() == chol.size(), "The input vector is of wrong size");
 
-    ///
-    ///  \brief Computes the solution of \f$ A x = b \f$ where *this is the Cholesky decomposition
-    /// of A.
-    ///        This functions takes as input the vector b, and returns the solution \f$ x = A^-1 b
-    ///        \f$.
-    ///
-    /// \param[inout] mat The right-and-side term.
-    ///
-    /// \sa ContactCholeskyDecompositionTpl::solveInPlace
-    template<typename MatrixLike>
-    Matrix solve(const Eigen::MatrixBase<MatrixLike> & mat) const;
+        const Eigen::DenseIndex num_total_constraints = chol.size() - chol.nv;
+        for (Eigen::DenseIndex k = chol.size() - 2; k >= num_total_constraints; --k)
+          vec_[k] -= chol.U.row(k)
+                       .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
+                       .dot(vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
 
-    ///
-    ///  \brief Retrieves the Cholesky decomposition of the Mass Matrix contained in *this.
-    ///
-    /// \param[in] model Model of the dynamical system.
-    ///
-    template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
-    ContactCholeskyDecompositionTpl
-    getMassMatrixChoeslkyDecomposition(const ModelTpl<S1, O1, JointCollectionTpl> & model) const;
+        // TODO: exploit the Sparsity pattern of the first rows of U
+        for (Eigen::DenseIndex k = num_total_constraints - 1; k >= 0; --k)
+        {
+          const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
+          vec_[k] -= chol.U.row(k).tail(slice_dim).dot(vec_.tail(slice_dim));
+        }
+      }
+    };
+  } // namespace details
 
-    ///@{
-    /// \brief Vectorwize operations
-    template<typename MatrixLike>
-    void Uv(const Eigen::MatrixBase<MatrixLike> & mat) const;
+  template<typename Scalar, int Options>
+  template<typename MatrixLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::Uiv(
+    const Eigen::MatrixBase<MatrixLike> & mat) const
+  {
+    details::UivAlgo<MatrixLike>::run(*this, mat.const_cast_derived());
+  }
 
-    template<typename MatrixLike>
-    void Utv(const Eigen::MatrixBase<MatrixLike> & mat) const;
-
-    template<typename MatrixLike>
-    void Uiv(const Eigen::MatrixBase<MatrixLike> & mat) const;
-
-    template<typename MatrixLike>
-    void Utiv(const Eigen::MatrixBase<MatrixLike> & mat) const;
-    ///@}
-
-    /// \brief Returns the matrix resulting from the decomposition
-    Matrix matrix() const;
-
-    /// \brief Fill the input matrix with the matrix resulting from the decomposition
-    template<typename MatrixType>
-    void matrix(const Eigen::MatrixBase<MatrixType> & res) const;
-
-    /// \brief Returns the inverse matrix resulting from the decomposition
-    Matrix inverse() const;
-
-    /// \brief Fill the input matrix with the inverse matrix resulting from the decomposition
-    template<typename MatrixType>
-    void inverse(const Eigen::MatrixBase<MatrixType> & res) const;
-
-    // data
-    EigenStorageVector D_storage;
-    typename EigenStorageVector::RefMapType D;
-    EigenStorageVector Dinv_storage;
-    typename EigenStorageVector::RefMapType Dinv;
-    EigenStorageRowMatrix U_storage;
-    typename EigenStorageRowMatrix::RefMapType U;
-
-    ///@{
-    /// \brief Friend algorithms
+  namespace details
+  {
     template<typename MatrixLike, int ColsAtCompileTime>
-    friend struct details::UvAlgo;
+    struct UtivAlgo
+    {
+      template<typename Scalar, int Options>
+      static void run(
+        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const Eigen::MatrixBase<MatrixLike> & mat)
+      {
+        MatrixLike & mat_ = mat.const_cast_derived();
 
-    template<typename MatrixLike, int ColsAtCompileTime>
-    friend struct details::UtvAlgo;
+        PINOCCHIO_CHECK_INPUT_ARGUMENT(
+          mat.rows() == chol.size(), "The input matrix is of wrong size");
 
-    template<typename MatrixLike, int ColsAtCompileTime>
-    friend struct details::UivAlgo;
+        for (Eigen::DenseIndex col_id = 0; col_id < mat_.cols(); ++col_id)
+          UtivAlgo<typename MatrixLike::ColXpr>::run(chol, mat_.col(col_id));
+      }
+    };
 
-    template<typename MatrixLike, int ColsAtCompileTime>
-    friend struct details::UtivAlgo;
+    template<typename VectorLike>
+    struct UtivAlgo<VectorLike, 1>
+    {
+      template<typename Scalar, int Options>
+      static void run(
+        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const Eigen::MatrixBase<VectorLike> & vec)
+      {
+        EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
+        VectorLike & vec_ = vec.const_cast_derived();
 
-    // TODO Remove when API is stabilized
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
+        PINOCCHIO_CHECK_INPUT_ARGUMENT(
+          vec.size() == chol.size(), "The input vector is of wrong size");
+        const Eigen::DenseIndex num_total_constraints = chol.constraintDim();
+
+        // TODO: exploit the Sparsity pattern of the first rows of U
+        for (Eigen::DenseIndex k = 0; k < num_total_constraints; ++k)
+        {
+          const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
+          vec_.tail(slice_dim) -= chol.U.row(k).tail(slice_dim).transpose() * vec_[k];
+        }
+
+        for (Eigen::DenseIndex k = num_total_constraints; k <= chol.size() - 2; ++k)
+          vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1) -=
+            chol.U.row(k).segment(k + 1, chol.nv_subtree_fromRow[k] - 1).transpose() * vec_[k];
+      }
+    };
+  } // namespace details
+
+  template<typename Scalar, int Options>
+  template<typename MatrixLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::Utiv(
+    const Eigen::MatrixBase<MatrixLike> & mat) const
+  {
+    details::UtivAlgo<MatrixLike>::run(*this, PINOCCHIO_EIGEN_CONST_CAST(MatrixLike, mat));
+  }
+
+  template<typename Scalar, int Options>
+  typename ContactCholeskyDecompositionTpl<Scalar, Options>::Matrix
+  ContactCholeskyDecompositionTpl<Scalar, Options>::matrix() const
+  {
+    Matrix res(size(), size());
+    matrix(res);
+    return res;
+  }
+
+  template<typename Scalar, int Options>
+  template<typename MatrixType>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::matrix(
+    const Eigen::MatrixBase<MatrixType> & res) const
+  {
+    MatrixType & res_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res);
+    res_.noalias() = U * D.asDiagonal() * U.transpose();
+  }
+
+  template<typename Scalar, int Options>
+  typename ContactCholeskyDecompositionTpl<Scalar, Options>::Matrix
+  ContactCholeskyDecompositionTpl<Scalar, Options>::inverse() const
+  {
+    Matrix res(size(), size());
+    inverse(res);
+    return res;
+  }
+
+  template<typename Scalar, int Options>
+  template<typename S1, int O1>
+  bool ContactCholeskyDecompositionTpl<Scalar, Options>::operator==(
+    const ContactCholeskyDecompositionTpl<S1, O1> & other) const
+  {
+    bool is_same = true;
+
+    if (nv != other.nv)
+      return false;
+
+    if (
+      D.size() != other.D.size() || Dinv.size() != other.Dinv.size() || U.rows() != other.U.rows()
+      || U.cols() != other.U.cols())
+      return false;
+
+    is_same &= (D == other.D);
+    is_same &= (Dinv == other.Dinv);
+    is_same &= (U == other.U);
+
+    is_same &= (parents_fromRow == other.parents_fromRow);
+    is_same &= (nv_subtree_fromRow == other.nv_subtree_fromRow);
+    //        is_same &= (rowise_sparsity_pattern == other.rowise_sparsity_pattern);
+
+    return is_same;
+  }
+
+  template<typename Scalar, int Options>
+  template<typename S1, int O1>
+  bool ContactCholeskyDecompositionTpl<Scalar, Options>::operator!=(
+    const ContactCholeskyDecompositionTpl<S1, O1> & other) const
+  {
+    return !(*this == other);
+  }
+
+  namespace details
+  {
+
     template<typename Scalar, int Options, typename VectorLike>
-    friend VectorLike & details::inverseAlgo(
+    PINOCCHIO_DONT_INLINE VectorLike & inverseAlgo(
       const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
       const Eigen::DenseIndex col,
-      const Eigen::MatrixBase<VectorLike> & vec);
-    ///@}
+      const Eigen::MatrixBase<VectorLike> & vec)
+    {
+      EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike);
 
-    template<typename S1, int O1>
-    bool operator==(const ContactCholeskyDecompositionTpl<S1, O1> & other) const;
+      typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
 
-    template<typename S1, int O1>
-    bool operator!=(const ContactCholeskyDecompositionTpl<S1, O1> & other) const;
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
+      const Eigen::DenseIndex & chol_dim = chol.size();
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(col < chol_dim && col >= 0);
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(vec.size() == chol_dim);
 
-  protected:
-    EigenIndexVector parents_fromRow;
-    EigenIndexVector nv_subtree_fromRow;
+      const typename ContactCholeskyDecomposition::EigenIndexVector & nvt = chol.nv_subtree_fromRow;
+      VectorLike & vec_ = PINOCCHIO_EIGEN_CONST_CAST(VectorLike, vec);
 
-    EigenStorageVector DUt_storage;
-    typename EigenStorageVector::RefMapType DUt; // temporary containing the results of D * U^t
+      const Eigen::DenseIndex last_col =
+        std::min(col - 1, chol_dim - 2); // You can start from nv-2 (no child in nv-1)
+      vec_[col] = Scalar(1);
+      vec_.tail(chol_dim - col - 1).setZero();
 
-    /// \brief Dimension of the tangent of the configuration space of the model
-    Eigen::DenseIndex nv;
+      // TODO: exploit the sparsity pattern of the first rows of U
+      for (Eigen::DenseIndex k = last_col; k >= 0; --k)
+      {
+        const Eigen::DenseIndex nvt_max = std::min(col - k, nvt[k] - 1);
+        const auto U_row = chol.U.row(k);
+        vec_[k] = -U_row.segment(k + 1, nvt_max).dot(vec_.segment(k + 1, nvt_max));
+        //          if(k >= chol_constraint_dim)
+        //          {
+        //            vec_[k] = -U_row.segment(k+1,nvt_max).dot(vec_.segment(k+1,nvt_max));
+        //          }
+        //          else
+        //          {
+        //            typedef typename ContactCholeskyDecomposition::SliceVector SliceVector;
+        //            typedef typename ContactCholeskyDecomposition::Slice Slice;
+        //            const SliceVector & slice_vector = chol.rowise_sparsity_pattern[(size_t)k];
+        //
+        //            const Slice & slice_0 = slice_vector[0];
+        //            assert(slice_0.first_index == k);
+        //            Eigen::DenseIndex last_index1 = slice_0.first_index + slice_0.size;
+        //            const Eigen::DenseIndex last_index2 = k + nvt_max;
+        //            Eigen::DenseIndex slice_dim = std::min(last_index1,last_index2) - k;
+        //            vec_[k] =
+        //            -U_row.segment(slice_0.first_index+1,slice_dim-1).dot(vec_.segment(slice_0.first_index+1,slice_dim-1));
+        //
+        //            typename SliceVector::const_iterator slice_it = slice_vector.begin()++;
+        //            for(;slice_it != slice_vector.end(); ++slice_it)
+        //            {
+        //              const Slice & slice = *slice_it;
+        //              last_index1 = slice.first_index + slice.size;
+        //              slice_dim = std::min(last_index1,last_index2+1) - slice.first_index;
+        //              if(slice_dim <= 0) break;
+        //
+        //              vec_[k] -=
+        //              U_row.segment(slice.first_index,slice_dim).dot(vec_.segment(slice.first_index,slice_dim));
+        //            }
+        //          }
+      }
 
-    VectorOfSliceVector rowise_sparsity_pattern;
+      vec_.head(col + 1).array() *= chol.Dinv.head(col + 1).array();
 
-    /// \brief Store the current value of the physical compliance
-    EigenStorageVector compliance_storage;
-    typename EigenStorageVector::RefMapType compliance;
+      for (Eigen::DenseIndex k = 0; k < col + 1; ++k) // You can stop one step before nv.
+      {
+        const Eigen::DenseIndex nvt_max = nvt[k] - 1;
+        vec_.segment(k + 1, nvt_max) -= chol.U.row(k).segment(k + 1, nvt_max).transpose() * vec_[k];
+      }
 
-    /// \brief Store the current damping value
-    EigenStorageVector damping_storage;
-    typename EigenStorageVector::RefMapType damping;
+      return vec_;
+    }
+  } // namespace details
 
-    EigenStorageRowMatrix Delassus_storage;
-    typename EigenStorageRowMatrix::RefMapType Delassus;
-  };
+  template<typename Scalar, int Options>
+  template<typename MatrixType>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::inverse(
+    const Eigen::MatrixBase<MatrixType> & res) const
+  {
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(res.rows() == size());
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(res.cols() == size());
 
+    MatrixType & res_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res);
+
+    for (Eigen::DenseIndex col_id = 0; col_id < size(); ++col_id)
+      details::inverseAlgo(*this, col_id, res_.col(col_id));
+
+    res_.template triangularView<Eigen::StrictlyLower>() =
+      res_.transpose().template triangularView<Eigen::StrictlyLower>();
+  }
+
+  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 } // namespace pinocchio
 
 // Because of a GCC bug we should NEVER define a function that use ContactCholeskyDecompositionTpl
@@ -667,7 +879,6 @@ namespace pinocchio
   #include "pinocchio/algorithm/contact-cholesky.txx"
 #endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
 
-#include "pinocchio/algorithm/contact-cholesky.hxx"
 #include "pinocchio/algorithm/delassus-operator-cholesky-expression.hpp"
 
 #endif // ifndef __pinocchio_algorithm_contact_cholesky_hpp__

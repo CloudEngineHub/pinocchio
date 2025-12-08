@@ -5,7 +5,7 @@
 #ifndef __pinocchio_algorithm_constraints_utils_hpp__
 #define __pinocchio_algorithm_constraints_utils_hpp__
 
-#include "pinocchio/algorithm/constraints/fwd.hpp"
+#include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 #include "pinocchio/utils/reference.hpp"
 

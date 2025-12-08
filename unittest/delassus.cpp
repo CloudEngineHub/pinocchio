@@ -5,7 +5,7 @@
 
 #include "pinocchio/algorithm/contact-info.hpp"
 #include "pinocchio/algorithm/contact-dynamics.hpp"
-#include "pinocchio/algorithm/contact-cholesky.hxx"
+#include "pinocchio/algorithm/contact-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/multibody/sample-models.hpp"

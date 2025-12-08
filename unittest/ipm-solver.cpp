@@ -3,9 +3,9 @@
 //
 
 #include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/constraints/constraints.hpp"
+#include "pinocchio/algorithm/contact-cholesky.hpp"
 #include "pinocchio/algorithm/ipm-solver.hpp"
 
 #include "pinocchio/algorithm/admm-solver.hpp"
