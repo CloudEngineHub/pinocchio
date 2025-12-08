@@ -239,9 +239,29 @@ namespace pinocchio
       }
     } // while (leaf_vertices.size() > 0)
 
-    // Allocate memory for coupling terms
+    // We need to reorder neighbours according to elimanation order.
+    // This enables to properly allocate cross coupling terms
+    {
+      std::vector<size_t> sort_ordering(elimination_order.size(), elimination_order.size());
+      size_t val = 0;
+      for (const JointIndex joint_i : elimination_order)
+      {
+        sort_ordering[joint_i] = val++;
+      }
 
-    // Clear coupling terms
+      auto sort_function = [&](const JointIndex & joint1_id, const JointIndex & joint2_id) {
+        const auto & val1 = sort_ordering[joint1_id];
+        const auto & val2 = sort_ordering[joint2_id];
+
+        return !(val1 < val2);
+      };
+
+      for (auto & joint_neighbours : neighbours)
+      {
+        std::sort(joint_neighbours.begin(), joint_neighbours.end(), sort_function);
+      }
+    }
+    // Allocate memory for coupling terms
     auto & joint_cross_coupling = data.joint_cross_coupling;
     joint_cross_coupling.clear();
 
@@ -255,7 +275,6 @@ namespace pinocchio
     for (const JointIndex joint_i : elimination_order)
     {
       const auto & joint_neighbours = neighbours[joint_i];
-      // const JointIndex parent_joint_i = model.parents[joint_i];
 
       if (joint_neighbours.size() == 0)
         continue;
@@ -267,21 +286,8 @@ namespace pinocchio
         const auto pair_ji = JointPair(joint_j, joint_i);
         INSERT_JOINT_INERTIA_COUPLING_TERM(pair_ji);
 
-        assert(!projected_joint_cross_coupling.exists(JointPair(joint_j, joint_i)));
-        const auto res =
-          projected_joint_cross_coupling.insert(JointPair(joint_j, joint_i), 6, joint_nv);
-        PINOCCHIO_ONLY_USED_FOR_DEBUG(res);
-        assert(res && "must never happened");
-
-        for (size_t k = j + 1; k < joint_neighbours.size(); ++k)
-        {
-          const auto joint_k = joint_neighbours[k];
-          const auto pair_kj = JointPair(joint_k, joint_j);
-          INSERT_JOINT_INERTIA_COUPLING_TERM(pair_kj);
-
-          assert(!projected_joint_cross_coupling.exists(JointPair(joint_k, joint_i)));
-          projected_joint_cross_coupling.insert(JointPair(joint_k, joint_i), 6, joint_nv);
-        }
+        assert(!projected_joint_cross_coupling.exists(pair_ji));
+        projected_joint_cross_coupling.insert(pair_ji, 6, joint_nv);
       }
     }
 #undef INSERT_JOINT_INERTIA_COUPLING_TERM
