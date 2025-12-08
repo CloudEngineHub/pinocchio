@@ -337,25 +337,31 @@ namespace pinocchio
     const Eigen::MatrixBase<ResultMatrixType> & res_,
     AssignmentOperatorTag<op> aot)
   {
-
+    PINOCCHIO_UNUSED_VARIABLE(aot);
     const Eigen::DenseIndex constraint_size =
       getTotalConstraintResidualSize(constraint_models, constraint_datas);
-    ResultMatrixType & res = res_.const_cast_derived();
+    auto & res = res_.const_cast_derived();
 
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(rhs.rows(), constraint_size);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(res_.rows(), model.nv);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(rhs.rows(), model.nv);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(res_.rows(), constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res_.cols(), rhs.cols());
 
+    using aot_internal = std::conditional_t<
+      std::is_same<AssignmentOperatorTag<op>, SetTo>::value, AddTo, AssignmentOperatorTag<op>>;
+    if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
+    {
+      res.setZero();
+    }
+
     Eigen::Index row_id = 0;
-    res.setZero();
     for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize(cdata);
 
-      const auto rhs_block = rhs.middleRows(row_id, constraint_size);
-      cmodel.jacobianMatrixProduct(model, data, cdata, rhs_block, res, aot);
+      auto res_block = res.middleRows(row_id, constraint_size);
+      cmodel.jacobianMatrixProduct(model, data, cdata, rhs, res_block, aot_internal());
 
       row_id += constraint_size;
     }
@@ -381,7 +387,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ResultMatrixType> & res_,
     AssignmentOperatorTag<op> aot)
   {
-
+    PINOCCHIO_UNUSED_VARIABLE(aot);
     const Eigen::DenseIndex constraint_size =
       getTotalConstraintResidualSize(constraint_models, constraint_datas);
     ResultMatrixType & res = res_.const_cast_derived();
@@ -391,7 +397,14 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res_.cols(), rhs.cols());
 
     Eigen::Index row_id = 0;
-    res.setZero();
+
+    using aot_internal = std::conditional_t<
+      std::is_same<AssignmentOperatorTag<op>, SetTo>::value, AddTo, AssignmentOperatorTag<op>>;
+    if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
+    {
+      res.setZero();
+    }
+
     for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
@@ -399,7 +412,7 @@ namespace pinocchio
       const auto constraint_size = cmodel.residualSize(cdata);
 
       const auto rhs_block = rhs.middleRows(row_id, constraint_size);
-      cmodel.jacobianTransposeMatrixProduct(model, data, cdata, rhs_block, res, aot);
+      cmodel.jacobianTransposeMatrixProduct(model, data, cdata, rhs_block, res, aot_internal());
 
       row_id += constraint_size;
     }
