@@ -10,7 +10,6 @@
 #include "pinocchio/algorithm/frames.hpp"
 #include "pinocchio/algorithm/contact-info.hpp"
 #include "pinocchio/algorithm/contact-cholesky.hpp"
-#include "pinocchio/algorithm/contact-jacobian.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/utils/timer.hpp"

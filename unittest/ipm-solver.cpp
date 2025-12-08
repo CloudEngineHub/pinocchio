@@ -7,7 +7,6 @@
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/algorithm/ipm-solver.hpp"
-#include "pinocchio/algorithm/contact-jacobian.hpp"
 
 #include "pinocchio/algorithm/admm-solver.hpp"
 #include "pinocchio/algorithm/clarabel-solver.hpp"

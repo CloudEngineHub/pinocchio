@@ -10,7 +10,7 @@
 
 #include "pinocchio/algorithm/loop-constrained-aba.hpp"
 #include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/contact-jacobian.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 
 #include "pinocchio/algorithm/delassus-operator-rigid-body-visitors.hxx"
 

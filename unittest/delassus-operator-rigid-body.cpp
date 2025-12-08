@@ -10,7 +10,6 @@
 #include "pinocchio/algorithm/cholesky.hpp"
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/algorithm/contact-dynamics.hpp"
-#include "pinocchio/algorithm/contact-jacobian.hpp"
 #include "pinocchio/algorithm/contact-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 

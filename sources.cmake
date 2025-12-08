@@ -66,6 +66,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/zero-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/jointwise-constraint-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hxx
@@ -75,7 +76,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-info.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-jacobian.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-jacobian.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-solver-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-solver-utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-inverse-dynamics.hpp
@@ -491,7 +491,7 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/frames.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/centroidal.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics-derivatives.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-jacobian.txx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/crba.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/centroidal-derivatives.txx
@@ -533,7 +533,7 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
     ${PROJECT_SOURCE_DIR}/src/algorithm/center-of-mass-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/proximal.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/kinematics-derivatives.cpp
-    ${PROJECT_SOURCE_DIR}/src/algorithm/contact-jacobian.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/constraints/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/model.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/data.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/sample-models.cpp)

@@ -6,7 +6,6 @@
 #include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/contact-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/contact-jacobian.hpp"
 #include "pinocchio/algorithm/delassus-operator-dense.hpp"
 #include "pinocchio/algorithm/pgs-solver.hpp"
 #include "pinocchio/algorithm/aba.hpp"

@@ -3,7 +3,7 @@
 #include "pinocchio/multibody/data.hpp"
 
 #include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/algorithm/contact-jacobian.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 
 #include <boost/test/unit_test.hpp>
 

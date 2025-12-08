@@ -9,7 +9,7 @@
 #include "pinocchio/algorithm/contact-cholesky.hpp"
 #include "pinocchio/algorithm/contact-dynamics.hpp"
 #include "pinocchio/algorithm/contact-dynamics-derivatives.hpp"
-#include "pinocchio/algorithm/contact-jacobian.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 
 namespace pinocchio
 {

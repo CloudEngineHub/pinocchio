@@ -6,7 +6,7 @@
 #define __pinocchio_algorithm_contact_inverse_dynamics_hpp__
 
 #include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/contact-jacobian.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/proximal.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 

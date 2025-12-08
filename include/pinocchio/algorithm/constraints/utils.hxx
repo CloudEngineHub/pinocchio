@@ -2,8 +2,8 @@
 // Copyright (c) 2021-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_contact_jacobian_hxx__
-#define __pinocchio_algorithm_contact_jacobian_hxx__
+#ifndef __pinocchio_algorithm_constraints_utils_hxx__
+#define __pinocchio_algorithm_constraints_utils_hxx__
 
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
@@ -393,4 +393,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_contact_jacobian_hxx__
+#endif // ifndef __pinocchio_algorithm_constraints_utils_hxx__

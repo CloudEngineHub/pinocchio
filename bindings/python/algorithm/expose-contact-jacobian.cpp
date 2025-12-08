@@ -3,7 +3,7 @@
 //
 
 #include "pinocchio/bindings/python/algorithm/algorithms.hpp"
-#include "pinocchio/algorithm/contact-jacobian.hpp"
+#include "pinocchio/algorithm/constraints/utils.hpp"
 
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/utils/model-checker.hpp"

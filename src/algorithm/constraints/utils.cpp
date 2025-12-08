@@ -6,7 +6,7 @@
 
 #ifndef PINOCCHIO_SKIP_ALGORITHM_CONTACT_JACOBIAN
 
-  #include "pinocchio/algorithm/contact-jacobian.hpp"
+  #include "pinocchio/algorithm/constraints/utils.hpp"
 
 namespace pinocchio
 {

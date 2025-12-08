@@ -11,7 +11,8 @@
 #include "pinocchio/container/eigen-storage.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 
-#include "pinocchio/algorithm/constraints/constraints.hpp"
+#include "pinocchio/algorithm/fwd.hpp"
+// #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include <functional>
 
 namespace pinocchio
@@ -414,7 +415,8 @@ namespace pinocchio
       bool use_explicit_delassus = false)
     {
       compute(
-        model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu), use_explicit_delassus);
+        model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu),
+        use_explicit_delassus);
     }
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
@@ -487,7 +489,8 @@ namespace pinocchio
     /// property of the KKT matrix.
     ///
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & mus, bool use_explicit_delassus = false);
+    void
+    updateDamping(const Eigen::MatrixBase<VectorLike> & mus, bool use_explicit_delassus = false);
 
     ///
     /// \brief Update the damping term on the upper left block part of the KKT matrix. The damping
