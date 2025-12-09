@@ -290,6 +290,9 @@ BOOST_AUTO_TEST_CASE(test_specitic_6x6_case)
   const LhsType A = LhsType::Constant(n, n, 1);
   const RhsType B = RhsType::Constant(n, m, 2);
   ResType res = ResType::Random(n, m);
+  PINOCCHIO_UNUSED_VARIABLE(A);
+  PINOCCHIO_UNUSED_VARIABLE(B);
+  PINOCCHIO_UNUSED_VARIABLE(res);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
