@@ -227,7 +227,7 @@ namespace pinocchio
     typedef typename traits<Self>::PlainMatrixType PlainMatrixType;
 
     /// \brief Default constructor from a given size
-    explicit TridiagonalSymmetricMatrixTpl(const Eigen::DenseIndex size)
+    explicit TridiagonalSymmetricMatrixTpl(const Eigen::Index size)
     : m_size(size)
     , m_diagonal(size)
     , m_sub_diagonal(size - 1)
@@ -378,15 +378,14 @@ namespace pinocchio
     ///
     /// \returns The kth eigenvalue
     ///
-    Scalar
-    computeEigenvalue(const Eigen::DenseIndex eigenvalue_index, const Scalar eps = 1e-8) const
+    Scalar computeEigenvalue(const Eigen::Index eigenvalue_index, const Scalar eps = 1e-8) const
     {
       return ::pinocchio::computeEigenvalue(*this, eigenvalue_index, eps);
     }
 
   protected:
     /// \brief Size of the tridiagonal matrix
-    Eigen::DenseIndex m_size;
+    Eigen::Index m_size;
     /// \brief Main diagonal of the tridiagonal matrix
     CoeffVectorType m_diagonal;
     /// \brief Subdiagonal of the tridiagonal matrix
@@ -428,7 +427,7 @@ namespace pinocchio
       assert(cols() >= 1);
       assert(rows() >= 1);
 
-      const Eigen::DenseIndex reduced_size = cols() - 1;
+      const Eigen::Index reduced_size = cols() - 1;
       // Main diagonal
       result.noalias() = m_lhs.diagonal().asDiagonal() * m_rhs;
       // Upper diagonal
@@ -477,7 +476,7 @@ namespace pinocchio
       assert(cols() >= 1);
       assert(rows() >= 1);
 
-      const Eigen::DenseIndex reduced_size = cols() - 1;
+      const Eigen::Index reduced_size = cols() - 1;
       // Main diagonal
       result.noalias() = m_lhs * m_rhs.diagonal().asDiagonal();
       // Upper diagonal
@@ -563,14 +562,14 @@ namespace pinocchio
 
       // Forward sweep
       result.setIdentity();
-      for (Eigen::DenseIndex i = 1; i < m_size; ++i)
+      for (Eigen::Index i = 1; i < m_size; ++i)
       {
         result.row(i).head(i) -= w[i - 1] * result.row(i - 1).head(i);
       }
 
       // Backward sweep
       result.row(m_size - 1) /= b[m_size - 1];
-      for (Eigen::DenseIndex i = m_size - 2; i >= 0; --i)
+      for (Eigen::Index i = m_size - 2; i >= 0; --i)
       {
         result.row(i) -= c[i] * result.row(i + 1);
         result.row(i) /= b[i];
@@ -598,7 +597,7 @@ namespace pinocchio
       auto & w = m_sub_diagonal;
       auto & b = m_diagonal;
       const auto & c = tridiagonal_matrix.subDiagonal();
-      for (Eigen::DenseIndex i = 1; i < m_size; ++i)
+      for (Eigen::Index i = 1; i < m_size; ++i)
       {
         w.coeffRef(i - 1) /= b[i - 1];
         m_diagonal.coeffRef(i) -= w[i - 1] * c[i - 1];
@@ -606,7 +605,7 @@ namespace pinocchio
     }
 
     const TridiagonalSymmetricMatrix & tridiagonal_matrix;
-    Eigen::DenseIndex m_size;
+    Eigen::Index m_size;
     CoeffVectorType m_diagonal;
     CoeffVectorType m_sub_diagonal;
   };
@@ -636,21 +635,21 @@ namespace pinocchio
       assert(cols() >= 1);
       assert(rows() >= 1);
 
-      const Eigen::DenseIndex size = m_lhs.rows();
+      const Eigen::Index size = m_lhs.rows();
       const auto & b = m_lhs.m_diagonal;
       const auto & c = m_lhs.tridiagonal_matrix.subDiagonal();
       const auto & w = m_lhs.m_sub_diagonal;
 
       // Forward sweep
       result = m_rhs;
-      for (Eigen::DenseIndex i = 1; i < size; ++i)
+      for (Eigen::Index i = 1; i < size; ++i)
       {
         result.row(i) -= w[i - 1] * result.row(i - 1);
       }
 
       // Backward sweep
       result.row(size - 1) /= b[size - 1];
-      for (Eigen::DenseIndex i = size - 2; i >= 0; --i)
+      for (Eigen::Index i = size - 2; i >= 0; --i)
       {
         result.row(i) -= c[i] * result.row(i + 1);
         result.row(i) /= b[i];

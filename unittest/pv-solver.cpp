@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_3D_humanoid)
 
   computeAllTerms(model, data_ref, q, v);
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
   Eigen::MatrixXd J_ref(constraint_size, model.nv);

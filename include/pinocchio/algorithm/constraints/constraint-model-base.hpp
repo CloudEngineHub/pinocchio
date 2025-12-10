@@ -93,7 +93,7 @@ namespace pinocchio
 
     // Usefull types ------------------------------------------------
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
-    typedef std::vector<Eigen::DenseIndex> EigenIndexVector;
+    typedef std::vector<Eigen::Index> EigenIndexVector;
 
     // --------------------------------------------------------------
     // Methods
@@ -248,7 +248,7 @@ namespace pinocchio
     /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
     /// calling the calc method.
     const EigenIndexVector &
-    getRowIndexes(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    getRowIndexes(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
       return derived().getRowIndexesImpl(cdata, row_id);
     }

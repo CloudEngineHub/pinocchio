@@ -135,8 +135,7 @@ namespace pinocchio
       contact_models.size(), contact_data.size(), "contact models and data size are not the same");
 
     MatrixType & delassus = delassus_.const_cast_derived();
-    const Eigen::DenseIndex constraint_total_size =
-      getTotalConstraintMaxResidualSize(contact_models);
+    const Eigen::Index constraint_total_size = getTotalConstraintMaxResidualSize(contact_models);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(delassus_.rows(), constraint_total_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(delassus_.cols(), constraint_total_size);
 
@@ -185,7 +184,7 @@ namespace pinocchio
       Pass2::run(model.joints[i], data.joints[i], typename Pass2::ArgsType(model, data));
     }
 
-    Eigen::DenseIndex current_row_id = 0;
+    Eigen::Index current_row_id = 0;
     for (size_t k = 0; k < contact_models.size(); ++k)
     {
       typedef typename RigidConstraintData::VectorOfMatrix6 VectorOfMatrix6;
@@ -250,7 +249,7 @@ namespace pinocchio
         const VectorOfMatrix6 & propagators = cdata.extended_motion_propagators_joint1;
         const VectorOfMatrix6 & lambdas = cdata.lambdas_joint1;
 
-        Eigen::DenseIndex current_row_id_other = 0;
+        Eigen::Index current_row_id_other = 0;
         for (size_t i = 0; i < k; ++i)
         {
           const RigidConstraintModel & cmodel_other = contact_models[i];
@@ -490,8 +489,7 @@ namespace pinocchio
       contact_models.size(), contact_data.size(), "contact models and data size are not the same");
 
     MatrixType & delassus = delassus_.const_cast_derived();
-    const Eigen::DenseIndex constraint_total_size =
-      getTotalConstraintMaxResidualSize(contact_models);
+    const Eigen::Index constraint_total_size = getTotalConstraintMaxResidualSize(contact_models);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(delassus_.rows(), constraint_total_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(delassus_.cols(), constraint_total_size);
 
@@ -704,7 +702,7 @@ namespace pinocchio
       }
     }
 
-    Eigen::DenseIndex current_row_id = 0;
+    Eigen::Index current_row_id = 0;
     for (size_t k = 0; k < contact_models.size(); ++k)
     {
       const RigidConstraintModel & cmodel = contact_models[k];
@@ -717,7 +715,7 @@ namespace pinocchio
       {
         const int size = cmodel.maxResidualSize();
 
-        Eigen::DenseIndex current_row_id_other = 0;
+        Eigen::Index current_row_id_other = 0;
         for (size_t i = 0; i < k; ++i)
         {
           RigidConstraintData & cdata_other = contact_data[i];

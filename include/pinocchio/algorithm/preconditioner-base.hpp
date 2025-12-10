@@ -52,11 +52,11 @@ namespace pinocchio
       derived().unscaleInPlace(x.derived());
     }
 
-    Eigen::DenseIndex rows() const
+    Eigen::Index rows() const
     {
       return derived().rows();
     }
-    Eigen::DenseIndex cols() const
+    Eigen::Index cols() const
     {
       return derived().cols();
     }

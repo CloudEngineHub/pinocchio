@@ -108,7 +108,7 @@ namespace pinocchio
     for (size_t row_id = 0; row_id < active_dofs.size(); ++row_id)
     {
       const auto col_id = active_dofs[row_id];
-      jacobian_matrix(Eigen::DenseIndex(row_id), col_id) = Scalar(1);
+      jacobian_matrix(Eigen::Index(row_id), col_id) = Scalar(1);
     }
   }
 
@@ -143,9 +143,9 @@ namespace pinocchio
       const auto col_id = active_dofs[row_id];
 
       if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
-        res.row(Eigen::DenseIndex(row_id)) -= mat.row(col_id);
+        res.row(Eigen::Index(row_id)) -= mat.row(col_id);
       else
-        res.row(Eigen::DenseIndex(row_id)) += mat.row(col_id);
+        res.row(Eigen::Index(row_id)) += mat.row(col_id);
     }
   }
 
@@ -180,9 +180,9 @@ namespace pinocchio
       const auto col_id = active_dofs[row_id];
 
       if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
-        res.row(col_id) -= mat.row(Eigen::DenseIndex(row_id));
+        res.row(col_id) -= mat.row(Eigen::Index(row_id));
       else
-        res.row(col_id) += mat.row(Eigen::DenseIndex(row_id));
+        res.row(col_id) += mat.row(Eigen::Index(row_id));
     }
   }
 
@@ -205,7 +205,7 @@ namespace pinocchio
       diagonal_constraint_inertia.size(), residualSize(cdata),
       "The diagonal_constraint_inertia is of wrong size.");
 
-    Eigen::DenseIndex row_id = 0;
+    Eigen::Index row_id = 0;
     for (const JointIndex joint_id : active_joints)
     {
       const auto joint_nv = model.nvs[joint_id];
@@ -241,7 +241,7 @@ namespace pinocchio
     {
       const auto row_id = active_dofs[dof_id];
 
-      joint_torques.row(row_id) += constraint_forces.row(Eigen::DenseIndex(dof_id));
+      joint_torques.row(row_id) += constraint_forces.row(Eigen::Index(dof_id));
     }
   }
 
@@ -268,7 +268,7 @@ namespace pinocchio
     {
       const auto row_id = active_dofs[dof_id];
 
-      constraint_motions.row(Eigen::DenseIndex(dof_id)) = joint_motions.row(row_id);
+      constraint_motions.row(Eigen::Index(dof_id)) = joint_motions.row(row_id);
     }
   }
 

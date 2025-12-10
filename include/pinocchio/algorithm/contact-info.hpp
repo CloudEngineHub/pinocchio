@@ -406,7 +406,7 @@ namespace pinocchio
 
     /// \brief Returns the colwise sparsity associated with a given row
     const BooleanVector &
-    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -415,7 +415,7 @@ namespace pinocchio
 
     /// \brief Returns the vector of the indexes associated with a given row
     const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -688,15 +688,15 @@ namespace pinocchio
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), maxResidualSize()); // We know it is constant
       res.setZero();
 
-      //      const Eigen::DenseIndex constraint_size = size();
+      //      const Eigen::Index constraint_size = size();
       //
-      //      const Eigen::DenseIndex
+      //      const Eigen::Index
       //      complexity_strategy_1 = 6 * res.cols() * 36 + constraint_size * 36 * res.cols(),
       //      complexity_strategy_2 = 36 * constraint_size * 6 + constraint_size * 36 * res.cols();
 
       const Matrix36 A1 = getA1(cdata, WorldFrameTag());
       const Matrix36 A2 = getA2(cdata, WorldFrameTag());
-      for (Eigen::DenseIndex jj = 0; jj < model.nv; ++jj)
+      for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
         if (!(colwise_joint1_sparsity[jj] || colwise_joint2_sparsity[jj]))
           continue;
@@ -739,7 +739,7 @@ namespace pinocchio
       const SE3 & oMc2 = cdata.oMc2;
       const SE3 & c1Mc2 = cdata.c1Mc2;
 
-      for (Eigen::DenseIndex jj = 0; jj < model.nv; ++jj)
+      for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
 
         if (colwise_joint1_sparsity[jj] || colwise_joint2_sparsity[jj])
@@ -986,8 +986,8 @@ namespace pinocchio
         {
           const JointModel & joint1 = model.joints[current1_id];
           const int j1nv = joint1.nv();
-          joint1_span_indexes.push_back((Eigen::DenseIndex)current1_id);
-          Eigen::DenseIndex current1_col_id = joint1.idx_v();
+          joint1_span_indexes.push_back((Eigen::Index)current1_id);
+          Eigen::Index current1_col_id = joint1.idx_v();
           for (int k = 0; k < j1nv; ++k, ++current1_col_id)
           {
             colwise_joint1_sparsity[current1_col_id] = true;
@@ -998,8 +998,8 @@ namespace pinocchio
         {
           const JointModel & joint2 = model.joints[current2_id];
           const int j2nv = joint2.nv();
-          joint2_span_indexes.push_back((Eigen::DenseIndex)current2_id);
-          Eigen::DenseIndex current2_col_id = joint2.idx_v();
+          joint2_span_indexes.push_back((Eigen::Index)current2_id);
+          Eigen::Index current2_col_id = joint2.idx_v();
           for (int k = 0; k < j2nv; ++k, ++current2_col_id)
           {
             colwise_joint2_sparsity[current2_col_id] = true;
@@ -1015,9 +1015,9 @@ namespace pinocchio
         {
           const JointModel & joint = model.joints[current_id];
           const int jnv = joint.nv();
-          joint1_span_indexes.push_back((Eigen::DenseIndex)current_id);
-          joint2_span_indexes.push_back((Eigen::DenseIndex)current_id);
-          Eigen::DenseIndex current_row_id = joint.idx_v();
+          joint1_span_indexes.push_back((Eigen::Index)current_id);
+          joint2_span_indexes.push_back((Eigen::Index)current_id);
+          Eigen::Index current_row_id = joint.idx_v();
           for (int k = 0; k < jnv; ++k, ++current_row_id)
           {
             colwise_joint1_sparsity[current_row_id] = true;
@@ -1034,7 +1034,7 @@ namespace pinocchio
       colwise_span_indexes.reserve((size_t)model.nv);
       colwise_sparsity.resize(model.nv);
       loop_span_indexes.reserve((size_t)model.nv);
-      for (Eigen::DenseIndex col_id = 0; col_id < model.nv; ++col_id)
+      for (Eigen::Index col_id = 0; col_id < model.nv; ++col_id)
       {
         if (colwise_joint1_sparsity[col_id] || colwise_joint2_sparsity[col_id])
         {
@@ -1058,11 +1058,11 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  Eigen::DenseIndex getTotalConstraintResidualSize(
+  Eigen::Index getTotalConstraintResidualSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    Eigen::DenseIndex total_size = 0;
+    Eigen::Index total_size = 0;
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const auto & constraint_model = helper::get_ref(constraint_models[k]);
@@ -1077,10 +1077,10 @@ namespace pinocchio
   /// \brief Computes the sum of the sizes of the constraints contained in the input
   /// `constraint_models` vector.
   template<class ConstraintModel, class ConstraintModelAllocator>
-  Eigen::DenseIndex getTotalConstraintMaxResidualSize(
+  Eigen::Index getTotalConstraintMaxResidualSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
-    Eigen::DenseIndex total_size = 0;
+    Eigen::Index total_size = 0;
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);

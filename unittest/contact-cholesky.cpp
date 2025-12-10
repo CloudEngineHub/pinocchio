@@ -56,12 +56,12 @@ namespace pinocchio
     {
       assert(mat.rows() == mat.cols());
       U.template triangularView<Eigen::Upper>() = mat.template triangularView<Eigen::Upper>();
-      for (Eigen::DenseIndex k = mat.rows() - 1; k >= 0; --k)
+      for (Eigen::Index k = mat.rows() - 1; k >= 0; --k)
       {
-        for (Eigen::DenseIndex i = k - 1; i >= 0; --i)
+        for (Eigen::Index i = k - 1; i >= 0; --i)
         {
           const Scalar a = U(i, k) / U(k, k);
-          for (Eigen::DenseIndex j = i; j >= 0; --j)
+          for (Eigen::Index j = i; j >= 0; --j)
           {
             U(j, i) -= U(j, k) * a;
           }
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 BOOST_AUTO_TEST_CASE(UDUt_solver)
 {
-  const Eigen::DenseIndex size = 100;
+  const Eigen::Index size = 100;
   Eigen::MatrixXd mat = Eigen::MatrixXd::Random(size, size);
   mat = mat * mat.transpose();
 
@@ -211,12 +211,12 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_simple)
     data_ref.U.isApprox(contact_chol_decomposition.U.bottomRightCorner(model.nv, model.nv)));
 
   ContactCholeskyDecompositionAccessor access(contact_chol_decomposition);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     BOOST_CHECK(access.getParents_fromRow()[k] == data.parents_fromRow[(size_t)k]);
   }
 
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     BOOST_CHECK(access.getNvSubtree_fromRow()[k] == data.nvSubtree_fromRow[(size_t)k]);
   }
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
   contact_chol_decomposition.resize(model, contact_models, contact_datas);
 
   ContactCholeskyDecompositionAccessor access(contact_chol_decomposition);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     if (data.parents_fromRow[(size_t)k] == -1)
       BOOST_CHECK(access.getParents_fromRow()[k + constraint_size] == -1);
@@ -694,7 +694,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_LOCAL)
   contact_chol_decomposition.resize(model, contact_models, contact_datas);
 
   ContactCholeskyDecompositionAccessor access(contact_chol_decomposition);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     if (data.parents_fromRow[(size_t)k] == -1)
       BOOST_CHECK(access.getParents_fromRow()[k + constraint_size] == -1);

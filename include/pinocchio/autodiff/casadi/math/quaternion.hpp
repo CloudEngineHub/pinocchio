@@ -44,7 +44,7 @@ namespace pinocchio
           const Scalar cond2 =
             (cond1 && mat.coeff(2, 2) > mat.coeff(1, 1)) || (mat.coeff(2, 2) > mat.coeff(0, 0));
 
-          for (Eigen::DenseIndex k = 0; k < 4; ++k)
+          for (Eigen::Index k = 0; k < 4; ++k)
           {
             Scalar t_is_negative_cond1 = Scalar::if_else(
               cond1, quat_t_negative_1.coeffs().coeff(k), quat_t_negative_0.coeffs().coeff(k));

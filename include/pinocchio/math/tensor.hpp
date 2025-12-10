@@ -95,11 +95,7 @@ namespace pinocchio
 #ifndef PINOCCHIO_WITH_EIGEN_TENSOR_MODULE
 
   // Mimic the Eigen::Tensor module only available for C++11 and more
-  template<
-    typename Scalar_,
-    int NumIndices_,
-    int Options_ = 0,
-    typename IndexType = Eigen::DenseIndex>
+  template<typename Scalar_, int NumIndices_, int Options_ = 0, typename IndexType = Eigen::Index>
   struct Tensor
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -325,11 +321,7 @@ namespace pinocchio
 #else
 
   // Use the default Eigen::Tensor module
-  template<
-    typename Scalar_,
-    int NumIndices_,
-    int Options_ = 0,
-    typename IndexType = Eigen::DenseIndex>
+  template<typename Scalar_, int NumIndices_, int Options_ = 0, typename IndexType = Eigen::Index>
   using Tensor = Eigen::Tensor<Scalar_, NumIndices_, Options_, IndexType>;
 
 #endif // ifndef PINOCCHIO_WITH_EIGEN_TENSOR_MODULE

@@ -290,7 +290,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL)
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL)
   // Check solutions
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 
-  Eigen::DenseIndex constraint_id = 0;
+  Eigen::Index constraint_id = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = contact_models[k];
@@ -416,7 +416,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_3D)
   contact_models.push_back(ci_RA);
   contact_datas.push_back(RigidConstraintData(ci_RA));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -479,7 +479,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_3D)
   // Check solutions
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 
-  Eigen::DenseIndex constraint_id = 0;
+  Eigen::Index constraint_id = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = contact_models[k];
@@ -596,7 +596,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -651,7 +651,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
   BOOST_CHECK((J_ref * data.ddq + rhs_ref).isZero());
 
-  Eigen::DenseIndex constraint_id = 0;
+  Eigen::Index constraint_id = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = contact_models[k];
@@ -731,7 +731,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   contact_models.push_back(ci_RA);
   contact_datas.push_back(RigidConstraintData(ci_RA));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -885,7 +885,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
 
   std::cout << "acc_3_final:\n" << acc_3_final << std::endl;
 
-  Eigen::DenseIndex constraint_id = 0;
+  Eigen::Index constraint_id = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = contact_models[k];
@@ -935,7 +935,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   std::cout << "ddq: " << data_bis.ddq.transpose() << std::endl;
   std::cout << "ddq: " << data.ddq.transpose() << std::endl;
 
-  //  Eigen::DenseIndex constraint_id = 0;
+  //  Eigen::Index constraint_id = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = contact_models[k];
@@ -1270,7 +1270,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   contact_models.push_back(ci_RA);
   contact_datas.push_back(RigidConstraintData(ci_RA));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -1397,7 +1397,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   Motion acc_3_final = c1Mc2_3.act(data.a[ci_RA.joint2_id]);
   BOOST_CHECK(acc_3_final.isZero());
 
-  Eigen::DenseIndex constraint_id = 0;
+  Eigen::Index constraint_id = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = contact_models[k];
@@ -1656,7 +1656,7 @@ BOOST_AUTO_TEST_CASE(test_contact_ABA_6D)
 
   RigidConstraintDataVector contact_datas_ref(contact_datas);
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -1828,7 +1828,7 @@ BOOST_AUTO_TEST_CASE(test_contact_ABA_3D)
 
   RigidConstraintDataVector contact_datas_ref(contact_datas);
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 

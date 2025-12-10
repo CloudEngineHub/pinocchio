@@ -20,7 +20,7 @@ namespace pinocchio
     typedef typename Vector::Scalar Scalar;
 
     explicit PowerIterationAlgoTpl(
-      const Eigen::DenseIndex size, const int max_it = 10, const Scalar rel_tol = Scalar(1e-8))
+      const Eigen::Index size, const int max_it = 10, const Scalar rel_tol = Scalar(1e-8))
     : principal_eigen_vector(size)
     , lowest_eigen_vector(size)
     , max_it(max_it)

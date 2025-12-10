@@ -55,7 +55,7 @@ namespace pinocchio
       quat_else.w() = Scalar(1) - t2_2 / 2 + t2_2 * t2_2 / 24;
 
       using ::pinocchio::internal::if_then_else;
-      for (Eigen::DenseIndex k = 0; k < 4; ++k)
+      for (Eigen::Index k = 0; k < 4; ++k)
       {
         quat_out.coeffs().coeffRef(k) = if_then_else(
           ::pinocchio::internal::GT, t2, ts_prec, quat_then.coeffs().coeffRef(k),
@@ -249,7 +249,7 @@ namespace pinocchio
         Scalar(2) * (Scalar(1) + th2_2 / Scalar(6) + Scalar(7) / Scalar(360) * th2_2 * th2_2),
         theta / math::sin(theta_2));
 
-      for (Eigen::DenseIndex k = 0; k < 3; ++k)
+      for (Eigen::Index k = 0; k < 3; ++k)
       {
         // res[k] = if_then_else(LT, norm_squared, ts_prec,
         //                       Scalar(2) * (Scalar(1) + y_x_sq / Scalar(6) - y_x_sq*y_x_sq /

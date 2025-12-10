@@ -55,8 +55,8 @@ namespace pinocchio
 
       if (joint1_id > 0 && joint2_id > 0)
       {
-        data.joint_coupling_info(Eigen::DenseIndex(joint1_id), Eigen::DenseIndex(joint2_id)) = true;
-        data.joint_coupling_info(Eigen::DenseIndex(joint2_id), Eigen::DenseIndex(joint1_id)) = true;
+        data.joint_coupling_info(Eigen::Index(joint1_id), Eigen::Index(joint2_id)) = true;
+        data.joint_coupling_info(Eigen::Index(joint2_id), Eigen::Index(joint1_id)) = true;
 
         auto & joint1_neighbours = neighbours[joint1_id];
         if (!helper::exists(joint1_neighbours, joint2_id))
@@ -198,11 +198,11 @@ namespace pinocchio
                                                             : JointPair(parent_id, neighbour_j);
 #define EXIST_JOINT_PAIR(pair)                                                                     \
   bool(                                                                                            \
-    joint_coupling_info(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second))             \
-    && joint_coupling_info(Eigen::DenseIndex(pair.second), Eigen::DenseIndex(pair.first)))
+    joint_coupling_info(Eigen::Index(pair.first), Eigen::Index(pair.second))                       \
+    && joint_coupling_info(Eigen::Index(pair.second), Eigen::Index(pair.first)))
 #define REGISTER_JOINT_PAIR(pair)                                                                  \
-  joint_coupling_info(Eigen::DenseIndex(pair.first), Eigen::DenseIndex(pair.second)) = true;       \
-  joint_coupling_info(Eigen::DenseIndex(pair.second), Eigen::DenseIndex(pair.first)) = true
+  joint_coupling_info(Eigen::Index(pair.first), Eigen::Index(pair.second)) = true;                 \
+  joint_coupling_info(Eigen::Index(pair.second), Eigen::Index(pair.first)) = true
           if (!EXIST_JOINT_PAIR(jp_pair))
           {
             REGISTER_JOINT_PAIR(jp_pair);

@@ -67,23 +67,23 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
     const EigenIndexVector & active_dofs = constraint.getActiveDofs();
     for (size_t row_id = 0; row_id < size_t(constraint.maxResidualSize()); ++row_id)
     {
-      const Eigen::DenseIndex dof_id = active_dofs[row_id];
+      const Eigen::Index dof_id = active_dofs[row_id];
       const BooleanVector & row_sparsity_pattern =
-        constraint.getRowSparsityPattern(constraint_data, Eigen::DenseIndex(row_id));
+        constraint.getRowSparsityPattern(constraint_data, Eigen::Index(row_id));
       const EigenIndexVector & row_active_indexes =
-        constraint.getRowIndexes(constraint_data, Eigen::DenseIndex(row_id));
+        constraint.getRowIndexes(constraint_data, Eigen::Index(row_id));
 
       // Check that the rest of the indexes greater than dof_id are not active.
       BOOST_CHECK((row_sparsity_pattern.tail(model.nv - 1 - dof_id).array() == false).all());
 
-      Eigen::DenseIndex id = dof_id;
+      Eigen::Index id = dof_id;
       while (parents_fromRow[size_t(id)] > -1)
       {
         BOOST_CHECK(row_sparsity_pattern[id] == true);
         id = parents_fromRow[size_t(id)];
       }
 
-      for (const Eigen::DenseIndex active_id : row_active_indexes)
+      for (const Eigen::Index active_id : row_active_indexes)
       {
         BOOST_CHECK(row_sparsity_pattern[active_id] == true);
       }
@@ -137,9 +137,9 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
   constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
 
   const EigenIndexVector & active_dofs = constraint_model.getActiveDofs();
-  for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.maxResidualSize(); ++row_id)
+  for (Eigen::Index row_id = 0; row_id < constraint_model.maxResidualSize(); ++row_id)
   {
-    const Eigen::DenseIndex dof_id = active_dofs[size_t(row_id)];
+    const Eigen::Index dof_id = active_dofs[size_t(row_id)];
     BOOST_CHECK(jacobian_matrix.row(row_id).sum() == 1.);
     BOOST_CHECK(jacobian_matrix(row_id, dof_id) == 1.);
     BOOST_CHECK(

@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(test_matrix_matrix_product)
 {
   using namespace pinocchio;
   using namespace Eigen;
-  const Eigen::DenseIndex m = 20, n = 100;
+  const Eigen::Index m = 20, n = 100;
   MatrixXd M1(MatrixXd::Ones(m, n)), M2(MatrixXd::Ones(n, m));
   MatrixMatrixProduct<MatrixXd, MatrixXd>::type res = M1 * M2;
   BOOST_CHECK(!res.eval().isZero());
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(test_scalar_matrix_product)
 {
   using namespace pinocchio;
   using namespace Eigen;
-  const Eigen::DenseIndex m = 20, n = 100;
+  const Eigen::Index m = 20, n = 100;
   MatrixXd M(MatrixXd::Ones(m, n));
   const double alpha = 0.;
   ScalarMatrixProduct<double, MatrixXd>::type res = alpha * M;
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(test_matrix_scalar_product)
 {
   using namespace pinocchio;
   using namespace Eigen;
-  const Eigen::DenseIndex m = 20, n = 100;
+  const Eigen::Index m = 20, n = 100;
   MatrixXd M(MatrixXd::Ones(m, n));
   const double alpha = 1.;
   MatrixScalarProduct<MatrixXd, double>::type res = M * alpha;
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_eigen_helpers)
 {
   using namespace pinocchio;
   using namespace Eigen;
-  const Eigen::DenseIndex m = 20, n = 100;
+  const Eigen::Index m = 20, n = 100;
 
   MatrixXd M(MatrixXd::Ones(m, n));
 
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_eigen_helpers_on_std_vector)
 {
   using namespace pinocchio;
   using namespace Eigen;
-  const Eigen::DenseIndex m = 20, n = 100;
+  const Eigen::Index m = 20, n = 100;
 
   std::vector<Eigen::MatrixXd> vec(10, MatrixXd::Ones(m, n));
 

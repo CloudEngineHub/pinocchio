@@ -122,7 +122,7 @@ namespace eigenpy
 
     if (MatType::IsVectorAtCompileTime)
     {
-      const Eigen::DenseIndex size_at_compile_time =
+      const Eigen::Index size_at_compile_time =
         MatType::IsRowMajor ? MatType::ColsAtCompileTime : MatType::RowsAtCompileTime;
 
       switch (ndim)

@@ -35,7 +35,7 @@ namespace pinocchio
     typedef Eigen::Map<PlainMatrixType> & RefMapType;
     typedef const Eigen::Map<PlainMatrixType> & ConstRefMapType;
     typedef const Eigen::Map<const PlainMatrixType> ConstMapType;
-    typedef Eigen::DenseIndex Index;
+    typedef Eigen::Index Index;
 
     enum
     {
@@ -283,7 +283,7 @@ namespace pinocchio
     template<typename T>
     void _init2(const T rows, const T cols, std::enable_if_t<!IsVectorAtCompileTime, T> * = 0)
     {
-      m_storage = StorageVector(Eigen::DenseIndex(rows * cols));
+      m_storage = StorageVector(Eigen::Index(rows * cols));
       new (&m_map) MapType(m_storage.data(), rows, cols);
     }
 

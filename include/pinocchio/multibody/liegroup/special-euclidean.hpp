@@ -797,7 +797,7 @@ namespace pinocchio
       res_quat = quat * quat1;
 
       const Scalar dot_product = res_quat.dot(quat);
-      for (Eigen::DenseIndex k = 0; k < 4; ++k)
+      for (Eigen::Index k = 0; k < 4; ++k)
       {
         res_quat.coeffs().coeffRef(k) = if_then_else(
           internal::LT, dot_product, Scalar(0), static_cast<Scalar>(-res_quat.coeffs().coeff(k)),

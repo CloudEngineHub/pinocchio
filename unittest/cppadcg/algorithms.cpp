@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(test_crba_code_generation_pointer)
   ADTangentVectorType ad_a = a.cast<ADScalar>();
 
   ADConfigVectorType ad_X = ADConfigVectorType::Zero(nq + 2 * nv);
-  Eigen::DenseIndex i = 0;
+  Eigen::Index i = 0;
   ad_X.segment(i, nq) = ad_q;
   i += nq;
   ad_X.segment(i, nv) = ad_v;

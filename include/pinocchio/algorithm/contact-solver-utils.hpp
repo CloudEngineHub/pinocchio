@@ -84,7 +84,7 @@ namespace pinocchio
       const Eigen::DenseBase<VectorLikeOut> & x_proj_)
     {
       assert(x.size() == x_proj_.size());
-      Eigen::DenseIndex index = 0;
+      Eigen::Index index = 0;
       VectorLikeOut & x_proj = x_proj_.const_cast_derived();
 
       typedef typename VectorLikeIn::ConstSegmentReturnType SegmentType1;
@@ -177,7 +177,7 @@ namespace pinocchio
       const Eigen::DenseBase<VectorLikeOut> & x_proj_)
     {
       assert(x.size() == x_proj_.size());
-      Eigen::DenseIndex index = 0;
+      Eigen::Index index = 0;
       VectorLikeOut & x_proj = x_proj_.const_cast_derived();
 
       typedef typename VectorLikeIn::ConstSegmentReturnType SegmentType1;
@@ -304,7 +304,7 @@ namespace pinocchio
     {
       assert(x.size() == x_proj_.size());
       VectorLikeOut & x_proj = x_proj_.const_cast_derived();
-      Eigen::DenseIndex index = 0;
+      Eigen::Index index = 0;
 
       typedef typename VectorLikeIn::ConstSegmentReturnType SegmentType1;
       typedef typename VectorLikeOut::SegmentReturnType SegmentType2;
@@ -380,7 +380,7 @@ namespace pinocchio
         const auto & lb = set.lb;
         const auto & ub = set.ub;
         Scalar complementarity = Scalar(0);
-        for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
+        for (Eigen::Index row_id = 0; row_id < size; ++row_id)
         {
           const Scalar velocity_positive_part = math::max(Scalar(0), velocity[row_id]);
           const Scalar velocity_negative_part = velocity_positive_part - velocity[row_id];
@@ -405,7 +405,7 @@ namespace pinocchio
         assert(force.size() == velocity.size());
 
         Scalar complementarity = Scalar(0);
-        for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
+        for (Eigen::Index row_id = 0; row_id < size; ++row_id)
         {
           const Scalar row_complementarity = math::fabs(Scalar(velocity[row_id] * force[row_id]));
           complementarity = math::max(complementarity, row_complementarity);
@@ -450,7 +450,7 @@ namespace pinocchio
       Scalar & complementarity)
     {
       assert(velocities.size() == forces.size());
-      Eigen::DenseIndex index = 0;
+      Eigen::Index index = 0;
       complementarity = Scalar(0);
 
       typedef typename VectorLikeVelocity::ConstSegmentReturnType SegmentType1;
@@ -558,7 +558,7 @@ namespace pinocchio
       typedef typename VectorLikeIn::ConstSegmentReturnType SegmentType1;
       typedef typename VectorLikeOut::SegmentReturnType SegmentType2;
 
-      Eigen::DenseIndex index = 0;
+      Eigen::Index index = 0;
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
@@ -583,7 +583,7 @@ namespace pinocchio
       typedef typename ConstraintSet::Vector3 Vector3;
       typedef typename ConstraintSet::Scalar Scalar;
 
-      Eigen::DenseIndex index = 0;
+      Eigen::Index index = 0;
       Scalar norm(0);
       for (const auto & set : sets)
       {
@@ -610,7 +610,7 @@ namespace pinocchio
       typedef typename ConstraintSet::Vector3 Vector3;
       typedef typename ConstraintSet::Scalar Scalar;
 
-      Eigen::DenseIndex index = 0;
+      Eigen::Index index = 0;
       Scalar norm(0);
       for (const auto & set : sets)
       {
@@ -635,7 +635,7 @@ namespace pinocchio
     //   typedef CoulombFrictionConeTpl<Scalar> Cone;
     //   typedef typename Cone::Vector3 Vector3;
     //
-    //   Eigen::DenseIndex index = 0;
+    //   Eigen::Index index = 0;
     //   Scalar norm = 0;
     //   for(const auto & cone: cones)
     //   {
@@ -731,7 +731,7 @@ namespace pinocchio
       using SegmentType = typename VectorLikeOut::SegmentReturnType;
       VectorLikeOut & time_scaling = time_scaling_.const_cast_derived();
 
-      Eigen::DenseIndex cindex = 0;
+      Eigen::Index cindex = 0;
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);

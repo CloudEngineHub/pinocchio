@@ -75,16 +75,16 @@ namespace pinocchio
 
       if (geom1_is_selected)
       {
-        const Eigen::DenseIndex geom1_id_local =
-          static_cast<Eigen::DenseIndex>(geometry_to_collision_index[geom1_id]);
+        const Eigen::Index geom1_id_local =
+          static_cast<Eigen::Index>(geometry_to_collision_index[geom1_id]);
         collision_object_inflation[geom1_id_local] =
           (std::max)(inflation, collision_object_inflation[geom1_id_local]);
       }
 
       if (geom2_is_selected)
       {
-        const Eigen::DenseIndex geom2_id_local =
-          static_cast<Eigen::DenseIndex>(geometry_to_collision_index[geom2_id]);
+        const Eigen::Index geom2_id_local =
+          static_cast<Eigen::Index>(geometry_to_collision_index[geom2_id]);
         collision_object_inflation[geom2_id_local] =
           (std::max)(inflation, collision_object_inflation[geom2_id_local]);
       }
@@ -109,7 +109,7 @@ namespace pinocchio
         collision_obj.setCollisionGeometry(new_geometry, compute_local_aabb);
 
       collision_obj.computeAABB();
-      collision_obj.getAABB().expand(collision_object_inflation[static_cast<Eigen::DenseIndex>(k)]);
+      collision_obj.getAABB().expand(collision_object_inflation[static_cast<Eigen::Index>(k)]);
     }
 
     // Remove deactivated collision objects

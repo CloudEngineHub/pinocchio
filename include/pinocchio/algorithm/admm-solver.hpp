@@ -340,8 +340,8 @@ namespace pinocchio
     , linear_update_rule_factor(linear_update_rule_factor)
     , ratio_primal_dual(ratio_primal_dual)
     , lanczos_decomposition(
-        static_cast<Eigen::DenseIndex>(math::max(2, problem_dim)),
-        static_cast<Eigen::DenseIndex>(math::max(2, math::min(lanczos_size, problem_dim))))
+        static_cast<Eigen::Index>(math::max(2, problem_dim)),
+        static_cast<Eigen::Index>(math::max(2, math::min(lanczos_size, problem_dim))))
     , x_(VectorXs::Zero(problem_dim))
     , x_anderson_(VectorXs::Zero(problem_dim))
     , y_(VectorXs::Zero(problem_dim))
@@ -546,8 +546,8 @@ namespace pinocchio
         || new_lanczos_decomposition_size != this->lanczos_decomposition.decompositionSize())
       {
         this->lanczos_decomposition = LanczosDecomposition(
-          static_cast<Eigen::DenseIndex>(new_lanczos_size),
-          static_cast<Eigen::DenseIndex>(new_lanczos_decomposition_size));
+          static_cast<Eigen::Index>(new_lanczos_size),
+          static_cast<Eigen::Index>(new_lanczos_decomposition_size));
       }
     }
 

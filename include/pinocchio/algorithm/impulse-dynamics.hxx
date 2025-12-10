@@ -88,7 +88,7 @@ namespace pinocchio
       Ag_ang.col(i) += Ag_lin.col(i).cross(data.com[0]);
 
     primal_dual_contact_solution.tail(model.nv).setZero();
-    Eigen::DenseIndex current_row_id = 0;
+    Eigen::Index current_row_id = 0;
     for (size_t contact_id = 0; contact_id < contact_models.size(); ++contact_id)
     {
       const RigidConstraintModel & contact_model = contact_models[contact_id];
@@ -153,7 +153,7 @@ namespace pinocchio
     data.impulse_c = -primal_dual_contact_solution.head(contact_chol.constraintDim());
 
     // Retrieve the impulses
-    Eigen::DenseIndex current_row_sol_id = 0;
+    Eigen::Index current_row_sol_id = 0;
     for (size_t contact_id = 0; contact_id < contact_models.size(); ++contact_id)
     {
       const RigidConstraintModel & contact_model = contact_models[contact_id];

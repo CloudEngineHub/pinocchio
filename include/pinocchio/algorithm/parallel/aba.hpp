@@ -69,8 +69,8 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(q.cols(), res.cols());
 
     setDefaultOpenMPSettings(num_threads);
-    const Eigen::DenseIndex batch_size = res.cols();
-    Eigen::DenseIndex i = 0;
+    const Eigen::Index batch_size = res.cols();
+    Eigen::Index i = 0;
 
 #pragma omp parallel for schedule(                                                                 \
     static) // we use static here as this is the same computationnal cost for all threads

@@ -189,7 +189,7 @@ namespace pinocchio
       typedef Eigen::Block<typename Data::Matrix6x, 3, -1> Block3x;
       const Block3x Ag_lin = data.Ag.template middleRows<3>(Force::LINEAR);
       Block3x Ag_ang = data.Ag.template middleRows<3>(Force::ANGULAR);
-      for (Eigen::DenseIndex i = 0; i < model.nv; ++i)
+      for (Eigen::Index i = 0; i < model.nv; ++i)
         Ag_ang.col(i) += Ag_lin.col(i).cross(data.com[0]);
 
       data.hg.toVector().noalias() = data.Ag * v;
@@ -338,7 +338,7 @@ namespace pinocchio
 
       const Block3x Ag_lin = data.Ag.template middleRows<3>(Force::LINEAR);
       Block3x Ag_ang = data.Ag.template middleRows<3>(Force::ANGULAR);
-      for (Eigen::DenseIndex i = 0; i < model.nv; ++i)
+      for (Eigen::Index i = 0; i < model.nv; ++i)
         Ag_ang.col(i) += Ag_lin.col(i).cross(data.com[0]);
 
       data.hg.toVector().noalias() = data.Ag * v;
@@ -346,7 +346,7 @@ namespace pinocchio
 
       const Block3x dAg_lin = data.dAg.template middleRows<3>(Force::LINEAR);
       Block3x dAg_ang = data.dAg.template middleRows<3>(Force::ANGULAR);
-      for (Eigen::DenseIndex i = 0; i < model.nv; ++i)
+      for (Eigen::Index i = 0; i < model.nv; ++i)
         dAg_ang.col(i) += dAg_lin.col(i).cross(data.com[0]) + Ag_lin.col(i).cross(data.vcom[0]);
 
       data.Ig.mass() = data.oYcrb[0].mass();
@@ -401,13 +401,13 @@ namespace pinocchio
 
       const Block3x Ag_lin = data.Ag.template middleRows<3>(Force::LINEAR);
       Block3x Ag_ang = data.Ag.template middleRows<3>(Force::ANGULAR);
-      for (Eigen::DenseIndex i = 0; i < model.nv; ++i)
+      for (Eigen::Index i = 0; i < model.nv; ++i)
         Ag_ang.col(i) += Ag_lin.col(i).cross(data.com[0]);
 
       // Express the centroidal time derivative map around the center of mass
       const Block3x dAg_lin = data.dAg.template middleRows<3>(Force::LINEAR);
       Block3x dAg_ang = data.dAg.template middleRows<3>(Force::ANGULAR);
-      for (Eigen::DenseIndex i = 0; i < model.nv; ++i)
+      for (Eigen::Index i = 0; i < model.nv; ++i)
       {
         dAg_ang.col(i) += dAg_lin.col(i).cross(data.com[0]) + Ag_lin.col(i).cross(data.vcom[0]);
       }

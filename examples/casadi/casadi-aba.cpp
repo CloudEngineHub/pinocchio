@@ -55,7 +55,7 @@ int main(int /*argc*/, char ** /*argv*/)
   aba(ad_model, ad_data, q_ad, v_ad, tau_ad);
   ::casadi::SX a_ad(model.nv, 1);
 
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
     a_ad(k) = ad_data.ddq[k];
 
   ::casadi::Function eval_aba(

@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_jointRX_motion_space)
   TangentVector v(TangentVector::Random(jmodel.nv()));
   VectorXAD X(jmodel_ad.nv());
 
-  for (Eigen::DenseIndex k = 0; k < jmodel.nv(); ++k)
+  for (Eigen::Index k = 0; k < jmodel.nv(); ++k)
   {
     X[k] = v[k];
   }
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(test_jointRX_motion_space)
   Motion m(jdata.v);
   JointMotionSubspaceXd Sref(jdata.S.matrix());
 
-  for (Eigen::DenseIndex k = 0; k < 3; ++k)
+  for (Eigen::Index k = 0; k < 3; ++k)
   {
     Y[k + Motion::LINEAR] = m_ad.linear()[k];
     Y[k + Motion::ANGULAR] = m_ad.angular()[k];
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(test_jointRX_motion_space)
   CppAD::ADFun<double> vjoint(X, Y);
 
   CPPAD_TESTVECTOR(double) x((size_t)jmodel_ad.nv());
-  for (Eigen::DenseIndex k = 0; k < jmodel.nv(); ++k)
+  for (Eigen::Index k = 0; k < jmodel.nv(); ++k)
   {
     x[(size_t)k] = v[k];
   }
@@ -257,7 +257,7 @@ struct TestADOnJoints
     TangentVector v(TangentVector::Random(jmodel.nv()));
     VectorXAD X(jmodel_ad.nv());
 
-    for (Eigen::DenseIndex k = 0; k < jmodel.nv(); ++k)
+    for (Eigen::Index k = 0; k < jmodel.nv(); ++k)
     {
       X[k] = v[k];
     }
@@ -269,7 +269,7 @@ struct TestADOnJoints
     Motion m(jdata_base.v());
     JointMotionSubspaceXd Sref(jdata_base.S().matrix());
 
-    for (Eigen::DenseIndex k = 0; k < 3; ++k)
+    for (Eigen::Index k = 0; k < 3; ++k)
     {
       Y[k + Motion::LINEAR] = m_ad.linear()[k];
       Y[k + Motion::ANGULAR] = m_ad.angular()[k];
@@ -278,7 +278,7 @@ struct TestADOnJoints
     CppAD::ADFun<Scalar> vjoint(X, Y);
 
     CPPAD_TESTVECTOR(Scalar) x((size_t)jmodel_ad.nv());
-    for (Eigen::DenseIndex k = 0; k < jmodel.nv(); ++k)
+    for (Eigen::Index k = 0; k < jmodel.nv(); ++k)
     {
       x[(size_t)k] = v[k];
     }

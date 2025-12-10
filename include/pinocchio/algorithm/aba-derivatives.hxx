@@ -359,7 +359,7 @@ namespace pinocchio
         }
 
         // Restore the status of dAdq_cols (remove gravity)
-        for (Eigen::DenseIndex k = 0; k < jmodel.nv(); ++k)
+        for (Eigen::Index k = 0; k < jmodel.nv(); ++k)
         {
           MotionRef<typename ColsBlock::ColXpr> m_in(J_cols.col(k));
           MotionRef<typename ColsBlock::ColXpr> m_out(dAdq_cols.col(k));

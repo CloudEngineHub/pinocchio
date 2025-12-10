@@ -434,7 +434,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
     delassus_operator.getAugmentedMassMatrixOperator().solveInPlace(res);
     BOOST_CHECK(res.isApprox(col_ref, 1e-10));
 
-    for (Eigen::DenseIndex col_id = 0; col_id < model.nv; ++col_id)
+    for (Eigen::Index col_id = 0; col_id < model.nv; ++col_id)
     {
       const Eigen::VectorXd rhs = Eigen::VectorXd::Unit(model.nv, col_id);
       const auto res_ref = (M_augmented_inv * rhs).eval();
@@ -452,7 +452,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
       + mu_inv * Eigen::MatrixXd::Identity(delassus_size, delassus_size);
     const Eigen::MatrixXd delassus_dense_inv = delassus_dense.inverse();
 
-    for (Eigen::DenseIndex col_id = 0; col_id < delassus_size; ++col_id)
+    for (Eigen::Index col_id = 0; col_id < delassus_size; ++col_id)
     {
       const Eigen::VectorXd rhs = Eigen::VectorXd::Unit(delassus_size, col_id);
       const auto res_ref = (delassus_dense_inv * rhs).eval();
@@ -541,7 +541,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
       + new_damping_value * Eigen::MatrixXd::Identity(delassus_size, delassus_size);
     const Eigen::MatrixXd delassus_dense_inv = delassus_dense.inverse();
 
-    for (Eigen::DenseIndex col_id = 0; col_id < delassus_size; ++col_id)
+    for (Eigen::Index col_id = 0; col_id < delassus_size; ++col_id)
     {
       const Eigen::VectorXd rhs = Eigen::VectorXd::Unit(delassus_size, col_id);
       const auto res_ref = (delassus_dense_inv * rhs).eval();
@@ -886,7 +886,7 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
 
     BOOST_CHECK(res.isApprox(col_ref, 1e-10));
 
-    for (Eigen::DenseIndex col_id = 0; col_id < model.nv; ++col_id)
+    for (Eigen::Index col_id = 0; col_id < model.nv; ++col_id)
     {
       const Eigen::VectorXd rhs = Eigen::VectorXd::Unit(model.nv, col_id);
       const auto res_ref = (M_augmented_inv * rhs).eval();
@@ -904,7 +904,7 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
       + mu_inv * Eigen::MatrixXd::Identity(delassus_size, delassus_size);
     const Eigen::MatrixXd delassus_dense_inv = delassus_dense.inverse();
 
-    for (Eigen::DenseIndex col_id = 0; col_id < delassus_size; ++col_id)
+    for (Eigen::Index col_id = 0; col_id < delassus_size; ++col_id)
     {
       const Eigen::VectorXd rhs = Eigen::VectorXd::Unit(delassus_size, col_id);
       const auto res_ref = (delassus_dense_inv * rhs).eval();
@@ -1147,7 +1147,7 @@ void test_solve_in_place(
   delassus_operator.getAugmentedMassMatrixOperator().solveInPlace(res);
   BOOST_CHECK(res.isApprox(col_ref, 1e-10));
 
-  for (Eigen::DenseIndex col_id = 0; col_id < model.nv; ++col_id)
+  for (Eigen::Index col_id = 0; col_id < model.nv; ++col_id)
   {
     const Eigen::VectorXd rhs = Eigen::VectorXd::Unit(model.nv, col_id);
     const auto res_ref = (M_augmented_inv * rhs).eval();
@@ -1165,7 +1165,7 @@ void test_solve_in_place(
     + damping_value * Eigen::MatrixXd::Identity(delassus_size, delassus_size);
   const Eigen::MatrixXd delassus_dense_inv = delassus_dense.inverse();
 
-  for (Eigen::DenseIndex col_id = 0; col_id < delassus_size; ++col_id)
+  for (Eigen::Index col_id = 0; col_id < delassus_size; ++col_id)
   {
     const Eigen::VectorXd rhs = Eigen::VectorXd::Unit(delassus_size, col_id);
     const auto res_ref = (delassus_dense_inv * rhs).eval();
@@ -1407,7 +1407,7 @@ BOOST_AUTO_TEST_CASE(general_test_no_constraints)
 
   // Test solveInPlace
   {
-    const Eigen::DenseIndex col_id = 7;
+    const Eigen::Index col_id = 7;
     const Eigen::VectorXd rhs = Eigen::VectorXd::Unit(model.nv, col_id);
     Eigen::VectorXd res = rhs;
 
@@ -1447,7 +1447,7 @@ BOOST_AUTO_TEST_CASE(general_test_no_constraints)
     BOOST_CHECK(res.isApprox(M_inv.col(col_id)));
     BOOST_CHECK(res.isApprox(res_ref));
 
-    for (Eigen::DenseIndex col_id = 0; col_id < model.nv; ++col_id)
+    for (Eigen::Index col_id = 0; col_id < model.nv; ++col_id)
     {
       const Eigen::VectorXd rhs = Eigen::VectorXd::Unit(model.nv, col_id);
       const auto res_ref =

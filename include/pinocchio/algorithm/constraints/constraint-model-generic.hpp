@@ -243,14 +243,14 @@ namespace pinocchio
 
     /// \copydoc RootBase::getRowIndexes
     const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
+    getRowIndexesImpl(const ConstraintData & constraint_data, const Eigen::Index row_id) const
     {
       return ::pinocchio::visitors::getRowIndexes(*this, constraint_data, row_id);
     }
 
     /// \copydoc RootBase::getRowSparsityPattern
     const BooleanVector & getRowSparsityPatternImpl(
-      const ConstraintData & constraint_data, const Eigen::DenseIndex row_id) const
+      const ConstraintData & constraint_data, const Eigen::Index row_id) const
     {
       return ::pinocchio::visitors::getRowSparsityPattern(*this, constraint_data, row_id);
     }

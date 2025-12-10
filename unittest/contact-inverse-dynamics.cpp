@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
   Eigen::VectorXd tau = Eigen::VectorXd::Random(model.nv);
   Eigen::VectorXd a = Eigen::VectorXd::Zero(model.nv);
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (const auto & cmodel : constraint_models)
   {
     // We know that point contact is of constant size

@@ -314,10 +314,10 @@ BOOST_AUTO_TEST_CASE(test_pool_talos_memory)
   ;
   BroadPhaseManagerPool broadphase_manager_pool(model, geometry_model, num_thread);
 
-  const Eigen::DenseIndex batch_size = 2048;
+  const Eigen::Index batch_size = 2048;
   const Eigen::VectorXd qmax = Eigen::VectorXd::Ones(model.nq);
   Eigen::MatrixXd q(model.nq, batch_size);
-  for (Eigen::DenseIndex i = 0; i < batch_size; ++i)
+  for (Eigen::Index i = 0; i < batch_size; ++i)
   {
     q.col(i) = randomConfiguration(model, -qmax, qmax);
   }
@@ -355,11 +355,11 @@ BOOST_AUTO_TEST_CASE(test_pool_talos)
   GeometryData geometry_data_ref(geometry_model);
 
   const Eigen::VectorXd qmax = Eigen::VectorXd::Ones(model.nq);
-  const Eigen::DenseIndex batch_size = 2048;
+  const Eigen::Index batch_size = 2048;
   const size_t num_thread = (size_t)omp_get_max_threads();
 
   Eigen::MatrixXd q(model.nq, batch_size);
-  for (Eigen::DenseIndex i = 0; i < batch_size; ++i)
+  for (Eigen::Index i = 0; i < batch_size; ++i)
   {
     q.col(i) = randomConfiguration(model, -qmax, qmax);
   }
@@ -368,7 +368,7 @@ BOOST_AUTO_TEST_CASE(test_pool_talos)
 
   VectorXb res_ref(batch_size);
   res_ref.fill(false);
-  for (Eigen::DenseIndex i = 0; i < batch_size; ++i)
+  for (Eigen::Index i = 0; i < batch_size; ++i)
   {
     res_ref[i] = computeCollisions(model, data_ref, geometry_model, geometry_data_ref, q.col(i));
   }
@@ -397,7 +397,7 @@ BOOST_AUTO_TEST_CASE(test_pool_talos)
     BOOST_CHECK(res1 == res_ref);
     BOOST_CHECK(res2 == res_ref);
 
-    for (Eigen::DenseIndex k = 0; k < batch_size; ++k)
+    for (Eigen::Index k = 0; k < batch_size; ++k)
     {
       if (res3[k])
         BOOST_CHECK(res_ref[k]);
@@ -420,7 +420,7 @@ BOOST_AUTO_TEST_CASE(test_pool_talos)
     BOOST_CHECK(res1 == res_ref);
     BOOST_CHECK(res2 == res_ref);
 
-    for (Eigen::DenseIndex k = 0; k < batch_size; ++k)
+    for (Eigen::Index k = 0; k < batch_size; ++k)
     {
       if (res3[k])
         BOOST_CHECK(res_ref[k]);

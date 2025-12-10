@@ -88,7 +88,7 @@ namespace pinocchio
         // The following commented lines produced some memory allocation.
         // Should be replaced by a manual loop
         //          tmp_mat.array().colwise() *= -self.D.head(self.constraintDim()).array();
-        for (Eigen::DenseIndex i = 0; i < x.cols(); ++i)
+        for (Eigen::Index i = 0; i < x.cols(); ++i)
           tmp_mat.col(i).array() *= -self.D.head(self.constraintDim()).array();
 
         //            res.const_cast_derived().noalias() = U1 * tmp_mat;
@@ -132,7 +132,7 @@ namespace pinocchio
       // Should be replaced by a manual loop
       //        x.const_cast_derived().array().colwise() *=
       //        -self.Dinv.head(self.constraintDim()).array();
-      for (Eigen::DenseIndex i = 0; i < x.cols(); ++i)
+      for (Eigen::Index i = 0; i < x.cols(); ++i)
         x.const_cast_derived().col(i).array() *= -self.Dinv.head(self.constraintDim()).array();
 
       U1.adjoint().solveInPlace(x);
@@ -256,15 +256,15 @@ namespace pinocchio
       const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mu);
     }
 
-    Eigen::DenseIndex size() const
+    Eigen::Index size() const
     {
       return self.constraintDim();
     }
-    Eigen::DenseIndex rows() const
+    Eigen::Index rows() const
     {
       return size();
     }
-    Eigen::DenseIndex cols() const
+    Eigen::Index cols() const
     {
       return size();
     }

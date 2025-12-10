@@ -104,8 +104,8 @@ BOOST_AUTO_TEST_CASE(matrix_stack_default)
   }
 
   { // case with memory allocation
-    const Eigen::DenseIndex max_rows = 3;
-    const Eigen::DenseIndex max_cols = 4;
+    const Eigen::Index max_rows = 3;
+    const Eigen::Index max_cols = 4;
     const std::size_t matrix_max_size = max_rows * max_cols;
     MatrixXsStack matrix_stack(100, matrix_max_size);
     BOOST_CHECK(matrix_stack.size() == 0);

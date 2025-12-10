@@ -503,7 +503,7 @@ namespace pinocchio
         typedef PowerIterationAlgoTpl<context::VectorXs> PowerIterationAlgo;
         bp::class_<PowerIterationAlgo>(
           "PowerIterationAlgo", "",
-          bp::init<Eigen::DenseIndex, int, Scalar>(
+          bp::init<Eigen::Index, int, Scalar>(
             (bp::arg("self"), bp::arg("size"), bp::arg("max_it") = 10, bp::arg("rel_tol") = 1e-8),
             "Default constructor"))
           .def("run", &PowerIterationAlgo::run<context::MatrixXs>, bp::arg("self"), "")

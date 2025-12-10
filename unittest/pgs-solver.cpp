@@ -45,7 +45,7 @@ struct TestBoxTpl
       constraint_datas.push_back(cm.createData());
     }
 
-    const Eigen::DenseIndex constraint_size = getTotalConstraintMaxResidualSize(constraint_models);
+    const Eigen::Index constraint_size = getTotalConstraintMaxResidualSize(constraint_models);
     dual_solution = primal_solution = primal_solution_sparse =
       Eigen::VectorXd::Zero(constraint_size);
   }

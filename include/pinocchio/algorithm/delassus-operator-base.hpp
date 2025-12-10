@@ -217,15 +217,15 @@ namespace pinocchio
       return derived().getDamping();
     }
 
-    Eigen::DenseIndex size() const
+    Eigen::Index size() const
     {
       return derived().size();
     }
-    Eigen::DenseIndex rows() const
+    Eigen::Index rows() const
     {
       return derived().rows();
     }
-    Eigen::DenseIndex cols() const
+    Eigen::Index cols() const
     {
       return derived().cols();
     }

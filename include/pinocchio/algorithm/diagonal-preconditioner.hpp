@@ -138,11 +138,11 @@ namespace pinocchio
       x_.array() = x_bar.array() * m_squared_diagonal.array();
     }
 
-    Eigen::DenseIndex rows() const
+    Eigen::Index rows() const
     {
       return m_diagonal.size();
     }
-    Eigen::DenseIndex cols() const
+    Eigen::Index cols() const
     {
       return m_diagonal.size();
     }

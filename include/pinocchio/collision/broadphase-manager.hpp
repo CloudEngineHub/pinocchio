@@ -74,7 +74,7 @@ namespace pinocchio
       }
 
       collision_object_inflation.resize(
-        static_cast<Eigen::DenseIndex>(selected_geometry_objects.size()));
+        static_cast<Eigen::Index>(selected_geometry_objects.size()));
 
       init();
     }

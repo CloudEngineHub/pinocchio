@@ -171,7 +171,7 @@ namespace pinocchio
       typedef Eigen::Map<VectorXs> MapVectorXs;
       MapVectorXs x = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, this->size(), 1));
 
-      for (Eigen::DenseIndex i = 0; i < this->size(); ++i)
+      for (Eigen::Index i = 0; i < this->size(); ++i)
       {
         x = VectorXs::Unit(this->size(), i);
         this->applyOnTheRight(x, res_.col(i));
@@ -245,15 +245,15 @@ namespace pinocchio
       return helper::get_ref(m_constraint_datas_ref);
     }
 
-    Eigen::DenseIndex size() const
+    Eigen::Index size() const
     {
       return m_size;
     }
-    Eigen::DenseIndex rows() const
+    Eigen::Index rows() const
     {
       return m_size;
     }
-    Eigen::DenseIndex cols() const
+    Eigen::Index cols() const
     {
       return m_size;
     }
@@ -414,7 +414,7 @@ namespace pinocchio
     }
 
     // Holders
-    Eigen::DenseIndex m_size;
+    Eigen::Index m_size;
     ModelHolder m_model_ref;
     DataHolder m_data_ref;
     ConstraintModelVectorHolder m_constraint_models_ref;

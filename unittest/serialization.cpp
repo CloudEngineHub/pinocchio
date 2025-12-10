@@ -238,10 +238,10 @@ BOOST_AUTO_TEST_CASE(test_eigen_serialization)
 {
   using namespace pinocchio;
 
-  const Eigen::DenseIndex num_cols = 10;
-  const Eigen::DenseIndex num_rows = 20;
+  const Eigen::Index num_cols = 10;
+  const Eigen::Index num_rows = 20;
 
-  const Eigen::DenseIndex array_size = 3;
+  const Eigen::Index array_size = 3;
 
   Eigen::MatrixXd Mat = Eigen::MatrixXd::Random(num_rows, num_cols);
   generic_test(Mat, TEST_SERIALIZATION_FOLDER "/eigen_matrix", "matrix");
@@ -249,14 +249,14 @@ BOOST_AUTO_TEST_CASE(test_eigen_serialization)
   Eigen::VectorXd Vec = Eigen::VectorXd::Random(num_rows * num_cols);
   generic_test(Vec, TEST_SERIALIZATION_FOLDER "/eigen_vector", "vector");
 
-  Eigen::array<Eigen::DenseIndex, array_size> array = {1, 2, 3};
+  Eigen::array<Eigen::Index, array_size> array = {1, 2, 3};
   generic_test(array, TEST_SERIALIZATION_FOLDER "/eigen_array", "array");
 
   Eigen::ArrayXXd Array = Eigen::ArrayXXd::Random(num_rows, num_cols);
   generic_test(Array, TEST_SERIALIZATION_FOLDER "/eigen_array", "array");
 
-  const Eigen::DenseIndex tensor_size = 3;
-  const Eigen::DenseIndex x_dim = 10, y_dim = 20, z_dim = 30;
+  const Eigen::Index tensor_size = 3;
+  const Eigen::Index x_dim = 10, y_dim = 20, z_dim = 30;
 
   typedef pinocchio::Tensor<double, tensor_size> Tensor3x;
   Tensor3x tensor(x_dim, y_dim, z_dim);
@@ -863,7 +863,7 @@ BOOST_AUTO_TEST_CASE(test_geometry_model_and_data_serialization)
 
       const double min_altitude = -1.;
       const double x_dim = 1., y_dim = 2.;
-      const Eigen::DenseIndex nx = 100, ny = 200;
+      const Eigen::Index nx = 100, ny = 200;
       const Eigen::MatrixXd heights = Eigen::MatrixXd::Random(ny, nx);
 
       HeightField<OBBRSS> * hfield_ptr =
@@ -1198,7 +1198,7 @@ BOOST_AUTO_TEST_CASE(double_entry_container)
   typedef pinocchio::container::DoubleEntryContainer<std::vector<Matrix6>> DoubleEntryContainer;
 
   DoubleEntryContainer container(10, 20);
-  for (Eigen::DenseIndex k = 0; k < 10; ++k)
+  for (Eigen::Index k = 0; k < 10; ++k)
   {
     container.insert({k, k}, Matrix6::Random());
   }

@@ -36,7 +36,7 @@ namespace pinocchio
     template<typename Scalar, int Options, typename VectorLike>
     VectorLike & inverseAlgo(
       const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
-      const Eigen::DenseIndex col,
+      const Eigen::Index col,
       const Eigen::MatrixBase<VectorLike> & vec);
   } // namespace details
 
@@ -83,7 +83,7 @@ namespace pinocchio
     typedef RigidConstraintModelTpl<Scalar, Options> RigidConstraintModel;
     typedef RigidConstraintDataTpl<Scalar, Options> RigidConstraintData;
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
-    typedef Eigen::Matrix<Eigen::DenseIndex, Eigen::Dynamic, 1, Options> EigenIndexVector;
+    typedef Eigen::Matrix<Eigen::Index, Eigen::Dynamic, 1, Options> EigenIndexVector;
     typedef
       typename PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(EigenIndexVector) VectorOfEigenIndexVector;
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
@@ -92,14 +92,14 @@ namespace pinocchio
     /// \brief Data information related to the Sparsity structure of the Cholesky decompostion
     struct Slice
     {
-      Slice(const Eigen::DenseIndex & first_index, const Eigen::DenseIndex & size)
+      Slice(const Eigen::Index & first_index, const Eigen::Index & size)
       : first_index(first_index)
       , size(size)
       {
       }
 
-      Eigen::DenseIndex first_index;
-      Eigen::DenseIndex size;
+      Eigen::Index first_index;
+      Eigen::Index size;
     };
 
     typedef DelassusCholeskyExpressionTpl<ContactCholeskyDecompositionTpl>
@@ -499,14 +499,14 @@ namespace pinocchio
     }
 
     /// \brief Size of the decomposition
-    Eigen::DenseIndex size() const
+    Eigen::Index size() const
     {
       return D.size();
     }
 
     /// \brief Returns the total dimension of the constraints contained in the Cholesky
     /// factorization
-    Eigen::DenseIndex constraintDim() const
+    Eigen::Index constraintDim() const
     {
       return size() - nv;
     }
@@ -603,7 +603,7 @@ namespace pinocchio
     template<typename Scalar, int Options, typename VectorLike>
     friend VectorLike & details::inverseAlgo(
       const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
-      const Eigen::DenseIndex col,
+      const Eigen::Index col,
       const Eigen::MatrixBase<VectorLike> & vec);
     ///@}
 
@@ -622,7 +622,7 @@ namespace pinocchio
     typename EigenStorageVector::RefMapType DUt; // temporary containing the results of D * U^t
 
     /// \brief Dimension of the tangent of the configuration space of the model
-    Eigen::DenseIndex nv;
+    Eigen::Index nv;
 
     VectorOfSliceVector rowise_sparsity_pattern;
 

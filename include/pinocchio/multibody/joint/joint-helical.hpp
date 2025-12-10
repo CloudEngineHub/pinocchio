@@ -283,7 +283,7 @@ namespace pinocchio
     template<typename MotionDerived>
     void setTo(MotionDense<MotionDerived> & m) const
     {
-      for (Eigen::DenseIndex k = 0; k < 3; ++k)
+      for (Eigen::Index k = 0; k < 3; ++k)
       {
         m.angular()[k] = k == axis ? m_w : (Scalar)0;
         m.linear()[k] = k == axis ? m_v : (Scalar)0;

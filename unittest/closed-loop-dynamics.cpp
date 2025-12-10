@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(closed_loop_constraint_6D_LOCAL)
   contact_models.push_back(ci_RF_LF);
   contact_datas.push_back(RigidConstraintData(ci_RF_LF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 

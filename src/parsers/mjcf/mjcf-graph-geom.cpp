@@ -90,7 +90,7 @@ namespace pinocchio
           {
             auto vertices = currentMesh.vertices;
             // Scale vertices
-            for (Eigen::DenseIndex i = 0; i < vertices.rows(); ++i)
+            for (Eigen::Index i = 0; i < vertices.rows(); ++i)
               vertices.row(i) = vertices.row(i).cwiseProduct(currentMesh.scale.transpose());
             auto model = std::make_shared<hpp::fcl::BVHModel<fcl::OBBRSS>>();
             model->beginModel();

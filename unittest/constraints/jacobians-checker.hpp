@@ -27,7 +27,7 @@ namespace pinocchio
     const int num_tests = int(1e2);
 #endif
 
-    const Eigen::DenseIndex m = 40;
+    const Eigen::Index m = 40;
     for (int k = 0; k < num_tests; ++k)
     {
       const Data::MatrixXs mat = Data::MatrixXs::Random(model.nv, m);

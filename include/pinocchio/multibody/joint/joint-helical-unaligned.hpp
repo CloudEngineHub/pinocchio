@@ -94,7 +94,7 @@ namespace pinocchio
     template<typename MotionDerived>
     void setTo(MotionDense<MotionDerived> & m) const
     {
-      for (Eigen::DenseIndex k = 0; k < 3; ++k)
+      for (Eigen::Index k = 0; k < 3; ++k)
       {
         m.angular().noalias() = m_axis * m_w;
         m.linear().noalias() = m_axis * m_v;

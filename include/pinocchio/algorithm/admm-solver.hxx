@@ -149,7 +149,7 @@ namespace pinocchio
       constraint_models.size() == constraint_datas.size()
       && "Both std::vector should be of equal size.");
 
-    Eigen::DenseIndex cindex = 0;
+    Eigen::Index cindex = 0;
 
     using SegmentType = typename VectorLikeIn::ConstSegmentReturnType;
     using Scalar = typename ConstraintModel::Scalar;

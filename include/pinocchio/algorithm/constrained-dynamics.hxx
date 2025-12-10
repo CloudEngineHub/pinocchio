@@ -292,7 +292,7 @@ namespace pinocchio
     typename Motion::Vector3 coriolis_centrifugal_acc1_local;
     typename Motion::Vector3 coriolis_centrifugal_acc2_local;
 
-    Eigen::DenseIndex current_row_id = 0;
+    Eigen::Index current_row_id = 0;
     for (size_t contact_id = 0; contact_id < constraint_models.size(); ++contact_id)
     {
       const RigidConstraintModel & contact_model = constraint_models[contact_id];
@@ -452,7 +452,7 @@ namespace pinocchio
     //    Scalar primal_infeasibility = Scalar(0);
     int it = 0;
     data.lambda_c_prox.setZero();
-    const Eigen::DenseIndex constraint_size = contact_chol.constraintDim();
+    const Eigen::Index constraint_size = contact_chol.constraintDim();
     for (; it < settings.max_iter;)
     {
       it++;
@@ -491,7 +491,7 @@ namespace pinocchio
     data.lambda_c = -primal_dual_contact_solution.head(constraint_size);
 
     // Retrieve the contact forces
-    Eigen::DenseIndex current_row_sol_id = 0;
+    Eigen::Index current_row_sol_id = 0;
     for (size_t contact_id = 0; contact_id < constraint_models.size(); ++contact_id)
     {
       const RigidConstraintModel & contact_model = constraint_models[contact_id];

@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(test_rnea_derivatives)
 
   rnea(ad_model, ad_data, q_int_ad, v_ad, a_ad);
   casadi::SX cs_tau(model.nv, 1);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     cs_tau(k) = ad_data.tau[k];
   }

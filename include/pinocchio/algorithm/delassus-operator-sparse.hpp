@@ -161,7 +161,7 @@ namespace pinocchio
     template<typename VectorLike>
     void updateCompliance(const Eigen::MatrixBase<VectorLike> & vec)
     {
-      for (Eigen::DenseIndex k = 0; k < size(); ++k)
+      for (Eigen::Index k = 0; k < size(); ++k)
       {
         delassus_matrix_plus_damping.coeffRef(k, k) += -compliance[k] + vec[k];
       }
@@ -180,7 +180,7 @@ namespace pinocchio
     template<typename VectorLike>
     void updateDamping(const Eigen::MatrixBase<VectorLike> & vec)
     {
-      for (Eigen::DenseIndex k = 0; k < size(); ++k)
+      for (Eigen::Index k = 0; k < size(); ++k)
       {
         delassus_matrix_plus_damping.coeffRef(k, k) += -damping[k] + vec[k];
       }
@@ -240,15 +240,15 @@ namespace pinocchio
       res.array() += damping.array() * x.array();
     }
 
-    Eigen::DenseIndex size() const
+    Eigen::Index size() const
     {
       return delassus_matrix.rows();
     }
-    Eigen::DenseIndex rows() const
+    Eigen::Index rows() const
     {
       return delassus_matrix.rows();
     }
-    Eigen::DenseIndex cols() const
+    Eigen::Index cols() const
     {
       return delassus_matrix.cols();
     }

@@ -275,7 +275,7 @@ namespace pinocchio
                || (InnerDimensionAtCompileTime != Eigen::Dynamic && RowsAtCompileTime != Eigen::Dynamic);
       }
 
-      static Eigen::DenseIndex
+      static Eigen::Index
       dynamic_size(const Eigen::MatrixBase<Lhs> & lhs, const Eigen::MatrixBase<Rhs> & rhs)
       {
         if constexpr (is_static_size_product())
@@ -327,7 +327,7 @@ namespace pinocchio
         typename Rhs,
         int Option>
       static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void run(
-        const Eigen::DenseIndex leading_size,
+        const Eigen::Index leading_size,
         Dst & result,
         const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {
@@ -361,7 +361,7 @@ namespace pinocchio
         typename Rhs,
         int Option>
       static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void run(
-        const Eigen::DenseIndex leading_size,
+        const Eigen::Index leading_size,
         Dst & result,
         const Eigen::Product<Lhs, Rhs, Option> & matrix_product)
       {

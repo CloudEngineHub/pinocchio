@@ -131,7 +131,7 @@ void check_A1_and_A2(
   BOOST_CHECK(J_local.isApprox(J_ref));
 
   // Check Jacobian matrix product
-  const Eigen::DenseIndex m = 40;
+  const Eigen::Index m = 40;
   const Data::MatrixXs mat = Data::MatrixXs::Random(model.nv, m);
 
   Data::MatrixXs res(cmodel.residualSize(cdata), m);

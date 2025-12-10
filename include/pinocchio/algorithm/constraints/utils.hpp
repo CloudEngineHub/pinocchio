@@ -130,10 +130,10 @@ namespace pinocchio
    * @sa ConstraintModelTpl::size
    */
   template<typename ConstraintModel, class ConstraintModelAllocator>
-  Eigen::DenseIndex
+  Eigen::Index
   maxResidualSize(const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
   {
-    Eigen::DenseIndex max_size = 0;
+    Eigen::Index max_size = 0;
     for (const ConstraintModel & cm : constraint_models)
     {
       const auto & cmodel = helper::get_ref(cm);
@@ -176,11 +176,11 @@ namespace pinocchio
     class ConstraintModelAllocator,
     typename ConstraintData,
     class ConstraintDataAllocator>
-  Eigen::DenseIndex residualSize(
+  Eigen::Index residualSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    Eigen::DenseIndex active_size = 0;
+    Eigen::Index active_size = 0;
     for (std::size_t i = 0; i < constraint_models.size(); ++i)
     {
       const auto & cmodel = helper::get_ref(constraint_models[i]);

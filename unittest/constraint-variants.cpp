@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
   {
     ConstraintData constraint_data(rcm.createData());
     rcm.calc(model, data, rcd);
-    for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
+    for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
     {
       BOOST_CHECK(
         constraint_model.getRowIndexes(constraint_data, row_id) == rcm.getRowIndexes(rcd, row_id));
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
   // Test getRowSparsityPattern
   {
     ConstraintData constraint_data(rcm.createData());
-    for (Eigen::DenseIndex row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
+    for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
     {
       BOOST_CHECK(
         constraint_model.getRowSparsityPattern(constraint_data, row_id)

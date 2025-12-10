@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(test_subtree_com_jacobian)
     centerOfMass(model, data_fd, q);
     const SE3::Vector3 com = data_fd.oMi[joint_id].act(data_fd.com[joint_id]);
     Jcom_fd.setZero();
-    for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       v_plus[k] = eps;
       Eigen::VectorXd q_plus = integrate(model, q, v_plus);

@@ -51,7 +51,7 @@ namespace pinocchio
     res_.fill(false);
 
     setDefaultOpenMPSettings(num_threads);
-    const Eigen::DenseIndex batch_size = res.size();
+    const Eigen::Index batch_size = res.size();
 
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(ConfigVectorPool) ConfigVectorPoolPlain;
     PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConfigVectorPoolPlain) q_thread(num_threads, q);
@@ -61,7 +61,7 @@ namespace pinocchio
     if (stopAtFirstCollisionInBatch)
     {
       bool is_colliding = false;
-      Eigen::DenseIndex i = 0;
+      Eigen::Index i = 0;
 
 #pragma omp parallel for schedule(static)
       for (i = 0; i < batch_size; i++)
@@ -92,7 +92,7 @@ namespace pinocchio
     }
     else
     {
-      Eigen::DenseIndex i = 0;
+      Eigen::Index i = 0;
 #pragma omp parallel for schedule(static)
       for (i = 0; i < batch_size; i++)
       {
@@ -174,7 +174,7 @@ namespace pinocchio
 
       openmp_exception.run([=, &model, &data, &manager, &current_traj, &res_current_traj] {
         // lambda start corpus
-        for (Eigen::DenseIndex col_id = 0; col_id < current_traj.cols(); ++col_id)
+        for (Eigen::Index col_id = 0; col_id < current_traj.cols(); ++col_id)
         {
           res_current_traj[col_id] =
             computeCollisions(model, data, manager, current_traj.col(col_id), true);

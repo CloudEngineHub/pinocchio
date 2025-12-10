@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
   BOOST_CHECK(data.dq_after.isApprox(data_ref.dq_after));
   BOOST_CHECK(data.impulse_c.isApprox(data_ref.impulse_c));
 
-  Eigen::DenseIndex constraint_id = 0;
+  Eigen::Index constraint_id = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = contact_models[k];
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   BOOST_CHECK(data.dq_after.isApprox(data_ref.dq_after));
   BOOST_CHECK(data.impulse_c.isApprox(data_ref.impulse_c));
 
-  Eigen::DenseIndex constraint_id = 0;
+  Eigen::Index constraint_id = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = contact_models[k];
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_3D)
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -443,7 +443,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_3D)
   BOOST_CHECK(data.dq_after.isApprox(data_ref.dq_after));
   BOOST_CHECK(data.impulse_c.isApprox(data_ref.impulse_c));
 
-  Eigen::DenseIndex constraint_id = 0;
+  Eigen::Index constraint_id = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = contact_models[k];

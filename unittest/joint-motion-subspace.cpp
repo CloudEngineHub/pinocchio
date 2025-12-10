@@ -158,7 +158,7 @@ void test_constraint_operations(const JointModelBase<JointModel> & jmodel)
     typename ConstraintType::DenseBase S = M.act(constraint);
     typename ConstraintType::DenseBase S_ref(6, constraint.nv());
 
-    for (Eigen::DenseIndex k = 0; k < constraint.nv(); ++k)
+    for (Eigen::Index k = 0; k < constraint.nv(); ++k)
     {
       typedef typename ConstraintType::DenseBase::ColXpr Vector6Like;
       MotionRef<Vector6Like> m_in(constraint_mat.col(k)), m_out(S_ref.col(k));
@@ -175,7 +175,7 @@ void test_constraint_operations(const JointModelBase<JointModel> & jmodel)
     typename ConstraintType::DenseBase S = M.actInv(constraint);
     typename ConstraintType::DenseBase S_ref(6, constraint.nv());
 
-    for (Eigen::DenseIndex k = 0; k < constraint.nv(); ++k)
+    for (Eigen::Index k = 0; k < constraint.nv(); ++k)
     {
       typedef typename ConstraintType::DenseBase::ColXpr Vector6Like;
       MotionRef<Vector6Like> m_in(constraint_mat.col(k)), m_out(S_ref.col(k));
@@ -209,7 +209,7 @@ void test_constraint_operations(const JointModelBase<JointModel> & jmodel)
     typename ConstraintType::DenseBase S = v.cross(constraint);
     typename ConstraintType::DenseBase S_ref(6, constraint.nv());
 
-    for (Eigen::DenseIndex k = 0; k < constraint.nv(); ++k)
+    for (Eigen::Index k = 0; k < constraint.nv(); ++k)
     {
       typedef typename ConstraintType::DenseBase::ColXpr Vector6Like;
       MotionRef<Vector6Like> m_in(constraint_mat.col(k)), m_out(S_ref.col(k));
@@ -221,7 +221,7 @@ void test_constraint_operations(const JointModelBase<JointModel> & jmodel)
 
   // Test transpose operations
   {
-    const Eigen::DenseIndex dim = 20;
+    const Eigen::Index dim = 20;
     const Matrix6x Fin = Matrix6x::Random(6, dim);
     Eigen::MatrixXd Fout = constraint.transpose() * Fin;
     Eigen::MatrixXd Fout_ref = constraint_mat.transpose() * Fin;

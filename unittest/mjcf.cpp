@@ -1063,7 +1063,7 @@ BOOST_AUTO_TEST_CASE(armature)
   Eigen::VectorXd armature_real(model_m.nv);
   armature_real << 1.3, 2.4, 0.4, 1, 1, 1;
 
-  for (Eigen::DenseIndex i = 0; i < model_m.nv; i++)
+  for (Eigen::Index i = 0; i < model_m.nv; i++)
     BOOST_CHECK_EQUAL(model_m.armature[i], armature_real[i]);
 }
 

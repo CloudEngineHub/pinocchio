@@ -54,8 +54,7 @@ namespace pinocchio
       break;
 
     case LOCAL_WORLD_ALIGNED:
-      for (Eigen::DenseIndex col_id = colRef; col_id >= 0;
-           col_id = data.parents_fromRow[(size_t)col_id])
+      for (Eigen::Index col_id = colRef; col_id >= 0; col_id = data.parents_fromRow[(size_t)col_id])
       {
         MotionOut1 m1(v_partial_dq_.col(col_id));
         m1.linear() -= trans.cross(m1.angular());
@@ -65,8 +64,7 @@ namespace pinocchio
       break;
 
     case LOCAL:
-      for (Eigen::DenseIndex col_id = colRef; col_id >= 0;
-           col_id = data.parents_fromRow[(size_t)col_id])
+      for (Eigen::Index col_id = colRef; col_id >= 0; col_id = data.parents_fromRow[(size_t)col_id])
       {
         v_tmp = v_partial_dq_.col(col_id);
         MotionOut1(v_partial_dq_.col(col_id)) = placement.actInv(v_tmp);
@@ -142,8 +140,7 @@ namespace pinocchio
 
     case LOCAL_WORLD_ALIGNED: {
       const typename SE3::Vector3 trans = data.oMi[joint_id].rotation() * placement.translation();
-      for (Eigen::DenseIndex col_id = colRef; col_id >= 0;
-           col_id = data.parents_fromRow[(size_t)col_id])
+      for (Eigen::Index col_id = colRef; col_id >= 0; col_id = data.parents_fromRow[(size_t)col_id])
       {
         MotionOut1 m1(v_partial_dq_.col(col_id));
         m1.linear() -= trans.cross(m1.angular());
@@ -158,8 +155,7 @@ namespace pinocchio
     }
     case LOCAL: {
       Motion v_tmp;
-      for (Eigen::DenseIndex col_id = colRef; col_id >= 0;
-           col_id = data.parents_fromRow[(size_t)col_id])
+      for (Eigen::Index col_id = colRef; col_id >= 0; col_id = data.parents_fromRow[(size_t)col_id])
       {
         v_tmp = v_partial_dq_.col(col_id);
         MotionOut1(v_partial_dq_.col(col_id)) = placement.actInv(v_tmp);

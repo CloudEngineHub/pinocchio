@@ -95,15 +95,15 @@ namespace pinocchio
       CollisionObject & co1 = reinterpret_cast<CollisionObject &>(*o1);
       CollisionObject & co2 = reinterpret_cast<CollisionObject &>(*o2);
 
-      const Eigen::DenseIndex go1_index = (Eigen::DenseIndex)co1.geometryObjectIndex;
-      const Eigen::DenseIndex go2_index = (Eigen::DenseIndex)co2.geometryObjectIndex;
+      const Eigen::Index go1_index = (Eigen::Index)co1.geometryObjectIndex;
+      const Eigen::Index go2_index = (Eigen::Index)co2.geometryObjectIndex;
 
       const GeometryModel & geometry_model = *geometry_model_ptr;
 
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        go1_index < (Eigen::DenseIndex)geometry_model.ngeoms && go1_index >= 0);
+        go1_index < (Eigen::Index)geometry_model.ngeoms && go1_index >= 0);
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        go2_index < (Eigen::DenseIndex)geometry_model.ngeoms && go2_index >= 0);
+        go2_index < (Eigen::Index)geometry_model.ngeoms && go2_index >= 0);
 
       const int pair_index = geometry_model.collisionPairMapping(go1_index, go2_index);
       if (pair_index == -1)
@@ -229,15 +229,15 @@ namespace pinocchio
       CollisionObject & co1 = reinterpret_cast<CollisionObject &>(*o1);
       CollisionObject & co2 = reinterpret_cast<CollisionObject &>(*o2);
 
-      const Eigen::DenseIndex go1_index = (Eigen::DenseIndex)co1.geometryObjectIndex;
-      const Eigen::DenseIndex go2_index = (Eigen::DenseIndex)co2.geometryObjectIndex;
+      const Eigen::Index go1_index = (Eigen::Index)co1.geometryObjectIndex;
+      const Eigen::Index go2_index = (Eigen::Index)co2.geometryObjectIndex;
 
       const GeometryModel & geometry_model = this->getGeometryModel();
 
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        go1_index < (Eigen::DenseIndex)geometry_model.ngeoms && go1_index >= 0);
+        go1_index < (Eigen::Index)geometry_model.ngeoms && go1_index >= 0);
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        go2_index < (Eigen::DenseIndex)geometry_model.ngeoms && go2_index >= 0);
+        go2_index < (Eigen::Index)geometry_model.ngeoms && go2_index >= 0);
 
       const int pair_index_ = geometry_model.collisionPairMapping(go1_index, go2_index);
       if (pair_index_ == -1)

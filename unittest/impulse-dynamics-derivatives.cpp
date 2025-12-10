@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
   contact_models.push_back(ci_RF);
   contact_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_WORLD_ALIGNED_fd)
   contact_models.push_back(ci_RF);
   contact_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
     constraint_size += contact_models[k].maxResidualSize();
 

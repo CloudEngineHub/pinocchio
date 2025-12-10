@@ -83,7 +83,7 @@ namespace pinocchio
       bool abs_prec_reached = false, rel_prec_reached = false;
       settings.relative_residual = settings.absolute_residual = Scalar(0);
 
-      Eigen::DenseIndex row_id = 0;
+      Eigen::Index row_id = 0;
       for (std::size_t constraint_id = 0; constraint_id < n_constraints; ++constraint_id)
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);

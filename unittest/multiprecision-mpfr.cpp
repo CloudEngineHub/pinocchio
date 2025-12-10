@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(test_cast)
   BOOST_CHECK(initial_value == value_cast);
 
   typedef Eigen::Matrix<float_100, Eigen::Dynamic, 1> VectorFloat100;
-  static const Eigen::DenseIndex dim = 100;
+  static const Eigen::Index dim = 100;
   Eigen::VectorXd initial_vec = Eigen::VectorXd::Random(dim);
   VectorFloat100 vec_float_100 = initial_vec.cast<float_100>();
   Eigen::VectorXd vec = vec_float_100.cast<double>();

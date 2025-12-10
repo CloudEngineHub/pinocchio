@@ -388,19 +388,19 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike3> & margin)
     {
       // Fill bound limit and margin for lower and upper for activable constraints
-      activable_position_limit = VectorXs::Zero(Eigen::DenseIndex(maxResidualSize()));
-      activable_position_margin = VectorXs::Zero(Eigen::DenseIndex(maxResidualSize()));
-      Eigen::DenseIndex constraint_id = 0;
+      activable_position_limit = VectorXs::Zero(Eigen::Index(maxResidualSize()));
+      activable_position_margin = VectorXs::Zero(Eigen::Index(maxResidualSize()));
+      Eigen::Index constraint_id = 0;
       for (; constraint_id < lowerMaxResidualSize(); ++constraint_id)
       {
-        const Eigen::DenseIndex idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
+        const Eigen::Index idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
         activable_position_limit[constraint_id] = lb[idx_q];
         activable_position_margin[constraint_id] = margin[idx_q];
         assert(margin[idx_q] >= 0);
       }
       for (; constraint_id < maxResidualSize(); ++constraint_id)
       {
-        const Eigen::DenseIndex idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
+        const Eigen::Index idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
         activable_position_limit[constraint_id] = ub[idx_q];
         activable_position_margin[constraint_id] = margin[idx_q];
         assert(margin[idx_q] >= 0);
@@ -454,7 +454,7 @@ namespace pinocchio
 
     /// \copydoc RootBase::getRowSparsityPattern
     const BooleanVector &
-    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize(cdata));
       const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
@@ -463,7 +463,7 @@ namespace pinocchio
 
     /// \copydoc RootBase::getRowIndexes
     const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize(cdata));
       const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
@@ -483,10 +483,10 @@ namespace pinocchio
     {
       auto res = res_.const_cast_derived();
       PINOCCHIO_CHECK_INPUT_ARGUMENT(int(res.size()) == residualSize(cdata));
-      for (Eigen::DenseIndex row_id = 0; row_id < residualSize(cdata); ++row_id)
+      for (Eigen::Index row_id = 0; row_id < residualSize(cdata); ++row_id)
       {
-        const Eigen::DenseIndex idx =
-          Eigen::DenseIndex(cdata.active_idx_in_activable[static_cast<size_t>(row_id)]);
+        const Eigen::Index idx =
+          Eigen::Index(cdata.active_idx_in_activable[static_cast<size_t>(row_id)]);
         res[row_id] = m_compliance[idx];
       }
     }

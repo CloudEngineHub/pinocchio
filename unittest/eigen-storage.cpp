@@ -26,9 +26,9 @@ BOOST_AUTO_TEST_CASE(eigen_storage_default)
 
 BOOST_AUTO_TEST_CASE(eigen_storage_matrix)
 {
-  const Eigen::DenseIndex rows = 10, cols = 20;
+  const Eigen::Index rows = 10, cols = 20;
 
-  const Eigen::DenseIndex initial_capacity = rows * cols;
+  const Eigen::Index initial_capacity = rows * cols;
   EigenStorageMatrix storage(rows, cols);
   BOOST_CHECK(storage.isValid());
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(eigen_storage_matrix)
   BOOST_CHECK(storage_copy.storage() == storage.storage());
 
   // Check resize
-  const Eigen::DenseIndex new_rows = 2 * rows, new_cols = cols;
+  const Eigen::Index new_rows = 2 * rows, new_cols = cols;
   storage.conservativeResize(new_rows, new_cols);
   BOOST_CHECK(matrix_map.data() == storage.data());
   BOOST_CHECK(storage.map().topLeftCorner(rows, cols).isOnes(0.));
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(eigen_storage_matrix)
 
 BOOST_AUTO_TEST_CASE(cast)
 {
-  const Eigen::DenseIndex rows = 10, cols = 20;
+  const Eigen::Index rows = 10, cols = 20;
 
   EigenStorageMatrix storage(rows, cols);
   storage.map().setConstant(1.895);
@@ -76,9 +76,9 @@ BOOST_AUTO_TEST_CASE(cast)
 
 BOOST_AUTO_TEST_CASE(eigen_storage_row_matrix)
 {
-  const Eigen::DenseIndex rows = 10, cols = 20;
+  const Eigen::Index rows = 10, cols = 20;
 
-  const Eigen::DenseIndex initial_capacity = rows * cols;
+  const Eigen::Index initial_capacity = rows * cols;
   EigenStorageRowMatrix storage(rows, cols);
   BOOST_CHECK(storage.isValid());
 
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(eigen_storage_row_matrix)
   BOOST_CHECK(storage_copy.storage() == storage.storage());
 
   // Check resize
-  const Eigen::DenseIndex new_rows = 2 * rows, new_cols = cols;
+  const Eigen::Index new_rows = 2 * rows, new_cols = cols;
   storage.conservativeResize(new_rows, new_cols);
   BOOST_CHECK(matrix_map.data() == storage.data());
   BOOST_CHECK(storage.map().topLeftCorner(rows, cols).isOnes(0.));
@@ -112,9 +112,9 @@ BOOST_AUTO_TEST_CASE(eigen_storage_row_matrix)
 
 BOOST_AUTO_TEST_CASE(eigen_storage_vector)
 {
-  const Eigen::DenseIndex size = 100;
+  const Eigen::Index size = 100;
 
-  const Eigen::DenseIndex initial_capacity = size;
+  const Eigen::Index initial_capacity = size;
   EigenStorageVector storage(size);
   BOOST_CHECK(storage.isValid());
 
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(eigen_storage_vector)
   BOOST_CHECK(storage_copy.storage() == storage.storage());
 
   // Check resize
-  const Eigen::DenseIndex new_size = 2 * size;
+  const Eigen::Index new_size = 2 * size;
   storage.conservativeResize(new_size);
   BOOST_CHECK(vector_map.data() == storage.data());
   BOOST_CHECK(storage.map().head(size).isOnes(0.));

@@ -28,8 +28,8 @@ BOOST_AUTO_TEST_CASE(test_isSymmetric)
 #endif
   for (int i = 0; i < max_test; ++i)
   {
-    const Eigen::DenseIndex rows = rand() % max_size + 3; // random row number
-    const Eigen::DenseIndex cols = rand() % max_size + 3; // random col number
+    const Eigen::Index rows = rand() % max_size + 3; // random row number
+    const Eigen::Index cols = rand() % max_size + 3; // random col number
 
     const Matrix random_matrix = Matrix::Random(rows, cols);
     Matrix symmetric_matrix = random_matrix.transpose() * random_matrix;
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(test_enforceSymmetry)
 #endif
   for (int i = 0; i < max_test; ++i)
   {
-    const Eigen::DenseIndex rows = rand() % max_size + 3; // random row number
+    const Eigen::Index rows = rand() % max_size + 3; // random row number
 
     Matrix random_matrix = Matrix::Random(rows, rows);
     BOOST_CHECK(!isSymmetric(random_matrix));

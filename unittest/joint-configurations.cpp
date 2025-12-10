@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(diff_integration_test)
   Eigen::VectorXd q_fd(model.nq), v_fd(model.nv);
   v_fd.setZero();
   const double eps = 1e-8;
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_fd[k] = eps;
     q_fd = integrate(model, qs[0], v_fd);
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(diff_integration_test)
   dIntegrate(model, qs[0], vs[1], results[0], ARG0);
   Eigen::VectorXd q_fd_intermediate(model.nq);
   Eigen::VectorXd q0_plus_v = integrate(model, qs[0], vs[1]);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_fd[k] = eps;
     q_fd_intermediate = integrate(model, qs[0], v_fd);
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(diff_integration_test)
 
   dIntegrate(model, qs[0], vs[1], results[1], ARG1);
   v_fd = vs[1];
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_fd[k] += eps;
     q_fd = integrate(model, qs[0], v_fd);
@@ -149,13 +149,13 @@ BOOST_AUTO_TEST_CASE(tangent_map_test)
   idx_vs.reserve(static_cast<size_t>(model.nq));
 
   getTangentToConfigurationSparsitySegment(model, joint_ids, nvs, idx_vs);
-  for (Eigen::DenseIndex k = 0; k < model.nq; ++k)
+  for (Eigen::Index k = 0; k < model.nq; ++k)
   {
     TMs[3].block(k, idx_vs[size_t(k)], 1, nvs[size_t(k)]) = TMc.block(k, 0, 1, nvs[size_t(k)]);
   }
 
   const double eps = 1e-8;
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v[k] = eps;
 
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE(diff_difference_test)
   v_fd.setZero();
   const double eps = 1e-8;
   const Eigen::VectorXd v_ref = difference(model, q0, q1);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_fd[k] = eps;
     q_fd = integrate(model, q0, v_fd);
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(diff_difference_test)
   BOOST_CHECK(results[1].isIdentity());
 
   dDifference(model, q0, q1, results[1], ARG1);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_fd[k] = eps;
     q_fd = integrate(model, q1, v_fd);

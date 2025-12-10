@@ -159,15 +159,15 @@ namespace pinocchio
       res.array() += compliance.array() * x.array();
     }
 
-    Eigen::DenseIndex size() const
+    Eigen::Index size() const
     {
       return delassus_matrix.rows();
     }
-    Eigen::DenseIndex rows() const
+    Eigen::Index rows() const
     {
       return delassus_matrix.rows();
     }
-    Eigen::DenseIndex cols() const
+    Eigen::Index cols() const
     {
       return delassus_matrix.cols();
     }

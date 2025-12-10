@@ -448,9 +448,9 @@ namespace pinocchio
       typedef typename std::vector<ADConstraintData, ADConstraintDataAllocator>
         ADConstraintDataVector;
 
-      static Eigen::DenseIndex constraintDim(const ConstraintModelVector & contact_models)
+      static Eigen::Index constraintDim(const ConstraintModelVector & contact_models)
       {
-        Eigen::DenseIndex num_total_constraints = 0;
+        Eigen::Index num_total_constraints = 0;
         for (typename ConstraintModelVector::const_iterator it = contact_models.begin();
              it != contact_models.end(); ++it)
         {
@@ -608,7 +608,7 @@ namespace pinocchio
       ADConstraintModelVector ad_contact_models;
       ADConstraintDataVector ad_contact_datas;
 
-      Eigen::DenseIndex nc;
+      Eigen::Index nc;
       ADScalar cs_q, cs_v, cs_tau, cs_v_int, cs_ddq, cs_lambda_c;
 
       // Derivatives
@@ -656,9 +656,9 @@ namespace pinocchio
       typedef typename std::vector<ADConstraintData, ADConstraintDataAllocator>
         ADConstraintDataVector;
 
-      static Eigen::DenseIndex constraintDim(const ConstraintModelVector & contact_models)
+      static Eigen::Index constraintDim(const ConstraintModelVector & contact_models)
       {
-        Eigen::DenseIndex num_total_constraints = 0;
+        Eigen::Index num_total_constraints = 0;
         for (typename ConstraintModelVector::const_iterator it = contact_models.begin();
              it != contact_models.end(); ++it)
         {
@@ -794,7 +794,7 @@ namespace pinocchio
       ADConstraintModelVector ad_contact_models;
       ADConstraintDataVector ad_contact_datas;
 
-      Eigen::DenseIndex nc;
+      Eigen::Index nc;
       ADScalar cs_q, cs_v, cs_tau, cs_ddq, cs_lambda_c;
 
       // Derivatives

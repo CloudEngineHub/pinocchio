@@ -49,8 +49,8 @@ namespace pinocchio
 
     CodeGenBase(
       const Model & model,
-      const Eigen::DenseIndex dim_input,
-      const Eigen::DenseIndex dim_output,
+      const Eigen::Index dim_input,
+      const Eigen::Index dim_output,
       const std::string & function_name,
       const std::string & library_name)
     : ad_model(model.template cast<ADScalar>())
@@ -167,12 +167,12 @@ namespace pinocchio
     }
 
     /// \brief Dimension of the input vector
-    Eigen::DenseIndex getInputDimension() const
+    Eigen::Index getInputDimension() const
     {
       return ad_X.size();
     }
     /// \brief Dimension of the output vector
-    Eigen::DenseIndex getOutputDimension() const
+    Eigen::Index getOutputDimension() const
     {
       return ad_Y.size();
     }

@@ -203,7 +203,7 @@ namespace pinocchio
 
       for (int p = 0; p < model.nvs[i]; p++)
       {
-        const Eigen::DenseIndex ip = model.idx_vs[i] + p;
+        const Eigen::Index ip = model.idx_vs[i] + p;
 
         const MotionRef<typename Data::Matrix6x::ColXpr> S_i = data.J.col(ip); // S{i}(:,p)
         const ActionMatrixType S_iA = S_i.toActionMatrix(); //(S{i}(:,p) )x matrix
@@ -256,7 +256,7 @@ namespace pinocchio
 
           for (int q = 0; q < model.nvs[j]; q++)
           {
-            const Eigen::DenseIndex jq = model.idx_vs[j] + q;
+            const Eigen::Index jq = model.idx_vs[j] + q;
 
             const MotionRef<typename Data::Matrix6x::ColXpr> S_j = data.J.col(jq);
             const MotionRef<typename Data::Matrix6x::ColXpr> psid_dm =
@@ -288,7 +288,7 @@ namespace pinocchio
 
               for (int r = 0; r < model.nvs[k]; r++)
               {
-                const Eigen::DenseIndex kr = model.idx_vs[k] + r;
+                const Eigen::Index kr = model.idx_vs[k] + r;
 
                 const MotionRef<typename Data::Matrix6x::ColXpr> S_k(data.J.col(kr));
                 const MotionRef<typename Data::Matrix6x::ColXpr> psid_dm =

@@ -141,7 +141,7 @@ namespace pinocchio
       template<typename Scalar, bool value = is_floating_point<Scalar>::value>
       struct quaternionbase_assign_impl;
 
-      template<Eigen::DenseIndex i>
+      template<Eigen::Index i>
       struct quaternionbase_assign_impl_if_t_negative
       {
         template<typename Scalar, typename Matrix3, typename QuaternionDerived>
@@ -150,8 +150,8 @@ namespace pinocchio
         {
           using pinocchio::math::sqrt;
 
-          Eigen::DenseIndex j = (i + 1) % 3;
-          Eigen::DenseIndex k = (j + 1) % 3;
+          Eigen::Index j = (i + 1) % 3;
+          Eigen::Index k = (j + 1) % 3;
 
           t = sqrt(mat.coeff(i, i) - mat.coeff(j, j) - mat.coeff(k, k) + Scalar(1.0));
           q.coeffs().coeffRef(i) = Scalar(0.5) * t;
@@ -192,7 +192,7 @@ namespace pinocchio
             quaternionbase_assign_impl_if_t_positive::run(t, q, mat);
           else
           {
-            Eigen::DenseIndex i = 0;
+            Eigen::Index i = 0;
             if (mat.coeff(1, 1) > mat.coeff(0, 0))
               i = 1;
             if (mat.coeff(2, 2) > mat.coeff(i, i))

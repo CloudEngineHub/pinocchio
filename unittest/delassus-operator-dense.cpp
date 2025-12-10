@@ -25,7 +25,7 @@ using namespace pinocchio;
 
 BOOST_AUTO_TEST_CASE(test_memory_allocation)
 {
-  const Eigen::DenseIndex mat_size = 100;
+  const Eigen::Index mat_size = 100;
   const Eigen::MatrixXd mat_ = Eigen::MatrixXd::Random(mat_size, mat_size);
   const Eigen::MatrixXd symmetric_mat = mat_.transpose() * mat_;
 
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(test_cholesky_expression_to_dense)
 
 BOOST_AUTO_TEST_CASE(delassus_dense_compliant)
 {
-  const Eigen::DenseIndex mat_size = 50;
+  const Eigen::Index mat_size = 50;
   const Eigen::MatrixXd mat = Eigen::MatrixXd::Random(mat_size, mat_size);
   const Eigen::MatrixXd symmetric_mat = mat.transpose() * mat;
   const Eigen::VectorXd compliance = 1e-1 * Eigen::VectorXd::Ones(mat_size);

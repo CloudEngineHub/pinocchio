@@ -409,7 +409,7 @@ namespace pinocchio
 
     /// \copydoc RootBase::getRowSparsityPattern
     const BooleanVector &
-    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -419,7 +419,7 @@ namespace pinocchio
 
     /// \copydoc RootBase::getRowIndexes
     const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);

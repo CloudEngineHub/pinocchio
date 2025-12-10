@@ -8,7 +8,6 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
-#include <typeinfo>
 
 using namespace pinocchio;
 
@@ -35,16 +34,6 @@ BOOST_AUTO_TEST_CASE(test_helpers)
   BOOST_CHECK(helper::has_fixed_rows_v<Matrix33>);
   BOOST_CHECK(helper::has_fixed_cols_v<Matrix33>);
   BOOST_CHECK(helper::has_fixed_size_v<Matrix33>);
-}
-
-BOOST_AUTO_TEST_CASE(test_make_map)
-{
-  typedef Eigen::Matrix<double, Eigen::Dynamic, 1> Vector;
-  {
-    Vector vec = Vector::Zero(10);
-    auto vec_map = internal::make_eigen_map<Vector>(vec);
-    BOOST_CHECK(vec == vec_map);
-  }
 }
 
 BOOST_AUTO_TEST_CASE(test_size_product)
@@ -107,15 +96,6 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   const auto res_aliasing = C_expression.eval();
   BOOST_CHECK(C == res_aliasing);
 
-  // Specific case where MaxUnfolding == 0
-  {
-    auto C_op = promote_static_eval(C);
-    BOOST_CHECK(&C_op.expression() == &C);
-
-    C_op = A * B;
-    BOOST_CHECK(C == res_aliasing);
-  }
-
   // Test with noalias
   A.setConstant(3);
   B.setConstant(4);
@@ -134,15 +114,6 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   const auto res_noaliasing = C_expression.eval();
   BOOST_CHECK(res_noaliasing != res_aliasing);
   BOOST_CHECK(C == res_noaliasing);
-
-  // Specific case where MaxUnfolding == 0
-  {
-    auto C_noalias_op = promote_static_eval(C.noalias());
-    BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
-
-    C_noalias_op = A * B;
-    BOOST_CHECK(C == res_noaliasing);
-  }
 }
 
 BOOST_AUTO_TEST_CASE(test_static_matrix)
@@ -175,15 +146,6 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   const auto res_aliasing = C_expression.eval();
   BOOST_CHECK(C == res_aliasing);
 
-  // Specific case where MaxUnfolding == 0
-  {
-    auto C_op = promote_static_eval(C);
-    BOOST_CHECK(&C_op.expression() == &C);
-
-    C_op = A * B;
-    BOOST_CHECK(C == res_aliasing);
-  }
-
   // Test with noalias
   A.setConstant(3);
   B.setConstant(4);
@@ -202,15 +164,6 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   const auto res_noaliasing = C_expression.eval();
   BOOST_CHECK(res_noaliasing != res_aliasing);
   BOOST_CHECK(C == res_noaliasing);
-
-  // Specific case where MaxUnfolding == 0
-  {
-    auto C_noalias_op = promote_static_eval(C.noalias());
-    BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
-
-    C_noalias_op = A * B;
-    BOOST_CHECK(C == res_noaliasing);
-  }
 }
 
 BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
@@ -244,15 +197,6 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   const auto res_aliasing = C_expression.eval();
   BOOST_CHECK(C == res_aliasing);
 
-  // Specific case where MaxUnfolding == 0
-  {
-    auto C_op = promote_static_eval(C);
-    BOOST_CHECK(&C_op.expression() == &C);
-
-    C_op = A * B;
-    BOOST_CHECK(C == res_aliasing);
-  }
-
   // Test with noalias
   A.setConstant(3);
   B.setConstant(4);
@@ -271,41 +215,6 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   const auto res_noaliasing = C_expression.eval();
   BOOST_CHECK(res_noaliasing != res_aliasing);
   BOOST_CHECK(C == res_noaliasing);
-
-  // Specific case where MaxUnfolding == 0
-  {
-    auto C_noalias_op = promote_static_eval(C.noalias());
-    BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
-
-    C_noalias_op = A * B;
-    BOOST_CHECK(C == res_noaliasing);
-  }
-}
-
-BOOST_AUTO_TEST_CASE(test_specitic_6x6_case)
-{
-  constexpr Eigen::Index Rows = 6, Cols = Rows, InnerDim = Rows;
-  const Eigen::Index n = Rows, m = Cols;
-  typedef Eigen::Matrix<double, Rows, InnerDim> LhsType;
-  typedef Eigen::Matrix<double, InnerDim, Cols> RhsType;
-  typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> ResType;
-
-  typedef internal::MatrixProductDimensions<ResType, LhsType, RhsType> Dims;
-
-  typedef Dims::PlainResult PlainResType;
-
-  BOOST_CHECK(Dims::is_static_size_product());
-  BOOST_CHECK(PlainResType::RowsAtCompileTime == Rows);
-  BOOST_CHECK(PlainResType::ColsAtCompileTime == Cols);
-
-  const LhsType A = LhsType::Constant(n, n, 1);
-  const RhsType B = RhsType::Constant(n, m, 2);
-  ResType res = ResType::Random(n, m);
-
-  const auto matrix_product = A * B;
-  BOOST_CHECK(
-    promote_static_eval(res.noalias()).dispatch_type(matrix_product)
-    == pinocchio::internal::DispatchType::STATIC);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

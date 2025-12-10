@@ -539,8 +539,7 @@ namespace pinocchio
     }
 
     // Reserve memory
-    const Eigen::DenseIndex njoints =
-      input_model.njoints - (Eigen::DenseIndex)list_of_joints_to_lock.size();
+    const Eigen::Index njoints = input_model.njoints - (Eigen::Index)list_of_joints_to_lock.size();
     reduced_model.names.reserve((size_t)njoints);
     reduced_model.joints.reserve((size_t)njoints);
     reduced_model.jointPlacements.reserve((size_t)njoints);

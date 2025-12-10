@@ -108,12 +108,12 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
 
   // Check projection on force sets
   {
-    const Eigen::DenseIndex nb_lower_active_dofs =
-      Eigen::DenseIndex(constraint.lowerResidualSize(constraint_data));
-    const Eigen::DenseIndex nb_upper_active_dofs =
-      Eigen::DenseIndex(constraint.upperResidualSize(constraint_data));
+    const Eigen::Index nb_lower_active_dofs =
+      Eigen::Index(constraint.lowerResidualSize(constraint_data));
+    const Eigen::Index nb_upper_active_dofs =
+      Eigen::Index(constraint.upperResidualSize(constraint_data));
 
-    const Eigen::DenseIndex total_active_dofs = nb_lower_active_dofs + nb_upper_active_dofs;
+    const Eigen::Index total_active_dofs = nb_lower_active_dofs + nb_upper_active_dofs;
 
     const int num_projections = int(1e6);
     for (int k = 0; k < num_projections; ++k)
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
     JointLimitConstraintData constraint_data_fd(constraint_model);
     Eigen::MatrixXd jacobian_matrix_fd(constraint_model.residualSize(constraint_data), model.nv);
 
-    for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       Eigen::VectorXd v_eps = Eigen::VectorXd::Zero(model.nv);
       v_eps[k] = eps_fd;
@@ -363,7 +363,7 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
     Eigen::MatrixXd jacobian_matrix_fd(constraint_model.residualSize(constraint_data), model.nv);
 
     bool ok_to_check = true;
-    for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       Eigen::VectorXd v_eps = Eigen::VectorXd::Zero(model.nv);
       v_eps[k] = eps_fd;

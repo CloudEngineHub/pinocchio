@@ -156,7 +156,7 @@ namespace pinocchio
       typedef typename Matrix6xLikeOut::ColXpr ColXprOut;
       typedef MotionRef<ColXprOut> MotionOut;
 
-      for (Eigen::DenseIndex j = 0; j < Jin.cols(); ++j)
+      for (Eigen::Index j = 0; j < Jin.cols(); ++j)
       {
         MotionIn v_in(Jin.col(j));
         MotionOut v_out(Jout_.col(j));
@@ -215,7 +215,7 @@ namespace pinocchio
       switch (rf)
       {
       case WORLD: {
-        for (Eigen::DenseIndex jExtended = colRef; jExtended >= 0;
+        for (Eigen::Index jExtended = colRef; jExtended >= 0;
              jExtended = data.non_mimic_parents_fromRow[(size_t)jExtended])
         {
           MotionIn v_in(Jin.col(jExtended));
@@ -224,7 +224,7 @@ namespace pinocchio
           v_out = v_in;
         }
         // Add mimicking joint effect into mimicked column
-        for (Eigen::DenseIndex jExtended = colRefMimicPass; jExtended >= 0;
+        for (Eigen::Index jExtended = colRefMimicPass; jExtended >= 0;
              jExtended = data.mimic_parents_fromRow[(size_t)jExtended])
         {
           MotionIn v_in(Jin.col(jExtended));
@@ -235,7 +235,7 @@ namespace pinocchio
         break;
       }
       case LOCAL_WORLD_ALIGNED: {
-        for (Eigen::DenseIndex jExtended = colRef; jExtended >= 0;
+        for (Eigen::Index jExtended = colRef; jExtended >= 0;
              jExtended = data.non_mimic_parents_fromRow[(size_t)jExtended])
         {
           MotionIn v_in(Jin.col(jExtended));
@@ -245,7 +245,7 @@ namespace pinocchio
           v_out.linear().noalias() -= placement.translation().cross(v_in.angular());
         }
         // Add mimicking joint effect into mimicked column
-        for (Eigen::DenseIndex jExtended = colRefMimicPass; jExtended >= 0;
+        for (Eigen::Index jExtended = colRefMimicPass; jExtended >= 0;
              jExtended = data.mimic_parents_fromRow[(size_t)jExtended])
         {
           MotionIn v_in(Jin.col(jExtended));
@@ -257,7 +257,7 @@ namespace pinocchio
         break;
       }
       case LOCAL: {
-        for (Eigen::DenseIndex jExtended = colRef; jExtended >= 0;
+        for (Eigen::Index jExtended = colRef; jExtended >= 0;
              jExtended = data.non_mimic_parents_fromRow[(size_t)jExtended])
         {
           MotionIn v_in(Jin.col(jExtended));
@@ -266,7 +266,7 @@ namespace pinocchio
           v_out = placement.actInv(v_in);
         }
         // Add mimicking joint effect into mimicked column
-        for (Eigen::DenseIndex jExtended = colRefMimicPass; jExtended >= 0;
+        for (Eigen::Index jExtended = colRefMimicPass; jExtended >= 0;
              jExtended = data.mimic_parents_fromRow[(size_t)jExtended])
         {
           MotionIn v_in(Jin.col(jExtended));
@@ -799,7 +799,7 @@ namespace pinocchio
         const SE3 & oMjoint = data.oMi[jointId];
         const Motion & v_joint = data.v[jointId];
         const int colRef = model.nvExtendeds[jointId] + model.idx_vExtendeds[jointId] - 1;
-        for (Eigen::DenseIndex jExtended = colRef; jExtended >= 0;
+        for (Eigen::Index jExtended = colRef; jExtended >= 0;
              jExtended = data.parents_fromRow[(size_t)jExtended])
         {
           typedef typename Data::Matrix6x::ConstColXpr ConstColXprIn;
@@ -818,7 +818,7 @@ namespace pinocchio
         const Motion & ov_joint = data.ov[jointId];
         const SE3 & oMjoint = data.oMi[jointId];
         const int colRef = model.nvExtendeds[jointId] + model.idx_vExtendeds[jointId] - 1;
-        for (Eigen::DenseIndex jExtended = colRef; jExtended >= 0;
+        for (Eigen::Index jExtended = colRef; jExtended >= 0;
              jExtended = data.parents_fromRow[(size_t)jExtended])
         {
           typedef typename Data::Matrix6x::ConstColXpr ConstColXprIn;

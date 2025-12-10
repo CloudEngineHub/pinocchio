@@ -14,7 +14,7 @@
 #include <limits>
 
 #define PINOCCHIO_JOINT_MODEL_TYPEDEF_GENERIC(Joint, TYPENAME)                                     \
-  typedef Eigen::DenseIndex Index;                                                                 \
+  typedef Eigen::Index Index;                                                                      \
   typedef TYPENAME traits<Joint>::Scalar Scalar;                                                   \
   typedef TYPENAME traits<Joint>::JointDataDerived JointDataDerived;                               \
   typedef TYPENAME traits<Joint>::JointModelDerived JointModelDerived;                             \

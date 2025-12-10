@@ -17,7 +17,7 @@ using namespace pinocchio;
 
 BOOST_AUTO_TEST_CASE(delassus_dense_preconditioned)
 {
-  const Eigen::DenseIndex mat_size = 3;
+  const Eigen::Index mat_size = 3;
   const Eigen::MatrixXd mat = Eigen::MatrixXd::Random(mat_size, mat_size);
   const Eigen::MatrixXd symmetric_mat = mat.transpose() * mat;
   const Eigen::VectorXd diag_vec = 1e-1 * Eigen::VectorXd::Ones(mat_size);

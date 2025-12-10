@@ -113,15 +113,15 @@ namespace pinocchio
       m_preconditioner.unscale(m_tmp_vec, res_);
     }
 
-    Eigen::DenseIndex size() const
+    Eigen::Index size() const
     {
       return ref().size();
     }
-    Eigen::DenseIndex rows() const
+    Eigen::Index rows() const
     {
       return ref().rows();
     }
-    Eigen::DenseIndex cols() const
+    Eigen::Index cols() const
     {
       return ref().cols();
     }

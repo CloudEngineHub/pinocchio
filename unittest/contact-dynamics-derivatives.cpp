@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_constraint_dynamics_derivatives)
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_fd)
   constraint_models.push_back(ci_LF);
   constraint_data.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -460,7 +460,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
   ci_LF.corrector.Kd = KD;
   constraint_models.push_back(ci_LF);
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -514,7 +514,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
   {
     dacc_corrector_LF_dq = -(ci_LF.corrector.Kp * dv_LF_dv_L.topRows<3>());
     dacc_corrector_LF_dq -= ci_LF.corrector.Kd * dv_LF_dq_L.topRows<3>();
-    for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       dacc_corrector_LF_dq.col(k) +=
         ci_LF.corrector.Kp
@@ -538,7 +538,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
   Eigen::MatrixXd dlambda_dq_fd(constraint_size, model.nv),
     dlambda_dv_fd(constraint_size, model.nv), dlambda_dtau_fd(constraint_size, model.nv);
 
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     Eigen::VectorXd v_eps = Eigen::VectorXd::Zero(model.nv);
     v_eps[k] = eps;
@@ -567,7 +567,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
 
   Data::Matrix6x dacc_corrector_RF_dv_fd(6, model.nv);
   Data::Matrix3x dacc_corrector_LF_dv_fd(3, model.nv);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     Eigen::VectorXd v_plus(v);
     v_plus[k] += eps;
@@ -590,7 +590,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
 
   Data::Matrix6x dacc_corrector_RF_dtau_fd(6, model.nv);
   Data::Matrix3x dacc_corrector_LF_dtau_fd(3, model.nv);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     Eigen::VectorXd tau_plus(tau);
     tau_plus[k] += eps;
@@ -644,7 +644,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd)
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -764,7 +764,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd_prox)
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -897,7 +897,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_loop_closure_3D_
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -1034,7 +1034,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
   constraint_data.push_back(RigidConstraintData(ci_closure));
   // End of Loopo Closure Constraint
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -1187,7 +1187,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
   constraint_data.push_back(RigidConstraintData(ci_closure));
   constraint_data_fd.push_back(RigidConstraintData(ci_closure));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -1369,7 +1369,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
   constraint_data.push_back(RigidConstraintData(ci_closure));
   constraint_data_fd.push_back(RigidConstraintData(ci_closure));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -1550,7 +1550,7 @@ BOOST_AUTO_TEST_CASE(
   constraint_data.push_back(RigidConstraintData(ci_closure));
   // End of Loopo Closure Constraint
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -1678,7 +1678,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
   constraint_data.push_back(RigidConstraintData(ci_closure));
   // End of Loopo Closure Constraint
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -1808,7 +1808,7 @@ BOOST_AUTO_TEST_CASE(
   constraint_data.push_back(RigidConstraintData(ci_closure));
   // End of Loopo Closure Constraint
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -1929,7 +1929,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_6D
   constraint_models.push_back(ci_LF);
   constraint_data.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -2047,7 +2047,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_3D
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -2188,7 +2188,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
   constraint_models.push_back(ci_RH);
   constraint_data.push_back(RigidConstraintData(ci_RH));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -2245,14 +2245,14 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
   Eigen::MatrixXd dac_dq_fd(constraint_size, model.nv);
 
   Eigen::VectorXd contact_acc0(constraint_size);
-  Eigen::DenseIndex row_id = 0;
+  Eigen::Index row_id = 0;
 
   forwardKinematics(model, data, q, v, data.ddq);
   for (size_t k = 0; k < constraint_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = constraint_models[k];
     const RigidConstraintData & cdata = constraint_data[k];
-    const Eigen::DenseIndex size = cmodel.residualSize(cdata);
+    const Eigen::Index size = cmodel.residualSize(cdata);
 
     const Motion contact_acc = getContactAcceleration(model, data, cmodel);
 
@@ -2277,13 +2277,13 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
     lambda_partial_dq_fd.col(k) = (data_fd.lambda_c - lambda0) / alpha;
 
     Eigen::VectorXd contact_acc_plus(constraint_size);
-    Eigen::DenseIndex row_id = 0;
+    Eigen::Index row_id = 0;
     forwardKinematics(model, data_fd, q_plus, v, data.ddq);
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const RigidConstraintModel & cmodel = constraint_models[k];
       const RigidConstraintData & cdata = constraint_data[k];
-      const Eigen::DenseIndex size = cmodel.residualSize(cdata);
+      const Eigen::Index size = cmodel.residualSize(cdata);
 
       const Motion contact_acc = getContactAcceleration(model, data_fd, cmodel);
 
@@ -2368,7 +2368,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
   constraint_models.push_back(ci_RH);
   constraint_data.push_back(RigidConstraintData(ci_RH));
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 
@@ -2409,14 +2409,14 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
   Eigen::MatrixXd dac_dq_fd(constraint_size, model.nv);
 
   Eigen::VectorXd contact_acc0(constraint_size);
-  Eigen::DenseIndex row_id = 0;
+  Eigen::Index row_id = 0;
 
   forwardKinematics(model, data, q, v, data.ddq);
   for (size_t k = 0; k < constraint_models.size(); ++k)
   {
     const RigidConstraintModel & cmodel = constraint_models[k];
     const RigidConstraintData & cdata = constraint_data[k];
-    const Eigen::DenseIndex size = cmodel.residualSize(cdata);
+    const Eigen::Index size = cmodel.residualSize(cdata);
 
     const Motion contact_acc = getContactAcceleration(model, data, cmodel, cdata.c1Mc2);
 
@@ -2436,13 +2436,13 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
       model, data_fd, q_plus, v, tau, constraint_models, constraint_data, prox_settings);
 
     Eigen::VectorXd contact_acc_plus(constraint_size);
-    Eigen::DenseIndex row_id = 0;
+    Eigen::Index row_id = 0;
     forwardKinematics(model, data_fd, q_plus, v, data.ddq);
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const RigidConstraintModel & cmodel = constraint_models[k];
       const RigidConstraintData & cdata = constraint_data[k];
-      const Eigen::DenseIndex size = cmodel.residualSize(cdata);
+      const Eigen::Index size = cmodel.residualSize(cdata);
 
       const Motion contact_acc = getContactAcceleration(model, data_fd, cmodel, cdata.c1Mc2);
 
@@ -2572,7 +2572,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_cassie_proximal)
     constraint_datas.push_back(RigidConstraintData(constraint_models[(pinocchio::JointIndex)k]));
   }
 
-  Eigen::DenseIndex constraint_size = 0;
+  Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].maxResidualSize();
 

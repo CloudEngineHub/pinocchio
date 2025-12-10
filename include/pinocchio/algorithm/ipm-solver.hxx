@@ -572,7 +572,7 @@ namespace pinocchio
     using SegmentType = typename VectorLikeInOut::SegmentReturnType;
 
     VectorLikeInOut & x = x_.const_cast_derived();
-    Eigen::DenseIndex cindex = 0;
+    Eigen::Index cindex = 0;
     for (std::size_t k = 0; k < constraint_models.size(); ++k)
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);
@@ -653,7 +653,7 @@ namespace pinocchio
     using SegmentType = typename VectorLikeInOut::SegmentReturnType;
 
     VectorLikeInOut & x = x_.const_cast_derived();
-    Eigen::DenseIndex cindex = 0;
+    Eigen::Index cindex = 0;
     for (std::size_t k = 0; k < constraint_models.size(); ++k)
     {
       const auto & cmodel = helper::get_ref(constraint_models[k]);

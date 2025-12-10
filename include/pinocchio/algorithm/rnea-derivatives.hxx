@@ -409,11 +409,11 @@ namespace pinocchio
         jmodel.jointVelocitySelector(data.tau).noalias() =
           J_cols.transpose() * data.of[i].toVector();
 
-        const Eigen::DenseIndex nv_subtree = data.nvSubtree[i];
-        const Eigen::DenseIndex nv = jmodel.nv();
-        const Eigen::DenseIndex idx_v = jmodel.idx_v();
-        const Eigen::DenseIndex idx_v_plus = idx_v + nv;
-        const Eigen::DenseIndex nv_subtree_plus = nv_subtree - nv;
+        const Eigen::Index nv_subtree = data.nvSubtree[i];
+        const Eigen::Index nv = jmodel.nv();
+        const Eigen::Index idx_v = jmodel.idx_v();
+        const Eigen::Index idx_v_plus = idx_v + nv;
+        const Eigen::Index nv_subtree_plus = nv_subtree - nv;
 
         // dtau/da similar to data.M
         motionSet::inertiaAction(data.oYcrb[i], J_cols, dFda_cols);
@@ -527,7 +527,7 @@ namespace pinocchio
       }
 
       // Restore the status of dAdq_cols (remove gravity)
-      for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+      for (Eigen::Index k = 0; k < model.nv; ++k)
       {
         MotionRef<typename Data::Matrix6x::ColXpr> m_in(data.J.col(k));
         MotionRef<typename Data::Matrix6x::ColXpr> m_out(data.dAdq.col(k));
@@ -609,7 +609,7 @@ namespace pinocchio
       }
 
       // Restore the status of dAdq_cols (remove gravity)
-      for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+      for (Eigen::Index k = 0; k < model.nv; ++k)
       {
         MotionRef<typename Data::Matrix6x::ColXpr> m_in(data.J.col(k));
         MotionRef<typename Data::Matrix6x::ColXpr> m_out(data.dAdq.col(k));

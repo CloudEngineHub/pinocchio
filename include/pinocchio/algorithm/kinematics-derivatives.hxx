@@ -705,7 +705,7 @@ namespace pinocchio
         const int nv = jmodel.nv();
         Eigen::Matrix<Scalar, 6, JointModel::NV, Options> v_spatial_partial_dv_cols(6, nv);
 
-#define FOR_NV() for (Eigen::DenseIndex j = 0; j < nv; ++j)
+#define FOR_NV() for (Eigen::Index j = 0; j < nv; ++j)
 #define GET_LINEAR(vec6) vec6.template segment<3>(Motion::LINEAR)
 #define GET_ANGULAR(vec6) vec6.template segment<3>(Motion::ANGULAR)
 
@@ -877,7 +877,7 @@ namespace pinocchio
         Eigen::Matrix<Scalar, 6, JointModel::NV, Options> a_spatial_partial_da_cols(6, nv);
         Eigen::Matrix<Scalar, 6, JointModel::NV, Options> v_spatial_partial_dq_cols(6, nv);
 
-#define FOR_NV() for (Eigen::DenseIndex j = 0; j < nv; ++j)
+#define FOR_NV() for (Eigen::Index j = 0; j < nv; ++j)
 #define GET_LINEAR(vec6) vec6.template segment<3>(Motion::LINEAR)
 #define GET_ANGULAR(vec6) vec6.template segment<3>(Motion::ANGULAR)
 
@@ -1079,7 +1079,7 @@ namespace pinocchio
 
     const typename Data::Matrix6x & J = data.J;
     typename Data::Tensor3x & kinematic_hessians = data.kinematic_hessians;
-    const Eigen::DenseIndex slice_matrix_size = 6 * model.nv;
+    const Eigen::Index slice_matrix_size = 6 * model.nv;
 
     for (size_t joint_id = 1; joint_id < (size_t)model.njoints; ++joint_id)
     {
@@ -1091,7 +1091,7 @@ namespace pinocchio
 
       for (int joint_row = 0; joint_row < nv; ++joint_row)
       {
-        const Eigen::DenseIndex outer_row_id = idx_v + joint_row;
+        const Eigen::Index outer_row_id = idx_v + joint_row;
 
         for (size_t support_id = 0; support_id < support.size() - 1; ++support_id)
         {
@@ -1101,7 +1101,7 @@ namespace pinocchio
           const int inner_idx_v = model.idx_vs[joint_id_support];
           for (int inner_joint_row = 0; inner_joint_row < inner_nv; ++inner_joint_row)
           {
-            const Eigen::DenseIndex inner_row_id = inner_idx_v + inner_joint_row;
+            const Eigen::Index inner_row_id = inner_idx_v + inner_joint_row;
             assert(inner_row_id < outer_row_id);
 
             MapVector6 motion_vec_in(
@@ -1118,7 +1118,7 @@ namespace pinocchio
         // Computations already done
         for (int inner_joint_row = 0; inner_joint_row < joint_row; ++inner_joint_row)
         {
-          const Eigen::DenseIndex inner_row_id = idx_v + inner_joint_row;
+          const Eigen::Index inner_row_id = idx_v + inner_joint_row;
           MapVector6 motion_vec_in(
             kinematic_hessians.data() + inner_row_id * slice_matrix_size + outer_row_id * 6);
           MapVector6 motion_vec_out(
@@ -1129,7 +1129,7 @@ namespace pinocchio
 
         for (int inner_joint_row = joint_row + 1; inner_joint_row < nv; ++inner_joint_row)
         {
-          const Eigen::DenseIndex inner_row_id = idx_v + inner_joint_row;
+          const Eigen::Index inner_row_id = idx_v + inner_joint_row;
           const MotionIn S2(J.col(inner_row_id));
 
           MapVector6 motion_vec_out(
@@ -1147,7 +1147,7 @@ namespace pinocchio
           const int inner_idx_v = model.idx_vs[joint_id_subtree];
           for (int inner_joint_row = 0; inner_joint_row < inner_nv; ++inner_joint_row)
           {
-            const Eigen::DenseIndex inner_row_id = inner_idx_v + inner_joint_row;
+            const Eigen::Index inner_row_id = inner_idx_v + inner_joint_row;
             assert(inner_row_id > outer_row_id);
             const MotionIn S2(J.col(inner_row_id));
 
@@ -1193,10 +1193,10 @@ namespace pinocchio
 
     const int idx_vj = model.joints[joint_id].idx_v();
     const int nvj = model.joints[joint_id].nv();
-    const Eigen::DenseIndex slice_matrix_size = 6 * model.nv;
+    const Eigen::Index slice_matrix_size = 6 * model.nv;
 
     typedef std::vector<int> IndexVector;
-    const Eigen::DenseIndex last_idx = idx_vj + nvj - 1;
+    const Eigen::Index last_idx = idx_vj + nvj - 1;
     const std::vector<int> & supporting_indexes =
       data.supports_fromRow[(size_t)(last_idx)]; // until the last element of the joint size (nvj)
 
@@ -1210,7 +1210,7 @@ namespace pinocchio
     case WORLD: {
       for (size_t i = 0; i < supporting_indexes.size(); ++i)
       {
-        const Eigen::DenseIndex outer_row_id = supporting_indexes[i];
+        const Eigen::Index outer_row_id = supporting_indexes[i];
 
         // Take into account parent indexes of the current joint motion subspace
         for (int subspace_idx = data.start_idx_v_fromRow[(size_t)outer_row_id];
@@ -1227,7 +1227,7 @@ namespace pinocchio
 
         for (size_t j = i + 1; j < supporting_indexes.size(); ++j)
         {
-          const Eigen::DenseIndex inner_row_id = supporting_indexes[j];
+          const Eigen::Index inner_row_id = supporting_indexes[j];
 
           ConstMapVector6 vec_in(
             kinematic_hessians.data() + outer_row_id * slice_matrix_size + inner_row_id * 6);
@@ -1246,12 +1246,12 @@ namespace pinocchio
 
       for (size_t i = 0; i < supporting_indexes.size(); ++i)
       {
-        const Eigen::DenseIndex outer_row_id = supporting_indexes[i];
+        const Eigen::Index outer_row_id = supporting_indexes[i];
         const MotionColRef S1(J.col(outer_row_id));
 
         for (size_t j = 0; j < supporting_indexes.size(); ++j)
         {
-          const Eigen::DenseIndex inner_row_id = supporting_indexes[j];
+          const Eigen::Index inner_row_id = supporting_indexes[j];
           if (inner_row_id >= data.start_idx_v_fromRow[(size_t)outer_row_id])
             break;
 
@@ -1301,7 +1301,7 @@ namespace pinocchio
 
         for (size_t j = i + 1; j < supporting_indexes.size(); ++j)
         {
-          const Eigen::DenseIndex inner_row_id = supporting_indexes[j];
+          const Eigen::Index inner_row_id = supporting_indexes[j];
           MotionColRef S2(J.col(inner_row_id));
 
           ConstMapVector6 vec_in(
@@ -1326,7 +1326,7 @@ namespace pinocchio
       for (IndexVector::const_reverse_iterator rit = supporting_indexes.rbegin();
            rit != supporting_indexes.rend(); ++rit)
       {
-        const Eigen::DenseIndex outer_row_id = *rit;
+        const Eigen::Index outer_row_id = *rit;
 
         // This corresponds to the joint connected to the world, we can skip
         if (data.parents_fromRow[(size_t)data.start_idx_v_fromRow[(size_t)outer_row_id]] < 0)
@@ -1350,7 +1350,7 @@ namespace pinocchio
         IndexVector::const_reverse_iterator inner_rit = rit;
         for (++inner_rit; inner_rit != supporting_indexes.rend(); ++inner_rit)
         {
-          const Eigen::DenseIndex inner_row_id = *inner_rit;
+          const Eigen::Index inner_row_id = *inner_rit;
 
           ConstMapVector6 vec_in(
             kinematic_hessians.data() + inner_row_id * slice_matrix_size + outer_row_id * 6);

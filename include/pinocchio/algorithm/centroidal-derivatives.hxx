@@ -215,7 +215,7 @@ namespace pinocchio
       PINOCCHIO_CHECK_ARGUMENT_SIZE(
         Fin.cols(), Fout.cols(), "Fin and Fout do not have the same number of columns");
 
-      for (Eigen::DenseIndex k = 0; k < Fin.cols(); ++k)
+      for (Eigen::Index k = 0; k < Fin.cols(); ++k)
       {
         typedef ForceRef<typename Matrix6xLikeIn::ColXpr> ForceTypeIn;
         typedef ForceRef<typename Matrix6xLikeOut::ColXpr> ForceTypeOut;
@@ -233,7 +233,7 @@ namespace pinocchio
       EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix6xLike, 6, Eigen::Dynamic)
       EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3)
 
-      for (Eigen::DenseIndex k = 0; k < F.cols(); ++k)
+      for (Eigen::Index k = 0; k < F.cols(); ++k)
       {
         typedef ForceRef<typename Matrix6xLike::ColXpr> ForceType;
         ForceType f(PINOCCHIO_EIGEN_CONST_CAST(Matrix6xLike, F).col(k));
@@ -334,13 +334,13 @@ namespace pinocchio
       // Compute the partial derivatives
       translateForceSet(data.dHdq, com, dh_dq.const_cast_derived());
       Matrix6xLike0 & dh_dq_ = dh_dq.const_cast_derived();
-      for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+      for (Eigen::Index k = 0; k < model.nv; ++k)
         dh_dq_.col(k).template segment<3>(Force::ANGULAR) +=
           data.hg.linear().cross(data.dFda.col(k).template segment<3>(Force::LINEAR)) / Ytot.mass();
 
       translateForceSet(data.dFdq, com, dhdot_dq.const_cast_derived());
       Matrix6xLike1 & dhdot_dq_ = dhdot_dq.const_cast_derived();
-      for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+      for (Eigen::Index k = 0; k < model.nv; ++k)
         dhdot_dq_.col(k).template segment<3>(Force::ANGULAR) +=
           data.dhg.linear().cross(data.dFda.col(k).template segment<3>(Force::LINEAR))
           / Ytot.mass();
@@ -382,7 +382,7 @@ namespace pinocchio
         ColsBlock Ftmp_cols = jmodel.jointCols(Ftmp);
 
         const Vector3 mg = data.oYcrb[i].mass() * model.gravity.linear();
-        for (Eigen::DenseIndex k = 0; k < jmodel.nv(); ++k)
+        for (Eigen::Index k = 0; k < jmodel.nv(); ++k)
         {
           MotionRef<typename ColsBlock::ColXpr> mref(J_cols.col(k));
           vtmp.linear() = mref.linear() + mref.angular().cross(data.oYcrb[i].lever());
@@ -474,13 +474,13 @@ namespace pinocchio
       // Retrieve the partial derivatives from RNEA derivatives
       translateForceSet(data.dHdq, com, dh_dq.const_cast_derived());
       Matrix6xLike0 & dh_dq_ = dh_dq.const_cast_derived();
-      for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+      for (Eigen::Index k = 0; k < model.nv; ++k)
         dh_dq_.col(k).template segment<3>(Force::ANGULAR) +=
           data.hg.linear().cross(data.dFda.col(k).template segment<3>(Force::LINEAR)) / Ytot.mass();
 
       translateForceSet(Ftmp, com, dhdot_dq.const_cast_derived());
       Matrix6xLike1 & dhdot_dq_ = dhdot_dq.const_cast_derived();
-      for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+      for (Eigen::Index k = 0; k < model.nv; ++k)
         dhdot_dq_.col(k).template segment<3>(Force::ANGULAR) +=
           data.dhg.linear().cross(data.dFda.col(k).template segment<3>(Force::LINEAR))
           / Ytot.mass();

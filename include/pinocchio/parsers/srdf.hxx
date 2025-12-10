@@ -337,8 +337,8 @@ namespace pinocchio
                 std::istringstream config_string(joint_val);
                 std::vector<double> config_vec(
                   (std::istream_iterator<double>(config_string)), std::istream_iterator<double>());
-                joint_config = Eigen::Map<Eigen::VectorXd>(
-                  config_vec.data(), (Eigen::DenseIndex)config_vec.size());
+                joint_config =
+                  Eigen::Map<Eigen::VectorXd>(config_vec.data(), (Eigen::Index)config_vec.size());
 
                 typedef LoadReferenceConfigurationStep<Scalar, Options, JointCollectionTpl>
                   LoadReferenceConfigurationStep_t;

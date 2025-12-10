@@ -197,7 +197,7 @@ namespace pinocchio
 
       const Block3x dAg_lin = data.dAg.template middleRows<3>(Force::LINEAR);
       Block3x dAg_ang = data.dAg.template middleRows<3>(Force::ANGULAR);
-      for (Eigen::DenseIndex i = 0; i < model.nv; ++i)
+      for (Eigen::Index i = 0; i < model.nv; ++i)
         dAg_ang.col(i) += dAg_lin.col(i).cross(data.com[0]) + Ag_lin.col(i).cross(data.vcom[0]);
 
       data.hg = data.h[0];

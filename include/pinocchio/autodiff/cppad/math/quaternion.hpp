@@ -40,7 +40,7 @@ namespace pinocchio
           quaternionbase_assign_impl_if_t_negative<2>::run(t, quat_t_negative_2, mat);
 
           // Build the expression graph
-          for (Eigen::DenseIndex k = 0; k < 4; ++k)
+          for (Eigen::Index k = 0; k < 4; ++k)
           {
             ADScalar t_is_negative_cond1 = CppAD::CondExpGt<Scalar>(
               mat.coeff(1, 1), mat.coeff(0, 0), quat_t_negative_1.coeffs().coeff(k),

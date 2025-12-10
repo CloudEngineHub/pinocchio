@@ -184,27 +184,27 @@ namespace pinocchio
         model.frames[object.parentFrame].parentJoint == object.parentJoint,
         "The object joint parent and its frame joint parent do not match.");
 
-    Eigen::DenseIndex idx = (Eigen::DenseIndex)(ngeoms++);
+    Eigen::Index idx = (Eigen::Index)(ngeoms++);
     geometryObjects.push_back(object);
     geometryObjects.back().parentJoint = model.frames[object.parentFrame].parentJoint;
 
     collisionPairMapping.conservativeResize(idx + 1, idx + 1);
     collisionPairMapping.col(idx).fill(-1);
     collisionPairMapping.row(idx).fill(-1);
-    assert(collisionPairMapping.cols() == (Eigen::DenseIndex)ngeoms);
+    assert(collisionPairMapping.cols() == (Eigen::Index)ngeoms);
 
     return (GeomIndex)idx;
   }
 
   inline GeomIndex GeometryModel::addGeometryObject(const GeometryObject & object)
   {
-    Eigen::DenseIndex idx = (Eigen::DenseIndex)(ngeoms++);
+    Eigen::Index idx = (Eigen::Index)(ngeoms++);
     geometryObjects.push_back(object);
 
     collisionPairMapping.conservativeResize(idx + 1, idx + 1);
     collisionPairMapping.col(idx).fill(-1);
     collisionPairMapping.row(idx).fill(-1);
-    assert(collisionPairMapping.cols() == (Eigen::DenseIndex)ngeoms);
+    assert(collisionPairMapping.cols() == (Eigen::Index)ngeoms);
 
     return (GeomIndex)idx;
   }
@@ -325,27 +325,26 @@ namespace pinocchio
     {
       collisionPairs.push_back(pair);
 
-      collisionPairMapping((Eigen::DenseIndex)pair.second, (Eigen::DenseIndex)pair.first) =
+      collisionPairMapping((Eigen::Index)pair.second, (Eigen::Index)pair.first) =
         (int)(collisionPairs.size() - 1);
-      collisionPairMapping((Eigen::DenseIndex)pair.first, (Eigen::DenseIndex)pair.second) =
+      collisionPairMapping((Eigen::Index)pair.first, (Eigen::Index)pair.second) =
         collisionPairMapping(
-          (Eigen::DenseIndex)pair.second,
-          (Eigen::DenseIndex)pair.first); // make symmetric
+          (Eigen::Index)pair.second,
+          (Eigen::Index)pair.first); // make symmetric
     }
   }
 
   inline void GeometryModel::setCollisionPairs(const MatrixXb & map, const bool upper)
   {
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      map.rows(), (Eigen::DenseIndex)ngeoms, "Input map does not have the correct number of rows.");
+      map.rows(), (Eigen::Index)ngeoms, "Input map does not have the correct number of rows.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      map.cols(), (Eigen::DenseIndex)ngeoms,
-      "Input map does not have the correct number of columns.");
+      map.cols(), (Eigen::Index)ngeoms, "Input map does not have the correct number of columns.");
     removeAllCollisionPairs();
 
-    for (Eigen::DenseIndex i = 0; i < (Eigen::DenseIndex)ngeoms; ++i)
+    for (Eigen::Index i = 0; i < (Eigen::Index)ngeoms; ++i)
     {
-      for (Eigen::DenseIndex j = i + 1; j < (Eigen::DenseIndex)ngeoms; ++j)
+      for (Eigen::Index j = i + 1; j < (Eigen::Index)ngeoms; ++j)
       {
         if (upper)
         {
@@ -389,13 +388,13 @@ namespace pinocchio
 
     if (index != (long)collisionPairs.size())
     {
-      collisionPairMapping((Eigen::DenseIndex)pair.first, (Eigen::DenseIndex)pair.second) =
-        collisionPairMapping((Eigen::DenseIndex)pair.second, (Eigen::DenseIndex)pair.first) = -1;
+      collisionPairMapping((Eigen::Index)pair.first, (Eigen::Index)pair.second) =
+        collisionPairMapping((Eigen::Index)pair.second, (Eigen::Index)pair.first) = -1;
       collisionPairs.erase(collisionPairs.begin() + index);
 
-      for (Eigen::DenseIndex i = 0; i < collisionPairMapping.cols(); ++i)
+      for (Eigen::Index i = 0; i < collisionPairMapping.cols(); ++i)
       {
-        for (Eigen::DenseIndex j = i + 1; j < collisionPairMapping.cols(); ++j)
+        for (Eigen::Index j = i + 1; j < collisionPairMapping.cols(); ++j)
         {
           if (collisionPairMapping(i, j) > index)
           {
@@ -415,13 +414,12 @@ namespace pinocchio
 
   inline bool GeometryModel::existCollisionPair(const CollisionPair & pair) const
   {
-    return collisionPairMapping((Eigen::DenseIndex)pair.first, (Eigen::DenseIndex)pair.second)
-           != -1;
+    return collisionPairMapping((Eigen::Index)pair.first, (Eigen::Index)pair.second) != -1;
   }
 
   inline PairIndex GeometryModel::findCollisionPair(const CollisionPair & pair) const
   {
-    int res = collisionPairMapping((Eigen::DenseIndex)pair.first, (Eigen::DenseIndex)pair.second);
+    int res = collisionPairMapping((Eigen::Index)pair.first, (Eigen::Index)pair.second);
     if (res == -1)
       return collisionPairs.size();
     else
@@ -445,7 +443,7 @@ namespace pinocchio
   inline void GeometryData::setActiveCollisionPairs(
     const GeometryModel & geom_model, const MatrixXb & map, const bool upper)
   {
-    const Eigen::DenseIndex ngeoms = (Eigen::DenseIndex)geom_model.ngeoms;
+    const Eigen::Index ngeoms = (Eigen::Index)geom_model.ngeoms;
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       map.rows(), ngeoms, "Input map does not have the correct number of rows.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
@@ -458,16 +456,16 @@ namespace pinocchio
     {
       const CollisionPair & cp = geom_model.collisionPairs[k];
 
-      Eigen::DenseIndex i, j;
+      Eigen::Index i, j;
       if (upper)
       {
-        j = (Eigen::DenseIndex)std::max(cp.first, cp.second);
-        i = (Eigen::DenseIndex)std::min(cp.first, cp.second);
+        j = (Eigen::Index)std::max(cp.first, cp.second);
+        i = (Eigen::Index)std::min(cp.first, cp.second);
       }
       else
       {
-        i = (Eigen::DenseIndex)std::max(cp.first, cp.second);
-        j = (Eigen::DenseIndex)std::min(cp.first, cp.second);
+        i = (Eigen::Index)std::max(cp.first, cp.second);
+        j = (Eigen::Index)std::min(cp.first, cp.second);
       }
 
       activeCollisionPairs[k] = map(i, j);
@@ -500,7 +498,7 @@ namespace pinocchio
     const bool upper,
     const bool sync_distance_upper_bound)
   {
-    const Eigen::DenseIndex ngeoms = (Eigen::DenseIndex)geom_model.ngeoms;
+    const Eigen::Index ngeoms = (Eigen::Index)geom_model.ngeoms;
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       security_margin_map.rows(), ngeoms, "Input map does not have the correct number of rows.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
@@ -516,16 +514,16 @@ namespace pinocchio
     {
       const CollisionPair & cp = geom_model.collisionPairs[k];
 
-      Eigen::DenseIndex i, j;
+      Eigen::Index i, j;
       if (upper)
       {
-        j = (Eigen::DenseIndex)std::max(cp.first, cp.second);
-        i = (Eigen::DenseIndex)std::min(cp.first, cp.second);
+        j = (Eigen::Index)std::max(cp.first, cp.second);
+        i = (Eigen::Index)std::min(cp.first, cp.second);
       }
       else
       {
-        i = (Eigen::DenseIndex)std::max(cp.first, cp.second);
-        j = (Eigen::DenseIndex)std::min(cp.first, cp.second);
+        i = (Eigen::Index)std::max(cp.first, cp.second);
+        j = (Eigen::Index)std::min(cp.first, cp.second);
       }
 
       collisionRequests[k].security_margin = security_margin_map(i, j);

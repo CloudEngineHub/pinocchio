@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_orthogonalization)
 {
   for (size_t i = 0; i < 100; ++i)
   {
-    const Eigen::DenseIndex size = 20;
+    const Eigen::Index size = 20;
     const Eigen::MatrixXd random_mat = Eigen::MatrixXd::Random(size, size);
     const auto qr = random_mat.householderQr();
     const Eigen::MatrixXd basis = qr.householderQ();
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(test_orthonormalization)
     ;
   for (size_t i = 0; i < num_tests; ++i)
   {
-    const Eigen::DenseIndex size = 100;
+    const Eigen::Index size = 100;
     const double prec = size * size * Eigen::NumTraits<double>::dummy_precision();
     const Eigen::MatrixXd random_mat = Eigen::MatrixXd::Random(size, size);
     const Eigen::MatrixXd mat = random_mat + Eigen::MatrixXd::Identity(size, size);

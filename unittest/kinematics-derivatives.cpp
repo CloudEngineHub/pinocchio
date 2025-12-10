@@ -739,7 +739,7 @@ BOOST_AUTO_TEST_CASE(test_classic_acceleration_derivatives)
   const Motion::Vector3 point_acc_LWA = oMpoint.rotation() * point_acc_L; // LOCAL_WORLD_ALIGNED
 
   // Derivatives w.r.t q
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_plus[k] = eps;
     const VectorXd q_plus = integrate(model, q, v_plus);
@@ -769,7 +769,7 @@ BOOST_AUTO_TEST_CASE(test_classic_acceleration_derivatives)
   BOOST_CHECK(a3_partial_dq_LWA_fd.isApprox(a3_partial_dq_LWA, sqrt(eps)));
 
   // Derivatives w.r.t v
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_plus = v;
     v_plus[k] += eps;
@@ -795,7 +795,7 @@ BOOST_AUTO_TEST_CASE(test_classic_acceleration_derivatives)
 
   // Derivatives w.r.t v
   Eigen::VectorXd a_plus = Eigen::VectorXd::Zero(model.nv);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     a_plus = a;
     a_plus[k] += eps;
@@ -939,7 +939,7 @@ BOOST_AUTO_TEST_CASE(test_kinematics_hessians)
   computeJointKinematicHessians(model, data2, q);
   BOOST_CHECK(data2.J.isApprox(data.J));
 
-  const Eigen::DenseIndex matrix_offset = 6 * model.nv;
+  const Eigen::Index matrix_offset = 6 * model.nv;
 
   for (int k = 0; k < model.nv; ++k)
   {
@@ -1005,12 +1005,12 @@ BOOST_AUTO_TEST_CASE(test_kinematics_hessians)
   computeJointJacobians(model, data_ref, q);
   VectorXd v_plus(VectorXd::Zero(model.nv));
 
-  const Eigen::DenseIndex outer_offset = model.nv * 6;
+  const Eigen::Index outer_offset = model.nv * 6;
 
   // WORLD
   getJointJacobian(model, data_ref, joint_id, WORLD, J_ref);
   Data::Tensor3x kinematic_hessian_world = getJointKinematicHessian(model, data, joint_id, WORLD);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_plus[k] = eps;
     const VectorXd q_plus = integrate(model, q, v_plus);
@@ -1035,7 +1035,7 @@ BOOST_AUTO_TEST_CASE(test_kinematics_hessians)
   Data::Tensor3x kinematic_hessian_local_world_aligned =
     getJointKinematicHessian(model, data, joint_id, LOCAL_WORLD_ALIGNED);
   Data::Matrix3x dt_last_fd(3, model.nv);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_plus[k] = eps;
     const VectorXd q_plus = integrate(model, q, v_plus);
@@ -1070,7 +1070,7 @@ BOOST_AUTO_TEST_CASE(test_kinematics_hessians)
   computeJointJacobians(model, data_ref, q);
   getJointJacobian(model, data_ref, joint_id, LOCAL, J_ref);
   Data::Tensor3x kinematic_hessian_local = getJointKinematicHessian(model, data, joint_id, LOCAL);
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
   {
     v_plus[k] = eps;
     const VectorXd q_plus = integrate(model, q, v_plus);

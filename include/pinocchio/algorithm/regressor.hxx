@@ -50,17 +50,17 @@ namespace pinocchio
         {
         case LOCAL:
           iMp = oMi.actInv(oMp);
-          kinematic_regressor_.template middleCols<6>((Eigen::DenseIndex)(6 * (i - 1))) =
+          kinematic_regressor_.template middleCols<6>((Eigen::Index)(6 * (i - 1))) =
             iMp.toActionMatrix(); // TODO: we can avoid a copy
           break;
         case LOCAL_WORLD_ALIGNED:
           iMp.rotation() = oMp.rotation();
           iMp.translation() = oMp.translation() - oMi.translation();
-          kinematic_regressor_.template middleCols<6>((Eigen::DenseIndex)(6 * (i - 1))) =
+          kinematic_regressor_.template middleCols<6>((Eigen::Index)(6 * (i - 1))) =
             iMp.toActionMatrix(); // TODO: we can avoid a copy
           break;
         case WORLD:
-          kinematic_regressor_.template middleCols<6>((Eigen::DenseIndex)(6 * (i - 1))) =
+          kinematic_regressor_.template middleCols<6>((Eigen::Index)(6 * (i - 1))) =
             oMp.toActionMatrix(); // TODO: we can avoid a copy
           break;
         }
@@ -80,7 +80,7 @@ namespace pinocchio
     const ReferenceFrame rf,
     const Eigen::MatrixBase<Matrix6xReturnType> & kinematic_regressor)
   {
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(joint_id > 0 && (Eigen::DenseIndex)joint_id < model.njoints);
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(joint_id > 0 && (Eigen::Index)joint_id < model.njoints);
     internal::computeJointKinematicRegressorGeneric(
       model, data, joint_id, rf, data.oMi[joint_id], kinematic_regressor.const_cast_derived());
   }
@@ -98,7 +98,7 @@ namespace pinocchio
     const SE3Tpl<Scalar, Options> & placement,
     const Eigen::MatrixBase<Matrix6xReturnType> & kinematic_regressor)
   {
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(joint_id > 0 && (Eigen::DenseIndex)joint_id < model.njoints);
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(joint_id > 0 && (Eigen::Index)joint_id < model.njoints);
 
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
     typedef typename Data::SE3 SE3;
@@ -121,7 +121,7 @@ namespace pinocchio
     const ReferenceFrame rf,
     const Eigen::MatrixBase<Matrix6xReturnType> & kinematic_regressor)
   {
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(frame_id > 0 && (Eigen::DenseIndex)frame_id < model.nframes);
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(frame_id > 0 && (Eigen::Index)frame_id < model.nframes);
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef typename Model::Frame Frame;
@@ -167,8 +167,7 @@ namespace pinocchio
     for (JointIndex i = 1; i < (JointIndex)model.njoints; ++i)
     {
       const SE3 & oMi = data.oMi[i];
-      ColsBlock sr_cols =
-        data.staticRegressor.template middleCols<4>((Eigen::DenseIndex)(i - 1) * 4);
+      ColsBlock sr_cols = data.staticRegressor.template middleCols<4>((Eigen::Index)(i - 1) * 4);
       sr_cols.col(0) = oMi.translation();
       sr_cols.template rightCols<3>() = oMi.rotation();
       sr_cols *= mass_inv;
@@ -412,7 +411,7 @@ namespace pinocchio
       const JointIndex parent = model.parents[i];
 
       data.jointTorqueRegressor.block(
-        jmodel.idx_v(), 10 * (Eigen::DenseIndex(col_idx) - 1), jmodel.nv(), 10) =
+        jmodel.idx_v(), 10 * (Eigen::Index(col_idx) - 1), jmodel.nv(), 10) =
         jdata.S().transpose() * data.bodyRegressor;
 
       if (parent > 0)
@@ -501,7 +500,7 @@ namespace pinocchio
                    w_x = angular_vel[0], w_y = angular_vel[1], w_z = angular_vel[2];
 
       auto joint_regressor =
-        data.kineticEnergyRegressor.template segment<10>(10 * Eigen::DenseIndex(joint_id - 1));
+        data.kineticEnergyRegressor.template segment<10>(10 * Eigen::Index(joint_id - 1));
 
       joint_regressor[0] = 0.5 * linear_vel.dot(linear_vel);
       joint_regressor[1] = -w_y * v_z + w_z * v_y;
@@ -546,7 +545,7 @@ namespace pinocchio
       const auto g = -model.gravity.linear();
 
       auto joint_regressor =
-        data.potentialEnergyRegressor.template segment<10>(10 * Eigen::DenseIndex(joint_id - 1));
+        data.potentialEnergyRegressor.template segment<10>(10 * Eigen::Index(joint_id - 1));
 
       const typename Data::Vector3 gravity_local = R.transpose() * g;
       joint_regressor[0] = g.dot(t);

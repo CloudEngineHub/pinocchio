@@ -221,7 +221,7 @@ namespace pinocchio
 
     /// \copydoc Base::getRowSparsityPattern
     const BooleanVector &
-    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -230,7 +230,7 @@ namespace pinocchio
 
     /// \copydoc Base::getRowIndexes
     const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::DenseIndex row_id) const
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
       PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -314,8 +314,8 @@ namespace pinocchio
       if (current1_id > current2_id)
       {
         const JointModel & joint1 = model.joints[current1_id];
-        joint1_span_indexes.push_back((Eigen::DenseIndex)current1_id);
-        Eigen::DenseIndex current1_col_id = joint1.idx_v();
+        joint1_span_indexes.push_back((Eigen::Index)current1_id);
+        Eigen::Index current1_col_id = joint1.idx_v();
         for (int k = 0; k < joint1.nv(); ++k, ++current1_col_id)
         {
           colwise_joint1_sparsity[current1_col_id] = true;
@@ -325,8 +325,8 @@ namespace pinocchio
       else
       {
         const JointModel & joint2 = model.joints[current2_id];
-        joint2_span_indexes.push_back((Eigen::DenseIndex)current2_id);
-        Eigen::DenseIndex current2_col_id = joint2.idx_v();
+        joint2_span_indexes.push_back((Eigen::Index)current2_id);
+        Eigen::Index current2_col_id = joint2.idx_v();
         for (int k = 0; k < joint2.nv(); ++k, ++current2_col_id)
         {
           colwise_joint2_sparsity[current2_col_id] = true;
@@ -341,9 +341,9 @@ namespace pinocchio
       while (current_id > 0)
       {
         const JointModel & joint = model.joints[current_id];
-        joint1_span_indexes.push_back((Eigen::DenseIndex)current_id);
-        joint2_span_indexes.push_back((Eigen::DenseIndex)current_id);
-        Eigen::DenseIndex current_row_id = joint.idx_v();
+        joint1_span_indexes.push_back((Eigen::Index)current_id);
+        joint2_span_indexes.push_back((Eigen::Index)current_id);
+        Eigen::Index current_row_id = joint.idx_v();
         for (int k = 0; k < joint.nv(); ++k, ++current_row_id)
         {
           colwise_joint1_sparsity[current_row_id] = true;
@@ -358,7 +358,7 @@ namespace pinocchio
     colwise_sparsity.resize(model.nv);
     colwise_sparsity.setZero();
     loop_span_indexes.reserve((size_t)model.nv);
-    for (Eigen::DenseIndex col_id = 0; col_id < model.nv; ++col_id)
+    for (Eigen::Index col_id = 0; col_id < model.nv; ++col_id)
     {
       if (colwise_joint1_sparsity[col_id] || colwise_joint2_sparsity[col_id])
       {

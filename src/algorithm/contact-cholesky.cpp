@@ -18,7 +18,7 @@ namespace pinocchio
     template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI context::VectorXs &
     inverseAlgo<context::Scalar, context::Options, context::VectorXs>(
       const ContactCholeskyDecompositionTpl<context::Scalar, context::Options> &,
-      const Eigen::DenseIndex,
+      const Eigen::Index,
       const Eigen::MatrixBase<context::VectorXs> &);
   }
   template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI
@@ -64,7 +64,7 @@ namespace pinocchio
     context::Data &,
     const context::RigidConstraintModelVector &,
     const context::RigidConstraintDataVector &,
-    const context::Scalar, 
+    const context::Scalar,
     bool use_explicit_delassus = false);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void

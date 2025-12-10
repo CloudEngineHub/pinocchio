@@ -53,7 +53,7 @@ namespace pinocchio
     {
       typedef Eigen::Matrix<Scalar, dim, 1> ReturnType;
       ReturnType res;
-      for (Eigen::DenseIndex i = 0; i < dim; ++i)
+      for (Eigen::Index i = 0; i < dim; ++i)
         res[i] = i == axis ? s : Scalar(0);
 
       return res;
@@ -71,7 +71,7 @@ namespace pinocchio
       Vector3Like & v3_ = PINOCCHIO_EIGEN_CONST_CAST(Vector3Like, v3);
       typedef typename Vector3Like::Scalar Scalar;
 
-      for (Eigen::DenseIndex i = 0; i < dim; ++i)
+      for (Eigen::Index i = 0; i < dim; ++i)
         v3_[i] = i == axis ? Scalar(1) : Scalar(0);
     }
 

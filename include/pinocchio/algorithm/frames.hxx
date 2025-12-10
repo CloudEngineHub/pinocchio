@@ -329,7 +329,7 @@ namespace pinocchio
       const Motion v_frame = frame.placement.actInv(v_joint);
 
       const int colRef = nv(model.joints[joint_id]) + idx_v(model.joints[joint_id]) - 1;
-      for (Eigen::DenseIndex j = colRef; j >= 0; j = data.parents_fromRow[(size_t)j])
+      for (Eigen::Index j = colRef; j >= 0; j = data.parents_fromRow[(size_t)j])
       {
         typedef typename Data::Matrix6x::ColXpr ColXprIn;
         typedef const MotionRef<ColXprIn> MotionIn;
@@ -346,7 +346,7 @@ namespace pinocchio
     case LOCAL_WORLD_ALIGNED: {
       const Motion & ov_joint = data.ov[joint_id];
       const int colRef = nv(model.joints[joint_id]) + idx_v(model.joints[joint_id]) - 1;
-      for (Eigen::DenseIndex j = colRef; j >= 0; j = data.parents_fromRow[(size_t)j])
+      for (Eigen::Index j = colRef; j >= 0; j = data.parents_fromRow[(size_t)j])
       {
         typedef typename Data::Matrix6x::ColXpr ColXprIn;
         typedef const MotionRef<ColXprIn> MotionIn;

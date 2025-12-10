@@ -599,15 +599,15 @@ namespace pinocchio
       if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
         res.setZero();
 
-      //      const Eigen::DenseIndex constraint_size = size();
+      //      const Eigen::Index constraint_size = size();
       //
-      //      const Eigen::DenseIndex
+      //      const Eigen::Index
       //      complexity_strategy_1 = 6 * res.cols() * 36 + constraint_size * 36 * res.cols(),
       //      complexity_strategy_2 = 36 * constraint_size * 6 + constraint_size * 36 * res.cols();
 
       const Matrix6 A = getA2(cdata, WorldFrameTag());
 
-      for (Eigen::DenseIndex jj = 0; jj < model.nv; ++jj)
+      for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
         if (!(this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj]))
           continue;
@@ -674,7 +674,7 @@ namespace pinocchio
 
       const Matrix6 A = getA2(cdata, WorldFrameTag());
 
-      for (Eigen::DenseIndex jj = 0; jj < model.nv; ++jj)
+      for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
         if (!(this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj]))
           continue;
@@ -712,7 +712,7 @@ namespace pinocchio
 
       const SE3 & oMc1 = cdata.oMc1;
 
-      for (Eigen::DenseIndex j = 0; j < model.nv; ++j)
+      for (Eigen::Index j = 0; j < model.nv; ++j)
       {
         if (this->colwise_joint1_sparsity[j] || this->colwise_joint2_sparsity[j])
         {

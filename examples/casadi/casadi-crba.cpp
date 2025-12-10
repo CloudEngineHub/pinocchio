@@ -44,9 +44,9 @@ int main(int /*argc*/, char ** /*argv*/)
   ad_data.M.triangularView<Eigen::StrictlyLower>() =
     ad_data.M.transpose().triangularView<Eigen::StrictlyLower>();
   ::casadi::SX M_ad(model.nv, model.nv);
-  for (Eigen::DenseIndex j = 0; j < model.nv; ++j)
+  for (Eigen::Index j = 0; j < model.nv; ++j)
   {
-    for (Eigen::DenseIndex i = 0; i < model.nv; ++i)
+    for (Eigen::Index i = 0; i < model.nv; ++i)
     {
       M_ad(i, j) = ad_data.M(i, j);
     }

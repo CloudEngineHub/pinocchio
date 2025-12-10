@@ -17,7 +17,7 @@ using namespace pinocchio;
 
 BOOST_AUTO_TEST_CASE(test_random_matrix)
 {
-  const Eigen::DenseIndex mat_size = 20;
+  const Eigen::Index mat_size = 20;
   const Eigen::MatrixXd matrix = Eigen::MatrixXd::Random(mat_size, mat_size);
   toCSVfile(TEST_SERIALIZATION_FOLDER "/test.csv", matrix);
 }

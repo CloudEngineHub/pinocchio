@@ -30,7 +30,7 @@ namespace pinocchio
 
     /// \brief Default constructor for the Lanczos decomposition from an input matrix
     template<typename MatrixLikeType>
-    LanczosDecompositionTpl(const MatrixLikeType & mat, const Eigen::DenseIndex decomposition_size)
+    LanczosDecompositionTpl(const MatrixLikeType & mat, const Eigen::Index decomposition_size)
     : m_Qs(mat.rows(), decomposition_size)
     , m_Ts(decomposition_size)
     , m_A_times_q(mat.rows())
@@ -48,8 +48,7 @@ namespace pinocchio
 
     /// \brief Constructor for the Lanczos decomposition from given sizes.
     /// Compute must be called afterwards.
-    LanczosDecompositionTpl(
-      const Eigen::DenseIndex size, const Eigen::DenseIndex decomposition_size)
+    LanczosDecompositionTpl(const Eigen::Index size, const Eigen::Index decomposition_size)
     : m_Qs(size, decomposition_size)
     , m_Ts(decomposition_size)
     , m_A_times_q(size)
@@ -86,8 +85,8 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         A.rows() == m_Qs.rows(), "The input matrix is not of correct size.");
 
-      const Eigen::DenseIndex num_cols = A.cols();
-      const Eigen::DenseIndex decomposition_size = m_Ts.cols();
+      const Eigen::Index num_cols = A.cols();
+      const Eigen::Index decomposition_size = m_Ts.cols();
       auto & alphas = m_Ts.diagonal();
       auto & betas = m_Ts.subDiagonal();
 
@@ -97,7 +96,7 @@ namespace pinocchio
 
       m_Ts.setZero();
       m_rank = 1;
-      for (Eigen::DenseIndex k = 0; k < decomposition_size; ++k)
+      for (Eigen::Index k = 0; k < decomposition_size; ++k)
       {
         const auto q = m_Qs.col(k);
         m_A_times_q.noalias() = A * q;
@@ -128,9 +127,9 @@ namespace pinocchio
 
             Scalar q_next_norm = -1; //= q_next.norm();
 
-            for (Eigen::DenseIndex j = 0; j < num_cols; ++j)
+            for (Eigen::Index j = 0; j < num_cols; ++j)
             {
-              const Eigen::DenseIndex base_col_id = (k + 1 + j) % num_cols;
+              const Eigen::Index base_col_id = (k + 1 + j) % num_cols;
               if (base_col_id == 0)
                 continue; // The first column of Qs is the first unit vector.
 
@@ -173,7 +172,7 @@ namespace pinocchio
     template<typename MatrixLikeType>
     PlainMatrix computeDecompositionResidual(const MatrixLikeType & A) const
     {
-      const Eigen::DenseIndex last_col_id = m_Ts.cols() - 1;
+      const Eigen::Index last_col_id = m_Ts.cols() - 1;
       const auto & alphas = m_Ts.diagonal();
       const auto & betas = m_Ts.subDiagonal();
 
@@ -216,13 +215,13 @@ namespace pinocchio
     }
 
     /// \brief Returns the external size of the Lanczos decomposition.
-    Eigen::DenseIndex size() const
+    Eigen::Index size() const
     {
       return m_Qs.rows();
     }
 
     /// \brief Returns the inerternal size of the Lanczos decomposition.
-    Eigen::DenseIndex decompositionSize() const
+    Eigen::Index decompositionSize() const
     {
       return m_Ts.rows();
     }
@@ -231,7 +230,7 @@ namespace pinocchio
     PlainMatrix m_Qs;
     TridiagonalMatrix m_Ts;
     mutable Vector m_A_times_q;
-    Eigen::DenseIndex m_rank;
+    Eigen::Index m_rank;
   };
 } // namespace pinocchio
 

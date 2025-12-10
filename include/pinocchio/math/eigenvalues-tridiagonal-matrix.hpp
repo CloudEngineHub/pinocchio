@@ -32,8 +32,8 @@ namespace pinocchio
   template<typename Scalar, int Options>
   Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> computeSpectrum(
     const TridiagonalSymmetricMatrixTpl<Scalar, Options> & tridiagonal_mat,
-    const Eigen::DenseIndex m1,
-    const Eigen::DenseIndex m2,
+    const Eigen::Index m1,
+    const Eigen::Index m2,
     Scalar eps = 1e-4)
   {
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> ReturnType;
@@ -48,8 +48,8 @@ namespace pinocchio
       "m2 should be lower than the size of the tridiagonal matrix.");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(eps >= Scalar(0), "eps should be greater than 0.")
 
-    const Eigen::DenseIndex n = tridiagonal_mat.rows();
-    const Eigen::DenseIndex dm = m2 - m1 + 1;
+    const Eigen::Index n = tridiagonal_mat.rows();
+    const Eigen::Index dm = m2 - m1 + 1;
     const Scalar relfeh = 2 * Eigen::NumTraits<Scalar>::epsilon();
 
     assert((Scalar(1) + relfeh) > Scalar(1));
@@ -62,7 +62,7 @@ namespace pinocchio
 
     Scalar xmin = alphas[n - 1] - betas_abs[n - 1], xmax = alphas[n - 1] + betas_abs[n - 1];
 
-    for (Eigen::DenseIndex i = n - 2; i >= 0; --i)
+    for (Eigen::Index i = n - 2; i >= 0; --i)
     {
       const Scalar h = betas_abs[i] + betas_abs[i + 1];
       xmax = math::max(alphas[i] + h, xmax);
@@ -81,12 +81,12 @@ namespace pinocchio
     x.segment(m1, dm).fill(xmax);
     wu.segment(m1, dm).fill(xmin);
 
-    //    Eigen::DenseIndex z = 0;
+    //    Eigen::Index z = 0;
     // Loop for the kth eigenvalue
-    for (Eigen::DenseIndex k = m2; k >= m1; --k)
+    for (Eigen::Index k = m2; k >= m1; --k)
     {
       Scalar xu = xmin;
-      for (Eigen::DenseIndex i = k; i >= m1; --i)
+      for (Eigen::Index i = k; i >= m1; --i)
       {
         if (xu <= wu[i])
         {
@@ -96,9 +96,9 @@ namespace pinocchio
           {
             //            z++;
             Scalar x1 = 0.5 * (xu + x0);
-            Eigen::DenseIndex a = -1;
+            Eigen::Index a = -1;
             Scalar q = 1.;
-            for (Eigen::DenseIndex j = 0; j < n; ++j)
+            for (Eigen::Index j = 0; j < n; ++j)
             {
               const Scalar dq = q != Scalar(0) ? betas_square[j] / q : betas_abs[j] / relfeh;
               q = alphas[j] - x1 - dq;
@@ -162,7 +162,7 @@ namespace pinocchio
   template<typename Scalar, int Options>
   Scalar computeEigenvalue(
     const TridiagonalSymmetricMatrixTpl<Scalar, Options> & tridiagonal_mat,
-    const Eigen::DenseIndex eigenvalue_index,
+    const Eigen::Index eigenvalue_index,
     Scalar eps = 1e-4)
   {
     return computeSpectrum(

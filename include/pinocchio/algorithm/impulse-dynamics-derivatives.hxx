@@ -86,7 +86,7 @@ namespace pinocchio
       // dvec/dq
       ColsBlockOut1 v_partial_dq_cols = jmodel.jointCols(v_partial_dq_);
 
-#define FOR_NV() for (Eigen::DenseIndex j = 0; j < nv; ++j)
+#define FOR_NV() for (Eigen::Index j = 0; j < nv; ++j)
 #define GET_LINEAR(vec6) vec6.template segment<3>(Motion::LINEAR)
 #define GET_ANGULAR(vec6) vec6.template segment<3>(Motion::ANGULAR)
 
@@ -253,7 +253,7 @@ namespace pinocchio
     const Eigen::MatrixBase<MatrixType3> & impulse_partial_dq,
     const Eigen::MatrixBase<MatrixType4> & impulse_partial_dv)
   {
-    const Eigen::DenseIndex nc = data.contact_chol.constraintDim();
+    const Eigen::Index nc = data.contact_chol.constraintDim();
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
 
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
@@ -315,7 +315,7 @@ namespace pinocchio
       Pass2::run(model.joints[i], typename Pass2::ArgsType(model, data));
     }
 
-    Eigen::DenseIndex current_row_sol_id = 0;
+    Eigen::Index current_row_sol_id = 0;
     typedef typename SizeDepType<3>::template RowsReturn<typename Data::MatrixXs>::Type Rows3Block;
     typedef typename SizeDepType<6>::template RowsReturn<typename Data::MatrixXs>::Type Rows6Block;
     for (size_t k = 0; k < contact_models.size(); ++k)
@@ -410,7 +410,7 @@ namespace pinocchio
         case CONTACT_6D: {
           Rows6Block contact_dvc_dv = SizeDepType<6>::middleRows(data.dac_da, current_row_sol_id);
           Rows6Block contact_dic_dq = SizeDepType<6>::middleRows(dic_dq, current_row_sol_id);
-          for (Eigen::DenseIndex j = colRef; j >= 0; j = data.parents_fromRow[(size_t)j])
+          for (Eigen::Index j = colRef; j >= 0; j = data.parents_fromRow[(size_t)j])
           {
             typedef typename Rows6Block::ColXpr ColType;
             typedef typename Rows6Block::ColXpr ColTypeOut;
@@ -423,7 +423,7 @@ namespace pinocchio
         }
         case CONTACT_3D: {
           Rows3Block contact_dic_dq = SizeDepType<3>::middleRows(dic_dq, current_row_sol_id);
-          for (Eigen::DenseIndex j = colRef; j >= 0; j = data.parents_fromRow[(size_t)j])
+          for (Eigen::Index j = colRef; j >= 0; j = data.parents_fromRow[(size_t)j])
           {
             typedef typename Data::Matrix6x::ColXpr ColType;
             MotionRef<ColType> min(data.J.col(j));

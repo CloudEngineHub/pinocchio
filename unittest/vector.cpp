@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(test_isNormalized)
 #endif
   for (int i = 0; i < max_test; ++i)
   {
-    const Eigen::DenseIndex size = rand() % max_size + 1; // random vector size
+    const Eigen::Index size = rand() % max_size + 1; // random vector size
     Vector vec;
     vec = Vector::Random(size) + Vector::Constant(size, 2.);
     BOOST_CHECK(!isNormalized(vec));

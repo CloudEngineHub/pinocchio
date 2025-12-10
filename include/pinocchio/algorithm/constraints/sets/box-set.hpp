@@ -104,7 +104,7 @@ namespace pinocchio
     }
 
     /// \brief Project the value given as input for the given row index.
-    Scalar rowiseProject(const Eigen::DenseIndex row_id, const Scalar value) const
+    Scalar rowiseProject(const Eigen::Index row_id, const Scalar value) const
     {
       assert(row_id < lb.size());
       return math::max(lb[row_id], math::min(ub[row_id], value));

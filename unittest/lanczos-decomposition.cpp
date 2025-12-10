@@ -30,8 +30,8 @@ int line;
 
 BOOST_AUTO_TEST_CASE(test_basic_constructor)
 {
-  const Eigen::DenseIndex mat_size = 20;
-  const Eigen::DenseIndex decomposition_size = 10;
+  const Eigen::Index mat_size = 20;
+  const Eigen::Index decomposition_size = 10;
 
   typedef LanczosDecompositionTpl<Eigen::MatrixXd> LanczosDecomposition;
   LanczosDecomposition lanczos_decomposition(mat_size, decomposition_size);
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(test_basic_constructor)
 
 BOOST_AUTO_TEST_CASE(test_identity)
 {
-  const Eigen::DenseIndex mat_size = 20;
+  const Eigen::Index mat_size = 20;
   const Eigen::MatrixXd identity_matrix = Eigen::MatrixXd::Identity(mat_size, mat_size);
 
   typedef LanczosDecompositionTpl<Eigen::MatrixXd> LanczosDecomposition;
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(test_identity)
 
 BOOST_AUTO_TEST_CASE(test_diagonal_matrix)
 {
-  const Eigen::DenseIndex mat_size = 20;
+  const Eigen::Index mat_size = 20;
   const Eigen::VectorXd diagonal_terms = Eigen::VectorXd::LinSpaced(mat_size, 0.0, mat_size - 1);
   const Eigen::MatrixXd diagonal_matrix = diagonal_terms.asDiagonal();
 
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(test_diagonal_matrix)
   const auto residual = lanczos_decomposition.computeDecompositionResidual(diagonal_matrix);
   BOOST_CHECK(residual.isZero());
 
-  for (Eigen::DenseIndex col_id = 0; col_id < lanczos_decomposition.Ts().cols(); ++col_id)
+  for (Eigen::Index col_id = 0; col_id < lanczos_decomposition.Ts().cols(); ++col_id)
   {
     BOOST_CHECK(math::fabs(lanczos_decomposition.Qs().col(col_id).norm() - 1.) <= 1e-12);
   }
@@ -89,7 +89,7 @@ void checkDecomposition(
 
   const auto size = lanczos_decomposition.decompositionSize();
 
-  for (Eigen::DenseIndex col_id = 0; col_id < size; ++col_id)
+  for (Eigen::Index col_id = 0; col_id < size; ++col_id)
   {
     PINOCCHIO_CHECK(math::fabs(lanczos_decomposition.Qs().col(col_id).norm() - 1.) <= 1e-12);
   }
@@ -100,7 +100,7 @@ void checkDecomposition(
 BOOST_AUTO_TEST_CASE(test_random)
 {
   typedef LanczosDecompositionTpl<Eigen::MatrixXd> LanczosDecomposition;
-  const Eigen::DenseIndex mat_size = 20;
+  const Eigen::Index mat_size = 20;
 
   for (int it = 0; it < 1000; ++it)
   {
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_random)
 BOOST_AUTO_TEST_CASE(test_low_rank)
 {
   typedef LanczosDecompositionTpl<Eigen::MatrixXd> LanczosDecomposition;
-  const Eigen::DenseIndex mat_size = 20;
+  const Eigen::Index mat_size = 20;
   Eigen::MatrixXd A = Eigen::MatrixXd::Identity(mat_size, mat_size);
   A.row(mat_size - 1).setZero();
   A.col(mat_size - 1).setZero();
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(test_low_rank)
 BOOST_AUTO_TEST_CASE(test_delassus)
 {
   typedef LanczosDecompositionTpl<Eigen::MatrixXd> LanczosDecomposition;
-  const Eigen::DenseIndex mat_size = 20;
+  const Eigen::Index mat_size = 20;
 
   for (int it = 0; it < 1000; ++it)
   {
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE(test_delassus_light_cube)
 BOOST_AUTO_TEST_CASE(test_delassus_preconditioned)
 {
   typedef LanczosDecompositionTpl<Eigen::MatrixXd> LanczosDecomposition;
-  const Eigen::DenseIndex mat_size = 20;
+  const Eigen::Index mat_size = 20;
 
   for (int it = 0; it < 1000; ++it)
   {

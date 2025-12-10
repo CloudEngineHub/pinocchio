@@ -64,7 +64,7 @@ namespace pinocchio
     {
       typedef MotionTpl<Scalar> ReturnType;
       ReturnType res;
-      for (Eigen::DenseIndex i = 0; i < dim; ++i)
+      for (Eigen::Index i = 0; i < dim; ++i)
         res.toVector()[i] = i == axis ? s : Scalar(0);
 
       return res;

@@ -54,7 +54,7 @@ int main(int /*argc*/, char ** /*argv*/)
   rnea(ad_model, ad_data, q_ad, v_ad, a_ad);
   ::casadi::SX tau_ad(model.nv, 1);
 
-  for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+  for (Eigen::Index k = 0; k < model.nv; ++k)
     tau_ad(k) = ad_data.tau[k];
 
   ::casadi::Function eval_rnea(

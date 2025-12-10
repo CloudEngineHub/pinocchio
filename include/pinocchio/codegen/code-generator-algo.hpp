@@ -58,7 +58,7 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
       ad_v = ad_X.segment(it, ad_model.nv);
@@ -82,7 +82,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector2> & a)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q;
       it += ad_model.nq;
       x.segment(it, ad_model.nv) = v;
@@ -102,7 +102,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector2> & a)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q;
       it += ad_model.nq;
       x.segment(it, ad_model.nv) = v;
@@ -178,7 +178,7 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
       ad_v = ad_X.segment(it, ad_model.nv);
@@ -201,7 +201,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector2> & tau)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q;
       it += ad_model.nq;
       x.segment(it, ad_model.nv) = v;
@@ -221,7 +221,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector2> & tau)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q;
       it += ad_model.nq;
       x.segment(it, ad_model.nv) = v;
@@ -294,16 +294,16 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
 
       pinocchio::crba(ad_model, ad_data, ad_q, pinocchio::Convention::WORLD);
-      Eigen::DenseIndex it_Y = 0;
+      Eigen::Index it_Y = 0;
 
-      for (Eigen::DenseIndex i = 0; i < ad_model.nv; ++i)
+      for (Eigen::Index i = 0; i < ad_model.nv; ++i)
       {
-        for (Eigen::DenseIndex j = i; j < ad_model.nv; ++j)
+        for (Eigen::Index j = i; j < ad_model.nv; ++j)
         {
           ad_Y[it_Y++] = ad_data.M(i, j);
         }
@@ -319,17 +319,17 @@ namespace pinocchio
     void evalFunction(const Eigen::MatrixBase<ConfigVectorType> & q)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q;
       it += ad_model.nq;
 
       Base::evalFunction(x);
 
       // fill M
-      Eigen::DenseIndex it_Y = 0;
-      for (Eigen::DenseIndex i = 0; i < ad_model.nv; ++i)
+      Eigen::Index it_Y = 0;
+      for (Eigen::Index i = 0; i < ad_model.nv; ++i)
       {
-        for (Eigen::DenseIndex j = i; j < ad_model.nv; ++j)
+        for (Eigen::Index j = i; j < ad_model.nv; ++j)
         {
           M(i, j) = Base::y[it_Y++];
         }
@@ -390,15 +390,15 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
 
       pinocchio::computeMinverse(ad_model, ad_data, ad_q);
-      Eigen::DenseIndex it_Y = 0;
-      for (Eigen::DenseIndex i = 0; i < ad_model.nv; ++i)
+      Eigen::Index it_Y = 0;
+      for (Eigen::Index i = 0; i < ad_model.nv; ++i)
       {
-        for (Eigen::DenseIndex j = i; j < ad_model.nv; ++j)
+        for (Eigen::Index j = i; j < ad_model.nv; ++j)
         {
           ad_Y[it_Y++] = ad_data.Minv(i, j);
         }
@@ -414,17 +414,17 @@ namespace pinocchio
     void evalFunction(const Eigen::MatrixBase<ConfigVectorType> & q)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q;
       it += ad_model.nq;
 
       Base::evalFunction(x);
 
       // fill Minv
-      Eigen::DenseIndex it_Y = 0;
-      for (Eigen::DenseIndex i = 0; i < ad_model.nv; ++i)
+      Eigen::Index it_Y = 0;
+      for (Eigen::Index i = 0; i < ad_model.nv; ++i)
       {
-        for (Eigen::DenseIndex j = i; j < ad_model.nv; ++j)
+        for (Eigen::Index j = i; j < ad_model.nv; ++j)
         {
           Minv(i, j) = Base::y[it_Y++];
         }
@@ -498,7 +498,7 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
       ad_v = ad_X.segment(it, ad_model.nv);
@@ -511,7 +511,7 @@ namespace pinocchio
 
       assert(ad_Y.size() == Base::getOutputDimension());
 
-      Eigen::DenseIndex it_Y = 0;
+      Eigen::Index it_Y = 0;
       Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_dtau_dq;
       it_Y += ad_model.nv * ad_model.nv;
       Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_dtau_dv;
@@ -530,7 +530,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector2> & a)
     {
       // fill x
-      Eigen::DenseIndex it_x = 0;
+      Eigen::Index it_x = 0;
       x.segment(it_x, ad_model.nq) = q;
       it_x += ad_model.nq;
       x.segment(it_x, ad_model.nv) = v;
@@ -541,7 +541,7 @@ namespace pinocchio
       Base::evalFunction(x);
 
       // fill partial derivatives
-      Eigen::DenseIndex it_y = 0;
+      Eigen::Index it_y = 0;
       dtau_dq = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
       it_y += ad_model.nv * ad_model.nv;
       dtau_dv = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
@@ -617,7 +617,7 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
       ad_v = ad_X.segment(it, ad_model.nv);
@@ -630,7 +630,7 @@ namespace pinocchio
 
       assert(ad_Y.size() == Base::getOutputDimension());
 
-      Eigen::DenseIndex it_Y = 0;
+      Eigen::Index it_Y = 0;
       Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_dddq_dq;
       it_Y += ad_model.nv * ad_model.nv;
       Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_dddq_dv;
@@ -649,7 +649,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector2> & tau)
     {
       // fill x
-      Eigen::DenseIndex it_x = 0;
+      Eigen::Index it_x = 0;
       x.segment(it_x, ad_model.nq) = q;
       it_x += ad_model.nq;
       x.segment(it_x, ad_model.nv) = v;
@@ -660,7 +660,7 @@ namespace pinocchio
       Base::evalFunction(x);
 
       // fill partial derivatives
-      Eigen::DenseIndex it_y = 0;
+      Eigen::Index it_y = 0;
       dddq_dq = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
       it_y += ad_model.nv * ad_model.nv;
       dddq_dv = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
@@ -718,9 +718,9 @@ namespace pinocchio
     typedef typename ADData::MatrixXs ADMatrixXs;
     typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(ADMatrixXs) RowADMatrixXs;
 
-    Eigen::DenseIndex constraintDim(const ContactModelVector & contact_models) const
+    Eigen::Index constraintDim(const ContactModelVector & contact_models) const
     {
-      Eigen::DenseIndex num_total_constraints = 0;
+      Eigen::Index num_total_constraints = 0;
       for (typename ContactModelVector::const_iterator it = contact_models.begin();
            it != contact_models.end(); ++it)
       {
@@ -785,7 +785,7 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
       ad_v = ad_X.segment(it, ad_model.nv);
@@ -799,7 +799,7 @@ namespace pinocchio
         ad_model, ad_data, ad_contact_models, ad_contact_datas);
       assert(ad_Y.size() == Base::getOutputDimension());
 
-      Eigen::DenseIndex it_Y = 0;
+      Eigen::Index it_Y = 0;
       Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_data.ddq_dq;
       it_Y += ad_model.nv * ad_model.nv;
       Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_data.ddq_dv;
@@ -823,7 +823,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector2> & tau)
     {
       // fill x
-      Eigen::DenseIndex it_x = 0;
+      Eigen::Index it_x = 0;
       x.segment(it_x, ad_model.nq) = q;
       it_x += ad_model.nq;
       x.segment(it_x, ad_model.nv) = v;
@@ -834,7 +834,7 @@ namespace pinocchio
       Base::evalFunction(x);
 
       // fill partial derivatives
-      Eigen::DenseIndex it_y = 0;
+      Eigen::Index it_y = 0;
       dddq_dq = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
       it_y += ad_model.nv * ad_model.nv;
       dddq_dv = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
@@ -857,7 +857,7 @@ namespace pinocchio
     using Base::ad_Y;
     using Base::y;
 
-    Eigen::DenseIndex nc;
+    Eigen::Index nc;
     ADContactModelVector ad_contact_models;
     ADContactDataVector ad_contact_datas;
 
@@ -902,9 +902,9 @@ namespace pinocchio
     typedef typename ADData::MatrixXs ADMatrixXs;
     typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(ADMatrixXs) RowADMatrixXs;
 
-    Eigen::DenseIndex constraintDim(const ContactModelVector & contact_models) const
+    Eigen::Index constraintDim(const ContactModelVector & contact_models) const
     {
-      Eigen::DenseIndex num_total_constraints = 0;
+      Eigen::Index num_total_constraints = 0;
       for (typename ContactModelVector::const_iterator it = contact_models.begin();
            it != contact_models.end(); ++it)
       {
@@ -970,7 +970,7 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
       ad_v = ad_X.segment(it, ad_model.nv);
@@ -994,7 +994,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector2> & tau)
     {
       // fill x
-      Eigen::DenseIndex it_x = 0;
+      Eigen::Index it_x = 0;
       x.segment(it_x, ad_model.nq) = q;
       it_x += ad_model.nq;
       x.segment(it_x, ad_model.nv) = v;
@@ -1004,7 +1004,7 @@ namespace pinocchio
 
       Base::evalFunction(x);
 
-      Eigen::DenseIndex it_y = 0;
+      Eigen::Index it_y = 0;
       ddq = Base::y.segment(it_y, ad_model.nv);
       it_y += ad_model.nv;
       lambda_c = Base::y.segment(it_y, nc);
@@ -1018,7 +1018,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector2> & a)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q;
       it += ad_model.nq;
       x.segment(it, ad_model.nv) = v;
@@ -1053,7 +1053,7 @@ namespace pinocchio
     ADContactModelVector ad_contact_models;
     ADContactDataVector ad_contact_datas;
 
-    Eigen::DenseIndex nc;
+    Eigen::Index nc;
     VectorXs x;
 
     ADConfigVectorType ad_q;
@@ -1090,7 +1090,7 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
       ad_v = ad_X.segment(it, ad_model.nv);
@@ -1108,7 +1108,7 @@ namespace pinocchio
       const Eigen::MatrixBase<ConfigVectorType2> & qout)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q;
       it += ad_model.nq;
       x.segment(it, ad_model.nv) = v;
@@ -1161,7 +1161,7 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q0 = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
       ad_q1 = ad_X.segment(it, ad_model.nq);
@@ -1179,7 +1179,7 @@ namespace pinocchio
       const Eigen::MatrixBase<TangentVector> & v)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q0;
       it += ad_model.nq;
       x.segment(it, ad_model.nq) = q1;
@@ -1233,7 +1233,7 @@ namespace pinocchio
     {
       CppAD::Independent(ad_X);
 
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       ad_q0 = ad_X.segment(it, ad_model.nq);
       it += ad_model.nq;
       ad_q1 = ad_X.segment(it, ad_model.nq);
@@ -1257,7 +1257,7 @@ namespace pinocchio
       const ArgumentPosition arg)
     {
       // fill x
-      Eigen::DenseIndex it = 0;
+      Eigen::Index it = 0;
       x.segment(it, ad_model.nq) = q0;
       it += ad_model.nq;
       x.segment(it, ad_model.nq) = q1;

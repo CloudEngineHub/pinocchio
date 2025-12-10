@@ -148,7 +148,7 @@ BOOST_PYTHON_MODULE(PINOCCHIO_PYTHON_MODULE_NAME)
   exposeConversions();
 
   typedef std::vector<::pinocchio::VectorXb> StdVec_VectorXb;
-  typedef std::vector<::Eigen::DenseIndex> StdVec_Index;
+  typedef std::vector<::Eigen::Index> StdVec_Index;
   typedef std::vector<context::MatrixXs> StdVec_MatrixXs;
 
   StdVectorPythonVisitor<StdVec_VectorXb, false>::expose(

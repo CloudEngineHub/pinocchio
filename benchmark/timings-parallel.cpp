@@ -52,7 +52,7 @@ struct ParallelFixture : benchmark::Fixture
     taus = Eigen::MatrixXd(model.nv, BATCH_SIZE);
     res = Eigen::MatrixXd(model.nv, BATCH_SIZE);
 
-    for (Eigen::DenseIndex i = 0; i < BATCH_SIZE; ++i)
+    for (Eigen::Index i = 0; i < BATCH_SIZE; ++i)
     {
       qs.col(i) = randomConfiguration(model, -qmax, qmax);
       vs.col(i) = Eigen::VectorXd::Random(model.nv);

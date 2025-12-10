@@ -114,7 +114,7 @@ namespace pinocchio
     data.sDUiJt = J.transpose();
     // Compute U^-1 * J.T
     cholesky::Uiv(model, data, data.sDUiJt);
-    for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
       data.sDUiJt.row(k) /= sqrt(data.D[k]);
 
     data.JMinvJt.noalias() = data.sDUiJt.transpose() * data.sDUiJt;
@@ -195,7 +195,7 @@ namespace pinocchio
     data.sDUiJt = J.transpose();
     // Compute U^-1 * J.T
     cholesky::Uiv(model, data, data.sDUiJt);
-    for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
       data.sDUiJt.row(k) /= sqrt(data.D[k]);
 
     data.JMinvJt.noalias() = data.sDUiJt.transpose() * data.sDUiJt;
@@ -229,7 +229,7 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(KKTMatrix_inv.rows(), data.JMinvJt.rows() + model.nv);
 
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-    const Eigen::DenseIndex nc = data.JMinvJt.cols();
+    const Eigen::Index nc = data.JMinvJt.cols();
 
     KKTMatrixType & KKTMatrix_inv_ = PINOCCHIO_EIGEN_CONST_CAST(KKTMatrixType, KKTMatrix_inv);
 

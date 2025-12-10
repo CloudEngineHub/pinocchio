@@ -240,7 +240,7 @@ struct FiniteDiffJoint
     SE3 M_ref(jdata.M());
 
     CV q_int(q);
-    const Eigen::DenseIndex nv = jdata.S().nv();
+    const Eigen::Index nv = jdata.S().nv();
     TV v(nv);
     v.setZero();
     double eps = 1e-8;

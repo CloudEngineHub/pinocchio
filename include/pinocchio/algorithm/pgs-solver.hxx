@@ -234,7 +234,7 @@ namespace pinocchio
       const Eigen::MatrixBase<DualVectorType> & dual_vector_) const
     {
 
-      const Eigen::DenseIndex size = primal_vector_.size();
+      const Eigen::Index size = primal_vector_.size();
       assert(G_block_.rows() == size);
       assert(dual_vector_.size() == size);
 
@@ -242,7 +242,7 @@ namespace pinocchio
       auto & primal_vector = primal_vector_.const_cast_derived();
       auto & dual_vector = dual_vector_.const_cast_derived();
 
-      for (Eigen::DenseIndex i = 0; i < size; ++i)
+      for (Eigen::Index i = 0; i < size; ++i)
       {
         Scalar d_primal_value =
           -this->over_relax_value * dual_vector[i]
@@ -266,7 +266,7 @@ namespace pinocchio
       const Eigen::MatrixBase<DualVectorType> & dual_vector_) const
     {
 
-      const Eigen::DenseIndex size = primal_vector_.size();
+      const Eigen::Index size = primal_vector_.size();
       assert(G_block_.rows() == size);
       assert(dual_vector_.size() == size);
 
@@ -274,7 +274,7 @@ namespace pinocchio
       auto & primal_vector = primal_vector_.const_cast_derived();
       auto & dual_vector = dual_vector_.const_cast_derived();
 
-      for (Eigen::DenseIndex i = 0; i < size; ++i)
+      for (Eigen::Index i = 0; i < size; ++i)
       {
         Scalar d_primal_value =
           -this->over_relax_value * dual_vector[i]
@@ -343,7 +343,7 @@ namespace pinocchio
       const Eigen::MatrixBase<PrimalVectorType> & primal_vector_,
       const Eigen::MatrixBase<DualVectorType> & dual_vector_)
     {
-      const Eigen::DenseIndex size = primal_vector_.size();
+      const Eigen::Index size = primal_vector_.size();
       assert(G_block_.rows() == size);
       assert(dual_vector_.size() == size);
 
@@ -351,7 +351,7 @@ namespace pinocchio
       auto & primal_vector = primal_vector_.const_cast_derived();
       auto & dual_vector = dual_vector_.const_cast_derived();
 
-      for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
+      for (Eigen::Index row_id = 0; row_id < size; ++row_id)
       {
         Scalar & value = primal_vector.coeffRef(row_id);
         const Scalar value_previous = value;
@@ -398,7 +398,7 @@ namespace pinocchio
       const Eigen::MatrixBase<PrimalVectorType> & primal_vector_,
       const Eigen::MatrixBase<DualVectorType> & dual_vector_)
     {
-      const Eigen::DenseIndex size = primal_vector_.size();
+      const Eigen::Index size = primal_vector_.size();
       assert(G_block_.rows() == size);
       assert(dual_vector_.size() == size);
 
@@ -406,7 +406,7 @@ namespace pinocchio
       auto & primal_vector = primal_vector_.const_cast_derived();
       auto & dual_vector = dual_vector_.const_cast_derived();
 
-      for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
+      for (Eigen::Index row_id = 0; row_id < size; ++row_id)
       {
         Scalar & value = primal_vector.coeffRef(row_id);
         const Scalar value_previous = value;
@@ -431,13 +431,13 @@ namespace pinocchio
       this->dual_feasibility =
         Scalar(0); // always zero as the dual variable belongs to the constraint set.
 
-      const Eigen::DenseIndex size = primal_vector.size();
+      const Eigen::Index size = primal_vector.size();
       assert(dual_vector.size() == size);
       Scalar complementarity = Scalar(0);
 
       const auto & lb = set.lb;
       const auto & ub = set.ub;
-      for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
+      for (Eigen::Index row_id = 0; row_id < size; ++row_id)
       {
         const Scalar dual_positive_part = math::max(Scalar(0), dual_vector[row_id]);
         const Scalar dual_negative_part = dual_positive_part - dual_vector[row_id];
@@ -515,12 +515,12 @@ namespace pinocchio
       this->primal_feasibility =
         Scalar(0); // always zero as the primal variable belongs to the constraint set.
 
-      const Eigen::DenseIndex size = primal_vector.size();
+      const Eigen::Index size = primal_vector.size();
       assert(dual_vector.size() == size);
       Scalar complementarity = Scalar(0);
       Scalar dual_feasibility = Scalar(0);
 
-      for (Eigen::DenseIndex row_id = 0; row_id < size; ++row_id)
+      for (Eigen::Index row_id = 0; row_id < size; ++row_id)
       {
         const Scalar row_complementarity =
           math::fabs(Scalar(primal_vector[row_id] * dual_vector[row_id]));
@@ -598,12 +598,12 @@ namespace pinocchio
       complementarity = Scalar(0);
       dual_feasibility = Scalar(0);
       primal_feasibility = Scalar(0);
-      Eigen::DenseIndex row_id = 0;
+      Eigen::Index row_id = 0;
       for (size_t constraint_id = 0; constraint_id < nc; ++constraint_id)
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const Eigen::DenseIndex constraint_size = cmodel.residualSize(cdata);
+        const Eigen::Index constraint_size = cmodel.residualSize(cdata);
 
         auto G_block = G.block(row_id, row_id, constraint_size, constraint_size);
         auto impulse = x.segment(row_id, constraint_size);

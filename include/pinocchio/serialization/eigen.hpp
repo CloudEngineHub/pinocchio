@@ -139,7 +139,7 @@ namespace boost
           Archive & ar, EigenPlainObjectBase & m, const unsigned int /*version*/)
         {
 
-          ::Eigen::DenseIndex rows(m.rows()), cols(m.cols());
+          ::Eigen::Index rows(m.rows()), cols(m.cols());
           if (EigenPlainObjectBase::RowsAtCompileTime == ::Eigen::Dynamic)
             ar & BOOST_SERIALIZATION_NVP(rows);
           if (EigenPlainObjectBase::ColsAtCompileTime == ::Eigen::Dynamic)
@@ -192,7 +192,7 @@ namespace boost
       ::Eigen::Map<PlainObjectBase, MapOptions, StrideType> & m,
       const unsigned int /*version*/)
     {
-      ::Eigen::DenseIndex rows(m.rows()), cols(m.cols());
+      ::Eigen::Index rows(m.rows()), cols(m.cols());
       if (PlainObjectBase::RowsAtCompileTime == ::Eigen::Dynamic)
         ar >> BOOST_SERIALIZATION_NVP(rows);
       if (PlainObjectBase::ColsAtCompileTime == ::Eigen::Dynamic)
