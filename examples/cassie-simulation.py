@@ -99,7 +99,7 @@ q = q0.copy()
 
 pinocchio.computeAllTerms(robot.model, robot.data, q, np.zeros(robot.model.nv))
 kkt_constraint = pinocchio.ContactCholeskyDecomposition(robot.model, constraint_models)
-constraint_dim = sum([cm.size() for cm in constraint_models])
+constraint_size = sum([cm.size() for cm in constraint_models])
 N = 1000
 eps = 1e-6
 mu = 1e-4
@@ -167,7 +167,7 @@ def com_des(k):
 
 def squashing(model, data, q_in, Nin=N, epsin=eps, verbose=True):
     q = q_in.copy()
-    y = np.ones(constraint_dim)
+    y = np.ones(constraint_size)
 
     _N_full = 200
 
@@ -231,8 +231,8 @@ def squashing(model, data, q_in, Nin=N, epsin=eps, verbose=True):
             [-constraint_value - y * mu, kp * com_err, np.zeros(robot.model.nv - 3)]
         )
         dz = kkt_constraint.solve(rhs)
-        dy = dz[:constraint_dim]
-        dq = dz[constraint_dim:]
+        dy = dz[:constraint_size]
+        dq = dz[constraint_size:]
         alpha = 1.0
         q = pinocchio.integrate(robot.model, q, -alpha * dq)
         y -= alpha * (-dy + y)

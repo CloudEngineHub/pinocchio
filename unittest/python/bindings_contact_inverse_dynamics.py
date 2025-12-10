@@ -49,13 +49,13 @@ class TestContactInverseDynamics(TestCase):
             contact_models_vec.append(contact_model)
             contact_datas_vec.append(contact_model.createData())
 
-        constraint_dim = 0
+        constraint_size = 0
         for cm, cd in zip(contact_models_vec, contact_datas_vec):
-            constraint_dim += cm.residualSize(cd)
+            constraint_size += cm.residualSize(cd)
 
         dt = 1e-3
-        constraint_correction = np.zeros(constraint_dim)
-        lambda_guess = np.zeros(constraint_dim)
+        constraint_correction = np.zeros(constraint_size)
+        lambda_guess = np.zeros(constraint_size)
         prox_settings = pin.ProximalSettings(1e-12, 1e-6, 1)
 
         # Compute all the Jacobians and call cacl on each constraint

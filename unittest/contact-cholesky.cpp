@@ -373,8 +373,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
   J_LF.setZero();
   getJointJacobian(model, data_ref, model.getJointId(LF), LOCAL, J_LF);
 
-  const int constraint_dim = 12;
-  const int total_dim = model.nv + constraint_dim;
+  const int constraint_size = 12;
+  const int total_dim = model.nv + constraint_size;
 
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
@@ -393,11 +393,11 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
   for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
   {
     if (data.parents_fromRow[(size_t)k] == -1)
-      BOOST_CHECK(access.getParents_fromRow()[k + constraint_dim] == -1);
+      BOOST_CHECK(access.getParents_fromRow()[k + constraint_size] == -1);
     else
       BOOST_CHECK(
-        access.getParents_fromRow()[k + constraint_dim]
-        == data.parents_fromRow[(size_t)k] + constraint_dim);
+        access.getParents_fromRow()[k + constraint_size]
+        == data.parents_fromRow[(size_t)k] + constraint_size);
   }
 
   contact_chol_decomposition.compute(model, data, contact_models, contact_datas);
@@ -421,8 +421,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
                                 * contact_chol_decomposition.U.transpose();
 
   BOOST_CHECK(H_recomposed.bottomRightCorner(model.nv, model.nv).isApprox(data.M));
-  BOOST_CHECK(H_recomposed.topRightCorner(constraint_dim, model.nv)
-                .isApprox(H.topRightCorner(constraint_dim, model.nv)));
+  BOOST_CHECK(H_recomposed.topRightCorner(constraint_size, model.nv)
+                .isApprox(H.topRightCorner(constraint_size, model.nv)));
   BOOST_CHECK(H_recomposed.isApprox(H));
 
   // test Operational Space Inertia Matrix
@@ -431,7 +431,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
                        * H.middleRows<12>(0).rightCols(model.nv).transpose();
     MatrixXd iosim = contact_chol_decomposition.getInverseOperationalSpaceInertiaMatrix();
     MatrixXd osim = contact_chol_decomposition.getOperationalSpaceInertiaMatrix();
-    Eigen::MatrixXd JMinv_test(Eigen::MatrixXd::Zero(constraint_dim, model.nv));
+    Eigen::MatrixXd JMinv_test(Eigen::MatrixXd::Zero(constraint_size, model.nv));
     contact_chol_decomposition.getJMinv(JMinv_test);
     MatrixXd JMinv_ref = H.middleRows<12>(0).rightCols(model.nv) * data_ref.M.inverse();
     BOOST_CHECK(JMinv_ref.isApprox(JMinv_test));
@@ -472,7 +472,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
   const double mu = 0.1;
   contact_chol_decomposition_mu.compute(model, data, contact_models, contact_datas, mu);
   Data::MatrixXs H_mu(H);
-  H_mu.topLeftCorner(constraint_dim, constraint_dim).diagonal().fill(-mu);
+  H_mu.topLeftCorner(constraint_size, constraint_size).diagonal().fill(-mu);
 
   // test damped Operational Space Inertia Matrix
   {
@@ -599,8 +599,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
   contact_chol_decomposition.matrix(mat1);
   BOOST_CHECK(mat1.isApprox(H));
 
-  MatrixXd mat2(constraint_dim + model.nv, constraint_dim + model.nv);
-  contact_chol_decomposition.matrix(mat2.middleCols(0, constraint_dim + model.nv));
+  MatrixXd mat2(constraint_size + model.nv, constraint_size + model.nv);
+  contact_chol_decomposition.matrix(mat2.middleCols(0, constraint_size + model.nv));
   BOOST_CHECK(mat2.isApprox(H));
 
   MatrixXd mat3 = contact_chol_decomposition.matrix();
@@ -675,8 +675,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_LOCAL)
   J_LA.setZero();
   getJointJacobian(model, data_ref, model.getJointId(LA), LOCAL_WORLD_ALIGNED, J_LA);
 
-  const int constraint_dim = 9;
-  const int total_dim = model.nv + constraint_dim;
+  const int constraint_size = 9;
+  const int total_dim = model.nv + constraint_size;
 
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
@@ -697,11 +697,11 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_LOCAL)
   for (Eigen::DenseIndex k = 0; k < model.nv; ++k)
   {
     if (data.parents_fromRow[(size_t)k] == -1)
-      BOOST_CHECK(access.getParents_fromRow()[k + constraint_dim] == -1);
+      BOOST_CHECK(access.getParents_fromRow()[k + constraint_size] == -1);
     else
       BOOST_CHECK(
-        access.getParents_fromRow()[k + constraint_dim]
-        == data.parents_fromRow[(size_t)k] + constraint_dim);
+        access.getParents_fromRow()[k + constraint_size]
+        == data.parents_fromRow[(size_t)k] + constraint_size);
   }
 
   contact_chol_decomposition.compute(model, data, contact_models, contact_datas);
@@ -725,8 +725,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_LOCAL)
                                 * contact_chol_decomposition.U.transpose();
 
   BOOST_CHECK(H_recomposed.bottomRightCorner(model.nv, model.nv).isApprox(data.M));
-  BOOST_CHECK(H_recomposed.topRightCorner(constraint_dim, model.nv)
-                .isApprox(H.topRightCorner(constraint_dim, model.nv)));
+  BOOST_CHECK(H_recomposed.topRightCorner(constraint_size, model.nv)
+                .isApprox(H.topRightCorner(constraint_size, model.nv)));
   BOOST_CHECK(H_recomposed.isApprox(H));
 
   // Test basic operation
@@ -824,8 +824,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_LOCAL)
   contact_chol_decomposition.matrix(mat1);
   BOOST_CHECK(mat1.isApprox(H));
 
-  MatrixXd mat2(constraint_dim + model.nv, constraint_dim + model.nv);
-  contact_chol_decomposition.matrix(mat2.middleCols(0, constraint_dim + model.nv));
+  MatrixXd mat2(constraint_size + model.nv, constraint_size + model.nv);
+  contact_chol_decomposition.matrix(mat2.middleCols(0, constraint_size + model.nv));
   BOOST_CHECK(mat2.isApprox(H));
 
   MatrixXd mat3 = contact_chol_decomposition.matrix();
@@ -898,8 +898,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL_WORLD_ALIGNED)
   J_LF.setZero();
   getJointJacobian(model, data_ref, model.getJointId(LF), ci_LF.reference_frame, J_LF);
 
-  const int constraint_dim = 12;
-  const int total_dim = model.nv + constraint_dim;
+  const int constraint_size = 12;
+  const int total_dim = model.nv + constraint_size;
 
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
@@ -921,8 +921,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL_WORLD_ALIGNED)
   Data::MatrixXs H_recomposed = contact_chol_decomposition.matrix();
 
   BOOST_CHECK(H_recomposed.bottomRightCorner(model.nv, model.nv).isApprox(data.M));
-  BOOST_CHECK(H_recomposed.topRightCorner(constraint_dim, model.nv)
-                .isApprox(H.topRightCorner(constraint_dim, model.nv)));
+  BOOST_CHECK(H_recomposed.topRightCorner(constraint_size, model.nv)
+                .isApprox(H.topRightCorner(constraint_size, model.nv)));
   BOOST_CHECK(H_recomposed.isApprox(H));
 
   // inverse
@@ -1011,15 +1011,15 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_by_joint_2)
   J_LA.setZero();
   getJointJacobian(model, data_ref, model.getJointId(LA), WORLD, J_LA);
 
-  const int constraint_dim = 24;
-  const int total_dim = model.nv + constraint_dim;
+  const int constraint_size = 24;
+  const int total_dim = model.nv + constraint_size;
 
   const SE3 oMRA_wla = SE3(SE3::Matrix3::Identity(), ci_RA.joint1_placement.translation());
 
   const double mu = 0.1;
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
-  H.topLeftCorner(constraint_dim, constraint_dim).diagonal().fill(-mu);
+  H.topLeftCorner(constraint_size, constraint_size).diagonal().fill(-mu);
   H.bottomRightCorner(model.nv, model.nv) = data_ref.M;
   H.middleRows<6>(0).rightCols(model.nv) = -ci_RF.joint1_placement.toActionMatrixInverse() * J_RF;
   H.middleRows<6>(6).rightCols(model.nv) = -ci_LF.joint1_placement.toActionMatrixInverse() * J_LF;
@@ -1040,8 +1040,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_by_joint_2)
   Data::MatrixXs H_recomposed = contact_chol_decomposition.matrix();
 
   BOOST_CHECK(H_recomposed.bottomRightCorner(model.nv, model.nv).isApprox(data.M));
-  BOOST_CHECK(H_recomposed.topRightCorner(constraint_dim, model.nv)
-                .isApprox(H.topRightCorner(constraint_dim, model.nv)));
+  BOOST_CHECK(H_recomposed.topRightCorner(constraint_size, model.nv)
+                .isApprox(H.topRightCorner(constraint_size, model.nv)));
   BOOST_CHECK(H_recomposed.isApprox(H));
 
   VectorXd v_in(VectorXd::Random(contact_chol_decomposition.size()));
@@ -1120,17 +1120,17 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_by_joint_2)
   contact_chol_decomposition.solveInPlace(H_inv3);
 
   MatrixXd H_inv_ref = H_recomposed.inverse();
-  BOOST_CHECK(H_inv.topLeftCorner(constraint_dim, constraint_dim)
-                .isApprox(H_inv_ref.topLeftCorner(constraint_dim, constraint_dim)));
+  BOOST_CHECK(H_inv.topLeftCorner(constraint_size, constraint_size)
+                .isApprox(H_inv_ref.topLeftCorner(constraint_size, constraint_size)));
   BOOST_CHECK(H_inv.bottomRightCorner(model.nv, model.nv)
                 .isApprox(H_inv_ref.bottomRightCorner(model.nv, model.nv)));
-  BOOST_CHECK(H_inv.topRightCorner(constraint_dim, model.nv)
-                .isApprox(H_inv_ref.topRightCorner(constraint_dim, model.nv)));
+  BOOST_CHECK(H_inv.topRightCorner(constraint_size, model.nv)
+                .isApprox(H_inv_ref.topRightCorner(constraint_size, model.nv)));
 
   BOOST_CHECK(H_inv_ref.isApprox(H_inv));
   BOOST_CHECK(H_inv_ref.isApprox(H_inv2));
   BOOST_CHECK(H_inv_ref.isApprox(H_inv3));
-  const VectorXd ei = VectorXd::Unit(contact_chol_decomposition.size(), constraint_dim);
+  const VectorXd ei = VectorXd::Unit(contact_chol_decomposition.size(), constraint_size);
   VectorXd ei_inv = ei;
   contact_chol_decomposition.solveInPlace(ei_inv);
   VectorXd ei_inv2 = ei;
@@ -1222,8 +1222,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_WORLD_by_joint_2)
   J_LA.setZero();
   getJointJacobian(model, data_ref, model.getJointId(LA), LOCAL_WORLD_ALIGNED, J_LA);
 
-  const int constraint_dim = 15;
-  const int total_dim = model.nv + constraint_dim;
+  const int constraint_size = 15;
+  const int total_dim = model.nv + constraint_size;
 
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
@@ -1263,8 +1263,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_WORLD_by_joint_2)
                                 * contact_chol_decomposition.U.transpose();
 
   BOOST_CHECK(H_recomposed.bottomRightCorner(model.nv, model.nv).isApprox(data.M));
-  BOOST_CHECK(H_recomposed.topRightCorner(constraint_dim, model.nv)
-                .isApprox(H.topRightCorner(constraint_dim, model.nv)));
+  BOOST_CHECK(H_recomposed.topRightCorner(constraint_size, model.nv)
+                .isApprox(H.topRightCorner(constraint_size, model.nv)));
   BOOST_CHECK(H_recomposed.isApprox(H));
 
   // test Operational Space Inertia Matrix
@@ -1371,12 +1371,12 @@ BOOST_AUTO_TEST_CASE(loop_contact_cholesky_contact6D)
   const SE3 oM2_loop2 = data_ref.oMi[loop_RA_LA_lwa.joint2_id] * loop_RA_LA_lwa.joint2_placement;
   const SE3 _1M2_loop2 = oM1_loop2.inverse() * oM2_loop2;
 
-  const int constraint_dim = 12;
-  const int total_dim = model.nv + constraint_dim;
+  const int constraint_size = 12;
+  const int total_dim = model.nv + constraint_size;
 
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
-  H.topLeftCorner(constraint_dim, constraint_dim).diagonal().fill(-mu);
+  H.topLeftCorner(constraint_size, constraint_size).diagonal().fill(-mu);
   H.bottomRightCorner(model.nv, model.nv) = data_ref.M;
   H.middleRows<6>(0).rightCols(model.nv) = J_RF_local - _1M2_loop1.toActionMatrix() * J_LF_local;
   const SE3 oM1_loop2_lwa = SE3(oM1_loop2.rotation(), SE3::Vector3::Zero());
@@ -1397,8 +1397,8 @@ BOOST_AUTO_TEST_CASE(loop_contact_cholesky_contact6D)
   data.M.triangularView<Eigen::StrictlyLower>() =
     data.M.triangularView<Eigen::StrictlyUpper>().transpose();
   BOOST_CHECK(H_recomposed.bottomRightCorner(model.nv, model.nv).isApprox(data.M));
-  BOOST_CHECK(H_recomposed.topRightCorner(constraint_dim, model.nv)
-                .isApprox(H.topRightCorner(constraint_dim, model.nv)));
+  BOOST_CHECK(H_recomposed.topRightCorner(constraint_size, model.nv)
+                .isApprox(H.topRightCorner(constraint_size, model.nv)));
   BOOST_CHECK(H_recomposed.isApprox(H));
 
   // inverse
@@ -1516,12 +1516,12 @@ BOOST_AUTO_TEST_CASE(loop_contact_cholesky_contact_3d)
   const SE3 oM2_loop2 = data_ref.oMi[loop_RA_LA_lwa.joint2_id] * loop_RA_LA_lwa.joint2_placement;
   const SE3 _1M2_loop2 = oM1_loop2.inverse() * oM2_loop2;
 
-  const int constraint_dim = 6;
-  const int total_dim = model.nv + constraint_dim;
+  const int constraint_size = 6;
+  const int total_dim = model.nv + constraint_size;
 
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
-  H.topLeftCorner(constraint_dim, constraint_dim).diagonal().fill(-mu);
+  H.topLeftCorner(constraint_size, constraint_size).diagonal().fill(-mu);
   H.bottomRightCorner(model.nv, model.nv) = data_ref.M;
   H.middleRows<3>(0).rightCols(model.nv) =
     J_RF_local.middleRows<3>(Motion::LINEAR)
@@ -1547,13 +1547,13 @@ BOOST_AUTO_TEST_CASE(loop_contact_cholesky_contact_3d)
   data.M.triangularView<Eigen::StrictlyLower>() =
     data.M.triangularView<Eigen::StrictlyUpper>().transpose();
   BOOST_CHECK(H_recomposed.bottomRightCorner(model.nv, model.nv).isApprox(data.M));
-  BOOST_CHECK(H_recomposed.topRightCorner(constraint_dim, model.nv)
-                .isApprox(H.topRightCorner(constraint_dim, model.nv)));
+  BOOST_CHECK(H_recomposed.topRightCorner(constraint_size, model.nv)
+                .isApprox(H.topRightCorner(constraint_size, model.nv)));
   BOOST_CHECK(H_recomposed.isApprox(H));
 
-  // std::cout << "H_recomposed.topRightCorner(constraint_dim,model.nv):\n" <<
-  // H_recomposed.topRightCorner(constraint_dim,model.nv) << std::endl; std::cout <<
-  // "H.topRightCorner(constraint_dim,model.nv):\n" << H  .topRightCorner(constraint_dim,model.nv)
+  // std::cout << "H_recomposed.topRightCorner(constraint_size,model.nv):\n" <<
+  // H_recomposed.topRightCorner(constraint_size,model.nv) << std::endl; std::cout <<
+  // "H.topRightCorner(constraint_size,model.nv):\n" << H  .topRightCorner(constraint_size,model.nv)
   // << std::endl;
 
   // inverse
@@ -1693,14 +1693,14 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_joint_friction_constraint)
   const double mu = 1e-10;
   contact_chol_decomposition.compute(model, data, constraint_models, constraint_datas, mu);
 
-  const int constraint_dim = constraint_model.residualSize(constraint_data);
-  const int total_dim = model.nv + constraint_dim;
+  const int constraint_size = constraint_model.residualSize(constraint_data);
+  const int total_dim = model.nv + constraint_size;
   Data::MatrixXs H(total_dim, total_dim);
   H.setZero();
-  H.topLeftCorner(constraint_dim, constraint_dim).diagonal().fill(-mu);
+  H.topLeftCorner(constraint_size, constraint_size).diagonal().fill(-mu);
   H.bottomRightCorner(model.nv, model.nv) = data.M;
   constraint_model.jacobian(
-    model, data, constraint_data, H.middleRows(0, constraint_dim).rightCols(model.nv));
+    model, data, constraint_data, H.middleRows(0, constraint_size).rightCols(model.nv));
 
   H.triangularView<Eigen::StrictlyLower>() = H.triangularView<Eigen::StrictlyUpper>().transpose();
 

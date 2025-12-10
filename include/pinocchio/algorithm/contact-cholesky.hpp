@@ -222,10 +222,10 @@ namespace pinocchio
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
 
-      const Eigen::DenseIndex constraint_dim = cmodel.residualSize(cdata);
-      auto U_block = U.block(current_row, total_constraints_dim, constraint_dim, model.nv);
+      const Eigen::DenseIndex constraint_size = cmodel.residualSize(cdata);
+      auto U_block = U.block(current_row, total_constraints_dim, constraint_size, model.nv);
       cmodel.jacobian(model, data, cdata, U_block);
-      current_row += constraint_dim;
+      current_row += constraint_size;
     }
 
     // Cholesky
@@ -260,9 +260,9 @@ namespace pinocchio
         const auto & cmodel =
           helper::get_ref(constraint_models[num_constraints - 1 - constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[num_constraints - 1 - constraint_id]);
-        const Eigen::DenseIndex constraint_dim = cmodel.residualSize(cdata);
+        const Eigen::DenseIndex constraint_size = cmodel.residualSize(cdata);
 
-        for (Eigen::DenseIndex constraint_row_id = constraint_dim - 1; constraint_row_id >= 0;
+        for (Eigen::DenseIndex constraint_row_id = constraint_size - 1; constraint_row_id >= 0;
              --constraint_row_id, --current_row)
         {
           const auto & colwise_sparsity = cmodel.getRowSparsityPattern(cdata, constraint_row_id);
@@ -798,7 +798,7 @@ namespace pinocchio
         const Eigen::DenseIndex nvt_max = std::min(col - k, nvt[k] - 1);
         const auto U_row = chol.U.row(k);
         vec_[k] = -U_row.segment(k + 1, nvt_max).dot(vec_.segment(k + 1, nvt_max));
-        //          if(k >= chol_constraint_dim)
+        //          if(k >= chol_constraint_size)
         //          {
         //            vec_[k] = -U_row.segment(k+1,nvt_max).dot(vec_.segment(k+1,nvt_max));
         //          }

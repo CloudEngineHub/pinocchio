@@ -179,9 +179,9 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
   contact_models.push_back(ci_RF);
   contact_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_dim = 0;
+  Eigen::DenseIndex constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxResidualSize();
+    constraint_size += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -201,9 +201,9 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
   MatrixXd dqafter_partial_dv_fd(model.nv, model.nv);
   dqafter_partial_dv_fd.setZero();
 
-  MatrixXd impulse_partial_dq_fd(constraint_dim, model.nv);
+  MatrixXd impulse_partial_dq_fd(constraint_size, model.nv);
   impulse_partial_dq_fd.setZero();
-  MatrixXd impulse_partial_dv_fd(constraint_dim, model.nv);
+  MatrixXd impulse_partial_dv_fd(constraint_size, model.nv);
   impulse_partial_dv_fd.setZero();
 
   const VectorXd dqafter0 =
@@ -213,13 +213,13 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
   VectorXd q_plus(model.nq);
   VectorXd dqafter_plus(model.nv);
 
-  const Eigen::MatrixXd Jc = data.contact_chol.matrix().topRightCorner(constraint_dim, model.nv);
+  const Eigen::MatrixXd Jc = data.contact_chol.matrix().topRightCorner(constraint_size, model.nv);
   const Eigen::VectorXd vel_jump = Jc * (dqafter0 + r_coeff * v);
 
   Data data_plus(model);
-  VectorXd impulse_plus(constraint_dim);
+  VectorXd impulse_plus(constraint_size);
 
-  Eigen::MatrixXd dvc_dq_fd(constraint_dim, model.nv);
+  Eigen::MatrixXd dvc_dq_fd(constraint_size, model.nv);
   const double alpha = 1e-8;
   for (int k = 0; k < model.nv; ++k)
   {
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
       model, data_fd, q_plus, v, contact_models, contact_data, r_coeff, prox_settings);
 
     const Eigen::MatrixXd Jc_plus =
-      data_fd.contact_chol.matrix().topRightCorner(constraint_dim, model.nv);
+      data_fd.contact_chol.matrix().topRightCorner(constraint_size, model.nv);
     const Eigen::VectorXd vel_jump_plus = Jc_plus * (dqafter0 + r_coeff * v);
 
     dqafter_partial_dq_fd.col(k) = (dqafter_plus - dqafter0) / alpha;
@@ -291,9 +291,9 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_WORLD_ALIGNED_fd)
   contact_models.push_back(ci_RF);
   contact_data.push_back(RigidConstraintData(ci_RF));
 
-  Eigen::DenseIndex constraint_dim = 0;
+  Eigen::DenseIndex constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxResidualSize();
+    constraint_size += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -313,9 +313,9 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_WORLD_ALIGNED_fd)
   MatrixXd dqafter_partial_dv_fd(model.nv, model.nv);
   dqafter_partial_dv_fd.setZero();
 
-  MatrixXd impulse_partial_dq_fd(constraint_dim, model.nv);
+  MatrixXd impulse_partial_dq_fd(constraint_size, model.nv);
   impulse_partial_dq_fd.setZero();
-  MatrixXd impulse_partial_dv_fd(constraint_dim, model.nv);
+  MatrixXd impulse_partial_dv_fd(constraint_size, model.nv);
   impulse_partial_dv_fd.setZero();
 
   const VectorXd dqafter0 =
@@ -325,7 +325,7 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_WORLD_ALIGNED_fd)
   VectorXd q_plus(model.nq);
   VectorXd dqafter_plus(model.nv);
 
-  VectorXd impulse_plus(constraint_dim);
+  VectorXd impulse_plus(constraint_size);
   const double alpha = 1e-8;
   for (int k = 0; k < model.nv; ++k)
   {

@@ -92,14 +92,14 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_dim = 0;
+  Eigen::DenseIndex constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxResidualSize();
+    constraint_size += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
   const double r_coeff = 0.5;
-  Eigen::MatrixXd J_ref(constraint_dim, model.nv);
+  Eigen::MatrixXd J_ref(constraint_size, model.nv);
   J_ref.setZero();
 
   computeAllTerms(model, data_ref, q, v);
@@ -111,16 +111,16 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
   getJointJacobian(model, data_ref, model.getJointId(RF), LOCAL, J_ref.middleRows<6>(0));
   getJointJacobian(model, data_ref, model.getJointId(LF), LOCAL, J_ref.middleRows<6>(6));
 
-  Eigen::VectorXd rhs_ref(constraint_dim);
+  Eigen::VectorXd rhs_ref(constraint_size);
 
   rhs_ref.segment<6>(0) = getFrameVelocity(model, data_ref, model.getFrameId(RF), LOCAL).toVector();
   rhs_ref.segment<6>(6) = getFrameVelocity(model, data_ref, model.getFrameId(LF), LOCAL).toVector();
 
   Eigen::MatrixXd KKT_matrix_ref =
-    Eigen::MatrixXd::Zero(model.nv + constraint_dim, model.nv + constraint_dim);
+    Eigen::MatrixXd::Zero(model.nv + constraint_size, model.nv + constraint_size);
   KKT_matrix_ref.bottomRightCorner(model.nv, model.nv) = data_ref.M;
-  KKT_matrix_ref.topRightCorner(constraint_dim, model.nv) = J_ref;
-  KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_dim) = J_ref.transpose();
+  KKT_matrix_ref.topRightCorner(constraint_size, model.nv) = J_ref;
+  KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_size) = J_ref.transpose();
 
   PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
@@ -227,14 +227,14 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_dim = 0;
+  Eigen::DenseIndex constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxResidualSize();
+    constraint_size += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
   const double r_coeff = 0.5;
-  Eigen::MatrixXd J_ref(constraint_dim, model.nv);
+  Eigen::MatrixXd J_ref(constraint_size, model.nv);
   J_ref.setZero();
 
   computeAllTerms(model, data_ref, q, v);
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   getJointJacobian(
     model, data_ref, model.getJointId(LF), LOCAL_WORLD_ALIGNED, J_ref.middleRows<6>(6));
 
-  Eigen::VectorXd rhs_ref(constraint_dim);
+  Eigen::VectorXd rhs_ref(constraint_size);
 
   rhs_ref.segment<6>(0) =
     getFrameVelocity(model, data_ref, model.getFrameId(RF), LOCAL_WORLD_ALIGNED).toVector();
@@ -256,10 +256,10 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
     getFrameVelocity(model, data_ref, model.getFrameId(LF), LOCAL_WORLD_ALIGNED).toVector();
 
   Eigen::MatrixXd KKT_matrix_ref =
-    Eigen::MatrixXd::Zero(model.nv + constraint_dim, model.nv + constraint_dim);
+    Eigen::MatrixXd::Zero(model.nv + constraint_size, model.nv + constraint_size);
   KKT_matrix_ref.bottomRightCorner(model.nv, model.nv) = data_ref.M;
-  KKT_matrix_ref.topRightCorner(constraint_dim, model.nv) = J_ref;
-  KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_dim) = J_ref.transpose();
+  KKT_matrix_ref.topRightCorner(constraint_size, model.nv) = J_ref;
+  KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_size) = J_ref.transpose();
 
   PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
@@ -366,14 +366,14 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_3D)
   contact_models.push_back(ci_LF);
   contact_datas.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::DenseIndex constraint_dim = 0;
+  Eigen::DenseIndex constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxResidualSize();
+    constraint_size += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
   const double r_coeff = 0.5;
-  Eigen::MatrixXd J_ref(constraint_dim, model.nv), Jtmp(6, model.nv);
+  Eigen::MatrixXd J_ref(constraint_size, model.nv), Jtmp(6, model.nv);
   J_ref.setZero();
   Jtmp.setZero();
 
@@ -387,16 +387,16 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_3D)
   getJointJacobian(model, data_ref, model.getJointId(LF), LOCAL, Jtmp);
   J_ref.middleRows<3>(6) = Jtmp.middleRows<3>(Motion::LINEAR);
 
-  Eigen::VectorXd rhs_ref(constraint_dim);
+  Eigen::VectorXd rhs_ref(constraint_size);
 
   rhs_ref.segment<6>(0) = getFrameVelocity(model, data_ref, model.getFrameId(RF), LOCAL).toVector();
   rhs_ref.segment<3>(6) = getFrameVelocity(model, data_ref, model.getFrameId(LF), LOCAL).linear();
 
   Eigen::MatrixXd KKT_matrix_ref =
-    Eigen::MatrixXd::Zero(model.nv + constraint_dim, model.nv + constraint_dim);
+    Eigen::MatrixXd::Zero(model.nv + constraint_size, model.nv + constraint_size);
   KKT_matrix_ref.bottomRightCorner(model.nv, model.nv) = data_ref.M;
-  KKT_matrix_ref.topRightCorner(constraint_dim, model.nv) = J_ref;
-  KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_dim) = J_ref.transpose();
+  KKT_matrix_ref.topRightCorner(constraint_size, model.nv) = J_ref;
+  KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_size) = J_ref.transpose();
 
   PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS

@@ -51,14 +51,14 @@ BOOST_AUTO_TEST_CASE(closed_loop_constraint_6D_LOCAL)
   contact_models.push_back(ci_RF_LF);
   contact_datas.push_back(RigidConstraintData(ci_RF_LF));
 
-  Eigen::DenseIndex constraint_dim = 0;
+  Eigen::DenseIndex constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxResidualSize();
+    constraint_size += contact_models[k].maxResidualSize();
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
 
-  Eigen::MatrixXd J_ref(constraint_dim, model.nv);
+  Eigen::MatrixXd J_ref(constraint_size, model.nv);
   J_ref.setZero();
 
   computeAllTerms(model, data_ref, q, v);
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(closed_loop_constraint_6D_LOCAL)
 
   J_ref = J_RF_local - c1Mc2_ref.toActionMatrix() * J_LF_local;
 
-  Eigen::VectorXd rhs_ref(constraint_dim);
+  Eigen::VectorXd rhs_ref(constraint_size);
 
   const Motion vc1_ref = ci_RF_LF.joint1_placement.actInv(data_ref.v[ci_RF_LF.joint1_id]);
   const Motion vc2_ref = ci_RF_LF.joint2_placement.actInv(data_ref.v[ci_RF_LF.joint2_id]);
@@ -93,10 +93,10 @@ BOOST_AUTO_TEST_CASE(closed_loop_constraint_6D_LOCAL)
   rhs_ref.segment<6>(0) = constraint_acceleration_error_ref.toVector();
 
   Eigen::MatrixXd KKT_matrix_ref =
-    Eigen::MatrixXd::Zero(model.nv + constraint_dim, model.nv + constraint_dim);
+    Eigen::MatrixXd::Zero(model.nv + constraint_size, model.nv + constraint_size);
   KKT_matrix_ref.bottomRightCorner(model.nv, model.nv) = data_ref.M;
-  KKT_matrix_ref.topRightCorner(constraint_dim, model.nv) = J_ref;
-  KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_dim) = J_ref.transpose();
+  KKT_matrix_ref.topRightCorner(constraint_size, model.nv) = J_ref;
+  KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_size) = J_ref.transpose();
 
   PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS

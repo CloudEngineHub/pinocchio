@@ -452,27 +452,27 @@ namespace pinocchio
     //    Scalar primal_infeasibility = Scalar(0);
     int it = 0;
     data.lambda_c_prox.setZero();
-    const Eigen::DenseIndex constraint_dim = contact_chol.constraintDim();
+    const Eigen::DenseIndex constraint_size = contact_chol.constraintDim();
     for (; it < settings.max_iter;)
     {
       it++;
-      primal_dual_contact_solution.head(constraint_dim) =
+      primal_dual_contact_solution.head(constraint_size) =
         primal_rhs_contact + data.lambda_c_prox * settings.mu;
       primal_dual_contact_solution.tail(model.nv) = tau - data.nle;
       contact_chol.solveInPlace(primal_dual_contact_solution);
 
       // Use data.lambda_c as tmp variable for computing the constraint residual
       contact_chol.getDelassusCholeskyExpression().applyOnTheRight(
-        primal_dual_contact_solution.head(constraint_dim), data.lambda_c);
-      data.lambda_c -= mu * primal_dual_contact_solution.head(constraint_dim)
-                       + primal_rhs_contact.head(constraint_dim);
+        primal_dual_contact_solution.head(constraint_size), data.lambda_c);
+      data.lambda_c -= mu * primal_dual_contact_solution.head(constraint_size)
+                       + primal_rhs_contact.head(constraint_size);
 
       settings.absolute_residual = data.lambda_c.template lpNorm<Eigen::Infinity>();
       settings.relative_residual =
-        (primal_dual_contact_solution.head(constraint_dim) + data.lambda_c_prox)
+        (primal_dual_contact_solution.head(constraint_size) + data.lambda_c_prox)
           .template lpNorm<Eigen::Infinity>();
 
-      data.lambda_c_prox = -primal_dual_contact_solution.head(constraint_dim);
+      data.lambda_c_prox = -primal_dual_contact_solution.head(constraint_size);
 
       const bool convergence_criteria_reached =
         check_expression_if_real<Scalar, false>(
@@ -488,7 +488,7 @@ namespace pinocchio
 
     // Retrieve the joint space acceleration
     a = primal_dual_contact_solution.tail(model.nv);
-    data.lambda_c = -primal_dual_contact_solution.head(constraint_dim);
+    data.lambda_c = -primal_dual_contact_solution.head(constraint_size);
 
     // Retrieve the contact forces
     Eigen::DenseIndex current_row_sol_id = 0;

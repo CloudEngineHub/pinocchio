@@ -303,10 +303,10 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_3D_humanoid)
 
   computeAllTerms(model, data_ref, q, v);
 
-  Eigen::DenseIndex constraint_dim = 0;
+  Eigen::DenseIndex constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_dim += contact_models[k].maxResidualSize();
-  Eigen::MatrixXd J_ref(constraint_dim, model.nv);
+    constraint_size += contact_models[k].maxResidualSize();
+  Eigen::MatrixXd J_ref(constraint_size, model.nv);
   J_ref.setZero();
   Data::Matrix6x Jtmp = Data::Matrix6x::Zero(6, model.nv);
 
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_3D_humanoid)
   getJointJacobian(model, data_ref, ci_RF2.joint1_id, ci_RF2.reference_frame, Jtmp);
   J_ref.middleRows<6>(6) = ci_RF2.joint1_placement.inverse().toActionMatrix() * Jtmp;
 
-  Eigen::VectorXd rhs_ref(constraint_dim);
+  Eigen::VectorXd rhs_ref(constraint_size);
   rhs_ref.segment<6>(0) =
     computeAcceleration(
       model, data_ref, ci_RF.joint1_id, ci_RF.reference_frame, ci_RF.type, ci_RF.joint1_placement)

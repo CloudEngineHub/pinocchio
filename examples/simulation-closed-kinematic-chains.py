@@ -100,7 +100,7 @@ constraint_model = pin.RigidConstraintModel(
     constraint1_joint2_placement,
 )
 constraint_data = constraint_model.createData()
-constraint_dim = constraint_model.maxResidualSize()
+constraint_size = constraint_model.maxResidualSize()
 
 # First, do an inverse geometry
 rho = 1e-10
@@ -108,7 +108,7 @@ mu = 1e-4
 
 q = q0.copy()
 
-y = np.ones(constraint_dim)
+y = np.ones(constraint_size)
 data.M = np.eye(model.nv) * rho
 kkt_constraint = pin.ContactCholeskyDecomposition(
     model, data, [constraint_model], [constraint_data]
@@ -138,8 +138,8 @@ for k in range(N):
     rhs = np.concatenate([-constraint_value - y * mu, np.zeros(model.nv)])
 
     dz = kkt_constraint.solve(rhs)
-    dy = dz[:constraint_dim]
-    dq = dz[constraint_dim:]
+    dy = dz[:constraint_size]
+    dq = dz[constraint_size:]
 
     alpha = 1.0
     q = pin.integrate(model, q, -alpha * dq)

@@ -274,10 +274,10 @@ int main(int argc, const char ** argv)
         model, data_caba_ref, qs[_smooth], qdots[_smooth], taus[_smooth], contact_model_CL,
         contact_data_CL, prox_settings);
 
-      long constraint_dim = data.lambda_c_prox.rows();
+      long constraint_size = data.lambda_c_prox.rows();
       const Eigen::MatrixXd & J_ref =
-        data.contact_chol.matrix().topRightCorner(constraint_dim, model.nv);
-      const Eigen::MatrixXd & rhs = data.primal_rhs_contact.topRows(constraint_dim);
+        data.contact_chol.matrix().topRightCorner(constraint_size, model.nv);
+      const Eigen::MatrixXd & rhs = data.primal_rhs_contact.topRows(constraint_size);
       Eigen::MatrixXd constraint_error = J_ref * data.ddq - rhs;
 
       lcaba_residual[_smooth] = (J_ref * data_caba.ddq - rhs).template lpNorm<Eigen::Infinity>();
@@ -391,10 +391,10 @@ int main(int argc, const char ** argv)
 
     std::cout << "--" << std::endl;
 
-    long constraint_dim = data.lambda_c_prox.rows();
+    long constraint_size = data.lambda_c_prox.rows();
     const Eigen::MatrixXd & J_ref =
-      data.contact_chol.matrix().topRightCorner(constraint_dim, model.nv);
-    const Eigen::MatrixXd & rhs = data.primal_rhs_contact.topRows(constraint_dim);
+      data.contact_chol.matrix().topRightCorner(constraint_size, model.nv);
+    const Eigen::MatrixXd & rhs = data.primal_rhs_contact.topRows(constraint_size);
     Eigen::VectorXd constraint_error = J_ref * data.ddq - rhs;
     std::cout << "Constraint residual LTL = " << constraint_error.template lpNorm<Eigen::Infinity>()
               << std::endl;

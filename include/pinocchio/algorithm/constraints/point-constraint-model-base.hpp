@@ -626,11 +626,11 @@ namespace pinocchio
       if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
         res.setZero();
 
-      //      const Eigen::DenseIndex constraint_dim = size();
+      //      const Eigen::DenseIndex constraint_size = size();
       //
       //      const Eigen::DenseIndex
-      //      complexity_strategy_1 = 6 * res.cols() * 36 + constraint_dim * 36 * res.cols(),
-      //      complexity_strategy_2 = 36 * constraint_dim * 6 + constraint_dim * 36 * res.cols();
+      //      complexity_strategy_1 = 6 * res.cols() * 36 + constraint_size * 36 * res.cols(),
+      //      complexity_strategy_2 = 36 * constraint_size * 6 + constraint_size * 36 * res.cols();
 
       const auto & A1 = cdata.A1_world;
       const auto & A2 = cdata.A2_world;
