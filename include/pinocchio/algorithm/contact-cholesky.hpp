@@ -123,10 +123,10 @@ namespace pinocchio
 
           rowise_sparsity_pattern.clear();
           rowise_sparsity_pattern.resize((size_t)total_constraint_size,default_slice_vector);
-          row_id = 0; size_t ee_id = 0;
+          row_id = 0; size_t constraint_id = 0;
           for(typename RigidConstraintModelVector::const_iterator it = constraint_models.begin();
               it != constraint_models.end();
-              ++it, ++ee_id)
+              ++it, ++constraint_id)
           {
             const RigidConstraintModel & cmodel = *it;
             const BooleanVector & joint1_indexes_ee = cmodel.colwise_joint1_sparsity;
@@ -139,22 +139,22 @@ namespace pinocchio
               slice_vector.push_back(Slice(row_id,total_constraint_size-row_id));
 
               bool previous_index_was_true = true;
-              for(Eigen::DenseIndex joint1_indexes_ee_id = total_constraint_size;
-                  joint1_indexes_ee_id < total_size;
-                  ++joint1_indexes_ee_id)
+              for(Eigen::DenseIndex joint1_indexes_constraint_id = total_constraint_size;
+                  joint1_indexes_constraint_id < total_size;
+                  ++joint1_indexes_constraint_id)
               {
-                if(joint1_indexes_ee[joint1_indexes_ee_id])
+                if(joint1_indexes_ee[joint1_indexes_constraint_id])
                 {
                   if(previous_index_was_true) // no discontinuity
                     slice_vector.back().size++;
                   else // discontinuity; need to create a new slice
                   {
-                    const Slice new_slice(joint1_indexes_ee_id,1);
+                    const Slice new_slice(joint1_indexes_constraint_id,1);
                     slice_vector.push_back(new_slice);
                   }
                 }
 
-                previous_index_was_true = joint1_indexes_ee[joint1_indexes_ee_id];
+                previous_index_was_true = joint1_indexes_ee[joint1_indexes_constraint_id];
               }
 
               row_id++;
@@ -209,7 +209,7 @@ namespace pinocchio
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
     const auto & M = data.M;
 
-    const size_t num_ee = constraint_models.size();
+    const size_t num_constraints = constraint_models.size();
 
     D.tail(model.nv) = M.diagonal();
     U.bottomRightCorner(model.nv, model.nv).template triangularView<Eigen::StrictlyUpper>() =
@@ -218,10 +218,10 @@ namespace pinocchio
     // Constraint filling
     Eigen::DenseIndex current_row = 0;
     U.topRightCorner(total_constraints_dim, model.nv).setZero();
-    for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
+    for (size_t constraint_id = 0; constraint_id < num_constraints; ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
+      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
 
       const Eigen::DenseIndex constraint_dim = cmodel.residualSize(cdata);
       auto U_block = U.block(current_row, total_constraints_dim, constraint_dim, model.nv);
@@ -256,10 +256,11 @@ namespace pinocchio
 
       // Constraint part
       Eigen::DenseIndex current_row = total_constraints_dim - 1;
-      for (size_t ee_id = 0; ee_id < num_ee; ++ee_id)
+      for (size_t constraint_id = 0; constraint_id < num_constraints; ++constraint_id)
       {
-        const auto & cmodel = helper::get_ref(constraint_models[num_ee - 1 - ee_id]);
-        const auto & cdata = helper::get_ref(constraint_datas[num_ee - 1 - ee_id]);
+        const auto & cmodel =
+          helper::get_ref(constraint_models[num_constraints - 1 - constraint_id]);
+        const auto & cdata = helper::get_ref(constraint_datas[num_constraints - 1 - constraint_id]);
         const Eigen::DenseIndex constraint_dim = cmodel.residualSize(cdata);
 
         for (Eigen::DenseIndex constraint_row_id = constraint_dim - 1; constraint_row_id >= 0;
@@ -277,10 +278,10 @@ namespace pinocchio
 
     // Setting physical compliance
     int cindex = 0;
-    for (std::size_t ee_id = 0; ee_id < num_ee; ee_id++)
+    for (std::size_t constraint_id = 0; constraint_id < num_constraints; constraint_id++)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
+      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
       const int cdim = cmodel.residualSize(cdata);
       auto segment = compliance.segment(cindex, cdim);
       cmodel.retrieveCompliance(cdata, segment);

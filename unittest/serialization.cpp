@@ -895,10 +895,10 @@ struct JointLimitAndFrictionConstraintModelInitializer
   static DerivedConstraintModel run(const Model & model)
   {
     const std::string ee_name = "wrist2_joint";
-    const JointIndex ee_id = model.getJointId(ee_name);
+    const JointIndex constraint_id = model.getJointId(ee_name);
 
     // get joint path to end-effector
-    const Model::IndexVector & ee_support = model.supports[ee_id];
+    const Model::IndexVector & ee_support = model.supports[constraint_id];
     // get joint ids to put in the joint limit constraint (omit first joint as it is always the
     // universe)
     const Model::IndexVector active_joint_ids(ee_support.begin() + 1, ee_support.end());

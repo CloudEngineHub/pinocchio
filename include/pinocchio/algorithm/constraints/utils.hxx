@@ -43,10 +43,10 @@ namespace pinocchio
       force.setZero();
 
     Eigen::Index row_id = 0;
-    for (size_t ee_id = 0; ee_id < constraint_models.size(); ++ee_id)
+    for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
+      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize(cdata);
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
@@ -96,10 +96,10 @@ namespace pinocchio
       force.setZero();
 
     Eigen::Index row_id = 0;
-    for (size_t ee_id = 0; ee_id < constraint_models.size(); ++ee_id)
+    for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
+      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize(cdata);
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
@@ -139,10 +139,10 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), constraint_size);
 
     Eigen::Index row_id = 0;
-    for (size_t ee_id = 0; ee_id < constraint_models.size(); ++ee_id)
+    for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
+      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize(cdata);
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);
@@ -185,10 +185,10 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), total_constraint_size);
 
     Eigen::Index row_id = 0;
-    for (size_t ee_id = 0; ee_id < constraint_models.size(); ++ee_id)
+    for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[ee_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[ee_id]);
+      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize(cdata);
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);

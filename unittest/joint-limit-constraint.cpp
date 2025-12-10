@@ -45,9 +45,9 @@ BOOST_AUTO_TEST_CASE(constraint_constructor_with_infinite_bounds)
 
   const Data data(model);
 
-  const JointIndex ee_id = JointIndex(model.njoints) - 1;
+  const JointIndex constraint_id = JointIndex(model.njoints) - 1;
 
-  const Model::IndexVector & ee_support = model.supports[ee_id];
+  const Model::IndexVector & ee_support = model.supports[constraint_id];
   const Model::IndexVector activable_joint_ids(ee_support.begin() + 1, ee_support.end());
   JointLimitConstraintModel constraint(model, activable_joint_ids);
 
@@ -61,9 +61,9 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
 
   Data data(model);
 
-  const JointIndex ee_id = JointIndex(model.njoints) - 1;
+  const JointIndex constraint_id = JointIndex(model.njoints) - 1;
 
-  const Model::IndexVector & ee_support = model.supports[ee_id];
+  const Model::IndexVector & ee_support = model.supports[constraint_id];
   const Model::IndexVector activable_joint_ids(ee_support.begin() + 1, ee_support.end());
 
   for (const JointIndex joint_id : activable_joint_ids)
@@ -134,9 +134,9 @@ BOOST_AUTO_TEST_CASE(cast)
 
   const Data data(model);
 
-  const JointIndex ee_id = JointIndex(model.njoints) - 1;
+  const JointIndex constraint_id = JointIndex(model.njoints) - 1;
 
-  const Model::IndexVector & ee_support = model.supports[ee_id];
+  const Model::IndexVector & ee_support = model.supports[constraint_id];
   const Model::IndexVector active_joint_ids(ee_support.begin() + 1, ee_support.end());
   JointLimitConstraintModel cm(model, active_joint_ids);
 
@@ -154,9 +154,9 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
 
   Data data(model);
 
-  const JointIndex ee_id = JointIndex(model.njoints) - 1;
+  const JointIndex constraint_id = JointIndex(model.njoints) - 1;
 
-  const Model::IndexVector & ee_support = model.supports[ee_id];
+  const Model::IndexVector & ee_support = model.supports[constraint_id];
   const Model::IndexVector activable_joint_ids(ee_support.begin() + 1, ee_support.end());
 
   // we set the margin to infinity so all limits are taken into account in what follows.

@@ -89,10 +89,10 @@ namespace pinocchio
 
       // Append constraint inertia to oYaba_augmented
       Eigen::Index row_id = 0;
-      for (size_t ee_id = 0; ee_id < constraint_models_ref.size(); ++ee_id)
+      for (size_t constraint_id = 0; constraint_id < constraint_models_ref.size(); ++constraint_id)
       {
-        const auto & cmodel = helper::get_ref(constraint_models_ref[ee_id]);
-        const auto & cdata = helper::get_ref(constraint_datas_ref[ee_id]);
+        const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
+        const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
 
         const auto constraint_size = cmodel.residualSize(cdata);
 
@@ -184,12 +184,13 @@ namespace pinocchio
     //      auto & u = custom_data.u;
     //      u.setZero();
     //      Eigen::Index row_id = 0;
-    //      for (size_t ee_id = 0; ee_id < constraint_models_ref.size(); ++ee_id)
+    //      for (size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+    //      ++constraint_id)
     //      {
     //        const auto & cmodel =
-    //          helper::get_ref(constraint_models_ref[ee_id]);
+    //          helper::get_ref(constraint_models_ref[constraint_id]);
     //        const auto & cdata =
-    //          helper::get_ref(constraint_datas_ref[ee_id]);
+    //          helper::get_ref(constraint_datas_ref[constraint_id]);
     //        const auto csize = cmodel.size();
     //        const auto rhs_rows = rhs.middleRows(row_id, csize);
     //
@@ -241,12 +242,13 @@ namespace pinocchio
     //    {
     //      const auto & ddq = custom_data.ddq;
     //      Eigen::Index row_id = 0;
-    //      for (size_t ee_id = 0; ee_id < constraint_models_ref.size(); ++ee_id)
+    //      for (size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+    //      ++constraint_id)
     //      {
     //        const auto & cmodel =
-    //          helper::get_ref(constraint_models_ref[ee_id]);
+    //          helper::get_ref(constraint_models_ref[constraint_id]);
     //        const auto & cdata =
-    //          helper::get_ref(constraint_datas_ref[ee_id]);
+    //          helper::get_ref(constraint_datas_ref[constraint_id]);
     //        const auto csize = cmodel.size();
     //
     //        cmodel.jacobianMatrixProduct(
@@ -304,12 +306,13 @@ namespace pinocchio
     //    {
     //      u.setZero();
     //      Eigen::Index row_id = 0;
-    //      for (size_t ee_id = 0; ee_id < constraint_models_ref.size(); ++ee_id)
+    //      for (size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+    //      ++constraint_id)
     //      {
     //        const auto & cmodel =
-    //          helper::get_ref(constraint_models_ref[ee_id]);
+    //          helper::get_ref(constraint_models_ref[constraint_id]);
     //        const auto & cdata =
-    //          helper::get_ref(constraint_datas_ref[ee_id]);
+    //          helper::get_ref(constraint_datas_ref[constraint_id]);
     //        const auto csize = cmodel.size();
     //        const auto mat_rows = mat.middleRows(row_id, csize);
     //
@@ -327,12 +330,13 @@ namespace pinocchio
     MapVectorXs tmp_vec = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, size(), 1));
     //    {
     //      Eigen::Index row_id = 0;
-    //      for (size_t ee_id = 0; ee_id < constraint_models_ref.size(); ++ee_id)
+    //      for (size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+    //      ++constraint_id)
     //      {
     //        const auto & cmodel =
-    //          helper::get_ref(constraint_models_ref[ee_id]);
+    //          helper::get_ref(constraint_models_ref[constraint_id]);
     //        const auto & cdata =
-    //          helper::get_ref(constraint_datas_ref[ee_id]);
+    //          helper::get_ref(constraint_datas_ref[constraint_id]);
     //        const auto csize = cmodel.size();
     //
     //        cmodel.jacobianMatrixProduct(
