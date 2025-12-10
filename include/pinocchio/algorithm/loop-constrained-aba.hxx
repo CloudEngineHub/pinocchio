@@ -344,7 +344,6 @@ namespace pinocchio
       Data & data)
     {
       typedef typename Model::JointIndex JointIndex;
-      typedef typename Data::Matrix6x Matrix6x;
 
       const auto J_cols = jmodel.jointCols(data.J);
 

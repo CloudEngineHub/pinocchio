@@ -206,7 +206,6 @@ namespace pinocchio
     const Eigen::DenseIndex total_size = size();
     const Eigen::DenseIndex total_constraints_dim = total_size - nv;
 
-    typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
     const auto & M = data.M;
 
     const size_t num_constraints = constraint_models.size();
