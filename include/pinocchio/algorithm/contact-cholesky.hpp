@@ -58,13 +58,7 @@ namespace pinocchio
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
 
     nv = model.nv;
-    Eigen::DenseIndex num_total_constraints = 0;
-    for (std::size_t i = 0; i < constraint_models.size(); i++)
-    {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
-      const auto & cdata = helper::get_ref(constraint_datas[i]);
-      num_total_constraints += cmodel.residualSize(cdata);
-    }
+    const auto total_constraint_size = residualSize(constraint_models, constraint_datas);
 
     const Eigen::DenseIndex total_size = nv + total_constraint_size;
 
