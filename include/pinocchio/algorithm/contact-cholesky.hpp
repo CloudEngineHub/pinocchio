@@ -31,7 +31,7 @@ namespace pinocchio
   , DUt(DUt_storage.map())
   , compliance(compliance_storage.map())
   , damping(damping_storage.map())
-  , Delassus(Delassus_storage.map())
+  , delassus_block(delassus_block_storage.map())
   {
     std::vector<ConstraintModel> empty_constraint_models;
     std::vector<ConstraintData> empty_constraint_datas;
@@ -171,7 +171,7 @@ namespace pinocchio
     D_storage.resize(total_size);
     Dinv_storage.resize(total_size);
     U_storage.resize(total_size, total_size);
-    Delassus_storage.resize(total_constraint_size, total_constraint_size);
+    delassus_block_storage.resize(total_constraint_size, total_constraint_size);
     U.setIdentity();
     DUt_storage.resize(total_size);
   }
@@ -207,7 +207,7 @@ namespace pinocchio
     const Eigen::DenseIndex total_constraints_dim = total_size - nv;
 
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-    const typename Data::MatrixXs & M = data.M;
+    const auto & M = data.M;
 
     const size_t num_ee = constraint_models.size();
 
@@ -290,8 +290,8 @@ namespace pinocchio
     // Setting numerical damping
     if (use_explicit_delassus)
     {
-      computeDelassusFromU();
-      updateDampingDelassus(mus);
+      computedelassus_blockFromU();
+      updateDampingdelassus_block(mus);
     }
 
     else
@@ -321,9 +321,9 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusFromU()
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::computedelassus_blockFromU()
   {
-    // Delassus.setZero();
+    // delassus_block.setZero();
     const Eigen::DenseIndex total_size = size();
     const Eigen::DenseIndex total_constraints_dim = total_size - nv;
     const Matrix & UtopRight = U.topRightCorner(total_constraints_dim, nv);
@@ -338,21 +338,21 @@ namespace pinocchio
     //       UtopRight.row(j).transpose().cwiseProduct(Dtail);
     //     for (Eigen::DenseIndex _i = j; _i >= 0; _i--)
     //     {
-    //       Delassus(_i, j) = UtopRight.row(_i).dot(DUt_partial);
+    //       delassus_block(_i, j) = UtopRight.row(_i).dot(DUt_partial);
     //     }
     //   }
 
     // typedef Eigen::Map<RowMatrix> MapRowMatrix;
     // MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraints_dim,
-    // nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal(); Delassus.noalias() = OSIMinv *
-    // UtopRight.transpose();
+    // nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal(); delassus_block.noalias() = OSIMinv
+    // * UtopRight.transpose();
 
-    Delassus.noalias() = (UtopRight * Dtail.asDiagonal()) * UtopRight.transpose();
+    delassus_block.noalias() = (UtopRight * Dtail.asDiagonal()) * UtopRight.transpose();
   }
 
   template<typename Scalar, int Options>
   template<typename VectorLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDampingDelassus(
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDampingdelassus_block(
     const Eigen::MatrixBase<VectorLike> & vec)
   {
     EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
@@ -369,7 +369,7 @@ namespace pinocchio
       DUt_partial.noalias() =
         U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
 
-      D[j] = -Delassus(j, j) - damping[j] - compliance[j]
+      D[j] = -delassus_block(j, j) - damping[j] - compliance[j]
              - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
       // std::cout << "j = " << j << ", slice_dim = " << slice_dim << " D[j] = " << D[j] <<
       // std::endl;
@@ -382,7 +382,7 @@ namespace pinocchio
       for (Eigen::DenseIndex _i = j - 1; _i >= 0; _i--)
       {
         U(_i, j) =
-          (-Delassus(_i, j) - U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial)) * Dinv[j];
+          (-delassus_block(_i, j) - U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial)) * Dinv[j];
       }
     }
   }
@@ -396,7 +396,7 @@ namespace pinocchio
     damping = vec;
     if (use_explicit_delasssus)
     {
-      updateDampingDelassus(vec);
+      updateDampingdelassus_block(vec);
     }
     else
     {

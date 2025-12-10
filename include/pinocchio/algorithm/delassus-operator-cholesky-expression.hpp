@@ -64,7 +64,9 @@ namespace pinocchio
 
     template<typename MatrixIn, typename MatrixOut>
     void applyOnTheRight(
-      const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res, bool use_explicit_delassus = false) const
+      const Eigen::MatrixBase<MatrixIn> & x,
+      const Eigen::MatrixBase<MatrixOut> & res,
+      bool use_explicit_delassus = false) const
     {
       if (use_explicit_delassus)
       {
@@ -103,7 +105,7 @@ namespace pinocchio
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), self.constraintDim());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), x.cols());
 
-      res.const_cast_derived().noalias() = self.Delassus * x;
+      res.const_cast_derived().noalias() = self.delassus_block * x;
     }
 
     template<typename MatrixLike>
@@ -236,7 +238,8 @@ namespace pinocchio
     /// positiveness of the matrix.
     ///
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & mus, bool use_explicit_delassus = false)
+    void
+    updateDamping(const Eigen::MatrixBase<VectorLike> & mus, bool use_explicit_delassus = false)
     {
       const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mus, use_explicit_delassus);
     }

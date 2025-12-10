@@ -120,7 +120,7 @@ namespace pinocchio
     , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
-    , Delassus(Delassus_storage.map())
+    , delassus_block(delassus_block_storage.map())
     {
     }
 
@@ -160,7 +160,7 @@ namespace pinocchio
     , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
-    , Delassus(Delassus_storage.map())
+    , delassus_block(delassus_block_storage.map())
     {
       PINOCCHIO_UNUSED_VARIABLE(data);
       resize(model, constraint_models, constraint_datas);
@@ -178,7 +178,7 @@ namespace pinocchio
     , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
-    , Delassus(Delassus_storage.map())
+    , delassus_block(delassus_block_storage.map())
     {
       *this = other;
     }
@@ -276,8 +276,8 @@ namespace pinocchio
       PINOCCHIO_EIGEN_MALLOC_ALLOWED();
     }
 
-    /// \brief Returns the Cholesky decomposition expression associated to the underlying Delassus
-    /// matrix.
+    /// \brief Returns the Cholesky decomposition expression associated to the underlying
+    /// delassus_block matrix.
     DelassusCholeskyExpression getDelassusCholeskyExpression() const
     {
       return DelassusCholeskyExpression(*this);
@@ -485,10 +485,10 @@ namespace pinocchio
     ///
     void updateDamping(const Scalar & mu, bool use_explicit_delassus = false);
 
-    void computeDelassusFromU();
+    void computedelassus_blockFromU();
 
     template<typename VectorLike>
-    void updateDampingDelassus(const Eigen::MatrixBase<VectorLike> & mus);
+    void updateDampingdelassus_block(const Eigen::MatrixBase<VectorLike> & mus);
 
     ///
     /// \brief Returns the current damping vector.
@@ -634,8 +634,8 @@ namespace pinocchio
     EigenStorageVector damping_storage;
     typename EigenStorageVector::RefMapType damping;
 
-    EigenStorageRowMatrix Delassus_storage;
-    typename EigenStorageRowMatrix::RefMapType Delassus;
+    EigenStorageRowMatrix delassus_block_storage;
+    typename EigenStorageRowMatrix::RefMapType delassus_block;
   };
 
 } // namespace pinocchio
