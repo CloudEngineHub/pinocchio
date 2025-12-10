@@ -125,10 +125,10 @@ namespace boost
     template<typename Archive, typename Scalar, int Options>
     void serialize(
       Archive & ar,
-      ::pinocchio::PointContactConstraintDataTpl<Scalar, Options> & cdata,
+      ::pinocchio::PointContactDataTpl<Scalar, Options> & cdata,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::PointContactConstraintDataTpl<Scalar, Options> Self;
+      typedef ::pinocchio::PointContactDataTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
     }

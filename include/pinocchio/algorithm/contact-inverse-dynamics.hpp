@@ -25,24 +25,24 @@ namespace pinocchio
   ///
   template<
     typename Scalar,
-    class PointContactConstraintModelVector,
-    class PointContactConstraintDataVector,
+    class PointContactModelVector,
+    class PointContactDataVector,
     typename VectorLikeC,
     typename VectorLikeResult>
   bool computeInverseDynamicsConstraintForces(
-    const PointContactConstraintModelVector & constraint_models,
-    const PointContactConstraintDataVector & constraint_datas,
+    const PointContactModelVector & constraint_models,
+    const PointContactDataVector & constraint_datas,
     const Eigen::MatrixBase<VectorLikeC> & c_ref,
     const Eigen::MatrixBase<VectorLikeResult> & _lambda,
     ProximalSettingsTpl<Scalar> & settings,
     bool solve_ncp = true)
   {
     static_assert(
-      helper::is_std_vector_v<PointContactConstraintModelVector>,
-      "PointContactConstraintModelVector should be a std::vector<T,Allocator>");
+      helper::is_std_vector_v<PointContactModelVector>,
+      "PointContactModelVector should be a std::vector<T,Allocator>");
     static_assert(
-      helper::is_std_vector_v<PointContactConstraintDataVector>,
-      "PointContactConstraintDataVector should be a std::vector<T,Allocator>");
+      helper::is_std_vector_v<PointContactDataVector>,
+      "PointContactDataVector should be a std::vector<T,Allocator>");
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
@@ -181,8 +181,8 @@ namespace pinocchio
     typename ConfigVectorType,
     typename TangentVectorType1,
     typename TangentVectorType2,
-    class PointContactConstraintModelVector,
-    class PointContactConstraintDataVector,
+    class PointContactModelVector,
+    class PointContactDataVector,
     typename VectorLikeGamma,
     typename VectorLikeLam>
   bool contactInverseDynamics(
@@ -192,19 +192,19 @@ namespace pinocchio
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & a,
     const Scalar dt,
-    const PointContactConstraintModelVector & constraint_models,
-    PointContactConstraintDataVector & constraint_datas,
+    const PointContactModelVector & constraint_models,
+    PointContactDataVector & constraint_datas,
     const Eigen::MatrixBase<VectorLikeGamma> & constraint_correction,
     const Eigen::MatrixBase<VectorLikeLam> & _lambda_sol,
     ProximalSettingsTpl<Scalar> & settings,
     bool solve_ncp = true)
   {
     static_assert(
-      helper::is_std_vector_v<PointContactConstraintModelVector>,
-      "PointContactConstraintModelVector should be a std::vector<T,Allocator>");
+      helper::is_std_vector_v<PointContactModelVector>,
+      "PointContactModelVector should be a std::vector<T,Allocator>");
     static_assert(
-      helper::is_std_vector_v<PointContactConstraintDataVector>,
-      "PointContactConstraintDataVector should be a std::vector<T,Allocator>");
+      helper::is_std_vector_v<PointContactDataVector>,
+      "PointContactDataVector should be a std::vector<T,Allocator>");
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef typename Model::VectorXs VectorXs;

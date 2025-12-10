@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 BOOST_AUTO_TEST_CASE(default_constructor_shared_ptr)
 {
-  typedef PointContactConstraintModelTpl<double> ConstraintModel;
+  typedef PointContactModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::shared_ptr>
     DelassusOperatorRigidBodySharedPtr;
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(default_constructor_shared_ptr)
 
 BOOST_AUTO_TEST_CASE(default_constructor_reference_wrapper)
 {
-  typedef PointContactConstraintModelTpl<double> ConstraintModel;
+  typedef PointContactModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
@@ -616,7 +616,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
 
 BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
 {
-  typedef PointContactConstraintModelTpl<double> ConstraintModel;
+  typedef PointContactModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
@@ -1364,7 +1364,7 @@ BOOST_AUTO_TEST_CASE(general_test_constraint_generic)
 
 BOOST_AUTO_TEST_CASE(general_test_no_constraints)
 {
-  typedef PointContactConstraintModelTpl<double> ConstraintModel;
+  typedef PointContactModelTpl<double> ConstraintModel;
   typedef DelassusOperatorRigidBodySystemsTpl<
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;

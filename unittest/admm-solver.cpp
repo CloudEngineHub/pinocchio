@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(ball)
 
   const double dt = 1e-3;
 
-  typedef PointContactConstraintModel ConstraintModel;
+  typedef PointContactModel ConstraintModel;
   typedef TestBoxTpl<ConstraintModel> TestBox;
   std::vector<ConstraintModel> constraint_models;
 
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(ball)
 void buildStackOfCubesModel(
   std::vector<double> masses,
   ::pinocchio::Model & model,
-  std::vector<PointContactConstraintModel> & constraint_models)
+  std::vector<PointContactModel> & constraint_models)
 {
   const SE3::Vector3 box_dims = SE3::Vector3::Ones();
   const int n_cubes = (int)masses.size();
@@ -237,7 +237,7 @@ void buildStackOfCubesModel(
         SE3::Matrix3::Identity(), rot * local_placement_box_1.translation());
       const SE3 local_placement_2(
         SE3::Matrix3::Identity(), rot * local_placement_box_2.translation());
-      PointContactConstraintModel cm(
+      PointContactModel cm(
         model, (JointIndex)i, local_placement_1, (JointIndex)i + 1, local_placement_2);
       cm.setFriction(friction_value);
       constraint_models.push_back(cm);
@@ -263,7 +263,7 @@ Eigen::Vector3d computeFtotOfFirstBoxInStackOfBoxes(const Eigen::VectorXd & cont
 BOOST_AUTO_TEST_CASE(box)
 {
   Model model;
-  typedef PointContactConstraintModel ConstraintModel;
+  typedef PointContactModel ConstraintModel;
   typedef TestBoxTpl<ConstraintModel> TestBox;
   std::vector<ConstraintModel> constraint_models;
   const double box_mass = 1e1;
@@ -362,7 +362,7 @@ BOOST_AUTO_TEST_CASE(stack_of_boxes)
   }
 
   Model model;
-  typedef PointContactConstraintModel ConstraintModel;
+  typedef PointContactModel ConstraintModel;
   typedef TestBoxTpl<ConstraintModel> TestBox;
   std::vector<ConstraintModel> constraint_models;
 

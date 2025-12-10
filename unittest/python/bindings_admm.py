@@ -76,7 +76,7 @@ class TestADMM(TestCase):
         dt = 1e-3
 
         # Adding constraints from points contacts
-        contact_constraints = self.computeContactConstraints(model, geom_model, q0)
+        contact_constraints = self.computeContacts(model, geom_model, q0)
         for fpcm in contact_constraints:
             constraint_models.append(pin.ConstraintModel(fpcm))
 

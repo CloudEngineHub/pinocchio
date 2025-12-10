@@ -35,12 +35,12 @@ class TestContactInverseDynamics(TestCase):
         a = 0 * np.random.rand(model.nv)
         data = model.createData()
 
-        contact_models_vec = pin.StdVec_PointContactConstraintModel()
-        contact_datas_vec = pin.StdVec_PointContactConstraintData()
+        contact_models_vec = pin.StdVec_PointContactModel()
+        contact_datas_vec = pin.StdVec_PointContactData()
 
         for frame_id in frame_ids:
             frame = model.frames[frame_id]
-            contact_model = pin.PointContactConstraintModel(
+            contact_model = pin.PointContactModel(
                 model, frame.parentJoint, frame.placement
             )
             contact_model.compliance[:] = 0

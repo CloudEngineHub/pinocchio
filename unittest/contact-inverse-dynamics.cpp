@@ -15,32 +15,29 @@
 
 using namespace pinocchio;
 
-typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactConstraintModel)
-  PointContactConstraintModelVector;
-typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactConstraintData)
-  PointContactConstraintDataVector;
+typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactModel) PointContactModelVector;
+typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactData) PointContactDataVector;
 
-void init(Model & model, PointContactConstraintModelVector & constraint_models)
+void init(Model & model, PointContactModelVector & constraint_models)
 {
   pinocchio::buildModels::humanoidRandom(model, true);
   model.lowerPositionLimit.head<3>().fill(-1.);
   model.upperPositionLimit.head<3>().fill(1.);
 
   const std::string RF = "rleg6_joint";
-  PointContactConstraintModel ci_RF(model, model.getJointId(RF));
+  PointContactModel ci_RF(model, model.getJointId(RF));
   ci_RF.setFriction(0.4);
   constraint_models.push_back(ci_RF);
 
   const std::string LF = "lleg6_joint";
-  PointContactConstraintModel ci_LF(model, model.getJointId(LF));
+  PointContactModel ci_LF(model, model.getJointId(LF));
   ci_LF.setFriction(0.4);
   constraint_models.push_back(ci_LF);
 }
 
-PointContactConstraintDataVector
-createData(const PointContactConstraintModelVector & constraint_models)
+PointContactDataVector createData(const PointContactModelVector & constraint_models)
 {
-  PointContactConstraintDataVector constraint_datas;
+  PointContactDataVector constraint_datas;
 
   for (const auto & cmodel : constraint_models)
   {
@@ -58,7 +55,7 @@ typename PINOCCHIO_EIGEN_PLAIN_TYPE(VectorLike) abs(const Eigen::MatrixBase<Vect
 
 template<typename VectorLike>
 void makeIsotropic(
-  PointContactConstraintModelVector & constraint_models, const Eigen::MatrixBase<VectorLike> & vec_)
+  PointContactModelVector & constraint_models, const Eigen::MatrixBase<VectorLike> & vec_)
 {
   auto & vec = vec_.const_cast_derived();
 
@@ -85,7 +82,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
 #endif
 
   Model model;
-  PointContactConstraintModelVector constraint_models;
+  PointContactModelVector constraint_models;
 
   init(model, constraint_models);
   auto constraint_datas = createData(constraint_models);

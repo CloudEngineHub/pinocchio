@@ -25,8 +25,8 @@ BOOST_AUTO_TEST_CASE(constraint_variants)
 
   Data data(model);
 
-  PointContactConstraintModel rcm = init_constraint<PointContactConstraintModel>(model);
-  PointContactConstraintData rcd(rcm);
+  PointContactModel rcm = init_constraint<PointContactModel>(model);
+  PointContactData rcd(rcm);
 
   ConstraintModel::ConstraintModelVariant constraint_model_variant = rcm;
   ConstraintModel constraint_model(rcm);
@@ -42,8 +42,8 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
 
   Data data(model);
 
-  PointContactConstraintModel rcm = init_constraint<PointContactConstraintModel>(model);
-  PointContactConstraintData rcd(rcm);
+  PointContactModel rcm = init_constraint<PointContactModel>(model);
+  PointContactData rcd(rcm);
 
   BOOST_CHECK(ConstraintData(rcd) == ConstraintData(rcd));
   BOOST_CHECK(ConstraintData(rcd) == rcd);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
 
   // Test create data visitor
   {
-    PointContactConstraintData rcd(rcm);
+    PointContactData rcd(rcm);
     ConstraintData constraint_data = visitors::createData(constraint_model);
     constraint_data = rcd;
     BOOST_CHECK(constraint_data == rcd);

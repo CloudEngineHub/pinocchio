@@ -32,10 +32,10 @@ namespace pinocchio
     }
 
     template<>
-    bp::class_<context::PointContactConstraintModel> &
-    expose_constraint_model(bp::class_<context::PointContactConstraintModel> & cl)
+    bp::class_<context::PointContactModel> &
+    expose_constraint_model(bp::class_<context::PointContactModel> & cl)
     {
-      typedef context::PointContactConstraintModel Self;
+      typedef context::PointContactModel Self;
       return cl.def("getFriction", &Self::getFriction, "Get coulomb friction coefficient.")
         .def("setFriction", &Self::setFriction, "Set coulomb friction coefficient.");
     }

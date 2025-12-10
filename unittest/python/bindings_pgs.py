@@ -69,7 +69,7 @@ class TestPGS(TestCase):
         self.addSystemCollisionPairs(model, geom_model, q0)
 
         # Adding constraints from point contacts
-        contact_constraints = self.computeContactConstraints(model, geom_model, q0)
+        contact_constraints = self.computeContacts(model, geom_model, q0)
         for fpcm in contact_constraints:
             constraint_models.append(pin.ConstraintModel(fpcm))
 
