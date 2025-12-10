@@ -270,10 +270,10 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-      const int cdim = cmodel.residualSize(cdata);
-      auto segment = compliance.segment(cindex, cdim);
+      const int constraint_size = cmodel.residualSize(cdata);
+      auto segment = compliance.segment(cindex, constraint_size);
       cmodel.retrieveCompliance(cdata, segment);
-      cindex += cdim;
+      cindex += constraint_size;
     }
 
     // Setting numerical damping

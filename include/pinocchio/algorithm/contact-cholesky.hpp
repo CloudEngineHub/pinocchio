@@ -276,15 +276,15 @@ namespace pinocchio
     }
 
     // Setting physical compliance
-    int cindex = 0;
+    int constraint_index = 0;
     for (std::size_t constraint_id = 0; constraint_id < num_constraints; constraint_id++)
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-      const int cdim = cmodel.residualSize(cdata);
-      auto segment = compliance.segment(cindex, cdim);
+      const int constraint_size = cmodel.residualSize(cdata);
+      auto segment = compliance.segment(constraint_index, constraint_size);
       cmodel.retrieveCompliance(cdata, segment);
-      cindex += cdim;
+      constraint_index += constraint_size;
     }
 
     // Setting numerical damping
