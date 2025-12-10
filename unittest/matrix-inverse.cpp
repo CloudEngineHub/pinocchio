@@ -47,8 +47,9 @@ void test_generated_inverse_impl()
 
     Matrix res = Matrix::Zero();
     matrix_inversion_code_generated(mat, res);
-    BOOST_CHECK((res * mat).isIdentity(1e-8));
-    BOOST_CHECK(mat.inverse().isApprox(res, 1e-8));
+    BOOST_CHECK((res * mat).isIdentity(1e-14 * res.norm()));
+
+    BOOST_CHECK(mat.inverse().isApprox(res, 1e-14 * res.norm()));
   }
 }
 
