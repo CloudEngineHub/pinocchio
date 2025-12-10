@@ -40,18 +40,10 @@ BOOST_AUTO_TEST_CASE(test_helpers)
 BOOST_AUTO_TEST_CASE(test_make_map)
 {
   typedef Eigen::Matrix<double, Eigen::Dynamic, 1> Vector;
-  typedef Eigen::Matrix<double, 1, Eigen::Dynamic> RowVector;
-  typedef Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::RowMajor> VectorRowMajor;
-
-  typedef internal::make_static_matrix<1, 6, RowVector>::type RowVectorAsStatic;
-  std::cout << "RowVectorAsStatic: " << typeid(RowVectorAsStatic).name() << std::endl;
-
   {
     Vector vec = Vector::Zero(10);
     auto vec_map = internal::make_eigen_map<Vector>(vec);
     BOOST_CHECK(vec == vec_map);
-    // auto vec_row_map = internal::make_eigen_map<VectorRowMajor>(vec);
-    // BOOST_CHECK(vec == vec_row_map);
   }
 }
 
