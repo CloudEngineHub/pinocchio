@@ -8,7 +8,7 @@
 #include "pinocchio/macros.hpp"
 
 // clang-format off
-PINOCCHIO_PRAGMA_DEPRECATED_HEADER(pinocchio/algorithm/contact-jacobian.hpp, pinocchio/algorithm/constraints/utils.hpp)
+PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/algorithm/contact-jacobian.hpp, pinocchio/algorithm/constraints/utils.hpp)
 // clang-format on
 
 #include "pinocchio/algorithm/constraints/utils.hpp"
