@@ -8,7 +8,7 @@
 #include "pinocchio/macros.hpp"
 
 // clang-format off
-PINOCCHIO_DEPRECATED_MOVED_HEADER(pinocchio/parsers/sample-models.hpp, pinocchio/multibody/sample-models.hpp)
+PINOCCHIO_MOVED_HEADER(pinocchio/parsers/sample-models.hpp, pinocchio/multibody/sample-models.hpp)
 // clang-format on
 
 #include "pinocchio/multibody/sample-models.hpp"
