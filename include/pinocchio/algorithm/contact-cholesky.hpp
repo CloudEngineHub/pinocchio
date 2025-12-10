@@ -66,15 +66,15 @@ namespace pinocchio
       num_total_constraints += cmodel.residualSize(cdata);
     }
 
-    const Eigen::DenseIndex total_dim = nv + num_total_constraints;
+    const Eigen::DenseIndex total_size = nv + total_constraint_size;
 
     // Compute first parents_fromRow for all the joints.
     // This code is very similar to the code of Data::computeParents_fromRow,
     // but shifted with a value corresponding to the number of constraints.
-    parents_fromRow.resize(total_dim);
+    parents_fromRow.resize(total_size);
     parents_fromRow.fill(-1);
 
-    nv_subtree_fromRow.resize(total_dim);
+    nv_subtree_fromRow.resize(total_size);
     //      nv_subtree_fromRow.fill(0);
 
     // Fill nv_subtree_fromRow for model
@@ -88,22 +88,22 @@ namespace pinocchio
       const int idx_vj = joint.idx_v();
 
       if (parent_id > 0)
-        parents_fromRow[idx_vj + num_total_constraints] =
-          parent_joint.idx_v() + parent_joint.nv() - 1 + num_total_constraints;
+        parents_fromRow[idx_vj + total_constraint_size] =
+          parent_joint.idx_v() + parent_joint.nv() - 1 + total_constraint_size;
       else
-        parents_fromRow[idx_vj + num_total_constraints] = -1;
+        parents_fromRow[idx_vj + total_constraint_size] = -1;
 
       const JointIndex last_child =
         model.subtrees[joint_id].size() > 0 ? model.subtrees[joint_id].back() : JointIndex(0);
-      nv_subtree_fromRow[idx_vj + num_total_constraints] =
+      nv_subtree_fromRow[idx_vj + total_constraint_size] =
         model.joints[last_child].idx_v() + model.joints[last_child].nv() - idx_vj;
 
       for (int row = 1; row < nvj; ++row)
       {
-        parents_fromRow[idx_vj + num_total_constraints + row] =
-          idx_vj + row - 1 + num_total_constraints;
-        nv_subtree_fromRow[idx_vj + num_total_constraints + row] =
-          nv_subtree_fromRow[idx_vj + num_total_constraints] - row;
+        parents_fromRow[idx_vj + total_constraint_size + row] =
+          idx_vj + row - 1 + total_constraint_size;
+        nv_subtree_fromRow[idx_vj + total_constraint_size + row] =
+          nv_subtree_fromRow[idx_vj + total_constraint_size] - row;
       }
     }
 
@@ -116,11 +116,11 @@ namespace pinocchio
       {
         const auto & row_active_indexes = cmodel.getRowIndexes(cdata, k);
         nv_subtree_fromRow[row_id] =
-          num_total_constraints - row_id + 1
+          total_constraint_size - row_id + 1
           + (row_active_indexes.size() > 0 ? row_active_indexes.back() : 0);
       }
     }
-    assert(row_id == num_total_constraints);
+    assert(row_id == total_constraint_size);
 
     // Fill the sparsity pattern for each Row of the Cholesky decomposition (matrix U)
     /*
@@ -128,7 +128,7 @@ namespace pinocchio
           static const SliceVector default_slice_vector(1,default_slice_value);
 
           rowise_sparsity_pattern.clear();
-          rowise_sparsity_pattern.resize((size_t)num_total_constraints,default_slice_vector);
+          rowise_sparsity_pattern.resize((size_t)total_constraint_size,default_slice_vector);
           row_id = 0; size_t ee_id = 0;
           for(typename RigidConstraintModelVector::const_iterator it = constraint_models.begin();
               it != constraint_models.end();
@@ -142,11 +142,11 @@ namespace pinocchio
             {
               SliceVector & slice_vector = rowise_sparsity_pattern[(size_t)row_id];
               slice_vector.clear();
-              slice_vector.push_back(Slice(row_id,num_total_constraints-row_id));
+              slice_vector.push_back(Slice(row_id,total_constraint_size-row_id));
 
               bool previous_index_was_true = true;
-              for(Eigen::DenseIndex joint1_indexes_ee_id = num_total_constraints;
-                  joint1_indexes_ee_id < total_dim;
+              for(Eigen::DenseIndex joint1_indexes_ee_id = total_constraint_size;
+                  joint1_indexes_ee_id < total_size;
                   ++joint1_indexes_ee_id)
               {
                 if(joint1_indexes_ee[joint1_indexes_ee_id])
@@ -169,17 +169,17 @@ namespace pinocchio
      */
 
     // Allocate Eigen memory if needed
-    compliance_storage.resize(num_total_constraints);
+    compliance_storage.resize(total_constraint_size);
     compliance.setZero();
-    damping_storage.resize(num_total_constraints);
+    damping_storage.resize(total_constraint_size);
     damping.setZero();
 
-    D_storage.resize(total_dim);
-    Dinv_storage.resize(total_dim);
-    U_storage.resize(total_dim, total_dim);
-    Delassus_storage.resize(num_total_constraints, num_total_constraints);
+    D_storage.resize(total_size);
+    Dinv_storage.resize(total_size);
+    U_storage.resize(total_size, total_size);
+    Delassus_storage.resize(total_constraint_size, total_constraint_size);
     U.setIdentity();
-    DUt_storage.resize(total_dim);
+    DUt_storage.resize(total_size);
   }
 
   template<typename Scalar, int Options>
@@ -209,8 +209,8 @@ namespace pinocchio
       "different.");
     PINOCCHIO_ONLY_USED_FOR_DEBUG(model);
 
-    const Eigen::DenseIndex total_dim = size();
-    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    const Eigen::DenseIndex total_size = size();
+    const Eigen::DenseIndex total_constraints_dim = total_size - nv;
 
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
     const typename Data::MatrixXs & M = data.M;
@@ -321,8 +321,8 @@ namespace pinocchio
   template<typename Scalar, int Options>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(const Scalar & compliance)
   {
-    const Eigen::DenseIndex total_dim = size();
-    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    const Eigen::DenseIndex total_size = size();
+    const Eigen::DenseIndex total_constraints_dim = total_size - nv;
     updateCompliance(Vector::Constant(total_constraints_dim, compliance));
   }
 
@@ -330,8 +330,8 @@ namespace pinocchio
   void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusFromU()
   {
     // Delassus.setZero();
-    const Eigen::DenseIndex total_dim = size();
-    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    const Eigen::DenseIndex total_size = size();
+    const Eigen::DenseIndex total_constraints_dim = total_size - nv;
     const Matrix & UtopRight = U.topRightCorner(total_constraints_dim, nv);
     const Vector & Dtail = D.tail(nv);
 
@@ -363,8 +363,8 @@ namespace pinocchio
   {
     EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
     damping = vec;
-    const Eigen::DenseIndex total_dim = size();
-    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    const Eigen::DenseIndex total_size = size();
+    const Eigen::DenseIndex total_constraints_dim = total_size - nv;
     U.topLeftCorner(total_constraints_dim, total_constraints_dim).setIdentity();
 
     // Upper left triangular part of U
@@ -406,13 +406,13 @@ namespace pinocchio
     }
     else
     {
-      const Eigen::DenseIndex total_dim = size();
-      const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+      const Eigen::DenseIndex total_size = size();
+      const Eigen::DenseIndex total_constraints_dim = total_size - nv;
 
       // Upper left triangular part of U
       for (Eigen::DenseIndex j = total_constraints_dim - 1; j >= 0; --j)
       {
-        const Eigen::DenseIndex slice_dim = total_dim - j - 1;
+        const Eigen::DenseIndex slice_dim = total_size - j - 1;
         auto DUt_partial = DUt.head(slice_dim);
         DUt_partial.noalias() =
           U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
@@ -438,8 +438,8 @@ namespace pinocchio
     //      PINOCCHIO_CHECK_INPUT_ARGUMENT(check_expression_if_real<Scalar>(mu >= 0), "mu should be
     //      positive.");
 
-    const Eigen::DenseIndex total_dim = size();
-    const Eigen::DenseIndex total_constraints_dim = total_dim - nv;
+    const Eigen::DenseIndex total_size = size();
+    const Eigen::DenseIndex total_constraints_dim = total_size - nv;
     updateDamping(Vector::Constant(total_constraints_dim, mu), use_explicit_delassus);
   }
 
@@ -515,16 +515,16 @@ namespace pinocchio
 
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
-        const Eigen::DenseIndex num_total_constraints = chol.size() - chol.nv;
+        const Eigen::DenseIndex total_constraint_size = chol.size() - chol.nv;
 
         // TODO: exploit the Sparsity pattern of the first rows of U
-        for (Eigen::DenseIndex k = 0; k < num_total_constraints; ++k)
+        for (Eigen::DenseIndex k = 0; k < total_constraint_size; ++k)
         {
           const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
           vec_[k] += chol.U.row(k).tail(slice_dim).dot(vec_.tail(slice_dim));
         }
 
-        for (Eigen::DenseIndex k = num_total_constraints; k <= chol.size() - 2; ++k)
+        for (Eigen::DenseIndex k = total_constraint_size; k <= chol.size() - 2; ++k)
           vec_[k] += chol.U.row(k)
                        .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
                        .dot(vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
@@ -573,14 +573,14 @@ namespace pinocchio
 
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
-        const Eigen::DenseIndex num_total_constraints = chol.constraintDim();
+        const Eigen::DenseIndex total_constraint_size = chol.constraintDim();
 
-        for (Eigen::DenseIndex k = chol.size() - 2; k >= num_total_constraints; --k)
+        for (Eigen::DenseIndex k = chol.size() - 2; k >= total_constraint_size; --k)
           vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1) +=
             chol.U.row(k).segment(k + 1, chol.nv_subtree_fromRow[k] - 1).transpose() * vec_[k];
 
         // TODO: exploit the Sparsity pattern of the first rows of U
-        for (Eigen::DenseIndex k = num_total_constraints - 1; k >= 0; --k)
+        for (Eigen::DenseIndex k = total_constraint_size - 1; k >= 0; --k)
         {
           const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
           vec_.tail(slice_dim) += chol.U.row(k).tail(slice_dim).transpose() * vec_[k];
@@ -631,14 +631,14 @@ namespace pinocchio
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
 
-        const Eigen::DenseIndex num_total_constraints = chol.size() - chol.nv;
-        for (Eigen::DenseIndex k = chol.size() - 2; k >= num_total_constraints; --k)
+        const Eigen::DenseIndex total_constraint_size = chol.size() - chol.nv;
+        for (Eigen::DenseIndex k = chol.size() - 2; k >= total_constraint_size; --k)
           vec_[k] -= chol.U.row(k)
                        .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
                        .dot(vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
 
         // TODO: exploit the Sparsity pattern of the first rows of U
-        for (Eigen::DenseIndex k = num_total_constraints - 1; k >= 0; --k)
+        for (Eigen::DenseIndex k = total_constraint_size - 1; k >= 0; --k)
         {
           const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
           vec_[k] -= chol.U.row(k).tail(slice_dim).dot(vec_.tail(slice_dim));
@@ -688,16 +688,16 @@ namespace pinocchio
 
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
-        const Eigen::DenseIndex num_total_constraints = chol.constraintDim();
+        const Eigen::DenseIndex total_constraint_size = chol.constraintDim();
 
         // TODO: exploit the Sparsity pattern of the first rows of U
-        for (Eigen::DenseIndex k = 0; k < num_total_constraints; ++k)
+        for (Eigen::DenseIndex k = 0; k < total_constraint_size; ++k)
         {
           const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
           vec_.tail(slice_dim) -= chol.U.row(k).tail(slice_dim).transpose() * vec_[k];
         }
 
-        for (Eigen::DenseIndex k = num_total_constraints; k <= chol.size() - 2; ++k)
+        for (Eigen::DenseIndex k = total_constraint_size; k <= chol.size() - 2; ++k)
           vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1) -=
             chol.U.row(k).segment(k + 1, chol.nv_subtree_fromRow[k] - 1).transpose() * vec_[k];
       }
