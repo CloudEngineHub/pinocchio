@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2022 INRIA
+// Copyright (c) 2022-2025 INRIA
 //
 
 #ifndef __pinocchio_python_spatial_symmetric3_hpp__
@@ -8,12 +8,13 @@
 #include <eigenpy/exception.hpp>
 #include <eigenpy/memory.hpp>
 #include <eigenpy/eigen-to-python.hpp>
+#include <eigenpy/copyable.hpp>
+
 #include <boost/python/tuple.hpp>
 
 #include "pinocchio/spatial/symmetric3.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
 
 namespace pinocchio
@@ -166,7 +167,7 @@ namespace pinocchio
           .def(Symmetric3PythonVisitor<Symmetric3>())
           .def(CastVisitor<Symmetric3>())
           .def(ExposeConstructorByCastVisitor<Symmetric3, ::pinocchio::Symmetric3>())
-          .def(CopyableVisitor<Symmetric3>())
+          .def(::eigenpy::CopyableVisitor<Symmetric3>())
           .def(PrintableVisitor<Symmetric3>());
       }
 

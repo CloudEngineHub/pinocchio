@@ -7,7 +7,7 @@
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/math/lanczos-decomposition.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
+#include <eigenpy/copyable.hpp>
 
 #include <eigenpy/eigenpy.hpp>
 #include <eigenpy/memory.hpp>
@@ -76,7 +76,7 @@ namespace pinocchio
           .def(bp::self != bp::self)
 #endif
 
-          .def(CopyableVisitor<Self>())
+          .def(::eigenpy::CopyableVisitor<Self>())
 
           ;
       }

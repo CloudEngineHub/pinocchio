@@ -77,7 +77,7 @@ namespace pinocchio
 #ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION
             .def_pickle(PickleVector<vector_type>())
 #endif
-            .def(eigenpy::CopyableVisitor<vector_type>());
+            .def(::eigenpy::CopyableVisitor<vector_type>());
 
           // Register conversion
           if (EnableFromPythonListConverter)

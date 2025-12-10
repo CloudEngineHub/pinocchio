@@ -1,17 +1,17 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2024-2025 INRIA
 //
 
 #ifndef __pinocchio_python_algorithm_constraints_set_box_set_hpp__
 #define __pinocchio_python_algorithm_constraints_set_box_set_hpp__
 
 #include <eigenpy/eigenpy.hpp>
+#include <eigenpy/copyable.hpp>
 
 #include "pinocchio/algorithm/constraints/sets/box-set.hpp"
 
 #include "pinocchio/bindings/python/algorithm/constraints/set-base.hpp"
 #include "pinocchio/bindings/python/utils/cast.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 
 namespace pinocchio
 {
@@ -48,7 +48,7 @@ namespace pinocchio
           .def(BoxSetPythonVisitor())
           // .def(CastVisitor<BoxSet>())
           // .def(ExposeConstructorByCastVisitor<BoxSet,::pinocchio::BoxSet>())
-          .def(CopyableVisitor<BoxSet>());
+          .def(::eigenpy::CopyableVisitor<BoxSet>());
       }
     };
 

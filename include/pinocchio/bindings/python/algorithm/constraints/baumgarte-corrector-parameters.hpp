@@ -5,10 +5,11 @@
 #ifndef __pinocchio_python_algorithm_constraints_baumgarte_corrector_parameters_hpp__
 #define __pinocchio_python_algorithm_constraints_baumgarte_corrector_parameters_hpp__
 
+#include <eigenpy/copyable.hpp>
+
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/comparable.hpp"
 
 namespace pinocchio

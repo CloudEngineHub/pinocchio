@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2015-2024 CNRS INRIA
+// Copyright (c) 2015-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
@@ -14,7 +15,7 @@
 #include "pinocchio/spatial/inertia.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
+#include <eigenpy/copyable.hpp>
 #include "pinocchio/bindings/python/utils/printable.hpp"
 
 #if EIGENPY_VERSION_AT_MOST(2, 8, 1)
@@ -294,7 +295,7 @@ namespace pinocchio
           .def(InertiaPythonVisitor<Inertia>())
           .def(CastVisitor<Inertia>())
           .def(ExposeConstructorByCastVisitor<Inertia, ::pinocchio::Inertia>())
-          .def(CopyableVisitor<Inertia>())
+          .def(::eigenpy::CopyableVisitor<Inertia>())
           .def(PrintableVisitor<Inertia>());
       }
 
@@ -449,7 +450,7 @@ namespace pinocchio
           "Supported operations ...",
           bp::no_init)
           .def(PseudoInertiaPythonVisitor<PseudoInertia>())
-          .def(CopyableVisitor<PseudoInertia>())
+          .def(::eigenpy::CopyableVisitor<PseudoInertia>())
           .def(PrintableVisitor<PseudoInertia>())
           .def(CastVisitor<PseudoInertia>())
           .def(ExposeConstructorByCastVisitor<PseudoInertia, ::pinocchio::PseudoInertia>());
@@ -574,7 +575,7 @@ namespace pinocchio
           "Supported operations ...",
           bp::no_init)
           .def(LogCholeskyParametersPythonVisitor<LogCholeskyParameters>())
-          .def(CopyableVisitor<LogCholeskyParameters>())
+          .def(::eigenpy::CopyableVisitor<LogCholeskyParameters>())
           .def(PrintableVisitor<LogCholeskyParameters>())
           .def(CastVisitor<LogCholeskyParameters>())
           .def(ExposeConstructorByCastVisitor<

@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2015-2022 CNRS INRIA, 2025 INRIA
+// Copyright (c) 2015-2018 CNRS
+// Copyright (x) 2018-2025 INRIA
 //
 
 #ifndef __pinocchio_python_geometry_data_hpp__
@@ -41,7 +42,7 @@ namespace pinocchio
             .def(bp::init<const GeomIndex &, const GeomIndex &>(
               bp::args("self", "index1", "index2"), "Initializer of collision pair."))
             .def(PrintableVisitor<CollisionPair>())
-            .def(CopyableVisitor<CollisionPair>())
+            .def(::eigenpy::CopyableVisitor<CollisionPair>())
             .def(bp::self == bp::self)
             .def(bp::self != bp::self)
             .def_readwrite("first", &CollisionPair::first)
@@ -164,7 +165,7 @@ namespace pinocchio
             bp::no_init)
             .def(GeometryDataPythonVisitor())
             .def(PrintableVisitor<GeometryData>())
-            .def(CopyableVisitor<GeometryData>())
+            .def(::eigenpy::CopyableVisitor<GeometryData>())
             .def(SerializableVisitor<GeometryData>())
             .def(AddressVisitor<GeometryModel>());
         }

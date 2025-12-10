@@ -27,7 +27,7 @@ namespace pinocchio
   namespace python
   {
     namespace bp = boost::python;
-    using eigenpy::CopyableVisitor;
+    using ::eigenpy::CopyableVisitor;
 
     struct GeometryObjectPythonVisitor
     : public boost::python::def_visitor<GeometryObjectPythonVisitor>
@@ -165,7 +165,7 @@ namespace pinocchio
             "in parent joint's frame.\n\n",
             bp::no_init)
             .def(GeometryObjectPythonVisitor())
-            .def(CopyableVisitor<GeometryObject>())
+            .def(::eigenpy::CopyableVisitor<GeometryObject>())
             .def(AddressVisitor<GeometryObject>())
             .def(SerializableVisitor<GeometryObject>())
 #ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION

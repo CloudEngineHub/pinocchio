@@ -1,16 +1,18 @@
 //
-// Copyright (c) 2016-2022 CNRS INRIA
+// Copyright (c) 2016-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 //
 
 #ifndef __pinocchio_python_multibody_frame_hpp__
 #define __pinocchio_python_multibody_frame_hpp__
 
+#include <eigenpy/copyable.hpp>
+
 #include "pinocchio/multibody/fwd.hpp"
 #include "pinocchio/multibody/frame.hpp"
 
-#include "pinocchio/bindings/python/utils/deprecation.hpp"
+#include <eigenpy/deprecation-policy.hpp>
 #include "pinocchio/bindings/python/utils/cast.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
 
 namespace pinocchio
@@ -53,19 +55,19 @@ namespace pinocchio
             "parent",
             bp::make_function(
               +[](const Frame & self) { return self.parentJoint; },
-              deprecated_member<>("Deprecated member. Use Frame.parentJoint instead.")),
+              ::eigenpy::deprecated_member<>("Deprecated member. Use Frame.parentJoint instead.")),
             bp::make_function(
               +[](Frame & self, const JointIndex index) { self.parentJoint = index; },
-              deprecated_member<>("Deprecated member. Use Frame.parentJoint instead.")),
+              ::eigenpy::deprecated_member<>("Deprecated member. Use Frame.parentJoint instead.")),
             "See parentJoint property.")
           .add_property(
             "previousFrame",
             bp::make_function(
               +[](const Frame & self) { return self.parentFrame; },
-              deprecated_member<>("Deprecated member. Use Frame.parentFrame instead.")),
+              ::eigenpy::deprecated_member<>("Deprecated member. Use Frame.parentFrame instead.")),
             bp::make_function(
               +[](Frame & self, const FrameIndex index) { self.parentFrame = index; },
-              deprecated_member<>("Deprecated member. Use Frame.parentFrame instead.")),
+              ::eigenpy::deprecated_member<>("Deprecated member. Use Frame.parentFrame instead.")),
             "See parentFrame property.")
           .def_readwrite(
             "placement", &Frame::placement, "placement in the parent joint local frame")
@@ -99,7 +101,7 @@ namespace pinocchio
           .def(FramePythonVisitor())
           .def(CastVisitor<Frame>())
           .def(ExposeConstructorByCastVisitor<Frame, ::pinocchio::Frame>())
-          .def(CopyableVisitor<Frame>())
+          .def(::eigenpy::CopyableVisitor<Frame>())
           .def(PrintableVisitor<Frame>())
           .def_pickle(Pickle());
       }

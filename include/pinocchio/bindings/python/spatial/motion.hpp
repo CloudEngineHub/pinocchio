@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2015-2024 CNRS INRIA
+// Copyright (c) 2015-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
@@ -8,6 +9,8 @@
 
 #include <eigenpy/eigenpy.hpp>
 #include <eigenpy/memory.hpp>
+#include <eigenpy/copyable.hpp>
+
 #include <boost/python/tuple.hpp>
 #include <boost/python/implicit.hpp>
 
@@ -16,7 +19,6 @@
 #include "pinocchio/spatial/force.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
 
 #if EIGENPY_VERSION_AT_MOST(2, 8, 1)
@@ -218,7 +220,7 @@ namespace pinocchio
           .def(MotionPythonVisitor<Motion>())
           .def(CastVisitor<Motion>())
           .def(ExposeConstructorByCastVisitor<Motion, ::pinocchio::Motion>())
-          .def(CopyableVisitor<Motion>())
+          .def(::eigenpy::CopyableVisitor<Motion>())
           .def(PrintableVisitor<Motion>());
       }
 

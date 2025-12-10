@@ -1,9 +1,11 @@
 //
-// Copyright (c) 2022 INRIA
+// Copyright (c) 2022-2025 INRIA
 //
 
 #ifndef __pinocchio_python_algorithm_constraints_set_trivial_cones_hpp__
 #define __pinocchio_python_algorithm_constraints_set_trivial_cones_hpp__
+
+#include <eigenpy/copyable.hpp>
 
 #include "pinocchio/algorithm/constraints/sets/zero-cone.hpp"
 #include "pinocchio/algorithm/constraints/sets/full-space-cone.hpp"
@@ -11,7 +13,6 @@
 
 #include "pinocchio/bindings/python/algorithm/constraints/set-base.hpp"
 #include "pinocchio/bindings/python/utils/cast.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 
 namespace pinocchio
 {
@@ -29,7 +30,7 @@ namespace pinocchio
         bp::class_<TrivialCone>(class_name.c_str(), doc_string.c_str(), bp::no_init)
           .def(SetPythonVisitor<TrivialCone, context::VectorXs>())
           .def(ConeSetPythonVisitor<TrivialCone>())
-          .def(CopyableVisitor<TrivialCone>());
+          .def(::eigenpy::CopyableVisitor<TrivialCone>());
       }
     };
 

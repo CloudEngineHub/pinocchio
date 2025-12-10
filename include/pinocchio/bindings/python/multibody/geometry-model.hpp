@@ -130,7 +130,7 @@ namespace pinocchio
             .def(GeometryModelPythonVisitor())
             .def(PrintableVisitor<GeometryModel>())
             .def(SerializableVisitor<GeometryModel>())
-            .def(CopyableVisitor<GeometryModel>())
+            .def(::eigenpy::CopyableVisitor<GeometryModel>())
             .def(AddressVisitor<GeometryModel>())
 #ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION
             .def_pickle(PickleFromStringSerialization<GeometryModel>())

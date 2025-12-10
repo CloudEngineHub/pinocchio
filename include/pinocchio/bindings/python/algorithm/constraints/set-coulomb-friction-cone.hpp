@@ -1,15 +1,15 @@
 //
-// Copyright (c) 2022 INRIA
+// Copyright (c) 2022-2025 INRIA
 //
 
 #ifndef __pinocchio_python_algorithm_constraints_set_coulomb_friction_cone_hpp__
 #define __pinocchio_python_algorithm_constraints_set_coulomb_friction_cone_hpp__
 
-#include "pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp"
+#include <eigenpy/copyable.hpp>
 
+#include "pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/set-base.hpp"
 #include "pinocchio/bindings/python/utils/cast.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 
 namespace pinocchio
 {
@@ -57,7 +57,7 @@ namespace pinocchio
           .def(CoulombFrictionConePythonVisitor())
           // .def(CastVisitor<CoulombFrictionCone>())
           // .def(ExposeConstructorByCastVisitor<CoulombFrictionCone,::pinocchio::CoulombFrictionCone>())
-          .def(CopyableVisitor<CoulombFrictionCone>());
+          .def(::eigenpy::CopyableVisitor<CoulombFrictionCone>());
       }
     };
 
@@ -89,7 +89,7 @@ namespace pinocchio
           .def(DualCoulombFrictionConePythonVisitor())
           // .def(CastVisitor<DualCoulombFrictionCone>())
           // .def(ExposeConstructorByCastVisitor<DualCoulombFrictionCone,::pinocchio::CoulombFrictionCone>())
-          .def(CopyableVisitor<DualCoulombFrictionCone>());
+          .def(::eigenpy::CopyableVisitor<DualCoulombFrictionCone>());
       }
     };
   } // namespace python

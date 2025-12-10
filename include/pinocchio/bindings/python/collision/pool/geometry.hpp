@@ -1,17 +1,17 @@
 //
-// Copyright (c) 2021-2022 INRIA
+// Copyright (c) 2021-2025 INRIA
 //
 
 #ifndef __pinocchio_python_collision_pool_geometry_hpp__
 #define __pinocchio_python_collision_pool_geometry_hpp__
 
 #include <boost/python/overloads.hpp>
+#include <eigenpy/copyable.hpp>
 
 #include <eigenpy/eigen-to-python.hpp>
 #include <eigenpy/memory.hpp>
 #include <eigenpy/exception.hpp>
 
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 
 #include "pinocchio/algorithm/check.hpp"
@@ -87,7 +87,7 @@ namespace pinocchio
           "Pool containing a model + a geometry_model and several datas for parallel computations",
           bp::no_init)
           .def(GeometryPoolPythonVisitor())
-          .def(CopyableVisitor<GeometryPool>());
+          .def(::eigenpy::CopyableVisitor<GeometryPool>());
 
         StdVectorPythonVisitor<GeometryModelVector>::expose("StdVec_GeometryModel");
         StdVectorPythonVisitor<GeometryDataVector>::expose("StdVec_GeometryData");

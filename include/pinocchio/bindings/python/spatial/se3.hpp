@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2015-2024 CNRS INRIA
+// Copyright (c) 2015-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
@@ -8,6 +9,7 @@
 
 #include <eigenpy/eigenpy.hpp>
 #include <eigenpy/memory.hpp>
+#include <eigenpy/copyable.hpp>
 #include <boost/python/tuple.hpp>
 
 #include "pinocchio/spatial/se3.hpp"
@@ -19,7 +21,6 @@
 #include "pinocchio/utils/string.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
 #include "pinocchio/bindings/python/utils/namespace.hpp"
 
@@ -226,7 +227,7 @@ namespace pinocchio
           .def(SE3PythonVisitor<SE3>())
           .def(CastVisitor<SE3>())
           .def(ExposeConstructorByCastVisitor<SE3, ::pinocchio::SE3>())
-          .def(CopyableVisitor<SE3>())
+          .def(::eigenpy::CopyableVisitor<SE3>())
           .def(bp::self_ns::str(bp::self_ns::self))
           .def("__repr__", &repr);
       }

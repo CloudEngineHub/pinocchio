@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2016-2023 CNRS INRIA, 2025 INRIA
+// Copyright (c) 2016-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 //
 
 #ifndef __pinocchio_python_utils_copyable_hpp__
@@ -16,7 +17,7 @@ namespace pinocchio
   namespace python
   {
 
-    using eigenpy::CopyableVisitor;
+    using ::eigenpy::CopyableVisitor;
 
   } // namespace python
 } // namespace pinocchio

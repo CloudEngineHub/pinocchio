@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2015-2024 CNRS INRIA
+// Copyright (c) 2015-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
@@ -7,6 +8,7 @@
 #define __pinocchio_python_multibody_model_hpp__
 
 #include <eigenpy/eigen-to-python.hpp>
+#include <eigenpy/copyable.hpp>
 
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/serialization/model.hpp"
@@ -20,7 +22,6 @@
 #include "pinocchio/bindings/python/utils/cast.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/std-map.hpp"
 #include "pinocchio/bindings/python/utils/pickle.hpp"
 #include "pinocchio/bindings/python/utils/pickle-map.hpp"
@@ -417,7 +418,7 @@ namespace pinocchio
           .def(ExposeConstructorByCastVisitor<Model, ::pinocchio::Model>())
           .def(SerializableVisitor<Model>())
           .def(PrintableVisitor<Model>())
-          .def(CopyableVisitor<Model>())
+          .def(::eigenpy::CopyableVisitor<Model>())
 #ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION
           .def_pickle(PickleFromStringSerialization<Model>())
 #endif

@@ -1,11 +1,12 @@
 //
-// Copyright (c) 2022 INRIA
+// Copyright (c) 2022-2025 INRIA
 //
 
 #ifndef __pinocchio_python_collision_pool_broadphase_manager_hpp__
 #define __pinocchio_python_collision_pool_broadphase_manager_hpp__
 
 #include <eigenpy/eigen-to-python.hpp>
+#include <eigenpy/copyable.hpp>
 
 #include "pinocchio/collision/pool/broadphase-manager.hpp"
 
@@ -15,7 +16,6 @@
 #include <eigenpy/exception.hpp>
 
 #include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 
 namespace pinocchio
@@ -122,7 +122,7 @@ namespace pinocchio
         bp::class_<BroadPhaseManagerPool, bp::bases<Base>>(
           class_name.c_str(), doc.c_str(), bp::no_init)
           .def(BroadPhaseManagerPoolPythonVisitor())
-          .def(CopyableVisitor<BroadPhaseManagerPool>());
+          .def(::eigenpy::CopyableVisitor<BroadPhaseManagerPool>());
 
         const std::string vector_name = "StdVec_" + broadphase_prefix + "_" + manager_name;
         StdVectorPythonVisitor<BroadPhaseManagerVector>::expose(vector_name);

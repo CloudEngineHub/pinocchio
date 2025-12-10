@@ -1,11 +1,12 @@
 //
-// Copyright (c) 2021-2022 INRIA
+// Copyright (c) 2021-2025 INRIA
 //
 
 #ifndef __pinocchio_python_multibody_pool_model_hpp__
 #define __pinocchio_python_multibody_pool_model_hpp__
 
 #include <eigenpy/eigen-to-python.hpp>
+#include <eigenpy/copyable.hpp>
 
 #include "pinocchio/multibody/pool/model.hpp"
 
@@ -14,7 +15,6 @@
 #include <eigenpy/exception.hpp>
 
 #include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 
 #if EIGENPY_VERSION_AT_MOST(2, 8, 1)
@@ -74,7 +74,7 @@ namespace pinocchio
           "ModelPool", "Pool containing a model and several datas for parallel computations",
           bp::no_init)
           .def(ModelPoolPythonVisitor())
-          .def(CopyableVisitor<ModelPool>());
+          .def(::eigenpy::CopyableVisitor<ModelPool>());
 
         StdVectorPythonVisitor<ModelVector>::expose("StdVec_Model");
         StdVectorPythonVisitor<DataVector>::expose("StdVec_Data");

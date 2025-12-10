@@ -12,13 +12,13 @@
 #include <eigenpy/memory.hpp>
 #include <eigenpy/eigen-to-python.hpp>
 #include <eigenpy/exception.hpp>
+#include <eigenpy/copyable.hpp>
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
 #include "pinocchio/bindings/python/serialization/serializable.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/utils/std-aligned-vector.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 
 #if EIGENPY_VERSION_AT_MOST(2, 8, 1)
 EIGENPY_DEFINE_STRUCT_ALLOCATOR_SPECIALIZATION(pinocchio::Data)
@@ -300,7 +300,7 @@ namespace pinocchio
           "It contains all the data that can be modified by the Pinocchio algorithms.",
           bp::no_init)
           .def(DataPythonVisitor())
-          .def(CopyableVisitor<Data>())
+          .def(::eigenpy::CopyableVisitor<Data>())
 #ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION
           .def(SerializableVisitor<Data>())
           .def_pickle(PickleData<Data>())

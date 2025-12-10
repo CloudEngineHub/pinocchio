@@ -6,6 +6,8 @@
 #define __pinocchio_python_algorithm_contact_cholesky_hpp__
 
 #include <eigenpy/memory.hpp>
+#include <eigenpy/copyable.hpp>
+
 #include "pinocchio/algorithm/contact-cholesky.hpp"
 
 #include "pinocchio/algorithm/delassus-operator-dense.hpp"
@@ -14,7 +16,6 @@
 #include "pinocchio/bindings/python/utils/macros.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/utils/comparable.hpp"
-#include "pinocchio/bindings/python/utils/copyable.hpp"
 #include "pinocchio/bindings/python/utils/model-checker.hpp"
 
 #include "pinocchio/bindings/python/algorithm/delassus-operator.hpp"
@@ -246,7 +247,7 @@ namespace pinocchio
           "ContactCholeskyDecomposition",
           "Contact information container for contact dynamic algorithms.", bp::no_init)
           .def(ContactCholeskyDecompositionPythonVisitor<ContactCholeskyDecomposition>())
-          .def(CopyableVisitor<ContactCholeskyDecomposition>());
+          .def(::eigenpy::CopyableVisitor<ContactCholeskyDecomposition>());
 
         {
           typedef typename ContactCholeskyDecomposition::DelassusCholeskyExpression
