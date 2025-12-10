@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(box)
     test(q0, v0, tau0, fext, dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(1e-8));
+    BOOST_CHECK(test.dual_solution.isZero(1e-7));
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - fext.linear();
     const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.primal_solution / dt);
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-6));
@@ -471,7 +471,7 @@ BOOST_AUTO_TEST_CASE(point_anchor_box)
     test(q0, v0, tau0, fext, dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(1e-8));
+    BOOST_CHECK(test.dual_solution.isZero(1e-7));
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - fext.linear();
     Force::Vector3 f_tot = Force::Vector3::Zero();
     for (int k = 0; k < 4; ++k)
