@@ -5,7 +5,7 @@
 #ifndef __pinocchio_algorithm_contact_jacobian_hpp__
 #define __pinocchio_algorithm_contact_jacobian_hpp__
 
-#include "pinocchio/macro.hpp"
+#include "pinocchio/macros.hpp"
 
 // clang-format off
 PINOCCHIO_PRAGMA_DEPRECATED_HEADER(pinocchio/algorithm/contact-jacobian.hpp, pinocchio/algorithm/constraints/utils.hpp)
