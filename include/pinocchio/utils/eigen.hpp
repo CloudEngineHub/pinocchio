@@ -422,7 +422,7 @@ namespace pinocchio
         return dispatch<Eigen::internal::sub_assign_op>(matrix_product);
       }
 
-      EIGEN_DEVICE_FUNC ExpressionType & expression() const
+      ExpressionType & expression()
       {
         return m_expression;
       }
@@ -441,7 +441,10 @@ namespace pinocchio
       }
 
     protected:
-      ExpressionType & m_expression;
+      typename std::conditional<
+        helper::is_eigen_noalias_v<ExpressionType>,
+        ExpressionType,
+        ExpressionType &>::type m_expression;
 
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
