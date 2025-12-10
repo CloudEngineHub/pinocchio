@@ -8,6 +8,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
+#include <typeinfo>
 
 using namespace pinocchio;
 
@@ -34,6 +35,24 @@ BOOST_AUTO_TEST_CASE(test_helpers)
   BOOST_CHECK(helper::has_fixed_rows_v<Matrix33>);
   BOOST_CHECK(helper::has_fixed_cols_v<Matrix33>);
   BOOST_CHECK(helper::has_fixed_size_v<Matrix33>);
+}
+
+BOOST_AUTO_TEST_CASE(test_make_map)
+{
+  typedef Eigen::Matrix<double, Eigen::Dynamic, 1> Vector;
+  typedef Eigen::Matrix<double, 1, Eigen::Dynamic> RowVector;
+  typedef Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::RowMajor> VectorRowMajor;
+
+  typedef internal::make_static_matrix<1, 6, RowVector>::type RowVectorAsStatic;
+  std::cout << "RowVectorAsStatic: " << typeid(RowVectorAsStatic).name() << std::endl;
+
+  {
+    Vector vec = Vector::Zero(10);
+    auto vec_map = internal::make_eigen_map<Vector>(vec);
+    BOOST_CHECK(vec == vec_map);
+    // auto vec_row_map = internal::make_eigen_map<VectorRowMajor>(vec);
+    // BOOST_CHECK(vec == vec_row_map);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(test_size_product)
@@ -290,9 +309,11 @@ BOOST_AUTO_TEST_CASE(test_specitic_6x6_case)
   const LhsType A = LhsType::Constant(n, n, 1);
   const RhsType B = RhsType::Constant(n, m, 2);
   ResType res = ResType::Random(n, m);
-  PINOCCHIO_UNUSED_VARIABLE(A);
-  PINOCCHIO_UNUSED_VARIABLE(B);
-  PINOCCHIO_UNUSED_VARIABLE(res);
+
+  const auto matrix_product = A * B;
+  BOOST_CHECK(
+    promote_static_eval(res.noalias()).dispatch_type(matrix_product)
+    == pinocchio::internal::DispatchType::STATIC);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
