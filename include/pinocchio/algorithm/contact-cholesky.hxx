@@ -2,15 +2,12 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_contact_cholesky_hpp__
-#define __pinocchio_algorithm_contact_cholesky_hpp__
+#ifndef __pinocchio_algorithm_contact_cholesky_hxx__
+#define __pinocchio_algorithm_contact_cholesky_hxx__
 
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/multibody/data.hpp"
 #include "pinocchio/utils/reference.hpp"
-
-#include "pinocchio/algorithm/contact-cholesky.fwd.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
 
 #include <algorithm>
 
@@ -20,23 +17,6 @@ namespace pinocchio
   // TODO Remove when API is stabilized
   PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-
-  template<typename Scalar, int Options>
-  template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
-  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
-    const ModelTpl<S1, O1, JointCollectionTpl> & model)
-  : D(D_storage.map())
-  , Dinv(Dinv_storage.map())
-  , U(U_storage.map())
-  , DUt(DUt_storage.map())
-  , compliance(compliance_storage.map())
-  , damping(damping_storage.map())
-  , delassus_block(delassus_block_storage.map())
-  {
-    std::vector<ConstraintModel> empty_constraint_models;
-    std::vector<ConstraintData> empty_constraint_datas;
-    resize(model, empty_constraint_models, empty_constraint_datas);
-  }
 
   template<typename Scalar, int Options>
   template<
@@ -52,23 +32,31 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
+    typedef ModelTpl<S1, O1, JointCollectionTpl> Model;
+
     assert(
       constraint_models.size() == constraint_datas.size()
       && "Both std::vector should be of equal size.");
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
 
     nv = model.nv;
-    const auto total_constraint_size = residualSize(constraint_models, constraint_datas);
+    Eigen::DenseIndex num_total_constraints = 0;
+    for (std::size_t i = 0; i < constraint_models.size(); i++)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cdata = helper::get_ref(constraint_datas[i]);
+      num_total_constraints += cmodel.residualSize(cdata);
+    }
 
-    const Eigen::DenseIndex total_size = nv + total_constraint_size;
+    const Eigen::DenseIndex total_dim = nv + num_total_constraints;
 
     // Compute first parents_fromRow for all the joints.
     // This code is very similar to the code of Data::computeParents_fromRow,
     // but shifted with a value corresponding to the number of constraints.
-    parents_fromRow.resize(total_size);
+    parents_fromRow.resize(total_dim);
     parents_fromRow.fill(-1);
 
-    nv_subtree_fromRow.resize(total_size);
+    nv_subtree_fromRow.resize(total_dim);
     //      nv_subtree_fromRow.fill(0);
 
     // Fill nv_subtree_fromRow for model
@@ -82,22 +70,22 @@ namespace pinocchio
       const int idx_vj = joint.idx_v();
 
       if (parent_id > 0)
-        parents_fromRow[idx_vj + total_constraint_size] =
-          parent_joint.idx_v() + parent_joint.nv() - 1 + total_constraint_size;
+        parents_fromRow[idx_vj + num_total_constraints] =
+          parent_joint.idx_v() + parent_joint.nv() - 1 + num_total_constraints;
       else
-        parents_fromRow[idx_vj + total_constraint_size] = -1;
+        parents_fromRow[idx_vj + num_total_constraints] = -1;
 
       const JointIndex last_child =
         model.subtrees[joint_id].size() > 0 ? model.subtrees[joint_id].back() : JointIndex(0);
-      nv_subtree_fromRow[idx_vj + total_constraint_size] =
+      nv_subtree_fromRow[idx_vj + num_total_constraints] =
         model.joints[last_child].idx_v() + model.joints[last_child].nv() - idx_vj;
 
       for (int row = 1; row < nvj; ++row)
       {
-        parents_fromRow[idx_vj + total_constraint_size + row] =
-          idx_vj + row - 1 + total_constraint_size;
-        nv_subtree_fromRow[idx_vj + total_constraint_size + row] =
-          nv_subtree_fromRow[idx_vj + total_constraint_size] - row;
+        parents_fromRow[idx_vj + num_total_constraints + row] =
+          idx_vj + row - 1 + num_total_constraints;
+        nv_subtree_fromRow[idx_vj + num_total_constraints + row] =
+          nv_subtree_fromRow[idx_vj + num_total_constraints] - row;
       }
     }
 
@@ -110,11 +98,11 @@ namespace pinocchio
       {
         const auto & row_active_indexes = cmodel.getRowIndexes(cdata, k);
         nv_subtree_fromRow[row_id] =
-          total_constraint_size - row_id + 1
+          num_total_constraints - row_id + 1
           + (row_active_indexes.size() > 0 ? row_active_indexes.back() : 0);
       }
     }
-    assert(row_id == total_constraint_size);
+    assert(row_id == num_total_constraints);
 
     // Fill the sparsity pattern for each Row of the Cholesky decomposition (matrix U)
     /*
@@ -122,7 +110,7 @@ namespace pinocchio
           static const SliceVector default_slice_vector(1,default_slice_value);
 
           rowise_sparsity_pattern.clear();
-          rowise_sparsity_pattern.resize((size_t)total_constraint_size,default_slice_vector);
+          rowise_sparsity_pattern.resize((size_t)num_total_constraints,default_slice_vector);
           row_id = 0; size_t constraint_id = 0;
           for(typename RigidConstraintModelVector::const_iterator it = constraint_models.begin();
               it != constraint_models.end();
@@ -136,11 +124,11 @@ namespace pinocchio
             {
               SliceVector & slice_vector = rowise_sparsity_pattern[(size_t)row_id];
               slice_vector.clear();
-              slice_vector.push_back(Slice(row_id,total_constraint_size-row_id));
+              slice_vector.push_back(Slice(row_id,num_total_constraints-row_id));
 
               bool previous_index_was_true = true;
-              for(Eigen::DenseIndex joint1_indexes_constraint_id = total_constraint_size;
-                  joint1_indexes_constraint_id < total_size;
+              for(Eigen::DenseIndex joint1_indexes_constraint_id = num_total_constraints;
+                  joint1_indexes_constraint_id < total_dim;
                   ++joint1_indexes_constraint_id)
               {
                 if(joint1_indexes_ee[joint1_indexes_constraint_id])
@@ -163,17 +151,17 @@ namespace pinocchio
      */
 
     // Allocate Eigen memory if needed
-    compliance_storage.resize(total_constraint_size);
+    compliance_storage.resize(num_total_constraints);
     compliance.setZero();
-    damping_storage.resize(total_constraint_size);
+    damping_storage.resize(num_total_constraints);
     damping.setZero();
 
-    D_storage.resize(total_size);
-    Dinv_storage.resize(total_size);
-    U_storage.resize(total_size, total_size);
-    delassus_block_storage.resize(total_constraint_size, total_constraint_size);
+    D_storage.resize(total_dim);
+    Dinv_storage.resize(total_dim);
+    U_storage.resize(total_dim, total_dim);
+    Delassus_storage.resize(num_total_constraints, num_total_constraints);
     U.setIdentity();
-    DUt_storage.resize(total_size);
+    DUt_storage.resize(total_dim);
   }
 
   template<typename Scalar, int Options>
@@ -203,10 +191,11 @@ namespace pinocchio
       "different.");
     PINOCCHIO_ONLY_USED_FOR_DEBUG(model);
 
-    const Eigen::DenseIndex total_size = size();
-    const Eigen::DenseIndex total_constraint_size = total_size - nv;
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraint_size = total_dim - nv;
 
-    const auto & M = data.M;
+    typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
+    const typename Data::MatrixXs & M = data.M;
 
     const size_t num_constraints = constraint_models.size();
 
@@ -290,8 +279,8 @@ namespace pinocchio
     // Setting numerical damping
     if (use_explicit_delassus)
     {
-      computedelassus_blockFromU();
-      updateDampingdelassus_block(mus);
+      computeDelassusFromU();
+      updateDampingDelassus(mus);
     }
 
     else
@@ -315,17 +304,17 @@ namespace pinocchio
   template<typename Scalar, int Options>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(const Scalar & compliance)
   {
-    const Eigen::DenseIndex total_size = size();
-    const Eigen::DenseIndex total_constraint_size = total_size - nv;
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraint_size = total_dim - nv;
     updateCompliance(Vector::Constant(total_constraint_size, compliance));
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::computedelassus_blockFromU()
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusFromU()
   {
-    // delassus_block.setZero();
-    const Eigen::DenseIndex total_size = size();
-    const Eigen::DenseIndex total_constraint_size = total_size - nv;
+    // Delassus.setZero();
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraint_size = total_dim - nv;
     const Matrix & UtopRight = U.topRightCorner(total_constraint_size, nv);
     const Vector & Dtail = D.tail(nv);
 
@@ -338,27 +327,27 @@ namespace pinocchio
     //       UtopRight.row(j).transpose().cwiseProduct(Dtail);
     //     for (Eigen::DenseIndex _i = j; _i >= 0; _i--)
     //     {
-    //       delassus_block(_i, j) = UtopRight.row(_i).dot(DUt_partial);
+    //       Delassus(_i, j) = UtopRight.row(_i).dot(DUt_partial);
     //     }
     //   }
 
     // typedef Eigen::Map<RowMatrix> MapRowMatrix;
     // MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraint_size,
-    // nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal(); delassus_block.noalias() = OSIMinv
-    // * UtopRight.transpose();
+    // nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal(); Delassus.noalias() = OSIMinv *
+    // UtopRight.transpose();
 
-    delassus_block.noalias() = (UtopRight * Dtail.asDiagonal()) * UtopRight.transpose();
+    Delassus.noalias() = (UtopRight * Dtail.asDiagonal()) * UtopRight.transpose();
   }
 
   template<typename Scalar, int Options>
   template<typename VectorLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDampingdelassus_block(
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDampingDelassus(
     const Eigen::MatrixBase<VectorLike> & vec)
   {
     EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
     damping = vec;
-    const Eigen::DenseIndex total_size = size();
-    const Eigen::DenseIndex total_constraint_size = total_size - nv;
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraint_size = total_dim - nv;
     U.topLeftCorner(total_constraint_size, total_constraint_size).setIdentity();
 
     // Upper left triangular part of U
@@ -369,7 +358,7 @@ namespace pinocchio
       DUt_partial.noalias() =
         U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
 
-      D[j] = -delassus_block(j, j) - damping[j] - compliance[j]
+      D[j] = -Delassus(j, j) - damping[j] - compliance[j]
              - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
       // std::cout << "j = " << j << ", slice_dim = " << slice_dim << " D[j] = " << D[j] <<
       // std::endl;
@@ -382,7 +371,7 @@ namespace pinocchio
       for (Eigen::DenseIndex _i = j - 1; _i >= 0; _i--)
       {
         U(_i, j) =
-          (-delassus_block(_i, j) - U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial)) * Dinv[j];
+          (-Delassus(_i, j) - U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial)) * Dinv[j];
       }
     }
   }
@@ -396,17 +385,17 @@ namespace pinocchio
     damping = vec;
     if (use_explicit_delasssus)
     {
-      updateDampingdelassus_block(vec);
+      updateDampingDelassus(vec);
     }
     else
     {
-      const Eigen::DenseIndex total_size = size();
-      const Eigen::DenseIndex total_constraint_size = total_size - nv;
+      const Eigen::DenseIndex total_dim = size();
+      const Eigen::DenseIndex total_constraint_size = total_dim - nv;
 
       // Upper left triangular part of U
       for (Eigen::DenseIndex j = total_constraint_size - 1; j >= 0; --j)
       {
-        const Eigen::DenseIndex slice_dim = total_size - j - 1;
+        const Eigen::DenseIndex slice_dim = total_dim - j - 1;
         auto DUt_partial = DUt.head(slice_dim);
         DUt_partial.noalias() =
           U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
@@ -432,8 +421,8 @@ namespace pinocchio
     //      PINOCCHIO_CHECK_INPUT_ARGUMENT(check_expression_if_real<Scalar>(mu >= 0), "mu should be
     //      positive.");
 
-    const Eigen::DenseIndex total_size = size();
-    const Eigen::DenseIndex total_constraint_size = total_size - nv;
+    const Eigen::DenseIndex total_dim = size();
+    const Eigen::DenseIndex total_constraint_size = total_dim - nv;
     updateDamping(Vector::Constant(total_constraint_size, mu), use_explicit_delassus);
   }
 
@@ -509,16 +498,16 @@ namespace pinocchio
 
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
-        const Eigen::DenseIndex total_constraint_size = chol.size() - chol.nv;
+        const Eigen::DenseIndex num_total_constraints = chol.size() - chol.nv;
 
         // TODO: exploit the Sparsity pattern of the first rows of U
-        for (Eigen::DenseIndex k = 0; k < total_constraint_size; ++k)
+        for (Eigen::DenseIndex k = 0; k < num_total_constraints; ++k)
         {
           const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
           vec_[k] += chol.U.row(k).tail(slice_dim).dot(vec_.tail(slice_dim));
         }
 
-        for (Eigen::DenseIndex k = total_constraint_size; k <= chol.size() - 2; ++k)
+        for (Eigen::DenseIndex k = num_total_constraints; k <= chol.size() - 2; ++k)
           vec_[k] += chol.U.row(k)
                        .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
                        .dot(vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
@@ -567,14 +556,14 @@ namespace pinocchio
 
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
-        const Eigen::DenseIndex total_constraint_size = chol.constraintDim();
+        const Eigen::DenseIndex num_total_constraints = chol.constraintDim();
 
-        for (Eigen::DenseIndex k = chol.size() - 2; k >= total_constraint_size; --k)
+        for (Eigen::DenseIndex k = chol.size() - 2; k >= num_total_constraints; --k)
           vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1) +=
             chol.U.row(k).segment(k + 1, chol.nv_subtree_fromRow[k] - 1).transpose() * vec_[k];
 
         // TODO: exploit the Sparsity pattern of the first rows of U
-        for (Eigen::DenseIndex k = total_constraint_size - 1; k >= 0; --k)
+        for (Eigen::DenseIndex k = num_total_constraints - 1; k >= 0; --k)
         {
           const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
           vec_.tail(slice_dim) += chol.U.row(k).tail(slice_dim).transpose() * vec_[k];
@@ -625,14 +614,14 @@ namespace pinocchio
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
 
-        const Eigen::DenseIndex total_constraint_size = chol.size() - chol.nv;
-        for (Eigen::DenseIndex k = chol.size() - 2; k >= total_constraint_size; --k)
+        const Eigen::DenseIndex num_total_constraints = chol.size() - chol.nv;
+        for (Eigen::DenseIndex k = chol.size() - 2; k >= num_total_constraints; --k)
           vec_[k] -= chol.U.row(k)
                        .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
                        .dot(vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
 
         // TODO: exploit the Sparsity pattern of the first rows of U
-        for (Eigen::DenseIndex k = total_constraint_size - 1; k >= 0; --k)
+        for (Eigen::DenseIndex k = num_total_constraints - 1; k >= 0; --k)
         {
           const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
           vec_[k] -= chol.U.row(k).tail(slice_dim).dot(vec_.tail(slice_dim));
@@ -682,16 +671,16 @@ namespace pinocchio
 
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
-        const Eigen::DenseIndex total_constraint_size = chol.constraintDim();
+        const Eigen::DenseIndex num_total_constraints = chol.constraintDim();
 
         // TODO: exploit the Sparsity pattern of the first rows of U
-        for (Eigen::DenseIndex k = 0; k < total_constraint_size; ++k)
+        for (Eigen::DenseIndex k = 0; k < num_total_constraints; ++k)
         {
           const Eigen::DenseIndex slice_dim = chol.size() - k - 1;
           vec_.tail(slice_dim) -= chol.U.row(k).tail(slice_dim).transpose() * vec_[k];
         }
 
-        for (Eigen::DenseIndex k = total_constraint_size; k <= chol.size() - 2; ++k)
+        for (Eigen::DenseIndex k = num_total_constraints; k <= chol.size() - 2; ++k)
           vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1) -=
             chol.U.row(k).segment(k + 1, chol.nv_subtree_fromRow[k] - 1).transpose() * vec_[k];
       }
@@ -862,17 +851,4 @@ namespace pinocchio
   PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 } // namespace pinocchio
 
-// Because of a GCC bug we should NEVER define a function that use ContactCholeskyDecompositionTpl
-// before doing the explicit template instantiation.
-// If we don't take care, GCC will not accept any visibility attribute when declaring the
-// explicit template instantiation of the ContactCholeskyDecompositionTpl class.
-// The warning message will look like this: type attributes ignored after type is already defined
-// [-Wattributes] A minimal code example is added on the PR
-// (https://github.com/stack-of-tasks/pinocchio/pull/2469)
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/contact-cholesky.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#include "pinocchio/algorithm/delassus-operator-cholesky-expression.hpp"
-
-#endif // ifndef __pinocchio_algorithm_contact_cholesky_hpp__
+#endif // ifndef __pinocchio_algorithm_contact_cholesky_hxx__
