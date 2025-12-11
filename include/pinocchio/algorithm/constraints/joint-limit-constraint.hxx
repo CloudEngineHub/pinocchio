@@ -245,6 +245,10 @@ namespace pinocchio
     cdata.constraint_residual_storage.resize(residualSize(cdata));
   }
 
+  // -------------------------------
+  // IMPLEMENTATIONS OF BASE METHODS
+  // -------------------------------
+
   template<typename Scalar, int Options>
   template<template<typename, int> class JointCollectionTpl>
   void JointLimitConstraintModelTpl<Scalar, Options>::calcImpl(

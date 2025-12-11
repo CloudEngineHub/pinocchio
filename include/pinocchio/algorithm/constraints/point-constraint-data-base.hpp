@@ -13,7 +13,7 @@ namespace pinocchio
 {
 
   ///
-  ///  \brief Data structure associated with PointConstraint
+  /// \brief Data structure associated with PointConstraint
   ///
   template<typename Derived>
   struct PointConstraintDataBase : ConstraintDataBase<Derived>
@@ -53,6 +53,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to base
     Base & base()
     {
@@ -64,6 +66,8 @@ namespace pinocchio
     {
       return static_cast<const Base &>(*this);
     }
+
+    // Constructors ------------------
 
     /// \brief Default constructor
     PointConstraintDataBase()
@@ -107,6 +111,8 @@ namespace pinocchio
     {
       PINOCCHIO_UNUSED_VARIABLE(constraint_model);
     }
+
+    // Operators ---------------------
 
     /// \brief Assignment operator
     PointConstraintDataBase & operator=(const PointConstraintDataBase & other)

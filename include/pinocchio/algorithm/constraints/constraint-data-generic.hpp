@@ -53,6 +53,22 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
+    /// \brief Cast to variant.
+    ConstraintDataVariant & toVariant()
+    {
+      return static_cast<ConstraintDataVariant &>(*this);
+    }
+
+    /// \brief Const cast to variant.
+    const ConstraintDataVariant & toVariant() const
+    {
+      return static_cast<const ConstraintDataVariant &>(*this);
+    }
+
+    // Constructors ------------------
+
     /// \brief Default constructor
     ConstraintDataTpl()
     : ConstraintDataVariant()
@@ -74,17 +90,7 @@ namespace pinocchio
         (boost::mpl::contains<typename ConstraintDataVariant::types, ContraintDataDerived>));
     }
 
-    /// \brief Cast to variant.
-    ConstraintDataVariant & toVariant()
-    {
-      return static_cast<ConstraintDataVariant &>(*this);
-    }
-
-    /// \brief Const cast to variant.
-    const ConstraintDataVariant & toVariant() const
-    {
-      return static_cast<const ConstraintDataVariant &>(*this);
-    }
+    // Operators ---------------------
 
     /// \brief Is this equal to other?
     template<typename ConstraintDataDerived>

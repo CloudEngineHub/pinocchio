@@ -21,6 +21,12 @@ namespace pinocchio
 
     typedef DataEntity<Derived> Base;
 
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    // CRTP related ------------------
+
     /// \brief Cast to Derived
     Derived & derived()
     {
@@ -33,16 +39,53 @@ namespace pinocchio
       return static_cast<const Derived &>(*this);
     }
 
-    /// \brief Returns the name of the underlying constraint if this is a variant.
-    std::string shortname() const
+    /// \brief Cast to base.
+    ConstraintDataBase & base()
     {
-      return derived().shortnameImpl();
+      return *this;
+    }
+
+    /// \brief Const cast to base.
+    const ConstraintDataBase & base() const
+    {
+      return *this;
+    }
+
+    // Constructors ------------------
+
+  protected:
+    /// \brief Default constructor
+    ConstraintDataBase()
+    {
+    }
+
+    // Operators ---------------------
+
+  public:
+    /// \brief Comparison operator
+    template<typename OtherDerived>
+    bool operator==(const ConstraintDataBase<OtherDerived> &) const
+    {
+      return true;
+    }
+
+    /// \brief Comparison operator
+    template<typename OtherDerived>
+    bool operator!=(const ConstraintDataBase<OtherDerived> & other) const
+    {
+      return !(*this == other);
     }
 
     /// \brief Returns the name of the class.
     static std::string classname()
     {
       return Derived::classnameImpl();
+    }
+
+    /// \brief Returns the name of the underlying constraint if this is a variant.
+    std::string shortname() const
+    {
+      return derived().shortnameImpl();
     }
 
     /// \brief Print the name of the class
@@ -58,26 +101,6 @@ namespace pinocchio
     {
       constraint.disp(os);
       return os;
-    }
-
-    /// \brief Comparison operator
-    template<typename OtherDerived>
-    bool operator==(const ConstraintDataBase<OtherDerived> &) const
-    {
-      return true;
-    }
-
-    /// \brief Comparison operator
-    template<typename OtherDerived>
-    bool operator!=(const ConstraintDataBase<OtherDerived> & other) const
-    {
-      return !(*this == other);
-    }
-
-  protected:
-    /// \brief Default constructor
-    ConstraintDataBase()
-    {
     }
   };
 } // namespace pinocchio

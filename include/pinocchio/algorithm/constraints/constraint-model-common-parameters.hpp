@@ -33,6 +33,17 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // Constructors ------------------
+
+  protected:
+    /// \brief Default constructor - protected so that the class cannot be instanciated on its own.
+    ConstraintModelCommonParameters()
+    {
+    }
+
+    // Operators ---------------------
+
+  public:
     /// \brief Cast to NewScalar
     template<typename NewScalar, typename OtherDerived>
     void cast(ConstraintModelCommonParameters<OtherDerived> & other) const
@@ -79,11 +90,6 @@ namespace pinocchio
     }
 
   protected:
-    /// \brief Default constructor - protected so that the class cannot be instanciated on its own.
-    ConstraintModelCommonParameters()
-    {
-    }
-
     // ------------------------------
     // MEMBERS
     // ------------------------------

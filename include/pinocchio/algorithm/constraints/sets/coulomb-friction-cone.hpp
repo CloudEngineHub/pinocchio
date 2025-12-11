@@ -30,7 +30,7 @@ namespace pinocchio
     typedef CoulombFrictionConeTpl<Scalar> DualCone;
   };
 
-  ///  \brief 3d Coulomb friction cone operator.
+  /// \brief 3d Coulomb friction cone operator.
   ///  This operator does not own any data.
   ///  Instead, it points to the data owned by some other struct.
   ///  Creating and copying an instance of this struct is free.

@@ -28,14 +28,14 @@ namespace pinocchio
 
   enum struct ConstraintSizeType
   {
-    STATIC,   // The size is static, fixed at compile time. residualSize = maxResidualSize =
-              // sizeCapacity -> fixed
-    CONSTANT, // The size is constant, fixed at build time. residualSize = maxResidualSize =
-              // sizeCapacity -> maxResidualSizeImpl to implement
-    BOUNDED,  // The size is bounded, a maxResidualSize is fixed at build time and 0 <= size <=
-              // maxResidualSize = capacity -> residualSizeImpl and maxResidualSizeImpl to implement
-    GENERAL   // The size is not guaranteed to be bounded, capacitySize gives an estimated max size
-              // for allocation -> residualSizeImpl and sizeCapacityImpl to implement
+    STATIC,   // The size is fixed at compile time. residualSize = maxResidualSize
+              // -> no implementation to provide.
+    CONSTANT, // The size is fixed at build time. residualSize = maxResidualSize
+              // -> maxResidualSizeImpl to implement
+    BOUNDED,  // The maxResidualSize is fixed at build time. 0 <= size <= maxResidualSize
+              // -> residualSizeImpl and maxResidualSizeImpl to implement
+    GENERAL   // The size is not guaranteed to be bounded
+              // -> residualSizeImpl to implement
   };
 
   template<class Derived>
@@ -95,11 +95,11 @@ namespace pinocchio
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
     typedef std::vector<Eigen::Index> EigenIndexVector;
 
-    // --------------------------------------------------------------
-    // Methods
-    // --------------------------------------------------------------
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
 
-    // CRTP classics and operators ----------------------------------
+    // CRTP related ------------------
 
     /// \brief Cast to derived class.
     Derived & derived()
@@ -125,6 +125,25 @@ namespace pinocchio
       return *this;
     }
 
+    // Constructors ------------------
+
+  protected:
+    /// \brief Constructor from model.
+    /// Protected so that ConstraintModelBase cannot be constructed.
+    template<int Options, template<typename, int> class JointCollectionTpl>
+    explicit ConstraintModelBase(const ModelTpl<Scalar, Options, JointCollectionTpl> & /*model*/)
+    {
+    }
+
+    /// \brief Default constructor
+    /// Protected so that ConstraintModelBase cannot be constructed.
+    ConstraintModelBase()
+    {
+    }
+
+    // Operators ---------------------
+
+  public:
     /// \brief Cast to NewScalar.
     template<typename NewScalar>
     typename CastType<NewScalar, Derived>::type cast() const
@@ -162,18 +181,22 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    // Aesthetics methods --------------------------------------------
+    // -------------------------------
+    // BASE METHODS
+    // -------------------------------
 
-    /// \brief Returns the name of the underlying class if this is a variant.
-    std::string shortname() const
-    {
-      return derived().shortnameImpl();
-    }
+    // General -----------------------
 
     /// \brief Returns the name of the underlying class if this is a variant.
     static std::string classname()
     {
       return Derived::classnameImpl();
+    }
+
+    /// \brief Returns the name of the underlying class if this is a variant.
+    std::string shortname() const
+    {
+      return derived().shortnameImpl();
     }
 
     /// \brief Prints the shortname of the constraint.
@@ -191,8 +214,6 @@ namespace pinocchio
       return os;
     }
 
-    // Relation to data ---------------------------------------------
-
     using Base::createData;
 
     /// \brief Returns a constraint data associated to this constraint model.
@@ -201,7 +222,7 @@ namespace pinocchio
       return derived().createDataImpl();
     }
 
-    // Size management ----------------------------------------------
+    // Size management ---------------
 
     /// \brief Returns the maximum size of the constraint.
     int maxResidualSize() const
@@ -216,7 +237,7 @@ namespace pinocchio
       }
     }
 
-    // Methods for algorithm ----------------------------------------
+    // Methods for algorithm ---------
 
     /// \brief Returns the current size of the constraint, typically after `calc` has been called.
     /// \note If constraints are dynamic (e.g. joint limits), residualSize is computed when
@@ -277,6 +298,10 @@ namespace pinocchio
 
     /// \brief Evaluate the constraint values at the current state given by data and store the
     /// results in cdata.
+    /// \note data must be populated by results of a `forwardKinematic(model, data, q, v, a)`.
+    /// The forward kinematics on q determines the constraint position error, on v the constraint
+    /// velocity error, on a the constraint acceleration error.
+    /// Typically, a call to `aba` will fill all the necessary fields of data.
     template<int Options, template<typename, int> class JointCollectionTpl>
     void calc(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -454,7 +479,7 @@ namespace pinocchio
         model, data, cdata, diagonal_constraint_inertia.derived(), reference_frame);
     }
 
-    // Handling data metods -----------------------------------------
+    // Data handling -----------------
 
     /// \brief Returns the compliance internally stored in the constraint model.
     ComplianceVectorTypeConstRef compliance() const
@@ -480,8 +505,6 @@ namespace pinocchio
       return derived().baumgarte_corrector_parameters_impl();
     }
 
-    // Standard setters --------------------------------------------
-
     /// \brief Set the compliance
     template<typename VectorLike>
     void setCompliance(const Eigen::MatrixBase<VectorLike> & vector)
@@ -496,24 +519,25 @@ namespace pinocchio
       derived().setBaumgarteCorrectorParametersImpl(baumgarte_corrector_parameters_in);
     }
 
-    // --------------------------------------------------------------
-    // Implementation
-    // --------------------------------------------------------------
-    // // General
-    // shortnameImpl()
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    // General -----------------------
     // classnameImpl()
+    // shortnameImpl()
     // createDataImpl()
 
-    // // Size management
+    // Size Management ---------------
     // maxResidualSizeImpl()  // Not needed for STATIC
 
-    // // For algorithms
-    // residualSizeImpl(const cdata)  // Not needed for < CONSTANT
+    // Methods for algorithms --------
+    // residualSizeImpl(const cdata)  // Not needed for <= CONSTANT
     // getRowSparsityPatternImpl(const cdata)
     // getRowIndexesImpl(const cdata)
     // setImpl()  // Not needed if has_set=False
-    // retrieveComplianceImpl(cdata, ...)  //
-    // calcImpl(const model, const data, cdata) // The only one mutating cdata
+    // retrieveComplianceImpl(cdata, ...)
+    // calcImpl(const model, const data, cdata)  // The only one mutating cdata
     // jacobianImpl(const model, const data, const cdata, ...)
     // jacobianMatrixProductImpl(const model, const data, const cdata, ...)
     // jacobianTransposeMatrixProductImpl(const model, const data, const cdata, ...)
@@ -521,14 +545,13 @@ namespace pinocchio
     // mapJointSpaceToConstraintMotionImpl(const model, const data, const cdata, ...)
     // appendCouplingConstraintInertiasImpl(const model, const data, const cdata, ...)
 
-    // // Data handing
+    // Data handling -----------------
     // compliance_impl()
     // baumgarte_corrector_parameters_impl()
-    // setComplianceImpl()  // Default to using the accessor
-    // setBaumgarteCorrectorParametersImpl()  // Default to using the accessor
+    // setComplianceImpl(...)
+    // setBaumgarteCorrectorParametersImpl(...)
 
-    // Default Implementation --------------------------------------
-
+    // Default Implementation --------
     /// \copydoc setCompliance
     template<typename VectorLike>
     void setComplianceImpl(const Eigen::MatrixBase<VectorLike> & vector)
@@ -543,26 +566,12 @@ namespace pinocchio
       baumgarte_corrector_parameters() = baumgarte_corrector_parameters_in;
     }
 
-    // --------------------------------------------------------------
-    // Attributes
-    // --------------------------------------------------------------
+    // ------------------------------
+    // MEMBERS
+    // ------------------------------
 
     /// \brief Name of the constraint
     std::string name;
-
-  protected:
-    /// \brief Constructor from model.
-    /// Protected so that ConstraintModelBase cannot be constructed.
-    template<int Options, template<typename, int> class JointCollectionTpl>
-    explicit ConstraintModelBase(const ModelTpl<Scalar, Options, JointCollectionTpl> & /*model*/)
-    {
-    }
-
-    /// \brief Default constructor
-    /// Protected so that ConstraintModelBase cannot be constructed.
-    ConstraintModelBase()
-    {
-    }
   };
 
 } // namespace pinocchio

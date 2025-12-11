@@ -73,7 +73,7 @@ namespace pinocchio
   };
 
   ///
-  ///  \brief Contact model structure containg all the info describing the rigid contact model
+  /// \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename Derived>
   struct PointConstraintModelBase : BinaryKinematicsConstraintBase<Derived>
@@ -114,6 +114,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to Base
     Base & base()
     {
@@ -138,6 +140,8 @@ namespace pinocchio
       return static_cast<const BaseCommonParameters &>(*this);
     }
 
+    // Constructors ------------------
+
     ///
     /// \brief Default constructor
     ///
@@ -147,7 +151,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type, joint indexes and placements.
+    /// \brief Contructor with from a given type, joint indexes and placements.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] model Model associated to the constraint.
@@ -170,7 +174,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type, joint1_id and placement.
+    /// \brief Contructor with from a given type, joint1_id and placement.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -188,7 +192,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type and the joint ids.
+    /// \brief Contructor with from a given type and the joint ids.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -204,7 +208,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type and .
+    /// \brief Contructor with from a given type and .
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -219,8 +223,10 @@ namespace pinocchio
     {
     }
 
+    // Operators ---------------------
+
     ///
-    ///  \brief Comparison operator
+    /// \brief Comparison operator
     ///
     /// \param[in] other Other PointConstraintModelBase to compare with.
     ///
@@ -233,7 +239,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Opposite of the comparison operator.
+    /// \brief Opposite of the comparison operator.
     ///
     /// \param[in] other Other PointConstraintModelBase to compare with.
     ///
@@ -252,71 +258,7 @@ namespace pinocchio
       Base::template cast<NewScalar>(res);
     }
 
-    // -------------------------------
-    // IMPLEMENTATIONS OF BASE METHODS
-    // -------------------------------
-
-    /// \copydoc RootBase::size
-    static constexpr int maxResidualSizeImpl()
-    {
-      return 3;
-    }
-
-    /// \copydoc RootBase::calc
-    template<template<typename, int> class JointCollectionTpl>
-    void calcImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata) const
-    {
-      PINOCCHIO_UNUSED_VARIABLE(model);
-
-      if (this->joint1_id > 0)
-        cdata.oMc1 = data.oMi[this->joint1_id] * this->joint1_placement;
-      else
-        cdata.oMc1 = this->joint1_placement;
-
-      if (this->joint2_id > 0)
-        cdata.oMc2 = data.oMi[this->joint2_id] * this->joint2_placement;
-      else
-        cdata.oMc2 = this->joint2_placement;
-
-      // Compute relative placement
-      cdata.c1Mc2 = cdata.oMc1.actInv(cdata.oMc2);
-      const auto & _1R2_ = cdata.c1Mc2.rotation();
-
-      // Compute errors
-      auto & position_error = cdata.constraint_position_error;
-      position_error.noalias() = cdata.c1Mc2.translation();
-      position_error.noalias() -= this->desired_constraint_offset;
-      //      cdata.constraint_position_error = cdata.oMc1.inverse().translation();
-
-      const auto vf1 = this->joint1_placement.actInv(data.v[this->joint1_id]);
-      const auto vf2 = this->joint2_placement.actInv(data.v[this->joint2_id]);
-
-      auto & velocity_error = cdata.constraint_velocity_error;
-      const Vector3 velocity_error_component1 = _1R2_ * vf2.linear() - vf1.linear();
-      velocity_error.noalias() = velocity_error_component1 - vf1.angular().cross(position_error);
-      velocity_error.noalias() -= this->desired_constraint_velocity;
-
-      const auto af1 = this->joint1_placement.actInv(data.a[this->joint1_id]);
-      const auto af2 = this->joint2_placement.actInv(data.a[this->joint2_id]);
-      auto & acceleration_error = cdata.constraint_acceleration_error;
-      acceleration_error.noalias() = _1R2_ * (af2.linear() + vf2.angular().cross(vf2.linear()))
-                                     - (af1.linear() + vf1.angular().cross(vf1.linear()));
-      acceleration_error.noalias() -= af1.angular().cross(position_error);
-      acceleration_error.noalias() += vf1.angular().cross(vf1.angular().cross(position_error));
-      acceleration_error.noalias() -= 2 * vf1.angular().cross(velocity_error_component1);
-      acceleration_error.noalias() -= this->desired_constraint_acceleration;
-
-      cdata.A1_world = this->getA1(cdata, WorldFrameTag());
-      cdata.A2_world = this->getA2(cdata, WorldFrameTag());
-      cdata.A_world = cdata.A1_world + cdata.A2_world;
-
-      cdata.A1_local = this->getA1(cdata, LocalFrameTag());
-      cdata.A2_local = this->getA2(cdata, LocalFrameTag());
-      cdata.A_local = cdata.A1_local + cdata.A2_local;
-    }
+    // Methods for rigid body --------
 
     /// \brief Returns the constraint projector associated with joint 1.
     /// This matrix transforms a spatial velocity expressed at the origin to the first component of
@@ -427,7 +369,7 @@ namespace pinocchio
     }
 
     ///
-    /// @brief This function computes the spatial inertia associated with the constraint.
+    /// \brief This function computes the spatial inertia associated with the constraint.
     /// This function is useful to express the constraint inertia associated with the constraint for
     /// AL-based approaches.
     ///
@@ -533,53 +475,105 @@ namespace pinocchio
         I12.const_cast_derived().setZero();
     }
 
-    /// \copydoc RootBase::appendCouplingConstraintInertiasImpl
-    template<
-      template<typename, int> class JointCollectionTpl,
-      typename Vector3Like,
-      ReferenceFrame rf>
-    void appendCouplingConstraintInertiasImpl(
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    // Methods for algorithms --------
+
+    /// \copydoc RootBase::calc
+    template<template<typename, int> class JointCollectionTpl>
+    void calcImpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<Vector3Like> & diagonal_constraint_inertia,
-      const ReferenceFrameTag<rf> reference_frame) const
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      ConstraintData & cdata) const
     {
       PINOCCHIO_UNUSED_VARIABLE(model);
 
-      Matrix6 I11, I12, I22;
-      computeConstraintInertias(cdata, diagonal_constraint_inertia, I11, I12, I22, reference_frame);
-      assert(
-        (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value
-         || std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
-        && "must never happened");
-
-      Matrix6 & Y1 = std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value
-                       ? data.oYaba_augmented[this->joint1_id]
-                       : data.oYaba_augmented[this->joint1_id];
-
       if (this->joint1_id > 0)
-        Y1 += I11;
-
-      Matrix6 & Y2 = std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value
-                       ? data.oYaba_augmented[this->joint2_id]
-                       : data.oYaba_augmented[this->joint2_id];
+        cdata.oMc1 = data.oMi[this->joint1_id] * this->joint1_placement;
+      else
+        cdata.oMc1 = this->joint1_placement;
 
       if (this->joint2_id > 0)
-        Y2 += I22;
+        cdata.oMc2 = data.oMi[this->joint2_id] * this->joint2_placement;
+      else
+        cdata.oMc2 = this->joint2_placement;
 
-      if (this->joint1_id > 0 && this->joint2_id > 0)
+      // Compute relative placement
+      cdata.c1Mc2 = cdata.oMc1.actInv(cdata.oMc2);
+      const auto & _1R2_ = cdata.c1Mc2.rotation();
+
+      // Compute errors
+      auto & position_error = cdata.constraint_position_error;
+      position_error.noalias() = cdata.c1Mc2.translation();
+      position_error.noalias() -= this->desired_constraint_offset;
+      //      cdata.constraint_position_error = cdata.oMc1.inverse().translation();
+
+      const auto vf1 = this->joint1_placement.actInv(data.v[this->joint1_id]);
+      const auto vf2 = this->joint2_placement.actInv(data.v[this->joint2_id]);
+
+      auto & velocity_error = cdata.constraint_velocity_error;
+      const Vector3 velocity_error_component1 = _1R2_ * vf2.linear() - vf1.linear();
+      velocity_error.noalias() = velocity_error_component1 - vf1.angular().cross(position_error);
+      velocity_error.noalias() -= this->desired_constraint_velocity;
+
+      const auto af1 = this->joint1_placement.actInv(data.a[this->joint1_id]);
+      const auto af2 = this->joint2_placement.actInv(data.a[this->joint2_id]);
+      auto & acceleration_error = cdata.constraint_acceleration_error;
+      acceleration_error.noalias() = _1R2_ * (af2.linear() + vf2.angular().cross(vf2.linear()))
+                                     - (af1.linear() + vf1.angular().cross(vf1.linear()));
+      acceleration_error.noalias() -= af1.angular().cross(position_error);
+      acceleration_error.noalias() += vf1.angular().cross(vf1.angular().cross(position_error));
+      acceleration_error.noalias() -= 2 * vf1.angular().cross(velocity_error_component1);
+      acceleration_error.noalias() -= this->desired_constraint_acceleration;
+
+      cdata.A1_world = this->getA1(cdata, WorldFrameTag());
+      cdata.A2_world = this->getA2(cdata, WorldFrameTag());
+      cdata.A_world = cdata.A1_world + cdata.A2_world;
+
+      cdata.A1_local = this->getA1(cdata, LocalFrameTag());
+      cdata.A2_local = this->getA2(cdata, LocalFrameTag());
+      cdata.A_local = cdata.A1_local + cdata.A2_local;
+    }
+
+    /// \copydoc RootBase::jacobian
+    template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
+    void jacobianImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
+    {
+      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
+      JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
+
+      const SE3 & oMc1 = cdata.oMc1;
+      const SE3 & oMc2 = cdata.oMc2;
+      const SE3 & c1Mc2 = cdata.c1Mc2;
+      const auto & position_error = cdata.constraint_position_error;
+
+      for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
-        assert(
-          data.joint_cross_coupling.exists({this->joint1_id, this->joint2_id})
-          || data.joint_cross_coupling.exists({this->joint2_id, this->joint1_id}));
-        if (data.joint_cross_coupling.exists({this->joint1_id, this->joint2_id}))
+        if (this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj])
         {
-          data.joint_cross_coupling.get({this->joint1_id, this->joint2_id}) += I12;
-        }
-        else
-        {
-          data.joint_cross_coupling.get({this->joint2_id, this->joint1_id}) += I12.transpose();
+          typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
+          const ConstColXpr Jcol = data.J.col(jj);
+          const MotionRef<const ConstColXpr> Jcol_motion(Jcol);
+
+          jacobian_matrix.col(jj).setZero();
+          if (this->colwise_joint1_sparsity[jj])
+          {
+            const Motion Jcol_local(oMc1.actInv(Jcol_motion)); // TODO: simplify computations
+            jacobian_matrix.col(jj).noalias() -= Jcol_local.linear();
+            jacobian_matrix.col(jj).noalias() += -Jcol_local.angular().cross(position_error);
+          }
+
+          if (this->colwise_joint2_sparsity[jj])
+          {
+            const Motion Jcol_local(oMc2.actInv(Jcol_motion)); // TODO: simplify computations
+            jacobian_matrix.col(jj) += c1Mc2.rotation() * Jcol_local.linear();
+          }
         }
       }
     }
@@ -732,53 +726,7 @@ namespace pinocchio
       }
     }
 
-    /// \copydoc RootBase::jacobian
-    template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
-    void jacobianImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
-    {
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
-
-      const SE3 & oMc1 = cdata.oMc1;
-      const SE3 & oMc2 = cdata.oMc2;
-      const SE3 & c1Mc2 = cdata.c1Mc2;
-      const auto & position_error = cdata.constraint_position_error;
-
-      for (Eigen::Index jj = 0; jj < model.nv; ++jj)
-      {
-        if (this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj])
-        {
-          typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
-          const ConstColXpr Jcol = data.J.col(jj);
-          const MotionRef<const ConstColXpr> Jcol_motion(Jcol);
-
-          jacobian_matrix.col(jj).setZero();
-          if (this->colwise_joint1_sparsity[jj])
-          {
-            const Motion Jcol_local(oMc1.actInv(Jcol_motion)); // TODO: simplify computations
-            jacobian_matrix.col(jj).noalias() -= Jcol_local.linear();
-            jacobian_matrix.col(jj).noalias() += -Jcol_local.angular().cross(position_error);
-          }
-
-          if (this->colwise_joint2_sparsity[jj])
-          {
-            const Motion Jcol_local(oMc2.actInv(Jcol_motion)); // TODO: simplify computations
-            jacobian_matrix.col(jj) += c1Mc2.rotation() * Jcol_local.linear();
-          }
-        }
-      }
-    }
-
-    ///
-    /// \copydoc RootBase::mapConstraintForceToJointForces(const ModelTpl<Scalar, Options,
-    /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> &, const
-    /// ConstraintData &, const Eigen::MatrixBase<ForceLike> &, std::vector<ForceTpl<Scalar,
-    /// Options>, ForceAllocator> &, ReferenceFrameTag<rf>)
-    ///
+    /// \copydoc RootBase::mapConstraintForceToJointForces
     template<
       template<typename, int> class JointCollectionTpl,
       typename ForceLike,
@@ -811,12 +759,7 @@ namespace pinocchio
           A2.transpose() * constraint_forces.template head<3>();
     }
 
-    ///
-    /// \copydoc RootBase::mapJointMotionsToConstraintMotion(const ModelTpl<Scalar, Options,
-    /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> &, const
-    /// ConstraintData &, const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> &, const
-    /// Eigen::MatrixBase<VectorLike> &, ReferenceFrameTag<rf>)
-    ///
+    /// \copydoc RootBase::mapJointMotionsToConstraintMotion
     template<
       template<typename, int> class JointCollectionTpl,
       typename MotionAllocator,
@@ -854,6 +797,56 @@ namespace pinocchio
         constraint_motion.const_cast_derived().setZero();
     }
 
+    /// \copydoc RootBase::appendCouplingConstraintInertias
+    template<
+      template<typename, int> class JointCollectionTpl,
+      typename Vector3Like,
+      ReferenceFrame rf>
+    void appendCouplingConstraintInertiasImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<Vector3Like> & diagonal_constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(model);
+
+      Matrix6 I11, I12, I22;
+      computeConstraintInertias(cdata, diagonal_constraint_inertia, I11, I12, I22, reference_frame);
+      assert(
+        (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value
+         || std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+        && "must never happened");
+
+      Matrix6 & Y1 = std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value
+                       ? data.oYaba_augmented[this->joint1_id]
+                       : data.oYaba_augmented[this->joint1_id];
+
+      if (this->joint1_id > 0)
+        Y1 += I11;
+
+      Matrix6 & Y2 = std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value
+                       ? data.oYaba_augmented[this->joint2_id]
+                       : data.oYaba_augmented[this->joint2_id];
+
+      if (this->joint2_id > 0)
+        Y2 += I22;
+
+      if (this->joint1_id > 0 && this->joint2_id > 0)
+      {
+        assert(
+          data.joint_cross_coupling.exists({this->joint1_id, this->joint2_id})
+          || data.joint_cross_coupling.exists({this->joint2_id, this->joint1_id}));
+        if (data.joint_cross_coupling.exists({this->joint1_id, this->joint2_id}))
+        {
+          data.joint_cross_coupling.get({this->joint1_id, this->joint2_id}) += I12;
+        }
+        else
+        {
+          data.joint_cross_coupling.get({this->joint2_id, this->joint1_id}) += I12.transpose();
+        }
+      }
+    }
   }; // PointConstraintModelBase<Derived>
 
 } // namespace pinocchio

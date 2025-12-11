@@ -64,7 +64,7 @@ namespace pinocchio
   };
 
   ///
-  ///  \brief Contact model structure containg all the info describing the rigid contact model
+  /// \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct PointAnchorConstraintModelTpl
@@ -95,6 +95,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// Cast to Base
     Base & base()
     {
@@ -106,6 +108,8 @@ namespace pinocchio
     {
       return static_cast<const Base &>(*this);
     }
+
+    // Constructors ------------------
 
     ///
     /// \brief Default constructor
@@ -138,7 +142,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor from joint1_id and placement.
+    /// \brief Contructor from joint1_id and placement.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -155,7 +159,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor from joint ids.
+    /// \brief Contructor from joint ids.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -196,8 +200,10 @@ namespace pinocchio
       return res;
     }
 
+    // Operators ---------------------
+
     ///
-    ///  \brief Comparison operator
+    /// \brief Comparison operator
     ///
     /// \param[in] other Other PointAnchorConstraintModelTpl to compare with.
     ///
@@ -226,17 +232,7 @@ namespace pinocchio
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
 
-    /// \copydoc RootBase::createData
-    ConstraintData createDataImpl() const
-    {
-      return ConstraintData(*this);
-    }
-
-    /// \copydoc RootBase::set
-    ConstraintSet setImpl() const
-    {
-      return ConstraintSet();
-    }
+    // General -----------------------
 
     /// \copydoc RootBase::classname
     static std::string classnameImpl()
@@ -250,10 +246,24 @@ namespace pinocchio
       return classname();
     }
 
+    /// \copydoc RootBase::createData
+    ConstraintData createDataImpl() const
+    {
+      return ConstraintData(*this);
+    }
+
+    // Methods for algorithms --------
+
+    /// \copydoc RootBase::set
+    ConstraintSet setImpl() const
+    {
+      return ConstraintSet();
+    }
+
   }; // struct PointAnchorConstraintModelTpl<_Scalar,_Options>
 
   ///
-  ///  \brief Contact model structure containg all the info describing the rigid contact model
+  /// \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct PointAnchorConstraintDataTpl
@@ -280,6 +290,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to Base
     Base & base()
     {
@@ -292,6 +304,8 @@ namespace pinocchio
       return static_cast<const Base &>(*this);
     }
 
+    // Constructors ------------------
+
     /// \brief Default constructor
     PointAnchorConstraintDataTpl()
     {
@@ -302,6 +316,8 @@ namespace pinocchio
     : Base(constraint_model)
     {
     }
+
+    // Operators ---------------------
 
     /// \brief Comparison operator
     bool operator==(const PointAnchorConstraintDataTpl & other) const

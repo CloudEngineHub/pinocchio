@@ -151,6 +151,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to Base
     Base & base()
     {
@@ -175,6 +177,8 @@ namespace pinocchio
       return static_cast<const BaseCommonParameters &>(*this);
     }
 
+    // Constructors ------------------
+
     /// \brief Default constructor
     JointFrictionConstraintModelTpl()
     {
@@ -190,8 +194,10 @@ namespace pinocchio
       init(model, active_joints);
     }
 
+    // Operators ---------------------
+
     ///
-    ///  \brief Comparison operator
+    /// \brief Comparison operator
     ///
     /// \param[in] other Other JointFrictionConstraintModelTpl to compare with.
     ///
@@ -210,7 +216,7 @@ namespace pinocchio
              && m_friction_upper_limit == other.m_friction_upper_limit;
     }
 
-    ///  \brief Comparison operator
+    /// \brief Comparison operator
     bool operator!=(const JointFrictionConstraintModelTpl & other) const
     {
       return !(*this == other);
@@ -233,6 +239,8 @@ namespace pinocchio
       res.m_friction_upper_limit = m_friction_upper_limit.template cast<NewScalar>();
       return res;
     }
+
+    // Managing methods --------------
 
     /// \brief Returns the vector of active joints
     const JointIndexVector & getActiveJoints() const
@@ -296,6 +304,8 @@ namespace pinocchio
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
 
+    // General -----------------------
+
     /// \copydoc RootBase::classname
     static std::string classnameImpl()
     {
@@ -308,22 +318,45 @@ namespace pinocchio
       return classname();
     }
 
-    /// \copydoc Base::set
-    ConstraintSet setImpl() const
-    {
-      return ConstraintSet(m_friction_lower_limit, m_friction_upper_limit);
-    }
-
     /// \copydoc RootBase::createData
     ConstraintData createDataImpl() const
     {
       return ConstraintData(*this);
     }
 
-    /// \copydoc RootBase::size
+    // Size Management ---------------
+
+    /// \copydoc RootBase::maxResidualSizeImpl
     int maxResidualSizeImpl() const
     {
       return int(active_dofs.size());
+    }
+
+    // Methods for algorithms --------
+
+    /// \copydoc RootBase::getRowSparsityPattern
+    const BooleanVector &
+    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+
+      return row_sparsity_pattern[size_t(row_id)];
+    }
+
+    /// \copydoc RootBase::getRowIndexes
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+      return row_active_indexes[size_t(row_id)];
+    }
+
+    /// \copydoc RootBase::set
+    ConstraintSet setImpl() const
+    {
+      return ConstraintSet(m_friction_lower_limit, m_friction_upper_limit);
     }
 
     /// \copydoc RootBase::calc
@@ -407,37 +440,6 @@ namespace pinocchio
       const Eigen::MatrixBase<OutputMatrix> & _res,
       AssignmentOperatorTag<op> aot = SetTo()) const;
 
-    /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector &
-    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-
-      return row_sparsity_pattern[size_t(row_id)];
-    }
-
-    /// \copydoc RootBase::getRowIndexes
-    const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return row_active_indexes[size_t(row_id)];
-    }
-
-    /// \copydoc RootBase::appendCouplingConstraintInertias
-    template<
-      template<typename, int> class JointCollectionTpl,
-      typename VectorNLike,
-      ReferenceFrame rf>
-    void appendCouplingConstraintInertiasImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
-      const ReferenceFrameTag<rf> reference_frame) const;
-
     /// \copydoc Base::mapConstraintForcesToJointTorques
     template<
       template<typename, int> class JointCollectionTpl,
@@ -462,13 +464,29 @@ namespace pinocchio
       const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
       const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions) const;
 
+    /// \copydoc RootBase::appendCouplingConstraintInertias
+    template<
+      template<typename, int> class JointCollectionTpl,
+      typename VectorNLike,
+      ReferenceFrame rf>
+    void appendCouplingConstraintInertiasImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const;
+
   protected:
+    // ------------------------------
+    // PROTECTED METHODS
+    // ------------------------------
+
+    /// \brief Initialization of the model.
     template<template<typename, int> class JointCollectionTpl>
     void init(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const JointIndexVector & active_joints);
 
-  protected:
     // ------------------------------
     // MEMBERS
     // ------------------------------
@@ -504,6 +522,22 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
+    /// \brief Cast to Base
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to Base
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
+    }
+
+    // Constructors ------------------
+
     /// \brief Default constructor
     JointFrictionConstraintDataTpl()
     {
@@ -513,6 +547,8 @@ namespace pinocchio
     explicit JointFrictionConstraintDataTpl(const ConstraintModel & /*constraint_model*/)
     {
     }
+
+    // Operators ---------------------
 
     /// \brief Comparison operator
     bool operator==(const JointFrictionConstraintDataTpl & /*other*/) const
@@ -530,6 +566,8 @@ namespace pinocchio
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
 
+    // General -----------------------
+
     /// \copydoc Base::classname
     static std::string classnameImpl()
     {
@@ -542,6 +580,7 @@ namespace pinocchio
       return classname();
     }
   };
+
 } // namespace pinocchio
 
 #include "pinocchio/algorithm/constraints/joint-friction-constraint.hxx"

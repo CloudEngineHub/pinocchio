@@ -125,6 +125,20 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
+    ConstraintModelVariant & toVariant()
+    {
+      return static_cast<ConstraintModelVariant &>(*this);
+    }
+
+    const ConstraintModelVariant & toVariant() const
+    {
+      return static_cast<const ConstraintModelVariant &>(*this);
+    }
+
+    // Constructors ------------------
+
     ConstraintModelTpl()
     : ConstraintModelVariant()
     {
@@ -143,15 +157,7 @@ namespace pinocchio
         (boost::mpl::contains<typename ConstraintModelVariant::types, ContraintModelDerived>));
     }
 
-    ConstraintModelVariant & toVariant()
-    {
-      return static_cast<ConstraintModelVariant &>(*this);
-    }
-
-    const ConstraintModelVariant & toVariant() const
-    {
-      return static_cast<const ConstraintModelVariant &>(*this);
-    }
+    // Operators ---------------------
 
     template<typename ConstraintModelDerived>
     bool isEqual(const ConstraintModelBase<ConstraintModelDerived> & other) const
@@ -180,6 +186,8 @@ namespace pinocchio
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
 
+    // General -----------------------
+
     /// \copydoc RootBase::classname
     static std::string classnameImpl()
     {
@@ -192,16 +200,40 @@ namespace pinocchio
       return ::pinocchio::visitors::shortname(*this);
     }
 
-    /// \copydoc RootBase::size
+    /// \copydoc RootBase::createData
+    ConstraintData createDataImpl() const
+    {
+      return ::pinocchio::visitors::createData<Scalar, Options, ConstraintCollectionTpl>(*this);
+    }
+
+    // Size Management ---------------
+
+    /// \copydoc RootBase::maxResidualSize
     int maxResidualSizeImpl() const
     {
       return ::pinocchio::visitors::maxResidualSize(*this);
     }
 
+    // Methods for algorithms --------
+
     /// \copydoc RootBase::residualSize
     int residualSizeImpl(const ConstraintData & constraint_data) const
     {
       return ::pinocchio::visitors::residualSize(*this, constraint_data);
+    }
+
+    /// \copydoc RootBase::getRowSparsityPattern
+    const BooleanVector & getRowSparsityPatternImpl(
+      const ConstraintData & constraint_data, const Eigen::Index row_id) const
+    {
+      return ::pinocchio::visitors::getRowSparsityPattern(*this, constraint_data, row_id);
+    }
+
+    /// \copydoc RootBase::getRowIndexes
+    const EigenIndexVector &
+    getRowIndexesImpl(const ConstraintData & constraint_data, const Eigen::Index row_id) const
+    {
+      return ::pinocchio::visitors::getRowIndexes(*this, constraint_data, row_id);
     }
 
     /// \copydoc RootBase::set
@@ -213,10 +245,12 @@ namespace pinocchio
       return val;
     }
 
-    /// \copydoc RootBase::createData
-    ConstraintData createDataImpl() const
+    /// \copydoc RootBase::retrieveCompliance
+    template<typename VectorLike>
+    void retrieveCompliance(
+      const ConstraintData & cdata, const Eigen::MatrixBase<VectorLike> & res) const
     {
-      return ::pinocchio::visitors::createData<Scalar, Options, ConstraintCollectionTpl>(*this);
+      return ::pinocchio::visitors::retrieveCompliance(*this, cdata, res);
     }
 
     /// \copydoc RootBase::calc
@@ -239,28 +273,6 @@ namespace pinocchio
     {
       ::pinocchio::visitors::jacobian(
         *this, model, data, cdata, jacobian_matrix.const_cast_derived());
-    }
-
-    /// \copydoc RootBase::getRowIndexes
-    const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & constraint_data, const Eigen::Index row_id) const
-    {
-      return ::pinocchio::visitors::getRowIndexes(*this, constraint_data, row_id);
-    }
-
-    /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector & getRowSparsityPatternImpl(
-      const ConstraintData & constraint_data, const Eigen::Index row_id) const
-    {
-      return ::pinocchio::visitors::getRowSparsityPattern(*this, constraint_data, row_id);
-    }
-
-    /// \copydoc RootBase::retrieveCompliance
-    template<typename VectorLike>
-    void retrieveCompliance(
-      const ConstraintData & cdata, const Eigen::MatrixBase<VectorLike> & res) const
-    {
-      return ::pinocchio::visitors::retrieveCompliance(*this, cdata, res);
     }
 
     /// \copydoc RootBase::jacobianMatrixProduct
@@ -338,22 +350,6 @@ namespace pinocchio
         *this, model, data, cdata, input_matrix.derived(), result_matrix.const_cast_derived(), aot);
     }
 
-    /// \copydoc RootBase::appendCouplingConstraintInertias
-    template<
-      template<typename, int> class JointCollectionTpl,
-      typename VectorNLike,
-      ReferenceFrame rf>
-    void appendCouplingConstraintInertiasImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
-      const ReferenceFrameTag<rf> reference_frame) const
-    {
-      ::pinocchio::visitors::appendCouplingConstraintInertias(
-        *this, model, data, cdata, diagonal_constraint_inertia.derived(), reference_frame);
-    }
-
     /// \copydoc RootBase::mapConstraintForceToJointSpace
     template<
       template<typename, int> class JointCollectionTpl,
@@ -395,6 +391,24 @@ namespace pinocchio
         *this, model, data, cdata, joint_motions, joint_generalized_velocity,
         constraint_motions.const_cast_derived(), reference_frame);
     }
+
+    /// \copydoc RootBase::appendCouplingConstraintInertias
+    template<
+      template<typename, int> class JointCollectionTpl,
+      typename VectorNLike,
+      ReferenceFrame rf>
+    void appendCouplingConstraintInertiasImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
+    {
+      ::pinocchio::visitors::appendCouplingConstraintInertias(
+        *this, model, data, cdata, diagonal_constraint_inertia.derived(), reference_frame);
+    }
+
+    // Data handling -----------------
 
     /// \copydoc RootBase::compliance_impl
     ComplianceVectorTypeConstRef compliance_impl() const

@@ -23,7 +23,7 @@ namespace pinocchio
     typedef FullSpaceConeTpl<Scalar, _Options> DualCone;
   };
 
-  ///  \brief Null set containing (0 singleton).
+  /// \brief Null set containing (0 singleton).
   template<typename _Scalar, int _Options>
   struct ZeroConeTpl : ConeBase<ZeroConeTpl<_Scalar, _Options>>
   {

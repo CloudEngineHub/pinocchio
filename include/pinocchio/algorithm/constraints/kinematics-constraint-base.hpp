@@ -29,6 +29,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to Base
     Base & base()
     {
@@ -40,6 +42,8 @@ namespace pinocchio
     {
       return static_cast<const Base &>(*this);
     }
+
+    // Constructors ------------------
 
   protected:
     /// \brief Default constructor
@@ -61,6 +65,8 @@ namespace pinocchio
     {
     }
 
+    // Operators ---------------------
+
     /// \brief Comparison operator
     template<typename OtherDerived>
     bool operator==(const KinematicsConstraintModelBase<OtherDerived> & other) const
@@ -74,6 +80,8 @@ namespace pinocchio
     {
       return !(*this == other);
     }
+
+    // Rigid Body Methods ------------
 
     ///
     /// \brief Map the constraint forces (aka constraint Lagrange multipliers) to the forces

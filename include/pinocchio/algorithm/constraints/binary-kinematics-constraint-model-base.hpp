@@ -59,6 +59,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to Base
     KinematicsBase & base()
     {
@@ -82,6 +84,8 @@ namespace pinocchio
     {
       return static_cast<const BaseCommonParameters &>(*this);
     }
+
+    // Constructors ------------------
 
     /// \brief Default constructor
     BinaryKinematicsConstraintBase()
@@ -151,6 +155,8 @@ namespace pinocchio
     {
     }
 
+    // Operators ---------------------
+
     /// \brief Comparison operator.
     template<typename OtherDerived>
     bool operator==(const BinaryKinematicsConstraintBase<OtherDerived> & other) const
@@ -209,12 +215,6 @@ namespace pinocchio
       res.loop_span_indexes = loop_span_indexes;
     }
 
-  protected:
-    /// \brief Initialize the constraint model based on the kinematics loop of model.
-    template<template<typename, int> class JointCollectionTpl>
-    void init(const ModelTpl<Scalar, Options, JointCollectionTpl> & model);
-
-  public:
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
@@ -237,6 +237,16 @@ namespace pinocchio
       return colwise_span_indexes;
     }
 
+  protected:
+    // ------------------------------
+    // PROTECTED METHODS
+    // ------------------------------
+
+    /// \brief Initialize the constraint model based on the kinematics loop of model.
+    template<template<typename, int> class JointCollectionTpl>
+    void init(const ModelTpl<Scalar, Options, JointCollectionTpl> & model);
+
+  public:
     // ------------------------------
     // MEMBERS
     // ------------------------------

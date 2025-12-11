@@ -13,7 +13,7 @@ namespace pinocchio
 {
 
   ///
-  ///  \brief Data structure associated with FrameConstraint
+  /// \brief Data structure associated with FrameConstraint
   ///
   template<typename Derived>
   struct FrameConstraintDataBase : ConstraintDataBase<Derived>
@@ -44,6 +44,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to Base
     Base & base()
     {
@@ -55,6 +57,8 @@ namespace pinocchio
     {
       return static_cast<const Base &>(*this);
     }
+
+    // Constructors ------------------
 
     /// \brief Default constructor
     FrameConstraintDataBase()
@@ -89,6 +93,8 @@ namespace pinocchio
     {
       PINOCCHIO_UNUSED_VARIABLE(constraint_model);
     }
+
+    // Operators ---------------------
 
     /// \brief Comparison operator
     bool operator==(const FrameConstraintDataBase & other) const

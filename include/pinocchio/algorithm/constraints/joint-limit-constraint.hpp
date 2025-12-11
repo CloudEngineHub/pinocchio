@@ -163,6 +163,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to Base
     Base & base()
     {
@@ -186,6 +188,8 @@ namespace pinocchio
     {
       return static_cast<const BaseCommonParameters &>(*this);
     }
+
+    // Constructors ------------------
 
     /// \brief Default constructor
     JointLimitConstraintModelTpl()
@@ -240,6 +244,8 @@ namespace pinocchio
     {
       init(model, activable_joints, lb, ub, margin);
     }
+
+    // Operators ---------------------
 
     /// \brief Cast operator
     template<typename NewScalar>
@@ -324,7 +330,8 @@ namespace pinocchio
       return *this;
     }
 
-    /// Specialized accessors
+    /// Specialized accessors --------
+
     /// \copydoc selected_joints
     const JointIndexVector & getSelectedJoints() const
     {
@@ -438,7 +445,7 @@ namespace pinocchio
 
     // Size Management ---------------
 
-    /// \copydoc RootBase::size
+    /// \copydoc RootBase::maxResidualSizeImpl
     int maxResidualSizeImpl() const
     {
       return int(activable_idx_in_selected.size());
@@ -726,6 +733,22 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
+    /// \brief Cast to Base
+    Base & base()
+    {
+      return static_cast<Base &>(*this);
+    }
+
+    /// \brief Const cast to Base
+    const Base & base() const
+    {
+      return static_cast<const Base &>(*this);
+    }
+
+    // Constructors ------------------
+
     /// \brief Default constructor
     JointLimitConstraintDataTpl()
     : constraint_residual(constraint_residual_storage.map())
@@ -775,6 +798,8 @@ namespace pinocchio
       assert(rowise_tangent_map.size() == static_cast<size_t>(constraint_model.getNqReduce()));
     }
 
+    // Operators ---------------------
+
     /// \brief Copy operator
     JointLimitConstraintDataTpl & operator=(const JointLimitConstraintDataTpl & other)
     {
@@ -819,6 +844,8 @@ namespace pinocchio
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
+
+    // General -----------------------
 
     /// \copydoc Base::classname
     static std::string classnameImpl()

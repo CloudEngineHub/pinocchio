@@ -22,7 +22,7 @@ namespace pinocchio
     };
   };
 
-  ///  \brief Box set defined by a lower and an upper bounds [lb;ub].
+  /// \brief Box set defined by a lower and an upper bounds [lb;ub].
   ///  This operator does not own any data.
   ///  Instead, it points to the data owned by some other struct.
   ///  Creating and copying an instance of this struct is free.

@@ -30,6 +30,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to Base
     Base & base()
     {
@@ -42,6 +44,7 @@ namespace pinocchio
       return static_cast<const Base &>(*this);
     }
 
+    // Constructors ------------------
   protected:
     /// \brief Default constructor
     /// Protected so can't be used
@@ -57,6 +60,8 @@ namespace pinocchio
     {
     }
 
+    // Operators ---------------------
+
     /// \brief Comparison operator
     template<typename OtherDerived>
     bool operator==(const JointWiseConstraintModelBase<OtherDerived> & other) const
@@ -70,6 +75,8 @@ namespace pinocchio
     {
       return !(*this == other);
     }
+
+    // Rigid Body Methods ------------
 
     /// \brief Map the constraint forces (aka constraint Lagrange multipliers) to the joint torques
     /// associated to each independant constraint. This operation corresponds to the mapping of the
@@ -126,11 +133,9 @@ namespace pinocchio
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
 
-    /// \copydoc Base::mapConstraintForceToJointSpace(const ModelTpl<Scalar, Options,
-    /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> , const
-    /// ConstraintData &, const Eigen::MatrixBase<ConstraintForceLike> &,
-    /// std::vector<ForceTpl<Scalar, Options>, ForceAllocator> &, const
-    /// Eigen::MatrixBase<JointTorquesLike> &,ReferenceFrameTag<rf>)
+    // Methods for algorithms --------
+
+    /// \copydoc Base::mapConstraintForceToJointSpace
     template<
       template<typename, int> class JointCollectionTpl,
       typename ConstraintForceLike,
@@ -151,12 +156,7 @@ namespace pinocchio
       mapConstraintForceToJointTorques(model, data, cdata, constraint_forces, joint_torques);
     }
 
-    ///\copydoc Base::mapJointSpaceToConstraintMotion(const ModelTpl<Scalar, Options,
-    /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> , const
-    /// ConstraintData &,
-    /// std::vector<MotionTpl<Scalar, Options>, MotionAllocator> &, const
-    /// Eigen::MatrixBase<JointMotionsLike> &, const Eigen::MatrixBase<VectorLike>
-    /// &,ReferenceFrameTag<rf>)
+    /// \copydoc Base::mapJointSpaceToConstraintMotion
     template<
       template<typename, int> class JointCollectionTpl,
       typename MotionAllocator,
@@ -177,7 +177,9 @@ namespace pinocchio
       mapJointMotionsToConstraintMotion(
         model, data, cdata, joint_generalized_velocity, constraint_motions.const_cast_derived());
     }
+
   }; // struct JointWiseConstraintModelBase
+
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_constraints_jointwise_constraint_base_hpp__

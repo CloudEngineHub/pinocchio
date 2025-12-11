@@ -86,6 +86,10 @@ namespace pinocchio
     m_compliance = ComplianceVectorType::Zero(maxResidualSize());
   }
 
+  // -------------------------------
+  // IMPLEMENTATIONS OF BASE METHODS
+  // -------------------------------
+
   template<typename Scalar, int Options>
   template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
   void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianImpl(
@@ -189,38 +193,6 @@ namespace pinocchio
   template<typename Scalar, int Options>
   template<
     template<typename, int> class JointCollectionTpl,
-    typename VectorNLike,
-    ReferenceFrame rf>
-  void JointFrictionConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertiasImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const ConstraintData & cdata,
-    const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
-    const ReferenceFrameTag<rf> reference_frame) const
-  {
-    PINOCCHIO_UNUSED_VARIABLE(cdata);
-    PINOCCHIO_UNUSED_VARIABLE(reference_frame);
-
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      diagonal_constraint_inertia.size(), residualSize(cdata),
-      "The diagonal_constraint_inertia is of wrong size.");
-
-    Eigen::Index row_id = 0;
-    for (const JointIndex joint_id : active_joints)
-    {
-      const auto joint_nv = model.nvs[joint_id];
-      const auto joint_diagonal_constraint_inertia =
-        diagonal_constraint_inertia.segment(row_id, joint_nv);
-
-      data.joint_apparent_inertia[joint_id].diagonal() += joint_diagonal_constraint_inertia;
-
-      row_id += joint_nv;
-    }
-  }
-
-  template<typename Scalar, int Options>
-  template<
-    template<typename, int> class JointCollectionTpl,
     typename ConstraintForcesLike,
     typename JointTorquesLike>
   void JointFrictionConstraintModelTpl<Scalar, Options>::mapConstraintForceToJointTorquesImpl(
@@ -269,6 +241,38 @@ namespace pinocchio
       const auto row_id = active_dofs[dof_id];
 
       constraint_motions.row(Eigen::Index(dof_id)) = joint_motions.row(row_id);
+    }
+  }
+
+  template<typename Scalar, int Options>
+  template<
+    template<typename, int> class JointCollectionTpl,
+    typename VectorNLike,
+    ReferenceFrame rf>
+  void JointFrictionConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertiasImpl(
+    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ConstraintData & cdata,
+    const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
+    const ReferenceFrameTag<rf> reference_frame) const
+  {
+    PINOCCHIO_UNUSED_VARIABLE(cdata);
+    PINOCCHIO_UNUSED_VARIABLE(reference_frame);
+
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(
+      diagonal_constraint_inertia.size(), residualSize(cdata),
+      "The diagonal_constraint_inertia is of wrong size.");
+
+    Eigen::Index row_id = 0;
+    for (const JointIndex joint_id : active_joints)
+    {
+      const auto joint_nv = model.nvs[joint_id];
+      const auto joint_diagonal_constraint_inertia =
+        diagonal_constraint_inertia.segment(row_id, joint_nv);
+
+      data.joint_apparent_inertia[joint_id].diagonal() += joint_diagonal_constraint_inertia;
+
+      row_id += joint_nv;
     }
   }
 

@@ -64,7 +64,7 @@ namespace pinocchio
   };
 
   ///
-  ///  \brief Contact model structure containg all the info describing the rigid contact model
+  /// \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct PointContactModelTpl : PointConstraintModelBase<PointContactModelTpl<_Scalar, _Options>>
@@ -90,6 +90,12 @@ namespace pinocchio
 
     using RootBase::classname;
 
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    // CRTP related ------------------
+
     /// \brief Cast to Base
     Base & base()
     {
@@ -101,6 +107,8 @@ namespace pinocchio
     {
       return static_cast<const Base &>(*this);
     }
+
+    // Constructors ------------------
 
     ///
     /// \brief Default constructor
@@ -133,7 +141,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor from joint1_id and placement.
+    /// \brief Contructor from joint1_id and placement.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -181,6 +189,8 @@ namespace pinocchio
     {
     }
 
+    // Operators ---------------------
+
     /// \brief Cast operator
     template<typename NewScalar>
     typename CastType<NewScalar, PointContactModelTpl>::type cast() const
@@ -192,7 +202,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Comparison operator
+    /// \brief Comparison operator
     ///
     /// \param[in] other Other PointContactModelTpl to compare with.
     ///
@@ -205,7 +215,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Oposite of the comparison operator.
+    /// \brief Oposite of the comparison operator.
     ///
     /// \param[in] other Other PointContactModelTpl to compare with.
     ///
@@ -216,6 +226,8 @@ namespace pinocchio
     {
       return !(*this == other);
     }
+
+    /// Specialized accessors --------
 
     /// \brief Get the friction coefficient of this contact constraint.
     Scalar getFriction() const
@@ -231,17 +243,11 @@ namespace pinocchio
       m_friction = friction;
     }
 
-    /// \copydoc RootBase::createData
-    ConstraintData createDataImpl() const
-    {
-      return ConstraintData(*this);
-    }
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
 
-    /// \copydoc RootBase::set
-    ConstraintSet setImpl() const
-    {
-      return ConstraintSet(m_friction);
-    }
+    // General -----------------------
 
     /// \copydoc RootBase::classname
     static std::string classnameImpl()
@@ -255,13 +261,27 @@ namespace pinocchio
       return classname();
     }
 
+    /// \copydoc RootBase::createData
+    ConstraintData createDataImpl() const
+    {
+      return ConstraintData(*this);
+    }
+
+    // Methods for algorithms --------
+
+    /// \copydoc RootBase::set
+    ConstraintSet setImpl() const
+    {
+      return ConstraintSet(m_friction);
+    }
+
   protected:
     Scalar m_friction = Scalar(0.5);
 
   }; // struct PointContactModelTpl<_Scalar,_Options>
 
   ///
-  ///  \brief Contact model structure containg all the info describing the rigid contact model
+  /// \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct PointContactDataTpl : PointConstraintDataBase<PointContactDataTpl<_Scalar, _Options>>
@@ -286,6 +306,8 @@ namespace pinocchio
     // METHODS SPECIFIC TO CLASS
     // -------------------------------
 
+    // CRTP related ------------------
+
     /// \brief Cast to base class
     Base & base()
     {
@@ -298,6 +320,8 @@ namespace pinocchio
       return static_cast<const Base &>(*this);
     }
 
+    // Constructors ------------------
+
     /// \brief Default constructor
     PointContactDataTpl()
     {
@@ -308,6 +332,8 @@ namespace pinocchio
     : Base(constraint_model)
     {
     }
+
+    // Operators ---------------------
 
     /// \brief Comparison operator
     bool operator==(const PointContactDataTpl & other) const
