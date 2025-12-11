@@ -43,8 +43,8 @@ bool within(const T & elt, const std::vector<T> & vec)
 template<typename Matrix>
 bool within(const typename Matrix::Scalar & elt, const Eigen::MatrixBase<Matrix> & mat)
 {
-  for (DenseIndex i = 0; i < mat.rows(); ++i)
-    for (DenseIndex j = 0; j < mat.rows(); ++j)
+  for (Eigen::Index i = 0; i < mat.rows(); ++i)
+    for (Eigen::Index j = 0; j < mat.rows(); ++j)
     {
       if (elt == mat(i, j))
         return true;
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     J_LF_LOCAL = -J6_LF_LOCAL.middleRows<3>(SE3::LINEAR);
     J_LF_LOCAL += cross(cd_LF.constraint_position_error, J6_LF_LOCAL.middleRows<3>(SE3::ANGULAR));
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(
         J_RF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero() != cm_RF.colwise_joint1_sparsity[k]);
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     J_clm_LOCAL +=
       cross(cld_RF_LF.constraint_position_error, J6_RF_LOCAL.middleRows<3>(SE3::ANGULAR));
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(J_clm_LOCAL.col(k).isZero(0) != within(k, clm_RF_LF.colwise_span_indexes));
     }

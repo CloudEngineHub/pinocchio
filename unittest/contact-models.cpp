@@ -38,8 +38,8 @@ bool within(const T & elt, const std::vector<T> & vec)
 template<typename Matrix>
 bool within(const typename Matrix::Scalar & elt, const Eigen::MatrixBase<Matrix> & mat)
 {
-  for (DenseIndex i = 0; i < mat.rows(); ++i)
-    for (DenseIndex j = 0; j < mat.rows(); ++j)
+  for (Eigen::Index i = 0; i < mat.rows(); ++i)
+    for (Eigen::Index j = 0; j < mat.rows(); ++j)
     {
       if (elt == mat(i, j))
         return true;
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       model, data, cm_LF_LOCAL.joint1_id, cm_LF_LOCAL.joint1_placement, cm_LF_LOCAL.reference_frame,
       J_LF_LOCAL);
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(J_RF_LOCAL.col(k).isZero() != cm_RF_LOCAL.colwise_joint1_sparsity[k]);
       BOOST_CHECK(J_LF_LOCAL.col(k).isZero() != cm_LF_LOCAL.colwise_joint1_sparsity[k]);
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     const SE3 c1Mc2 = oMc1.actInv(oMc2);
     const Data::Matrix6x J_clm_LOCAL = J_RF_LOCAL - c1Mc2.toActionMatrix() * J_LF_LOCAL;
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       if (!within(k, clm_RF_LF_LOCAL.colwise_span_indexes))
         BOOST_CHECK(J_clm_LOCAL.col(k).isZero());
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     getFrameJacobian(
       model, data, cm_LF_LWA.joint1_id, cm_LF_LWA.joint1_placement, LOCAL_WORLD_ALIGNED, J_LF_LWA);
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(J_RF_LWA.col(k).isZero() != cm_RF_LWA.colwise_joint1_sparsity[k]);
       BOOST_CHECK(J_LF_LWA.col(k).isZero() != cm_LF_LWA.colwise_joint1_sparsity[k]);
@@ -315,7 +315,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     const Data::Matrix6x J_clm_LWA =
       oMc1_lwa.toActionMatrix() * J_RF_LOCAL - oMc2_lwa.toActionMatrix() * J_LF_LOCAL;
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       if (!within(k, clm_RF_LF_LWA.colwise_span_indexes))
         BOOST_CHECK(J_clm_LWA.col(k).isZero());
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       model, data, cm_LF_LOCAL.joint1_id, cm_LF_LOCAL.joint1_placement, cm_LF_LOCAL.reference_frame,
       J_LF_LOCAL);
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(
         J_RF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero()
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     const Data::Matrix3x J_clm_LOCAL = J_RF_LOCAL.middleRows<3>(SE3::LINEAR)
                                        - c1Mc2.rotation() * J_LF_LOCAL.middleRows<3>(SE3::LINEAR);
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(J_clm_LOCAL.col(k).isZero(0) != within(k, clm_RF_LF_LOCAL.colwise_span_indexes));
     }
@@ -447,7 +447,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     getFrameJacobian(
       model, data, cm_LF_LWA.joint1_id, cm_LF_LWA.joint1_placement, LOCAL_WORLD_ALIGNED, J_LF_LWA);
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(
         J_RF_LWA.middleRows<3>(SE3::LINEAR).col(k).isZero()
@@ -467,7 +467,7 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       (oMc1_lwa.toActionMatrix() * J_RF_LOCAL - oMc2_lwa.toActionMatrix() * J_LF_LOCAL)
         .middleRows<3>(Motion::LINEAR);
 
-    for (DenseIndex k = 0; k < model.nv; ++k)
+    for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(J_clm_LWA.col(k).isZero(0) != within(k, clm_RF_LF_LWA.colwise_span_indexes));
     }
