@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2016-2025 CNRS INRIA
+// Copyright (c) 2016-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 //
 
 #ifndef __pinocchio_container_aligned_vector_hpp__
