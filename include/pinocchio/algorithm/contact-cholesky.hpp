@@ -859,6 +859,32 @@ namespace pinocchio
       res_.transpose().template triangularView<Eigen::StrictlyLower>();
   }
 
+  template<typename Scalar, int Options>
+  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::EigenStorageVector::MapType
+  ContactCholeskyDecompositionTpl<Scalar, Options>::getCompliance() const
+  {
+    return compliance;
+  }
+
+  template<typename Scalar, int Options>
+  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::EigenStorageVector::MapType
+  ContactCholeskyDecompositionTpl<Scalar, Options>::getDamping() const
+  {
+    return damping;
+  }
+
+  template<typename Scalar, int Options>
+  Eigen::Index ContactCholeskyDecompositionTpl<Scalar, Options>::size() const
+  {
+    return D.size();
+  }
+
+  template<typename Scalar, int Options>
+  Eigen::Index ContactCholeskyDecompositionTpl<Scalar, Options>::constraintDim() const
+  {
+    return size() - nv;
+  }
+
   PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 } // namespace pinocchio
 

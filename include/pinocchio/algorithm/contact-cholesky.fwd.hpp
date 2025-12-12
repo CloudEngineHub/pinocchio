@@ -459,10 +459,7 @@ namespace pinocchio
     ///
     /// \brief Returns the current compliance vector.
     ///
-    const typename EigenStorageVector::MapType getCompliance() const
-    {
-      return compliance;
-    }
+    const typename EigenStorageVector::MapType getCompliance() const;
 
     ///
     /// \brief Update the damping terms on the upper left block part of the KKT matrix. The damping
@@ -492,23 +489,14 @@ namespace pinocchio
     ///
     /// \brief Returns the current damping vector.
     ///
-    const typename EigenStorageVector::MapType getDamping() const
-    {
-      return damping;
-    }
+    const typename EigenStorageVector::MapType getDamping() const;
 
-    /// \brief Size of the decomposition
-    Eigen::Index size() const
-    {
-      return D.size();
-    }
+    /// \brief Size of the decomposition.
+    Eigen::Index size() const;
 
     /// \brief Returns the total dimension of the constraints contained in the Cholesky
-    /// factorization
-    Eigen::Index constraintDim() const
-    {
-      return size() - nv;
-    }
+    /// factorization.
+    Eigen::Index constraintDim() const;
 
     ///
     ///  \brief Computes the solution of \f$ A x = b \f$ where *this is the Cholesky decomposition
