@@ -66,7 +66,12 @@ namespace pinocchio
               return self.residualSize(cdata);
             },
             bp::args("self", "constraint_data"), "Constraint state size.")
-          .def("set", &Self::set, "Constraint set.")
+          .def(
+            "set",
+            +[](const Self & self, const ConstraintData & cdata) -> ConstraintSet {
+              return self.set(cdata);
+            },
+            bp::args("self", "constraint_data"), "Constraint set.")
           .def(
             "retrieveCompliance",
             bp::make_function(

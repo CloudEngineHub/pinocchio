@@ -495,7 +495,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   constraint_models[0].setFrictionLowerLimit(Eigen::VectorXd::Constant(6, -1.));
   constraint_models[0].setFrictionUpperLimit(Eigen::VectorXd::Constant(6, +1.));
-  const auto box_set = constraint_models[0].set();
+  const auto box_set = constraint_models[0].set(constraint_datas[0]);
 
   const Eigen::VectorXd v_free = v0 + dt * aba(model, data, q0, v0, tau0, Convention::WORLD);
 

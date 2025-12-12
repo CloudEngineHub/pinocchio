@@ -90,7 +90,7 @@ namespace pinocchio
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
         const auto constraint_size = cmodel.residualSize(cdata);
 
-        const auto cone = cmodel.set();
+        const auto cone = cmodel.set(cdata);
         auto lambda_segment = lambda.segment(row_id, constraint_size);
         const Vector3 lambda_c_previous = lambda_segment;
 

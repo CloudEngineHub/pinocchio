@@ -62,6 +62,7 @@ namespace pinocchio
     template<typename ConstraintModel>
     static void algo(
       const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+      const typename ConstraintModel::ConstraintData & cdata,
       const Scalar over_relax_value,
       const Eigen::EigenBase<BlockType> & G_block,
       ImpulseType & impulse,
@@ -73,7 +74,7 @@ namespace pinocchio
       typedef typename ConstraintModel::ConstraintSet ConstraintSet;
 
       // TODO(jcarpent): change cmodel.derived().set() -> cmodel.set()
-      auto set = cmodel.derived().set();
+      auto set = cmodel.set(cdata);
       PGSConstraintProjectionStep<ConstraintSet> step(over_relax_value, set);
       step.project(G_block.derived(), impulse.const_cast_derived(), velocity.const_cast_derived());
       step.computeFeasibility(impulse, velocity);
@@ -87,18 +88,20 @@ namespace pinocchio
     template<typename ConstraintModel>
     void run(
       const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+      const typename ConstraintModel::ConstraintData & cdata,
       const Eigen::EigenBase<BlockType> & G_block,
       ImpulseType & impulse,
       VelocityType & velocity)
     {
       algo(
-        cmodel.derived(), this->over_relax_value, G_block.derived(), impulse, velocity,
-        this->complementarity, this->primal_feasibility, this->dual_feasibility);
+        cmodel.derived(), cdata.derived(), this->over_relax_value, G_block.derived(), impulse,
+        velocity, this->complementarity, this->primal_feasibility, this->dual_feasibility);
     }
 
     template<int Options, template<typename S, int O> class ConstraintCollectionTpl>
     void run(
       const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const pinocchio::ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
       const Eigen::EigenBase<BlockType> & G_block,
       ImpulseType & impulse,
       VelocityType & velocity)
@@ -106,7 +109,7 @@ namespace pinocchio
       ArgsType args(
         this->over_relax_value, G_block.derived(), impulse, velocity, this->complementarity,
         this->primal_feasibility, this->dual_feasibility);
-      this->run(cmodel.derived(), args);
+      this->run(cmodel.derived(), cdata.derived(), args);
     }
   }; // struct PGSConstraintProjectionStepVisitor
 
@@ -639,7 +642,7 @@ namespace pinocchio
           Scalar, decltype(G_block), decltype(impulse), decltype(velocity)>
           Step;
         Step step(settings.over_relaxation);
-        step.run(cmodel, G_block, impulse, velocity);
+        step.run(cmodel, cdata, G_block, impulse, velocity);
 
         sol.complementarity = math::max(sol.complementarity, step.complementarity);
         sol.dual_feasibility = math::max(sol.dual_feasibility, step.dual_feasibility);

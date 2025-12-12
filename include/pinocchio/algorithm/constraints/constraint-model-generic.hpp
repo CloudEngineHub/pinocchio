@@ -223,9 +223,10 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::set
-    boost::blank setImpl() const
+    boost::blank setImpl(const ConstraintData & cdata) const
     {
       static boost::blank val;
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       PINOCCHIO_THROW_PRETTY(
         std::runtime_error, "Set method is not accessible for ConstraintModelTpl.");
       return val;

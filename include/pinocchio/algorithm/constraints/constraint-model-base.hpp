@@ -256,9 +256,9 @@ namespace pinocchio
     }
 
     /// \brief Returns an instance of the associated constraint set operator.
-    ConstraintSet set() const
+    ConstraintSet set(const ConstraintData & cdata) const
     {
-      return derived().setImpl();
+      return derived().setImpl(cdata);
     }
 
     /// \brief Fill the compliance of size residualSize relted to the courant state of the
@@ -541,7 +541,7 @@ namespace pinocchio
 
     // Methods for algorithms --------
     // residualSizeImpl(const cdata)  // Not needed for <= CONSTANT
-    // setImpl()  // Not needed if has_set=False
+    // setImpl(const cdata)  // Not needed if has_set=False
     // retrieveComplianceImpl(cdata, ...)
     // getRowSparsityPatternImpl(const model, const data, const cdata, ...)
     // getRowIndexesImpl(const model, const data, const cdata, ...)
