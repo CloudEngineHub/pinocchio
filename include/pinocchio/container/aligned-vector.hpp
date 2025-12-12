@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2024 CNRS INRIA
+// Copyright (c) 2016-2025 CNRS INRIA
 //
 
 #ifndef __pinocchio_container_aligned_vector_hpp__
@@ -10,7 +10,10 @@
 
 #define PINOCCHIO_ALIGNED_STD_VECTOR(Type) ::pinocchio::container::aligned_vector<Type>
 
-#define PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(T) ::pinocchio::container::aligned_vector<T>
+#define PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(T)                                               \
+  PINOCCHIO_PRAGMA(message "warning: PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR is deprecated, "    \
+                           "use PINOCCHIO_ALIGNED_STD_VECTOR instead.")                            \
+  PINOCCHIO_ALIGNED_STD_VECTOR(T)
 
 namespace pinocchio
 {
