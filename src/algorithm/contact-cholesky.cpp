@@ -34,6 +34,7 @@ namespace pinocchio
     context::RigidConstraintData,
     typename context::RigidConstraintDataVector::allocator_type>(
     const context::Model &,
+    const context::Data &,
     const context::RigidConstraintModelVector &,
     const context::RigidConstraintDataVector &);
 

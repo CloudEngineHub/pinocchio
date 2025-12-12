@@ -40,6 +40,8 @@ namespace pinocchio
       typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
       typedef typename traits<Self>::JacobianMatrixType JacobianMatrixType;
       typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+      typedef typename Self::BooleanVector BooleanVector;
+      typedef typename Self::EigenIndexVector EigenIndexVector;
 
     public:
       template<class PyClass>
@@ -64,15 +66,6 @@ namespace pinocchio
               return self.residualSize(cdata);
             },
             bp::args("self", "constraint_data"), "Constraint state size.")
-          .def(
-            "getRowSparsityPattern", &Self::getRowSparsityPattern,
-            bp::args("self", "constraint_data", "row_id"),
-            bp::return_value_policy<bp::copy_const_reference>(),
-            "Active colwise sparsity associated with a given row.")
-          .def(
-            "getRowIndexes", &Self::getRowIndexes, bp::args("self", "constraint_data", "row_id"),
-            bp::return_value_policy<bp::copy_const_reference>(),
-            "Vector of the active indexes associated with a given row.")
           .def("set", &Self::set, "Constraint set.")
           .def(
             "retrieveCompliance",
@@ -83,6 +76,27 @@ namespace pinocchio
                 return res;
               }),
             "Vector of the compliance for the constraint in a given state.")
+          .def(
+            "getRowSparsityPattern",
+            bp::make_function(
+              +[](
+                 const Self & self, const Model & model, const Data & data,
+                 const ConstraintData & cdata, const Eigen::Index row_id) -> const BooleanVector {
+                const BooleanVector res = self.getRowSparsityPattern(model, data, cdata, row_id);
+                return res;
+              }),
+            "Active colwise sparsity associated with a given row.")
+          .def(
+            "getRowIndexes",
+            bp::make_function(
+              +[](
+                 const Self & self, const Model & model, const Data & data,
+                 const ConstraintData & cdata,
+                 const Eigen::Index row_id) -> const EigenIndexVector {
+                const EigenIndexVector res = self.getRowIndexes(model, data, cdata, row_id);
+                return res;
+              }),
+            "Vector of the active indexes associated with a given row.")
           .def(
             "calc", &calc, bp::args("self", "model", "data", "constraint_data"),
             "Evaluate the constraint values at the current state given by data and store the "

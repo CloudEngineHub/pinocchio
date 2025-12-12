@@ -217,23 +217,9 @@ namespace pinocchio
     // Methods for algorithms --------
 
     /// \copydoc RootBase::residualSize
-    int residualSizeImpl(const ConstraintData & constraint_data) const
+    int residualSizeImpl(const ConstraintData & cdata) const
     {
-      return ::pinocchio::visitors::residualSize(*this, constraint_data);
-    }
-
-    /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector & getRowSparsityPatternImpl(
-      const ConstraintData & constraint_data, const Eigen::Index row_id) const
-    {
-      return ::pinocchio::visitors::getRowSparsityPattern(*this, constraint_data, row_id);
-    }
-
-    /// \copydoc RootBase::getRowIndexes
-    const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & constraint_data, const Eigen::Index row_id) const
-    {
-      return ::pinocchio::visitors::getRowIndexes(*this, constraint_data, row_id);
+      return ::pinocchio::visitors::residualSize(*this, cdata);
     }
 
     /// \copydoc RootBase::set
@@ -251,6 +237,28 @@ namespace pinocchio
       const ConstraintData & cdata, const Eigen::MatrixBase<VectorLike> & res) const
     {
       return ::pinocchio::visitors::retrieveCompliance(*this, cdata, res);
+    }
+
+    /// \copydoc RootBase::getRowSparsityPattern
+    template<template<typename, int> class JointCollectionTpl>
+    const BooleanVector & getRowSparsityPatternImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      return ::pinocchio::visitors::getRowSparsityPattern(*this, model, data, cdata, row_id);
+    }
+
+    /// \copydoc RootBase::getRowIndexes
+    template<template<typename, int> class JointCollectionTpl>
+    const EigenIndexVector & getRowIndexesImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      return ::pinocchio::visitors::getRowIndexes(*this, model, data, cdata, row_id);
     }
 
     /// \copydoc RootBase::calc

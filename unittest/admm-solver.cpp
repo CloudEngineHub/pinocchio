@@ -59,7 +59,7 @@ struct TestBoxTpl
     // cholesky of the Delassus matrix
     crba(model, data, q0, Convention::WORLD);
     ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-    chol.resize(model, constraint_models, constraint_datas);
+    chol.resize(model, data, constraint_models, constraint_datas);
     chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
     const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix();
@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   data.q_in = q0;
   calc(model, data, constraint_models, constraint_datas);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -639,7 +639,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -782,7 +782,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -930,7 +930,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -1069,7 +1069,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -1204,7 +1204,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -1341,7 +1341,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();

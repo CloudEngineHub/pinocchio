@@ -459,24 +459,6 @@ namespace pinocchio
       return int(cdata.active_idx_in_selected.size());
     }
 
-    /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector &
-    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize(cdata));
-      const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
-      return selected_row_sparsity_pattern[idx];
-    }
-
-    /// \copydoc RootBase::getRowIndexes
-    const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize(cdata));
-      const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
-      return selected_row_indexes[idx];
-    }
-
     /// \copydoc RootBase::set
     ConstraintSet setImpl() const
     {
@@ -496,6 +478,36 @@ namespace pinocchio
           Eigen::Index(cdata.active_idx_in_activable[static_cast<size_t>(row_id)]);
         res[row_id] = m_compliance[idx];
       }
+    }
+
+    /// \copydoc RootBase::getRowSparsityPattern
+    template<template<typename, int> class JointCollectionTpl>
+    const BooleanVector & getRowSparsityPatternImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize(cdata));
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
+      return selected_row_sparsity_pattern[idx];
+    }
+
+    /// \copydoc RootBase::getRowIndexes
+    template<template<typename, int> class JointCollectionTpl>
+    const EigenIndexVector & getRowIndexesImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize(cdata));
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
+      return selected_row_indexes[idx];
     }
 
     /// \copydoc RootBase::calc

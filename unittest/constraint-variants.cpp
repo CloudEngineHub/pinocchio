@@ -99,7 +99,8 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
     for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
     {
       BOOST_CHECK(
-        constraint_model.getRowIndexes(constraint_data, row_id) == rcm.getRowIndexes(rcd, row_id));
+        constraint_model.getRowIndexes(model, data, constraint_data, row_id)
+        == rcm.getRowIndexes(model, data, rcd, row_id));
     }
   }
 
@@ -109,8 +110,8 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
     for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
     {
       BOOST_CHECK(
-        constraint_model.getRowSparsityPattern(constraint_data, row_id)
-        == rcm.getRowSparsityPattern(rcd, row_id));
+        constraint_model.getRowSparsityPattern(model, data, constraint_data, row_id)
+        == rcm.getRowSparsityPattern(model, data, rcd, row_id));
     }
   }
 

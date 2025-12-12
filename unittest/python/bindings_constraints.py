@@ -336,20 +336,14 @@ class TestJointsAlgo(TestCase):
             for i in range(gcm.residualSize(gcd)):
                 self.assertTrue(
                     np.all(
-                        np.where(gcm.getRowSparsityPattern(gcd, i))[0]
-                        == np.array(gcm.getRowIndexes(gcd, i))
+                        np.where(
+                            gcm.getRowSparsityPattern(self.model, self.data, gcd, i)
+                        )[0]
+                        == np.array(gcm.getRowIndexes(self.model, self.data, gcd, i))
                     )
                 )
                 self.assertTrue(
-                    np.all(
-                        np.where(gcm.getRowSparsityPattern(gcd, i))[0]
-                        == np.array(gcm.getRowIndexes(gcd, i))
-                    )
-                )
-                self.assertTrue(
-                    set(gcm.getRowIndexes(gcd, i))
-                    <= set(gcm.getRowIndexes(gcd, i))
-                    <= ref_set
+                    set(gcm.getRowIndexes(self.model, self.data, gcd, i)) <= ref_set
                 )
                 self.assertTrue(gcm.residualSize(gcd) <= gcm.maxResidualSize())
             dummy_compliance = 0.1 * np.ones(gcm.maxResidualSize())

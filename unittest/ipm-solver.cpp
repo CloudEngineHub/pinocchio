@@ -115,7 +115,7 @@ struct TestBoxTpl
     // Cholesky of the Delassus matrix
     crba(model, data, q0, Convention::WORLD);
     ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-    chol.resize(model, constraint_models, constraint_datas);
+    chol.resize(model, data, constraint_models, constraint_datas);
     chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
     const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix();
     auto delassus_dense = chol.getDelassusCholeskyExpression().dense();

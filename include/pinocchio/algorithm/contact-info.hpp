@@ -405,19 +405,31 @@ namespace pinocchio
     }
 
     /// \brief Returns the colwise sparsity associated with a given row
-    const BooleanVector &
-    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
+    template<template<typename, int> class JointCollectionTpl>
+    const BooleanVector & getRowSparsityPatternImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_sparsity;
     }
 
     /// \brief Returns the vector of the indexes associated with a given row
-    const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
+    template<template<typename, int> class JointCollectionTpl>
+    const EigenIndexVector & getRowIndexesImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
       return colwise_span_indexes;
     }

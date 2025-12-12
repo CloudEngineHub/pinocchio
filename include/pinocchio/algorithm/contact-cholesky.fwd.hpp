@@ -169,6 +169,7 @@ namespace pinocchio
       class ConstraintDataAllocator>
     PINOCCHIO_DEPRECATED void allocate(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
+      const DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
@@ -191,6 +192,7 @@ namespace pinocchio
       class ConstraintDataAllocator>
     void resize(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
+      const DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 

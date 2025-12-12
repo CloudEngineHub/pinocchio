@@ -34,7 +34,7 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    data.contact_chol.resize(model, constraint_models, constraint_datas);
+    data.contact_chol.resize(model, data, constraint_models, constraint_datas);
     data.primal_dual_contact_solution.resize(data.contact_chol.size());
     data.primal_rhs_contact.resize(data.contact_chol.constraintDim());
 
