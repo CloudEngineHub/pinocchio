@@ -72,44 +72,42 @@ namespace pinocchio
       return model;
     }
 
-    PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+    PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
     buildBilateralConstraintModelsFromMJCF(Model & model, const bp::object & filename)
     {
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
       point_anchor_constraint_models;
       ::pinocchio::mjcf::buildConstraintModelsFromXML(
         path(filename), model, point_anchor_constraint_models);
       return point_anchor_constraint_models;
     }
 
-    PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+    PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
     &buildBilateralConstraintModelsFromMJCF(
       Model & model,
       const bp::object & filename,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
-        & point_anchor_constraint_models)
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models)
     {
       ::pinocchio::mjcf::buildConstraintModelsFromXML(
         path(filename), model, point_anchor_constraint_models);
       return point_anchor_constraint_models;
     }
 
-    PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+    PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
     buildFrameAnchorConstraintModelsFromMJCF(Model & model, const bp::object & filename)
     {
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
       frame_anchor_constraint_models;
       ::pinocchio::mjcf::buildConstraintModelsFromXML(
         path(filename), model, frame_anchor_constraint_models);
       return frame_anchor_constraint_models;
     }
 
-    PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+    PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
     &buildFrameAnchorConstraintModelsFromMJCF(
       Model & model,
       const bp::object & filename,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
-        & frame_anchor_constraint_models)
+      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) & frame_anchor_constraint_models)
     {
       ::pinocchio::mjcf::buildConstraintModelsFromXML(
         path(filename), model, frame_anchor_constraint_models);
@@ -119,10 +117,8 @@ namespace pinocchio
     void buildAllConstraintModelsFromMJCF(
       Model & model,
       const bp::object & filename,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
-        & point_anchor_constraint_models,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
-        & frame_anchor_constraint_models)
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models,
+      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) & frame_anchor_constraint_models)
     {
       ::pinocchio::mjcf::buildConstraintModelsFromXML(
         path(filename), model, point_anchor_constraint_models, frame_anchor_constraint_models);
@@ -185,16 +181,16 @@ namespace pinocchio
 
       bp::def(
         "buildBilateralConstraintModelsFromMJCF",
-        static_cast<PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) (*)(
+        static_cast<PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) (*)(
           Model &, const bp::object &)>(pinocchio::python::buildBilateralConstraintModelsFromMJCF),
         bp::args("mjcf_filename", "model"),
         "Parse the MJCF file given in input and return a list of pinocchio CosntraintModel.");
 
       bp::def(
         "buildBilateralConstraintModelsFromMJCF",
-        static_cast < PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+        static_cast < PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
           & (*)(Model &, const bp::object &,
-                PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) &)
+                PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) &)
               > (pinocchio::python::buildBilateralConstraintModelsFromMJCF),
         bp::args("mjcf_filename", "model", "point_anchor_constraint_models"),
         "Parse the MJCF file given in input and return a list of pinocchio CosntraintModel.",
@@ -202,7 +198,7 @@ namespace pinocchio
 
       bp::def(
         "buildFrameAnchorConstraintModelsFromMJCF",
-        static_cast<PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel) (*)(
+        static_cast<PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) (*)(
           Model &, const bp::object &)>(
           pinocchio::python::buildFrameAnchorConstraintModelsFromMJCF),
         bp::args("mjcf_filename", "model"),
@@ -210,9 +206,9 @@ namespace pinocchio
 
       bp::def(
         "buildFrameAnchorConstraintModelsFromMJCF",
-        static_cast < PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+        static_cast < PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
           & (*)(Model &, const bp::object &,
-                PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel) &)
+                PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) &)
               > (pinocchio::python::buildFrameAnchorConstraintModelsFromMJCF),
         bp::args("mjcf_filename", "model", "frame_anchor_constraint_models"),
         "Parse the MJCF file given in input and return a list of pinocchio CosntraintModel.",

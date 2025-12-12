@@ -38,8 +38,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_code_generation)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models_6D3D;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas_6D3D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models_6D3D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas_6D3D;
 
   RigidConstraintModel ci_RF(CONTACT_6D, model.getJointId(RF), LOCAL);
   contact_models_6D3D.push_back(ci_RF);

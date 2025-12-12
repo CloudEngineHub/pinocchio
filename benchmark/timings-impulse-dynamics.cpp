@@ -72,12 +72,12 @@ struct ContactFixture : ModelFixture
   std::unique_ptr<pinocchio::RigidConstraintModel> ci_RF_6D;
   std::unique_ptr<pinocchio::RigidConstraintModel> ci_LF_6D;
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintModel) contact_models_empty;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintData) contact_data_empty;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintModel) contact_models_6D;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintData) contact_data_6D;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintModel) contact_models_6D6D;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintData) contact_data_6D6D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_empty;
+  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_data_empty;
+  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_6D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_data_6D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_6D6D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_data_6D6D;
 
   pinocchio::ContactCholeskyDecomposition contact_chol_empty;
   pinocchio::ContactCholeskyDecomposition contact_chol_6D;
@@ -100,8 +100,8 @@ PINOCCHIO_DONT_INLINE static void impulseDynamicsCall(
   pinocchio::Data & data,
   const Eigen::VectorXd & q,
   const Eigen::VectorXd & v,
-  const PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintModel) & contact_models,
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintData) & contact_data,
+  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models,
+  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data,
   double r_coeff,
   const pinocchio::ProximalSettings & prox_settings)
 {

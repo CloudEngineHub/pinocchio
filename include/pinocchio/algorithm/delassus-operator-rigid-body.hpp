@@ -71,8 +71,8 @@ namespace pinocchio
             type>,
       InnerConstraintData>::type ConstraintData;
 
-    typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConstraintModel) ConstraintModelVector;
-    typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConstraintData) ConstraintDataVector;
+    typedef PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintModel) ConstraintModelVector;
+    typedef PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintData) ConstraintDataVector;
 
     typedef const Vector & getDampingReturnType;
   };
@@ -112,7 +112,7 @@ namespace pinocchio
 
     typedef typename Data::Force Force;
     typedef typename Data::VectorXs VectorXs;
-    typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(Force) ForceVector;
+    typedef PINOCCHIO_ALIGNED_STD_VECTOR(Force) ForceVector;
 
     typedef typename traits<Self>::ConstraintModel ConstraintModel;
     typedef typename traits<Self>::InnerConstraintModel InnerConstraintModel;

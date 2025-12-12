@@ -142,7 +142,7 @@ namespace pinocchio
 
         typedef pinocchio::urdf::details::UrdfVisitor UrdfVisitor;
         UrdfVisitor & urdfVisitor;
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ContactDetails) contact_details;
+        PINOCCHIO_ALIGNED_STD_VECTOR(ContactDetails) contact_details;
 
         SdfGraph(UrdfVisitor & urdfVisitor)
         : urdfVisitor(urdfVisitor)
@@ -264,10 +264,10 @@ namespace pinocchio
         }
 
         static bool existConstraint(
-          const PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ContactDetails) & contact_details,
+          const PINOCCHIO_ALIGNED_STD_VECTOR(ContactDetails) & contact_details,
           const std::string & jointName)
         {
-          for (PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ContactDetails)::const_iterator cm =
+          for (PINOCCHIO_ALIGNED_STD_VECTOR(ContactDetails)::const_iterator cm =
                  std::begin(contact_details);
                cm != std::end(contact_details); ++cm)
           {
@@ -290,11 +290,11 @@ namespace pinocchio
         }
 
         static int getConstraintId(
-          const PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ContactDetails) & contact_details,
+          const PINOCCHIO_ALIGNED_STD_VECTOR(ContactDetails) & contact_details,
           const std::string & jointName)
         {
           std::size_t i = 0;
-          for (PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ContactDetails)::const_iterator cm =
+          for (PINOCCHIO_ALIGNED_STD_VECTOR(ContactDetails)::const_iterator cm =
                  std::begin(contact_details);
                cm != std::end(contact_details); ++cm)
           {
@@ -306,11 +306,11 @@ namespace pinocchio
         }
 
         int getConstraintIdFromChild(
-          const PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ContactDetails) & contact_details,
+          const PINOCCHIO_ALIGNED_STD_VECTOR(ContactDetails) & contact_details,
           const std::string & childName)
         {
           std::size_t i = 0;
-          for (PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ContactDetails)::const_iterator cm =
+          for (PINOCCHIO_ALIGNED_STD_VECTOR(ContactDetails)::const_iterator cm =
                  std::begin(contact_details);
                cm != std::end(contact_details); ++cm)
           {
@@ -634,7 +634,7 @@ namespace pinocchio
         const SdfGraph & graph,
         const urdf::details::UrdfVisitor & visitor,
         const Model & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models);
+        PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models);
 
       /**
        * @brief Find the parent of all elements, the root link, and return it.
@@ -652,7 +652,7 @@ namespace pinocchio
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -698,7 +698,7 @@ namespace pinocchio
       const std::string & xmlStream,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -714,7 +714,7 @@ namespace pinocchio
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -761,7 +761,7 @@ namespace pinocchio
       const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -775,7 +775,7 @@ namespace pinocchio
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
       const std::string & xmlStream,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)
@@ -812,7 +812,7 @@ namespace pinocchio
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models,
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
       const std::string & rootLinkName,
       const std::vector<std::string> & parentGuidance,
       const bool verbose)

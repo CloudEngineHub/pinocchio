@@ -89,8 +89,8 @@ BOOST_AUTO_TEST_CASE(test_6D_unconstrained)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -117,8 +117,8 @@ BOOST_AUTO_TEST_CASE(test_6D_descendants)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -151,8 +151,8 @@ BOOST_AUTO_TEST_CASE(test_6D_descendants)
 BOOST_AUTO_TEST_CASE(test_6D_descendants_reversed)
 {
   Model model;
-  typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) ConstraintModelVector;
-  typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) ConstraintDataVector;
+  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) ConstraintModelVector;
+  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) ConstraintDataVector;
 
   build_trident_model(model);
   Data data(model), data_ref(model);
@@ -240,8 +240,8 @@ BOOST_AUTO_TEST_CASE(test_12D_descendants_redundant_reversed)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -282,8 +282,8 @@ BOOST_AUTO_TEST_CASE(test_6D_different_branches)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -318,8 +318,8 @@ BOOST_AUTO_TEST_CASE(test_12D_coupled_loop_common_link)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = pinocchio::randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -369,8 +369,8 @@ BOOST_AUTO_TEST_CASE(test_24D_coupling_with_double_ground)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = pinocchio::randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -425,8 +425,8 @@ BOOST_AUTO_TEST_CASE(test_6D_consecutive_links)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -460,8 +460,8 @@ BOOST_AUTO_TEST_CASE(test_12D_coupled_on_a_chain)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -504,8 +504,8 @@ BOOST_AUTO_TEST_CASE(test_12D_cross_coupled_on_a_chain)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -546,8 +546,8 @@ BOOST_AUTO_TEST_CASE(test_24D_cross_coupling)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -602,8 +602,8 @@ BOOST_AUTO_TEST_CASE(test_6D_cons_baumgarte)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -666,8 +666,8 @@ BOOST_AUTO_TEST_CASE(test_3D_cons_baumgarte)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = 0 * VectorXd::Random(model.nv);
@@ -732,8 +732,8 @@ BOOST_AUTO_TEST_CASE(test_loop_con_and_ground_con)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -775,8 +775,8 @@ BOOST_AUTO_TEST_CASE(test_loop_con_and_ground_con3D)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -818,8 +818,8 @@ BOOST_AUTO_TEST_CASE(test_loop_con3D_ground_con3D)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);
@@ -861,8 +861,8 @@ BOOST_AUTO_TEST_CASE(test_coupled_3D_6D_loops)
   Data data(model), data_ref(model);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   const VectorXd q = randomConfiguration(model);
   const VectorXd v = VectorXd::Random(model.nv);

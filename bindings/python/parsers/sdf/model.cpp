@@ -25,7 +25,7 @@ namespace pinocchio
       const std::vector<std::string> & parent_guidance)
     {
       Model model;
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) constraint_models;
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) constraint_models;
       ::pinocchio::sdf::buildModel(
         path(filename), model, constraint_models, root_link_name, parent_guidance);
       return bp::make_tuple(model, constraint_models);
@@ -38,7 +38,7 @@ namespace pinocchio
       const std::vector<std::string> & parent_guidance)
     {
       Model model;
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) constraint_models;
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) constraint_models;
       pinocchio::sdf::buildModel(
         path(filename), root_joint, model, constraint_models, root_link_name, parent_guidance);
       return bp::make_tuple(model, constraint_models);
@@ -52,7 +52,7 @@ namespace pinocchio
       const std::vector<std::string> & parent_guidance)
     {
       Model model;
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) constraint_models;
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) constraint_models;
       pinocchio::sdf::buildModel(
         path(filename), root_joint, root_joint_name, model, constraint_models, root_link_name,
         parent_guidance);

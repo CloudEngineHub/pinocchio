@@ -135,10 +135,10 @@ int main(int argc, const char ** argv)
   Data data(model), data_caba(model), data_caba_ref(model);
   VectorXd qmax = Eigen::VectorXd::Ones(model.nq);
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(VectorXd) qs(NBT);
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(VectorXd) qdots(NBT);
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(VectorXd) qddots(NBT);
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(VectorXd) taus(NBT);
+  PINOCCHIO_ALIGNED_STD_VECTOR(VectorXd) qs(NBT);
+  PINOCCHIO_ALIGNED_STD_VECTOR(VectorXd) qdots(NBT);
+  PINOCCHIO_ALIGNED_STD_VECTOR(VectorXd) qddots(NBT);
+  PINOCCHIO_ALIGNED_STD_VECTOR(VectorXd) taus(NBT);
 
   for (size_t i = 0; i < NBT; ++i)
   {
@@ -172,8 +172,8 @@ int main(int argc, const char ** argv)
   // ci_CL4.joint1_placement.setRandom();
   ci_CL4.joint2_placement.setRandom();
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_model_CL;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_data_CL;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_model_CL;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data_CL;
 
   if (case_num >= 0)
   {

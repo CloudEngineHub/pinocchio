@@ -135,8 +135,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_empty)
   //  const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) empty_contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) empty_contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) empty_contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) empty_contact_datas;
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -214,14 +214,14 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_double_init)
   const std::string LF = "lleg6_joint";
 
   // Contact models and data
-  const PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models_empty;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas_empty;
+  const PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models_empty;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas_empty;
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models_6D;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas_6D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models_6D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas_6D;
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models_6D6D;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas_6D6D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models_6D6D;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas_6D6D;
 
   RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL);
   contact_models_6D.push_back(ci_RF);
@@ -279,8 +279,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL)
   //  const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL);
   ci_RF.joint1_placement.setRandom();
   contact_models.push_back(ci_RF);
@@ -404,8 +404,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_3D)
   const std::string RA = "rarm6_joint";
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL);
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
@@ -528,8 +528,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_LOCAL_6D_loop_closure_j1j2)
   const std::string LF = "lleg6_joint";
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) constraint_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) constraint_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)
   constraint_data, constraint_data_fd;
 
   const std::string RA = "rarm5_joint";
@@ -587,8 +587,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   //  const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL_WORLD_ALIGNED);
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
@@ -701,8 +701,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   const std::string RA = "rarm6_joint";
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   RigidConstraintModel ci_RF(CONTACT_6D, model, 0, model.getJointId(RF), LOCAL_WORLD_ALIGNED);
   RigidConstraintModel ci_RF_bis(CONTACT_6D, model, model.getJointId(RF), LOCAL_WORLD_ALIGNED);
@@ -914,14 +914,14 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   }
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models_bis;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas_bis;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models_bis;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas_bis;
 
   contact_models_bis.push_back(ci_RF_bis);
   contact_models_bis.push_back(ci_LF_bis);
   contact_models_bis.push_back(ci_RA_bis);
 
-  for (PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel)::const_iterator it =
+  for (PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel)::const_iterator it =
          contact_models_bis.begin();
        it != contact_models_bis.end(); ++it)
     contact_datas_bis.push_back(RigidConstraintData(*it));
@@ -983,11 +983,10 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   }
 }
 
-PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintData)
-createData(
-  const PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintModel) & contact_models)
+PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData)
+createData(const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models)
 {
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(pinocchio::RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_datas;
   for (size_t k = 0; k < contact_models.size(); ++k)
     contact_datas.push_back(pinocchio::RigidConstraintData(contact_models[k]));
 
@@ -1017,7 +1016,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
   const JointIndex RF_id = model.getJointId(RF);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
 
   RigidConstraintModel ci_RF(CONTACT_6D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setIdentity();
@@ -1026,7 +1025,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
   ci_RF.corrector.Kd = 2. * math::sqrt(ci_RF.corrector.Kp);
   contact_models.push_back(ci_RF);
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)
   contact_datas = createData(contact_models);
   initConstraintDynamics(model, data, contact_models, contact_datas);
   constraintDynamics(model, data, q, v, tau, contact_models, contact_datas);
@@ -1041,7 +1040,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
   const VectorXd q_plus = integrate(model, q, v * dt);
 
   Data data_plus(model);
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)
   contact_datas_plus = createData(contact_models);
   initConstraintDynamics(model, data_plus, contact_models, contact_datas_plus);
   constraintDynamics(model, data_plus, q_plus, v, tau, contact_models, contact_datas_plus);
@@ -1059,7 +1058,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
 
     //    model.gravity.setZero();
     Data data_sim(model);
-    PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
+    PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)
     contact_data_sim = createData(contact_models);
     initConstraintDynamics(model, data_sim, contact_models, contact_data_sim);
 
@@ -1076,7 +1075,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
     ProximalSettings prox_settings(1e-12, mu, 1);
     constraintDynamics(
       model, data_sim, q0, v0, tau, contact_models, contact_data_sim, prox_settings);
-    PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
+    PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)
     contact_data_sim_prev(contact_data_sim);
 
     for (int it = 0; it <= N; it++)
@@ -1128,7 +1127,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_3D)
   const JointIndex RF_id = model.getJointId(RF);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
 
   RigidConstraintModel ci_RF1(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF1.joint1_placement.translation() = SE3::Vector3(0.5, 0.5, -0.5);
@@ -1158,7 +1157,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_3D)
   ci_RF4.corrector.Kd = 2. * math::sqrt(ci_RF4.corrector.Kp);
   contact_models.push_back(ci_RF4);
 
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)
   contact_datas = createData(contact_models);
   ProximalSettings prox_settings(1e-12, mu, 1);
   initConstraintDynamics(model, data, contact_models, contact_datas);
@@ -1176,7 +1175,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_3D)
 
     //    model.gravity.setZero();
     Data data_sim(model);
-    PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
+    PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)
     contact_data_sim = createData(contact_models);
     initConstraintDynamics(model, data_sim, contact_models, contact_data_sim);
 
@@ -1191,7 +1190,7 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_3D)
 
     constraintDynamics(
       model, data_sim, q0, v0, tau, contact_models, contact_data_sim, prox_settings);
-    PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
+    PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)
     contact_data_sim_prev(contact_data_sim);
 
     for (int it = 0; it <= N; it++)
@@ -1240,8 +1239,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   const std::string RA = "rarm6_joint";
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
 
   RigidConstraintModel ci_RF(CONTACT_3D, model, 0, model.getJointId(RF), LOCAL_WORLD_ALIGNED);
   RigidConstraintModel ci_RF_bis(CONTACT_3D, model, model.getJointId(RF), LOCAL_WORLD_ALIGNED);
@@ -1426,14 +1425,14 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_in_contact_specifying_joint2id
   }
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models_bis;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas_bis;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models_bis;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas_bis;
 
   contact_models_bis.push_back(ci_RF_bis);
   contact_models_bis.push_back(ci_LF_bis);
   contact_models_bis.push_back(ci_RA_bis);
 
-  for (PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel)::const_iterator it =
+  for (PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel)::const_iterator it =
          contact_models_bis.begin();
        it != contact_models_bis.end(); ++it)
     contact_datas_bis.push_back(RigidConstraintData(*it));
@@ -1518,9 +1517,8 @@ BOOST_AUTO_TEST_CASE(test_contact_ABA_with_armature)
   VectorXd v = VectorXd::Random(model.nv);
   VectorXd tau = VectorXd::Random(model.nv);
 
-  typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel)
-    RigidConstraintModelVector;
-  typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) RigidConstraintDataVector;
+  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) RigidConstraintModelVector;
+  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) RigidConstraintDataVector;
   const RigidConstraintModelVector empty_rigid_contact_models;
   RigidConstraintDataVector empty_rigid_contact_data;
 
@@ -1593,9 +1591,8 @@ BOOST_AUTO_TEST_CASE(test_contact_ABA_6D)
   //  const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel)
-    RigidConstraintModelVector;
-  typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) RigidConstraintDataVector;
+  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) RigidConstraintModelVector;
+  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) RigidConstraintDataVector;
 
   const RigidConstraintModelVector empty_contact_models;
   RigidConstraintDataVector empty_contact_data;
@@ -1813,9 +1810,8 @@ BOOST_AUTO_TEST_CASE(test_contact_ABA_3D)
   //  const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel)
-    RigidConstraintModelVector;
-  typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) RigidConstraintDataVector;
+  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) RigidConstraintModelVector;
+  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) RigidConstraintDataVector;
 
   RigidConstraintModelVector contact_models;
   RigidConstraintDataVector contact_datas;

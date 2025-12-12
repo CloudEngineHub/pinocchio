@@ -53,10 +53,8 @@ namespace pinocchio
     void buildConstraintModelsFromXML(
       const std::string & xmlStream,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
-        & point_anchor_constraint_models,
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
-        & frame_anchor_constraint_models,
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models,
+      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) & frame_anchor_constraint_models,
       const bool verbose)
     {
       typedef ::pinocchio::parsers::Model Model;
@@ -78,15 +76,14 @@ namespace pinocchio
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
       & buildConstraintModelsFromXML(
         const std::string & xmlStream,
         ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
-          & point_anchor_constraint_models,
+        PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models,
         const bool verbose)
     {
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
       frame_anchor_constraint_models;
       buildConstraintModelsFromXML(
         xmlStream, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
@@ -94,15 +91,14 @@ namespace pinocchio
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
       & buildConstraintModelsFromXML(
         const std::string & xmlStream,
         ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
-          & frame_anchor_constraint_models,
+        PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) & frame_anchor_constraint_models,
         const bool verbose)
     {
-      PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
       point_anchor_constraint_models;
       buildConstraintModelsFromXML(
         xmlStream, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);

@@ -147,57 +147,51 @@ namespace pinocchio
       typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
 
       typedef RigidConstraintModelTpl<Scalar, Options> RigidConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel)
-        RigidConstraintModelVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) RigidConstraintModelVector;
 
       typedef RigidConstraintDataTpl<Scalar, Options> RigidConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
-        RigidConstraintDataVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) RigidConstraintDataVector;
 
       typedef PointAnchorConstraintModelTpl<Scalar, Options> PointAnchorConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel)
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
         PointAnchorConstraintModelVector;
       typedef PointAnchorConstraintDataTpl<Scalar, Options> PointAnchorConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintData)
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintData)
         PointAnchorConstraintDataVector;
 
       typedef FrameAnchorConstraintModelTpl<Scalar, Options> FrameAnchorConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintModel)
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
         FrameAnchorConstraintModelVector;
       typedef FrameAnchorConstraintDataTpl<Scalar, Options> FrameAnchorConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(FrameAnchorConstraintData)
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintData)
         FrameAnchorConstraintDataVector;
 
       typedef PointContactModelTpl<Scalar, Options> PointContactModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactModel) PointContactModelVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointContactModel) PointContactModelVector;
       typedef PointContactDataTpl<Scalar, Options> PointContactData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointContactData) PointContactDataVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointContactData) PointContactDataVector;
 
       typedef JointFrictionConstraintModelTpl<Scalar, Options> JointFrictionConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(JointFrictionConstraintModel)
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointFrictionConstraintModel)
         JointFrictionConstraintModelVector;
       typedef JointFrictionConstraintDataTpl<Scalar, Options> JointFrictionConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(JointFrictionConstraintData)
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointFrictionConstraintData)
         JointFrictionConstraintDataVector;
 
       typedef JointLimitConstraintModelTpl<Scalar, Options> JointLimitConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(JointLimitConstraintModel)
-        JointLimitModelVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointLimitConstraintModel) JointLimitModelVector;
       typedef JointLimitConstraintDataTpl<Scalar, Options> JointLimitConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(JointLimitConstraintData)
-        JointLimitDataVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointLimitConstraintData) JointLimitDataVector;
 
       typedef ConstraintModelTpl<Scalar, Options> ConstraintModel;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConstraintModel) ConstraintModelVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintModel) ConstraintModelVector;
       typedef ConstraintDataTpl<Scalar, Options> ConstraintData;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(ConstraintData) ConstraintDataVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintData) ConstraintDataVector;
 
       typedef CoulombFrictionConeTpl<context::Scalar> CoulombFrictionCone;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(CoulombFrictionCone)
-        CoulombFrictionConeVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(CoulombFrictionCone) CoulombFrictionConeVector;
       typedef DualCoulombFrictionConeTpl<context::Scalar> DualCoulombFrictionCone;
-      typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(DualCoulombFrictionCone)
-        DualCoulombFrictionConeVector;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(DualCoulombFrictionCone) DualCoulombFrictionConeVector;
       typedef BoxSetTpl<context::Scalar> BoxSet;
       typedef ZeroConeTpl<context::Scalar> ZeroCone;
       typedef FullSpaceConeTpl<context::Scalar> FullSpaceCone;

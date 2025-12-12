@@ -37,7 +37,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
     typedef Eigen::Matrix<Scalar, 3, 6, Options> Matrix36;
     typedef Eigen::Matrix<Scalar, 3, 6, Eigen::RowMajor> RowMatrix36;
-    typedef PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(Matrix6) VectorOfMatrix6;
+    typedef PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) VectorOfMatrix6;
     typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> Matrix6x;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixX;
 

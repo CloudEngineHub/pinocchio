@@ -48,10 +48,10 @@ namespace pinocchio
         const SdfGraph & graph,
         const urdf::details::UrdfVisitor & visitor,
         const Model & model,
-        PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(PointAnchorConstraintModel) & constraint_models)
+        PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models)
       {
-        for (PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(
-               SdfGraph::ContactDetails)::const_iterator cm = std::cbegin(graph.contact_details);
+        for (PINOCCHIO_ALIGNED_STD_VECTOR(SdfGraph::ContactDetails)::const_iterator cm =
+               std::cbegin(graph.contact_details);
              cm != std::cend(graph.contact_details); ++cm)
         {
           // Get Link Name, and Link Pose, and set the values here:

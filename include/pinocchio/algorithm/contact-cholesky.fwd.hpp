@@ -84,8 +84,7 @@ namespace pinocchio
     typedef RigidConstraintDataTpl<Scalar, Options> RigidConstraintData;
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
     typedef Eigen::Matrix<Eigen::Index, Eigen::Dynamic, 1, Options> EigenIndexVector;
-    typedef
-      typename PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(EigenIndexVector) VectorOfEigenIndexVector;
+    typedef typename PINOCCHIO_ALIGNED_STD_VECTOR(EigenIndexVector) VectorOfEigenIndexVector;
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
 
     ///@{

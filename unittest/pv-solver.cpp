@@ -88,8 +88,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_empty)
   VectorXd tau = VectorXd::Random(model.nv);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) empty_contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) empty_contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) empty_contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) empty_contact_datas;
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -132,8 +132,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
   const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setRandom();
   contact_models.push_back(ci_RF);
@@ -216,8 +216,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_3D_humanoid)
   const Model::JointIndex RF_id = model.getJointId(RF);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setRandom();
   contact_models.push_back(ci_RF);
@@ -280,8 +280,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_3D_humanoid)
   const Model::JointIndex RF_id = model.getJointId(RF);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setRandom();
   ci_RF.corrector.Kd = 0.;
@@ -380,8 +380,8 @@ BOOST_AUTO_TEST_CASE(test_FD_humanoid_redundant_baumgarte)
   const Model::JointIndex RF_id = model.getJointId(RF);
 
   // Contact models and data
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_datas;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
+  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setRandom();
   ci_RF.corrector.Kd = 1.;

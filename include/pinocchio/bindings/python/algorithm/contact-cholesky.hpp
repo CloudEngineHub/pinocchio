@@ -46,10 +46,9 @@ namespace pinocchio
       typedef Eigen::Ref<RowMatrix> RefRowMatrix;
       typedef Eigen::Ref<Vector> RefVector;
 
-      typedef typename PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel)
-        RigidConstraintModelVector;
-      typedef typename PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData)
-        RigidConstraintDataVector;
+      typedef
+        typename PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) RigidConstraintModelVector;
+      typedef typename PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) RigidConstraintDataVector;
 
       typedef context::ConstraintModelVector ConstraintModelVector;
       typedef context::ConstraintDataVector ConstraintDataVector;
