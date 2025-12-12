@@ -243,8 +243,7 @@ namespace pinocchio
     // We need to reorder neighbours according to elimanation order.
     // This enables to properly allocate cross coupling terms
     {
-      std::vector<size_t> sort_ordering(
-        joint_elimination_order.size(), joint_elimination_order.size());
+      std::vector<size_t> sort_ordering(model.joints.size(), model.joints.size());
       size_t val = 0;
       for (const JointIndex joint_i : joint_elimination_order)
       {
