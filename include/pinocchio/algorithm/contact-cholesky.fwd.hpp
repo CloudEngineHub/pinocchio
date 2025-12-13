@@ -116,7 +116,6 @@ namespace pinocchio
     : D(D_storage.map())
     , Dinv(Dinv_storage.map())
     , U(U_storage.map())
-    , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
     , delassus_block(delassus_block_storage.map())
@@ -156,7 +155,6 @@ namespace pinocchio
     : D(D_storage.map())
     , Dinv(Dinv_storage.map())
     , U(U_storage.map())
-    , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
     , delassus_block(delassus_block_storage.map())
@@ -174,7 +172,6 @@ namespace pinocchio
     : D(D_storage.map())
     , Dinv(Dinv_storage.map())
     , U(U_storage.map())
-    , DUt(DUt_storage.map())
     , compliance(compliance_storage.map())
     , damping(damping_storage.map())
     , delassus_block(delassus_block_storage.map())
@@ -193,7 +190,6 @@ namespace pinocchio
       D_storage = other.D_storage;
       Dinv_storage = other.Dinv_storage;
       U_storage = other.U_storage;
-      DUt_storage = other.DUt_storage;
       compliance_storage = other.compliance_storage;
       damping_storage = other.damping_storage;
 
@@ -604,9 +600,6 @@ namespace pinocchio
   protected:
     EigenIndexVector parents_fromRow;
     EigenIndexVector nv_subtree_fromRow;
-
-    EigenStorageVector DUt_storage;
-    typename EigenStorageVector::RefMapType DUt; // temporary containing the results of D * U^t
 
     /// \brief Dimension of the tangent of the configuration space of the model
     Eigen::Index nv;

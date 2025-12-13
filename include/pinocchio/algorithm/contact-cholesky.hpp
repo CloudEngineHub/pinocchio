@@ -28,7 +28,6 @@ namespace pinocchio
   : D(D_storage.map())
   , Dinv(Dinv_storage.map())
   , U(U_storage.map())
-  , DUt(DUt_storage.map())
   , compliance(compliance_storage.map())
   , damping(damping_storage.map())
   , delassus_block(delassus_block_storage.map())
@@ -173,7 +172,6 @@ namespace pinocchio
     U_storage.resize(total_size, total_size);
     delassus_block_storage.resize(total_constraint_size, total_constraint_size);
     U.setIdentity();
-    DUt_storage.resize(total_size);
   }
 
   template<typename Scalar, int Options>
@@ -234,7 +232,9 @@ namespace pinocchio
       // Classic Cholesky decomposition related to the mass matrix
       const Eigen::Index jj = total_constraint_size + j; // shifted index
       const Eigen::Index NVT = nv_subtree_fromRow[jj] - 1;
-      auto DUt_partial = DUt.head(NVT);
+
+      typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
+      MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, NVT, 1));
 
       if (NVT)
         DUt_partial.noalias() =
@@ -333,7 +333,9 @@ namespace pinocchio
     //   for (Eigen::Index j = total_constraint_size - 1; j >= 0; --j)
     //   {
     //     const Eigen::Index slice_dim = nv;
-    //     auto DUt_partial = DUt.head(slice_dim);
+    //     typedef Eigen::Map<Vector,EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
+    //     MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar,slice_dim,1));
+
     //     DUt_partial.noalias() =
     //       UtopRight.row(j).transpose().cwiseProduct(Dtail);
     //     for (Eigen::Index _i = j; _i >= 0; _i--)
@@ -365,7 +367,8 @@ namespace pinocchio
     for (Eigen::Index j = total_constraint_size - 1; j >= 0; --j)
     {
       const Eigen::Index slice_dim = total_constraint_size - j - 1;
-      auto DUt_partial = DUt.head(slice_dim);
+      typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
+      MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, slice_dim, 1));
       DUt_partial.noalias() =
         U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
 
@@ -407,7 +410,9 @@ namespace pinocchio
       for (Eigen::Index j = total_constraint_size - 1; j >= 0; --j)
       {
         const Eigen::Index slice_dim = total_size - j - 1;
-        auto DUt_partial = DUt.head(slice_dim);
+        typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
+        MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, slice_dim, 1));
+
         DUt_partial.noalias() =
           U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
 
