@@ -178,7 +178,7 @@ namespace pinocchio
       LocalFrameTag());
     // TODO(jcarpent): extend the code to operator on matrices
 
-    //    typedef Eigen::Map<VectorXs> MapVectorXs;
+    //    typedef Eigen::Map<VectorXs,EIGEN_DEFAULT_ALIGN_BYTES> MapVectorXs;
     //    MapVectorXs u = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, model_ref.nv, 1));
     //    {
     //      auto & u = custom_data.u;
@@ -296,7 +296,7 @@ namespace pinocchio
 
     // Make a pass over the whole set of constraints to add the contributions of constraint
 
-    typedef Eigen::Map<VectorXs> MapVectorXs;
+    typedef Eigen::Map<VectorXs, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorXs;
     MapVectorXs u = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, model_ref.nv, 1));
     // u and custom_data.of_augmented are reset by mapConstraintForcesToJointSpace
     mapConstraintForcesToJointSpace(
@@ -326,7 +326,7 @@ namespace pinocchio
     const auto & augmented_mass_matrix_operator = this->getAugmentedMassMatrixOperator();
     augmented_mass_matrix_operator.solveInPlace(u, false);
 
-    typedef Eigen::Map<VectorXs> MapVectorXs;
+    typedef Eigen::Map<VectorXs, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorXs;
     MapVectorXs tmp_vec = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, size(), 1));
     //    {
     //      Eigen::Index row_id = 0;
