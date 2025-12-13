@@ -19,175 +19,175 @@
 
 namespace pinocchio
 {
+  //
+  // template<typename DriftVectorLike, typename Scalar>
+  // struct ZeroInitialGuessMaxConstraintViolationVisitor
+  // : visitors::ConstraintUnaryVisitorBase<
+  //     ZeroInitialGuessMaxConstraintViolationVisitor<DriftVectorLike, Scalar>>
+  // {
+  //   using ArgsType = boost::fusion::vector<const DriftVectorLike &, Scalar &>;
+  //   using Base = visitors::ConstraintUnaryVisitorBase<
+  //     ZeroInitialGuessMaxConstraintViolationVisitor<DriftVectorLike, Scalar>>;
+  //
+  //   template<typename ConstraintModel>
+  //   static void algo(
+  //     const ConstraintModelBase<ConstraintModel> & cmodel,
+  //     const DriftVectorLike & drift,
+  //     Scalar & max_violation)
+  //   {
+  //     return algo_impl(cmodel.set(), drift, max_violation);
+  //   }
+  //
+  //   template<typename VectorLike>
+  //   static void algo_impl(
+  //     const CoulombFrictionConeTpl<Scalar> & set,
+  //     const Eigen::MatrixBase<VectorLike> & drift,
+  //     Scalar & max_violation)
+  //   {
+  //     PINOCCHIO_UNUSED_VARIABLE(set);
+  //     const Scalar violation = -drift.coeff(2);
+  //     if (violation > max_violation)
+  //     {
+  //       max_violation = violation;
+  //     }
+  //   }
+  //
+  //   template<typename VectorLike>
+  //   static void algo_impl(
+  //     const FullSpaceConeTpl<Scalar> & set,
+  //     const Eigen::MatrixBase<VectorLike> & drift,
+  //     Scalar & max_violation)
+  //   {
+  //     PINOCCHIO_UNUSED_VARIABLE(set);
+  //     const Scalar violation = drift.template lpNorm<Eigen::Infinity>();
+  //     if (violation > max_violation)
+  //     {
+  //       max_violation = violation;
+  //     }
+  //   }
+  //
+  //   template<typename VectorLike>
+  //   static void algo_impl(
+  //     const BoxSetTpl<Scalar> & set,
+  //     const Eigen::MatrixBase<VectorLike> & drift,
+  //     Scalar & max_violation)
+  //   {
+  //     PINOCCHIO_UNUSED_VARIABLE(set);
+  //     const Scalar violation = drift.template lpNorm<Eigen::Infinity>();
+  //     if (violation > max_violation)
+  //     {
+  //       max_violation = violation;
+  //     }
+  //   }
+  //
+  //   template<typename VectorLike>
+  //   static void algo_impl(
+  //     const NonNegativeOrthantConeTpl<Scalar> & set,
+  //     const Eigen::MatrixBase<VectorLike> & drift,
+  //     Scalar & max_violation)
+  //   {
+  //     Scalar violation = 0;
+  //     if (set.size() > 0)
+  //     {
+  //       violation = -math::min(Scalar(0), drift.minCoeff());
+  //     }
+  //
+  //     if (violation > max_violation)
+  //     {
+  //       max_violation = violation;
+  //     }
+  //   }
+  //
+  //   template<typename ConstraintSet, typename VectorLike>
+  //   static void algo_impl(
+  //     const ConstraintSet & set,
+  //     const Eigen::MatrixBase<VectorLike> & drift,
+  //     Scalar & max_violation)
+  //   {
+  //     // do nothing
+  //     PINOCCHIO_UNUSED_VARIABLE(set);
+  //     PINOCCHIO_UNUSED_VARIABLE(drift);
+  //     PINOCCHIO_UNUSED_VARIABLE(max_violation);
+  //   }
+  //
+  //   /// ::run for individual constraints
+  //   template<typename ConstraintModel>
+  //   static void run(
+  //     const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+  //     const DriftVectorLike & drift,
+  //     Scalar & max_violation)
+  //   {
+  //     algo(cmodel.derived(), drift, max_violation);
+  //   }
+  //
+  //   /// ::run for constraints variant
+  //   template<int Options, template<typename S, int O> class ConstraintCollectionTpl>
+  //   static void run(
+  //     const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+  //     const DriftVectorLike & drift,
+  //     Scalar & max_violation)
+  //   {
+  //     ArgsType args(drift, max_violation);
+  //     // Note: Base::run will call `algo` of this visitor
+  //     Base::run(cmodel.derived(), args);
+  //   }
+  // }; // struct ZeroInitialGuessMaxConstraintViolationVisitor
+  //
+  // template<
+  //   typename ConstraintModel,
+  //   typename ConstraintModelAllocator,
+  //   typename ConstraintData,
+  //   typename ConstraintDataAllocator,
+  //   typename VectorLikeIn>
+  // typename ConstraintModel::Scalar computeZeroInitialGuessMaxConstraintViolation(
+  //   const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+  //   const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+  //   const Eigen::DenseBase<VectorLikeIn> & drift)
+  // {
+  //   PINOCCHIO_TRACY_ZONE_SCOPED_N("computeZeroInitialGuessMaxConstraintViolation");
+  //   assert(
+  //     constraint_models.size() == constraint_datas.size()
+  //     && "Both std::vector should be of equal size.");
+  //
+  //   Eigen::DenseIndex cindex = 0;
+  //
+  //   using SegmentType = typename VectorLikeIn::ConstSegmentReturnType;
+  //   using Scalar = typename ConstraintModel::Scalar;
+  //
+  //   Scalar max_violation = Scalar(0);
+  //   for (size_t k = 0; k < constraint_models.size(); ++k)
+  //   {
+  //     const auto & cmodel = helper::get_ref(constraint_models[k]);
+  //     const auto & cdata = helper::get_ref(constraint_datas[k]);
+  //     const auto csize = cmodel.residualSize(cdata);
+  //
+  //     SegmentType drift_segment = drift.segment(cindex, csize);
+  //     typedef ZeroInitialGuessMaxConstraintViolationVisitor<SegmentType, Scalar> Algo;
+  //
+  //     Algo::run(cmodel, drift_segment, max_violation);
+  //
+  //     cindex += csize;
+  //   }
+  //   return max_violation;
+  // }
 
-  template<typename DriftVectorLike, typename Scalar>
-  struct ZeroInitialGuessMaxConstraintViolationVisitor
-  : visitors::ConstraintUnaryVisitorBase<
-      ZeroInitialGuessMaxConstraintViolationVisitor<DriftVectorLike, Scalar>>
-  {
-    using ArgsType = boost::fusion::vector<const DriftVectorLike &, Scalar &>;
-    using Base = visitors::ConstraintUnaryVisitorBase<
-      ZeroInitialGuessMaxConstraintViolationVisitor<DriftVectorLike, Scalar>>;
-
-    template<typename ConstraintModel>
-    static void algo(
-      const ConstraintModelBase<ConstraintModel> & cmodel,
-      const DriftVectorLike & drift,
-      Scalar & max_violation)
-    {
-      return algo_impl(cmodel.set(), drift, max_violation);
-    }
-
-    template<typename VectorLike>
-    static void algo_impl(
-      const CoulombFrictionConeTpl<Scalar> & set,
-      const Eigen::MatrixBase<VectorLike> & drift,
-      Scalar & max_violation)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(set);
-      const Scalar violation = -drift.coeff(2);
-      if (violation > max_violation)
-      {
-        max_violation = violation;
-      }
-    }
-
-    template<typename VectorLike>
-    static void algo_impl(
-      const FullSpaceConeTpl<Scalar> & set,
-      const Eigen::MatrixBase<VectorLike> & drift,
-      Scalar & max_violation)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(set);
-      const Scalar violation = drift.template lpNorm<Eigen::Infinity>();
-      if (violation > max_violation)
-      {
-        max_violation = violation;
-      }
-    }
-
-    template<typename VectorLike>
-    static void algo_impl(
-      const BoxSetTpl<Scalar> & set,
-      const Eigen::MatrixBase<VectorLike> & drift,
-      Scalar & max_violation)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(set);
-      const Scalar violation = drift.template lpNorm<Eigen::Infinity>();
-      if (violation > max_violation)
-      {
-        max_violation = violation;
-      }
-    }
-
-    template<typename VectorLike>
-    static void algo_impl(
-      const NonNegativeOrthantConeTpl<Scalar> & set,
-      const Eigen::MatrixBase<VectorLike> & drift,
-      Scalar & max_violation)
-    {
-      Scalar violation = 0;
-      if (set.size() > 0)
-      {
-        violation = -math::min(Scalar(0), drift.minCoeff());
-      }
-
-      if (violation > max_violation)
-      {
-        max_violation = violation;
-      }
-    }
-
-    template<typename ConstraintSet, typename VectorLike>
-    static void algo_impl(
-      const ConstraintSet & set,
-      const Eigen::MatrixBase<VectorLike> & drift,
-      Scalar & max_violation)
-    {
-      // do nothing
-      PINOCCHIO_UNUSED_VARIABLE(set);
-      PINOCCHIO_UNUSED_VARIABLE(drift);
-      PINOCCHIO_UNUSED_VARIABLE(max_violation);
-    }
-
-    /// ::run for individual constraints
-    template<typename ConstraintModel>
-    static void run(
-      const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-      const DriftVectorLike & drift,
-      Scalar & max_violation)
-    {
-      algo(cmodel.derived(), drift, max_violation);
-    }
-
-    /// ::run for constraints variant
-    template<int Options, template<typename S, int O> class ConstraintCollectionTpl>
-    static void run(
-      const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const DriftVectorLike & drift,
-      Scalar & max_violation)
-    {
-      ArgsType args(drift, max_violation);
-      // Note: Base::run will call `algo` of this visitor
-      Base::run(cmodel.derived(), args);
-    }
-  }; // struct ZeroInitialGuessMaxConstraintViolationVisitor
-
-  template<
-    typename ConstraintModel,
-    typename ConstraintModelAllocator,
-    typename ConstraintData,
-    typename ConstraintDataAllocator,
-    typename VectorLikeIn>
-  typename ConstraintModel::Scalar computeZeroInitialGuessMaxConstraintViolation(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Eigen::DenseBase<VectorLikeIn> & drift)
-  {
-    PINOCCHIO_TRACY_ZONE_SCOPED_N("computeZeroInitialGuessMaxConstraintViolation");
-    assert(
-      constraint_models.size() == constraint_datas.size()
-      && "Both std::vector should be of equal size.");
-
-    Eigen::Index cindex = 0;
-
-    using SegmentType = typename VectorLikeIn::ConstSegmentReturnType;
-    using Scalar = typename ConstraintModel::Scalar;
-
-    Scalar max_violation = Scalar(0);
-    for (size_t k = 0; k < constraint_models.size(); ++k)
-    {
-      const auto & cmodel = helper::get_ref(constraint_models[k]);
-      const auto & cdata = helper::get_ref(constraint_datas[k]);
-      const auto csize = cmodel.residualSize(cdata);
-
-      SegmentType drift_segment = drift.segment(cindex, csize);
-      typedef ZeroInitialGuessMaxConstraintViolationVisitor<SegmentType, Scalar> Algo;
-
-      Algo::run(cmodel, drift_segment, max_violation);
-
-      cindex += csize;
-    }
-    return max_violation;
-  }
-
-  template<typename _Scalar>
+  template<typename Scalar>
   template<typename DelassusDerived>
-  _Scalar ADMMConstraintSolverTpl<_Scalar>::computeDelassusLargestEigenvalue(
-    const DelassusOperatorBase<DelassusDerived> & delassus)
+  Scalar ADMMConstraintSolverTpl<Scalar>::computeDelassusLargestEigenvalue(
+    const DelassusOperatorBase<DelassusDerived> & delassus, ADMMSolverWorkspace & workspace)
   {
     const DelassusDerived & G = delassus.derived();
     Scalar L = Scalar(-1);
-    if (this->problem_size > 1)
+    if (workspace.problem_size > 1)
     {
       PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - lanczos");
-      this->lanczos_decomposition.compute(G);
-      L = ::pinocchio::computeLargestEigenvalue(this->lanczos_decomposition.Ts(), 1e-8);
+      workspace.lanczos_decomposition.compute(G);
+      L = ::pinocchio::computeLargestEigenvalue(workspace.lanczos_decomposition.Ts(), 1e-8);
 #ifndef NDEBUG
       const bool enforce_symmetry = true;
-      Eigen::MatrixXd delassus = G.matrix(enforce_symmetry);
-      Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(delassus);
-      Eigen::VectorXd eigvals = solver.eigenvalues();
+      MatrixXs delassus = G.matrix(enforce_symmetry);
+      Eigen::SelfAdjointEigenSolver<MatrixXs> solver(delassus);
+      VectorXs eigvals = solver.eigenvalues();
       Scalar true_L = eigvals.maxCoeff();
       PINOCCHIO_UNUSED_VARIABLE(true_L);
         //          if (true_m > 0)
@@ -222,305 +222,232 @@ namespace pinocchio
     typename ConstraintData,
     typename ConstraintDataAllocator>
   bool ADMMConstraintSolverTpl<_Scalar>::solve(
-    DelassusOperatorBase<DelassusDerived> & _delassus,
+    DelassusOperatorBase<DelassusDerived> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const boost::optional<RefConstVectorXs> preconditioner,
-    const boost::optional<RefConstVectorXs> primal_guess,
-    const boost::optional<RefConstVectorXs> dual_guess,
-    const bool solve_ncp,
-    const ADMMUpdateRule admm_update_rule,
-    const boost::optional<Scalar> rho0,
-    const ADMMProximalRule admm_proximal_policy,
-    const boost::optional<Scalar> mu_prox0,
-    const bool stat_record)
+    const ADMMSolverSettings & settings)
   {
-    // Unused for now
-    PINOCCHIO_UNUSED_VARIABLE(preconditioner);
+    // for easier access
+    static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
+    ADMMSolverSolution & sol = solution;
+    ADMMSolverWorkspace & wk = workspace;
+    DelassusDerived & G = delassus.derived();
 
-    typedef ADMMSpectralUpdateRuleTpl<Scalar> ADMMSpectralUpdateRule;
-    typedef ADMMOSQPUpdateRuleTpl<Scalar> ADMMOSQPUpdateRule;
-    typedef ADMMLinearUpdateRuleTpl<Scalar> ADMMLinearUpdateRule;
-
-    typedef ADMMUpdateRuleContainerTpl<Scalar> ADMMUpdateRuleContainer;
-
-    // typedef DelassusOperatorPreconditionedTpl<DelassusDerived, DiagonalPreconditioner>
-    //   DelassusOperatorPreconditioned;
-    DelassusDerived & G = _delassus.derived();
-
-    const Scalar mu_R = G.getCompliance().minCoeff();
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(tau <= Scalar(1) && tau > Scalar(0), "tau should lie in ]0,1].");
+    // Configure/reset solution, workspace and stats
+    const Eigen::Index np = G.rows();
+    const std::size_t problem_size = static_cast<std::size_t>(np);
+    assert(G.cols() == np);
+    assert(g.size() == np);
+    assert(residualSize(constraint_models, constraint_datas) == np);
+    const Scalar min_compliance = G.getCompliance().minCoeff();
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
-      tau_prox <= Scalar(1) && tau_prox > Scalar(0), "tau_prox should lie in ]0,1].");
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(mu_R >= Scalar(0), "R should be a positive vector.");
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(G.getCompliance().size(), problem_size);
-
-    // First, we initialize some utils
-    int it = 0;
-    this->delassus_decomposition_update_count = 0;
-
-    Scalar dx_norm = Scalar(0);
-    Scalar dy_norm = Scalar(0);
-    Scalar dz_norm = Scalar(0);
-    Scalar complementarity, primal_feasibility, dual_feasibility;
-    const Scalar g_norm_inf = g.template lpNorm<Eigen::Infinity>();
-
-    if (stat_record)
+      min_compliance >= Scalar(0), "compliance should be a positive vector.");
+    //
+    sol.reset();
+    sol.resize(problem_size);
+    assert(sol.iterations == 0);
+    //
+    wk.resize(problem_size, settings.lanczos_size, settings.anderson_capacity);
+    assert(wk.problem_size == problem_size);
+    assert(wk.x.size() == np);
+    //
+    stats.reset();
+    if (settings.stat_record)
     {
-      stats.reserve(this->max_it);
-      stats.reset();
+      stats.reserve(settings.max_iterations);
     }
+    //
+    settings.checkValidity();
+
 #ifdef PINOCCHIO_WITH_HPP_FCL
-    timer.start();
+    if (settings.measure_timings)
+    {
+      timer.start();
+    }
 #endif // PINOCCHIO_WITH_HPP_FCL
 
+    // First, we initialize some utils
     // Initialize De Saxé shift to 0
     // For the CCP, there is no shift.
     // For the NCP, the shift will be initialized using z.
-    s_.setZero();
+    wk.desaxce.setZero();
 
     // Set initial damping of the delassus to the proximal value and get smallest possible
     // eigenvalue of the problem.
-    Scalar prox_value;
-    if (mu_prox0)
-    {
-      prox_value = mu_prox0.get();
-    }
-    else
-    {
-      prox_value = mu_prox_default;
-    }
-    Scalar m = mu_R + prox_value;
-    rhs = VectorXs::Constant(this->problem_size, prox_value);
-    G.updateDamping(rhs);
-    this->delassus_decomposition_update_count++;
+    wk.mu_prox = settings.mu_prox;
+    Scalar m = min_compliance + wk.mu_prox;
+    wk.rhs = VectorXs::Constant(np, wk.mu_prox);
+    G.updateDamping(wk.rhs);
+    sol.delassus_decomposition_update_count++;
 
     // Initialization of the primal/dual variables.
     // If both primal and dual guesses are given, the solver uses both.
     // If one is given but not the other, the solver will compute the missing one using the given
     // one.
-    if (primal_guess)
-    {
-      if (dual_guess)
-      {
-        z_ = dual_guess.get();
-        if (solve_ncp)
-        {
-          // Add De Saxé shift
-          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_, s_);
-          z_ += s_;
-        }
-        x_ = primal_guess.get();
-        internal::computeConeProjection(constraint_models, constraint_datas, x_, y_);
-      }
-      else
-      {
-        // Warm-start dual variable using primal guess
-        x_ = primal_guess.get();
-        internal::computeConeProjection(constraint_models, constraint_datas, x_, y_);
-        G.applyOnTheRight(y_, z_);
-        z_.noalias() += g - y_.cwiseProduct(G.getDamping());
-        if (solve_ncp)
-        {
-          // Add De Saxé shift
-          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_, s_);
-          z_ += s_;
-        }
-      }
-    }
-    else
-    {
-      if (dual_guess)
-      {
-        // Warm-start primal variable using dual guess
-        z_ = dual_guess.get();
-        if (solve_ncp)
-        {
-          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_, s_);
-          z_ += s_;
-        }
-        x_ = z_ - g - s_;
-        G.solveInPlace(x_);
-        internal::computeConeProjection(constraint_models, constraint_datas, x_, y_);
-        // y_.setZero();
-      }
-      else
-      {
-        x_.setZero();
-        y_.setZero();
-        z_ = g;
-        if (solve_ncp)
-        {
-          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_, s_);
-          z_ += s_;
-        }
-      }
-    }
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(x_.size(), problem_size);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(y_.size(), problem_size);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(z_.size(), problem_size);
-    Scalar x_norm_inf = x_.template lpNorm<Eigen::Infinity>();
-    Scalar y_norm_inf = y_.template lpNorm<Eigen::Infinity>();
-    Scalar z_norm_inf = z_.template lpNorm<Eigen::Infinity>();
-    Scalar x_previous_norm_inf = x_norm_inf;
-    Scalar y_previous_norm_inf = y_norm_inf;
-    Scalar z_previous_norm_inf = z_norm_inf;
+    retrievePrimalDualGuess(G, g, constraint_models, constraint_datas, wk, settings);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.x.size(), np);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.y.size(), np);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.z.size(), np);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.desaxce.size(), np);
 
     // Check NCP/CCP conditions. If they are satisfied, don't run the solver.
-    // -- always primaly feasible as y_ is projected onto the constraints
-    primal_feasibility = Scalar(0);
+    // -- always primaly feasible as y is projected onto the constraints
+    sol.primal_feasibility = Scalar(0);
     // -- dual feasibility
-    G.applyOnTheRight(y_, rhs);
-    rhs += g - y_.cwiseProduct(G.getDamping());
-    if (solve_ncp)
+    G.applyOnTheRight(wk.y, wk.rhs);
+    wk.rhs += g - wk.y.cwiseProduct(G.getDamping());
+    if (settings.solve_ncp)
     {
-      internal::computeDeSaxeCorrection(constraint_models, constraint_datas, rhs, s_);
-      rhs += s_;
+      internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.rhs, wk.desaxce);
+      wk.rhs += wk.desaxce;
     }
-    internal::computeDualConeProjection(constraint_models, constraint_datas, rhs, tmp);
-    tmp -= rhs;
-    dual_feasibility = tmp.template lpNorm<Eigen::Infinity>();
+    internal::computeDualConeProjection(constraint_models, constraint_datas, wk.rhs, wk.tmp);
+    wk.tmp -= wk.rhs;
+    sol.dual_feasibility = wk.tmp.template lpNorm<Eigen::Infinity>();
     // -- complementarity
     internal::computeConicComplementarity(
-      constraint_models, constraint_datas, rhs, y_, complementarity);
+      constraint_models, constraint_datas, wk.rhs, wk.y, sol.complementarity);
 
     bool abs_prec_reached = false;
     bool rel_prec_reached = false;
     if (
-      check_expression_if_real<Scalar, false>(complementarity <= this->absolute_precision)
-      && check_expression_if_real<Scalar, false>(dual_feasibility <= this->absolute_precision))
+      check_expression_if_real<Scalar, false>(sol.complementarity <= settings.tol_complementarity)
+      && check_expression_if_real<Scalar, false>(sol.dual_feasibility <= settings.tol_feasibility))
     {
       abs_prec_reached = true;
-      z_ = rhs; // store dual solution
+      wk.z = wk.rhs; // store dual solution
     }
+
+    // init rho power of spectral rule
+    wk.spectral_rho_power = settings.spectral_rho_power_init;
+
+    // init rho
+    Scalar L = Scalar(-1); // not yet computed
+    bool delassus_largest_eigenvalue_computed = false;
+    if (settings.rho_init)
+    {
+      wk.rho = settings.rho_init.value();
+    }
+    else
+    {
+      // Compute rho with spectral rule
+      L = computeDelassusLargestEigenvalue(G, wk);
+      delassus_largest_eigenvalue_computed = true;
+      if (std::isnan(L))
+      {
+        L = Scalar(1);
+      }
+      wk.rho = ADMMSpectralUpdateRule::computeRho(L, m, wk.spectral_rho_power);
+    }
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(wk.rho >= 0, "rho should be positive.");
+    // clamp the rho
+    const Scalar rho_min = 1e-6;
+    const Scalar rho_max = 1e6;
+    wk.rho = math::max(math::min(wk.rho, rho_max), rho_min);
+
+    // set mu_prox according to prox policy
+    switch (settings.admm_proximal_rule)
+    {
+    case (ADMMProximalRule::MANUAL):
+      wk.mu_prox = settings.mu_prox;
+      break;
+    case (ADMMProximalRule::AUTOMATIC):
+      wk.mu_prox = wk.rho;
+      break;
+    }
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(wk.mu_prox >= 0, "mu_prox should be positive.");
 
     if (!abs_prec_reached)
     {
-      // Estimate highest eigenvalue of the problem
-      Scalar L = Scalar(-1); // not yet computed
-      bool delassus_largest_eigenvalue_computed = false;
-      Scalar rho;
-      if (rho0)
-      {
-        rho = rho0.get();
-      }
-      else
-      {
-        // Compute rho with spectral rule
-        L = computeDelassusLargestEigenvalue(G);
-        delassus_largest_eigenvalue_computed = true;
-        if (std::isnan(L))
-        {
-          L = Scalar(1);
-        }
-        rho = ADMMSpectralUpdateRule::computeRho(L, m, rho_power);
-      }
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(rho >= 0, "rho should be positive.");
-
       // Setup ADMM update rules:
       // Before running ADMM, we compute the largest and smallest eigenvalues of delassus in order
       // to be able to use a spectral update rule for the proximal parameter (rho)
       ADMMUpdateRuleContainer admm_update_rule_container;
-      switch (admm_update_rule)
+      switch (settings.admm_update_rule)
       {
       case (ADMMUpdateRule::SPECTRAL): {
         if (!delassus_largest_eigenvalue_computed)
         {
           // L has not yet been computed, we compute it
-          L = computeDelassusLargestEigenvalue(G);
+          L = computeDelassusLargestEigenvalue(G, wk);
           delassus_largest_eigenvalue_computed = true;
         }
-        admm_update_rule_container.spectral_rule =
-          ADMMSpectralUpdateRule(ratio_primal_dual, L, m, rho_power_factor);
+        admm_update_rule_container.spectral_rule = ADMMSpectralUpdateRule(
+          settings.ratio_primal_dual, L, m, settings.spectral_rho_power_factor);
         break;
       }
       case (ADMMUpdateRule::OSQP):
-        admm_update_rule_container.osqp_rule = ADMMOSQPUpdateRule(ratio_primal_dual, 1e-8);
+        admm_update_rule_container.osqp_rule = ADMMOSQPUpdateRule(settings.ratio_primal_dual, 1e-8);
         break;
       case (ADMMUpdateRule::LINEAR):
         admm_update_rule_container.linear_rule =
-          ADMMLinearUpdateRule(ratio_primal_dual, linear_update_rule_factor);
+          ADMMLinearUpdateRule(settings.ratio_primal_dual, settings.linear_update_rule_factor);
         break;
       case (ADMMUpdateRule::CONSTANT):
         break;
       }
-      const Scalar rho_min = 1e-6;
-      const Scalar rho_max = 1e6;
-
-      // clamp the rho
-      rho = math::max(math::min(rho, rho_max), rho_min);
-
-      // set mu_prox according to prox policy
-      switch (admm_proximal_policy)
-      {
-      case (ADMMProximalRule::MANUAL): {
-        if (mu_prox0)
-        {
-          this->mu_prox = mu_prox0.get();
-        }
-        else
-        {
-          this->mu_prox = mu_prox_default;
-        }
-        break;
-      }
-      case (ADMMProximalRule::AUTOMATIC):
-        this->mu_prox = rho;
-        break;
-      }
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(mu_prox >= 0, "mu_prox should be positive.");
 
       PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
 
       // Update the decomposition of the Delassus
-      prox_value = tau_prox * mu_prox + tau * rho;
-      rhs = VectorXs::Constant(this->problem_size, prox_value);
-      G.updateDamping(rhs);
+      Scalar prox_value = settings.tau_prox * wk.mu_prox + settings.tau * wk.rho;
+      wk.rhs = VectorXs::Constant(np, prox_value);
+      G.updateDamping(wk.rhs);
       Scalar old_prox_value = prox_value;
-      this->delassus_decomposition_update_count++;
-
-      is_initialized = true;
+      sol.delassus_decomposition_update_count++;
 
       // End of Initialization phase
-      it = 1;
-      int it_since_last_rho_update = 0;
-
-      x_anderson_ = x_;
-      z_anderson_ = z_;
-      this->anderson_history.clear();
+      wk.x_anderson = wk.x;
+      wk.z_anderson = wk.z;
+      wk.anderson_history.clear();
       Scalar anderson_primal_feasibility;
       Scalar anderson_previous_primal_feasibility = std::numeric_limits<Scalar>::max();
-      for (; it <= Base::max_it; ++it, ++it_since_last_rho_update)
+
+      Scalar dx_norm = nan;
+      Scalar dy_norm = nan;
+      Scalar dz_norm = nan;
+      const Scalar g_norm_inf = g.template lpNorm<Eigen::Infinity>();
+      Scalar x_norm_inf = wk.x.template lpNorm<Eigen::Infinity>();
+      Scalar y_norm_inf = wk.y.template lpNorm<Eigen::Infinity>();
+      Scalar z_norm_inf = wk.z.template lpNorm<Eigen::Infinity>();
+      Scalar x_previous_norm_inf = x_norm_inf;
+      Scalar y_previous_norm_inf = y_norm_inf;
+      Scalar z_previous_norm_inf = z_norm_inf;
+
+      sol.iterations = 0;
+      std::size_t it_since_last_rho_update = 0;
+      for (; sol.iterations <= settings.max_iterations;
+           ++sol.iterations, ++it_since_last_rho_update)
       {
         // Fit the Anderson acceleration to compute accelerated x and y iterates
-        if (it > 1)
+        if (sol.iterations > 1)
         {
-          if (this->anderson_history.capacity() > 0)
+          if (wk.anderson_history.capacity() > 0)
           {
-            this->anderson_history.push_back(x_, z_, z_ - z_previous_);
+            wk.anderson_history.push_back(wk.x, wk.z, wk.z - wk.z_previous);
           }
 
           if (
-            this->anderson_history.capacity() == 0 //
-            || this->anderson_history.size() < this->anderson_history.capacity())
+            wk.anderson_history.capacity() == 0 //
+            || wk.anderson_history.size() < wk.anderson_history.capacity())
           {
-            x_anderson_ = x_;
-            z_anderson_ = z_;
+            wk.x_anderson = wk.x;
+            wk.z_anderson = wk.z;
           }
           else
           {
-            this->anderson_history.fit();
-            this->anderson_history.getAcceleratedIterates(x_anderson_, z_anderson_);
+            wk.anderson_history.fit();
+            wk.anderson_history.getAcceleratedIterates(wk.x_anderson, wk.z_anderson);
           }
         }
 
         // store previous iterates
         // note: when Anderson capacity is < 2, x_anderson_ = x_
-        x_previous_ = x_anderson_;
-        y_previous_ = y_;
-        z_previous_ = z_anderson_;
-        complementarity = Scalar(0);
+        wk.x_previous = wk.x_anderson;
+        wk.y_previous = wk.y;
+        wk.z_previous = wk.z_anderson;
+        sol.complementarity = Scalar(0);
 
         // y-update, using Anderson iterate.
         // If update is worse in terms of primal feas, it is rejected and the default
@@ -528,164 +455,186 @@ namespace pinocchio
         {
           PINOCCHIO_TRACY_ZONE_SCOPED_N(
             "ADMMConstraintSolverTpl::solve - loop computeConeProjection");
-          tmp = x_anderson_ - z_anderson_ / (tau * rho);
-          internal::computeConeProjection(constraint_models, constraint_datas, tmp, y_);
+          wk.tmp = wk.x_anderson - wk.z_anderson / (settings.tau * wk.rho);
+          internal::computeConeProjection(constraint_models, constraint_datas, wk.tmp, wk.y);
 
-          anderson_primal_feasibility_vector = x_anderson_ - y_;
+          wk.anderson_primal_feasibility_vector = wk.x_anderson - wk.y;
           anderson_primal_feasibility =
-            anderson_primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
+            wk.anderson_primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
 
-          if (this->anderson_history.capacity() > 1 && it > 1)
+          if (wk.anderson_history.capacity() > 1 && sol.iterations > 1)
           {
             if (
               anderson_primal_feasibility >= anderson_previous_primal_feasibility //
-              && this->anderson_history.size() == this->anderson_history.capacity())
+              && wk.anderson_history.size() == wk.anderson_history.capacity())
             {
               // Reject Anderson iterate, accept default ADMM iterate instead.
               // Reset Anderson acceleration.
-              x_previous_ = x_;
-              z_previous_ = z_;
-              tmp = x_previous_ - z_previous_ / (tau * rho);
-              internal::computeConeProjection(constraint_models, constraint_datas, tmp, y_);
+              wk.x_previous = wk.x;
+              wk.z_previous = wk.z;
+              wk.tmp = wk.x_previous - wk.z_previous / (settings.tau * wk.rho);
+              internal::computeConeProjection(constraint_models, constraint_datas, wk.tmp, wk.y);
 
-              this->anderson_history.clear();
+              wk.anderson_history.clear();
 
-              anderson_primal_feasibility_vector = x_previous_ - y_;
+              wk.anderson_primal_feasibility_vector = wk.x_previous - wk.y;
               anderson_primal_feasibility =
-                anderson_primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
+                wk.anderson_primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
             }
           }
         }
         anderson_previous_primal_feasibility = anderson_primal_feasibility;
 
-        if (solve_ncp)
+        if (settings.solve_ncp)
         {
           // s-update
-          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, z_previous_, s_);
+          internal::computeDeSaxeCorrection(
+            constraint_models, constraint_datas, wk.z_previous, wk.desaxce);
         }
 
         // default (non-accelerated) x-update
         {
           PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop solveInPlace");
-          rhs = -(g + s_ - (rho * tau) * y_ - (mu_prox * tau_prox) * x_previous_ - z_previous_);
-          x_ = rhs;
-          G.solveInPlace(x_);
+          wk.rhs =
+            -(g + wk.desaxce - (wk.rho * settings.tau) * wk.y
+              - (wk.mu_prox * settings.tau_prox) * wk.x_previous - wk.z_previous);
+          wk.x = wk.rhs;
+          G.solveInPlace(wk.x);
         }
-        if (stat_record)
+        if (settings.stat_record)
         {
-          G.applyOnTheRight(x_, tmp);
-          Scalar linear_system_residual = (tmp - rhs).template lpNorm<Eigen::Infinity>();
+          G.applyOnTheRight(wk.x, wk.tmp);
+          Scalar linear_system_residual = (wk.tmp - wk.rhs).template lpNorm<Eigen::Infinity>();
           stats.linear_system_residual.push_back(linear_system_residual);
 
-          G.solveInPlace(tmp);
-          Scalar linear_system_consistency = (tmp - x_).template lpNorm<Eigen::Infinity>();
+          G.solveInPlace(wk.tmp);
+          Scalar linear_system_consistency = (wk.tmp - wk.x).template lpNorm<Eigen::Infinity>();
           stats.linear_system_consistency.push_back(linear_system_consistency);
         }
 
         // default (non-accelerated) z-update
-        tmp = z_previous_ - (tau * rho) * (x_ - y_);
-        z_.noalias() = this->dual_momentum * z_previous_ + (Scalar(1) - this->dual_momentum) * tmp;
+        wk.tmp = wk.z_previous - (settings.tau * wk.rho) * (wk.x - wk.y);
+        wk.z.noalias() =
+          settings.dual_momentum * wk.z_previous + (Scalar(1) - settings.dual_momentum) * wk.tmp;
 
         // check termination criteria
-        primal_feasibility_vector = x_ - y_;
+        wk.primal_feasibility_vector = wk.x - wk.y;
 
         {
-          VectorXs & dx = tmp;
-          dx = x_ - x_previous_;
+          VectorXs & dx = wk.tmp;
+          dx = wk.x - wk.x_previous;
           dx_norm = dx.template lpNorm<Eigen::Infinity>(); // check relative progress on x
-          dual_feasibility_vector = dx;
+          wk.dual_feasibility_vector = dx;
         }
 
         {
-          VectorXs & dy = tmp;
-          dy = y_ - y_previous_;
+          VectorXs & dy = wk.tmp;
+          dy = wk.y - wk.y_previous;
           dy_norm = dy.template lpNorm<Eigen::Infinity>(); // check relative progress on y
         }
 
         {
-          VectorXs & dz = tmp;
-          dz = z_ - z_previous_;
+          VectorXs & dz = wk.tmp;
+          dz = wk.z - wk.z_previous;
           dz_norm = dz.template lpNorm<Eigen::Infinity>(); // check relative progress on z
         }
 
-        primal_feasibility = primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
-        dual_feasibility = dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
-        dual_feasibility = math::max(mu_prox * tau_prox, rho * tau) * dual_feasibility;
+        // compute primal/dual feasibility and complementarity
+        // --> these are used to check convergence of the algo
+        sol.primal_feasibility = wk.primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
+        sol.dual_feasibility = wk.dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
+        sol.dual_feasibility =
+          math::max(wk.mu_prox * settings.tau_prox, wk.rho * settings.tau) * sol.dual_feasibility;
         internal::computeConicComplementarity(
-          constraint_models, constraint_datas, z_, y_, complementarity);
+          constraint_models, constraint_datas, wk.z, wk.y, sol.complementarity);
 
-        if (stat_record)
+        if (settings.stat_record)
         {
-          G.applyOnTheRight(y_, rhs);
-          rhs += g - prox_value * y_;
-          if (solve_ncp)
+          G.applyOnTheRight(wk.y, wk.rhs);
+          wk.rhs += g - prox_value * wk.y;
+          if (settings.solve_ncp)
           {
-            internal::computeDeSaxeCorrection(constraint_models, constraint_datas, rhs, tmp);
-            rhs += tmp;
+            internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.rhs, wk.tmp);
+            wk.rhs += wk.tmp;
           }
 
-          internal::computeDualConeProjection(constraint_models, constraint_datas, rhs, tmp);
-          rhs -= tmp;
+          internal::computeDualConeProjection(constraint_models, constraint_datas, wk.rhs, wk.tmp);
+          wk.rhs -= wk.tmp;
 
-          Scalar dual_feasibility_ncp = rhs.template lpNorm<Eigen::Infinity>();
+          Scalar dual_feasibility_ncp = wk.rhs.template lpNorm<Eigen::Infinity>();
 
-          stats.primal_feasibility.push_back(primal_feasibility);
-          stats.dual_feasibility.push_back(dual_feasibility);
+          stats.primal_feasibility.push_back(sol.primal_feasibility);
+          stats.dual_feasibility.push_back(sol.dual_feasibility);
           stats.dual_feasibility_ncp.push_back(dual_feasibility_ncp);
-          stats.complementarity.push_back(complementarity);
-          stats.rho.push_back(rho);
-          stats.mu_prox.push_back(mu_prox);
-          stats.anderson_size.push_back(this->anderson_history.size());
+          stats.complementarity.push_back(sol.complementarity);
+          stats.rho.push_back(wk.rho);
+          stats.mu_prox.push_back(wk.mu_prox);
+          stats.anderson_size.push_back(wk.anderson_history.size());
         }
 
         // Checking stopping residual
-        const Scalar x_norm_inf = x_.template lpNorm<Eigen::Infinity>();
-        const Scalar y_norm_inf = y_.template lpNorm<Eigen::Infinity>();
-        const Scalar z_norm_inf = z_.template lpNorm<Eigen::Infinity>();
-        if (
-          check_expression_if_real<Scalar, false>(complementarity <= this->absolute_precision)
-          && check_expression_if_real<Scalar, false>(
-            dual_feasibility <= this->absolute_precision
-                                  + this->relative_precision * math::max(g_norm_inf, z_norm_inf))
-          && check_expression_if_real<Scalar, false>(
-            primal_feasibility <= this->absolute_precision
-                                    + this->relative_precision * math::max(x_norm_inf, y_norm_inf)))
-          abs_prec_reached = true;
-        else
-          abs_prec_reached = false;
+        x_norm_inf = wk.x.template lpNorm<Eigen::Infinity>();
+        y_norm_inf = wk.y.template lpNorm<Eigen::Infinity>();
+        z_norm_inf = wk.z.template lpNorm<Eigen::Infinity>();
+        // -- absolute check
         if (
           check_expression_if_real<Scalar, false>(
-            dx_norm <= this->relative_precision * math::max(x_norm_inf, x_previous_norm_inf))
+            sol.complementarity <= settings.tol_complementarity)
           && check_expression_if_real<Scalar, false>(
-            dy_norm <= this->relative_precision * math::max(y_norm_inf, y_previous_norm_inf))
+            sol.dual_feasibility
+            <= settings.tol_feasibility
+                 + settings.tol_rel_feasibility * math::max(g_norm_inf, z_norm_inf))
           && check_expression_if_real<Scalar, false>(
-            dz_norm <= this->relative_precision * math::max(z_norm_inf, z_previous_norm_inf)))
-          rel_prec_reached = true;
+            sol.primal_feasibility
+            <= settings.tol_feasibility
+                 + settings.tol_rel_feasibility * math::max(x_norm_inf, y_norm_inf)))
+        {
+          abs_prec_reached = true;
+        }
         else
+        {
+          abs_prec_reached = false;
+        }
+
+        // -- relative check
+        if (
+          check_expression_if_real<Scalar, false>(
+            dx_norm <= settings.tol_rel_feasibility * math::max(x_norm_inf, x_previous_norm_inf))
+          && check_expression_if_real<Scalar, false>(
+            dy_norm <= settings.tol_rel_feasibility * math::max(y_norm_inf, y_previous_norm_inf))
+          && check_expression_if_real<Scalar, false>(
+            dz_norm <= settings.tol_rel_feasibility * math::max(z_norm_inf, z_previous_norm_inf)))
+        {
+          rel_prec_reached = true;
+        }
+        else
+        {
           rel_prec_reached = false;
+        }
 
         if (abs_prec_reached || rel_prec_reached)
           break;
 
+        // update rho if needed
         if (
-          this->delassus_decomposition_update_count < this->max_delassus_decomposition_updates
-          && it_since_last_rho_update >= this->rho_min_update_frequency)
+          sol.delassus_decomposition_update_count < settings.max_delassus_decomposition_updates
+          && it_since_last_rho_update >= settings.rho_min_update_frequency)
         {
           // Apply rho according to the primal_dual_ratio
-          Scalar new_rho = rho;
-          switch (admm_update_rule)
+          Scalar new_rho = wk.rho;
+          switch (settings.admm_update_rule)
           {
           case (ADMMUpdateRule::SPECTRAL):
             admm_update_rule_container.spectral_rule.eval(
-              primal_feasibility, dual_feasibility, new_rho);
+              sol.primal_feasibility, sol.dual_feasibility, new_rho);
             break;
           case (ADMMUpdateRule::OSQP):
             admm_update_rule_container.osqp_rule.eval(
-              primal_feasibility, dual_feasibility, new_rho);
+              sol.primal_feasibility, sol.dual_feasibility, new_rho);
             break;
           case (ADMMUpdateRule::LINEAR):
             admm_update_rule_container.linear_rule.eval(
-              primal_feasibility, dual_feasibility, new_rho);
+              sol.primal_feasibility, sol.dual_feasibility, new_rho);
             break;
           case (ADMMUpdateRule::CONSTANT):
             break;
@@ -695,28 +644,29 @@ namespace pinocchio
           new_rho = math::max(math::min(new_rho, rho_max), rho_min);
 
           // apply a momentum strategy on rho defined by:
-          new_rho =
-            std::pow(rho, this->rho_momentum) * std::pow(new_rho, Scalar(1) - this->rho_momentum);
+          new_rho = std::pow(wk.rho, settings.rho_momentum)
+                    * std::pow(new_rho, Scalar(1) - settings.rho_momentum);
 
           // clamp rho a second time in case the new values is outside the bounds
           new_rho = math::max(math::min(new_rho, rho_max), rho_min);
 
           bool update_delassus_factorization = false;
-          if (new_rho == rho)
+          if (new_rho == wk.rho)
           { // No change of rho, so need to redo a factorization
             update_delassus_factorization = false;
           }
           else if (
-            new_rho >= this->rho_update_ratio * rho || rho >= this->rho_update_ratio * new_rho)
+            new_rho >= settings.rho_update_ratio * wk.rho
+            || wk.rho >= settings.rho_update_ratio * new_rho)
           { // sufficient change of the rho value
-            rho = new_rho;
-            switch (admm_proximal_policy)
+            wk.rho = new_rho;
+            switch (settings.admm_proximal_rule)
             {
             case (ADMMProximalRule::MANUAL):
               // don't update the mu_prox
               break;
             case (ADMMProximalRule::AUTOMATIC):
-              this->mu_prox = rho;
+              wk.mu_prox = wk.rho;
               break;
             }
             it_since_last_rho_update = 0;
@@ -726,13 +676,13 @@ namespace pinocchio
           // Account for potential update of rho
           if (update_delassus_factorization)
           {
-            prox_value = tau_prox * mu_prox + tau * rho;
+            prox_value = settings.tau_prox * wk.mu_prox + settings.tau * wk.rho;
             if (old_prox_value != prox_value)
             {
               PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop updateDamping");
-              rhs = VectorXs::Constant(this->problem_size, prox_value);
-              G.updateDamping(rhs);
-              this->delassus_decomposition_update_count++;
+              wk.rhs = VectorXs::Constant(np, prox_value);
+              G.updateDamping(wk.rhs);
+              sol.delassus_decomposition_update_count++;
               old_prox_value = prox_value;
             }
           }
@@ -745,39 +695,116 @@ namespace pinocchio
       } // end ADMM main for loop
 
       // Save values of spectral update rule
-      if (admm_update_rule == ADMMUpdateRule::SPECTRAL)
+      if (settings.admm_update_rule == ADMMUpdateRule::SPECTRAL)
       {
-        this->rho_power = ADMMSpectralUpdateRule::computeRhoPower(L, m, rho);
+        wk.spectral_rho_power = ADMMSpectralUpdateRule::computeRhoPower(L, m, wk.rho);
       }
-      this->rho = rho;
     }
 
-    this->relative_residual = math::max(
-      dx_norm / math::max(x_norm_inf, x_previous_norm_inf),
-      dy_norm / math::max(y_norm_inf, y_previous_norm_inf));
-    this->relative_residual =
-      math::max(this->relative_residual, dz_norm / math::max(z_norm_inf, z_previous_norm_inf));
-    this->absolute_residual =
-      math::max(primal_feasibility, math::max(complementarity, dual_feasibility));
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
-    timer.stop();
-#endif // PINOCCHIO_WITH_HPP_FCL
-    //
-
-    this->it = it;
-
-    if (stat_record)
+    if (settings.measure_timings)
     {
-      stats.it = it;
-      stats.delassus_decomposition_update_count = delassus_decomposition_update_count;
+      timer.stop();
+    }
+#endif // PINOCCHIO_WITH_HPP_FCL
+
+    if (settings.stat_record)
+    {
+      stats.iterations = sol.iterations;
+      stats.delassus_decomposition_update_count = sol.delassus_decomposition_update_count;
     }
 
-    if (abs_prec_reached)
-      return true;
+    sol.x = wk.x;
+    sol.y = wk.y;
+    sol.z = wk.z;
+    sol.desaxce = wk.desaxce;
+    sol.rho = wk.rho;
+    sol.spectral_rho_power = wk.spectral_rho_power;
+    sol.mu_prox = wk.mu_prox;
+    sol.converged = abs_prec_reached || rel_prec_reached;
 
-    return false;
+    return sol.converged;
+  }
+
+  template<typename _Scalar>
+  template<
+    typename DelassusDerived,
+    typename VectorLike,
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename ConstraintData,
+    typename ConstraintDataAllocator>
+  void ADMMConstraintSolverTpl<_Scalar>::retrievePrimalDualGuess(
+    DelassusOperatorBase<DelassusDerived> & delassus,
+    const Eigen::MatrixBase<VectorLike> & g,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    ADMMSolverWorkspace & workspace,
+    const ADMMSolverSettings & settings)
+  {
+    // for easier access
+    ADMMSolverWorkspace & wk = workspace;
+    DelassusDerived & G = delassus.derived();
+
+    if (settings.primal_guess)
+    {
+      if (settings.dual_guess)
+      {
+        wk.z = settings.dual_guess.value();
+        if (settings.solve_ncp)
+        {
+          // Add De Saxé shift
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.z, wk.desaxce);
+          wk.z += wk.desaxce;
+        }
+        wk.x = settings.primal_guess.value();
+        internal::computeConeProjection(constraint_models, constraint_datas, wk.x, wk.y);
+      }
+      else
+      {
+        // Warm-start dual variable using primal guess
+        wk.x = settings.primal_guess.value();
+        internal::computeConeProjection(constraint_models, constraint_datas, wk.x, wk.y);
+        G.applyOnTheRight(wk.y, wk.z);
+        wk.z.noalias() += g - wk.y.cwiseProduct(G.getDamping());
+        if (settings.solve_ncp)
+        {
+          // Add De Saxé shift
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.z, wk.desaxce);
+          wk.z += wk.desaxce;
+        }
+      }
+    }
+    else
+    {
+      if (settings.dual_guess)
+      {
+        // Warm-start primal variable using dual guess
+        wk.z = settings.dual_guess.value();
+        if (settings.solve_ncp)
+        {
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.z, wk.desaxce);
+          wk.z += wk.desaxce;
+        }
+        wk.x = wk.z - g - wk.desaxce;
+        G.solveInPlace(wk.x);
+        internal::computeConeProjection(constraint_models, constraint_datas, wk.x, wk.y);
+        // wk.y.setZero();
+      }
+      else
+      {
+        wk.x.setZero();
+        wk.y.setZero();
+        wk.z = g;
+        if (settings.solve_ncp)
+        {
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.z, wk.desaxce);
+          wk.z += wk.desaxce;
+        }
+      }
+    }
   }
 
   //   template<typename _Scalar>

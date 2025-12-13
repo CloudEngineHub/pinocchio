@@ -15,6 +15,179 @@
 namespace pinocchio
 {
 
+  ///
+  /// \brief Base struct for settings to pass to the solve method of a constraint solver.
+  template<typename _Scalar>
+  struct ConstraintSolverSettingsBaseTpl
+  {
+    typedef _Scalar Scalar;
+
+    /// \brief Default constructor
+    ConstraintSolverSettingsBaseTpl(
+      std::size_t max_iterations,
+      Scalar tol_feasibility,
+      Scalar tol_rel_feasibility,
+      Scalar tol_complementarity,
+      Scalar tol_rel_complementarity,
+      bool solve_ncp,
+      bool measure_timings,
+      bool stat_record)
+    : max_iterations(max_iterations)
+    , tol_feasibility(tol_feasibility)
+    , tol_rel_feasibility(tol_rel_feasibility)
+    , tol_complementarity(tol_complementarity)
+    , tol_rel_complementarity(tol_rel_complementarity)
+    , solve_ncp(solve_ncp)
+    , measure_timings(measure_timings)
+    , stat_record(stat_record)
+    {
+    }
+
+    /// \brief Throws if settings are not valid.
+    void checkValidity() const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(
+        tol_feasibility >= Scalar(0), "tol_feasibility should be >= 0.");
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(
+        tol_rel_feasibility >= Scalar(0), "tol_rel_feasibility should be >= 0.");
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(
+        tol_complementarity >= Scalar(0), "tol_complementarity should be >= 0.");
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(
+        tol_rel_complementarity >= Scalar(0), "tol_rel_complementarity should be >= 0.");
+    }
+
+    /// \brief Maximum number of iterations of the solver.
+    std::size_t max_iterations;
+
+    /// \brief Tolerance on the primal/dual feasibility.
+    Scalar tol_feasibility;
+
+    /// \brief Relative tolerance on the primal/dual feasibility.
+    Scalar tol_rel_feasibility;
+
+    /// \brief Absolute tolerance on the complementarity (duality gap).
+    Scalar tol_complementarity;
+
+    /// \brief Relative tolerance on the complementarity (duality gap).
+    Scalar tol_rel_complementarity;
+
+    /// \brief Whether or not to solve the NCP. If set to solve, the equivalent CCP
+    /// is solved.
+    bool solve_ncp;
+
+    /// \brief Measure solve timings
+    bool measure_timings;
+
+    /// \brief Record per iteration stats.
+    bool stat_record;
+  }; // struct ConstraintSolverSettingsBaseTpl
+
+  ///
+  /// \brief Base struct for settings to pass to the solve method of a constraint solver.
+  template<typename _Scalar>
+  struct ConstraintSolverSolutionBaseTpl
+  {
+    typedef _Scalar Scalar;
+    static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
+
+    /// \brief Default constructor.
+    ConstraintSolverSolutionBaseTpl()
+    : iterations(0)
+    , converged(false)
+    , primal_feasibility(nan)
+    , dual_feasibility(nan)
+    , complementarity(nan)
+    {
+    }
+
+    /// \brief Reset the solution.
+    void reset()
+    {
+      iterations = 0;
+      converged = false;
+      primal_feasibility = nan;
+      dual_feasibility = nan;
+      complementarity = nan;
+    }
+
+    /// \brief Number of iterations of the solver
+    std::size_t iterations;
+
+    /// \brief Whether or not the solver has converged
+    bool converged;
+
+    /// \brief Value of the primal feasibility
+    Scalar primal_feasibility;
+
+    /// \brief Value of the dual feasibility
+    Scalar dual_feasibility;
+
+    /// \brief Value of the complementarity
+    Scalar complementarity;
+
+  }; // struct ConstraintSolverSolutionBaseTpl
+
+  ///
+  /// \brief Base struct to track a constraint solver progress per iteration.
+  template<typename _Scalar>
+  struct ConstraintSolverStatsBaseTpl
+  {
+    typedef _Scalar Scalar;
+
+    /// \brief Default constructor.
+    ConstraintSolverStatsBaseTpl()
+    : iterations(0)
+    {
+    }
+
+    /// \brief Constructor given a maximum iteration of the solver.
+    explicit ConstraintSolverStatsBaseTpl(std::size_t max_iterations)
+    : iterations(0)
+    {
+      reserve(max_iterations);
+    }
+
+    /// \brief Reserve enough storage for max_it iterations.
+    void reserve(std::size_t max_iterations)
+    {
+      primal_feasibility.reserve(size_t(max_iterations));
+      dual_feasibility.reserve(size_t(max_iterations));
+      dual_feasibility_ncp.reserve(size_t(max_iterations));
+      complementarity.reserve(size_t(max_iterations));
+    }
+
+    /// \brief Reset stats.
+    void reset()
+    {
+      iterations = 0;
+      primal_feasibility.clear();
+      dual_feasibility.clear();
+      dual_feasibility_ncp.clear();
+      complementarity.clear();
+    }
+
+    /// \brief Returns the size of the stats (number of iterations tracked).
+    size_t size() const
+    {
+      return primal_feasibility.size();
+    }
+
+    ///  \brief Total number of iterations.
+    std::size_t iterations;
+
+    /// \brief History of primal feasibility values.
+    std::vector<Scalar> primal_feasibility;
+
+    /// \brief History of dual feasibility values.
+    std::vector<Scalar> dual_feasibility;
+
+    /// \brief History of NCP dual feasibility values.
+    std::vector<Scalar> dual_feasibility_ncp;
+
+    /// \brief History of complementarity values.
+    std::vector<Scalar> complementarity;
+  };
+
   template<typename _Scalar>
   struct ContactSolverBaseTpl
   {
@@ -25,130 +198,12 @@ namespace pinocchio
     typedef hpp::fcl::Timer Timer;
 #endif // PINOCCHIO_WITH_HPP_FCL
 
-    struct SolverStats
-    {
-      SolverStats()
-      : it(0)
-      {
-      }
-
-      explicit SolverStats(const int max_it)
-      : it(0)
-      {
-        reserve(max_it);
-      }
-
-      void reserve(const int max_it)
-      {
-        primal_feasibility.reserve(size_t(max_it));
-        dual_feasibility.reserve(size_t(max_it));
-        dual_feasibility_ncp.reserve(size_t(max_it));
-        complementarity.reserve(size_t(max_it));
-      }
-
-      void reset()
-      {
-        primal_feasibility.clear();
-        dual_feasibility.clear();
-        complementarity.clear();
-        dual_feasibility_ncp.clear();
-        it = 0;
-      }
-
-      size_t size() const
-      {
-        return primal_feasibility.size();
-      }
-
-      ///  \brief Number of total iterations.
-      int it;
-
-      /// \brief History of primal feasibility values.
-      std::vector<Scalar> primal_feasibility;
-
-      /// \brief History of dual feasibility values.
-      std::vector<Scalar> dual_feasibility;
-      std::vector<Scalar> dual_feasibility_ncp;
-
-      /// \brief History of complementarity values.
-      std::vector<Scalar> complementarity;
-    };
-
-    explicit ContactSolverBaseTpl(const int problem_size)
-    : problem_size(problem_size)
-    , max_it(1000)
-    , it(0)
-    , absolute_precision(Scalar(1e-6))
-    , relative_precision(Scalar(1e-6))
-    , absolute_residual(Scalar(-1))
-    , relative_residual(Scalar(-1))
+    ContactSolverBaseTpl()
+    :
 #ifdef PINOCCHIO_WITH_HPP_FCL
-    , timer(false)
+      timer(false)
 #endif // PINOCCHIO_WITH_HPP_FCL
     {
-    }
-
-    /// \brief Returns the size of the problem
-    int getProblemSize() const
-    {
-      return problem_size;
-    }
-
-    /// \brief Get the number of iterations achieved by the solver.
-    int getIterationCount() const
-    {
-      return it;
-    }
-
-    /// \brief Set the maximum number of iterations.
-    void setMaxIterations(const int max_it)
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(max_it > 0, "max_it should be greater than 0.");
-      this->max_it = max_it;
-    }
-    /// \brief Get the maximum number of iterations allowed.
-    int getMaxIterations() const
-    {
-      return max_it;
-    }
-
-    /// \brief Set the absolute precision for the problem.
-    void setAbsolutePrecision(const Scalar absolute_precision)
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        absolute_precision >= Scalar(0), "absolute_precision should be positive.");
-      this->absolute_precision = absolute_precision;
-    }
-    /// \brief Get the absolute precision requested.
-    Scalar getAbsolutePrecision() const
-    {
-      return absolute_precision;
-    }
-
-    /// \brief Set the relative precision for the problem.
-    void setRelativePrecision(const Scalar relative_precision)
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        relative_precision >= Scalar(0), "relative_precision should be positive.");
-      this->relative_precision = relative_precision;
-    }
-    /// \brief Get the relative precision requested.
-    Scalar getRelativePrecision() const
-    {
-      return relative_precision;
-    }
-
-    /// \brief Returns the value of the absolute residual value corresponding to the contact
-    /// complementary conditions.
-    Scalar getAbsoluteConvergenceResidual() const
-    {
-      return absolute_residual;
-    }
-    /// \brief Returns the value of the relative residual value corresponding to the difference
-    /// between two successive iterates (infinity norms).
-    Scalar getRelativeConvergenceResidual() const
-    {
-      return relative_residual;
     }
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
@@ -159,21 +214,6 @@ namespace pinocchio
 #endif // PINOCCHIO_WITH_HPP_FCL
 
   protected:
-    /// \brief Size of the problem
-    int problem_size;
-    ///  \brief Maximum number of iterations.
-    int max_it;
-    /// \brief Number of iterations needed to achieve convergence.
-    int it;
-    /// \brief Desired absolute precision.
-    Scalar absolute_precision;
-    /// \brief Desired relative precision.
-    Scalar relative_precision;
-    /// \brief Absolule convergence residual value.
-    Scalar absolute_residual;
-    /// \brief Relative convergence residual value
-    Scalar relative_residual;
-
 #ifdef PINOCCHIO_WITH_HPP_FCL
     Timer timer;
 #endif // PINOCCHIO_WITH_HPP_FCL
