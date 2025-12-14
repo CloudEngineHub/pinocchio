@@ -33,8 +33,8 @@ namespace pinocchio
     {
       typedef ContactCholeskyDecomposition Self;
       typedef typename Self::Scalar Scalar;
-      typedef typename Self::RigidConstraintModel RigidConstraintModel;
-      typedef typename Self::RigidConstraintData RigidConstraintData;
+      typedef context::RigidConstraintModel RigidConstraintModel;
+      typedef context::RigidConstraintData RigidConstraintData;
       typedef typename Self::Matrix Matrix;
       typedef typename Self::RowMatrix RowMatrix;
       typedef typename Self::Vector Vector;
