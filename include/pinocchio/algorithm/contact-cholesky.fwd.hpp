@@ -12,8 +12,6 @@
 #include "pinocchio/utils/std-vector.hpp"
 
 #include "pinocchio/algorithm/fwd.hpp"
-// #include "pinocchio/algorithm/constraints/constraints.hpp"
-#include <functional>
 
 namespace pinocchio
 {
