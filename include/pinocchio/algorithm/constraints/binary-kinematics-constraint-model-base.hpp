@@ -116,7 +116,6 @@ namespace pinocchio
     , desired_constraint_acceleration(VectorConstraintSize::Zero())
     , colwise_joint1_sparsity(model.nv)
     , colwise_joint2_sparsity(model.nv)
-    , loop_span_indexes((size_t)model.nv)
     , nv(-1)
     , depth_joint1(0)
     , depth_joint2(0)
@@ -177,8 +176,7 @@ namespace pinocchio
              && joint2_span_indexes == other.joint2_span_indexes
              && depth_joint1 == other.depth_joint1 && depth_joint2 == other.depth_joint2
              && colwise_sparsity == other.colwise_sparsity
-             && colwise_span_indexes == other.colwise_span_indexes
-             && loop_span_indexes == other.loop_span_indexes;
+             && colwise_span_indexes == other.colwise_span_indexes;
     }
 
     /// \brief Comparison operator.
@@ -212,7 +210,6 @@ namespace pinocchio
       res.nv = nv;
       res.depth_joint1 = depth_joint1;
       res.depth_joint2 = depth_joint2;
-      res.loop_span_indexes = loop_span_indexes;
     }
 
     // -------------------------------
@@ -277,9 +274,6 @@ namespace pinocchio
 
     /// \brief Joint-wise span indexes associated with joint 2.
     EigenIndexVector joint2_span_indexes;
-
-    /// \todo Add doc
-    EigenIndexVector loop_span_indexes;
 
     /// \brief Sparsity pattern associated to the constraint.
     BooleanVector colwise_sparsity;

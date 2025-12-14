@@ -77,18 +77,12 @@ namespace pinocchio
     colwise_span_indexes.reserve((size_t)model.nv);
     colwise_sparsity.resize(model.nv);
     colwise_sparsity.setZero();
-    loop_span_indexes.reserve((size_t)model.nv);
     for (Eigen::Index col_id = 0; col_id < model.nv; ++col_id)
     {
       if (colwise_joint1_sparsity[col_id] || colwise_joint2_sparsity[col_id])
       {
         colwise_span_indexes.push_back(col_id);
         colwise_sparsity[col_id] = true;
-      }
-
-      if (colwise_joint1_sparsity[col_id] != colwise_joint2_sparsity[col_id])
-      {
-        loop_span_indexes.push_back(col_id);
       }
     }
 

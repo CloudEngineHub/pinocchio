@@ -88,7 +88,6 @@ namespace pinocchio
             T, joint1_span_indexes, "Jointwise span indexes associated with joint 1.")
           .PINOCCHIO_ADD_PROPERTY(
             T, joint2_span_indexes, "Jointwise span indexes associated with joint 2.")
-          .PINOCCHIO_ADD_PROPERTY(T, loop_span_indexes, "Loop span indexes.")
           .PINOCCHIO_ADD_PROPERTY(
             T, colwise_sparsity, "Sparsity pattern associated to the constraint.")
           .PINOCCHIO_ADD_PROPERTY(
@@ -191,7 +190,6 @@ namespace pinocchio
             T, joint1_span_indexes, "Jointwise span indexes associated with joint 1.")
           .PINOCCHIO_ADD_PROPERTY(
             T, joint2_span_indexes, "Jointwise span indexes associated with joint 2.")
-          .PINOCCHIO_ADD_PROPERTY(T, loop_span_indexes, "Loop span indexes.")
           .PINOCCHIO_ADD_PROPERTY(
             T, colwise_sparsity, "Sparsity pattern associated to the constraint.")
           .PINOCCHIO_ADD_PROPERTY(

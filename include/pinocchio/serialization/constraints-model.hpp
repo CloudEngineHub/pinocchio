@@ -204,7 +204,6 @@ namespace boost
       ar & make_nvp("colwise_joint2_sparsity", cmodel.colwise_joint2_sparsity);
       ar & make_nvp("joint1_span_indexes", cmodel.joint1_span_indexes);
       ar & make_nvp("joint2_span_indexes", cmodel.joint2_span_indexes);
-      ar & make_nvp("loop_span_indexes", cmodel.loop_span_indexes);
       ar & make_nvp("colwise_sparsity", cmodel.colwise_sparsity);
       ar & make_nvp("colwise_span_indexes", cmodel.colwise_span_indexes);
       ar & make_nvp("nv", cmodel.nv);
