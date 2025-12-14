@@ -445,13 +445,13 @@ namespace pinocchio
   template<typename Scalar, int Options>
   template<typename MatrixLike>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::solveInPlace(
-    const Eigen::MatrixBase<MatrixLike> & mat) const
+    const Eigen::MatrixBase<MatrixLike> & mat_) const
   {
-    MatrixLike & mat_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixLike, mat);
+    auto & mat = mat_.const_cast_derived();
 
-    Uiv(mat_);
-    mat_.array().colwise() *= Dinv.array();
-    Utiv(mat_);
+    Uiv(mat);
+    mat.array().colwise() *= Dinv.array();
+    Utiv(mat);
   }
 
   template<typename Scalar, int Options>
@@ -489,15 +489,14 @@ namespace pinocchio
       template<typename Scalar, int Options>
       static void run(
         const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
-        const Eigen::MatrixBase<MatrixLike> & mat)
+        const Eigen::MatrixBase<MatrixLike> & mat_)
       {
-        MatrixLike & mat_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixLike, mat);
+        auto & mat = mat_.const_cast_derived();
 
-        PINOCCHIO_CHECK_INPUT_ARGUMENT(
-          mat.rows() == chol.size(), "The input matrix is of wrong size");
+        assert(mat.rows() == chol.size() && "The input matrix is of wrong size");
 
         for (Eigen::Index col_id = 0; col_id < mat_.cols(); ++col_id)
-          UvAlgo<typename MatrixLike::ColXpr>::run(chol, mat_.col(col_id));
+          UvAlgo<typename MatrixLike::ColXpr>::run(chol, mat.col(col_id));
       }
     };
 
@@ -507,10 +506,10 @@ namespace pinocchio
       template<typename Scalar, int Options>
       static void run(
         const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
-        const Eigen::MatrixBase<VectorLike> & vec)
+        const Eigen::MatrixBase<VectorLike> & vec_)
       {
         EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
-        VectorLike & vec_ = PINOCCHIO_EIGEN_CONST_CAST(VectorLike, vec);
+        auto & vec = vec_.const_cast_derived();
 
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
@@ -520,13 +519,13 @@ namespace pinocchio
         for (Eigen::Index k = 0; k < total_constraint_size; ++k)
         {
           const Eigen::Index slice_dim = chol.size() - k - 1;
-          vec_[k] += chol.U.row(k).tail(slice_dim).dot(vec_.tail(slice_dim));
+          vec[k] += chol.U.row(k).tail(slice_dim).dot(vec_.tail(slice_dim));
         }
 
         for (Eigen::Index k = total_constraint_size; k <= chol.size() - 2; ++k)
-          vec_[k] += chol.U.row(k)
-                       .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
-                       .dot(vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
+          vec[k] += chol.U.row(k)
+                      .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
+                      .dot(vec.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
       }
     };
   } // namespace details
@@ -708,7 +707,7 @@ namespace pinocchio
   void ContactCholeskyDecompositionTpl<Scalar, Options>::Utiv(
     const Eigen::MatrixBase<MatrixLike> & mat) const
   {
-    details::UtivAlgo<MatrixLike>::run(*this, PINOCCHIO_EIGEN_CONST_CAST(MatrixLike, mat));
+    details::UtivAlgo<MatrixLike>::run(*this, mat.const_cast_derived());
   }
 
   template<typename Scalar, int Options>
@@ -723,10 +722,10 @@ namespace pinocchio
   template<typename Scalar, int Options>
   template<typename MatrixType>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::matrix(
-    const Eigen::MatrixBase<MatrixType> & res) const
+    const Eigen::MatrixBase<MatrixType> & res_) const
   {
-    MatrixType & res_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res);
-    res_.noalias() = U * D.asDiagonal() * U.transpose();
+    auto & res = res_.const_cast_derived();
+    res.noalias() = U * D.asDiagonal() * U.transpose();
   }
 
   template<typename Scalar, int Options>
@@ -779,33 +778,33 @@ namespace pinocchio
     PINOCCHIO_DONT_INLINE VectorLike & inverseAlgo(
       const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
       const Eigen::Index col,
-      const Eigen::MatrixBase<VectorLike> & vec)
+      const Eigen::MatrixBase<VectorLike> & vec_)
     {
       EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike);
 
       typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
 
+      auto & vec = vec_.const_cast_derived();
       const Eigen::Index & chol_dim = chol.size();
       PINOCCHIO_CHECK_INPUT_ARGUMENT(col < chol_dim && col >= 0);
       PINOCCHIO_CHECK_INPUT_ARGUMENT(vec.size() == chol_dim);
 
       const typename ContactCholeskyDecomposition::EigenIndexVector & nvt = chol.nv_subtree_fromRow;
-      VectorLike & vec_ = PINOCCHIO_EIGEN_CONST_CAST(VectorLike, vec);
 
       const Eigen::Index last_col =
         std::min(col - 1, chol_dim - 2); // You can start from nv-2 (no child in nv-1)
-      vec_[col] = Scalar(1);
-      vec_.tail(chol_dim - col - 1).setZero();
+      vec[col] = Scalar(1);
+      vec.tail(chol_dim - col - 1).setZero();
 
       // TODO: exploit the sparsity pattern of the first rows of U
       for (Eigen::Index k = last_col; k >= 0; --k)
       {
         const Eigen::Index nvt_max = std::min(col - k, nvt[k] - 1);
         const auto U_row = chol.U.row(k);
-        vec_[k] = -U_row.segment(k + 1, nvt_max).dot(vec_.segment(k + 1, nvt_max));
+        vec[k] = -U_row.segment(k + 1, nvt_max).dot(vec.segment(k + 1, nvt_max));
         //          if(k >= chol_constraint_size)
         //          {
-        //            vec_[k] = -U_row.segment(k+1,nvt_max).dot(vec_.segment(k+1,nvt_max));
+        //            vec[k] = -U_row.segment(k+1,nvt_max).dot(vec.segment(k+1,nvt_max));
         //          }
         //          else
         //          {
@@ -818,8 +817,8 @@ namespace pinocchio
         //            Eigen::Index last_index1 = slice_0.first_index + slice_0.size;
         //            const Eigen::Index last_index2 = k + nvt_max;
         //            Eigen::Index slice_dim = std::min(last_index1,last_index2) - k;
-        //            vec_[k] =
-        //            -U_row.segment(slice_0.first_index+1,slice_dim-1).dot(vec_.segment(slice_0.first_index+1,slice_dim-1));
+        //            vec[k] =
+        //            -U_row.segment(slice_0.first_index+1,slice_dim-1).dot(vec.segment(slice_0.first_index+1,slice_dim-1));
         //
         //            typename SliceVector::const_iterator slice_it = slice_vector.begin()++;
         //            for(;slice_it != slice_vector.end(); ++slice_it)
@@ -829,39 +828,38 @@ namespace pinocchio
         //              slice_dim = std::min(last_index1,last_index2+1) - slice.first_index;
         //              if(slice_dim <= 0) break;
         //
-        //              vec_[k] -=
+        //              vec[k] -=
         //              U_row.segment(slice.first_index,slice_dim).dot(vec_.segment(slice.first_index,slice_dim));
         //            }
         //          }
       }
 
-      vec_.head(col + 1).array() *= chol.Dinv.head(col + 1).array();
+      vec.head(col + 1).array() *= chol.Dinv.head(col + 1).array();
 
       for (Eigen::Index k = 0; k < col + 1; ++k) // You can stop one step before nv.
       {
         const Eigen::Index nvt_max = nvt[k] - 1;
-        vec_.segment(k + 1, nvt_max) -= chol.U.row(k).segment(k + 1, nvt_max).transpose() * vec_[k];
+        vec.segment(k + 1, nvt_max) -= chol.U.row(k).segment(k + 1, nvt_max).transpose() * vec[k];
       }
 
-      return vec_;
+      return vec;
     }
   } // namespace details
 
   template<typename Scalar, int Options>
   template<typename MatrixType>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::inverse(
-    const Eigen::MatrixBase<MatrixType> & res) const
+    const Eigen::MatrixBase<MatrixType> & res_) const
   {
+    auto & res = res_.const_cast_derived();
     PINOCCHIO_CHECK_INPUT_ARGUMENT(res.rows() == size());
     PINOCCHIO_CHECK_INPUT_ARGUMENT(res.cols() == size());
 
-    MatrixType & res_ = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res);
-
     for (Eigen::Index col_id = 0; col_id < size(); ++col_id)
-      details::inverseAlgo(*this, col_id, res_.col(col_id));
+      details::inverseAlgo(*this, col_id, res.col(col_id));
 
-    res_.template triangularView<Eigen::StrictlyLower>() =
-      res_.transpose().template triangularView<Eigen::StrictlyLower>();
+    res.template triangularView<Eigen::StrictlyLower>() =
+      res.transpose().template triangularView<Eigen::StrictlyLower>();
   }
 
   template<typename Scalar, int Options>

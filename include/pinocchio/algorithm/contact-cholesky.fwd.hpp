@@ -291,7 +291,7 @@ namespace pinocchio
     template<typename MatrixType>
     void getOperationalSpaceInertiaMatrix(const Eigen::MatrixBase<MatrixType> & res_) const
     {
-      MatrixType & res = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res_);
+      auto & res = res_.const_cast_derived();
       //        typedef typename RowMatrix::ConstBlockXpr ConstBlockXpr;
       const auto U1 = U.topLeftCorner(constraintDim(), constraintDim())
                         .template triangularView<Eigen::UnitUpper>();
@@ -321,7 +321,7 @@ namespace pinocchio
     template<typename MatrixType>
     void getInverseMassMatrix(const Eigen::MatrixBase<MatrixType> & res_) const
     {
-      MatrixType & res = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res_);
+      auto & res = res_.const_cast_derived();
       //        typedef typename RowMatrix::ConstBlockXpr ConstBlockXpr;
       const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
 
@@ -343,7 +343,7 @@ namespace pinocchio
     void getJMinv(const Eigen::MatrixBase<MatrixType> & res_) const
     {
       PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      MatrixType & res = PINOCCHIO_EIGEN_CONST_CAST(MatrixType, res_);
+      auto & res = res_.const_cast_derived();
       const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
       auto U2 = U.topRightCorner(constraintDim(), nv);
 
