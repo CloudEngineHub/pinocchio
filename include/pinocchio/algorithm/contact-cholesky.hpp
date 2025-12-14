@@ -419,14 +419,15 @@ namespace pinocchio
   {
     EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
     damping = vec;
-    const Eigen::Index total_size = size();
-    const Eigen::Index total_constraint_size = total_size - nv;
-    U.topLeftCorner(total_constraint_size, total_constraint_size).setIdentity();
+    const Eigen::Index constraint_size = constraintDim();
+
+    auto UTopLeft = U.topLeftCorner(constraint_size, constraint_size);
+    UTopLeft.setIdentity();
 
     // Upper left triangular part of U
-    for (Eigen::Index j = total_constraint_size - 1; j >= 0; --j)
+    for (Eigen::Index j = constraint_size - 1; j >= 0; --j)
     {
-      const Eigen::Index slice_dim = total_constraint_size - j - 1;
+      const Eigen::Index slice_dim = constraint_size - j - 1;
       typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
       MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, slice_dim, 1));
       DUt_partial.noalias() =
