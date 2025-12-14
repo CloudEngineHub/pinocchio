@@ -259,7 +259,7 @@ namespace pinocchio
       const auto U1 = U.topLeftCorner(constraintDim(), constraintDim());
 
       const auto dim = constraintDim();
-      typedef Eigen::Map<RowMatrix> MapRowMatrix;
+      typedef Eigen::Map<RowMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapRowMatrix;
       MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
 
       PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
@@ -297,10 +297,10 @@ namespace pinocchio
                         .template triangularView<Eigen::UnitUpper>();
 
       const auto dim = constraintDim();
-      typedef Eigen::Map<RowMatrix> MapRowMatrix;
+      typedef Eigen::Map<RowMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapRowMatrix;
       MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
 
-      typedef Eigen::Map<Matrix> MapMatrix;
+      typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
       MapMatrix U1inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
 
       PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
@@ -325,10 +325,10 @@ namespace pinocchio
       //        typedef typename RowMatrix::ConstBlockXpr ConstBlockXpr;
       const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
 
-      typedef Eigen::Map<RowMatrix> MapRowMatrix;
+      typedef Eigen::Map<RowMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapRowMatrix;
       MapRowMatrix Minv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
 
-      typedef Eigen::Map<Matrix> MapMatrix;
+      typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
       MapMatrix U4inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
 
       PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
@@ -347,7 +347,7 @@ namespace pinocchio
       const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
       auto U2 = U.topRightCorner(constraintDim(), nv);
 
-      typedef Eigen::Map<Matrix> MapMatrix;
+      typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
       MapMatrix U4inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
 
       U4inv.setIdentity();
