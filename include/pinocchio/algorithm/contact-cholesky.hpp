@@ -22,6 +22,17 @@ namespace pinocchio
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
 
   template<typename Scalar, int Options>
+  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl()
+  : D(D_storage.map())
+  , Dinv(Dinv_storage.map())
+  , U(U_storage.map())
+  , compliance(compliance_storage.map())
+  , damping(damping_storage.map())
+  , delassus_block(delassus_block_storage.map())
+  {
+  }
+
+  template<typename Scalar, int Options>
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
   ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
     const ModelTpl<S1, O1, JointCollectionTpl> & model)
@@ -35,6 +46,64 @@ namespace pinocchio
     std::vector<ConstraintModel> empty_constraint_models;
     std::vector<ConstraintData> empty_constraint_datas;
     resize(model, empty_constraint_models, empty_constraint_datas);
+  }
+
+  template<typename Scalar, int Options>
+  template<
+    typename S1,
+    int O1,
+    template<typename, int> class JointCollectionTpl,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator>
+  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
+    const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    const DataTpl<S1, O1, JointCollectionTpl> & data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
+  : D(D_storage.map())
+  , Dinv(Dinv_storage.map())
+  , U(U_storage.map())
+  , compliance(compliance_storage.map())
+  , damping(damping_storage.map())
+  , delassus_block(delassus_block_storage.map())
+  {
+    PINOCCHIO_UNUSED_VARIABLE(data);
+    resize(model, constraint_models, constraint_datas);
+  }
+
+  template<typename Scalar, int Options>
+  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
+    const ContactCholeskyDecompositionTpl & other)
+  : D(D_storage.map())
+  , Dinv(Dinv_storage.map())
+  , U(U_storage.map())
+  , compliance(compliance_storage.map())
+  , damping(damping_storage.map())
+  , delassus_block(delassus_block_storage.map())
+  {
+    *this = other;
+  }
+
+  template<typename Scalar, int Options>
+  ContactCholeskyDecompositionTpl<Scalar, Options> &
+  ContactCholeskyDecompositionTpl<Scalar, Options>::operator=(
+    const ContactCholeskyDecompositionTpl & other)
+  {
+    parents_fromRow = other.parents_fromRow;
+    nv_subtree_fromRow = other.nv_subtree_fromRow;
+    nv = other.nv;
+
+    rowise_sparsity_pattern = other.rowise_sparsity_pattern;
+
+    D_storage = other.D_storage;
+    Dinv_storage = other.Dinv_storage;
+    U_storage = other.U_storage;
+    compliance_storage = other.compliance_storage;
+    damping_storage = other.damping_storage;
+
+    return *this;
   }
 
   template<typename Scalar, int Options>
@@ -773,14 +842,12 @@ namespace pinocchio
     {
       EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike);
 
-      typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
-
       auto & vec = vec_.const_cast_derived();
       const Eigen::Index & chol_dim = chol.size();
       PINOCCHIO_CHECK_INPUT_ARGUMENT(col < chol_dim && col >= 0);
       PINOCCHIO_CHECK_INPUT_ARGUMENT(vec.size() == chol_dim);
 
-      const typename ContactCholeskyDecomposition::EigenIndexVector & nvt = chol.nv_subtree_fromRow;
+      const auto & nvt = chol.nv_subtree_fromRow;
 
       const Eigen::Index last_col =
         std::min(col - 1, chol_dim - 2); // You can start from nv-2 (no child in nv-1)
@@ -793,36 +860,37 @@ namespace pinocchio
         const Eigen::Index nvt_max = std::min(col - k, nvt[k] - 1);
         const auto U_row = chol.U.row(k);
         vec[k] = -U_row.segment(k + 1, nvt_max).dot(vec.segment(k + 1, nvt_max));
-        //          if(k >= chol_constraint_size)
-        //          {
-        //            vec[k] = -U_row.segment(k+1,nvt_max).dot(vec.segment(k+1,nvt_max));
-        //          }
-        //          else
-        //          {
-        //            typedef typename ContactCholeskyDecomposition::SliceVector SliceVector;
-        //            typedef typename ContactCholeskyDecomposition::Slice Slice;
-        //            const SliceVector & slice_vector = chol.rowise_sparsity_pattern[(size_t)k];
-        //
-        //            const Slice & slice_0 = slice_vector[0];
-        //            assert(slice_0.first_index == k);
-        //            Eigen::Index last_index1 = slice_0.first_index + slice_0.size;
-        //            const Eigen::Index last_index2 = k + nvt_max;
-        //            Eigen::Index slice_dim = std::min(last_index1,last_index2) - k;
-        //            vec[k] =
-        //            -U_row.segment(slice_0.first_index+1,slice_dim-1).dot(vec.segment(slice_0.first_index+1,slice_dim-1));
-        //
-        //            typename SliceVector::const_iterator slice_it = slice_vector.begin()++;
-        //            for(;slice_it != slice_vector.end(); ++slice_it)
-        //            {
-        //              const Slice & slice = *slice_it;
-        //              last_index1 = slice.first_index + slice.size;
-        //              slice_dim = std::min(last_index1,last_index2+1) - slice.first_index;
-        //              if(slice_dim <= 0) break;
-        //
-        //              vec[k] -=
-        //              U_row.segment(slice.first_index,slice_dim).dot(vec_.segment(slice.first_index,slice_dim));
-        //            }
-        //          }
+        //  if(k >= chol_constraint_size)
+        //  {
+        //    vec[k] = -U_row.segment(k+1,nvt_max).dot(vec.segment(k+1,nvt_max));
+        //  }
+        //  else
+        //  {
+        //    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
+        //    typedef typename ContactCholeskyDecomposition::SliceVector SliceVector;
+        //    typedef typename ContactCholeskyDecomposition::Slice Slice;
+        //    const SliceVector & slice_vector = chol.rowise_sparsity_pattern[(size_t)k];
+
+        //    const Slice & slice_0 = slice_vector[0];
+        //    assert(slice_0.first_index == k);
+        //    Eigen::Index last_index1 = slice_0.first_index + slice_0.size;
+        //    const Eigen::Index last_index2 = k + nvt_max;
+        //    Eigen::Index slice_dim = std::min(last_index1,last_index2) - k;
+        //    vec[k] =
+        //    -U_row.segment(slice_0.first_index+1,slice_dim-1).dot(vec.segment(slice_0.first_index+1,slice_dim-1));
+
+        //    typename SliceVector::const_iterator slice_it = slice_vector.begin()++;
+        //    for(;slice_it != slice_vector.end(); ++slice_it)
+        //    {
+        //      const Slice & slice = *slice_it;
+        //      last_index1 = slice.first_index + slice.size;
+        //      slice_dim = std::min(last_index1,last_index2+1) - slice.first_index;
+        //      if(slice_dim <= 0) break;
+
+        //      vec[k] -=
+        //      U_row.segment(slice.first_index,slice_dim).dot(vec_.segment(slice.first_index,slice_dim));
+        //    }
+        //  }
       }
 
       vec.head(col + 1).array() *= chol.Dinv.head(col + 1).array();

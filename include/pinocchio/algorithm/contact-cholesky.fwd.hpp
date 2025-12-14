@@ -112,15 +112,7 @@ namespace pinocchio
     ///
     /// \brief Default constructor
     ///
-    ContactCholeskyDecompositionTpl()
-    : D(D_storage.map())
-    , Dinv(Dinv_storage.map())
-    , U(U_storage.map())
-    , compliance(compliance_storage.map())
-    , damping(damping_storage.map())
-    , delassus_block(delassus_block_storage.map())
-    {
-    }
+    ContactCholeskyDecompositionTpl();
 
     ///
     /// \brief Constructor from a model.
@@ -151,50 +143,21 @@ namespace pinocchio
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       const DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-    : D(D_storage.map())
-    , Dinv(Dinv_storage.map())
-    , U(U_storage.map())
-    , compliance(compliance_storage.map())
-    , damping(damping_storage.map())
-    , delassus_block(delassus_block_storage.map())
-    {
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      resize(model, constraint_models, constraint_datas);
-    }
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
     ///
     /// \brief Copy constructor
     ///
     /// \param[in] other ContactCholeskyDecompositionTpl to copy
     ///
-    ContactCholeskyDecompositionTpl(const ContactCholeskyDecompositionTpl & other)
-    : D(D_storage.map())
-    , Dinv(Dinv_storage.map())
-    , U(U_storage.map())
-    , compliance(compliance_storage.map())
-    , damping(damping_storage.map())
-    , delassus_block(delassus_block_storage.map())
-    {
-      *this = other;
-    }
+    ContactCholeskyDecompositionTpl(const ContactCholeskyDecompositionTpl & other);
 
-    ContactCholeskyDecompositionTpl & operator=(const ContactCholeskyDecompositionTpl & other)
-    {
-      parents_fromRow = other.parents_fromRow;
-      nv_subtree_fromRow = other.nv_subtree_fromRow;
-      nv = other.nv;
-
-      rowise_sparsity_pattern = other.rowise_sparsity_pattern;
-
-      D_storage = other.D_storage;
-      Dinv_storage = other.Dinv_storage;
-      U_storage = other.U_storage;
-      compliance_storage = other.compliance_storage;
-      damping_storage = other.damping_storage;
-
-      return *this;
-    }
+    ///
+    /// \brief Copy operator
+    ///
+    /// \param[in] other ContactCholeskyDecompositionTpl to copy
+    ///
+    ContactCholeskyDecompositionTpl & operator=(const ContactCholeskyDecompositionTpl & other);
 
     ///
     ///  \brief Internal memory allocation.
