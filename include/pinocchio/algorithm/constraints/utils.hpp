@@ -191,6 +191,34 @@ namespace pinocchio
     return active_size;
   }
 
+  template<
+    typename ConstraintModel,
+    class ConstraintModelAllocator,
+    typename ConstraintData,
+    class ConstraintDataAllocator,
+    typename ComplianceVector>
+  void retrieveCompliance(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const Eigen::MatrixBase<ComplianceVector> & compliance_)
+  {
+    EIGEN_STATIC_ASSERT_VECTOR_ONLY(ComplianceVector);
+
+    Eigen::Index constraint_index = 0;
+    auto & compliance = compliance_.const_cast_derived();
+
+    assert(compliance.size() == residualSize(constraint_models, constraint_datas));
+
+    for (std::size_t i = 0; i < constraint_models.size(); i++)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cdata = helper::get_ref(constraint_datas[i]);
+      const auto csize = cmodel.residualSize(cdata);
+      cmodel.retrieveCompliance(cdata, compliance.segment(constraint_index, csize));
+      constraint_index += csize;
+    }
+  }
+
   ///
   /// \brief Maps the constraint forces expressed in the constraint space to joint forces expressed
   /// in the local frame.
