@@ -311,14 +311,15 @@ namespace pinocchio
                   min_config, max_config, config_limit_margin, min_dry_friction, max_dry_friction,
                   damping, *mimic_info);
                 break;
-              case Base::CONTINUOUS:
+              case JointType::CONTINUOUS:
                 joint_id = addMimicJoint<
                   typename JointCollection::JointModelRUBX,
                   typename JointCollection::JointModelRUBY,
                   typename JointCollection::JointModelRUBZ,
                   typename JointCollection::JointModelRevoluteUnboundedUnaligned>(
-                  frame, placement, joint_name, max_effort, max_velocity, min_config, max_config,
-                  friction, damping, *mimic_info);
+                  frame, placement, joint_name, min_effort, max_effort, min_velocity, max_velocity,
+                  min_config, max_config, config_limit_margin, min_dry_friction, max_dry_friction,
+                  damping, *mimic_info);
                 break;
               default:
                 PINOCCHIO_CHECK_INPUT_ARGUMENT(

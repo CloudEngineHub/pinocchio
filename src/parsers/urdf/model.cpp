@@ -196,18 +196,17 @@ namespace pinocchio
               friction = Vector::Constant(0, 0.);
               damping = Vector::Constant(0, 0.);
 
-              MimicInfo_ mimic_info(
+              MimicInfo mimic_info(
                 joint->mimic->joint_name, joint->mimic->multiplier, joint->mimic->offset, axis,
-                UrdfVisitorBase::CONTINUOUS);
+                JointType::CONTINUOUS);
 
               model.addJointAndBody(
-                UrdfVisitorBase::MIMIC, axis, parentFrameId, jointPlacement, joint->name, Y,
-                link->name, max_effort, max_velocity, min_config, max_config, friction, damping,
-                mimic_info);
+                JointType::MIMIC, axis, parentFrameId, jointPlacement, joint->name, Y, link->name,
+                max_effort, max_velocity, min_config, max_config, friction, damping, mimic_info);
             }
             else
               model.addJointAndBody(
-                UrdfVisitorBase::CONTINUOUS, axis, parentFrameId, jointPlacement, joint->name, Y,
+                JointType::CONTINUOUS, axis, parentFrameId, jointPlacement, joint->name, Y,
                 link->name, max_effort, max_velocity, min_config, max_config, friction, damping);
 
             break;
