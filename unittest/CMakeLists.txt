@@ -78,7 +78,9 @@ function(ADD_PINOCCHIO_UNIT_TEST name)
     set_target_properties(${TEST_NAME} PROPERTIES LINKER_LANGUAGE CXX)
     target_include_directories(${TEST_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-    if(NOT unit_test_HEADER_ONLY)
+    if(unit_test_HEADER_ONLY)
+      target_link_libraries(${TEST_NAME} PUBLIC ${PROJECT_NAME}_headers)
+    else()
       target_link_libraries(${TEST_NAME} PUBLIC ${PROJECT_NAME}_default)
     endif()
 
