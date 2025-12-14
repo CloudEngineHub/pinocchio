@@ -77,12 +77,6 @@ namespace pinocchio
     typedef EigenStorageTpl<Matrix> EigenStorageMatrix;
     typedef EigenStorageTpl<RowMatrix> EigenStorageRowMatrix;
 
-    // TODO Remove when API is stabilized
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-    typedef RigidConstraintModelTpl<Scalar, Options> RigidConstraintModel;
-    typedef RigidConstraintDataTpl<Scalar, Options> RigidConstraintData;
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
     typedef Eigen::Matrix<Eigen::Index, Eigen::Dynamic, 1, Options> EigenIndexVector;
     typedef typename PINOCCHIO_ALIGNED_STD_VECTOR(EigenIndexVector) VectorOfEigenIndexVector;
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
