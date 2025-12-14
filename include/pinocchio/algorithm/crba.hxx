@@ -156,7 +156,6 @@ namespace pinocchio
         typedef JointModelMimicTpl<Scalar, Options, JointCollectionTpl> JointModel;
 
         JointIndex mimicking_id = jmodel.id();
-        JointIndex mimicked_id = jmodel.derived().jmodel().id();
 
         Eigen::Ref<Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options, 6, JointModel::MaxNVMimicked>>
           J_cols = jmodel.jointExtendedModelCols(data.J);
@@ -396,8 +395,7 @@ namespace pinocchio
       {
         typedef JointModelMimic JointModel;
 
-        const JointIndex & mimicking_id = jmodel.id();
-        const JointIndex & mimicked_id = jmodel.derived().jmodel().id();
+        const JointIndex mimicking_id = jmodel.id();
         auto & F = data.Fcrb[mimicking_id];
 
         /* F[1:6,i] = Y*S */
