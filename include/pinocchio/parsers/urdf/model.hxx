@@ -311,6 +311,15 @@ namespace pinocchio
                   min_config, max_config, config_limit_margin, min_dry_friction, max_dry_friction,
                   damping, *mimic_info);
                 break;
+              case Base::CONTINUOUS:
+                joint_id = addMimicJoint<
+                  typename JointCollection::JointModelRUBX,
+                  typename JointCollection::JointModelRUBY,
+                  typename JointCollection::JointModelRUBZ,
+                  typename JointCollection::JointModelRevoluteUnboundedUnaligned>(
+                  frame, placement, joint_name, max_effort, max_velocity, min_config, max_config,
+                  friction, damping, *mimic_info);
+                break;
               default:
                 PINOCCHIO_CHECK_INPUT_ARGUMENT(
                   false, "Cannot mimic this type. Only revolute, prismatic and helicoidal can be "
@@ -585,7 +594,8 @@ namespace pinocchio
             return model.addJoint(
               frame.parentJoint,
               typename JointCollection::JointModelMimic(
-                TypeUnaligned(), mimicked_joint, mimic_info.multiplier, mimic_info.offset),
+                TypeUnaligned(mimic_info.axis.normalized()), mimicked_joint, mimic_info.multiplier,
+                mimic_info.offset),
               frame.placement * placement, joint_name, min_effort, max_effort, min_velocity,
               max_velocity, min_config, max_config, config_limit_margin, min_dry_friction,
               max_dry_friction, damping);

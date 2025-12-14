@@ -43,6 +43,7 @@ set(${PROJECT_NAME}_PYTHON_TESTS
     # Parsers
     bindings_sample_models
     bindings_mjcf
+    bindings_model_graph
     # Others
     robot_wrapper
     utils
@@ -67,8 +68,9 @@ function(pinocchio_add_python_cpp_module name)
   endif()
 
   add_library(${target_name} MODULE ${_exclude} ${source_file})
-  target_compile_definitions(${target_name} PRIVATE EXT_MODULE_NAME=${module_name})
-  target_link_libraries(${target_name} PRIVATE pinocchio_default eigenpy::eigenpy)
+  target_compile_definitions(${target_name} PRIVATE EXT_MODULE_NAME=${module_name}
+                                                    COAL_DISABLE_HPP_FCL_WARNINGS)
+  target_link_libraries(${target_name} PRIVATE pinocchio::pinocchio_default eigenpy::eigenpy)
   foreach(_dep ${ARGS_PIN_TARGETS})
     target_link_libraries(${target_name} PRIVATE ${_dep})
   endforeach()
@@ -97,6 +99,11 @@ function(pinocchio_add_lib_unit_test name)
   set(TEST_NAME "${PROJECT_NAME}-test-py-${name}")
   add_python_unit_test(${TEST_NAME} "unittest/python/${name}.py" "bindings/python"
                        "unittest/python")
+  get_test_property(${TEST_NAME} ENVIRONMENT _ENVIRONMENT)
+  set_tests_properties(
+    "${TEST_NAME}"
+    PROPERTIES ENVIRONMENT
+               "${_ENVIRONMENT};EXAMPLE_ROBOT_DATA_MODEL_DIR=${EXAMPLE_ROBOT_DATA_MODEL_DIR}")
   add_windows_dll_path_to_test(${TEST_NAME})
 endfunction()
 
@@ -117,6 +124,11 @@ endif()
 foreach(TEST ${${PROJECT_NAME}_PYTHON_TESTS})
   set(TEST_NAME "${PROJECT_NAME}-test-py-${TEST}")
   add_python_unit_test(${TEST_NAME} "unittest/python/${TEST}.py" "bindings/python")
+  get_test_property(${TEST_NAME} ENVIRONMENT _ENVIRONMENT)
+  set_tests_properties(
+    "${TEST_NAME}"
+    PROPERTIES ENVIRONMENT
+               "${_ENVIRONMENT};EXAMPLE_ROBOT_DATA_MODEL_DIR=${EXAMPLE_ROBOT_DATA_MODEL_DIR}")
   add_windows_dll_path_to_test(${TEST_NAME})
 endforeach(TEST ${${PROJECT_NAME}_PYTHON_TESTS})
 
@@ -141,6 +153,11 @@ if(MEMORYCHECK_COMMAND AND MEMORYCHECK_COMMAND MATCHES ".*valgrind$")
       "unittest/python/${TEST}.supp"
       MODULES
       "bindings/python")
+    get_test_property(${TEST_NAME} ENVIRONMENT _ENVIRONMENT)
+    set_tests_properties(
+      "${TEST_NAME}"
+      PROPERTIES ENVIRONMENT
+                 "${_ENVIRONMENT};EXAMPLE_ROBOT_DATA_MODEL_DIR=${EXAMPLE_ROBOT_DATA_MODEL_DIR}")
     add_windows_dll_path_to_test(${TEST_NAME})
   endforeach()
 else()
@@ -149,7 +166,7 @@ endif()
 
 # TODO @jorisv: reenable these on windows when we normalize paths to lib/bin like on eigenpy
 if(NOT WIN32)
-  pinocchio_add_python_cpp_module(bindings_visualizer PIN_TARGETS pinocchio_visualizers)
+  pinocchio_add_python_cpp_module(bindings_visualizer PIN_TARGETS pinocchio::pinocchio_visualizers)
   pinocchio_add_lib_unit_test(bindings_visualizer)
 endif()
 

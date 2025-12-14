@@ -1095,7 +1095,17 @@ namespace pinocchio
           std::string jointName = nameOfBody + "_fixed";
           mjcfVisitor << jointName << " being parsed." << '\n';
 
-          mjcfVisitor.addFixedJointAndBody(parentFrameId, bodyPose, jointName, inertia, nameOfBody);
+          urdfVisitor.addFixedJointAndBody(parentFrameId, bodyPose, jointName, inertia, nameOfBody);
+
+          // Attach child site frame to parent joint
+          FrameIndex bodyId = urdfVisitor.model.getFrameId(nameOfBody, BODY);
+          JointIndex parentJoint = urdfVisitor.model.frames[bodyId].parentJoint;
+          for (const auto & site : currentBody.siteChildren)
+          {
+            SE3 placement = bodyPose * site.sitePlacement;
+            urdfVisitor.model.addFrame(
+              Frame(site.siteName, parentJoint, bodyId, placement, OP_FRAME));
+          }
           return;
         }
 
@@ -1184,8 +1194,9 @@ namespace pinocchio
             rangeCompo.armature;
         }
 
-        FrameIndex bodyId = mjcfVisitor.model.getFrameId(nameOfBody, BODY);
-        frame = mjcfVisitor.model.frames[bodyId];
+        // Attach child site frame to parent joint
+        FrameIndex bodyId = urdfVisitor.model.getFrameId(nameOfBody, BODY);
+        frame = urdfVisitor.model.frames[bodyId];
         for (const auto & site : currentBody.siteChildren)
         {
           SE3 placement = bodyInJoint * site.sitePlacement;
