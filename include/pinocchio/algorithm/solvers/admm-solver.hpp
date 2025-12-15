@@ -127,20 +127,14 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Solve the constraint problem composed of problem data (G,g,constraint_models) and
-    /// starting from the initial guess.
+    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
+    /// constraint_datas).
     ///
-    /// TODO: put correct params
     /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
-    /// \param[in] g Free constraint acceleration or velicity associted with the constraint problem.
-    /// \param[in] constraint_models Vector of constraints.
-    /// \param[in] preconditioner Precondtionner of the problem.
-    /// \param[in] primal_guess Optional initial guess of the primal solution (constrained forces).
-    /// \param[in] dual_guess Optinal Initial guess of the dual solution (constrained velocities).
-    /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false)
-    /// \param[in] admm_update_rule update rule for ADMM (constant, linear or spectral)
-    /// \param[in] rho0 Initial value of the rho parameter.
-    /// \param[in] stat_record record solver metrics
+    /// \param[in] g Free constraint acceleration or velocity associted with the constraint problem.
+    /// \param[in] constraint_models Vector of constraint models.
+    /// \param[in] constraint_datas Vector of constraint datas.
+    /// \param[in] settings Settings for the PGS solver.
     ///
     /// \returns True if the problem has converged.
     template<
@@ -302,8 +296,8 @@ namespace pinocchio
     /// \brief Relative tolerance of complementarity (duality complementarity).
     using Base::tol_rel_complementarity;
 
-    /// \brief Whether or not to solve the NCP. If set to solve, the equivalent CCP
-    /// is solved.
+    /// \brief Whether or not to solve the NCP. If set to false, the equivalent CCP
+    /// is solved. Default is true.
     using Base::solve_ncp;
 
     /// \brief Measure solve timings
