@@ -5,18 +5,110 @@
 #ifndef __pinocchio_algorithm_solvers_pgs_solver_hpp__
 #define __pinocchio_algorithm_solvers_pgs_solver_hpp__
 
-#include "pinocchio/algorithm/constraints/fwd.hpp"
+#include "pinocchio/algorithm/solvers/fwd.hpp"
 #include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
+
+#include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/delassus-operator-dense.hpp"
 #include <boost/optional.hpp>
 #include <limits>
 
 namespace pinocchio
 {
+  // fwd declarations for PGS-internal structs
+  // user-api structs are fwd delclared in solvers/fwd.hpp.
+  // see below for definitions
+  namespace internal
+  {
+    template<typename Scalar>
+    struct PGSSolverWorkspaceTpl;
+  }
 
-  template<typename Scalar>
-  struct PGSConstraintSolverTpl;
-  typedef PGSConstraintSolverTpl<context::Scalar> PGSConstraintSolver;
+  /// \brief Projected Gauss Siedel solver
+  template<typename _Scalar>
+  struct PGSConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
+  {
+    typedef _Scalar Scalar;
+    typedef ConstraintSolverBaseTpl<Scalar> Base;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
+
+    typedef internal::PGSSolverWorkspaceTpl<Scalar> PGSSolverWorkspace;
+    typedef PGSSolverSettingsTpl<Scalar> PGSSolverSettings;
+    typedef PGSSolverSolutionTpl<Scalar> PGSSolverSolution;
+    typedef PGSSolverStatsTpl<Scalar> PGSSolverStats;
+
+    explicit PGSConstraintSolverTpl(std::size_t problem_size)
+    : Base()
+    , solution()
+    , workspace(problem_size)
+    , stats()
+    {
+    }
+
+    ///
+    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_sets) and
+    /// starting from the initial guess.
+    ///
+    /// \param[in] G Symmetric PSD matrix representing the Delassus of the contact problem.
+    /// \param[in] g Free contact acceleration or velicity associted with the contact problem.
+    /// \param[in] constraint_models Vector of constraint models.
+    /// \param[in] x Initial guess solution of the problem.
+    /// \param[in] over_relax Optional over relaxation value, default to 1.
+    ///
+    /// \returns True if the problem has converged.
+    template<
+      typename MatrixType,
+      typename VectorLike,
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
+    bool solve(
+      const Eigen::MatrixBase<MatrixType> & delassus,
+      const Eigen::MatrixBase<VectorLike> & g,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const PGSSolverSettings & settings);
+
+    ///
+    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_sets) and
+    /// starting from the initial guess.
+    ///
+    /// \param[in] G Symmetric PSD matrix representing the Delassus of the contact problem.
+    /// \param[in] g Free contact acceleration or velicity associted with the contact problem.
+    /// \param[in] constraint_models Vector of constraint models.
+    /// \param[in] x Initial guess solution of the problem.
+    /// \param[in] over_relax Optional over relaxation value, default to 1.
+    ///
+    /// \returns True if the problem has converged.
+    template<
+      typename DelassusDerived,
+      typename VectorLike,
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
+    bool solve(
+      DelassusOperatorBase<DelassusDerived> & delassus,
+      const Eigen::MatrixBase<VectorLike> & g,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const PGSSolverSettings & settings)
+    {
+      return solve(delassus.derived().matrix(), g, constraint_models, constraint_datas, settings);
+    }
+
+#ifdef PINOCCHIO_WITH_HPP_FCL
+    using Base::timer;
+#endif // PINOCCHIO_WITH_HPP_FCL
+
+    PGSSolverSolution solution;
+    PGSSolverWorkspace workspace;
+    PGSSolverStats stats;
+
+  }; // struct PGSConstraintSolverTpl
 
   ///
   /// \brief Settings for the PGS constraint solver loop.
@@ -103,64 +195,6 @@ namespace pinocchio
     /// \brief Over-relaxation of PGS step. Default value is 1.
     Scalar over_relaxation;
   }; // struct PGSSolverSettingsTpl
-  typedef PGSSolverSettingsTpl<context::Scalar> PGSSolverSettings;
-
-  ///
-  /// \brief Workspace for the PGS constraint solver.
-  template<typename _Scalar>
-  struct PGSSolverWorkspaceTpl
-  {
-    typedef _Scalar Scalar;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
-
-    // TODO: use eigenstorage
-
-    /// \brief Default constructor
-    PGSSolverWorkspaceTpl()
-    : problem_size(0)
-    {
-    }
-
-    /// \brief Constructor given problem_size.
-    PGSSolverWorkspaceTpl(std::size_t problem_size)
-    : problem_size(problem_size)
-    {
-      resize(problem_size);
-    }
-
-    /// \brief Resize workspace vectors to problem size.
-    void resize(std::size_t problem_size_)
-    {
-      problem_size = problem_size_;
-
-      Eigen::Index np = static_cast<Eigen::Index>(problem_size);
-      x.setZero(np);
-      x_previous.setZero(np);
-      y.setZero(np);
-      tmp.setZero(np);
-      rhs.setZero(np);
-    }
-
-    /// \brief Size of problem.
-    std::size_t problem_size;
-
-    /// \brief Primal variable (impulses) at current iteration.
-    VectorXs x;
-
-    /// \brief Primal variable (impulses) at previous iteration.
-    VectorXs x_previous;
-
-    /// \brief Dual variable (constraint velocities) at current iteration.
-    VectorXs y;
-
-    /// \brief Temporary vector for computations.
-    VectorXs rhs;
-
-    /// \brief Temporary vector for computations.
-    VectorXs tmp;
-  }; // struct PGSSolverWorkspaceTpl
-  typedef PGSSolverWorkspaceTpl<context::Scalar> PGSSolverWorkspace;
 
   ///
   /// \brief Struct describing the solution of the PGS constraint solver
@@ -276,93 +310,66 @@ namespace pinocchio
     /// \brief Vector storing per iteration complementarity.
     using Base::complementarity;
   }; // struct PGSSolverStatsTpl
-  typedef PGSSolverStatsTpl<context::Scalar> PGSSolverStats;
 
-  /// \brief Projected Gauss Siedel solver
-  template<typename _Scalar>
-  struct PGSConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
+  namespace internal
   {
-    typedef _Scalar Scalar;
-    typedef ConstraintSolverBaseTpl<Scalar> Base;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
-    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
-
-    typedef PGSSolverWorkspaceTpl<Scalar> PGSSolverWorkspace;
-    typedef PGSSolverSettingsTpl<Scalar> PGSSolverSettings;
-    typedef PGSSolverSolutionTpl<Scalar> PGSSolverSolution;
-    typedef PGSSolverStatsTpl<Scalar> PGSSolverStats;
-
-    explicit PGSConstraintSolverTpl(std::size_t problem_size)
-    : Base()
-    , solution()
-    , workspace(problem_size)
-    , stats()
+    ///
+    /// \brief Workspace for the PGS constraint solver.
+    template<typename _Scalar>
+    struct PGSSolverWorkspaceTpl
     {
-    }
+      typedef _Scalar Scalar;
+      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
 
-    ///
-    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_sets) and
-    /// starting from the initial guess.
-    ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the contact problem.
-    /// \param[in] g Free contact acceleration or velicity associted with the contact problem.
-    /// \param[in] constraint_models Vector of constraint models.
-    /// \param[in] x Initial guess solution of the problem.
-    /// \param[in] over_relax Optional over relaxation value, default to 1.
-    ///
-    /// \returns True if the problem has converged.
-    template<
-      typename MatrixType,
-      typename VectorLike,
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator>
-    bool solve(
-      const Eigen::MatrixBase<MatrixType> & delassus,
-      const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const PGSSolverSettings & settings);
+      // TODO: use eigenstorage
 
-    ///
-    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_sets) and
-    /// starting from the initial guess.
-    ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the contact problem.
-    /// \param[in] g Free contact acceleration or velicity associted with the contact problem.
-    /// \param[in] constraint_models Vector of constraint models.
-    /// \param[in] x Initial guess solution of the problem.
-    /// \param[in] over_relax Optional over relaxation value, default to 1.
-    ///
-    /// \returns True if the problem has converged.
-    template<
-      typename DelassusDerived,
-      typename VectorLike,
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator>
-    bool solve(
-      DelassusOperatorBase<DelassusDerived> & delassus,
-      const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const PGSSolverSettings & settings)
-    {
-      return solve(delassus.derived().matrix(), g, constraint_models, constraint_datas, settings);
-    }
+      /// \brief Default constructor
+      PGSSolverWorkspaceTpl()
+      : problem_size(0)
+      {
+      }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
-    using Base::timer;
-#endif // PINOCCHIO_WITH_HPP_FCL
+      /// \brief Constructor given problem_size.
+      PGSSolverWorkspaceTpl(std::size_t problem_size)
+      : problem_size(problem_size)
+      {
+        resize(problem_size);
+      }
 
-    PGSSolverSolution solution;
-    PGSSolverWorkspace workspace;
-    PGSSolverStats stats;
+      /// \brief Resize workspace vectors to problem size.
+      void resize(std::size_t problem_size_)
+      {
+        problem_size = problem_size_;
 
-  }; // struct PGSConstraintSolverTpl
+        Eigen::Index np = static_cast<Eigen::Index>(problem_size);
+        x.setZero(np);
+        x_previous.setZero(np);
+        y.setZero(np);
+        tmp.setZero(np);
+        rhs.setZero(np);
+      }
+
+      /// \brief Size of problem.
+      std::size_t problem_size;
+
+      /// \brief Primal variable (impulses) at current iteration.
+      VectorXs x;
+
+      /// \brief Primal variable (impulses) at previous iteration.
+      VectorXs x_previous;
+
+      /// \brief Dual variable (constraint velocities) at current iteration.
+      VectorXs y;
+
+      /// \brief Temporary vector for computations.
+      VectorXs rhs;
+
+      /// \brief Temporary vector for computations.
+      VectorXs tmp;
+    }; // struct PGSSolverWorkspaceTpl
+  } // namespace internal
+
 } // namespace pinocchio
 
 #include "pinocchio/algorithm/solvers/pgs-solver.hxx"

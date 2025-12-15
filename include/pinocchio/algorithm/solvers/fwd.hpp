@@ -10,6 +10,24 @@
 namespace pinocchio
 {
   // -------------------------
+  // PGS constraint solver
+  template<typename Scalar>
+  struct PGSConstraintSolverTpl;
+  typedef PGSConstraintSolverTpl<context::Scalar> PGSConstraintSolver;
+
+  template<typename Scalar>
+  struct PGSSolverSettingsTpl;
+  typedef PGSSolverSettingsTpl<context::Scalar> PGSSolverSettings;
+
+  template<typename Scalar>
+  struct PGSSolverSolutionTpl;
+  typedef PGSSolverSolutionTpl<context::Scalar> PGSSolverSolution;
+
+  template<typename Scalar>
+  struct PGSSolverStatsTpl;
+  typedef PGSSolverStatsTpl<context::Scalar> PGSSolverStats;
+
+  // -------------------------
   // ADMM constraint solver
   template<typename Scalar>
   struct ADMMConstraintSolverTpl;
