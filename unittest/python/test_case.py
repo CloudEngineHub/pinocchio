@@ -255,14 +255,16 @@ class ContactSolverTestCase(PinocchioTestCase):
 
     @unittest.skipUnless(matplotlib_found, "Needs Matplotlib.")
     def plotContactSolver(self, solver):
-        stats: pin.SolverStats = solver.getStats()
+        stats: pin.SolverStats = solver.stats
         if stats.size() > 0:
             plt.figure()
-            it = solver.getIterationCount()
-            abs_res = solver.getAbsoluteConvergenceResidual()
-            rel_res = solver.getRelativeConvergenceResidual()
+            it = solver.solution.iterations
+            primal_feas = solver.solution.primal_feasibility
+            dual_feas = solver.solution.dual_feasibility
             plt.cla()
-            plt.title(f"it = {it}, abs res = {abs_res:.2e}, rel res = {rel_res:.2e}")
+            plt.title(
+                f"it = {it}, abs res = {primal_feas:.2e}, rel res = {dual_feas:.2e}"
+            )
             plt.plot(stats.complementarity, label="complementarity")
             plt.plot(stats.primal_feasibility, label="primal feas")
             plt.plot(stats.dual_feasibility, label="dual feas")
