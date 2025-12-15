@@ -551,124 +551,148 @@ namespace pinocchio
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const boost::optional<RefConstVectorXs> x_guess,
-    const Scalar over_relax,
-    const bool solve_ncp,
-    const bool stat_record)
+    const PGSSolverSettings & settings)
   {
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(
-      over_relax < Scalar(2) && over_relax > Scalar(0), "over_relax should lie in ]0,2[.")
+    // for easier access
+    PGSSolverSolution & sol = solution;
+    PGSSolverWorkspace & wk = workspace;
     const MatrixType & G = delassus.derived();
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(g.size(), this->getProblemSize());
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(G.rows(), this->getProblemSize());
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(G.cols(), this->getProblemSize());
 
-    if (x_guess)
+    // Configure/reset solution, workspace and stats
+    const Eigen::Index np = G.rows();
+    const std::size_t problem_size = static_cast<std::size_t>(np);
+    assert(G.cols() == np);
+    assert(g.size() == np);
+    assert(residualSize(constraint_models, constraint_datas) == np);
+    //
+    sol.reset();
+    sol.resize(problem_size);
+    assert(sol.iterations == 0);
+    //
+    wk.resize(problem_size);
+    assert(wk.problem_size == problem_size);
+    assert(wk.x.size() == np);
+    //
+    stats.reset();
+    if (settings.stat_record)
     {
-      x = x_guess.get();
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(x.size(), this->getProblemSize());
+      stats.reserve(settings.max_iterations);
+    }
+    //
+    settings.checkValidity();
+
+    // Retrieve guess if any
+    if (settings.primal_guess)
+    {
+      wk.x = settings.primal_guess.value();
     }
     else
     {
-      x.setZero();
+      wk.x.setZero();
     }
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.x.size(), np);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.y.size(), np);
 
-    const size_t nc = constraint_models.size(); // num constraints
-
-    int it = 1;
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
-    timer.start();
+    if (settings.measure_timings)
+    {
+      timer.start();
+    }
 #endif // PINOCCHIO_WITH_HPP_FCL
 
-    Scalar complementarity, proximal_metric, primal_feasibility, dual_feasibility;
-    bool abs_prec_reached = false, rel_prec_reached = false;
-    Scalar x_previous_norm_inf = x.template lpNorm<Eigen::Infinity>();
+    bool abs_prec_reached = false;
+    bool rel_prec_reached = false;
+    Scalar x_previous_norm_inf = wk.x.template lpNorm<Eigen::Infinity>();
+    const std::size_t num_constraints = constraint_models.size();
 
-    if (stat_record)
+    sol.iterations = 0;
+    for (; sol.iterations <= settings.max_iterations; ++sol.iterations)
     {
-      stats.reserve(this->max_it);
-      stats.reset();
-    }
+      wk.x_previous = wk.x;
 
-    for (; it <= this->max_it; ++it)
-    {
-      x_previous = x;
-      complementarity = Scalar(0);
-      dual_feasibility = Scalar(0);
-      primal_feasibility = Scalar(0);
+      sol.complementarity = Scalar(0);
+      sol.dual_feasibility = Scalar(0);
+      sol.primal_feasibility = Scalar(0);
+
+      // PGS step for each constraint
       Eigen::Index row_id = 0;
-      for (size_t constraint_id = 0; constraint_id < nc; ++constraint_id)
+      for (size_t constraint_id = 0; constraint_id < num_constraints; ++constraint_id)
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
         const Eigen::Index constraint_size = cmodel.residualSize(cdata);
 
         auto G_block = G.block(row_id, row_id, constraint_size, constraint_size);
-        auto impulse = x.segment(row_id, constraint_size);
-
-        auto velocity = y.segment(row_id, constraint_size);
+        auto impulse = wk.x.segment(row_id, constraint_size);
+        auto velocity = wk.y.segment(row_id, constraint_size);
 
         // Update dual variable
-        velocity.noalias() = G.middleRows(row_id, constraint_size) * x;
+        velocity.noalias() = G.middleRows(row_id, constraint_size) * wk.x;
         velocity += g.segment(row_id, constraint_size);
 
         typedef PGSConstraintProjectionStepVisitor<
           Scalar, decltype(G_block), decltype(impulse), decltype(velocity)>
           Step;
-        Step step(over_relax);
+        Step step(settings.over_relaxation);
         step.run(cmodel, G_block, impulse, velocity);
-        //        PGSConstraintProjectionStep<ConstraintSet> step(over_relax, set);
-        //        step.project(G_block, velocity, impulse);
-        //        step.computeFeasibility(velocity, impulse);
 
-        // Update problem feasibility
-        complementarity = math::max(complementarity, step.complementarity);
-        dual_feasibility = math::max(dual_feasibility, step.dual_feasibility);
-        primal_feasibility = math::max(primal_feasibility, step.primal_feasibility);
+        sol.complementarity = math::max(sol.complementarity, step.complementarity);
+        sol.dual_feasibility = math::max(sol.dual_feasibility, step.dual_feasibility);
+        sol.primal_feasibility = math::max(sol.primal_feasibility, step.primal_feasibility);
 
-        // Update row id for the next constraint
         row_id += constraint_size;
       }
 
-      // Checking stopping residual
+      // Checking stopping criterion
+      // -- absolute
       if (
-        check_expression_if_real<Scalar, false>(complementarity <= this->absolute_precision)
-        && check_expression_if_real<Scalar, false>(dual_feasibility <= this->absolute_precision))
+        check_expression_if_real<Scalar, false>(sol.primal_feasibility <= settings.tol_feasibility)
+        && check_expression_if_real<Scalar, false>(sol.dual_feasibility <= settings.tol_feasibility)
+        && check_expression_if_real<Scalar, false>(
+          sol.complementarity <= settings.tol_complementarity))
+      {
         abs_prec_reached = true;
+      }
       else
+      {
         abs_prec_reached = false;
+      }
 
-      proximal_metric = (x - x_previous).template lpNorm<Eigen::Infinity>();
-      const Scalar x_norm_inf = x.template lpNorm<Eigen::Infinity>();
+      // -- relative
+      const Scalar proximal_metric = (wk.x - wk.x_previous).template lpNorm<Eigen::Infinity>();
+      const Scalar x_norm_inf = wk.x.template lpNorm<Eigen::Infinity>();
       if (check_expression_if_real<Scalar, false>(
             proximal_metric
-            <= this->relative_precision * math::max(x_norm_inf, x_previous_norm_inf)))
-        rel_prec_reached = true;
-      else
-        rel_prec_reached = false;
-
-      if (stat_record)
+            <= settings.tol_rel_feasibility * math::max(x_norm_inf, x_previous_norm_inf)))
       {
-        VectorXs tmp = G * x;
-        tmp += g;
-        VectorXs rhs(tmp.size());
-        if (solve_ncp)
-        {
-          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, tmp, rhs);
-          tmp += rhs;
-        }
+        rel_prec_reached = true;
+      }
+      else
+      {
+        rel_prec_reached = false;
+      }
 
-        rhs = tmp;
-        internal::computeDualConeProjection(constraint_models, constraint_datas, rhs, rhs);
-        tmp -= rhs;
-        Scalar dual_feasibility_ncp = tmp.template lpNorm<Eigen::Infinity>();
+      // Record stats
+      if (settings.stat_record)
+      {
+        wk.tmp.noalias() = G * wk.x;
+        wk.tmp += g;
+        if (settings.solve_ncp)
+        {
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.tmp, wk.rhs);
+          wk.tmp += wk.rhs;
+        }
+        wk.rhs = wk.tmp;
+        internal::computeDualConeProjection(constraint_models, constraint_datas, wk.rhs, wk.rhs);
+        wk.tmp -= wk.rhs;
+        const Scalar dual_feasibility_ncp = wk.tmp.template lpNorm<Eigen::Infinity>();
+
+        stats.primal_feasibility.push_back(sol.primal_feasibility);
+        stats.dual_feasibility.push_back(sol.dual_feasibility);
         stats.dual_feasibility_ncp.push_back(dual_feasibility_ncp);
-        stats.it = it;
-        stats.primal_feasibility.push_back(primal_feasibility);
-        stats.dual_feasibility.push_back(dual_feasibility);
-        stats.complementarity.push_back(complementarity);
+        stats.complementarity.push_back(sol.complementarity);
       }
 
       if (abs_prec_reached || rel_prec_reached)
@@ -683,14 +707,12 @@ namespace pinocchio
 
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
 
-    this->absolute_residual = math::max(complementarity, dual_feasibility);
-    this->relative_residual = proximal_metric;
-    this->it = it;
+    // Retrieve solution
+    sol.x = wk.x;
+    sol.y = wk.y;
+    sol.converged = abs_prec_reached || rel_prec_reached;
 
-    if (abs_prec_reached || rel_prec_reached)
-      return true;
-
-    return false;
+    return sol.converged;
   }
 
 } // namespace pinocchio
