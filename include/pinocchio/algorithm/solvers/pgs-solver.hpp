@@ -41,7 +41,7 @@ namespace pinocchio
     typedef PGSSolverSolutionTpl<Scalar> PGSSolverSolution;
     typedef PGSSolverStatsTpl<Scalar> PGSSolverStats;
 
-    explicit PGSConstraintSolverTpl(std::size_t problem_size)
+    explicit PGSConstraintSolverTpl(std::size_t problem_size = 0)
     : Base()
     , solution()
     , workspace(problem_size)

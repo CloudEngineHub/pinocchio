@@ -120,7 +120,7 @@ namespace pinocchio
     typedef internal::ADMMUpdateRuleContainerTpl<Scalar> ADMMUpdateRuleContainer;
 
     /// \brief Default constructor.
-    explicit ADMMConstraintSolverTpl(std::size_t problem_size)
+    explicit ADMMConstraintSolverTpl(std::size_t problem_size = 0)
     : Base()
     , solution()
     , workspace(problem_size)
