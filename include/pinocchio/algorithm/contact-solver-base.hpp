@@ -189,7 +189,7 @@ namespace pinocchio
   };
 
   template<typename _Scalar>
-  struct ContactSolverBaseTpl
+  struct ConstraintSolverBaseTpl
   {
     typedef _Scalar Scalar;
 
@@ -198,7 +198,7 @@ namespace pinocchio
     typedef hpp::fcl::Timer Timer;
 #endif // PINOCCHIO_WITH_HPP_FCL
 
-    ContactSolverBaseTpl()
+    ConstraintSolverBaseTpl()
     :
 #ifdef PINOCCHIO_WITH_HPP_FCL
       timer(false)
@@ -218,7 +218,7 @@ namespace pinocchio
     Timer timer;
 #endif // PINOCCHIO_WITH_HPP_FCL
 
-  }; // struct ContactSolverBaseTpl
+  }; // struct ConstraintSolverBaseTpl
 
 } // namespace pinocchio
 

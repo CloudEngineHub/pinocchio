@@ -109,7 +109,7 @@ namespace pinocchio
         bp::init<int>(bp::args("self", "problem_dim"), "Default constructor."));
 
       // Expose helpers
-      class_.def(ContactSolverBasePythonVisitor<Solver>())
+      class_.def(ConstraintSolverBasePythonVisitor<Solver>())
         .def(
           "getPrimalSolution", &Solver::getPrimalSolution, bp::arg("self"),
           "Returns the primal solution of the problem.", bp::return_internal_reference<>())

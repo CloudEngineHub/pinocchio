@@ -789,10 +789,10 @@ namespace pinocchio
   /// the DeSaxce term, the problem becomes an NCP.
   template<typename _Scalar>
   struct PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
-    ADMMConstraintSolverTpl : ContactSolverBaseTpl<_Scalar>
+    ADMMConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
-    typedef ContactSolverBaseTpl<_Scalar> Base;
+    typedef ConstraintSolverBaseTpl<_Scalar> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Ref<VectorXs> RefVectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;

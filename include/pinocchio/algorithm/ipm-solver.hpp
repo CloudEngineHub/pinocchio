@@ -15,10 +15,10 @@ namespace pinocchio
 {
   /// \brief Interior point solver
   template<typename _Scalar>
-  struct IPMConstraintSolverTpl : ContactSolverBaseTpl<_Scalar>
+  struct IPMConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
-    typedef ContactSolverBaseTpl<Scalar> Base;
+    typedef ConstraintSolverBaseTpl<Scalar> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3s;

@@ -325,7 +325,7 @@ namespace pinocchio
            bp::arg("ratio_primal_dual") = Scalar(10), bp::arg("lanczos_size") = 3),
           "Default constructor."));
 
-      cl.def(ContactSolverBasePythonVisitor<Solver>())
+      cl.def(ConstraintSolverBasePythonVisitor<Solver>())
 
         .def(
           "reset", &Solver::reset, bp::arg("self"),

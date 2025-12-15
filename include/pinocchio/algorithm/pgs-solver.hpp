@@ -280,10 +280,10 @@ namespace pinocchio
 
   /// \brief Projected Gauss Siedel solver
   template<typename _Scalar>
-  struct PGSConstraintSolverTpl : ContactSolverBaseTpl<_Scalar>
+  struct PGSConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
-    typedef ContactSolverBaseTpl<Scalar> Base;
+    typedef ConstraintSolverBaseTpl<Scalar> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
