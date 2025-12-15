@@ -565,11 +565,11 @@ namespace pinocchio
     assert(g.size() == np);
     assert(residualSize(constraint_models, constraint_datas) == np);
     //
-    sol.reset();
-    sol.resize(problem_size);
+    sol.reset(problem_size);
+    assert(sol.problem_size == problem_size);
     assert(sol.iterations == 0);
     //
-    wk.resize(problem_size);
+    wk.reset(problem_size);
     assert(wk.problem_size == problem_size);
     assert(wk.x.size() == np);
     //

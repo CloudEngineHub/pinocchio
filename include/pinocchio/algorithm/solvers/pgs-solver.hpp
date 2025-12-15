@@ -10,6 +10,9 @@
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/delassus-operator-dense.hpp"
+
+#include "pinocchio/container/eigen-storage.hpp"
+
 #include <boost/optional.hpp>
 #include <limits>
 
@@ -30,7 +33,6 @@ namespace pinocchio
   {
     typedef _Scalar Scalar;
     typedef ConstraintSolverBaseTpl<Scalar> Base;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
 
@@ -205,7 +207,7 @@ namespace pinocchio
     typedef _Scalar Scalar;
     typedef ConstraintSolverSolutionBaseTpl<Scalar> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
+    typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
     using Base::nan;
 
@@ -213,14 +215,22 @@ namespace pinocchio
     PGSSolverSolutionTpl()
     : Base()
     , problem_size(0)
+    , x(x_storage.map())
+    , y(y_storage.map())
     {
     }
 
     /// \brief Reset the solution.
-    void reset()
+    void reset(std::size_t problem_size_ = 0)
     {
       Base::reset();
-      problem_size = 0;
+      problem_size = problem_size_;
+
+      resize(problem_size);
+
+      // set solution to nan - solver has not run
+      x.setConstant(nan);
+      y.setConstant(nan);
     }
 
     /// \brief Resize the primal/dual vectors of the solution.
@@ -229,8 +239,8 @@ namespace pinocchio
       problem_size = problem_size_;
 
       Eigen::Index np = static_cast<Eigen::Index>(problem_size);
-      x.setZero(np);
-      y.setZero(np);
+      x_storage.resize(np);
+      y_storage.resize(np);
     }
 
     /// \brief Retrieve primal solution.
@@ -268,10 +278,14 @@ namespace pinocchio
     std::size_t problem_size;
 
     /// \brief Primal solution.
-    VectorXs x;
+    /// \note Order of storage/map declaration is important!
+    /// First declare the storage, then the map, otherwise map will point to nothing.
+    VectorXsStorage x_storage;
+    typename VectorXsStorage::RefMapType x;
 
     /// \brief Dual solution.
-    VectorXs y;
+    VectorXsStorage y_storage;
+    typename VectorXsStorage::RefMapType y;
   }; // struct PGSSolverSolutionTpl
 
   ///
@@ -320,21 +334,36 @@ namespace pinocchio
     {
       typedef _Scalar Scalar;
       typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
-      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
+      typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
-      // TODO: use eigenstorage
-
-      /// \brief Default constructor
-      PGSSolverWorkspaceTpl()
-      : problem_size(0)
-      {
-      }
+      static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
 
       /// \brief Constructor given problem_size.
-      PGSSolverWorkspaceTpl(std::size_t problem_size)
+      PGSSolverWorkspaceTpl(std::size_t problem_size = 0)
       : problem_size(problem_size)
+      , x(x_storage.map())
+      , x_previous(x_previous_storage.map())
+      , y(y_storage.map())
+      , rhs(rhs_storage.map())
+      , tmp(tmp_storage.map())
       {
         resize(problem_size);
+      }
+
+      /// \brief Reset the workspace.
+      void reset(std::size_t problem_size_ = 0)
+      {
+        problem_size = problem_size_;
+
+        resize(problem_size);
+
+#ifndef NDEBUG
+        x.setConstant(nan);
+        x_previous.setConstant(nan);
+        y.setConstant(nan);
+        tmp.setConstant(nan);
+        rhs.setConstant(nan);
+#endif
       }
 
       /// \brief Resize workspace vectors to problem size.
@@ -343,30 +372,35 @@ namespace pinocchio
         problem_size = problem_size_;
 
         Eigen::Index np = static_cast<Eigen::Index>(problem_size);
-        x.setZero(np);
-        x_previous.setZero(np);
-        y.setZero(np);
-        tmp.setZero(np);
-        rhs.setZero(np);
+        x_storage.resize(np);
+        x_previous_storage.resize(np);
+        y_storage.resize(np);
+        tmp_storage.resize(np);
+        rhs_storage.resize(np);
       }
 
       /// \brief Size of problem.
       std::size_t problem_size;
 
       /// \brief Primal variable (impulses) at current iteration.
-      VectorXs x;
+      VectorXsStorage x_storage;
+      typename VectorXsStorage::RefMapType x;
 
       /// \brief Primal variable (impulses) at previous iteration.
-      VectorXs x_previous;
+      VectorXsStorage x_previous_storage;
+      typename VectorXsStorage::RefMapType x_previous;
 
       /// \brief Dual variable (constraint velocities) at current iteration.
-      VectorXs y;
+      VectorXsStorage y_storage;
+      typename VectorXsStorage::RefMapType y;
 
       /// \brief Temporary vector for computations.
-      VectorXs rhs;
+      VectorXsStorage rhs_storage;
+      typename VectorXsStorage::RefMapType rhs;
 
       /// \brief Temporary vector for computations.
-      VectorXs tmp;
+      VectorXsStorage tmp_storage;
+      typename VectorXsStorage::RefMapType tmp;
     }; // struct PGSSolverWorkspaceTpl
   } // namespace internal
 
