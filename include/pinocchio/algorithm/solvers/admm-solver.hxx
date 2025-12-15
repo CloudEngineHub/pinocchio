@@ -50,11 +50,11 @@ namespace pinocchio
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       min_compliance >= Scalar(0), "compliance should be a positive vector.");
     //
-    sol.reset();
-    sol.resize(problem_size);
+    sol.reset(problem_size);
+    assert(sol.problem_size == problem_size);
     assert(sol.iterations == 0);
     //
-    wk.resize(problem_size, settings.lanczos_size, settings.anderson_capacity);
+    wk.reset(problem_size, settings.lanczos_size, settings.anderson_capacity);
     assert(wk.problem_size == problem_size);
     assert(wk.x.size() == np);
     //
@@ -83,7 +83,7 @@ namespace pinocchio
     // eigenvalue of the problem.
     wk.mu_prox = settings.mu_prox;
     Scalar m = min_compliance + wk.mu_prox;
-    wk.rhs = VectorXs::Constant(np, wk.mu_prox);
+    wk.rhs.setConstant(wk.mu_prox);
     G.updateDamping(wk.rhs);
     sol.delassus_decomposition_update_count++;
 
@@ -198,7 +198,7 @@ namespace pinocchio
 
       // Update the decomposition of the Delassus
       Scalar prox_value = settings.tau_prox * wk.mu_prox + settings.tau * wk.rho;
-      wk.rhs = VectorXs::Constant(np, prox_value);
+      wk.rhs.setConstant(prox_value);
       G.updateDamping(wk.rhs);
       Scalar old_prox_value = prox_value;
       sol.delassus_decomposition_update_count++;
@@ -327,20 +327,20 @@ namespace pinocchio
         wk.primal_feasibility_vector = wk.x - wk.y;
 
         {
-          VectorXs & dx = wk.tmp;
+          auto & dx = wk.tmp;
           dx = wk.x - wk.x_previous;
           dx_norm = dx.template lpNorm<Eigen::Infinity>(); // check relative progress on x
           wk.dual_feasibility_vector = dx;
         }
 
         {
-          VectorXs & dy = wk.tmp;
+          auto & dy = wk.tmp;
           dy = wk.y - wk.y_previous;
           dy_norm = dy.template lpNorm<Eigen::Infinity>(); // check relative progress on y
         }
 
         {
-          VectorXs & dz = wk.tmp;
+          auto & dz = wk.tmp;
           dz = wk.z - wk.z_previous;
           dz_norm = dz.template lpNorm<Eigen::Infinity>(); // check relative progress on z
         }
@@ -486,7 +486,7 @@ namespace pinocchio
             if (old_prox_value != prox_value)
             {
               PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop updateDamping");
-              wk.rhs = VectorXs::Constant(np, prox_value);
+              wk.rhs.setConstant(prox_value);
               G.updateDamping(wk.rhs);
               sol.delassus_decomposition_update_count++;
               old_prox_value = prox_value;
@@ -566,7 +566,6 @@ namespace pinocchio
     }
     else
     {
-      // TODO adapt this with Gbar
       typedef Eigen::Matrix<Scalar, 1, 1> Vector1;
       const Vector1 Gvec = G * Vector1::Constant(1);
       L = Gvec.coeff(0);
