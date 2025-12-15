@@ -2,11 +2,11 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_pgs_solver_hpp__
-#define __pinocchio_algorithm_pgs_solver_hpp__
+#ifndef __pinocchio_algorithm_solvers_pgs_solver_hpp__
+#define __pinocchio_algorithm_solvers_pgs_solver_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/contact-solver-base.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
 #include "pinocchio/algorithm/delassus-operator-dense.hpp"
 #include <boost/optional.hpp>
 #include <limits>
@@ -365,6 +365,6 @@ namespace pinocchio
   }; // struct PGSConstraintSolverTpl
 } // namespace pinocchio
 
-#include "pinocchio/algorithm/pgs-solver.hxx"
+#include "pinocchio/algorithm/solvers/pgs-solver.hxx"
 
-#endif // ifndef __pinocchio_algorithm_pgs_solver_hpp__
+#endif // ifndef __pinocchio_algorithm_solvers_pgs_solver_hpp__

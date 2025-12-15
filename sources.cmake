@@ -5,8 +5,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/aba-derivatives.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/aba.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/aba.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/admm-solver.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/admm-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/center-of-mass-derivatives.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/center-of-mass-derivatives.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/center-of-mass.hpp
@@ -75,8 +73,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-info.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-jacobian.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-solver-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-solver-utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-inverse-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/copy.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/crba.hpp
@@ -124,8 +120,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/preconditioner-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/diagonal-preconditioner.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/pgs-solver.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/pgs-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/proximal.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/pv.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/pv.hxx
@@ -137,8 +131,14 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/rnea.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/rnea-second-order-derivatives.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/rnea-second-order-derivatives.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/admm-solver.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/admm-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/anderson-acceleration.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/constraint-solver-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/constraint-solver-utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/pgs-solver.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/pgs-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/utils/force.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/utils/motion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/alloca.hpp

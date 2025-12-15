@@ -2,15 +2,15 @@
 // Copyright (c) 2022-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_admm_solver_hpp__
-#define __pinocchio_algorithm_admm_solver_hpp__
+#ifndef __pinocchio_algorithm_solvers_admm_solver_hpp__
+#define __pinocchio_algorithm_solvers_admm_solver_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/math/fwd.hpp"
 #include "pinocchio/math/comparison-operators.hpp"
 #include "pinocchio/math/eigenvalues.hpp"
 
-#include "pinocchio/algorithm/contact-solver-base.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
 #include "pinocchio/algorithm/solvers/anderson-acceleration.hpp"
 
@@ -882,6 +882,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#include "pinocchio/algorithm/admm-solver.hxx"
+#include "pinocchio/algorithm/solvers/admm-solver.hxx"
 
-#endif // ifndef __pinocchio_algorithm_admm_solver_hpp__
+#endif // ifndef __pinocchio_algorithm_solvers_admm_solver_hpp__

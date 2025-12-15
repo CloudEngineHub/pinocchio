@@ -2,12 +2,12 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_pgs_solver_hxx__
-#define __pinocchio_algorithm_pgs_solver_hxx__
+#ifndef __pinocchio_algorithm_solvers_pgs_solver_hxx__
+#define __pinocchio_algorithm_solvers_pgs_solver_hxx__
 
 #include "pinocchio/algorithm/constraints/sets/sets.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
-#include "pinocchio/algorithm/contact-solver-utils.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-utils.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 
 namespace pinocchio
@@ -717,4 +717,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_pgs_solver_hxx__
+#endif // ifndef __pinocchio_algorithm_solvers_pgs_solver_hxx__

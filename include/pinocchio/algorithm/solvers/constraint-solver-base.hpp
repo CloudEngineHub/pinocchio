@@ -2,8 +2,8 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_contact_solver_base_hpp__
-#define __pinocchio_algorithm_contact_solver_base_hpp__
+#ifndef __pinocchio_algorithm_solvers_constraint_solver_base_hpp__
+#define __pinocchio_algorithm_solvers_constraint_solver_base_hpp__
 
 #include "pinocchio/math/fwd.hpp"
 #include "pinocchio/math/comparison-operators.hpp"
@@ -222,4 +222,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_contact_solver_base_hpp__
+#endif // ifndef __pinocchio_algorithm_solvers_constraint_solver_base_hpp__

@@ -2,8 +2,8 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_contact_solver_utils_hpp__
-#define __pinocchio_algorithm_contact_solver_utils_hpp__
+#ifndef __pinocchio_algorithm_solvers_constraint_solver_utils_hpp__
+#define __pinocchio_algorithm_solvers_constraint_solver_utils_hpp__
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/math/fwd.hpp"
@@ -775,4 +775,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_contact_solver_utils_hpp__
+#endif // ifndef __pinocchio_algorithm_solvers_constraint_solver_utils_hpp__
