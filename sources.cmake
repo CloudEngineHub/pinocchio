@@ -103,9 +103,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics-derivatives.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ipm-solver.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ipm-solver.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ipm-solver-cone-operations.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/jacobian.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/jacobian.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/joint-configuration.hpp
@@ -659,7 +656,6 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-centroidal.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-aba.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-algorithms.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/ipm-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-com.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-frames.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-energy.cpp

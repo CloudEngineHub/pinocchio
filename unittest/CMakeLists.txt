@@ -350,7 +350,6 @@ add_pinocchio_unit_test(coulomb-friction-cone)
 # Solvers
 add_pinocchio_unit_test(pgs-solver)
 add_pinocchio_unit_test(admm-solver)
-add_pinocchio_unit_test(ipm-solver)
 
 # Serialization
 make_directory("${CMAKE_CURRENT_BINARY_DIR}/serialization-data")
