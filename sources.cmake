@@ -5,8 +5,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/aba-derivatives.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/aba.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/aba.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/admm-solver.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/admm-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/center-of-mass-derivatives.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/center-of-mass-derivatives.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/center-of-mass.hpp
@@ -75,8 +73,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-info.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-jacobian.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-solver-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-solver-utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-inverse-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/copy.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/crba.hpp
@@ -107,9 +103,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics-derivatives.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ipm-solver.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ipm-solver.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/ipm-solver-cone-operations.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/jacobian.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/jacobian.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/joint-configuration.hpp
@@ -124,8 +117,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/preconditioner-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/diagonal-preconditioner.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/pgs-solver.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/pgs-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/proximal.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/pv.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/pv.hxx
@@ -137,8 +128,14 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/rnea.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/rnea-second-order-derivatives.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/rnea-second-order-derivatives.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/admm-solver.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/admm-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/anderson-acceleration.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/constraint-solver-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/constraint-solver-utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/pgs-solver.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/pgs-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/utils/force.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/utils/motion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/alloca.hpp
@@ -659,9 +656,6 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-centroidal.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-aba.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-algorithms.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/admm-solver.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/pgs-solver.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/ipm-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-com.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-frames.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-energy.cpp
@@ -690,6 +684,9 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-impulse-dynamics-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-kinematic-regressor.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-crba.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-constraint-solver-base.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-admm-solver.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-pgs-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/module.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/utils/version.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/utils/dependencies.cpp

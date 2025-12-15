@@ -3,7 +3,7 @@
 //
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/algorithm/contact-solver-base.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
 
 #include <eigenpy/eigen-from-python.hpp>
 
@@ -15,8 +15,8 @@ namespace pinocchio
     namespace bp = boost::python;
 
     template<typename Solver>
-    struct ContactSolverBasePythonVisitor
-    : public boost::python::def_visitor<ContactSolverBasePythonVisitor<Solver>>
+    struct ConstraintSolverBasePythonVisitor
+    : public boost::python::def_visitor<ConstraintSolverBasePythonVisitor<Solver>>
     {
       typedef typename Solver::Scalar Scalar;
 
@@ -66,7 +66,7 @@ namespace pinocchio
           ;
 #endif
       }
-    }; // struct ContactSolverBasePythonVisitor
+    }; // struct ConstraintSolverBasePythonVisitor
 
   } // namespace python
 } // namespace pinocchio

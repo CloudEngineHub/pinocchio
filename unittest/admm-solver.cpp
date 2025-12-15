@@ -6,8 +6,7 @@
 #include "pinocchio/algorithm/contact-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/constraints/utils.hpp"
-#include "pinocchio/algorithm/admm-solver.hpp"
-#include "pinocchio/algorithm/pgs-solver.hpp"
+#include "pinocchio/algorithm/solvers/admm-solver.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/delassus.hpp"
@@ -16,8 +15,6 @@
 #include <boost/utility/binary.hpp>
 
 using namespace pinocchio;
-
-double mu = 1e-4;
 
 template<typename _ConstraintModel>
 struct TestBoxTpl
@@ -59,76 +56,65 @@ struct TestBoxTpl
     data.tau_in = tau0;
     calc(model, data, constraint_models, constraint_datas);
 
-    // Cholesky of the Delassus matrix
+    // cholesky of the Delassus matrix
     crba(model, data, q0, Convention::WORLD);
     ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
     chol.resize(model, constraint_models, constraint_datas);
     chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
-    // std::cout << "chol.getDamping() :   " << chol.getDamping().transpose() << std::endl;
 
     const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix();
-    // std::cout << "delassus_matrix_plain:    " << delassus_matrix_plain << std::endl;
     auto G_expression = chol.getDelassusCholeskyExpression();
 
+    // construct constraint drift g
     Eigen::MatrixXd constraint_jacobian(delassus_matrix_plain.rows(), model.nv);
     constraint_jacobian.setZero();
     getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
-
     const Eigen::VectorXd g = constraint_jacobian * v_free;
 
-    // Configure the member ADMM solver
-    ADMMConstraintSolverTpl<double> admm_solver(
-      int(getTotalConstraintMaxResidualSize(constraint_models)));
-    admm_solver.setMaxIterations(10000);
-    admm_solver.setAbsolutePrecision(1e-10);
-    admm_solver.setRelativePrecision(1e-12);
-    admm_solver.setLanczosSize((int)g.size());
-
-    PGSConstraintSolver pgs_solver(int(delassus_matrix_plain.rows()));
-    pgs_solver.setAbsolutePrecision(1e-10);
-    pgs_solver.setRelativePrecision(1e-12);
-
+    // optional compliance
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g.size());
     G_expression.updateCompliance(compliance);
+
+    // optional preconditioner - no effect for now
     Eigen::VectorXd mean_inertia = Eigen::VectorXd::Constant(g.size(), data.M.diagonal().trace());
     mean_inertia /= (double)(g.size());
     mean_inertia = mean_inertia.array().sqrt();
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(mean_inertia);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
-    has_converged = admm_solver.solve(
-      G_expression, g, constraint_models, constraint_datas, preconditioner_vec,
-      primal_solution_constref,
-      boost::none,              // dual_guess
-      true,                     // solve_ncp
-      ADMMUpdateRule::SPECTRAL, // admm_update_rule
-      boost::none,              // rho0
-      ADMMProximalRule::MANUAL, // admm_proximal_policy
-      boost::none,              // mu_prox0
-      true);                    // stat_record = true
-    primal_solution = admm_solver.getPrimalSolution();
-    // std::cout << "primal_solution :   " << (primal_solution).transpose() << std::endl;
-    // std::cout << "g :   " << (g).transpose() << std::endl;
-    // std::cout << "delassus_matrix_plain :   " << (delassus_matrix_plain).transpose() <<
-    // std::endl; std::cout << "delassus_matrix_plain * primal_solution :   " <<
-    // (delassus_matrix_plain * primal_solution).transpose() << std::endl; std::cout <<
-    // "time_scaling.asDiagonal()* delassus_matrix_plain * primal_solution :   " <<
-    // (time_scaling.asDiagonal()*delassus_matrix_plain * primal_solution).transpose() << std::endl;
-    // std::cout << "time_scaling.asDiagonal()* delassus_matrix_plain * primal_solution + g :   " <<
-    // (time_scaling.asDiagonal()*delassus_matrix_plain * primal_solution + g).transpose() <<
-    // std::endl;
+
+    // Configure the member ADMM solver
+    ADMMConstraintSolver admm_solver(
+      std::size_t(getTotalConstraintMaxResidualSize(constraint_models)));
+    ADMMSolverSettings admm_settings; // default settings
+    admm_settings.max_iterations = 10000;
+    admm_settings.tol_feasibility = 1e-10;
+    admm_settings.tol_rel_feasibility = 1e-12;
+    admm_settings.tol_complementarity = 1e-10;
+    admm_settings.tol_rel_complementarity = 1e-12;
+    admm_settings.lanczos_size = static_cast<std::size_t>(g.size());
+    admm_settings.preconditioner.emplace(mean_inertia);
+    admm_settings.primal_guess.emplace(primal_solution);
+    admm_settings.dual_guess = std::nullopt;
+    admm_settings.rho_init = std::nullopt;
+    admm_settings.admm_update_rule = ADMMUpdateRule::SPECTRAL;
+    admm_settings.admm_proximal_rule = ADMMProximalRule::MANUAL;
+    admm_settings.mu_prox = 1e-6;
+    admm_settings.stat_record = true;
+    admm_settings.solve_ncp = true;
+
+    has_converged =
+      admm_solver.solve(G_expression, g, constraint_models, constraint_datas, admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
 
     if (test_warmstart)
     {
-      boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_warmstart(primal_solution);
-      has_converged = has_converged
-                      && admm_solver.solve(
-                        G_expression, g, constraint_models, constraint_datas, preconditioner_vec,
-                        primal_solution_warmstart);
-      primal_solution = admm_solver.getPrimalSolution();
+      admm_settings.primal_guess.emplace(primal_solution);
+      has_converged =
+        has_converged
+        && admm_solver.solve(G_expression, g, constraint_models, constraint_datas, admm_settings);
+      admm_solver.solution.retrievePrimalSolution(primal_solution);
     }
 
-    dual_solution = admm_solver.getDualSolution();
-    n_iter = admm_solver.getIterationCount();
+    admm_solver.solution.retrieveDualSolution(dual_solution);
+    n_iter = admm_solver.solution.iterations;
     const Eigen::VectorXd tau_ext = constraint_jacobian.transpose() * primal_solution / dt;
 
     v_next =
@@ -144,7 +130,7 @@ struct TestBoxTpl
 
   Eigen::VectorXd primal_solution, dual_solution, dual_solution_sparse;
   bool has_converged;
-  int n_iter;
+  std::size_t n_iter;
 };
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
@@ -545,23 +531,28 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g.size());
   G_expression.updateCompliance(compliance);
-  boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-    Eigen::VectorXd::Ones(g.size()));
+  Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g.size()));
   Eigen::VectorXd dual_solution(Eigen::VectorXd::Zero(g.size()));
-  boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution(
-    Eigen::VectorXd::Zero(g.size()));
-  ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-  admm_solver.setAbsolutePrecision(1e-13);
-  admm_solver.setRelativePrecision(1e-14);
+  Eigen::VectorXd primal_solution(Eigen::VectorXd::Zero(g.size()));
 
-  const bool has_converged = admm_solver.solve(
-    G_expression, g, constraint_models, constraint_datas, preconditioner_vec, primal_solution);
+  ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+  ADMMSolverSettings admm_settings;
+  admm_settings.tol_feasibility = 1e-13;
+  admm_settings.tol_rel_feasibility = 1e-14;
+  admm_settings.tol_complementarity = 1e-13;
+  admm_settings.tol_rel_complementarity = 1e-14;
+  admm_settings.preconditioner.emplace(preconditioner_vec);
+  admm_settings.primal_guess.emplace(primal_solution);
+
+  const bool has_converged =
+    admm_solver.solve(G_expression, g, constraint_models, constraint_datas, admm_settings);
+  admm_solver.solution.retrievePrimalSolution(primal_solution);
   BOOST_CHECK(has_converged);
 
-  dual_solution = G * primal_solution.get() + g;
+  dual_solution = G * primal_solution + g;
 
-  BOOST_CHECK(std::fabs(primal_solution.get().dot(dual_solution)) <= 1e-8);
-  BOOST_CHECK(primal_solution.get().isZero());
+  BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
+  BOOST_CHECK(primal_solution.isZero());
 
   typedef TestBoxTpl<ConstraintModel> TestBox;
 
@@ -663,25 +654,31 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
-
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas,
-      preconditioner_vec, primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_against_lower_bound;
-    Eigen::VectorXd dual_solution2 = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution2;
+    admm_solver.solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(dual_solution.isZero(1e-6));
@@ -699,23 +696,28 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_move_away.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_move_away.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, preconditioner_vec,
-      primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2 = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution2;
+    admm_solver.solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -797,23 +799,29 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas,
-      preconditioner_vec, primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_against_lower_bound;
-    Eigen::VectorXd dual_solution2 = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution2;
+    admm_solver.solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(dual_solution.isZero(1e-6));
@@ -836,23 +844,28 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_move_away.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_move_away.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, preconditioner_vec,
-      primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2 = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution2;
+    admm_solver.solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -934,23 +947,29 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas,
-      preconditioner_vec, primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_against_lower_bound;
-    Eigen::VectorXd dual_solution2 = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution2;
+    admm_solver.solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(dual_solution.isZero(1e-6));
@@ -973,23 +992,28 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_move_away.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_move_away.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, preconditioner_vec,
-      primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2 = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution2;
+    admm_solver.solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -1062,28 +1086,30 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
     Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas,
-      preconditioner_vec, primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
-    // std::cout << " admm_solver.getAbsoluteConvergenceResidual():   " <<
-    // admm_solver.getAbsoluteConvergenceResidual() << std::endl; std::cout << "
-    // admm_solver.getRelativeConvergenceResidual():   " <<
-    // admm_solver.getRelativeConvergenceResidual() << std::endl;
+      admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
     constraint_velocity /= dt;
-    Eigen::VectorXd dual_solution = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution;
+    admm_solver.solution.retrieveDualSolution(dual_solution);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
@@ -1101,23 +1127,28 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_move_away.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_move_away.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, preconditioner_vec,
-      primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2 = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution2;
+    admm_solver.solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -1190,23 +1221,29 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
     Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas,
-      preconditioner_vec, primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
-    Eigen::VectorXd dual_solution = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution;
+    admm_solver.solution.retrieveDualSolution(dual_solution);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
@@ -1224,23 +1261,28 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_move_away.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_move_away.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, preconditioner_vec,
-      primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2 = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution2;
+    admm_solver.solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -1316,24 +1358,30 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
     Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas,
-      preconditioner_vec, primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
 
-    Eigen::VectorXd dual_solution = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution;
+    admm_solver.solution.retrieveDualSolution(dual_solution);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(std::abs(constraint_velocity[0]) < 1e-6);
@@ -1353,23 +1401,28 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
     Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
     Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    ADMMConstraintSolver admm_solver(int(delassus_matrix_plain.rows()));
-    admm_solver.setAbsolutePrecision(1e-13);
-    admm_solver.setRelativePrecision(1e-14);
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> preconditioner_vec(
-      Eigen::VectorXd::Ones(g_tilde_move_away.size()));
-    boost::optional<Eigen::Ref<const Eigen::VectorXd>> primal_solution_constref(primal_solution);
+    Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_move_away.size()));
+
+    ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
+    ADMMSolverSettings admm_settings;
+    admm_settings.tol_feasibility = 1e-13;
+    admm_settings.tol_rel_feasibility = 1e-14;
+    admm_settings.tol_complementarity = 1e-13;
+    admm_settings.tol_rel_complementarity = 1e-14;
+    admm_settings.preconditioner.emplace(preconditioner_vec);
+    admm_settings.primal_guess.emplace(primal_solution);
+
     const bool has_converged = admm_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, preconditioner_vec,
-      primal_solution_constref);
-    primal_solution = admm_solver.getPrimalSolution();
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings);
+    admm_solver.solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2 = admm_solver.getDualSolution();
+    Eigen::VectorXd dual_solution2;
+    admm_solver.solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());

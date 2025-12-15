@@ -14,7 +14,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
 
-    AndersonAccelerationTpl(int problem_size, std::size_t capacity)
+    AndersonAccelerationTpl(std::size_t problem_size, std::size_t capacity)
     : details(problem_size, capacity)
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(capacity >= 0, "capacity needs to be positive");
@@ -22,7 +22,7 @@ namespace pinocchio
     }
 
     /// \brief Reserve the capacity of the Anderson acceleration
-    void reserve(int new_problem_size, std::size_t new_capacity)
+    void reserve(std::size_t new_problem_size, std::size_t new_capacity)
     {
       this->details.problem_size = new_problem_size;
       this->details.capacity = new_capacity;
@@ -54,9 +54,9 @@ namespace pinocchio
     }
 
     /// \brief Get the problem size which this Anderson acceleration fits.
-    int problem_size() const
+    Eigen::Index problem_size() const
     {
-      return this->details.problem_size;
+      return static_cast<Eigen::Index>(this->details.problem_size);
     }
 
     /// \brief Getter for the Anderson weights
@@ -152,12 +152,12 @@ namespace pinocchio
       std::vector<VectorXs> zdiffs; // history of dual residuals
       VectorXs weights;             // weights of Anderson acceleration, computed by `fit`
       MatrixXs M;                   // matrix used to fit Anderson acceleration weights
-      int problem_size;             // size of each history vector
+      std::size_t problem_size;     // size of each history vector
       std::size_t capacity;         // capacity of the history
       std::size_t size;             // size of the history
       std::size_t idx;              // index of the most recent element in history
 
-      AndersonAccelerationData(int problem_size, std::size_t capacity)
+      AndersonAccelerationData(std::size_t problem_size, std::size_t capacity)
       : problem_size(problem_size)
       , capacity(capacity)
       , size(0)

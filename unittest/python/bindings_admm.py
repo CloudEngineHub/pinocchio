@@ -31,10 +31,13 @@ class TestADMM(TestCase):
         delassus = pin.DelassusOperatorDense(delassus_matrix)
         dim_pb = g.shape[0]
         solver = pin.ADMMConstraintSolver(dim_pb)
-        solver.setAbsolutePrecision(1e-13)
-        solver.setRelativePrecision(1e-14)
-        solver.setLanczosSize(g.size)
-        solver.solve(delassus, g, constraint_models, constraint_datas)
+        settings = pin.ADMMSolverSettings()
+        settings.tol_feasibility = 1e-13
+        settings.tol_rel_feasibility = 1e-14
+        settings.tol_complementarity = 1e-13
+        settings.tol_rel_complementarity = 1e-14
+        settings.lanczos_size = g.size
+        solver.solve(delassus, g, constraint_models, constraint_datas, settings)
 
     @unittest.skipUnless(coal_found, "Needs Coal.")
     def test_cassie(self, display=False, stat_record=True):
@@ -97,20 +100,23 @@ class TestADMM(TestCase):
         dim_pb = g.shape[0]
         self.assertTrue(dim_pb == csize, "constraint problem is of wrong size")
         solver = pin.ADMMConstraintSolver(dim_pb)
-        solver.setAbsolutePrecision(1e-10)
-        solver.setRelativePrecision(1e-12)
-        solver.setAndersonAccelerationCapacity(4)
-        solver.setRhoMomentum(0.9)
-        solver.setLanczosSize(g.size)
-        # solver = pin.PGSConstraintSolver(dim_pb)
-        # solver.setAbsolutePrecision(1e-10)
-        # solver.setRelativePrecision(1e-12)
+        settings = pin.ADMMSolverSettings()
+        settings.tol_feasibility = 1e-10
+        settings.tol_rel_feasibility = 1e-12
+        settings.tol_complementarity = 1e-10
+        settings.tol_rel_complementarity = 1e-12
+        settings.rho_momentum = 0.9
+        settings.anderson_capacity = 4
+        settings.lanczos_size = g.size
 
-        has_converged = solver.solve(delassus, g, constraint_models, constraint_datas)
+        has_converged = solver.solve(
+            delassus, g, constraint_models, constraint_datas, settings
+        )
 
-        print(f"{solver.getIterationCount()=}")
-        print(f"{solver.getAbsoluteConvergenceResidual()=}")
-        print(f"{solver.getRelativeConvergenceResidual()=}")
+        print(f"{solver.solution.iterations=}")
+        print(f"{solver.solution.primal_feasibility=}")
+        print(f"{solver.solution.dual_feasibility=}")
+        print(f"{solver.solution.complementarity=}")
         self.assertTrue(has_converged, "Solver did not converge.")
 
         if stat_record and matplotlib_found:

@@ -9,7 +9,7 @@
 
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/algorithm/contact-solver-utils.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-utils.hpp"
 
 #include <boost/test/unit_test.hpp>
 

@@ -46,7 +46,7 @@ namespace pinocchio
 
     void exposeCones();
 
-    void exposeContactSolvers();
+    void exposeConstraintSolvers();
 
     void exposeAlgorithms();
 

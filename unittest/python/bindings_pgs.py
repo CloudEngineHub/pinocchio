@@ -22,13 +22,19 @@ class TestPGS(TestCase):
         q0 = pin.neutral(model)
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
-        fext = [pin.Force.Zero() for i in range(model.njoints)]
-        delassus, g = self.setupTest(model, constraint_models, q0, v0, tau0, fext)
+        fext = [pin.Force.Zero() for _ in range(model.njoints)]
+        dt = 1e-3
+        delassus, g, constraint_datas = self.setupTest(
+            model, constraint_models, q0, v0, tau0, fext, dt
+        )
         dim_pb = g.shape[0]
         solver = pin.PGSConstraintSolver(dim_pb)
-        solver.setAbsolutePrecision(1e-13)
-        solver.setRelativePrecision(1e-14)
-        solver.solve(delassus, g, constraint_models)
+        settings = pin.PGSSolverSettings()
+        settings.tol_feasibility = 1e-13
+        settings.tol_rel_feasibility = 1e-14
+        settings.tol_complementarity = 1e-13
+        settings.tol_rel_complementarity = 1e-14
+        solver.solve(delassus, g, constraint_models, constraint_datas, settings)
 
     @unittest.skipUnless(coal_found, "Needs Coal.")
     def test_cassie(self, display=False, stat_record=True):
@@ -64,7 +70,7 @@ class TestPGS(TestCase):
         q0 = model.referenceConfigurations["home"]
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
-        fext = [pin.Force.Zero() for i in range(model.njoints)]
+        fext = [pin.Force.Zero() for _ in range(model.njoints)]
         self.addFloor(geom_model, visual_model)
         self.addSystemCollisionPairs(model, geom_model, q0)
 
@@ -73,37 +79,44 @@ class TestPGS(TestCase):
         for fpcm in contact_constraints:
             constraint_models.append(pin.ConstraintModel(fpcm))
 
-        delassus, g = self.setupTest(model, constraint_models, q0, v0, tau0, fext)
+        dt = 1e-3
+        delassus_matrix, g, constraint_datas = self.setupTest(
+            model, constraint_models, q0, v0, tau0, fext, dt
+        )
+        delassus = pin.DelassusOperatorDense(delassus_matrix)
 
+        csize = 0
+        for i, cm in enumerate(constraint_models):
+            cd = constraint_datas[i]
+            csize += cm.residualSize(cd)
         self.assertTrue(
-            delassus.shape[0]
-            == (3 * len(constraint_models_dict["point_anchor_constraint_models"]))
-            + (6 * len(constraint_models_dict["frame_anchor_constraint_models"]))
-            + (3 * len(contact_constraints))
-            + (model.upperPositionLimit != np.inf).sum()
-            - 4 * 3
-            + (model.lowerPositionLimit != -np.inf).sum()
-            - 4 * 3
-            + model.nv,
+            delassus.matrix().shape[0] == csize,
             "constraint problem is of wrong size.",
         )
 
         dim_pb = g.shape[0]
         solver = pin.PGSConstraintSolver(dim_pb)
-        solver.setAbsolutePrecision(1e-13)
-        solver.setRelativePrecision(1e-14)
+        settings = pin.PGSSolverSettings()
+        settings.tol_feasibility = 1e-13
+        settings.tol_rel_feasibility = 1e-14
+        settings.tol_complementarity = 1e-13
+        settings.tol_rel_complementarity = 1e-14
 
-        has_converged = solver.solve(delassus, g, constraint_models)
+        has_converged = solver.solve(
+            delassus, g, constraint_models, constraint_datas, settings
+        )
+
         self.assertTrue(has_converged, "Solver did not converge.")
-        print(solver.getIterationCount())
-        print(solver.getAbsoluteConvergenceResidual())
-        print(solver.getRelativeConvergenceResidual())
+        print(f"{solver.solution.iterations}")
+        print(f"{solver.solution.primal_feasibility}")
+        print(f"{solver.solution.dual_feasibility}")
+        print(f"{solver.solution.complementarity}")
 
         if stat_record and matplotlib_found:
             self.plotContactSolver(solver)
 
         if display and meshcat_found:
-            vizer, viewer = self.createVisualizer(model, geom_model, geom_model)
+            vizer, _ = self.createVisualizer(model, geom_model, geom_model)
             vizer.display(q0)
 
 
