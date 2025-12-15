@@ -169,10 +169,7 @@ namespace pinocchio
     PINOCCHIO_DEPRECATED void allocate(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-    {
-      resize(model, constraint_models, constraint_datas);
-    }
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
     ///
     ///  \brief Internal memory allocation.
@@ -200,116 +197,31 @@ namespace pinocchio
     /// \brief Returns the Inverse of the Operational Space Inertia Matrix resulting from the
     /// decomposition.
     ///
-    Matrix getInverseOperationalSpaceInertiaMatrix(bool enforce_symmetry = false) const
-    {
-      Matrix res(constraintDim(), constraintDim());
-      getInverseOperationalSpaceInertiaMatrix(res, enforce_symmetry);
-      return res;
-    }
+    Matrix getInverseOperationalSpaceInertiaMatrix(bool enforce_symmetry = false) const;
 
     template<typename MatrixType>
     void getInverseOperationalSpaceInertiaMatrix(
-      const Eigen::MatrixBase<MatrixType> & res, bool enforce_symmetry = false) const
-    {
-      const auto U1 = U.topLeftCorner(constraintDim(), constraintDim());
-
-      const auto dim = constraintDim();
-      typedef Eigen::Map<RowMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapRowMatrix;
-      MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
-
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      MatrixType & res_ = res.const_cast_derived();
-      OSIMinv.noalias() = D.head(dim).asDiagonal() * U1.adjoint();
-      res_.noalias() = -U1 * OSIMinv;
-      if (enforce_symmetry)
-        enforceSymmetry(res_);
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    }
+      const Eigen::MatrixBase<MatrixType> & res, bool enforce_symmetry = false) const;
 
     /// \brief Returns the Cholesky decomposition expression associated to the underlying
     /// delassus_block matrix.
-    DelassusCholeskyExpression getDelassusCholeskyExpression() const
-    {
-      return DelassusCholeskyExpression(*this);
-    }
+    DelassusCholeskyExpression getDelassusCholeskyExpression() const;
 
     ///
     /// \brief Returns the Operational Space Inertia Matrix resulting from the decomposition.
     ///
-    Matrix getOperationalSpaceInertiaMatrix() const
-    {
-      Matrix res(constraintDim(), constraintDim());
-      getOperationalSpaceInertiaMatrix(res);
-      return res;
-    }
+    Matrix getOperationalSpaceInertiaMatrix() const;
 
     template<typename MatrixType>
-    void getOperationalSpaceInertiaMatrix(const Eigen::MatrixBase<MatrixType> & res_) const
-    {
-      auto & res = res_.const_cast_derived();
-      //        typedef typename RowMatrix::ConstBlockXpr ConstBlockXpr;
-      const auto U1 = U.topLeftCorner(constraintDim(), constraintDim())
-                        .template triangularView<Eigen::UnitUpper>();
+    void getOperationalSpaceInertiaMatrix(const Eigen::MatrixBase<MatrixType> & res_) const;
 
-      const auto dim = constraintDim();
-      typedef Eigen::Map<RowMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapRowMatrix;
-      MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
-
-      typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
-      MapMatrix U1inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
-
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      U1inv.setIdentity();
-      U1.solveInPlace(U1inv); // TODO: implement Sparse Inverse
-      OSIMinv.noalias() = -U1inv.adjoint() * Dinv.head(dim).asDiagonal();
-      res.noalias() = OSIMinv * U1inv;
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    }
-
-    Matrix getInverseMassMatrix() const
-    {
-      Matrix res(nv, nv);
-      getInverseMassMatrix(res);
-      return res;
-    }
+    Matrix getInverseMassMatrix() const;
 
     template<typename MatrixType>
-    void getInverseMassMatrix(const Eigen::MatrixBase<MatrixType> & res_) const
-    {
-      auto & res = res_.const_cast_derived();
-      //        typedef typename RowMatrix::ConstBlockXpr ConstBlockXpr;
-      const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
-
-      typedef Eigen::Map<RowMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapRowMatrix;
-      MapRowMatrix Minv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
-
-      typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
-      MapMatrix U4inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
-
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      U4inv.setIdentity();
-      U4.solveInPlace(U4inv); // TODO: implement Sparse Inverse
-      Minv.noalias() = U4inv.adjoint() * Dinv.tail(nv).asDiagonal();
-      res.noalias() = Minv * U4inv;
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    }
+    void getInverseMassMatrix(const Eigen::MatrixBase<MatrixType> & res_) const;
 
     template<typename MatrixType>
-    void getJMinv(const Eigen::MatrixBase<MatrixType> & res_) const
-    {
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-      auto & res = res_.const_cast_derived();
-      const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
-      auto U2 = U.topRightCorner(constraintDim(), nv);
-
-      typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
-      MapMatrix U4inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
-
-      U4inv.setIdentity();
-      U4.solveInPlace(U4inv); // TODO: implement Sparse Inverse
-      res.noalias() = U2 * U4inv;
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-    }
+    void getJMinv(const Eigen::MatrixBase<MatrixType> & res_) const;
 
     PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
     PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
@@ -346,12 +258,7 @@ namespace pinocchio
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const S1 mu = S1(0.),
-      bool use_explicit_delassus = false)
-    {
-      compute(
-        model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu),
-        use_explicit_delassus);
-    }
+      bool use_explicit_delassus = false);
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
