@@ -1112,17 +1112,10 @@ namespace pinocchio
   PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 } // namespace pinocchio
 
-// Because of a GCC bug we should NEVER define a function that use ContactCholeskyDecompositionTpl
-// before doing the explicit template instantiation.
-// If we don't take care, GCC will not accept any visibility attribute when declaring the
-// explicit template instantiation of the ContactCholeskyDecompositionTpl class.
-// The warning message will look like this: type attributes ignored after type is already defined
-// [-Wattributes] A minimal code example is added on the PR
-// (https://github.com/stack-of-tasks/pinocchio/pull/2469)
+#include "pinocchio/algorithm/delassus-operator-cholesky-expression.hpp"
+
 #if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
   #include "pinocchio/algorithm/contact-cholesky.txx"
 #endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#include "pinocchio/algorithm/delassus-operator-cholesky-expression.hpp"
 
 #endif // ifndef __pinocchio_algorithm_contact_cholesky_hpp__
