@@ -48,14 +48,14 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_sets) and
-    /// starting from the initial guess.
+    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
+    /// constraint_datas).
     ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the contact problem.
-    /// \param[in] g Free contact acceleration or velicity associted with the contact problem.
+    /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
+    /// \param[in] g Free constraint acceleration or velocity associted with the constraint problem.
     /// \param[in] constraint_models Vector of constraint models.
-    /// \param[in] x Initial guess solution of the problem.
-    /// \param[in] over_relax Optional over relaxation value, default to 1.
+    /// \param[in] constraint_datas Vector of constraint datas.
+    /// \param[in] settings Settings for the PGS solver.
     ///
     /// \returns True if the problem has converged.
     template<
@@ -73,14 +73,14 @@ namespace pinocchio
       const PGSSolverSettings & settings);
 
     ///
-    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_sets) and
-    /// starting from the initial guess.
+    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
+    /// constraint_datas).
     ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the contact problem.
-    /// \param[in] g Free contact acceleration or velicity associted with the contact problem.
+    /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
+    /// \param[in] g Free constraint acceleration or velocity associted with the constraint problem.
     /// \param[in] constraint_models Vector of constraint models.
-    /// \param[in] x Initial guess solution of the problem.
-    /// \param[in] over_relax Optional over relaxation value, default to 1.
+    /// \param[in] constraint_datas Vector of constraint datas.
+    /// \param[in] settings Settings for the PGS solver.
     ///
     /// \returns True if the problem has converged.
     template<
