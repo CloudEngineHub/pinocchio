@@ -53,8 +53,9 @@ namespace pinocchio
   ///  \tparam _Options Alignment Options of the Eigen objects contained in the data structure.
   ///
   template<typename _Scalar, int _Options>
-  struct PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
-    ContactCholeskyDecompositionTpl
+  struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+    PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
+      ContactCholeskyDecompositionTpl
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
