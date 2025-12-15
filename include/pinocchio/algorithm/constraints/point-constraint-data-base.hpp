@@ -187,10 +187,6 @@ namespace pinocchio
     /// \brief Constraint acceleration biais
     Vector3 constraint_acceleration_biais_term;
 
-    Vector3 & contraint_residual = constraint_position_error;
-    Vector3 & dcontraint_residual = constraint_velocity_error;
-    Vector3 & ddcontraint_residual = constraint_acceleration_error;
-
     Matrix36 A1_world;
     Matrix36 A2_world;
     Matrix36 A_world; // A1 + A2

@@ -2,8 +2,8 @@
 // Copyright (c) 2023-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_kinematics_constraint_base_hpp__
-#define __pinocchio_algorithm_constraints_kinematics_constraint_base_hpp__
+#ifndef __pinocchio_algorithm_constraints_kinematics_constraint_model_base_hpp__
+#define __pinocchio_algorithm_constraints_kinematics_constraint_model_base_hpp__
 
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-base.hpp"
@@ -17,7 +17,8 @@ namespace pinocchio
     typedef typename traits<Derived>::Scalar Scalar;
     enum
     {
-      Options = traits<Derived>::Options
+      Options = traits<Derived>::Options,
+      Size = traits<Derived>::Size
     };
     typedef ConstraintModelBase<Derived> Base;
     typedef typename traits<Derived>::ConstraintData ConstraintData;
@@ -53,15 +54,10 @@ namespace pinocchio
     }
 
   public:
-    /// \brief Default constructor from model, joint1_id and joint2_id
+    /// \brief Default constructor from model
     template<int Options, template<typename, int> class JointCollectionTpl>
-    KinematicsConstraintModelBase(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const JointIndex joint1_id,
-      const JointIndex joint2_id)
+    KinematicsConstraintModelBase(const ModelTpl<Scalar, Options, JointCollectionTpl> & model)
     : Base(model)
-    , joint1_id(joint1_id)
-    , joint2_id(joint2_id)
     {
     }
 
@@ -71,7 +67,7 @@ namespace pinocchio
     template<typename OtherDerived>
     bool operator==(const KinematicsConstraintModelBase<OtherDerived> & other) const
     {
-      return base() == other.base() && joint1_id == other.joint1_id && joint2_id == other.joint2_id;
+      return base() == other.base();
     }
 
     /// \brief Comparison operator
@@ -201,11 +197,7 @@ namespace pinocchio
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
 
-    /// \copydoc Base::mapConstraintForceToJointSpace(const ModelTpl<Scalar, Options,
-    /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> , const
-    /// ConstraintData &, const Eigen::MatrixBase<ConstraintForceLike> &,
-    /// std::vector<ForceTpl<Scalar, Options>, ForceAllocator> &, const
-    /// Eigen::MatrixBase<JointTorquesLike> &,ReferenceFrameTag<rf>)
+    /// \copydoc Base::mapConstraintForceToJointSpace
     template<
       template<typename, int> class JointCollectionTpl,
       typename ConstraintForceLike,
@@ -226,12 +218,7 @@ namespace pinocchio
         model, data, cdata, constraint_forces.derived(), joint_forces, reference_frame);
     }
 
-    ///\copydoc Base::mapJointSpaceToConstraintMotion(const ModelTpl<Scalar, Options,
-    /// JointCollectionTpl> &, const DataTpl<Scalar, Options, JointCollectionTpl> , const
-    /// ConstraintData &,
-    /// std::vector<MotionTpl<Scalar, Options>, MotionAllocator> &, const
-    /// Eigen::MatrixBase<JointMotionsLike> &, const Eigen::MatrixBase<VectorLike>
-    /// &,ReferenceFrameTag<rf>)
+    ///\copydoc Base::mapJointSpaceToConstraintMotion
     template<
       template<typename, int> class JointCollectionTpl,
       typename MotionAllocator,
@@ -253,17 +240,7 @@ namespace pinocchio
         reference_frame);
     }
 
-    // ------------------------------
-    // MEMBERS
-    // ------------------------------
-
-    /// \brief Index of the first joint in the model tree
-    JointIndex joint1_id;
-
-    /// \brief Index of the second joint in the model tree
-    JointIndex joint2_id;
-
   }; // struct KinematicsConstraintModelBase
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_constraints_kinematics_constraint_base_hpp__
+#endif // ifndef __pinocchio_algorithm_constraints_kinematics_constraint_model_base_hpp__

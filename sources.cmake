@@ -31,7 +31,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/kinematics-constraint-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/kinematics-constraint-model-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-ordering.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-ordering.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-anchor-constraint.hpp

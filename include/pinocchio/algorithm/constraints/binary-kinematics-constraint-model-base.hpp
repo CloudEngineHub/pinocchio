@@ -10,7 +10,7 @@
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/kinematics-constraint-base.hpp"
+#include "pinocchio/algorithm/constraints/kinematics-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 
@@ -18,7 +18,7 @@ namespace pinocchio
 {
 
   template<typename Derived>
-  struct BinaryKinematicsConstraintBase
+  struct BinaryKinematicsConstraintModelBase
   : KinematicsConstraintModelBase<Derived>
   , ConstraintModelCommonParameters<Derived>
   {
@@ -27,18 +27,17 @@ namespace pinocchio
     typedef typename traits<Derived>::Scalar Scalar;
     enum
     {
-      Options = traits<Derived>::Options
+      Options = traits<Derived>::Options,
+      Size = traits<Derived>::Size
     };
 
-    typedef KinematicsConstraintModelBase<Derived> KinematicsBase;
+    typedef KinematicsConstraintModelBase<Derived> Base;
     typedef ConstraintModelCommonParameters<Derived> BaseCommonParameters;
     typedef ConstraintModelBase<Derived> RootBase;
 
     template<typename OtherDerived>
-    friend struct BinaryKinematicsConstraintBase;
+    friend struct BinaryKinematicsConstraintModelBase;
 
-    using KinematicsBase::joint1_id;
-    using KinematicsBase::joint2_id;
     using typename RootBase::BooleanVector;
     using typename RootBase::EigenIndexVector;
 
@@ -50,9 +49,12 @@ namespace pinocchio
     typedef ForceTpl<Scalar, Options> Force;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
+    typedef Eigen::Matrix<Scalar, Size, 6, Options> MatrixSize6;
+
     typedef typename traits<Derived>::VectorConstraintSize VectorConstraintSize;
     typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
+    using RootBase::derived;
     using RootBase::maxResidualSize;
 
     // -------------------------------
@@ -62,15 +64,15 @@ namespace pinocchio
     // CRTP related ------------------
 
     /// \brief Cast to Base
-    KinematicsBase & base()
+    Base & base()
     {
-      return static_cast<KinematicsBase &>(*this);
+      return static_cast<Base &>(*this);
     }
 
     /// \brief Const cast to Base
-    const KinematicsBase & base() const
+    const Base & base() const
     {
-      return static_cast<const KinematicsBase &>(*this);
+      return static_cast<const Base &>(*this);
     }
 
     /// \brief Cast to BaseCommonParameters
@@ -88,8 +90,10 @@ namespace pinocchio
     // Constructors ------------------
 
     /// \brief Default constructor
-    BinaryKinematicsConstraintBase()
-    : joint1_placement(SE3::Identity())
+    BinaryKinematicsConstraintModelBase()
+    : joint1_id(0)
+    , joint2_id(0)
+    , joint1_placement(SE3::Identity())
     , joint2_placement(SE3::Identity())
     , desired_constraint_offset(VectorConstraintSize::Zero())
     , desired_constraint_velocity(VectorConstraintSize::Zero())
@@ -102,13 +106,15 @@ namespace pinocchio
 
     /// \brief Full constructor
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    BinaryKinematicsConstraintBase(
+    BinaryKinematicsConstraintModelBase(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement,
       const JointIndex joint2_id,
       const SE3 & joint2_placement)
-    : KinematicsBase(model, joint1_id, joint2_id)
+    : Base(model)
+    , joint1_id(joint1_id)
+    , joint2_id(joint2_id)
     , joint1_placement(joint1_placement)
     , joint2_placement(joint2_placement)
     , desired_constraint_offset(VectorConstraintSize::Zero())
@@ -126,31 +132,32 @@ namespace pinocchio
     /// \brief Constructor with only joint1, relative placement is identity.
     /// joint2 defaults to 0 with identity relative placement.
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    BinaryKinematicsConstraintBase(
+    BinaryKinematicsConstraintModelBase(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
-    : BinaryKinematicsConstraintBase(model, joint1_id, SE3::Identity(), 0, SE3::Identity())
+    : BinaryKinematicsConstraintModelBase(model, joint1_id, SE3::Identity(), 0, SE3::Identity())
     {
     }
 
     /// \brief Constructor with only joint1 and relative placement to joint1.
     /// joint2 defaults to 0 with identity relative placement.
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    BinaryKinematicsConstraintBase(
+    BinaryKinematicsConstraintModelBase(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement)
-    : BinaryKinematicsConstraintBase(model, joint1_id, joint1_placement, 0, SE3::Identity())
+    : BinaryKinematicsConstraintModelBase(model, joint1_id, joint1_placement, 0, SE3::Identity())
     {
     }
 
     /// \brief Constructor with only joint1 and joint2 ids.
     /// Relative placements are identity.
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    BinaryKinematicsConstraintBase(
+    BinaryKinematicsConstraintModelBase(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const JointIndex joint2_id)
-    : BinaryKinematicsConstraintBase(model, joint1_id, SE3::Identity(), joint2_id, SE3::Identity())
+    : BinaryKinematicsConstraintModelBase(
+        model, joint1_id, SE3::Identity(), joint2_id, SE3::Identity())
     {
     }
 
@@ -158,7 +165,7 @@ namespace pinocchio
 
     /// \brief Comparison operator.
     template<typename OtherDerived>
-    bool operator==(const BinaryKinematicsConstraintBase<OtherDerived> & other) const
+    bool operator==(const BinaryKinematicsConstraintModelBase<OtherDerived> & other) const
     {
       if (this == &other)
         return true;
@@ -181,16 +188,16 @@ namespace pinocchio
 
     /// \brief Comparison operator.
     template<typename OtherDerived>
-    bool operator!=(const BinaryKinematicsConstraintBase<OtherDerived> & other) const
+    bool operator!=(const BinaryKinematicsConstraintModelBase<OtherDerived> & other) const
     {
       return !(*this == other);
     }
 
     /// \brief Cast to NewScalar.
     template<typename NewScalar, typename OtherDerived>
-    void cast(BinaryKinematicsConstraintBase<OtherDerived> & res) const
+    void cast(BinaryKinematicsConstraintModelBase<OtherDerived> & res) const
     {
-      KinematicsBase::cast(res);
+      Base::cast(res);
       BaseCommonParameters::template cast<NewScalar>(res);
 
       res.joint1_id = joint1_id;
@@ -210,6 +217,26 @@ namespace pinocchio
       res.nv = nv;
       res.depth_joint1 = depth_joint1;
       res.depth_joint2 = depth_joint2;
+    }
+
+    // Binary related ----------------
+
+    /// \brief Returns the constraint projector associated with joint 1.
+    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
+    /// the constraint associated with joint 1.
+    template<ReferenceFrame rf>
+    MatrixSize6 getA1(const ConstraintData & cdata, ReferenceFrameTag<rf> rft) const
+    {
+      return derived().getA1Impl(cdata, rft);
+    }
+
+    /// \brief Returns the constraint projector associated with joint 2.
+    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
+    /// the constraint associated with joint 2.
+    template<ReferenceFrame rf>
+    MatrixSize6 getA2(const ConstraintData & cdata, ReferenceFrameTag<rf> rft) const
+    {
+      return derived().getA2Impl(cdata, rft);
     }
 
     // -------------------------------
@@ -260,6 +287,12 @@ namespace pinocchio
     // MEMBERS
     // ------------------------------
 
+    /// \brief Index of the first joint in the model tree
+    JointIndex joint1_id;
+
+    /// \brief Index of the second joint in the model tree
+    JointIndex joint2_id;
+
     /// \brief Position of attached point with respect to the frame of joint1.
     SE3 joint1_placement;
 
@@ -302,7 +335,7 @@ namespace pinocchio
   protected:
     using BaseCommonParameters::m_baumgarte_parameters;
     using BaseCommonParameters::m_compliance;
-  }; // struct BinaryKinematicsConstraintBase<Derived>
+  }; // struct BinaryKinematicsConstraintModelBase<Derived>
 
 } // namespace pinocchio
 

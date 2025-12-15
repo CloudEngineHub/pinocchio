@@ -10,7 +10,7 @@ namespace pinocchio
 
   template<typename Derived>
   template<template<typename, int> class JointCollectionTpl>
-  void BinaryKinematicsConstraintBase<Derived>::init(
+  void BinaryKinematicsConstraintModelBase<Derived>::init(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model)
   {
     nv = model.nv;

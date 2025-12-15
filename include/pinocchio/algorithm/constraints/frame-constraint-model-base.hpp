@@ -76,7 +76,7 @@ namespace pinocchio
   /// \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename Derived>
-  struct FrameConstraintModelBase : BinaryKinematicsConstraintBase<Derived>
+  struct FrameConstraintModelBase : BinaryKinematicsConstraintModelBase<Derived>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -86,7 +86,7 @@ namespace pinocchio
       Options = traits<Derived>::Options
     };
 
-    typedef BinaryKinematicsConstraintBase<Derived> Base;
+    typedef BinaryKinematicsConstraintModelBase<Derived> Base;
     typedef typename Base::BaseCommonParameters BaseCommonParameters;
     typedef ConstraintModelBase<Derived> RootBase;
 
@@ -105,9 +105,11 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Vector6 VectorConstraintSize;
 
-    using Base::jacobianMatrixProduct;
-    using Base::jacobianTransposeMatrixProduct;
-    using Base::residualSize;
+    using Base::getA1;
+    using Base::getA2;
+    using RootBase::jacobianMatrixProduct;
+    using RootBase::jacobianTransposeMatrixProduct;
+    using RootBase::residualSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -173,12 +175,27 @@ namespace pinocchio
     }
 
     ///
+    /// \brief Contructor from joint1_id.
+    ///
+    /// \param[in] model Kinematic tree.
+    /// \param[in] joint1_id Index of the joint 1 in the model tree.
+    ///
+    /// \remarks The second joint id (joint2_id) is set to be 0 (corresponding to the index of the
+    /// universe).
+    ///
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    FrameConstraintModelBase(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
+    : Base(model, joint1_id)
+    {
+    }
+
+    ///
     /// \brief Contructor from joint1_id and placement.
     ///
-    /// \param[in] type Type of the contact.
+    /// \param[in] model Kinematic tree.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     /// \param[in] joint1_placement Placement of the constraint w.r.t the frame of joint1.
-    /// \param[in] reference_frame Reference frame in which the constraints quantities are
     /// expressed.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
@@ -203,22 +220,6 @@ namespace pinocchio
       const JointIndex joint1_id,
       const JointIndex joint2_id)
     : Base(model, joint1_id, joint2_id)
-    {
-    }
-
-    ///
-    /// \brief Contructor from joint1_id.
-    ///
-    /// \param[in] model Kinematic tree.
-    /// \param[in] joint1_id Index of the joint 1 in the model tree.
-    ///
-    /// \remarks The second joint id (joint2_id) is set to be 0 (corresponding to the index of the
-    /// universe).
-    ///
-    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    FrameConstraintModelBase(
-      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
-    : Base(model, joint1_id)
     {
     }
 
@@ -258,52 +259,6 @@ namespace pinocchio
     }
 
     // Methods for rigid body --------
-
-    /// \brief Returns the constraint projector associated with joint 1.
-    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
-    /// the constraint associated with joint 1.
-    template<ReferenceFrame rf>
-    Matrix6 getA1(const ConstraintData & cdata, ReferenceFrameTag<rf>) const
-    {
-      Matrix6 res;
-
-      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
-      {
-        const SE3 & oM1 = cdata.oMc1;
-        res = -oM1.toActionMatrixInverse();
-      }
-      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
-      {
-        const SE3 & j1Mc1 = this->joint1_placement;
-        res = -j1Mc1.toActionMatrixInverse();
-      }
-
-      return res;
-    }
-
-    /// \brief Returns the constraint projector associated with joint 2.
-    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
-    /// the constraint associated with joint 2.
-    template<ReferenceFrame rf>
-    Matrix6 getA2(const ConstraintData & cdata, ReferenceFrameTag<rf>) const
-    {
-      Matrix6 res;
-
-      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
-      {
-        const SE3 & oM1 = cdata.oMc1;
-        res = oM1.toActionMatrixInverse();
-      }
-      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
-      {
-        const SE3 & j2Mc2 = this->joint2_placement;
-        const SE3 & c1Mc2 = cdata.c1Mc2;
-        const SE3 c1Mj2 = c1Mc2.act(j2Mc2.inverse());
-        res = c1Mj2.toActionMatrix();
-      }
-
-      return res;
-    }
 
     template<
       typename Matrix6LikeOut1,
@@ -729,6 +684,48 @@ namespace pinocchio
           data.joint_cross_coupling.get({this->joint2_id, this->joint1_id}) += I12.transpose();
         }
       }
+    }
+
+    /// \copydoc Base::getA1
+    template<ReferenceFrame rf>
+    Matrix6 getA1Impl(const ConstraintData & cdata, ReferenceFrameTag<rf>) const
+    {
+      Matrix6 res;
+
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      {
+        const SE3 & oM1 = cdata.oMc1;
+        res = -oM1.toActionMatrixInverse();
+      }
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      {
+        const SE3 & j1Mc1 = this->joint1_placement;
+        res = -j1Mc1.toActionMatrixInverse();
+      }
+
+      return res;
+    }
+
+    /// \copydoc Base::getA2
+    template<ReferenceFrame rf>
+    Matrix6 getA2Impl(const ConstraintData & cdata, ReferenceFrameTag<rf>) const
+    {
+      Matrix6 res;
+
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      {
+        const SE3 & oM1 = cdata.oMc1;
+        res = oM1.toActionMatrixInverse();
+      }
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      {
+        const SE3 & j2Mc2 = this->joint2_placement;
+        const SE3 & c1Mc2 = cdata.c1Mc2;
+        const SE3 c1Mj2 = c1Mc2.act(j2Mc2.inverse());
+        res = c1Mj2.toActionMatrix();
+      }
+
+      return res;
     }
 
     //      ///

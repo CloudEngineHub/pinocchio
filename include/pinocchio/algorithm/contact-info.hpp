@@ -11,7 +11,7 @@
 #include "pinocchio/spatial/skew.hpp"
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/kinematics-constraint-base.hpp"
+#include "pinocchio/algorithm/constraints/kinematics-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/utils/reference.hpp"
@@ -187,7 +187,12 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
 
-    using Base::joint1_id, Base::joint2_id;
+    /// \brief Index of the first joint in the model tree
+    JointIndex joint1_id;
+
+    /// \brief Index of the second joint in the model tree
+    JointIndex joint2_id;
+
     ///  \brief Type of the contact.
     ContactType type;
 
@@ -275,7 +280,9 @@ namespace pinocchio
       const JointIndex joint2_id,
       const SE3 & joint2_placement,
       const ReferenceFrame & reference_frame = LOCAL)
-    : Base(model, joint1_id, joint2_id)
+    : Base(model)
+    , joint1_id(joint1_id)
+    , joint2_id(joint2_id)
     , type(type)
     , joint1_placement(joint1_placement)
     , joint2_placement(joint2_placement)
@@ -310,7 +317,9 @@ namespace pinocchio
       const JointIndex joint1_id,
       const SE3 & joint1_placement,
       const ReferenceFrame & reference_frame = LOCAL)
-    : Base(model, joint1_id, 0)
+    : Base(model)
+    , joint1_id(joint1_id)
+    , joint2_id(0)
     , type(type)
     , joint1_placement(joint1_placement)
     , joint2_placement(SE3::Identity())
@@ -343,7 +352,9 @@ namespace pinocchio
       const JointIndex joint1_id,
       const JointIndex joint2_id,
       const ReferenceFrame & reference_frame = LOCAL)
-    : Base(model, joint1_id, joint2_id)
+    : Base(model)
+    , joint1_id(joint1_id)
+    , joint2_id(joint2_id)
     , type(type)
     , joint1_placement(SE3::Identity())
     , joint2_placement(SE3::Identity())
@@ -377,7 +388,9 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const ReferenceFrame & reference_frame = LOCAL)
-    : Base(model, joint1_id, 0)
+    : Base(model)
+    , joint1_id(joint1_id)
+    , joint2_id(0)
     , type(type)
     , joint1_placement(SE3::Identity())
     , joint2_placement(SE3::Identity())
