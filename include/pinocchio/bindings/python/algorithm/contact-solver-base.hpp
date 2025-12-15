@@ -3,7 +3,7 @@
 //
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/algorithm/contact-solver-base.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
 
 #include <eigenpy/eigen-from-python.hpp>
 

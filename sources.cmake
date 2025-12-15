@@ -659,8 +659,6 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-centroidal.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-aba.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-algorithms.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/admm-solver.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/pgs-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/ipm-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-com.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-frames.cpp
@@ -690,6 +688,9 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-impulse-dynamics-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-kinematic-regressor.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-crba.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-constraint-solver-base.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-admm-solver.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-pgs-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/module.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/utils/version.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/utils/dependencies.cpp

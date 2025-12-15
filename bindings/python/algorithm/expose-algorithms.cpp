@@ -48,7 +48,7 @@ namespace pinocchio
 
       exposeCones();
 
-      exposeContactSolvers();
+      exposeConstraintSolvers();
     }
 
   } // namespace python

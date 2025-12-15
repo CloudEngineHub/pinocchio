@@ -9,13 +9,15 @@ namespace pinocchio
   namespace python
   {
 
-    // Forward declaration
+    // Forward declarations
+    void exposeConstraintSolverBases(); // Expose base classes first
     void exposePGSConstraintSolver();
     void exposeADMMConstraintSolver();
     void exposeIPMConstraintSolver();
 
-    void exposeContactSolvers()
+    void exposeConstraintSolvers()
     {
+      exposeConstraintSolverBases(); // Must be called first!
       exposePGSConstraintSolver();
       exposeADMMConstraintSolver();
       exposeIPMConstraintSolver();
