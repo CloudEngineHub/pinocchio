@@ -8,8 +8,8 @@
 #include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
 #include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/bindings/python/algorithm/constraints/constraint-data-inheritance.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
+#include "pinocchio/bindings/python/algorithm/constraints/constraint-data-inheritance.hpp"
 
 namespace pinocchio
 {
@@ -29,21 +29,23 @@ namespace pinocchio
     bp::class_<context::PointAnchorConstraintData> &
     expose_constraint_data(bp::class_<context::PointAnchorConstraintData> & cl)
     {
-      return cl;
+      return cl.def(
+        BinaryKinematicsConstraintDataBasePythonVisitor<context::PointAnchorConstraintData>());
     }
 
     template<>
     bp::class_<context::PointContactData> &
     expose_constraint_data(bp::class_<context::PointContactData> & cl)
     {
-      return cl;
+      return cl.def(BinaryKinematicsConstraintDataBasePythonVisitor<context::PointContactData>());
     }
 
     template<>
     bp::class_<context::FrameAnchorConstraintData> &
     expose_constraint_data(bp::class_<context::FrameAnchorConstraintData> & cl)
     {
-      return cl;
+      return cl.def(
+        BinaryKinematicsConstraintDataBasePythonVisitor<context::FrameAnchorConstraintData>());
     }
 
     template<>
@@ -63,9 +65,17 @@ namespace pinocchio
       return cl
         .def(bp::init<const typename Self::ConstraintModel &>(
           bp::args("self", "constraint_model"), "From model constructor."))
-        .PINOCCHIO_ADD_PROPERTY(Self, rowise_tangent_map, "Rowise tangent map.")
+        .PINOCCHIO_ADD_PROPERTY(
+          Self, active_idx_in_activable, "List of idx in all activable that are active.")
+        .PINOCCHIO_ADD_PROPERTY(
+          Self, active_idx_in_selected, "List of idx in selected joints for each active.")
+        .PINOCCHIO_ADD_PROPERTY(
+          Self, active_idx_qs_reduce, "List of idx in [0,nqreduce] for each active.")
+        .PINOCCHIO_ADD_PROPERTY(
+          Self, lower_residual_size, "Number of lower among active constraints.")
         .PINOCCHIO_ADD_PROPERTY(
           Self, activable_constraint_residual, "Activable constraint residual.")
+        .PINOCCHIO_ADD_PROPERTY(Self, rowise_tangent_map, "Rowise tangent map.")
         .add_property(
           "constraint_residual",
           bp::make_function(
@@ -76,6 +86,7 @@ namespace pinocchio
             },
             bp::with_custodian_and_ward_postcall<0, 1>()),
           "");
+      // CompactTangentMap and constraint_residual_storage are not exposed
     }
   } // namespace python
 } // namespace pinocchio

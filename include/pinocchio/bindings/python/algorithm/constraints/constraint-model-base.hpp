@@ -48,12 +48,12 @@ namespace pinocchio
       void visit(PyClass & cl) const
       {
         cl.PINOCCHIO_ADD_PROPERTY(Self, name, "Name of the constraint.")
-          .def("classname", &Self::classname)
-          .staticmethod("classname")
 #ifndef PINOCCHIO_PYTHON_SKIP_COMPARISON_OPERATIONS
           .def(bp::self == bp::self)
           .def(bp::self != bp::self)
 #endif
+          .def("classname", &Self::classname)
+          .staticmethod("classname")
           .def("shortname", &Self::shortname, "Short name of the class.")
           .def(
             "createData", &Self::createData, "Create a Data object for the given constraint model.")
@@ -120,19 +120,14 @@ namespace pinocchio
             "jacobianTransposeMatrixProduct", &jacobianTransposeMatrixProduct,
             bp::args("self", "model", "data", "constraint_data", "matrix"),
             "Backward chain rule: return product between the jacobian transpose and a matrix.");
-        // Rigid body methods: mapConstraintForceToJointSpaceImpl /
-        // mapJointSpaceToConstraintMotionImpl / appendCouplingConstraintInertiasImpl
+        // Methods: mapConstraintForceToJointSpace / mapJointSpaceToConstraintMotion
+        // are not exposed as they relies on allocators
         cl.def(
-            "setCompliance", bp::make_function(+[](Self & self, const context::VectorXs & vector) {
-              self.setCompliance(vector);
-            }),
-            "Set the compliance.")
-          .def(
-            "setBaumgarteCorrectorParameters",
-            bp::make_function(+[](Self & self, const BaumgarteCorrectorParameters & copy) {
-              self.setBaumgarteCorrectorParameters(copy);
-            }),
-            "Set the Baumgarte parameters.");
+          "appendCouplingConstraintInertias", &appendCouplingConstraintInertias,
+          bp::args(
+            "self", "model", "data", "constraint_data", "diagonal_constraint_inertia",
+            "reference_frame"),
+          "Append to data the apparent inertia due to the constraint.");
         if (::pinocchio::traits<ConstraintModelDerived>::has_baumgarte_corrector)
         {
           cl.add_property(
@@ -161,6 +156,17 @@ namespace pinocchio
               bp::return_internal_reference<>()),
             "Baumgarte parameters associated with the constraint.");
         }
+        cl.def(
+            "setCompliance", bp::make_function(+[](Self & self, const context::VectorXs & vector) {
+              self.setCompliance(vector);
+            }),
+            "Set the compliance.")
+          .def(
+            "setBaumgarteCorrectorParameters",
+            bp::make_function(+[](Self & self, const BaumgarteCorrectorParameters & copy) {
+              self.setBaumgarteCorrectorParameters(copy);
+            }),
+            "Set the Baumgarte parameters.");
       }
 
       static void calc(
@@ -192,6 +198,28 @@ namespace pinocchio
         context::MatrixXs res = context::MatrixXs::Zero(model.nv, matrix.cols());
         self.jacobianTransposeMatrixProduct(model, data, constraint_data, matrix, res);
         return res;
+      }
+
+      static void appendCouplingConstraintInertias(
+        const Self & self,
+        const Model & model,
+        Data & data,
+        const ConstraintData & constraint_data,
+        const context::VectorXs & diagonal_constraint_inertia,
+        ReferenceFrame rf)
+      {
+        switch (rf)
+        {
+        case WORLD:
+          self.appendCouplingConstraintInertias(
+            model, data, constraint_data, diagonal_constraint_inertia, WorldFrameTag());
+        case LOCAL:
+          self.appendCouplingConstraintInertias(
+            model, data, constraint_data, diagonal_constraint_inertia, LocalFrameTag());
+        case LOCAL_WORLD_ALIGNED:
+          self.appendCouplingConstraintInertias(
+            model, data, constraint_data, diagonal_constraint_inertia, LocalWorldAlignedFrameTag());
+        }
       }
     };
   } // namespace python
