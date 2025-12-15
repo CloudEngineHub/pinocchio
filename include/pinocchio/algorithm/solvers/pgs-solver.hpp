@@ -91,7 +91,7 @@ namespace pinocchio
       typename ConstraintData,
       typename ConstraintDataAllocator>
     bool solve(
-      DelassusOperatorBase<DelassusDerived> & delassus,
+      const DelassusOperatorBase<DelassusDerived> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
