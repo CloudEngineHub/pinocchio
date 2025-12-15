@@ -2,17 +2,9 @@
 // Copyright (c) 2015-2020 CNRS INRIA
 //
 
-/*
- * Unittest of the RNE algorithm. The code simply test that the algorithm does
- * not cause any serious errors. The numerical values are not cross validated
- * in any way.
- *
- */
-
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
 #include "pinocchio/algorithm/model.hpp"
-#include "pinocchio/spatial/fwd.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/center-of-mass.hpp"
@@ -24,57 +16,12 @@
 
 #include <iostream>
 
-// #define __SSE3__
-#include <fenv.h>
-
-#ifdef __SSE3__
-  #include <pmmintrin.h>
-#endif
-
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
 #include "utils/model-generator.hpp"
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
-
-BOOST_AUTO_TEST_CASE(test_rnea)
-{
-#ifdef __SSE3__
-  _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
-#endif
-  using namespace Eigen;
-  using namespace pinocchio;
-
-  pinocchio::Model model;
-  buildModels::humanoidRandom(model, true);
-
-  model.lowerPositionLimit.head<3>().fill(-1.);
-  model.upperPositionLimit.head<3>().fill(1.);
-
-  pinocchio::Data data(model);
-  data.v[0] = Motion::Zero();
-  data.a[0] = -model.gravity;
-
-  VectorXd q = randomConfiguration(model);
-  VectorXd v = VectorXd::Random(model.nv);
-  VectorXd a = VectorXd::Random(model.nv);
-
-#ifdef NDEBUG
-  const size_t NBT = 10000;
-#else
-  const size_t NBT = 1;
-  std::cout << "(the time score in debug mode is not relevant)  ";
-#endif
-
-  PinocchioTicToc timer(PinocchioTicToc::US);
-  timer.tic();
-  SMOOTH(NBT)
-  {
-    rnea(model, data, q, v, a);
-  }
-  timer.toc(std::cout, NBT);
-}
 
 BOOST_AUTO_TEST_CASE(test_nle_vs_rnea)
 {
