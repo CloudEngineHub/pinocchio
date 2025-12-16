@@ -120,11 +120,19 @@ namespace pinocchio
     }
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
+    /// \brief Timer for the `solve` method
     using Base::timer;
 #endif // PINOCCHIO_WITH_HPP_FCL
 
+    /// \brief Solution of the PGS solver
     PGSSolverSolution solution;
+
+    /// \brief Workspace of the PGS solver.
+    /// This is an internal of the solver and is not meant to be accessed by
+    /// users.
     PGSSolverWorkspace workspace;
+
+    /// \brief Per-iteration stats of the PGS solver.
     PGSSolverStats stats;
 
   protected:

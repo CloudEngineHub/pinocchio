@@ -171,11 +171,19 @@ namespace pinocchio
     }
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
+    /// \brief Timer for the `solve` method
     using Base::timer;
 #endif // PINOCCHIO_WITH_HPP_FCL
 
+    /// \brief Solution of the ADMM solver
     ADMMSolverSolution solution;
+
+    /// \brief Workspace of the ADMM solver.
+    /// This is an internal of the solver and is not meant to be accessed by
+    /// users.
     ADMMSolverWorkspace workspace;
+
+    /// \brief Per-iteration stats of the ADMM solver.
     ADMMSolverStats stats;
 
   protected:
