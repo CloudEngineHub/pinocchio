@@ -314,8 +314,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_fd)
 
   RigidConstraintModel ci_LF(CONTACT_6D, model, LF_id, LOCAL);
   ci_LF.joint1_placement.setRandom();
-  ci_LF.corrector.Kp = KP;
-  ci_LF.corrector.Kd = KD;
+  ci_LF.m_baumgarte_parameters.Kp = KP;
+  ci_LF.m_baumgarte_parameters.Kd = KD;
 
   constraint_models.push_back(ci_LF);
   constraint_data.push_back(RigidConstraintData(ci_LF));
@@ -447,15 +447,15 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
   RigidConstraintModel ci_RF(CONTACT_6D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setRandom();
   ci_RF.joint2_placement.setRandom();
-  ci_RF.corrector.Kp = KP;
-  ci_RF.corrector.Kd = KD;
+  ci_RF.m_baumgarte_parameters.Kp = KP;
+  ci_RF.m_baumgarte_parameters.Kd = KD;
   constraint_models.push_back(ci_RF);
 
   RigidConstraintModel ci_LF(CONTACT_3D, model, LF_id, LOCAL);
   ci_LF.joint1_placement.setRandom();
   ci_LF.joint2_placement.setRandom();
-  ci_LF.corrector.Kp = KP;
-  ci_LF.corrector.Kd = KD;
+  ci_LF.m_baumgarte_parameters.Kp = KP;
+  ci_LF.m_baumgarte_parameters.Kd = KD;
   constraint_models.push_back(ci_LF);
 
   Eigen::Index constraint_size = 0;
@@ -502,24 +502,24 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
 
   {
     const SE3::Matrix6 Jlog = Jlog6(constraint_datas[0].c1Mc2.inverse());
-    dacc_corrector_RF_dq = -(ci_RF.corrector.Kp * Jlog * dv_RF_dv_L);
-    dacc_corrector_RF_dq -= ci_RF.corrector.Kd * dv_RF_dq_L;
+    dacc_corrector_RF_dq = -(ci_RF.m_baumgarte_parameters.Kp * Jlog * dv_RF_dv_L);
+    dacc_corrector_RF_dq -= ci_RF.m_baumgarte_parameters.Kd * dv_RF_dq_L;
 
-    dacc_corrector_RF_dv = -(ci_RF.corrector.Kd * dv_RF_dv_L);
+    dacc_corrector_RF_dv = -(ci_RF.m_baumgarte_parameters.Kd * dv_RF_dv_L);
     BOOST_CHECK(dv_RF_dv_L.isApprox(data.contact_chol.matrix().topRightCorner(6, model.nv)));
   }
 
   {
-    dacc_corrector_LF_dq = -(ci_LF.corrector.Kp * dv_LF_dv_L.topRows<3>());
-    dacc_corrector_LF_dq -= ci_LF.corrector.Kd * dv_LF_dq_L.topRows<3>();
+    dacc_corrector_LF_dq = -(ci_LF.m_baumgarte_parameters.Kp * dv_LF_dv_L.topRows<3>());
+    dacc_corrector_LF_dq -= ci_LF.m_baumgarte_parameters.Kd * dv_LF_dq_L.topRows<3>();
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       dacc_corrector_LF_dq.col(k) +=
-        ci_LF.corrector.Kp
+        ci_LF.m_baumgarte_parameters.Kp
         * dv_LF_dv_L.col(k).tail<3>().cross(constraint_datas[1].contact_placement_error.linear());
     }
 
-    dacc_corrector_LF_dv = -(ci_LF.corrector.Kd * dv_LF_dv_L.topRows<3>());
+    dacc_corrector_LF_dv = -(ci_LF.m_baumgarte_parameters.Kd * dv_LF_dv_L.topRows<3>());
     BOOST_CHECK(dv_LF_dv_L.topRows<3>().isApprox(
       data.contact_chol.matrix().topRightCorner(9, model.nv).bottomRows<3>()));
   }
@@ -637,8 +637,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd)
 
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setRandom();
-  ci_RF.corrector.Kp = KP;
-  ci_RF.corrector.Kd = KD;
+  ci_RF.m_baumgarte_parameters.Kp = KP;
+  ci_RF.m_baumgarte_parameters.Kd = KD;
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
 
@@ -757,8 +757,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_fd_prox)
 
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setRandom();
-  ci_RF.corrector.Kp = KP;
-  ci_RF.corrector.Kd = KD;
+  ci_RF.m_baumgarte_parameters.Kp = KP;
+  ci_RF.m_baumgarte_parameters.Kd = KD;
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
 
@@ -885,8 +885,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_loop_closure_3D_
   PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) constraint_data;
 
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LF_id, LOCAL);
-  ci_RF.corrector.Kp = KP;
-  ci_RF.corrector.Kd = KD;
+  ci_RF.m_baumgarte_parameters.Kp = KP;
+  ci_RF.m_baumgarte_parameters.Kd = KD;
   ci_RF.joint1_placement.setRandom();
   forwardKinematics(model, data, q);
   // data.oMi[LF_id] * ci_RF.joint2_placement = data.oMi[RF_id] * ci_RF.joint1_placement;
@@ -1026,8 +1026,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
 
   RigidConstraintModel ci_closure(
     CONTACT_3D, model, 0, SE3::Identity(), RA_id, SE3::Random(), LOCAL);
-  ci_closure.corrector.Kp = KP;
-  ci_closure.corrector.Kd = KD;
+  ci_closure.m_baumgarte_parameters.Kp = KP;
+  ci_closure.m_baumgarte_parameters.Kd = KD;
   constraint_models.push_back(ci_closure);
   constraint_data.push_back(RigidConstraintData(ci_closure));
   // End of Loopo Closure Constraint
@@ -1179,8 +1179,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
 
   RigidConstraintModel ci_closure(
     CONTACT_6D, model, 0, SE3::Identity(), RA_id, SE3::Identity(), LOCAL);
-  ci_closure.corrector.Kp = KP;
-  ci_closure.corrector.Kd = KD;
+  ci_closure.m_baumgarte_parameters.Kp = KP;
+  ci_closure.m_baumgarte_parameters.Kd = KD;
   constraint_models.push_back(ci_closure);
   constraint_data.push_back(RigidConstraintData(ci_closure));
   constraint_data_fd.push_back(RigidConstraintData(ci_closure));
@@ -1208,8 +1208,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
 
   Motion v_error, a_error;
   computeVelocityAndAccelerationErrors(
-    model, ci_closure, q, v, ddq0, v_error, a_error, ci_closure.corrector.Kp,
-    ci_closure.corrector.Kd);
+    model, ci_closure, q, v, ddq0, v_error, a_error, ci_closure.m_baumgarte_parameters.Kp,
+    ci_closure.m_baumgarte_parameters.Kd);
   BOOST_CHECK(a_error.isZero());
 
   const Motion constraint_velocity_error = constraint_data[0].contact_velocity_error;
@@ -1250,8 +1250,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
 
     Motion v_error_plus, a_error_plus;
     computeVelocityAndAccelerationErrors(
-      model, ci_closure, q_plus, v, ddq0, v_error_plus, a_error_plus, ci_closure.corrector.Kp,
-      ci_closure.corrector.Kd);
+      model, ci_closure, q_plus, v, ddq0, v_error_plus, a_error_plus,
+      ci_closure.m_baumgarte_parameters.Kp, ci_closure.m_baumgarte_parameters.Kd);
 
     const Motion & constraint_velocity_error_plus = constraint_data_fd[0].contact_velocity_error;
     const VectorXd constraint_acceleration_error_plus =
@@ -1291,8 +1291,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
 
     Motion v_error_plus, a_error_plus;
     computeVelocityAndAccelerationErrors(
-      model, ci_closure, q, v_plus, ddq0, v_error_plus, a_error_plus, ci_closure.corrector.Kp,
-      ci_closure.corrector.Kd);
+      model, ci_closure, q, v_plus, ddq0, v_error_plus, a_error_plus,
+      ci_closure.m_baumgarte_parameters.Kp, ci_closure.m_baumgarte_parameters.Kd);
 
     const Motion & constraint_velocity_error_plus = constraint_data_fd[0].contact_velocity_error;
     dconstraint_velocity_error_dv_fd.col(k) =
@@ -1360,8 +1360,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
   // Add loop closure constraint
   RigidConstraintModel ci_closure(
     CONTACT_6D, model, LA_id, SE3::Random(), RA_id, SE3::Random(), LOCAL);
-  ci_closure.corrector.Kp = KP;
-  ci_closure.corrector.Kd = KD;
+  ci_closure.m_baumgarte_parameters.Kp = KP;
+  ci_closure.m_baumgarte_parameters.Kd = KD;
 
   constraint_models.push_back(ci_closure);
   constraint_data.push_back(RigidConstraintData(ci_closure));
@@ -1384,8 +1384,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
 
   Motion v_error, a_error;
   computeVelocityAndAccelerationErrors(
-    model, ci_closure, q, v, ddq0, v_error, a_error, ci_closure.corrector.Kp,
-    ci_closure.corrector.Kd);
+    model, ci_closure, q, v, ddq0, v_error, a_error, ci_closure.m_baumgarte_parameters.Kp,
+    ci_closure.m_baumgarte_parameters.Kd);
   BOOST_CHECK(a_error.isZero());
 
   const Motion constraint_velocity_error = constraint_data[0].contact_velocity_error;
@@ -1427,8 +1427,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
 
     Motion v_error_plus, a_error_plus;
     computeVelocityAndAccelerationErrors(
-      model, ci_closure, q_plus, v, ddq0, v_error_plus, a_error_plus, ci_closure.corrector.Kp,
-      ci_closure.corrector.Kd);
+      model, ci_closure, q_plus, v, ddq0, v_error_plus, a_error_plus,
+      ci_closure.m_baumgarte_parameters.Kp, ci_closure.m_baumgarte_parameters.Kd);
 
     const Motion & constraint_velocity_error_plus = constraint_data_fd[0].contact_velocity_error;
     const VectorXd constraint_acceleration_error_plus =
@@ -1468,8 +1468,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_6D_loop_closure_
 
     Motion v_error_plus, a_error_plus;
     computeVelocityAndAccelerationErrors(
-      model, ci_closure, q, v_plus, ddq0, v_error_plus, a_error_plus, ci_closure.corrector.Kp,
-      ci_closure.corrector.Kd);
+      model, ci_closure, q, v_plus, ddq0, v_error_plus, a_error_plus,
+      ci_closure.m_baumgarte_parameters.Kp, ci_closure.m_baumgarte_parameters.Kd);
 
     const Motion & constraint_velocity_error_plus = constraint_data_fd[0].contact_velocity_error;
     dconstraint_velocity_error_dv_fd.col(k) =
@@ -1541,8 +1541,8 @@ BOOST_AUTO_TEST_CASE(
 
   RigidConstraintModel ci_closure(
     CONTACT_6D, model, LA_id, SE3::Random(), RA_id, SE3::Random(), LOCAL_WORLD_ALIGNED);
-  ci_closure.corrector.Kp = 0.;
-  ci_closure.corrector.Kd = 0;
+  ci_closure.m_baumgarte_parameters.Kp = 0.;
+  ci_closure.m_baumgarte_parameters.Kd = 0;
 
   constraint_models.push_back(ci_closure);
   constraint_data.push_back(RigidConstraintData(ci_closure));
@@ -1670,8 +1670,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_3D_loop_closure_
 
   RigidConstraintModel ci_closure(
     CONTACT_3D, model, LA_id, SE3::Random(), RA_id, SE3::Random(), LOCAL);
-  ci_closure.corrector.Kp = KP;
-  ci_closure.corrector.Kd = KD;
+  ci_closure.m_baumgarte_parameters.Kp = KP;
+  ci_closure.m_baumgarte_parameters.Kd = KD;
   constraint_models.push_back(ci_closure);
   constraint_data.push_back(RigidConstraintData(ci_closure));
   // End of Loopo Closure Constraint
@@ -1799,8 +1799,8 @@ BOOST_AUTO_TEST_CASE(
   RigidConstraintModel ci_closure(
     CONTACT_3D, model, LA_id, SE3::Random(), RA_id, SE3::Random(), LOCAL_WORLD_ALIGNED);
 
-  ci_closure.corrector.Kp = KP;
-  ci_closure.corrector.Kd = KD;
+  ci_closure.m_baumgarte_parameters.Kp = KP;
+  ci_closure.m_baumgarte_parameters.Kd = KD;
 
   constraint_models.push_back(ci_closure);
   constraint_data.push_back(RigidConstraintData(ci_closure));
@@ -1920,8 +1920,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_6D
   PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) constraint_data;
 
   RigidConstraintModel ci_LF(CONTACT_6D, model, LF_id, LOCAL_WORLD_ALIGNED);
-  ci_LF.corrector.Kp = 0; // TODO: Add support for KP >0
-  ci_LF.corrector.Kd = KD;
+  ci_LF.m_baumgarte_parameters.Kp = 0; // TODO: Add support for KP >0
+  ci_LF.m_baumgarte_parameters.Kd = KD;
 
   ci_LF.joint1_placement.setRandom();
   constraint_models.push_back(ci_LF);
@@ -2039,8 +2039,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_LOCAL_WORLD_ALIGNED_3D
   PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) constraint_data;
 
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LOCAL_WORLD_ALIGNED);
-  ci_RF.corrector.Kp = KP;
-  ci_RF.corrector.Kd = KD;
+  ci_RF.m_baumgarte_parameters.Kp = KP;
+  ci_RF.m_baumgarte_parameters.Kd = KD;
   ci_RF.joint1_placement.setRandom();
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
@@ -2161,27 +2161,27 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
   PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) constraint_data;
 
   RigidConstraintModel ci_LF(CONTACT_6D, model, LF_id, LOCAL_WORLD_ALIGNED);
-  ci_LF.corrector.Kp = 0; // TODO: fix local_world_aligned for 6d with kp non-zero
-  ci_LF.corrector.Kd = KD;
+  ci_LF.m_baumgarte_parameters.Kp = 0; // TODO: fix local_world_aligned for 6d with kp non-zero
+  ci_LF.m_baumgarte_parameters.Kd = KD;
   ci_LF.joint1_placement.setRandom();
   constraint_models.push_back(ci_LF);
   constraint_data.push_back(RigidConstraintData(ci_LF));
   RigidConstraintModel ci_RF(CONTACT_6D, model, RF_id, LOCAL);
-  ci_RF.corrector.Kp = KP;
-  ci_RF.corrector.Kd = KD;
+  ci_RF.m_baumgarte_parameters.Kp = KP;
+  ci_RF.m_baumgarte_parameters.Kd = KD;
   ci_RF.joint1_placement.setRandom();
   constraint_models.push_back(ci_RF);
   constraint_data.push_back(RigidConstraintData(ci_RF));
 
   RigidConstraintModel ci_LH(CONTACT_3D, model, LH_id, LOCAL_WORLD_ALIGNED);
-  ci_LH.corrector.Kp = KP;
-  ci_LH.corrector.Kd = KD;
+  ci_LH.m_baumgarte_parameters.Kp = KP;
+  ci_LH.m_baumgarte_parameters.Kd = KD;
   ci_LH.joint1_placement.setRandom();
   constraint_models.push_back(ci_LH);
   constraint_data.push_back(RigidConstraintData(ci_LH));
   RigidConstraintModel ci_RH(CONTACT_3D, model, RH_id, LOCAL);
-  ci_RH.corrector.Kp = KP;
-  ci_RH.corrector.Kd = KD;
+  ci_RH.m_baumgarte_parameters.Kp = KP;
+  ci_RH.m_baumgarte_parameters.Kd = KD;
   ci_RH.joint1_placement.setRandom();
   constraint_models.push_back(ci_RH);
   constraint_data.push_back(RigidConstraintData(ci_RH));
@@ -2360,8 +2360,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
   PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) constraint_data;
 
   RigidConstraintModel ci_RH(CONTACT_6D, model, RH_id, SE3::Random(), LH_id, SE3::Random(), LOCAL);
-  ci_RH.corrector.Kp = 0;
-  ci_RH.corrector.Kd = 0;
+  ci_RH.m_baumgarte_parameters.Kp = 0;
+  ci_RH.m_baumgarte_parameters.Kd = 0;
 
   constraint_models.push_back(ci_RH);
   constraint_data.push_back(RigidConstraintData(ci_RH));
@@ -2489,10 +2489,10 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_dirty_data)
   RigidConstraintModel ci_LF(CONTACT_6D, model, LF_id, LOCAL);
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LOCAL);
 
-  ci_LF.corrector.Kp = KP;
-  ci_LF.corrector.Kd = KD;
-  ci_RF.corrector.Kp = KP;
-  ci_RF.corrector.Kd = KD;
+  ci_LF.m_baumgarte_parameters.Kp = KP;
+  ci_LF.m_baumgarte_parameters.Kd = KD;
+  ci_RF.m_baumgarte_parameters.Kp = KP;
+  ci_RF.m_baumgarte_parameters.Kd = KD;
   constraint_models.push_back(ci_LF);
   constraint_data.push_back(RigidConstraintData(ci_LF));
   constraint_models.push_back(ci_RF);

@@ -412,13 +412,13 @@ namespace pinocchio
     typedef typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex JointIndex;
     typedef typename DataTpl<Scalar, Options, JointCollectionTpl>::Motion Motion;
 
-    // bool baumgarte_position = false;
-    // for (std::size_t i = 0; i < contact_models.size(); ++i)
-    // {
-    //   if (!check_expression_if_real<Scalar, false>(
-    //         contact_models[i].corrector.Kp == static_cast<Scalar>(0.)))
-    //     baumgarte_position = true;
-    // }
+    bool baumgarte_position = false;
+    for (std::size_t i = 0; i < contact_models.size(); ++i)
+    {
+      if (!check_expression_if_real<Scalar, false>(
+            contact_models[i].m_baumgarte_parameters.Kp == static_cast<Scalar>(0.)))
+        baumgarte_position = true;
+    }
 
     data.v[0].setZero();
     data.a_gf[0] = -model.gravity;
@@ -461,12 +461,18 @@ namespace pinocchio
       const JointIndex & joint_id = contact_model.joint1_id;
       int con_dim = contact_model.maxResidualSize();
 
-      // const typename ConstraintModel::BaumgarteCorrectorParameters & corrector =
+      const typename ConstraintModel::BaumgarteCorrectorParameters & corrector =
       //   contact_model.corrector;
       ConstraintData & contact_data = contact_datas[i];
       
       // Compute vc1
       Motion vc1 = contact_model.joint1_placement.actInv(data.v[joint_id]);
+      const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
+        contact_model.m_baumgarte_parameters;
+      typename RigidConstraintData::Motion & contact_acc_err =
+        contact_datas[i].contact_acceleration_error;
+      typename RigidConstraintData::Motion & contact_vel_err =
+        contact_datas[i].contact_velocity_error;
 
       contact_data.constraint_acceleration_error.setZero();
       // if (!check_expression_if_real<Scalar, false>(corrector.Kd == static_cast<Scalar>(0.)))
@@ -597,16 +603,16 @@ namespace pinocchio
     typedef typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex JointIndex;
     typedef typename DataTpl<Scalar, Options, JointCollectionTpl>::Motion Motion;
 
-    // bool baumgarte_position = false;
-    // for (std::size_t i = 0; i < contact_models.size(); ++i)
-    // {
-    //   if (!check_expression_if_real<Scalar, false>(
-    //         contact_models[i].corrector.Kp == static_cast<Scalar>(0.)))
-    //   {
-    //     baumgarte_position = true;
-    //     break;
-    //   }
-    // }
+    bool baumgarte_position = false;
+    for (std::size_t i = 0; i < contact_models.size(); ++i)
+    {
+      if (!check_expression_if_real<Scalar, false>(
+            contact_models[i].baumgarte_corrector_parameters().Kp == static_cast<Scalar>(0.)))
+      {
+        baumgarte_position = true;
+        break;
+      }
+    }
 
     data.v[0].setZero();
     data.a_gf[0] = -model.gravity;
@@ -647,17 +653,17 @@ namespace pinocchio
       const ConstraintModel & contact_model = contact_models[i];
       const JointIndex & joint_id = contact_model.joint1_id;
       int con_dim = contact_model.maxResidualSize();
-      // const typename ConstraintModel::BaumgarteCorrectorParameters & corrector =
-        // contact_model.corrector;
-      
+
       ConstraintData & contact_data = contact_datas[i];
-      // typename ConstraintData::Vector3 & contact_acc_err_linear = contact_data.constraint_acceleration_error.linear();
-      // typename ConstraintData::Vector3 & contact_acc_err_angular = contact_data.constraint_acceleration_error.angular();
+
+      const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
+        contact_model.baumgarte_corrector_parameters();
 
       // Compute vc1
       Motion vc1 = contact_model.joint1_placement.actInv(data.v[joint_id]);
 
       contact_data.constraint_acceleration_error.setZero();
+      // TODO Ajay: Fix Baumgarte use
       // if (!check_expression_if_real<Scalar, false>(corrector.Kd == static_cast<Scalar>(0.)))
       // {
       //   if constexpr (ConstraintModel::Size == 6)

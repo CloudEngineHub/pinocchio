@@ -748,8 +748,10 @@ namespace pinocchio
 
       // Add the contribution of the corrector
       if (
-        check_expression_if_real<Scalar>(!(cmodel.corrector.Kp == static_cast<Scalar>(0.)))
-        || check_expression_if_real<Scalar>(!(cmodel.corrector.Kd == static_cast<Scalar>(0.))))
+        check_expression_if_real<Scalar>(
+          !(cmodel.m_baumgarte_parameters.Kp == static_cast<Scalar>(0.)))
+        || check_expression_if_real<Scalar>(
+          !(cmodel.m_baumgarte_parameters.Kd == static_cast<Scalar>(0.))))
       {
         Jlog6(cdata.c1Mc2.inverse(), Jlog);
 
@@ -764,16 +766,17 @@ namespace pinocchio
           RowsBlock contact_dac_dv = SizeDepType<6>::middleRows(data.dac_dv, current_row_sol_id);
           const RowsBlock contact_dac_da =
             SizeDepType<6>::middleRows(data.dac_da, current_row_sol_id);
-          contact_dac_dq += cmodel.corrector.Kd * contact_dvc_dq;
-          contact_dac_dv += cmodel.corrector.Kd * contact_dac_da;
+          contact_dac_dq += cmodel.m_baumgarte_parameters.Kd * contact_dvc_dq;
+          contact_dac_dv += cmodel.m_baumgarte_parameters.Kd * contact_dac_da;
           // d./dq
           const auto & colwise_span_indexes = cmodel.getRowIndexes(model, data, cdata, 0);
           for (size_t k = 0; k < colwise_span_indexes.size(); ++k)
           {
             const Eigen::Index row_id = cmodel.colwise_span_indexes[k];
-            // contact_dac_dq.col(row_id) += cmodel.corrector.Kd * contact_dvc_dq.col(row_id);
+            // contact_dac_dq.col(row_id) += cmodel.m_baumgarte_parameters.Kd *
+            // contact_dvc_dq.col(row_id);
             contact_dac_dq.col(row_id).noalias() +=
-              cmodel.corrector.Kp * Jlog * contact_dac_da.col(row_id);
+              cmodel.m_baumgarte_parameters.Kp * Jlog * contact_dac_da.col(row_id);
           }
           break;
         }
@@ -788,8 +791,8 @@ namespace pinocchio
             SizeDepType<3>::middleRows(data.dac_da, current_row_sol_id);
           if (cmodel.reference_frame == LOCAL)
           {
-            a_tmp.linear() =
-              cmodel.corrector.Kd * cdata.oMc2.rotation() * cdata.contact2_velocity.linear();
+            a_tmp.linear() = cmodel.m_baumgarte_parameters.Kd * cdata.oMc2.rotation()
+                             * cdata.contact2_velocity.linear();
             typename SE3::Matrix3 vc2_cross_in_c1, vc2_cross_in_world;
             skew(a_tmp.linear(), vc2_cross_in_world);
             vc2_cross_in_c1.noalias() = cdata.oMc1.rotation().transpose() * vc2_cross_in_world;
@@ -814,12 +817,13 @@ namespace pinocchio
               const MotionRef<ColType> J_col(data.J.col(j));
               a_tmp.angular() = cdata.oMc1.rotation().transpose() * J_col.angular();
               contact_dac_dq.col(j).noalias() +=
-                cmodel.corrector.Kp * cdata.contact_placement_error.linear().cross(a_tmp.angular());
+                cmodel.m_baumgarte_parameters.Kp
+                * cdata.contact_placement_error.linear().cross(a_tmp.angular());
             }
           }
-          contact_dac_dq.noalias() += cmodel.corrector.Kd * contact_dvc_dq;
-          contact_dac_dq.noalias() += cmodel.corrector.Kp * contact_dac_da;
-          contact_dac_dv.noalias() += cmodel.corrector.Kd * contact_dac_da;
+          contact_dac_dq.noalias() += cmodel.m_baumgarte_parameters.Kd * contact_dvc_dq;
+          contact_dac_dq.noalias() += cmodel.m_baumgarte_parameters.Kp * contact_dac_da;
+          contact_dac_dv.noalias() += cmodel.m_baumgarte_parameters.Kd * contact_dac_da;
           break;
         }
         default:

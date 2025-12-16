@@ -102,35 +102,6 @@ namespace pinocchio
       run(cmodel.derived(), args);
     }
 
-    // Will be remove with RigidBody
-    template<typename _Scalar, int _Options>
-    static void algo_step(
-      const RigidConstraintModelTpl<_Scalar, _Options> & cmodel, const Model & model, Data & data)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(model);
-
-      const JointIndex joint1_id = cmodel.joint1_id;
-      const JointIndex joint2_id = cmodel.joint2_id;
-      auto & neighbours = data.joint_neighbours;
-
-      // Here we suppose all BinartyKinematicsConstraintModelBase<ConstraintModel> are constant size
-      const auto constraint_size = cmodel.maxResidualSize();
-      data.constraints_supported_dim[joint1_id] += constraint_size;
-      data.constraints_supported_dim[joint2_id] += constraint_size;
-
-      if (joint1_id > 0 && joint2_id > 0)
-      {
-        data.joint_coupling_info(Eigen::Index(joint1_id), Eigen::Index(joint2_id)) = true;
-        data.joint_coupling_info(Eigen::Index(joint2_id), Eigen::Index(joint1_id)) = true;
-
-        auto & joint1_neighbours = neighbours[joint1_id];
-        if (!helper::exists(joint1_neighbours, joint2_id))
-          joint1_neighbours.push_back(joint2_id);
-        auto & joint2_neighbours = neighbours[joint2_id];
-        if (!helper::exists(joint2_neighbours, joint1_id))
-          joint2_neighbours.push_back(joint1_id);
-      }
-    }
   }; // struct ConstraintCouplingInformationCollectorStep
 
   template<

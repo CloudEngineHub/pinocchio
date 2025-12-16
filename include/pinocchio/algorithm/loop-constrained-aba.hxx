@@ -420,7 +420,7 @@ namespace pinocchio
         const JointIndex joint1_id = cmodel.joint1_id;
         const JointIndex joint2_id = cmodel.joint2_id;
 
-        const auto & corrector = cmodel.corrector;
+        const auto & corrector = cmodel.m_baumgarte_parameters;
         auto & contact_velocity_error = cdata.contact_velocity_error;
 
         if (joint1_id > 0)

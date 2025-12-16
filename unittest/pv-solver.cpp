@@ -381,6 +381,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 }
 
+// TODO: Ajay fix Baumgarte use
 // // BOOST_AUTO_TEST_CASE(test_FD_humanoid_redundant_baumgarte)
 // // {
 // //   using namespace Eigen;
