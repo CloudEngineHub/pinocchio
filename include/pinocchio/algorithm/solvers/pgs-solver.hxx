@@ -581,6 +581,9 @@ namespace pinocchio
     //
     settings.checkValidity();
 
+    // the solver can now be marked as reset
+    is_reset_ = true;
+
     // Retrieve guess if any
     if (settings.primal_guess)
     {
@@ -711,6 +714,9 @@ namespace pinocchio
     sol.x = wk.x;
     sol.y = wk.y;
     sol.converged = abs_prec_reached || rel_prec_reached;
+
+    // the solver has run, we mark it as not reset
+    is_reset_ = false;
 
     return sol.converged;
   }

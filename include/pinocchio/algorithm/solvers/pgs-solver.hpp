@@ -46,6 +46,7 @@ namespace pinocchio
     , solution()
     , workspace(problem_size)
     , stats()
+    , is_reset_(true)
     {
     }
 
@@ -73,14 +74,6 @@ namespace pinocchio
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const PGSSolverSettings & settings);
-
-    /// \brief Reset the constraint solver as if it has never run.
-    void reset()
-    {
-      solution.reset();
-      workspace.reset();
-      stats.reset();
-    }
 
     ///
     /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
@@ -110,6 +103,22 @@ namespace pinocchio
       return solve(delassus.derived().matrix(), g, constraint_models, constraint_datas, settings);
     }
 
+    /// \brief Reset the constraint solver as if it has never run.
+    void reset()
+    {
+      solution.reset();
+      workspace.reset();
+      stats.reset();
+      is_reset_ = true;
+    }
+
+    /// \brief Returns true if solver is in reset state (it has not run).
+    /// Otherwise, its solution and stats are valid.
+    bool isReset() const
+    {
+      return is_reset_;
+    }
+
 #ifdef PINOCCHIO_WITH_HPP_FCL
     using Base::timer;
 #endif // PINOCCHIO_WITH_HPP_FCL
@@ -117,6 +126,11 @@ namespace pinocchio
     PGSSolverSolution solution;
     PGSSolverWorkspace workspace;
     PGSSolverStats stats;
+
+  protected:
+    /// \brief Flag to check whether or not the solver is in a reset state.
+    /// If not, the solution and stats are valid.
+    bool is_reset_;
 
   }; // struct PGSConstraintSolverTpl
 

@@ -125,6 +125,7 @@ namespace pinocchio
     , solution()
     , workspace(problem_size)
     , stats()
+    , is_reset_(true)
     {
     }
 
@@ -159,6 +160,14 @@ namespace pinocchio
       solution.reset();
       workspace.reset();
       stats.reset();
+      is_reset_ = true;
+    }
+
+    /// \brief Returns true if solver is in reset state (it has not run).
+    /// Otherwise, its solution and stats are valid.
+    bool isReset() const
+    {
+      return is_reset_;
     }
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
@@ -170,6 +179,10 @@ namespace pinocchio
     ADMMSolverStats stats;
 
   protected:
+    /// \brief Flag to check whether or not the solver is in a reset state.
+    /// If not, the solution and stats are valid.
+    bool is_reset_;
+
     /// \brief Compute largest eigen value of delassus.
     template<typename DelassusDerived>
     static Scalar computeDelassusLargestEigenvalue(

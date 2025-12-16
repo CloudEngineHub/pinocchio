@@ -66,6 +66,9 @@ namespace pinocchio
     //
     settings.checkValidity();
 
+    // the solver can now be marked as reset
+    is_reset_ = true;
+
 #ifdef PINOCCHIO_WITH_HPP_FCL
     if (settings.measure_timings)
     {
@@ -530,6 +533,9 @@ namespace pinocchio
     sol.spectral_rho_power = wk.spectral_rho_power;
     sol.mu_prox = wk.mu_prox;
     sol.converged = abs_prec_reached || rel_prec_reached;
+
+    // the solver has run, we mark it as not reset
+    is_reset_ = false;
 
     return sol.converged;
   }
