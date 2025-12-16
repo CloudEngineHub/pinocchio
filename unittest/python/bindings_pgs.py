@@ -30,10 +30,10 @@ class TestPGS(TestCase):
         dim_pb = g.shape[0]
         solver = pin.PGSConstraintSolver(dim_pb)
         settings = pin.PGSSolverSettings()
-        settings.tol_feasibility = 1e-13
-        settings.tol_rel_feasibility = 1e-14
-        settings.tol_complementarity = 1e-13
-        settings.tol_rel_complementarity = 1e-14
+        settings.absolute_tol_feasibility = 1e-13
+        settings.relative_tol_feasibility = 1e-14
+        settings.absolute_tol_complementarity = 1e-13
+        settings.relative_tol_complementarity = 1e-14
         solver.solve(delassus, g, constraint_models, constraint_datas, settings)
 
     @unittest.skipUnless(coal_found, "Needs Coal.")
@@ -97,10 +97,10 @@ class TestPGS(TestCase):
         dim_pb = g.shape[0]
         solver = pin.PGSConstraintSolver(dim_pb)
         settings = pin.PGSSolverSettings()
-        settings.tol_feasibility = 1e-13
-        settings.tol_rel_feasibility = 1e-14
-        settings.tol_complementarity = 1e-13
-        settings.tol_rel_complementarity = 1e-14
+        settings.absolute_tol_feasibility = 1e-13
+        settings.relative_tol_feasibility = 1e-14
+        settings.absolute_tol_complementarity = 1e-13
+        settings.relative_tol_complementarity = 1e-14
 
         has_converged = solver.solve(
             delassus, g, constraint_models, constraint_datas, settings

@@ -32,10 +32,10 @@ class TestADMM(TestCase):
         dim_pb = g.shape[0]
         solver = pin.ADMMConstraintSolver(dim_pb)
         settings = pin.ADMMSolverSettings()
-        settings.tol_feasibility = 1e-13
-        settings.tol_rel_feasibility = 1e-14
-        settings.tol_complementarity = 1e-13
-        settings.tol_rel_complementarity = 1e-14
+        settings.absolute_tol_feasibility = 1e-13
+        settings.relative_tol_feasibility = 1e-14
+        settings.absolute_tol_complementarity = 1e-13
+        settings.relative_tol_complementarity = 1e-14
         settings.lanczos_size = g.size
         solver.solve(delassus, g, constraint_models, constraint_datas, settings)
 
@@ -101,10 +101,10 @@ class TestADMM(TestCase):
         self.assertTrue(dim_pb == csize, "constraint problem is of wrong size")
         solver = pin.ADMMConstraintSolver(dim_pb)
         settings = pin.ADMMSolverSettings()
-        settings.tol_feasibility = 1e-10
-        settings.tol_rel_feasibility = 1e-12
-        settings.tol_complementarity = 1e-10
-        settings.tol_rel_complementarity = 1e-12
+        settings.absolute_tol_feasibility = 1e-10
+        settings.relative_tol_feasibility = 1e-12
+        settings.absolute_tol_complementarity = 1e-10
+        settings.relative_tol_complementarity = 1e-12
         settings.rho_momentum = 0.9
         settings.anderson_capacity = 4
         settings.lanczos_size = g.size

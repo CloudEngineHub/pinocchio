@@ -33,16 +33,16 @@ namespace pinocchio
         .PINOCCHIO_ADD_PROPERTY(
           ConstraintSolverSettingsBase, max_iterations, "Maximum number of iterations")
         .PINOCCHIO_ADD_PROPERTY(
-          ConstraintSolverSettingsBase, tol_feasibility,
+          ConstraintSolverSettingsBase, absolute_tol_feasibility,
           "Absolute tolerance on primal/dual feasibility")
         .PINOCCHIO_ADD_PROPERTY(
-          ConstraintSolverSettingsBase, tol_rel_feasibility,
+          ConstraintSolverSettingsBase, relative_tol_feasibility,
           "Relative tolerance on primal/dual feasibility")
         .PINOCCHIO_ADD_PROPERTY(
-          ConstraintSolverSettingsBase, tol_complementarity,
+          ConstraintSolverSettingsBase, absolute_tol_complementarity,
           "Absolute tolerance on complementarity")
         .PINOCCHIO_ADD_PROPERTY(
-          ConstraintSolverSettingsBase, tol_rel_complementarity,
+          ConstraintSolverSettingsBase, relative_tol_complementarity,
           "Relative tolerance on complementarity")
         .PINOCCHIO_ADD_PROPERTY(
           ConstraintSolverSettingsBase, solve_ncp, "Whether to solve NCP (true) or CCP (false)")

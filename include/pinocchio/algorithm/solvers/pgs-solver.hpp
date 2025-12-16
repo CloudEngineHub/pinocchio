@@ -155,10 +155,10 @@ namespace pinocchio
     /// \brief Default constructor
     PGSSolverSettingsTpl(
       std::size_t max_iterations = 1000,
-      Scalar tol_feasibility = Scalar(1e-6),
-      Scalar tol_rel_feasibility = Scalar(1e-6),
-      Scalar tol_complementarity = Scalar(1e-6),
-      Scalar tol_rel_complementarity = Scalar(1e-6),
+      Scalar absolute_tol_feasibility = Scalar(1e-6),
+      Scalar relative_tol_feasibility = Scalar(1e-6),
+      Scalar absolute_tol_complementarity = Scalar(1e-6),
+      Scalar relative_tol_complementarity = Scalar(1e-6),
       bool solve_ncp = true,
       bool measure_timings = false,
       bool stat_record = false,
@@ -166,10 +166,10 @@ namespace pinocchio
       std::optional<RefConstVectorXs> primal_guess = std::nullopt)
     : Base(
         max_iterations,
-        tol_feasibility,
-        tol_rel_feasibility,
-        tol_complementarity,
-        tol_rel_complementarity,
+        absolute_tol_feasibility,
+        relative_tol_feasibility,
+        absolute_tol_complementarity,
+        relative_tol_complementarity,
         solve_ncp,
         measure_timings,
         stat_record)
@@ -194,16 +194,16 @@ namespace pinocchio
     using Base::max_iterations;
 
     /// \brief Tolerance on the primal/dual feasibilityibility.
-    using Base::tol_feasibility;
+    using Base::absolute_tol_feasibility;
 
     /// \brief Relative tolerance on the primal/dual feasibilityibility.
-    using Base::tol_rel_feasibility;
+    using Base::relative_tol_feasibility;
 
     /// \brief Absolute tolerance of complementarity (duality complementarity).
-    using Base::tol_complementarity;
+    using Base::absolute_tol_complementarity;
 
     /// \brief Relative tolerance of complementarity (duality complementarity).
-    using Base::tol_rel_complementarity;
+    using Base::relative_tol_complementarity;
 
     /// \brief Whether or not to solve the NCP. If set to solve, the equivalent CCP
     /// is solved.

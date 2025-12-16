@@ -25,18 +25,18 @@ namespace pinocchio
     /// \brief Default constructor
     ConstraintSolverSettingsBaseTpl(
       std::size_t max_iterations,
-      Scalar tol_feasibility,
-      Scalar tol_rel_feasibility,
-      Scalar tol_complementarity,
-      Scalar tol_rel_complementarity,
+      Scalar absolute_tol_feasibility,
+      Scalar relative_tol_feasibility,
+      Scalar absolute_tol_complementarity,
+      Scalar relative_tol_complementarity,
       bool solve_ncp,
       bool measure_timings,
       bool stat_record)
     : max_iterations(max_iterations)
-    , tol_feasibility(tol_feasibility)
-    , tol_rel_feasibility(tol_rel_feasibility)
-    , tol_complementarity(tol_complementarity)
-    , tol_rel_complementarity(tol_rel_complementarity)
+    , absolute_tol_feasibility(absolute_tol_feasibility)
+    , relative_tol_feasibility(relative_tol_feasibility)
+    , absolute_tol_complementarity(absolute_tol_complementarity)
+    , relative_tol_complementarity(relative_tol_complementarity)
     , solve_ncp(solve_ncp)
     , measure_timings(measure_timings)
     , stat_record(stat_record)
@@ -47,29 +47,29 @@ namespace pinocchio
     void checkValidity() const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        tol_feasibility >= Scalar(0), "tol_feasibility should be >= 0.");
+        absolute_tol_feasibility >= Scalar(0), "absolute_tol_feasibility should be >= 0.");
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        tol_rel_feasibility >= Scalar(0), "tol_rel_feasibility should be >= 0.");
+        relative_tol_feasibility >= Scalar(0), "relative_tol_feasibility should be >= 0.");
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        tol_complementarity >= Scalar(0), "tol_complementarity should be >= 0.");
+        absolute_tol_complementarity >= Scalar(0), "absolute_tol_complementarity should be >= 0.");
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        tol_rel_complementarity >= Scalar(0), "tol_rel_complementarity should be >= 0.");
+        relative_tol_complementarity >= Scalar(0), "relative_tol_complementarity should be >= 0.");
     }
 
     /// \brief Maximum number of iterations of the solver.
     std::size_t max_iterations;
 
     /// \brief Tolerance on the primal/dual feasibility.
-    Scalar tol_feasibility;
+    Scalar absolute_tol_feasibility;
 
     /// \brief Relative tolerance on the primal/dual feasibility.
-    Scalar tol_rel_feasibility;
+    Scalar relative_tol_feasibility;
 
     /// \brief Absolute tolerance on the complementarity (duality gap).
-    Scalar tol_complementarity;
+    Scalar absolute_tol_complementarity;
 
     /// \brief Relative tolerance on the complementarity (duality gap).
-    Scalar tol_rel_complementarity;
+    Scalar relative_tol_complementarity;
 
     /// \brief Whether or not to solve the NCP. If set to solve, the equivalent CCP
     /// is solved.
