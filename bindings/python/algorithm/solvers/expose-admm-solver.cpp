@@ -11,6 +11,8 @@
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
 
+#include <boost/optional.hpp>
+
 #include <eigenpy/memory.hpp>
 #include <eigenpy/eigen-from-python.hpp>
 #include <eigenpy/eigen-to-python.hpp>
@@ -66,6 +68,24 @@ namespace pinocchio
     // Expose ADMMSolverSettings (inheriting from base)
     // ============================================================================
 
+    // Wrapper functions for std::optional<Scalar> <-> boost::optional<Scalar> conversion
+    static boost::optional<Scalar> getRhoInitWrapper(const ADMMSolverSettings & settings)
+    {
+      if (settings.rho_init.has_value())
+        return boost::optional<Scalar>(settings.rho_init.value());
+      else
+        return boost::none;
+    }
+
+    static void
+    setRhoInitWrapper(ADMMSolverSettings & settings, const boost::optional<Scalar> & value)
+    {
+      if (value)
+        settings.rho_init = value.get();
+      else
+        settings.rho_init = std::nullopt;
+    }
+
     void exposeADMMSolverSettings()
     {
       bp::class_<ADMMSolverSettings, bp::bases<ConstraintSolverSettingsBase>>(
@@ -73,6 +93,12 @@ namespace pinocchio
         bp::init<>(bp::arg("self"), "Default constructor with default settings."))
 
         // ADMM specific settings (base class properties are inherited)
+        .add_property(
+          "rho_init", &getRhoInitWrapper, &setRhoInitWrapper,
+          "Initial value of rho parameter (optional). If None, will be estimated from Delassus.")
+        .PINOCCHIO_ADD_PROPERTY(
+          ADMMSolverSettings, warmstart_rho_with_prev_sol,
+          "Whether to warmstart rho with previous solution")
         .PINOCCHIO_ADD_PROPERTY(ADMMSolverSettings, admm_update_rule, "ADMM update rule")
         .PINOCCHIO_ADD_PROPERTY(ADMMSolverSettings, admm_proximal_rule, "ADMM proximal rule")
         .PINOCCHIO_ADD_PROPERTY(ADMMSolverSettings, mu_prox, "Proximal penalty parameter")
