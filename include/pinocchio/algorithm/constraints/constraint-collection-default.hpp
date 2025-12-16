@@ -22,8 +22,8 @@ namespace pinocchio
     typedef PointAnchorConstraintModelTpl<Scalar, Options> PointAnchorConstraintModel;
     typedef PointAnchorConstraintDataTpl<Scalar, Options> PointAnchorConstraintData;
 
-    typedef PointContactModelTpl<Scalar, Options> PointContactModel;
-    typedef PointContactDataTpl<Scalar, Options> PointContactData;
+    typedef PointContactConstraintModelTpl<Scalar, Options> PointContactConstraintModel;
+    typedef PointContactConstraintDataTpl<Scalar, Options> PointContactConstraintData;
 
     typedef JointFrictionConstraintModelTpl<Scalar, Options> JointFrictionConstraintModel;
     typedef JointFrictionConstraintDataTpl<Scalar, Options> JointFrictionConstraintData;
@@ -37,7 +37,7 @@ namespace pinocchio
     typedef boost::variant<
       boost::blank,
       PointAnchorConstraintModel,
-      PointContactModel,
+      PointContactConstraintModel,
       JointFrictionConstraintModel,
       JointLimitConstraintModel,
       FrameAnchorConstraintModel>
@@ -46,7 +46,7 @@ namespace pinocchio
     typedef boost::variant<
       boost::blank,
       PointAnchorConstraintData,
-      PointContactData,
+      PointContactConstraintData,
       JointFrictionConstraintData,
       JointLimitConstraintData,
       FrameAnchorConstraintData>

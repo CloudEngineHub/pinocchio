@@ -34,10 +34,11 @@ namespace pinocchio
     }
 
     template<>
-    bp::class_<context::PointContactData> &
-    expose_constraint_data(bp::class_<context::PointContactData> & cl)
+    bp::class_<context::PointContactConstraintData> &
+    expose_constraint_data(bp::class_<context::PointContactConstraintData> & cl)
     {
-      return cl.def(BinaryKinematicsConstraintDataBasePythonVisitor<context::PointContactData>());
+      return cl.def(
+        BinaryKinematicsConstraintDataBasePythonVisitor<context::PointContactConstraintData>());
     }
 
     template<>

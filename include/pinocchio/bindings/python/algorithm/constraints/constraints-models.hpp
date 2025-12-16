@@ -36,12 +36,14 @@ namespace pinocchio
     }
 
     template<>
-    bp::class_<context::PointContactModel> &
-    expose_constraint_model(bp::class_<context::PointContactModel> & cl)
+    bp::class_<context::PointContactConstraintModel> &
+    expose_constraint_model(bp::class_<context::PointContactConstraintModel> & cl)
     {
-      typedef context::PointContactModel Self;
-      return cl.def(BinaryKinematicsConstraintModelBasePythonVisitor<context::PointContactModel>())
-        .def(PointConstraintModelBasePythonVisitor<context::PointContactModel>())
+      typedef context::PointContactConstraintModel Self;
+      return cl
+        .def(
+          BinaryKinematicsConstraintModelBasePythonVisitor<context::PointContactConstraintModel>())
+        .def(PointConstraintModelBasePythonVisitor<context::PointContactConstraintModel>())
         .def("getFriction", &Self::getFriction, "Get coulomb friction coefficient.")
         .def("setFriction", &Self::setFriction, "Set coulomb friction coefficient.");
     }

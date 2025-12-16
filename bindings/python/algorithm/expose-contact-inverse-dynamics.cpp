@@ -22,8 +22,8 @@ namespace pinocchio
 
     static bp::tuple computeInverseDynamicsConstraintForces_wrapper(
       const VectorXs & c_ref,
-      const context::PointContactModelVector & contact_models,
-      const context::PointContactDataVector & contact_datas,
+      const context::PointContactConstraintModelVector & contact_models,
+      const context::PointContactConstraintDataVector & contact_datas,
       const boost::optional<VectorXs> & lambda_guess,
       ProximalSettingsTpl<Scalar> & settings,
       bool solve_ncp)
@@ -44,8 +44,8 @@ namespace pinocchio
       ConstRefVectorXs & v,
       ConstRefVectorXs & a,
       Scalar dt,
-      const context::PointContactModelVector & contact_models,
-      context::PointContactDataVector & contact_datas,
+      const context::PointContactConstraintModelVector & contact_models,
+      context::PointContactConstraintDataVector & contact_datas,
       ConstRefVectorXs & constraint_correction,
       ProximalSettingsTpl<Scalar> & settings,
       const boost::optional<ConstRefVectorXs> & lambda_guess = boost::none,

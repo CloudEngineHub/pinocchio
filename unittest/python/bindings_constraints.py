@@ -250,7 +250,9 @@ class TestJointsAlgo(TestCase):
                     i1Mc = oMi1.actInv(oMc)
                     oMc.translation = patch.getPointShape2(i)
                     i2Mc = oMi2.actInv(oMc)
-                    fp = pin.PointContactModel(model, joint_id1, i1Mc, joint_id2, i2Mc)
+                    fp = pin.PointContactConstraintModel(
+                        model, joint_id1, i1Mc, joint_id2, i2Mc
+                    )
                     gfp = pin.ConstraintModel(fp)
                     constraints_std_vec.append(gfp)
                     constraints_list.append(fp)

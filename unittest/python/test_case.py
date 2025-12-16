@@ -63,7 +63,7 @@ class ContactSolverTestCase(PinocchioTestCase):
             for j in range(4):
                 local_placement_1 = pin.SE3(np.identity(3), (rot @ local_trans_box_1))
                 local_placement_2 = pin.SE3(np.identity(3), (rot @ local_trans_box_2))
-                fpcm = pin.PointContactModel(
+                fpcm = pin.PointContactConstraintModel(
                     model, i, local_placement_1, i + 1, local_placement_2
                 )
                 fpcm.set = pin.CoulombFrictionCone(friction_coeff)
@@ -103,7 +103,7 @@ class ContactSolverTestCase(PinocchioTestCase):
         for i, cm in enumerate(constraint_models):
             cd = constraint_datas[i]
             cm_csize = cm.residualSize(cd)
-            if cm.shortname() == "PointContactModel":
+            if cm.shortname() == "PointContactConstraintModel":
                 continue
             elif cm.shortname() == "JointFrictionConstraintModel":
                 continue
@@ -229,7 +229,7 @@ class ContactSolverTestCase(PinocchioTestCase):
                     )
                     placement_i1 = pin.SE3(R_i1, pos_i1)
                     placement_i2 = pin.SE3(R_i2, pos_i2)
-                    contact_model_i = pin.PointContactModel(
+                    contact_model_i = pin.PointContactConstraintModel(
                         model, joint_id2, placement_i2, joint_id1, placement_i1
                     )
                     contact_model_i.set = pin.CoulombFrictionCone(friction_coeff)

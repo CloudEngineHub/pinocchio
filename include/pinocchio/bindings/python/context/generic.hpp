@@ -166,10 +166,12 @@ namespace pinocchio
       typedef PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintData)
         FrameAnchorConstraintDataVector;
 
-      typedef PointContactModelTpl<Scalar, Options> PointContactModel;
-      typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointContactModel) PointContactModelVector;
-      typedef PointContactDataTpl<Scalar, Options> PointContactData;
-      typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointContactData) PointContactDataVector;
+      typedef PointContactConstraintModelTpl<Scalar, Options> PointContactConstraintModel;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointContactConstraintModel)
+        PointContactConstraintModelVector;
+      typedef PointContactConstraintDataTpl<Scalar, Options> PointContactConstraintData;
+      typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointContactConstraintData)
+        PointContactConstraintDataVector;
 
       typedef JointFrictionConstraintModelTpl<Scalar, Options> JointFrictionConstraintModel;
       typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointFrictionConstraintModel)
