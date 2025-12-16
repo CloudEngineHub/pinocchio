@@ -80,9 +80,9 @@ struct TestBoxTpl
     BOOST_CHECK(pgs_solver.isReset() == true);
     PGSSolverSettings pgs_settings; // default settings
     pgs_settings.max_iterations = 100000;
-    pgs_settings.tol_feasibility = 1e-10;
+    pgs_settings.tol_feasibility = 1e-12;
     pgs_settings.tol_rel_feasibility = 1e-12;
-    pgs_settings.tol_complementarity = 1e-10;
+    pgs_settings.tol_complementarity = 1e-12;
     pgs_settings.tol_rel_complementarity = 1e-12;
     pgs_settings.primal_guess.emplace(primal_solution);
 
