@@ -297,7 +297,10 @@ namespace pinocchio
           bp::args("self", "problem_size"), "Constructor with problem dimension."));
 
       cl.PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolver, solution, "Access the solution of the solver")
-        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolver, stats, "Access the statistics of the solver");
+        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolver, stats, "Access the statistics of the solver")
+        .def(
+          "isReset", &ADMMSolver::isReset, bp::arg("self"),
+          "Check if the solver workspace has been reset");
 
       // Expose solve methods for different constraint models
       ADMMSolveMethodExposer<ADMMSolver> solve_exposer(cl);

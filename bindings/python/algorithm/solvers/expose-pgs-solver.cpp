@@ -198,7 +198,10 @@ namespace pinocchio
           bp::args("self", "problem_size"), "Constructor with problem dimension."));
 
       cl.PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolver, solution, "Access the solution of the solver")
-        .PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolver, stats, "Access the statistics of the solver");
+        .PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolver, stats, "Access the statistics of the solver")
+        .def(
+          "isReset", &PGSSolver::isReset, bp::arg("self"),
+          "Check if the solver workspace has been reset");
 
       // Expose solve methods for different constraint models
       PGSSolveMethodExposer<PGSSolver> solve_exposer(cl);
