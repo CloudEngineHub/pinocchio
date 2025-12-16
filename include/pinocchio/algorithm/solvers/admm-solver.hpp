@@ -237,6 +237,7 @@ namespace pinocchio
       std::optional<RefConstVectorXs> primal_guess = std::nullopt,
       std::optional<RefConstVectorXs> dual_guess = std::nullopt,
       std::optional<Scalar> rho_init = std::nullopt,
+      bool warmstart_rho_with_prev_sol = false,
       ADMMUpdateRule admm_update_rule = ADMMUpdateRule::OSQP,
       ADMMProximalRule admm_proximal_rule = ADMMProximalRule::MANUAL,
       Scalar mu_prox = 1e-6,
@@ -266,6 +267,7 @@ namespace pinocchio
     , primal_guess(primal_guess)
     , dual_guess(dual_guess)
     , rho_init(rho_init)
+    , warmstart_rho_with_prev_sol(warmstart_rho_with_prev_sol)
     , admm_update_rule(admm_update_rule)
     , admm_proximal_rule(admm_proximal_rule)
     , mu_prox(mu_prox)
@@ -353,6 +355,12 @@ namespace pinocchio
     /// If set to boost::none, the initial rho will be computed by estimating
     /// the largest eigenvalue of the Delassus.
     std::optional<Scalar> rho_init;
+
+    /// \brief Whether or not to warmstart rho with previous solution.
+    /// This setting is only effective if ADMM is not reset (a previous solution exists).
+    /// If set to true, the `rho_init` will be bypassed by the value of rho
+    /// stored in the solver's solution.
+    bool warmstart_rho_with_prev_sol;
 
     // ----------------------
     // ADMM specific settings

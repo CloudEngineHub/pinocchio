@@ -50,6 +50,14 @@ namespace pinocchio
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       min_compliance >= Scalar(0), "compliance should be a positive vector.");
     //
+    std::optional<Scalar> rho_init = settings.rho_init;
+    Scalar spectral_rho_power_init = settings.spectral_rho_power_init;
+    if (settings.warmstart_rho_with_prev_sol && isReset() == false)
+    {
+      // override rho_init with previous solution's rho value
+      rho_init = sol.rho;
+      spectral_rho_power_init = sol.spectral_rho_power;
+    }
     sol.reset(problem_size);
     assert(sol.problem_size == problem_size);
     assert(sol.iterations == 0);
@@ -129,14 +137,14 @@ namespace pinocchio
     }
 
     // init rho power of spectral rule
-    wk.spectral_rho_power = settings.spectral_rho_power_init;
+    wk.spectral_rho_power = spectral_rho_power_init;
 
     // init rho
     Scalar L = Scalar(-1); // not yet computed
     bool delassus_largest_eigenvalue_computed = false;
-    if (settings.rho_init)
+    if (rho_init)
     {
-      wk.rho = settings.rho_init.value();
+      wk.rho = rho_init.value();
     }
     else
     {
