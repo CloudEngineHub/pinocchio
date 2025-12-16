@@ -20,6 +20,10 @@ namespace pinocchio
   namespace internal
   {
 
+    // -----------------------------------------
+    // VISITORS DISPATCHING ON THE SET ---------
+    // -----------------------------------------
+
     template<typename ForceVectorLike, typename ResultVectorLike>
     struct ProjectionVisitor
     : visitors::ConstraintUnaryVisitorBase<ProjectionVisitor<ForceVectorLike, ResultVectorLike>>
@@ -481,6 +485,50 @@ namespace pinocchio
       }
     }
 
+    // -----------------------------------------
+    // VISITORS DISPATCHING ON THE CONSTRAINT --
+    // -----------------------------------------
+
+    // Default Implementation
+    template<typename ConstraintModelDerived>
+    struct DeSaxeCorrectionImpl
+    {
+      typedef ConstraintModelBase<ConstraintModelDerived> ConstraintModel;
+      typedef typename ConstraintModel::ConstraintData ConstraintDataDerived;
+
+      template<typename VelocityVectorLike, typename ResultVectorLike>
+      static void impl(
+        const ConstraintModel & cmodel,
+        const ConstraintDataDerived & cdata,
+        const VelocityVectorLike & velocity,
+        ResultVectorLike & result)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(cmodel);
+        PINOCCHIO_UNUSED_VARIABLE(cdata);
+        PINOCCHIO_UNUSED_VARIABLE(velocity);
+        result.setZero();
+      }
+    };
+
+    // Specialization for PointContact
+    template<typename _Scalar, int _Options>
+    struct DeSaxeCorrectionImpl<PointContactConstraintModelTpl<_Scalar, _Options>>
+    {
+      typedef ConstraintModelBase<PointContactConstraintModelTpl<_Scalar, _Options>>
+        ConstraintModel;
+      typedef typename ConstraintModel::ConstraintData ConstraintDataDerived;
+
+      template<typename VelocityVectorLike, typename ResultVectorLike>
+      static void impl(
+        const ConstraintModel & cmodel,
+        const ConstraintDataDerived & cdata,
+        const VelocityVectorLike & velocity,
+        ResultVectorLike & result)
+      {
+        result = cmodel.set(cdata).computeNormalCorrection(velocity);
+      }
+    };
+
     template<typename VelocityVectorLike, typename ResultVectorLike>
     struct DeSaxeCorrectionVisitor
     : visitors::ConstraintUnaryVisitorBase<
@@ -494,7 +542,6 @@ namespace pinocchio
         Base;
       using Base::run;
 
-      // TODO: DeSaxe is not related to set !!! But the problem stated
       template<typename ConstraintModel>
       static void algo(
         const ConstraintModelBase<ConstraintModel> & cmodel,
@@ -502,27 +549,8 @@ namespace pinocchio
         const VelocityVectorLike & velocity,
         ResultVectorLike & result)
       {
-        return algo_step(cmodel.set(cdata), velocity, result);
-      }
-
-      template<typename Vector1Like, typename Vector2Like>
-      static void algo_step(
-        const CoulombFrictionConeTpl<double> & set,
-        const Eigen::MatrixBase<Vector1Like> & velocity,
-        const Eigen::MatrixBase<Vector2Like> & result)
-      {
-        result.const_cast_derived() = set.computeNormalCorrection(velocity);
-      }
-
-      template<typename ConstraintSet, typename Vector1Like, typename Vector2Like>
-      static void algo_step(
-        const ConstraintSet & set,
-        const Eigen::MatrixBase<Vector1Like> & velocity,
-        const Eigen::MatrixBase<Vector2Like> & result)
-      {
-        PINOCCHIO_UNUSED_VARIABLE(set);
-        PINOCCHIO_UNUSED_VARIABLE(velocity);
-        result.const_cast_derived().setZero();
+        typedef DeSaxeCorrectionImpl<ConstraintModel> Impl;
+        return Impl::impl(cmodel.derived(), cdata.derived(), velocity, result);
       }
 
       template<typename ConstraintModel>
