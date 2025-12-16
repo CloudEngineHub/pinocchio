@@ -8,7 +8,7 @@
 
 // #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/kinematics-constraint-base.hpp"
+#include "pinocchio/algorithm/constraints/kinematics-constraint-model-base.hpp"
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
 #include "pinocchio/algorithm/constraints/constraints.hpp"
@@ -76,8 +76,7 @@ namespace pinocchio
       if (dim == 6)
       {
         data.KA[joint_id].template middleCols<6>(condim_counter[joint_id]) =
-          oMc.toActionMatrixInverse
-          ().transpose();
+          oMc.toActionMatrixInverse().transpose();
       }
       else if (dim == 3)
       {
@@ -394,8 +393,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & tau,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> &
-      contact_models,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
     std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
     ProximalSettingsTpl<Scalar> & settings)
   {
@@ -416,9 +414,10 @@ namespace pinocchio
     for (std::size_t i = 0; i < contact_models.size(); ++i)
     {
       if (!check_expression_if_real<Scalar, false>(
-            contact_models[i].m_baumgarte_parameters.Kp == static_cast<Scalar>(0.)))
+            contact_models[i].baumgarte_corrector_parameters().Kp == static_cast<Scalar>(0.)))
         baumgarte_position = true;
     }
+    PINOCCHIO_UNUSED_VARIABLE(baumgarte_position);
 
     data.v[0].setZero();
     data.a_gf[0] = -model.gravity;
@@ -462,17 +461,13 @@ namespace pinocchio
       int con_dim = contact_model.maxResidualSize();
 
       const typename ConstraintModel::BaumgarteCorrectorParameters & corrector =
-      //   contact_model.corrector;
+        contact_model.baumgarte_corrector_parameters();
+      PINOCCHIO_UNUSED_VARIABLE(corrector);
+
       ConstraintData & contact_data = contact_datas[i];
-      
+
       // Compute vc1
       Motion vc1 = contact_model.joint1_placement.actInv(data.v[joint_id]);
-      const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
-        contact_model.m_baumgarte_parameters;
-      typename RigidConstraintData::Motion & contact_acc_err =
-        contact_datas[i].contact_acceleration_error;
-      typename RigidConstraintData::Motion & contact_vel_err =
-        contact_datas[i].contact_velocity_error;
 
       contact_data.constraint_acceleration_error.setZero();
       // if (!check_expression_if_real<Scalar, false>(corrector.Kd == static_cast<Scalar>(0.)))
@@ -480,12 +475,14 @@ namespace pinocchio
       //   if constexpr (ConstraintModel::Size == 6)
       //   {
       //     contact_data.constraint_velocity_error = vc1.toVector();
-      //     contact_data.constraint_acceleration_error.noalias() -= corrector.Kd * contact_data.constraint_velocity_error;
+      //     contact_data.constraint_acceleration_error.noalias() -= corrector.Kd *
+      //     contact_data.constraint_velocity_error;
       //   }
       //   else
       //   {
       //     contact_data.constraint_velocity_error = vc1.linear();
-      //     contact_data.constraint_acceleration_error.noalias() -= corrector.Kd * contact_data.constraint_velocity_error;
+      //     contact_data.constraint_acceleration_error.noalias() -= corrector.Kd *
+      //     contact_data.constraint_velocity_error;
       //   }
       // }
 
@@ -585,8 +582,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & tau,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> &
-      contact_models,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
     std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
     ProximalSettingsTpl<Scalar> & settings)
   {
@@ -613,6 +609,7 @@ namespace pinocchio
         break;
       }
     }
+    PINOCCHIO_UNUSED_VARIABLE(baumgarte_position);
 
     data.v[0].setZero();
     data.a_gf[0] = -model.gravity;
@@ -658,6 +655,7 @@ namespace pinocchio
 
       const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
         contact_model.baumgarte_corrector_parameters();
+      PINOCCHIO_UNUSED_VARIABLE(corrector);
 
       // Compute vc1
       Motion vc1 = contact_model.joint1_placement.actInv(data.v[joint_id]);
@@ -669,12 +667,14 @@ namespace pinocchio
       //   if constexpr (ConstraintModel::Size == 6)
       //   {
       //     contact_data.constraint_velocity_error = vc1.toVector();
-      //     contact_data.constraint_acceleration_error.noalias() -= corrector.Kd * contact_data.constraint_velocity_error;
+      //     contact_data.constraint_acceleration_error.noalias() -= corrector.Kd *
+      //     contact_data.constraint_velocity_error;
       //   }
       //   else
       //   {
       //     contact_data.constraint_velocity_error = vc1.linear();
-      //     contact_data.constraint_acceleration_error.noalias() -= corrector.Kd * contact_data.constraint_velocity_error;
+      //     contact_data.constraint_acceleration_error.noalias() -= corrector.Kd *
+      //     contact_data.constraint_velocity_error;
       //   }
       // }
 
