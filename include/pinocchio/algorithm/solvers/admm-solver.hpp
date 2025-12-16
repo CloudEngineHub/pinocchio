@@ -153,6 +153,14 @@ namespace pinocchio
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const ADMMSolverSettings & settings);
 
+    /// \brief Reset the constraint solver as if it has never run.
+    void reset()
+    {
+      solution.reset();
+      workspace.reset();
+      stats.reset();
+    }
+
 #ifdef PINOCCHIO_WITH_HPP_FCL
     using Base::timer;
 #endif // PINOCCHIO_WITH_HPP_FCL

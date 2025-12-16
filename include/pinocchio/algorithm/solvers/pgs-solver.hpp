@@ -74,6 +74,14 @@ namespace pinocchio
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const PGSSolverSettings & settings);
 
+    /// \brief Reset the constraint solver as if it has never run.
+    void reset()
+    {
+      solution.reset();
+      workspace.reset();
+      stats.reset();
+    }
+
     ///
     /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
     /// constraint_datas).
