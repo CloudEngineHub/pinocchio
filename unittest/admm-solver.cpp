@@ -82,6 +82,7 @@ struct TestBoxTpl
 
     // Configure the member ADMM solver
     ADMMConstraintSolver admm_solver;
+    BOOST_CHECK(admm_solver.isReset() == true);
     ADMMSolverSettings admm_settings; // default settings
     admm_settings.max_iterations = 10000;
     admm_settings.tol_feasibility = 1e-10;
@@ -102,6 +103,7 @@ struct TestBoxTpl
     has_converged =
       admm_solver.solve(G_expression, g, constraint_models, constraint_datas, admm_settings);
     BOOST_CHECK(admm_solver.solution.problem_size == static_cast<std::size_t>(G_expression.rows()));
+    BOOST_CHECK(admm_solver.isReset() == false);
     admm_solver.solution.retrievePrimalSolution(primal_solution);
 
     if (test_warmstart)

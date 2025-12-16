@@ -77,6 +77,7 @@ struct TestBoxTpl
 
     // Configure the member PGS solver
     PGSConstraintSolver pgs_solver;
+    BOOST_CHECK(pgs_solver.isReset() == true);
     PGSSolverSettings pgs_settings; // default settings
     pgs_settings.max_iterations = 100000;
     pgs_settings.tol_feasibility = 1e-10;
@@ -88,6 +89,7 @@ struct TestBoxTpl
     has_converged =
       pgs_solver.solve(G_expression, g, constraint_models, constraint_datas, pgs_settings);
     BOOST_CHECK(pgs_solver.solution.problem_size == static_cast<std::size_t>(G_expression.rows()));
+    BOOST_CHECK(pgs_solver.isReset() == false);
     pgs_solver.solution.retrievePrimalSolution(primal_solution);
 
     if (test_warmstart)
