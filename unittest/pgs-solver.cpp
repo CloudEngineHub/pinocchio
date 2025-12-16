@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2024-2025 INRIA
 //
 
 #include "pinocchio/algorithm/constraints/constraints.hpp"
@@ -44,7 +44,9 @@ struct TestBoxTpl
     const Eigen::VectorXd & tau0,
     const Force & fext,
     const double dt,
-    const bool test_warmstart = false)
+    const bool test_warmstart = false,
+    const double relative_tol = 1e-12,
+    const double absolute_tol = 1e-10)
   {
     std::vector<Force> external_forces(size_t(model.njoints), Force::Zero());
     external_forces[1] = fext;
@@ -80,10 +82,10 @@ struct TestBoxTpl
     BOOST_CHECK(pgs_solver.isReset() == true);
     PGSSolverSettings pgs_settings; // default settings
     pgs_settings.max_iterations = 100000;
-    pgs_settings.tol_feasibility = 1e-12;
-    pgs_settings.tol_rel_feasibility = 1e-12;
-    pgs_settings.tol_complementarity = 1e-12;
-    pgs_settings.tol_rel_complementarity = 1e-12;
+    pgs_settings.tol_feasibility = absolute_tol;
+    pgs_settings.tol_rel_feasibility = relative_tol;
+    pgs_settings.tol_complementarity = absolute_tol;
+    pgs_settings.tol_rel_complementarity = relative_tol;
     pgs_settings.primal_guess.emplace(primal_solution);
 
     has_converged =
@@ -309,7 +311,7 @@ BOOST_AUTO_TEST_CASE(box)
     fext.linear() *= scaling * f_sliding;
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt);
+    test(q0, v0, tau0, fext, dt, false, 1e-12, 1e-12);
 
     BOOST_CHECK(test.has_converged == true);
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - 1 / scaling * fext.linear();
