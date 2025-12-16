@@ -44,8 +44,8 @@ namespace pinocchio
     explicit PGSConstraintSolverTpl(std::size_t problem_size = 0)
     : Base()
     , solution()
-    , workspace(problem_size)
     , stats()
+    , workspace_(problem_size)
     , is_reset_(true)
     {
     }
@@ -107,8 +107,8 @@ namespace pinocchio
     void reset()
     {
       solution.reset();
-      workspace.reset();
       stats.reset();
+      workspace_.reset();
       is_reset_ = true;
     }
 
@@ -127,15 +127,15 @@ namespace pinocchio
     /// \brief Solution of the PGS solver
     PGSSolverSolution solution;
 
-    /// \brief Workspace of the PGS solver.
-    /// This is an internal of the solver and is not meant to be accessed by
-    /// users.
-    PGSSolverWorkspace workspace;
-
     /// \brief Per-iteration stats of the PGS solver.
     PGSSolverStats stats;
 
   protected:
+    /// \brief Workspace of the PGS solver.
+    /// This is an internal of the solver and is not meant to be accessed by
+    /// users.
+    PGSSolverWorkspace workspace_;
+
     /// \brief Flag to check whether or not the solver is in a reset state.
     /// If not, the solution and stats are valid.
     bool is_reset_;

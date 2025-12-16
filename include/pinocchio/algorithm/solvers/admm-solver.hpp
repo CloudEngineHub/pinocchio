@@ -123,8 +123,8 @@ namespace pinocchio
     explicit ADMMConstraintSolverTpl(std::size_t problem_size = 0)
     : Base()
     , solution()
-    , workspace(problem_size)
     , stats()
+    , workspace_(problem_size)
     , is_reset_(true)
     {
     }
@@ -158,8 +158,8 @@ namespace pinocchio
     void reset()
     {
       solution.reset();
-      workspace.reset();
       stats.reset();
+      workspace_.reset();
       is_reset_ = true;
     }
 
@@ -178,15 +178,15 @@ namespace pinocchio
     /// \brief Solution of the ADMM solver
     ADMMSolverSolution solution;
 
-    /// \brief Workspace of the ADMM solver.
-    /// This is an internal of the solver and is not meant to be accessed by
-    /// users.
-    ADMMSolverWorkspace workspace;
-
     /// \brief Per-iteration stats of the ADMM solver.
     ADMMSolverStats stats;
 
   protected:
+    /// \brief Workspace of the ADMM solver.
+    /// This is an internal of the solver and is not meant to be accessed by
+    /// users.
+    ADMMSolverWorkspace workspace_;
+
     /// \brief Flag to check whether or not the solver is in a reset state.
     /// If not, the solution and stats are valid.
     bool is_reset_;

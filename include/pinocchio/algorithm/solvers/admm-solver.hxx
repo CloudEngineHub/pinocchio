@@ -37,7 +37,7 @@ namespace pinocchio
     // for easier access
     static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
     ADMMSolverSolution & sol = solution;
-    ADMMSolverWorkspace & wk = workspace;
+    ADMMSolverWorkspace & wk = workspace_;
     DelassusDerived & G = delassus.derived();
 
     // Configure/reset solution, workspace and stats

@@ -555,7 +555,7 @@ namespace pinocchio
   {
     // for easier access
     PGSSolverSolution & sol = solution;
-    PGSSolverWorkspace & wk = workspace;
+    PGSSolverWorkspace & wk = workspace_;
     const MatrixType & G = delassus.derived();
 
     // Configure/reset solution, workspace and stats
