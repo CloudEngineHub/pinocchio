@@ -74,7 +74,7 @@ namespace pinocchio
   , dhg(Force::Zero())
   , Ig(Inertia::Zero())
   , Fcrb((std::size_t)model.njoints, Matrix6x::Zero(6, model.nv))
-  , nvSubtree((std::size_t)model.njoints, -1)
+  , nvSubtree((std::size_t)model.njoints, 0)
   , start_idx_v_fromRow((std::size_t)model.nvExtended, -1)
   , end_idx_v_fromRow((std::size_t)model.nvExtended, -1)
   , idx_vExtended_to_idx_v_fromRow((std::size_t)model.nvExtended, -1)
@@ -212,26 +212,11 @@ namespace pinocchio
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   inline void DataTpl<Scalar, Options, JointCollectionTpl>::computeNvSubtree(const Model & model)
   {
-    for (JointIndex joint_id = 0; joint_id < JointIndex(model.njoints); ++joint_id)
+    for (int i = model.njoints - 1; i >= 0; --i)
     {
-      // Build a "correct" representation of mimic nvSubtree by using nvExtended, which will cover
-      // its children nv, and allow for a simple check
-      if (boost::get<JointModelMimicTpl<Scalar, Options, JointCollectionTpl>>(
-            &model.joints[joint_id]))
-        nvSubtree[joint_id] = 0;
-      else
-      {
-        int nv_;
-        const JointIndex last_child =
-          model.subtrees[joint_id].size() > 0 ? model.subtrees[joint_id].back() : JointIndex(0);
-        if (boost::get<JointModelMimicTpl<Scalar, Options, JointCollectionTpl>>(
-              &model.joints[last_child]))
-          nv_ = model.joints[last_child].nvExtended();
-        else
-          nv_ = model.joints[last_child].nv();
-        nvSubtree[joint_id] =
-          model.joints[last_child].idx_v() + nv_ - model.joints[joint_id].idx_v();
-      }
+      const Index parent = model.parents[(Index)i];
+      nvSubtree[(Index)i] += model.joints[(Index)i].nv();
+      nvSubtree[parent] += nvSubtree[(Index)i];
     }
     // fill mimic data
     for (const JointIndex mimicking_id : model.mimicking_joints)

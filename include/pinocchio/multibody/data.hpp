@@ -25,6 +25,7 @@
 #include "pinocchio/serialization/serializable.hpp"
 
 #include <set>
+#include <vector>
 
 namespace pinocchio
 {
