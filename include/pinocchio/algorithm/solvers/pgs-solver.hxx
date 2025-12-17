@@ -555,44 +555,41 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const PGSSolverSettings & settings,
-    PGSSolverResult & solution)
+    PGSSolverResult & result)
   {
     // for easier access
-    PGSSolverResult & sol = solution;
-    PGSSolverWorkspace & wk = workspace_;
     const MatrixType & G = delassus.derived();
+    PGSSolverResult & res = result;
+    PGSSolverWorkspace & wk = workspace_;
 
-    // Configure/reset solution, workspace and stats
+    // Configure/reset workspace, stats and results.
+    // note: the order matters as workspace is initialized using
+    // optional warmstarts contained in results.
     const Eigen::Index np = G.rows();
     const std::size_t problem_size = static_cast<std::size_t>(np);
     assert(G.cols() == np);
     assert(g.size() == np);
     assert(residualSize(constraint_models, constraint_datas) == np);
-    //
-    sol.reset(problem_size);
-    assert(sol.isValid() == false);
-    assert(sol.problem_size == problem_size);
-    assert(sol.iterations == 0);
-    //
+
+    // -- check if settings are valid
+    settings.checkValidity();
+
+    // -- reset workspace
     wk.reset(problem_size);
     assert(wk.problem_size == problem_size);
     assert(wk.x.size() == np);
-    //
+
+    // -- reset per-iteration statistics
     stats.reset();
     if (settings.stat_record)
     {
       stats.reserve(settings.max_iterations);
     }
-    //
-    settings.checkValidity();
 
-    // the solver can now be marked as reset
-    is_valid_ = false;
-
-    // Retrieve guess if any
-    if (settings.primal_guess)
+    // -- retrieve warmstart from results, then reset results
+    if (res.primal_guess)
     {
-      wk.x = settings.primal_guess.value();
+      wk.x = res.primal_guess.value();
     }
     else
     {
@@ -600,6 +597,13 @@ namespace pinocchio
     }
     PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.x.size(), np);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.y.size(), np);
+    res.reset(problem_size);
+    assert(res.isValid() == false);
+    assert(res.problem_size == problem_size);
+    assert(res.iterations == 0);
+
+    // the solver can now be marked as reset
+    is_valid_ = false;
 
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
 
@@ -615,14 +619,14 @@ namespace pinocchio
     Scalar x_previous_norm_inf = wk.x.template lpNorm<Eigen::Infinity>();
     const std::size_t num_constraints = constraint_models.size();
 
-    sol.iterations = 0;
-    for (; sol.iterations <= settings.max_iterations; ++sol.iterations)
+    res.iterations = 0;
+    for (; res.iterations <= settings.max_iterations; ++res.iterations)
     {
       wk.x_previous = wk.x;
 
-      sol.complementarity = Scalar(0);
-      sol.dual_feasibility = Scalar(0);
-      sol.primal_feasibility = Scalar(0);
+      res.complementarity = Scalar(0);
+      res.dual_feasibility = Scalar(0);
+      res.primal_feasibility = Scalar(0);
 
       // PGS step for each constraint
       Eigen::Index row_id = 0;
@@ -646,9 +650,9 @@ namespace pinocchio
         Step step(settings.over_relaxation);
         step.run(cmodel, cdata, G_block, impulse, velocity);
 
-        sol.complementarity = math::max(sol.complementarity, step.complementarity);
-        sol.dual_feasibility = math::max(sol.dual_feasibility, step.dual_feasibility);
-        sol.primal_feasibility = math::max(sol.primal_feasibility, step.primal_feasibility);
+        res.complementarity = math::max(res.complementarity, step.complementarity);
+        res.dual_feasibility = math::max(res.dual_feasibility, step.dual_feasibility);
+        res.primal_feasibility = math::max(res.primal_feasibility, step.primal_feasibility);
 
         row_id += constraint_size;
       }
@@ -657,11 +661,11 @@ namespace pinocchio
       // -- absolute
       if (
         check_expression_if_real<Scalar, false>(
-          sol.primal_feasibility <= settings.absolute_tol_feasibility)
+          res.primal_feasibility <= settings.absolute_tol_feasibility)
         && check_expression_if_real<Scalar, false>(
-          sol.dual_feasibility <= settings.absolute_tol_feasibility)
+          res.dual_feasibility <= settings.absolute_tol_feasibility)
         && check_expression_if_real<Scalar, false>(
-          sol.complementarity <= settings.absolute_tol_complementarity))
+          res.complementarity <= settings.absolute_tol_complementarity))
       {
         abs_prec_reached = true;
       }
@@ -699,10 +703,10 @@ namespace pinocchio
         wk.tmp -= wk.rhs;
         const Scalar dual_feasibility_ncp = wk.tmp.template lpNorm<Eigen::Infinity>();
 
-        stats.primal_feasibility.push_back(sol.primal_feasibility);
-        stats.dual_feasibility.push_back(sol.dual_feasibility);
+        stats.primal_feasibility.push_back(res.primal_feasibility);
+        stats.dual_feasibility.push_back(res.dual_feasibility);
         stats.dual_feasibility_ncp.push_back(dual_feasibility_ncp);
-        stats.complementarity.push_back(sol.complementarity);
+        stats.complementarity.push_back(res.complementarity);
       }
 
       if (abs_prec_reached || rel_prec_reached)
@@ -718,15 +722,15 @@ namespace pinocchio
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
 
     // Retrieve solution
-    sol.x = wk.x;
-    sol.y = wk.y;
-    sol.converged = abs_prec_reached || rel_prec_reached;
-    sol.makeValid();
+    res.x = wk.x;
+    res.y = wk.y;
+    res.converged = abs_prec_reached || rel_prec_reached;
+    res.makeValid();
 
     // the solver has run, we mark it as valid
     is_valid_ = true;
 
-    return sol.converged;
+    return res.converged;
   }
 
 } // namespace pinocchio

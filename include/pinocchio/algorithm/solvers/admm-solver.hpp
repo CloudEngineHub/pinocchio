@@ -137,7 +137,7 @@ namespace pinocchio
     /// \param[in] constraint_models Vector of constraint models.
     /// \param[in] constraint_datas Vector of constraint datas.
     /// \param[in] settings Settings for the ADMM solver.
-    /// \param[in/out] solution Solution to the constraint problem. Also contains the warmstart to
+    /// \param[in/out] result Solution to the constraint problem. Also contains the warmstart to
     /// solve the problem.
     ///
     /// \returns True if the problem has converged.
@@ -154,7 +154,7 @@ namespace pinocchio
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const ADMMSolverSettings & settings,
-      ADMMSolverResult & solution);
+      ADMMSolverResult & result);
 
     /// \brief Reset the constraint solver as if it has never run.
     void reset()
@@ -194,7 +194,7 @@ namespace pinocchio
     static Scalar computeDelassusLargestEigenvalue(
       const DelassusOperatorBase<DelassusDerived> & delassus, ADMMSolverWorkspace & workspace);
 
-    /// \brief Retrieve primal and/or dual guesses from settings.
+    /// \brief Retrieve primal and/or dual guesses from settings and result's warmstarts.
     template<
       typename DelassusDerived,
       typename VectorLike,
@@ -207,8 +207,17 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      ADMMSolverWorkspace & workspace,
-      const ADMMSolverSettings & settings);
+      const ADMMSolverSettings & settings,
+      const ADMMSolverResult & result,
+      ADMMSolverWorkspace & workspace);
+
+    /// \brief Retrieve rho parameters guesses from settings and result's warmstarts.
+    template<typename DelassusDerived>
+    static void retrieveRhoGuess(
+      const DelassusOperatorBase<DelassusDerived> & delassus,
+      const ADMMSolverSettings & settings,
+      const ADMMSolverResult & result,
+      ADMMSolverWorkspace & workspace);
   }; // struct ADMMConstraintSolverTpl
 
   ///
@@ -219,7 +228,6 @@ namespace pinocchio
     typedef _Scalar Scalar;
     typedef ConstraintSolverSettingsBaseTpl<Scalar> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
-    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
 
     /// \brief Default constructor
     ADMMSolverSettingsTpl(
@@ -231,9 +239,6 @@ namespace pinocchio
       bool solve_ncp = true,
       bool measure_timings = false,
       bool stat_record = false,
-      std::optional<RefConstVectorXs> preconditioner = std::nullopt,
-      std::optional<RefConstVectorXs> primal_guess = std::nullopt,
-      std::optional<RefConstVectorXs> dual_guess = std::nullopt,
       std::optional<Scalar> rho_init = std::nullopt,
       bool warmstart_rho_with_prev_sol = false,
       ADMMUpdateRule admm_update_rule = ADMMUpdateRule::OSQP,
@@ -246,6 +251,8 @@ namespace pinocchio
       Scalar rho_update_ratio = Scalar(0),
       std::size_t rho_min_update_frequency = 1,
       Scalar rho_momentum = Scalar(0),
+      Scalar rho_min = Scalar(1e-6),
+      Scalar rho_max = Scalar(1e6),
       Scalar spectral_rho_power_init = Scalar(0.2),
       Scalar spectral_rho_power_factor = Scalar(0.05),
       Scalar linear_update_rule_factor = Scalar(2),
@@ -261,9 +268,6 @@ namespace pinocchio
         solve_ncp,
         measure_timings,
         stat_record)
-    , preconditioner(preconditioner)
-    , primal_guess(primal_guess)
-    , dual_guess(dual_guess)
     , rho_init(rho_init)
     , warmstart_rho_with_prev_sol(warmstart_rho_with_prev_sol)
     , admm_update_rule(admm_update_rule)
@@ -276,6 +280,8 @@ namespace pinocchio
     , rho_update_ratio(rho_update_ratio)
     , rho_min_update_frequency(rho_min_update_frequency)
     , rho_momentum(rho_momentum)
+    , rho_min(rho_min)
+    , rho_max(rho_max)
     , spectral_rho_power_init(spectral_rho_power_init)
     , spectral_rho_power_factor(spectral_rho_power_factor)
     , linear_update_rule_factor(linear_update_rule_factor)
@@ -307,6 +313,9 @@ namespace pinocchio
         "rho_momentum should be in [0, 1].");
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         linear_update_rule_factor >= Scalar(0), "linear_update_rule_factor should be >= 0.");
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(
+        rho_min >= Scalar(0) && rho_max >= Scalar(0) && rho_min <= rho_max,
+        "rho_min and rho_max don't verify 0 <= rho_min <= rho_max");
     }
 
     // ----------------------
@@ -338,16 +347,7 @@ namespace pinocchio
     using Base::stat_record;
 
     // ----------------------
-    // Warmstart settings
-
-    /// \brief Optional preconditioner. Not used yet.
-    std::optional<RefConstVectorXs> preconditioner;
-
-    /// \brief Optional guess for the primal variable (impulses).
-    std::optional<RefConstVectorXs> primal_guess;
-
-    /// \brief Optional guess for the dual variable (velocities).
-    std::optional<RefConstVectorXs> dual_guess;
+    // ADMM specific settings
 
     /// \brief Initial value of rho parameter.
     /// If set to boost::none, the initial rho will be computed by estimating
@@ -359,9 +359,6 @@ namespace pinocchio
     /// If set to true, the `rho_init` will be bypassed by the value of rho
     /// stored in the solver's solution.
     bool warmstart_rho_with_prev_sol;
-
-    // ----------------------
-    // ADMM specific settings
 
     /// \brief Update rule for the rho admm term.
     ADMMUpdateRule admm_update_rule;
@@ -398,6 +395,14 @@ namespace pinocchio
     /// \brief Momentum on rho value
     Scalar rho_momentum;
 
+    /// \brief Minimum value that rho can take.
+    /// During 'solve', rho is clamped between `rho_min` and `rho_max`.
+    Scalar rho_min;
+
+    /// \brief Maximum value that rho can take.
+    /// During 'solve', rho is clamped between `rho_min` and `rho_max`.
+    Scalar rho_max;
+
     /// \brief Initial value of the rho power in the SPECTRAL update rule.
     Scalar spectral_rho_power_init;
 
@@ -424,12 +429,14 @@ namespace pinocchio
   ///
   /// \brief Struct describing the solution of the ADMM constraint solver
   /// after calling the `solve` method.
+  /// Also contains the warmstart of the solution to the constraint problem.
   template<typename _Scalar>
   struct ADMMSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar, ADMMConstraintSolverTpl>
   {
     typedef _Scalar Scalar;
     typedef ConstraintSolverResultBaseTpl<Scalar, ADMMConstraintSolverTpl> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
     using Base::isValid;
@@ -440,6 +447,9 @@ namespace pinocchio
     : Base()
     , problem_size(0)
     , delassus_decomposition_update_count(0)
+    , preconditioner(std::nullopt)
+    , primal_guess(std::nullopt)
+    , dual_guess(std::nullopt)
     , rho(nan)
     , spectral_rho_power(nan)
     , mu_prox(nan)
@@ -450,12 +460,17 @@ namespace pinocchio
     {
     }
 
-    /// \brief Reset the solution.
+    /// \brief Reset the results.
     void reset(std::size_t problem_size_ = 0)
     {
       Base::reset();
       problem_size = problem_size_;
       delassus_decomposition_update_count = 0;
+
+      preconditioner.reset();
+      primal_guess.reset();
+      dual_guess.reset();
+
       rho = nan;
       spectral_rho_power = nan;
       mu_prox = nan;
@@ -525,6 +540,21 @@ namespace pinocchio
 
     /// \brief Number of delassus decompositions.
     std::size_t delassus_decomposition_update_count;
+
+    // ----------------------
+    // Solution warmstart
+
+    /// \brief Optional preconditioner. Not used yet.
+    std::optional<RefConstVectorXs> preconditioner;
+
+    /// \brief Optional guess for the primal variable (impulses).
+    std::optional<RefConstVectorXs> primal_guess;
+
+    /// \brief Optional guess for the dual variable (velocities).
+    std::optional<RefConstVectorXs> dual_guess;
+
+    // ----------------------
+    // Solution - output of the solver
 
     /// \brief Value of ADMM rho term.
     Scalar rho;
@@ -658,6 +688,9 @@ namespace pinocchio
       : problem_size(problem_size)
       , lanczos_size(lanczos_size)
       , anderson_capacity(anderson_capacity)
+      , delassus_decomposition_update_count(0)
+      , delassus_smallest_eigenvalue(std::nullopt)
+      , delassus_largest_eigenvalue(std::nullopt)
       , rho(nan)
       , spectral_rho_power(nan)
       , mu_prox(nan)
@@ -694,6 +727,9 @@ namespace pinocchio
         lanczos_size = math::max(std::size_t(2), math::min(problem_size, lanczos_size_));
         anderson_capacity = anderson_capacity_;
 
+        delassus_decomposition_update_count = 0;
+        delassus_smallest_eigenvalue.reset();
+        delassus_largest_eigenvalue.reset();
         rho = nan;
         spectral_rho_power = nan;
         mu_prox = nan;
@@ -768,6 +804,17 @@ namespace pinocchio
 
       /// \brief Size of anderson history capacity.
       std::size_t anderson_capacity;
+
+      /// \brief Number of delassus decompositions.
+      std::size_t delassus_decomposition_update_count;
+
+      /// \brief Estimate of the smallest eigenvalue of the Delassus matrix.
+      /// If its value is `std::nullopt`, then it has not been computed yet.
+      std::optional<Scalar> delassus_smallest_eigenvalue;
+
+      /// \brief Estimate of the largest eigenvalue of the Delassus matrix.
+      /// If its value is `std::nullopt`, then it has not been computed yet.
+      std::optional<Scalar> delassus_largest_eigenvalue;
 
       /// \brief Value of ADMM rho term at current iteration.
       Scalar rho;

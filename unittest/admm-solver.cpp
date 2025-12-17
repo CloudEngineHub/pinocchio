@@ -90,16 +90,17 @@ struct TestBoxTpl
     admm_settings.absolute_tol_complementarity = 1e-10;
     admm_settings.relative_tol_complementarity = 1e-12;
     admm_settings.lanczos_size = static_cast<std::size_t>(g.size());
-    admm_settings.preconditioner.emplace(mean_inertia);
-    admm_settings.primal_guess.emplace(primal_solution);
-    admm_settings.dual_guess = std::nullopt;
     admm_settings.rho_init = std::nullopt;
-    admm_settings.admm_update_rule = ADMMUpdateRule::SPECTRAL;
+    admm_settings.admm_update_rule =
+      ADMMUpdateRule::SPECTRAL; // test if eigenvalue computation mechanism works well
     admm_settings.admm_proximal_rule = ADMMProximalRule::MANUAL;
     admm_settings.mu_prox = 1e-6;
     admm_settings.stat_record = true;
     admm_settings.solve_ncp = true;
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(mean_inertia);
+    admm_result.primal_guess.emplace(primal_solution);
+    admm_result.dual_guess = std::nullopt;
 
     has_converged = admm_solver.solve(
       G_expression, g, constraint_models, constraint_datas, admm_settings, admm_result);
@@ -110,7 +111,7 @@ struct TestBoxTpl
 
     if (test_warmstart)
     {
-      admm_settings.primal_guess.emplace(primal_solution);
+      admm_result.primal_guess.emplace(primal_solution);
       has_converged =
         has_converged
         && admm_solver.solve(
@@ -546,9 +547,9 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   admm_settings.relative_tol_feasibility = 1e-14;
   admm_settings.absolute_tol_complementarity = 1e-13;
   admm_settings.relative_tol_complementarity = 1e-14;
-  admm_settings.preconditioner.emplace(preconditioner_vec);
-  admm_settings.primal_guess.emplace(primal_solution);
   ADMMSolverResult admm_result;
+  admm_result.preconditioner.emplace(preconditioner_vec);
+  admm_result.primal_guess.emplace(primal_solution);
 
   const bool has_converged = admm_solver.solve(
     G_expression, g, constraint_models, constraint_datas, admm_settings, admm_result);
@@ -673,9 +674,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
@@ -714,9 +715,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
@@ -819,9 +820,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
@@ -865,9 +866,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
@@ -970,9 +971,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
@@ -1016,9 +1017,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
@@ -1112,9 +1113,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
@@ -1154,9 +1155,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
@@ -1250,9 +1251,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
@@ -1291,9 +1292,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
@@ -1390,9 +1391,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
@@ -1434,9 +1435,9 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     admm_settings.relative_tol_feasibility = 1e-14;
     admm_settings.absolute_tol_complementarity = 1e-13;
     admm_settings.relative_tol_complementarity = 1e-14;
-    admm_settings.preconditioner.emplace(preconditioner_vec);
-    admm_settings.primal_guess.emplace(primal_solution);
     ADMMSolverResult admm_result;
+    admm_result.preconditioner.emplace(preconditioner_vec);
+    admm_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,

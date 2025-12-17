@@ -33,141 +33,41 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const ADMMSolverSettings & settings,
-    ADMMSolverResult & solution)
+    ADMMSolverResult & result)
   {
     // for easier access
     static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
-    ADMMSolverResult & sol = solution;
+    ADMMSolverResult & res = result;
     ADMMSolverWorkspace & wk = workspace_;
     DelassusDerived & G = delassus.derived();
 
-    // Configure/reset solution, workspace and stats
+    // Configure/reset workspace, stats and result
+    // note: the order matters as workspace is initialized using
+    // optional warmstarts contained in result.
     const Eigen::Index np = G.rows();
     const std::size_t problem_size = static_cast<std::size_t>(np);
     assert(G.cols() == np);
     assert(g.size() == np);
     assert(residualSize(constraint_models, constraint_datas) == np);
-    const Scalar min_compliance = G.getCompliance().minCoeff();
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(
-      min_compliance >= Scalar(0), "compliance should be a positive vector.");
-    //
-    std::optional<Scalar> rho_init = settings.rho_init;
-    Scalar spectral_rho_power_init = settings.spectral_rho_power_init;
-    if (settings.warmstart_rho_with_prev_sol && sol.isValid())
-    {
-      // override rho_init with previous solution's rho value
-      rho_init = sol.rho;
-      spectral_rho_power_init = sol.spectral_rho_power;
-    }
-    sol.reset(problem_size);
-    assert(sol.isValid() == false);
-    assert(sol.problem_size == problem_size);
-    assert(sol.iterations == 0);
-    //
+
+    // -- check if settings are valid
+    settings.checkValidity();
+
+    // -- reset workspace
     wk.reset(problem_size, settings.lanczos_size, settings.anderson_capacity);
     assert(wk.problem_size == problem_size);
     assert(wk.x.size() == np);
-    //
+
+    // -- reset per-iteration statistics
     stats.reset();
     if (settings.stat_record)
     {
       stats.reserve(settings.max_iterations);
     }
-    //
-    settings.checkValidity();
 
-    // the solver is now marked as reset
-    is_valid_ = false;
-
-#ifdef PINOCCHIO_WITH_HPP_FCL
-    if (settings.measure_timings)
-    {
-      timer.start();
-    }
-#endif // PINOCCHIO_WITH_HPP_FCL
-
-    // First, we initialize some utils
-    // Initialize De Saxé shift to 0
-    // For the CCP, there is no shift.
-    // For the NCP, the shift will be initialized using z.
-    wk.desaxce.setZero();
-
-    // Set initial damping of the delassus to the proximal value and get smallest possible
-    // eigenvalue of the problem.
-    wk.mu_prox = settings.mu_prox;
-    Scalar m = min_compliance + wk.mu_prox;
-    wk.rhs.setConstant(wk.mu_prox);
-    G.updateDamping(wk.rhs);
-    sol.delassus_decomposition_update_count++;
-
-    // Initialization of the primal/dual variables.
-    // If both primal and dual guesses are given, the solver uses both.
-    // If one is given but not the other, the solver will compute the missing one using the given
-    // one.
-    retrievePrimalDualGuess(G, g, constraint_models, constraint_datas, wk, settings);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.x.size(), np);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.y.size(), np);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.z.size(), np);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.desaxce.size(), np);
-
-    // Check NCP/CCP conditions. If they are satisfied, don't run the solver.
-    // -- always primaly feasible as y is projected onto the constraints
-    sol.primal_feasibility = Scalar(0);
-    // -- dual feasibility
-    G.applyOnTheRight(wk.y, wk.rhs);
-    wk.rhs += g - wk.y.cwiseProduct(G.getDamping());
-    if (settings.solve_ncp)
-    {
-      internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.rhs, wk.desaxce);
-      wk.rhs += wk.desaxce;
-    }
-    internal::computeDualConeProjection(constraint_models, constraint_datas, wk.rhs, wk.tmp);
-    wk.tmp -= wk.rhs;
-    sol.dual_feasibility = wk.tmp.template lpNorm<Eigen::Infinity>();
-    // -- complementarity
-    internal::computeConicComplementarity(
-      constraint_models, constraint_datas, wk.rhs, wk.y, sol.complementarity);
-
-    bool abs_prec_reached = false;
-    bool rel_prec_reached = false;
-    if (
-      check_expression_if_real<Scalar, false>(
-        sol.complementarity <= settings.absolute_tol_complementarity)
-      && check_expression_if_real<Scalar, false>(
-        sol.dual_feasibility <= settings.absolute_tol_feasibility))
-    {
-      abs_prec_reached = true;
-      wk.z = wk.rhs; // store dual solution
-    }
-
-    // init rho power of spectral rule
-    wk.spectral_rho_power = spectral_rho_power_init;
-
-    // init rho
-    Scalar L = Scalar(-1); // not yet computed
-    bool delassus_largest_eigenvalue_computed = false;
-    if (rho_init)
-    {
-      wk.rho = rho_init.value();
-    }
-    else
-    {
-      // Compute rho with spectral rule
-      L = computeDelassusLargestEigenvalue(G, wk);
-      delassus_largest_eigenvalue_computed = true;
-      if (std::isnan(L))
-      {
-        L = Scalar(1);
-      }
-      wk.rho = ADMMSpectralUpdateRule::computeRho(L, m, wk.spectral_rho_power);
-    }
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(wk.rho >= 0, "rho should be positive.");
-    // clamp the rho
-    const Scalar rho_min = 1e-6;
-    const Scalar rho_max = 1e6;
-    wk.rho = math::max(math::min(wk.rho, rho_max), rho_min);
-
-    // set mu_prox according to prox policy
+    // -- retrieve warmstart from results, then reset results
+    retrievePrimalDualGuess(delassus, g, constraint_models, constraint_datas, settings, res, wk);
+    retrieveRhoGuess(delassus, settings, res, wk);
     switch (settings.admm_proximal_rule)
     {
     case (ADMMProximalRule::MANUAL):
@@ -177,7 +77,57 @@ namespace pinocchio
       wk.mu_prox = wk.rho;
       break;
     }
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(wk.mu_prox >= 0, "mu_prox should be positive.");
+    res.reset(problem_size);
+    assert(res.isValid() == false);
+    assert(res.problem_size == problem_size);
+    assert(res.iterations == 0);
+
+    // -- init of internals done - the solver is now marked as reset
+    is_valid_ = false;
+
+#ifdef PINOCCHIO_WITH_HPP_FCL
+    if (settings.measure_timings)
+    {
+      timer.start();
+    }
+#endif // PINOCCHIO_WITH_HPP_FCL
+
+    // Check NCP/CCP conditions. If they are satisfied, don't run the solver.
+    // -- always primaly feasible as y is projected onto the constraints
+    // (this has been done in `retrievePrimalDualGuess`)
+    res.primal_feasibility = Scalar(0);
+
+    // -- dual feasibility
+    G.applyOnTheRight(wk.y, wk.rhs);
+    wk.rhs += g - wk.y.cwiseProduct(G.getDamping());
+    if (settings.solve_ncp)
+    {
+      internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.rhs, wk.desaxce);
+      wk.rhs += wk.desaxce;
+    }
+    else
+    {
+      wk.desaxce.setZero();
+    }
+    internal::computeDualConeProjection(constraint_models, constraint_datas, wk.rhs, wk.tmp);
+    wk.tmp -= wk.rhs;
+    res.dual_feasibility = wk.tmp.template lpNorm<Eigen::Infinity>();
+
+    // -- complementarity
+    internal::computeConicComplementarity(
+      constraint_models, constraint_datas, wk.rhs, wk.y, res.complementarity);
+
+    bool abs_prec_reached = false;
+    bool rel_prec_reached = false;
+    if (
+      check_expression_if_real<Scalar, false>(
+        res.complementarity <= settings.absolute_tol_complementarity)
+      && check_expression_if_real<Scalar, false>(
+        res.dual_feasibility <= settings.absolute_tol_feasibility))
+    {
+      abs_prec_reached = true;
+      wk.z = wk.rhs; // store dual solution
+    }
 
     if (!abs_prec_reached)
     {
@@ -188,14 +138,16 @@ namespace pinocchio
       switch (settings.admm_update_rule)
       {
       case (ADMMUpdateRule::SPECTRAL): {
-        if (!delassus_largest_eigenvalue_computed)
+        if (wk.delassus_largest_eigenvalue.has_value() == false)
         {
-          // L has not yet been computed, we compute it
-          L = computeDelassusLargestEigenvalue(G, wk);
-          delassus_largest_eigenvalue_computed = true;
+          // largest eigenvalue has not yet been computed, we compute it
+          wk.delassus_largest_eigenvalue = computeDelassusLargestEigenvalue(G, wk);
         }
         admm_update_rule_container.spectral_rule = ADMMSpectralUpdateRule(
-          settings.ratio_primal_dual, L, m, settings.spectral_rho_power_factor);
+          settings.ratio_primal_dual,              //
+          wk.delassus_largest_eigenvalue.value(),  //
+          wk.delassus_smallest_eigenvalue.value(), //
+          settings.spectral_rho_power_factor);
         break;
       }
       case (ADMMUpdateRule::OSQP):
@@ -216,7 +168,7 @@ namespace pinocchio
       wk.rhs.setConstant(prox_value);
       G.updateDamping(wk.rhs);
       Scalar old_prox_value = prox_value;
-      sol.delassus_decomposition_update_count++;
+      wk.delassus_decomposition_update_count++;
 
       // End of Initialization phase
       wk.x_anderson = wk.x;
@@ -236,13 +188,13 @@ namespace pinocchio
       Scalar y_previous_norm_inf = y_norm_inf;
       Scalar z_previous_norm_inf = z_norm_inf;
 
-      sol.iterations = 0;
+      res.iterations = 0;
       std::size_t it_since_last_rho_update = 0;
-      for (; sol.iterations <= settings.max_iterations;
-           ++sol.iterations, ++it_since_last_rho_update)
+      for (; res.iterations <= settings.max_iterations;
+           ++res.iterations, ++it_since_last_rho_update)
       {
         // Fit the Anderson acceleration to compute accelerated x and y iterates
-        if (sol.iterations > 1)
+        if (res.iterations > 1)
         {
           if (wk.anderson_history.capacity() > 0)
           {
@@ -268,7 +220,7 @@ namespace pinocchio
         wk.x_previous = wk.x_anderson;
         wk.y_previous = wk.y;
         wk.z_previous = wk.z_anderson;
-        sol.complementarity = Scalar(0);
+        res.complementarity = Scalar(0);
 
         // y-update, using Anderson iterate.
         // If update is worse in terms of primal feas, it is rejected and the default
@@ -283,7 +235,7 @@ namespace pinocchio
           anderson_primal_feasibility =
             wk.anderson_primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
 
-          if (wk.anderson_history.capacity() > 1 && sol.iterations > 1)
+          if (wk.anderson_history.capacity() > 1 && res.iterations > 1)
           {
             if (
               anderson_primal_feasibility >= anderson_previous_primal_feasibility //
@@ -311,6 +263,10 @@ namespace pinocchio
           // s-update
           internal::computeDeSaxeCorrection(
             constraint_models, constraint_datas, wk.z_previous, wk.desaxce);
+        }
+        else
+        {
+          wk.desaxce.setZero();
         }
 
         // default (non-accelerated) x-update
@@ -362,12 +318,12 @@ namespace pinocchio
 
         // compute primal/dual feasibility and complementarity
         // --> these are used to check convergence of the algo
-        sol.primal_feasibility = wk.primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
-        sol.dual_feasibility = wk.dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
-        sol.dual_feasibility =
-          math::max(wk.mu_prox * settings.tau_prox, wk.rho * settings.tau) * sol.dual_feasibility;
+        res.primal_feasibility = wk.primal_feasibility_vector.template lpNorm<Eigen::Infinity>();
+        res.dual_feasibility = wk.dual_feasibility_vector.template lpNorm<Eigen::Infinity>();
+        res.dual_feasibility =
+          math::max(wk.mu_prox * settings.tau_prox, wk.rho * settings.tau) * res.dual_feasibility;
         internal::computeConicComplementarity(
-          constraint_models, constraint_datas, wk.z, wk.y, sol.complementarity);
+          constraint_models, constraint_datas, wk.z, wk.y, res.complementarity);
 
         if (settings.stat_record)
         {
@@ -384,10 +340,10 @@ namespace pinocchio
 
           Scalar dual_feasibility_ncp = wk.rhs.template lpNorm<Eigen::Infinity>();
 
-          stats.primal_feasibility.push_back(sol.primal_feasibility);
-          stats.dual_feasibility.push_back(sol.dual_feasibility);
+          stats.primal_feasibility.push_back(res.primal_feasibility);
+          stats.dual_feasibility.push_back(res.dual_feasibility);
           stats.dual_feasibility_ncp.push_back(dual_feasibility_ncp);
-          stats.complementarity.push_back(sol.complementarity);
+          stats.complementarity.push_back(res.complementarity);
           stats.rho.push_back(wk.rho);
           stats.mu_prox.push_back(wk.mu_prox);
           stats.anderson_size.push_back(wk.anderson_history.size());
@@ -400,13 +356,13 @@ namespace pinocchio
         // -- absolute check
         if (
           check_expression_if_real<Scalar, false>(
-            sol.complementarity <= settings.absolute_tol_complementarity)
+            res.complementarity <= settings.absolute_tol_complementarity)
           && check_expression_if_real<Scalar, false>(
-            sol.dual_feasibility
+            res.dual_feasibility
             <= settings.absolute_tol_feasibility
                  + settings.relative_tol_feasibility * math::max(g_norm_inf, z_norm_inf))
           && check_expression_if_real<Scalar, false>(
-            sol.primal_feasibility
+            res.primal_feasibility
             <= settings.absolute_tol_feasibility
                  + settings.relative_tol_feasibility * math::max(x_norm_inf, y_norm_inf)))
         {
@@ -441,7 +397,7 @@ namespace pinocchio
 
         // update rho if needed
         if (
-          sol.delassus_decomposition_update_count < settings.max_delassus_decomposition_updates
+          wk.delassus_decomposition_update_count < settings.max_delassus_decomposition_updates
           && it_since_last_rho_update >= settings.rho_min_update_frequency)
         {
           // Apply rho according to the primal_dual_ratio
@@ -450,29 +406,29 @@ namespace pinocchio
           {
           case (ADMMUpdateRule::SPECTRAL):
             admm_update_rule_container.spectral_rule.eval(
-              sol.primal_feasibility, sol.dual_feasibility, new_rho);
+              res.primal_feasibility, res.dual_feasibility, new_rho);
             break;
           case (ADMMUpdateRule::OSQP):
             admm_update_rule_container.osqp_rule.eval(
-              sol.primal_feasibility, sol.dual_feasibility, new_rho);
+              res.primal_feasibility, res.dual_feasibility, new_rho);
             break;
           case (ADMMUpdateRule::LINEAR):
             admm_update_rule_container.linear_rule.eval(
-              sol.primal_feasibility, sol.dual_feasibility, new_rho);
+              res.primal_feasibility, res.dual_feasibility, new_rho);
             break;
           case (ADMMUpdateRule::CONSTANT):
             break;
           }
 
           // clamp rho a second time
-          new_rho = math::max(math::min(new_rho, rho_max), rho_min);
+          new_rho = math::max(math::min(new_rho, settings.rho_max), settings.rho_min);
 
           // apply a momentum strategy on rho defined by:
           new_rho = std::pow(wk.rho, settings.rho_momentum)
                     * std::pow(new_rho, Scalar(1) - settings.rho_momentum);
 
           // clamp rho a second time in case the new values is outside the bounds
-          new_rho = math::max(math::min(new_rho, rho_max), rho_min);
+          new_rho = math::max(math::min(new_rho, settings.rho_max), settings.rho_min);
 
           bool update_delassus_factorization = false;
           if (new_rho == wk.rho)
@@ -506,7 +462,7 @@ namespace pinocchio
               PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop updateDamping");
               wk.rhs.setConstant(prox_value);
               G.updateDamping(wk.rhs);
-              sol.delassus_decomposition_update_count++;
+              wk.delassus_decomposition_update_count++;
               old_prox_value = prox_value;
             }
           }
@@ -521,7 +477,10 @@ namespace pinocchio
       // Save values of spectral update rule
       if (settings.admm_update_rule == ADMMUpdateRule::SPECTRAL)
       {
-        wk.spectral_rho_power = ADMMSpectralUpdateRule::computeRhoPower(L, m, wk.rho);
+        wk.spectral_rho_power = ADMMSpectralUpdateRule::computeRhoPower(
+          wk.delassus_largest_eigenvalue.value(),  //
+          wk.delassus_smallest_eigenvalue.value(), //
+          wk.rho);
       }
     }
 
@@ -536,24 +495,25 @@ namespace pinocchio
 
     if (settings.stat_record)
     {
-      stats.iterations = sol.iterations;
-      stats.delassus_decomposition_update_count = sol.delassus_decomposition_update_count;
+      stats.iterations = res.iterations;
+      stats.delassus_decomposition_update_count = wk.delassus_decomposition_update_count;
     }
 
-    sol.x = wk.x;
-    sol.y = wk.y;
-    sol.z = wk.z;
-    sol.desaxce = wk.desaxce;
-    sol.rho = wk.rho;
-    sol.spectral_rho_power = wk.spectral_rho_power;
-    sol.mu_prox = wk.mu_prox;
-    sol.converged = abs_prec_reached || rel_prec_reached;
-    sol.makeValid();
+    res.x = wk.x;
+    res.y = wk.y;
+    res.z = wk.z;
+    res.desaxce = wk.desaxce;
+    res.rho = wk.rho;
+    res.spectral_rho_power = wk.spectral_rho_power;
+    res.mu_prox = wk.mu_prox;
+    res.delassus_decomposition_update_count = wk.delassus_decomposition_update_count;
+    res.converged = abs_prec_reached || rel_prec_reached;
+    res.makeValid();
 
     // the solver has run, we mark it as valid
     is_valid_ = true;
 
-    return sol.converged;
+    return res.converged;
   }
 
   template<typename Scalar>
@@ -610,31 +570,54 @@ namespace pinocchio
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    ADMMSolverWorkspace & workspace,
-    const ADMMSolverSettings & settings)
+    const ADMMSolverSettings & settings,
+    const ADMMSolverResult & result,
+    ADMMSolverWorkspace & workspace)
   {
     // for easier access
-    ADMMSolverWorkspace & wk = workspace;
+    const ADMMSolverResult & res = result;
     DelassusDerived & G = delassus.derived();
+    ADMMSolverWorkspace & wk = workspace;
 
-    if (settings.primal_guess)
+    const Scalar min_compliance = G.getCompliance().minCoeff();
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(
+      min_compliance >= Scalar(0), "compliance should be a positive vector.");
+
+    // initialize De Saxé shift to 0
+    // for the CCP, there is no shift.
+    // for the NCP, the shift will be initialized using z.
+    wk.desaxce.setZero();
+
+    // set initial damping of the delassus to the proximal value and get smallest possible
+    // eigenvalue of the problem.
+    wk.mu_prox = settings.mu_prox;
+    wk.delassus_smallest_eigenvalue = min_compliance + wk.mu_prox;
+    wk.rhs.setConstant(wk.mu_prox);
+    G.updateDamping(wk.rhs);
+    wk.delassus_decomposition_update_count++;
+
+    // Initialization of the primal/dual variables.
+    // If both primal and dual guesses are given, the solver uses both.
+    // If one is given but not the other, the solver will compute the missing one using the given
+    // one.
+    if (res.primal_guess)
     {
-      if (settings.dual_guess)
+      if (res.dual_guess)
       {
-        wk.z = settings.dual_guess.value();
+        wk.z = res.dual_guess.value();
         if (settings.solve_ncp)
         {
           // Add De Saxé shift
           internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.z, wk.desaxce);
           wk.z += wk.desaxce;
         }
-        wk.x = settings.primal_guess.value();
+        wk.x = res.primal_guess.value();
         internal::computeConeProjection(constraint_models, constraint_datas, wk.x, wk.y);
       }
       else
       {
         // Warm-start dual variable using primal guess
-        wk.x = settings.primal_guess.value();
+        wk.x = res.primal_guess.value();
         internal::computeConeProjection(constraint_models, constraint_datas, wk.x, wk.y);
         G.applyOnTheRight(wk.y, wk.z);
         wk.z.noalias() += g - wk.y.cwiseProduct(G.getDamping());
@@ -648,10 +631,10 @@ namespace pinocchio
     }
     else
     {
-      if (settings.dual_guess)
+      if (res.dual_guess)
       {
         // Warm-start primal variable using dual guess
-        wk.z = settings.dual_guess.value();
+        wk.z = res.dual_guess.value();
         if (settings.solve_ncp)
         {
           internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.z, wk.desaxce);
@@ -674,6 +657,63 @@ namespace pinocchio
         }
       }
     }
+
+    // sanity checks
+    const Eigen::Index np = G.rows();
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.x.size(), np);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.y.size(), np);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.z.size(), np);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.desaxce.size(), np);
+  }
+
+  template<typename _Scalar>
+  template<typename DelassusDerived>
+  void ADMMConstraintSolverTpl<_Scalar>::retrieveRhoGuess(
+    const DelassusOperatorBase<DelassusDerived> & delassus,
+    const ADMMSolverSettings & settings,
+    const ADMMSolverResult & result,
+    ADMMSolverWorkspace & workspace)
+  {
+    // for easier access
+    const DelassusDerived & G = delassus.derived();
+    const ADMMSolverResult & res = result;
+    ADMMSolverWorkspace & wk = workspace;
+
+    std::optional<Scalar> rho_init = settings.rho_init;
+    Scalar spectral_rho_power_init = settings.spectral_rho_power_init;
+    if (settings.warmstart_rho_with_prev_sol && res.isValid())
+    {
+      // override rho_init with previous result's rho value
+      rho_init = res.rho;
+      spectral_rho_power_init = res.spectral_rho_power;
+    }
+
+    // init workspace's rho parameters
+    wk.spectral_rho_power = spectral_rho_power_init;
+    if (rho_init)
+    {
+      wk.rho = rho_init.value();
+    }
+    else
+    {
+      // compute rho with spectral rule
+      assert(wk.delassus_smallest_eigenvalue.has_value() == true);
+      assert(wk.delassus_largest_eigenvalue.has_value() == false);
+      wk.delassus_largest_eigenvalue = computeDelassusLargestEigenvalue(G, wk);
+      if (std::isnan(wk.delassus_largest_eigenvalue.value()))
+      {
+        wk.delassus_largest_eigenvalue = Scalar(1);
+      }
+      // TODO: change order of largest/smallest
+      wk.rho = ADMMSpectralUpdateRule::computeRho(
+        wk.delassus_largest_eigenvalue.value(),  //
+        wk.delassus_smallest_eigenvalue.value(), //
+        wk.spectral_rho_power);
+    }
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(wk.rho >= 0, "rho should be positive.");
+
+    // clamp the rho
+    wk.rho = math::max(math::min(wk.rho, settings.rho_max), settings.rho_min);
   }
 
 } // namespace pinocchio

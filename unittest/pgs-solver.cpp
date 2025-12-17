@@ -86,8 +86,8 @@ struct TestBoxTpl
     pgs_settings.relative_tol_feasibility = relative_tol;
     pgs_settings.absolute_tol_complementarity = absolute_tol;
     pgs_settings.relative_tol_complementarity = relative_tol;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     has_converged = pgs_solver.solve(
       G_expression, g, constraint_models, constraint_datas, pgs_settings, pgs_result);
@@ -97,7 +97,7 @@ struct TestBoxTpl
 
     if (test_warmstart)
     {
-      pgs_settings.primal_guess.emplace(primal_solution);
+      pgs_result.primal_guess.emplace(primal_solution);
       has_converged =
         has_converged
         && pgs_solver.solve(
@@ -532,8 +532,8 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   pgs_settings.relative_tol_feasibility = 1e-14;
   pgs_settings.absolute_tol_complementarity = 1e-13;
   pgs_settings.relative_tol_complementarity = 1e-14;
-  pgs_settings.primal_guess.emplace(primal_solution);
   PGSSolverResult pgs_result;
+  pgs_result.primal_guess.emplace(primal_solution);
 
   const bool has_converged = pgs_solver.solve(
     G_expression, g, constraint_models, constraint_datas, pgs_settings, pgs_result);
@@ -657,8 +657,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
@@ -696,8 +696,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
@@ -799,8 +799,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
@@ -843,8 +843,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
@@ -946,8 +946,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
@@ -990,8 +990,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
@@ -1084,8 +1084,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
@@ -1124,8 +1124,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
@@ -1218,8 +1218,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
@@ -1257,8 +1257,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
@@ -1354,8 +1354,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
@@ -1396,8 +1396,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     pgs_settings.relative_tol_feasibility = 1e-14;
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
-    pgs_settings.primal_guess.emplace(primal_solution);
     PGSSolverResult pgs_result;
+    pgs_result.primal_guess.emplace(primal_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,

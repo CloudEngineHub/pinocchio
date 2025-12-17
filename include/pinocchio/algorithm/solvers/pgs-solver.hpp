@@ -58,7 +58,7 @@ namespace pinocchio
     /// \param[in] constraint_models Vector of constraint models.
     /// \param[in] constraint_datas Vector of constraint datas.
     /// \param[in] settings Settings for the PGS solver.
-    /// \param[in/out] solution Solution to the constraint problem. Also contains the warmstart to
+    /// \param[in/out] result Solution to the constraint problem. Also contains the warmstart to
     /// solve the problem.
     ///
     /// \returns True if the problem has converged.
@@ -75,7 +75,7 @@ namespace pinocchio
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const PGSSolverSettings & settings,
-      PGSSolverResult & solution);
+      PGSSolverResult & result);
 
     ///
     /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
@@ -86,7 +86,7 @@ namespace pinocchio
     /// \param[in] constraint_models Vector of constraint models.
     /// \param[in] constraint_datas Vector of constraint datas.
     /// \param[in] settings Settings for the PGS solver.
-    /// \param[in/out] solution Solution to the constraint problem. Also contains the warmstart to
+    /// \param[in/out] result Solution to the constraint problem. Also contains the warmstart to
     /// solve the problem.
     ///
     /// \returns True if the problem has converged.
@@ -103,10 +103,10 @@ namespace pinocchio
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const PGSSolverSettings & settings,
-      PGSSolverResult & solution)
+      PGSSolverResult & result)
     {
       return solve(
-        delassus.derived().matrix(), g, constraint_models, constraint_datas, settings, solution);
+        delassus.derived().matrix(), g, constraint_models, constraint_datas, settings, result);
     }
 
     /// \brief Reset the constraint solver as if it has never run.
@@ -152,7 +152,6 @@ namespace pinocchio
     typedef _Scalar Scalar;
     typedef ConstraintSolverSettingsBaseTpl<Scalar> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
-    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
 
     /// \brief Default constructor
     PGSSolverSettingsTpl(
@@ -164,8 +163,7 @@ namespace pinocchio
       bool solve_ncp = true,
       bool measure_timings = false,
       bool stat_record = false,
-      Scalar over_relaxation = Scalar(1),
-      std::optional<RefConstVectorXs> primal_guess = std::nullopt)
+      Scalar over_relaxation = Scalar(1))
     : Base(
         max_iterations,
         absolute_tol_feasibility,
@@ -175,7 +173,6 @@ namespace pinocchio
         solve_ncp,
         measure_timings,
         stat_record)
-    , primal_guess(primal_guess)
     , over_relaxation(over_relaxation)
     {
     }
@@ -218,12 +215,6 @@ namespace pinocchio
     using Base::stat_record;
 
     // ----------------------
-    // Warmstart settings
-
-    /// \brief Optional guess for the primal variable (impulses).
-    std::optional<RefConstVectorXs> primal_guess;
-
-    // ----------------------
     // PGS specific settings
 
     /// \brief Over-relaxation of PGS step. Default value is 1.
@@ -233,12 +224,14 @@ namespace pinocchio
   ///
   /// \brief Struct describing the solution of the PGS constraint solver
   /// after calling the `solve` method.
+  /// Also contains the warmstart of the solution to the constraint problem.
   template<typename _Scalar>
   struct PGSSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar, PGSConstraintSolverTpl>
   {
     typedef _Scalar Scalar;
     typedef ConstraintSolverResultBaseTpl<Scalar, PGSConstraintSolverTpl> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
     using Base::isValid;
@@ -250,14 +243,18 @@ namespace pinocchio
     , problem_size(0)
     , x(x_storage.map())
     , y(y_storage.map())
+    , primal_guess(std::nullopt)
     {
     }
 
-    /// \brief Reset the solution.
+    /// \brief Reset the results.
+    /// \note This method does not touch the warmstart fields.
     void reset(std::size_t problem_size_ = 0)
     {
       Base::reset();
       problem_size = problem_size_;
+
+      primal_guess.reset();
 
       resize(problem_size);
 
@@ -309,6 +306,15 @@ namespace pinocchio
 
     /// \brief Size of primal/dual variables.
     std::size_t problem_size;
+
+    // ----------------------
+    // Solution warmstart
+
+    /// \brief Optional guess for the primal variable (impulses).
+    std::optional<RefConstVectorXs> primal_guess;
+
+    // ----------------------
+    // Solution - output of the solver
 
     /// \brief Primal solution.
     /// \note Order of storage/map declaration is important!
