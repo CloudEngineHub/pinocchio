@@ -30,6 +30,13 @@
 using namespace pinocchio;
 using namespace Eigen;
 
+template<class Delassus>
+struct ProtectedMemberExposer : public Delassus
+{
+  using Delassus::m_compliance_dampling_sum_dirty;
+  using Delassus::m_solve_in_place_dirty;
+};
+
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 BOOST_AUTO_TEST_CASE(default_constructor_shared_ptr)
@@ -803,6 +810,14 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
     delassus_operator.updateDamping(mu);
     BOOST_CHECK(delassus_operator.getDamping().isApproxToConstant(mu));
 
+    BOOST_CHECK(delassus_operator.isDirty());
+    delassus_operator.update();
+
+    const auto & delassus_operator_full_public =
+      static_cast<ProtectedMemberExposer<decltype(delassus_operator)> &>(delassus_operator);
+
+    BOOST_CHECK(delassus_operator_full_public.m_compliance_dampling_sum_dirty == false);
+
     Eigen::VectorXd res_damped(delassus_operator.size());
     delassus_operator.applyOnTheRight(rhs, res_damped);
     const auto res_gt_damped =
@@ -821,6 +836,14 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
     delassus_operator.updateDamping(mu);
     delassus_operator.updateCompliance(compliance);
     // BOOST_CHECK(delassus_operator.getCompliance().isApproxToConstant(compliance));
+
+    BOOST_CHECK(delassus_operator.isDirty());
+    delassus_operator.update();
+
+    const auto & delassus_operator_full_public =
+      static_cast<ProtectedMemberExposer<decltype(delassus_operator)> &>(delassus_operator);
+
+    BOOST_CHECK(delassus_operator_full_public.m_compliance_dampling_sum_dirty == false);
 
     Eigen::VectorXd res_damped(delassus_operator.size());
     delassus_operator.applyOnTheRight(rhs, res_damped);
