@@ -681,7 +681,7 @@ namespace pinocchio
 
     std::optional<Scalar> rho_init = settings.rho_init;
     Scalar spectral_rho_power_init = settings.spectral_rho_power_init;
-    if (settings.warmstart_rho_with_prev_sol && res.isValid())
+    if (settings.warmstart_rho_with_previous_result && res.isValid())
     {
       // override rho_init with previous result's rho value
       rho_init = res.rho;

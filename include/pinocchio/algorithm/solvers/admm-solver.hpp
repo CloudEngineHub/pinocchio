@@ -240,7 +240,7 @@ namespace pinocchio
       bool measure_timings = false,
       bool stat_record = false,
       std::optional<Scalar> rho_init = std::nullopt,
-      bool warmstart_rho_with_prev_sol = false,
+      bool warmstart_rho_with_previous_result = false,
       ADMMUpdateRule admm_update_rule = ADMMUpdateRule::OSQP,
       ADMMProximalRule admm_proximal_rule = ADMMProximalRule::MANUAL,
       Scalar mu_prox = 1e-6,
@@ -269,7 +269,7 @@ namespace pinocchio
         measure_timings,
         stat_record)
     , rho_init(rho_init)
-    , warmstart_rho_with_prev_sol(warmstart_rho_with_prev_sol)
+    , warmstart_rho_with_previous_result(warmstart_rho_with_previous_result)
     , admm_update_rule(admm_update_rule)
     , admm_proximal_rule(admm_proximal_rule)
     , mu_prox(mu_prox)
@@ -354,11 +354,11 @@ namespace pinocchio
     /// the largest eigenvalue of the Delassus.
     std::optional<Scalar> rho_init;
 
-    /// \brief Whether or not to warmstart rho with previous solution.
-    /// This setting is only effective if ADMM is not reset (a previous solution exists).
+    /// \brief Whether or not to warmstart rho with previous result.
     /// If set to true, the `rho_init` will be bypassed by the value of rho
     /// stored in the solver's solution.
-    bool warmstart_rho_with_prev_sol;
+    /// \note This setting is only effective if a previous solution is valid.
+    bool warmstart_rho_with_previous_result;
 
     /// \brief Update rule for the rho admm term.
     ADMMUpdateRule admm_update_rule;

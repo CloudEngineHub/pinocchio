@@ -112,6 +112,7 @@ struct TestBoxTpl
     if (test_warmstart)
     {
       admm_result.primal_guess.emplace(primal_solution);
+      admm_settings.warmstart_rho_with_previous_result = true;
       has_converged =
         has_converged
         && admm_solver.solve(
