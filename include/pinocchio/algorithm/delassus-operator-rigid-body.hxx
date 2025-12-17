@@ -36,11 +36,28 @@ namespace pinocchio
     m_constraint_models_ref = constraint_models_ref;
     m_constraint_datas_ref = constraint_datas_ref;
 
+    m_size =
+      residualSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref));
+
+    // resize quantities
+    m_damping_storage.resize(m_size);
+    m_compliance_storage.resize(m_size);
+    m_sum_compliance_damping_storage.resize(m_size);
+    m_sum_compliance_damping_inverse_storage.resize(m_size);
+
+    assert(m_damping.size() == m_size);
+    assert(m_compliance.size() == m_size);
+    assert(m_sum_compliance_damping_storage.size() == m_size);
+    assert(m_sum_compliance_damping_inverse_storage.size() == m_size);
+
+    // reset or set values
+    // m_damping.setZero();
     retrieveCompliance(
       helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref), m_compliance);
 
     computeJointMinimalOrdering(model(), data(), helper::get_ref(constraint_models_ref));
-    m_dirty = true;
+    m_compliance_dampling_sum_dirty = true;
+    m_solve_in_place_dirty = true;
   }
 
   template<
@@ -58,6 +75,11 @@ namespace pinocchio
   {
     typedef typename Data::Inertia Inertia;
     using Matrix6 = typename Inertia::Matrix6;
+
+    if (m_compliance_dampling_sum_dirty)
+    {
+      updateSumComplianceDamping();
+    }
 
     const Model & model_ref = model();
     Data & data_ref = data();
@@ -90,6 +112,7 @@ namespace pinocchio
       data_ref.joint_cross_coupling.apply([](Matrix6 & v) { v.setZero(); });
 
       // Append constraint inertia to oYaba_augmented
+      assert(!m_sum_compliance_damping_inverse.hasNaN());
       Eigen::Index row_id = 0;
       for (size_t constraint_id = 0; constraint_id < constraint_models_ref.size(); ++constraint_id)
       {
@@ -144,7 +167,8 @@ namespace pinocchio
     }
 #undef DO_PASS
 
-    compute_conclude();
+    if (solve_in_place)
+      m_solve_in_place_dirty = false;
   }
 
   template<
@@ -163,6 +187,10 @@ namespace pinocchio
     applyOnTheRight(
       const Eigen::MatrixBase<MatrixIn> & rhs, const Eigen::MatrixBase<MatrixOut> & res_) const
   {
+    PINOCCHIO_THROW_IF(
+      m_compliance_dampling_sum_dirty, std::logic_error,
+      "The DelassusOperator has dirty quantities. Please call update first.");
+
     MatrixOut & res = res_.const_cast_derived();
     PINOCCHIO_CHECK_SAME_MATRIX_SIZE(rhs, res);
 
@@ -282,11 +310,10 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       mat.rows(), size(), "The input matrix does not match the size of the Delassus.");
 
-    //    PINOCCHIO_THROW_IF(
-    //      m_dirty, std::logic_error,
-    //      "The DelassusOperator has dirty quantities. Please call compute() method first.");
-    if (isDirty())
-      self_const_cast().updateDecomposition();
+    PINOCCHIO_THROW_IF(
+      m_solve_in_place_dirty, std::logic_error,
+      "The DelassusOperator has dirty quantities. Please call the compute(false,true) or "
+      "compute(true,true) method first.");
 
     const Model & model_ref = model();
     const Data & data_ref = data();

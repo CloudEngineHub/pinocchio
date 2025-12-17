@@ -8,6 +8,7 @@
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
 #include "pinocchio/algorithm/constraints/utils.hpp"
+#include "pinocchio/container/eigen-storage.hpp"
 
 #include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
@@ -49,6 +50,8 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> DenseMatrix;
     typedef DenseMatrix Matrix;
+
+    typedef EigenStorageTpl<Vector> EigenStorageVector;
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef typename Model::Data Data;
@@ -104,6 +107,7 @@ namespace pinocchio
 
     typedef typename traits<Self>::Vector Vector;
     typedef typename traits<Self>::DenseMatrix DenseMatrix;
+    typedef typename traits<Self>::EigenStorageVector EigenStorageVector;
 
     typedef typename traits<Self>::Model Model;
     typedef Holder<const Model> ModelHolder;
@@ -138,11 +142,16 @@ namespace pinocchio
     , m_constraint_models_ref(constraint_models_ref)
     , m_constraint_datas_ref(constraint_datas_ref)
     , m_custom_data(helper::get_ref(model_ref))
-    , m_dirty(true)
-    , m_damping(Vector::Zero(m_size))
-    , m_compliance(Vector::Zero(m_size))
-    , m_sum_compliance_damping(Vector::Zero(m_size))
-    , m_sum_compliance_damping_inverse(Vector::Zero(m_size))
+    , m_solve_in_place_dirty(true)
+    , m_compliance_dampling_sum_dirty(true)
+    , m_damping_storage(m_size)
+    , m_damping(m_damping_storage.map())
+    , m_compliance_storage(m_size)
+    , m_compliance(m_compliance_storage.map())
+    , m_sum_compliance_damping_storage(m_size)
+    , m_sum_compliance_damping(m_sum_compliance_damping_storage.map())
+    , m_sum_compliance_damping_inverse_storage(m_size)
+    , m_sum_compliance_damping_inverse(m_sum_compliance_damping_inverse_storage.map())
     {
       assert(model().check(data()) && "data is not consistent with model.");
       PINOCCHIO_CHECK_ARGUMENT_SIZE(
@@ -155,7 +164,7 @@ namespace pinocchio
       update(constraint_models_ref, constraint_datas_ref);
     }
 
-    /// \brief Update the constraint model and data vectors.
+    /// \brief Update the constraint model and data vectors, and resize the internal quantities.
     ///
     /// \param[in] constraint_models_ref Vector of constraint models
     /// \param[in] constraint_datas_ref Vector of constraint datas
@@ -205,9 +214,9 @@ namespace pinocchio
     ///
     /// \brief Update the intermediate computations before calling solveInPlace or operator*
     ///
-    /// \param[in] apply_on_the_right If true, this will update the quantities related to the
+    /// \param[in] apply_on_the_right If true, this will update the quantities involved in the
     /// applyOnTheRight method
-    /// \param[in] solve_in_place If true, this will update the quantities related to the
+    /// \param[in] solve_in_place If true, this will update the quantities involved in the
     /// solveInPlace method
     ///
     /// \remarks By activating or deactivating apply_on_the_right and solve_in_place, this enables
@@ -260,7 +269,7 @@ namespace pinocchio
 
     bool isDirty() const
     {
-      return m_dirty;
+      return m_solve_in_place_dirty || m_compliance_dampling_sum_dirty;
     }
 
     template<typename MatrixIn, typename MatrixOut>
@@ -268,10 +277,11 @@ namespace pinocchio
       const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res) const;
 
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & vec)
+    void updateDamping(const Eigen::MatrixBase<VectorLike> & damping_vector)
     {
-      m_damping = vec;
-      updateSumComplianceDamping();
+      m_damping = damping_vector;
+      m_compliance_dampling_sum_dirty = true;
+      m_solve_in_place_dirty = true;
     }
 
     void updateDamping(const Scalar & mu)
@@ -279,16 +289,17 @@ namespace pinocchio
       updateDamping(Vector::Constant(size(), mu));
     }
 
-    const Vector & getDamping() const
+    typename EigenStorageVector::ConstRefConstMapType getDamping() const
     {
-      return m_damping;
+      return m_damping_storage.const_map();
     }
 
     template<typename VectorLike>
     void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliance_vector)
     {
       m_compliance = compliance_vector;
-      updateSumComplianceDamping();
+      m_compliance_dampling_sum_dirty = true;
+      m_solve_in_place_dirty = true;
     }
 
     void updateCompliance(const Scalar & compliance_value)
@@ -296,9 +307,14 @@ namespace pinocchio
       updateCompliance(Vector::Constant(size(), compliance_value));
     }
 
-    const Vector & getCompliance() const
+    void update()
     {
-      return m_compliance;
+      updateSumComplianceDamping();
+    }
+
+    typename EigenStorageVector::ConstRefConstMapType getCompliance() const
+    {
+      return m_compliance_storage.const_map();
     }
 
     template<typename MatrixLike>
@@ -378,21 +394,16 @@ namespace pinocchio
     }
 
   protected:
-    inline void compute_conclude()
-    {
-      m_dirty = false;
-    }
-
-    void updateSumComplianceDamping()
-    {
-      m_sum_compliance_damping = m_damping + m_compliance;
-      m_sum_compliance_damping_inverse = m_sum_compliance_damping.cwiseInverse();
-      m_dirty = true;
-    }
-
     DelassusOperatorRigidBodySystemsTpl & self_const_cast() const
     {
       return const_cast<DelassusOperatorRigidBodySystemsTpl &>(*this);
+    }
+
+    void updateSumComplianceDamping() const
+    {
+      m_sum_compliance_damping = m_damping + m_compliance;
+      m_sum_compliance_damping_inverse = m_sum_compliance_damping.cwiseInverse();
+      m_compliance_dampling_sum_dirty = false;
     }
 
     // Holders
@@ -403,9 +414,17 @@ namespace pinocchio
     ConstraintDataVectorHolder m_constraint_datas_ref;
 
     mutable CustomData m_custom_data;
-    bool m_dirty;
-    Vector m_damping, m_compliance;
-    Vector m_sum_compliance_damping, m_sum_compliance_damping_inverse;
+    bool m_solve_in_place_dirty;
+    mutable bool m_compliance_dampling_sum_dirty;
+
+    EigenStorageVector m_damping_storage;
+    typename EigenStorageVector::RefMapType m_damping;
+    EigenStorageVector m_compliance_storage;
+    typename EigenStorageVector::RefMapType m_compliance;
+    EigenStorageVector m_sum_compliance_damping_storage;
+    typename EigenStorageVector::RefMapType m_sum_compliance_damping;
+    EigenStorageVector m_sum_compliance_damping_inverse_storage;
+    typename EigenStorageVector::RefMapType m_sum_compliance_damping_inverse;
   };
 
 } // namespace pinocchio
