@@ -38,7 +38,7 @@ namespace pinocchio
 
     template<typename ConstraintModel>
     static void algo_step(
-      const KinematicsConstraintModelBase<ConstraintModel> & cmodel,
+      const BinaryKinematicsConstraintModelBase<ConstraintModel> & cmodel,
       const Model & model,
       Data & data)
     {
@@ -48,7 +48,7 @@ namespace pinocchio
       const JointIndex joint2_id = cmodel.joint2_id;
       auto & neighbours = data.joint_neighbours;
 
-      // Here we suppose all KinematicsConstraintModelBase<ConstraintModel> are constant size
+      // Here we suppose all BinartyKinematicsConstraintModelBase<ConstraintModel> are constant size
       const auto constraint_size = cmodel.maxResidualSize();
       data.constraints_supported_dim[joint1_id] += constraint_size;
       data.constraints_supported_dim[joint2_id] += constraint_size;
@@ -101,6 +101,7 @@ namespace pinocchio
       ArgsType args(model, data);
       run(cmodel.derived(), args);
     }
+
   }; // struct ConstraintCouplingInformationCollectorStep
 
   template<

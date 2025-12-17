@@ -993,10 +993,10 @@ struct initConstraint<pinocchio::PointAnchorConstraintModel>
 };
 
 template<>
-struct initConstraint<pinocchio::PointContactModel>
+struct initConstraint<pinocchio::PointContactConstraintModel>
 {
   typedef pinocchio::Model Model;
-  typedef pinocchio::PointContactModel ConstraintModel;
+  typedef pinocchio::PointContactConstraintModel ConstraintModel;
 
   static ConstraintModel run(const Model & model)
   {
@@ -1137,7 +1137,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_model_variant)
     generic_test(cdata, TEST_SERIALIZATION_FOLDER "/Constraint", "cdata_variant");
   }
   {
-    PointContactModel cmodel_ = initConstraint<PointContactModel>::run(model);
+    PointContactConstraintModel cmodel_ = initConstraint<PointContactConstraintModel>::run(model);
     ConstraintModel cmodel(cmodel_);
     ConstraintData cdata(cmodel.createData());
     cmodel.calc(model, data, cdata);

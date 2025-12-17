@@ -35,7 +35,8 @@ namespace pinocchio
   template<typename Scalar, int Options>
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
   ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
-    const ModelTpl<S1, O1, JointCollectionTpl> & model)
+    const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    const DataTpl<S1, O1, JointCollectionTpl> & data)
   : D(D_storage.map())
   , Dinv(Dinv_storage.map())
   , U(U_storage.map())
@@ -45,7 +46,7 @@ namespace pinocchio
   {
     std::vector<ConstraintModel> empty_constraint_models;
     std::vector<ConstraintData> empty_constraint_datas;
-    resize(model, empty_constraint_models, empty_constraint_datas);
+    resize(model, data, empty_constraint_models, empty_constraint_datas);
   }
 
   template<typename Scalar, int Options>
@@ -70,7 +71,7 @@ namespace pinocchio
   , delassus_block(delassus_block_storage.map())
   {
     PINOCCHIO_UNUSED_VARIABLE(data);
-    resize(model, constraint_models, constraint_datas);
+    resize(model, data, constraint_models, constraint_datas);
   }
 
   template<typename Scalar, int Options>
@@ -117,10 +118,11 @@ namespace pinocchio
     class ConstraintDataAllocator>
   PINOCCHIO_DEPRECATED void ContactCholeskyDecompositionTpl<Scalar, Options>::allocate(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    const DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    resize(model, constraint_models, constraint_datas);
+    resize(model, data, constraint_models, constraint_datas);
   }
 
   template<typename Scalar, int Options>
@@ -134,6 +136,7 @@ namespace pinocchio
     class ConstraintDataAllocator>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::resize(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    const DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
@@ -193,7 +196,7 @@ namespace pinocchio
       const auto & cdata = helper::get_ref(constraint_datas[i]);
       for (Eigen::Index k = 0; k < cmodel.residualSize(cdata); ++k, row_id++)
       {
-        const auto & row_active_indexes = cmodel.getRowIndexes(cdata, k);
+        const auto & row_active_indexes = cmodel.getRowIndexes(model, data, cdata, k);
         nv_subtree_fromRow[row_id] =
           total_constraint_size - row_id + 1
           + (row_active_indexes.size() > 0 ? row_active_indexes.back() : 0);
@@ -351,7 +354,8 @@ namespace pinocchio
         for (Eigen::Index constraint_row_id = constraint_size - 1; constraint_row_id >= 0;
              --constraint_row_id, --current_row)
         {
-          const auto & colwise_sparsity = cmodel.getRowSparsityPattern(cdata, constraint_row_id);
+          const auto & colwise_sparsity =
+            cmodel.getRowSparsityPattern(model, data, cdata, constraint_row_id);
           if (colwise_sparsity[j])
           {
             U(current_row, jj) -= U.row(current_row).segment(jj + 1, NVT).dot(DUt_partial);
@@ -547,10 +551,11 @@ namespace pinocchio
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
   ContactCholeskyDecompositionTpl<Scalar, Options>
   ContactCholeskyDecompositionTpl<Scalar, Options>::getMassMatrixChoeslkyDecomposition(
-    const ModelTpl<S1, O1, JointCollectionTpl> & model) const
+    const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    const DataTpl<S1, O1, JointCollectionTpl> & data) const
   {
     typedef ContactCholeskyDecompositionTpl<Scalar, Options> ReturnType;
-    ReturnType res(model);
+    ReturnType res(model, data);
 
     res.D = D.tail(nv);
     res.Dinv = Dinv.tail(nv);

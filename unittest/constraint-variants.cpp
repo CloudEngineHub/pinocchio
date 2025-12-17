@@ -25,8 +25,8 @@ BOOST_AUTO_TEST_CASE(constraint_variants)
 
   Data data(model);
 
-  PointContactModel rcm = init_constraint<PointContactModel>(model);
-  PointContactData rcd(rcm);
+  PointContactConstraintModel rcm = init_constraint<PointContactConstraintModel>(model);
+  PointContactConstraintData rcd(rcm);
 
   ConstraintModel::ConstraintModelVariant constraint_model_variant = rcm;
   ConstraintModel constraint_model(rcm);
@@ -42,8 +42,8 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
 
   Data data(model);
 
-  PointContactModel rcm = init_constraint<PointContactModel>(model);
-  PointContactData rcd(rcm);
+  PointContactConstraintModel rcm = init_constraint<PointContactConstraintModel>(model);
+  PointContactConstraintData rcd(rcm);
 
   BOOST_CHECK(ConstraintData(rcd) == ConstraintData(rcd));
   BOOST_CHECK(ConstraintData(rcd) == rcd);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
 
   // Test create data visitor
   {
-    PointContactData rcd(rcm);
+    PointContactConstraintData rcd(rcm);
     ConstraintData constraint_data = visitors::createData(constraint_model);
     constraint_data = rcd;
     BOOST_CHECK(constraint_data == rcd);
@@ -99,7 +99,8 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
     for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
     {
       BOOST_CHECK(
-        constraint_model.getRowIndexes(constraint_data, row_id) == rcm.getRowIndexes(rcd, row_id));
+        constraint_model.getRowIndexes(model, data, constraint_data, row_id)
+        == rcm.getRowIndexes(model, data, rcd, row_id));
     }
   }
 
@@ -109,8 +110,8 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
     for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
     {
       BOOST_CHECK(
-        constraint_model.getRowSparsityPattern(constraint_data, row_id)
-        == rcm.getRowSparsityPattern(rcd, row_id));
+        constraint_model.getRowSparsityPattern(model, data, constraint_data, row_id)
+        == rcm.getRowSparsityPattern(model, data, rcd, row_id));
     }
   }
 

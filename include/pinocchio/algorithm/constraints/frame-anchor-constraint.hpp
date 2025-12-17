@@ -256,8 +256,9 @@ namespace pinocchio
     // Methods for algorithms --------
 
     /// \copydoc RootBase::set
-    ConstraintSet setImpl() const
+    ConstraintSet setImpl(const ConstraintData & cdata) const
     {
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return ConstraintSet();
     }
 

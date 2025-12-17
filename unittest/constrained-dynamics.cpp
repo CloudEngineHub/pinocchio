@@ -540,8 +540,8 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_LOCAL_6D_loop_closure_j1j2)
   // Add loop closure constraint
   RigidConstraintModel ci_closure(
     CONTACT_6D, model, LA_id, SE3::Random(), RA_id, SE3::Random(), LOCAL);
-  ci_closure.corrector.Kp = KP;
-  ci_closure.corrector.Kd = KD;
+  ci_closure.m_baumgarte_parameters.Kp = KP;
+  ci_closure.m_baumgarte_parameters.Kd = KD;
 
   constraint_models.push_back(ci_closure);
   constraint_data.push_back(RigidConstraintData(ci_closure));
@@ -1021,8 +1021,8 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_6D)
   RigidConstraintModel ci_RF(CONTACT_6D, model, RF_id, LOCAL);
   ci_RF.joint1_placement.setIdentity();
   ci_RF.joint2_placement.setIdentity();
-  ci_RF.corrector.Kp = 10.;
-  ci_RF.corrector.Kd = 2. * math::sqrt(ci_RF.corrector.Kp);
+  ci_RF.m_baumgarte_parameters.Kp = 10.;
+  ci_RF.m_baumgarte_parameters.Kd = 2. * math::sqrt(ci_RF.m_baumgarte_parameters.Kp);
   contact_models.push_back(ci_RF);
 
   PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)
@@ -1132,29 +1132,29 @@ BOOST_AUTO_TEST_CASE(test_correction_CONTACT_3D)
   RigidConstraintModel ci_RF1(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF1.joint1_placement.translation() = SE3::Vector3(0.5, 0.5, -0.5);
   ci_RF1.joint2_placement.setRandom();
-  ci_RF1.corrector.Kp = 10.;
-  ci_RF1.corrector.Kd = 2. * math::sqrt(ci_RF1.corrector.Kp);
+  ci_RF1.m_baumgarte_parameters.Kp = 10.;
+  ci_RF1.m_baumgarte_parameters.Kd = 2. * math::sqrt(ci_RF1.m_baumgarte_parameters.Kp);
   contact_models.push_back(ci_RF1);
 
   RigidConstraintModel ci_RF2(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF2.joint1_placement.translation() = SE3::Vector3(-0.5, 0.5, -0.5);
   ci_RF2.joint2_placement.setRandom();
-  ci_RF2.corrector.Kp = 10.;
-  ci_RF2.corrector.Kd = 2. * math::sqrt(ci_RF2.corrector.Kp);
+  ci_RF2.m_baumgarte_parameters.Kp = 10.;
+  ci_RF2.m_baumgarte_parameters.Kd = 2. * math::sqrt(ci_RF2.m_baumgarte_parameters.Kp);
   contact_models.push_back(ci_RF2);
 
   RigidConstraintModel ci_RF3(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF3.joint1_placement.translation() = SE3::Vector3(-0.5, -0.5, -0.5);
   ci_RF3.joint2_placement.setRandom();
-  ci_RF3.corrector.Kp = 10.;
-  ci_RF3.corrector.Kd = 2. * math::sqrt(ci_RF3.corrector.Kp);
+  ci_RF3.m_baumgarte_parameters.Kp = 10.;
+  ci_RF3.m_baumgarte_parameters.Kd = 2. * math::sqrt(ci_RF3.m_baumgarte_parameters.Kp);
   contact_models.push_back(ci_RF3);
 
   RigidConstraintModel ci_RF4(CONTACT_3D, model, RF_id, LOCAL);
   ci_RF4.joint1_placement.translation() = SE3::Vector3(0.5, -0.5, -0.5);
   ci_RF4.joint2_placement.setRandom();
-  ci_RF4.corrector.Kp = 10.;
-  ci_RF4.corrector.Kd = 2. * math::sqrt(ci_RF4.corrector.Kp);
+  ci_RF4.m_baumgarte_parameters.Kp = 10.;
+  ci_RF4.m_baumgarte_parameters.Kd = 2. * math::sqrt(ci_RF4.m_baumgarte_parameters.Kp);
   contact_models.push_back(ci_RF4);
 
   PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData)

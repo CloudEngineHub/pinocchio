@@ -9,6 +9,7 @@
 #include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
+#include "pinocchio/bindings/python/algorithm/constraints/constraint-model-inheritance.hpp"
 
 namespace pinocchio
 {
@@ -28,15 +29,22 @@ namespace pinocchio
     bp::class_<context::PointAnchorConstraintModel> &
     expose_constraint_model(bp::class_<context::PointAnchorConstraintModel> & cl)
     {
-      return cl;
+      return cl
+        .def(
+          BinaryKinematicsConstraintModelBasePythonVisitor<context::PointAnchorConstraintModel>())
+        .def(PointConstraintModelBasePythonVisitor<context::PointAnchorConstraintModel>());
     }
 
     template<>
-    bp::class_<context::PointContactModel> &
-    expose_constraint_model(bp::class_<context::PointContactModel> & cl)
+    bp::class_<context::PointContactConstraintModel> &
+    expose_constraint_model(bp::class_<context::PointContactConstraintModel> & cl)
     {
-      typedef context::PointContactModel Self;
-      return cl.def("getFriction", &Self::getFriction, "Get coulomb friction coefficient.")
+      typedef context::PointContactConstraintModel Self;
+      return cl
+        .def(
+          BinaryKinematicsConstraintModelBasePythonVisitor<context::PointContactConstraintModel>())
+        .def(PointConstraintModelBasePythonVisitor<context::PointContactConstraintModel>())
+        .def("getFriction", &Self::getFriction, "Get coulomb friction coefficient.")
         .def("setFriction", &Self::setFriction, "Set coulomb friction coefficient.");
     }
 
@@ -44,7 +52,8 @@ namespace pinocchio
     bp::class_<context::FrameAnchorConstraintModel> &
     expose_constraint_model(bp::class_<context::FrameAnchorConstraintModel> & cl)
     {
-      return cl;
+      return cl.def(
+        BinaryKinematicsConstraintModelBasePythonVisitor<context::FrameAnchorConstraintModel>());
     }
 
     template<>
@@ -58,6 +67,9 @@ namespace pinocchio
                (bp::arg("self"), bp::arg("model"), bp::arg("active_joints")),
                "Contructor from given joint index vector "
                "implied in the constraint."))
+        .def(
+          "getActiveJoints", &Self::getActiveJoints,
+          bp::return_value_policy<bp::copy_const_reference>())
         .def(
           "getActiveDofs", &Self::getActiveDofs,
           bp::return_value_policy<bp::copy_const_reference>())
@@ -91,6 +103,20 @@ namespace pinocchio
                (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints")),
                "Contructor from given joint index vector "
                "implied in the constraint."))
+        .def(bp::init<
+             const context::Model &, const JointIndexVector &, const context::VectorXs &,
+             const context::VectorXs &>(
+          (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints"), bp::arg("lb"),
+           bp::arg("ub")),
+          "Contructor from given joint index vector "
+          "implied in the constraint."))
+        .def(bp::init<
+             const context::Model &, const JointIndexVector &, const context::VectorXs &,
+             const context::VectorXs &, const context::VectorXs &>(
+          (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints"), bp::arg("lb"),
+           bp::arg("ub"), bp::arg("margin")),
+          "Contructor from given joint index vector "
+          "implied in the constraint."))
         .def(
           "getSelectedJoints", &Self::getSelectedJoints,
           bp::return_value_policy<bp::copy_const_reference>(),
@@ -112,16 +138,6 @@ namespace pinocchio
           "upperMaxResidualSize", &Self::upperMaxResidualSize,
           "Part of maxResidualSize() that are upper bound limits.")
         .def(
-          "setPositionLimitAndMargin",
-          bp::make_function(
-            +[](
-               Self & self, const context::VectorXs & lb, const context::VectorXs & ub,
-               const context::VectorXs & margin) -> void {
-              self.setPositionLimitAndMargin(lb, ub, margin);
-            }),
-          "Set position limit and margin for activable constraints from lower_bound, upper_bound "
-          "and margin of size model.nq.")
-        .def(
           "lowerResidualSize",
           bp::make_function(+[](const Self & self, const ConstraintData & cdata) -> int {
             return self.lowerResidualSize(cdata);
@@ -132,11 +148,17 @@ namespace pinocchio
           bp::make_function(+[](const Self & self, const ConstraintData & cdata) -> int {
             return self.upperResidualSize(cdata);
           }),
-          "Give the size of constraint that are upper bound in a given state.");
-      // .def(
-      //   "getActiveIdxInActivable", &Self::getActiveIdxInActivable,
-      //   bp::return_value_policy<bp::copy_const_reference>(),
-      //   "Indexes of the active constraints set.");
+          "Give the size of constraint that are upper bound in a given state.")
+        .def(
+          "setPositionLimitAndMargin",
+          bp::make_function(
+            +[](
+               Self & self, const context::VectorXs & lb, const context::VectorXs & ub,
+               const context::VectorXs & margin) -> void {
+              self.setPositionLimitAndMargin(lb, ub, margin);
+            }),
+          "Set position limit and margin for activable constraints from lower_bound, upper_bound "
+          "and margin of size model.nq.");
       return cl;
     }
   } // namespace python

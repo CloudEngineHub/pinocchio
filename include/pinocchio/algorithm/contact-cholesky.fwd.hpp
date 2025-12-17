@@ -111,9 +111,12 @@ namespace pinocchio
     /// \brief Constructor from a model.
     ///
     /// \param[in] model Model of the kinematic tree.
+    /// \param[in] data Data associated with the kinematic tree
     ///
     template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
-    explicit ContactCholeskyDecompositionTpl(const ModelTpl<S1, O1, JointCollectionTpl> & model);
+    explicit ContactCholeskyDecompositionTpl(
+      const ModelTpl<S1, O1, JointCollectionTpl> & model,
+      const DataTpl<S1, O1, JointCollectionTpl> & data);
 
     ///
     /// \brief Constructor from a model and a collection of RigidConstraintModel objects.
@@ -169,6 +172,7 @@ namespace pinocchio
       class ConstraintDataAllocator>
     PINOCCHIO_DEPRECATED void allocate(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
+      const DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
@@ -191,6 +195,7 @@ namespace pinocchio
       class ConstraintDataAllocator>
     void resize(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
+      const DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
@@ -389,8 +394,9 @@ namespace pinocchio
     /// \param[in] model Model of the dynamical system.
     ///
     template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
-    ContactCholeskyDecompositionTpl
-    getMassMatrixChoeslkyDecomposition(const ModelTpl<S1, O1, JointCollectionTpl> & model) const;
+    ContactCholeskyDecompositionTpl getMassMatrixChoeslkyDecomposition(
+      const ModelTpl<S1, O1, JointCollectionTpl> & model,
+      const DataTpl<S1, O1, JointCollectionTpl> & data) const;
 
     ///@{
     /// \brief Vectorwize operations

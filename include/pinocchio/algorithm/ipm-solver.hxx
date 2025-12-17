@@ -515,8 +515,9 @@ namespace pinocchio
       Base;
 
     template<typename Scalar, int Options>
-    static void
-    algo(const pinocchio::PointContactModelTpl<Scalar, Options> & cmodel, VectorLikeInOut & x)
+    static void algo(
+      const pinocchio::PointContactConstraintModelTpl<Scalar, Options> & cmodel,
+      VectorLikeInOut & x)
     {
       x.coeffRef(2) /= cmodel.set().mu;
     }
@@ -541,7 +542,7 @@ namespace pinocchio
       // ArgsType args(x);
       // Base::run will call `algo` (dispatch to right type)
       // Base::run(cmodel, args);
-      typedef PointContactModelTpl<Scalar, Options> ContactModel;
+      typedef PointContactConstraintModelTpl<Scalar, Options> ContactModel;
       if (const ContactModel * fpc_model = boost::get<const ContactModel>(&cmodel))
       {
         algo(*fpc_model, x);
@@ -596,8 +597,9 @@ namespace pinocchio
       Base;
 
     template<typename Scalar, int Options>
-    static void
-    algo(const pinocchio::PointContactModelTpl<Scalar, Options> & cmodel, VectorLikeInOut & x)
+    static void algo(
+      const pinocchio::PointContactConstraintModelTpl<Scalar, Options> & cmodel,
+      VectorLikeInOut & x)
     {
       x.coeffRef(2) *= cmodel.set().mu;
     }
@@ -622,7 +624,7 @@ namespace pinocchio
       // ArgsType args(x);
       // Base::run will call `algo` (dispatch to right type)
       // Base::run(cmodel, args);
-      typedef PointContactModelTpl<Scalar, Options> ContactModel;
+      typedef PointContactConstraintModelTpl<Scalar, Options> ContactModel;
       if (const ContactModel * fpc_model = boost::get<const ContactModel>(&cmodel))
       {
         algo(*fpc_model, x);
@@ -680,7 +682,7 @@ namespace pinocchio
 
     template<typename Scalar, int Options>
     static void algo(
-      const pinocchio::PointContactModelTpl<Scalar, Options> & cmodel,
+      const pinocchio::PointContactConstraintModelTpl<Scalar, Options> & cmodel,
       const ScalingMatrix & scaling_matrix,
       BarrierHessianTerm & barrier_hessian_term)
     {
@@ -712,7 +714,7 @@ namespace pinocchio
       // ArgsType args(scaling_matrix, barrier_hessian_term);
       // Base::run will call `algo` (dispatch to right type)
       // Base::run(cmodel, args);
-      typedef PointContactModelTpl<Scalar, Options> ContactModel;
+      typedef PointContactConstraintModelTpl<Scalar, Options> ContactModel;
       if (const ContactModel * fpc_model = boost::get<const ContactModel>(&cmodel))
       {
         algo(*fpc_model, scaling_matrix, barrier_hessian_term);

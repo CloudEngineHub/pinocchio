@@ -21,22 +21,9 @@ namespace pinocchio
   {
     namespace bp = boost::python;
 
-    // Default inheritance Visitor Template
-    template<class T, class TBase>
-    struct ConstraintDataInheritancePythonVisitor
-    : public bp::def_visitor<ConstraintDataInheritancePythonVisitor<T, TBase>>
-    {
-    public:
-      template<class PyClass>
-      void visit(PyClass &) const
-      {
-      }
-    };
-
-    // Specialize
     template<class T>
-    struct ConstraintDataInheritancePythonVisitor<T, FrameConstraintDataBase<T>>
-    : public bp::def_visitor<ConstraintDataInheritancePythonVisitor<T, FrameConstraintDataBase<T>>>
+    struct BinaryKinematicsConstraintDataBasePythonVisitor
+    : public bp::def_visitor<BinaryKinematicsConstraintDataBasePythonVisitor<T>>
     {
     public:
       template<class PyClass>
@@ -49,36 +36,12 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY(T, oMc1, "Placement of the constraint frame 1 wrt WORLD.")
           .PINOCCHIO_ADD_PROPERTY(T, oMc2, "Placement of the constraint frame 2 wrt WORLD.")
           .PINOCCHIO_ADD_PROPERTY(T, c1Mc2, "Placement of the constraint frame 2 wrt frame 1.")
-          .PINOCCHIO_ADD_PROPERTY(T, constraint_position_error, "Constraint placement (6D) error.")
-          .PINOCCHIO_ADD_PROPERTY(T, constraint_velocity_error, "Constraint velocity (6D) error.")
+          .PINOCCHIO_ADD_PROPERTY(T, constraint_position_error, "Constraint position error.")
+          .PINOCCHIO_ADD_PROPERTY(T, constraint_velocity_error, "Constraint velocity error.")
           .PINOCCHIO_ADD_PROPERTY(
-            T, constraint_acceleration_error, "Constraint acceleration (6D) error.")
+            T, constraint_acceleration_error, "Constraint acceleration error.")
           .PINOCCHIO_ADD_PROPERTY(
-            T, constraint_acceleration_biais_term, "Constraint acceleration (6D) term.");
-      }
-    };
-
-    template<class T>
-    struct ConstraintDataInheritancePythonVisitor<T, PointConstraintDataBase<T>>
-    : public bp::def_visitor<ConstraintDataInheritancePythonVisitor<T, PointConstraintDataBase<T>>>
-    {
-    public:
-      template<class PyClass>
-      void visit(PyClass & cl) const
-      {
-        cl.def(bp::init<>(bp::arg("self"), "Default constructor."))
-          .def(bp::init<const typename T::ConstraintModel &>(
-            bp::args("self", "constraint_model"), "From model constructor."))
-          .PINOCCHIO_ADD_PROPERTY(T, constraint_force, "Resulting force.")
-          .PINOCCHIO_ADD_PROPERTY(T, oMc1, "Placement of the constraint frame 1 wrt WORLD.")
-          .PINOCCHIO_ADD_PROPERTY(T, oMc2, "Placement of the constraint frame 2 wrt WORLD.")
-          .PINOCCHIO_ADD_PROPERTY(T, c1Mc2, "Placement of the constraint frame 2 wrt frame 1.")
-          .PINOCCHIO_ADD_PROPERTY(T, constraint_position_error, "Constraint position (3D) error.")
-          .PINOCCHIO_ADD_PROPERTY(T, constraint_velocity_error, "Constraint velocity (3D) error.")
-          .PINOCCHIO_ADD_PROPERTY(
-            T, constraint_acceleration_error, "Constraint acceleration (3D) error.")
-          .PINOCCHIO_ADD_PROPERTY(
-            T, constraint_acceleration_biais_term, "Constraint acceleration (3D) term.");
+            T, constraint_acceleration_biais_term, "Constraint acceleration term.");
       }
     };
   } // namespace python

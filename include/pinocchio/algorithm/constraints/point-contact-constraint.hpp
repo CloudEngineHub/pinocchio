@@ -14,14 +14,14 @@ namespace pinocchio
 {
 
   template<typename NewScalar, typename Scalar, int Options>
-  struct CastType<NewScalar, PointContactModelTpl<Scalar, Options>>
+  struct CastType<NewScalar, PointContactConstraintModelTpl<Scalar, Options>>
   {
-    typedef PointContactModelTpl<NewScalar, Options> type;
+    typedef PointContactConstraintModelTpl<NewScalar, Options> type;
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<PointContactModelTpl<_Scalar, _Options>>
-  : traits<PointConstraintModelBase<PointContactModelTpl<_Scalar, _Options>>>
+  struct traits<PointContactConstraintModelTpl<_Scalar, _Options>>
+  : traits<PointConstraintModelBase<PointContactConstraintModelTpl<_Scalar, _Options>>>
   {
     typedef _Scalar Scalar;
 
@@ -34,8 +34,8 @@ namespace pinocchio
     // --------------------------------------------------------------
     // Traits referencing the constraint and associated types
     // --------------------------------------------------------------
-    typedef PointContactModelTpl<Scalar, Options> ConstraintModel;
-    typedef PointContactDataTpl<Scalar, Options> ConstraintData;
+    typedef PointContactConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef PointContactConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef CoulombFrictionConeTpl<Scalar> ConstraintSet;
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
@@ -58,8 +58,8 @@ namespace pinocchio
   };
 
   template<typename _Scalar, int _Options>
-  struct traits<PointContactDataTpl<_Scalar, _Options>>
-  : traits<PointContactModelTpl<_Scalar, _Options>>
+  struct traits<PointContactConstraintDataTpl<_Scalar, _Options>>
+  : traits<PointContactConstraintModelTpl<_Scalar, _Options>>
   {
   };
 
@@ -67,7 +67,8 @@ namespace pinocchio
   /// \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
-  struct PointContactModelTpl : PointConstraintModelBase<PointContactModelTpl<_Scalar, _Options>>
+  struct PointContactConstraintModelTpl
+  : PointConstraintModelBase<PointContactConstraintModelTpl<_Scalar, _Options>>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -77,13 +78,13 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef PointConstraintModelBase<PointContactModelTpl> Base;
-    typedef ConstraintModelBase<PointContactModelTpl> RootBase;
+    typedef PointConstraintModelBase<PointContactConstraintModelTpl> Base;
+    typedef ConstraintModelBase<PointContactConstraintModelTpl> RootBase;
 
     template<typename NewScalar, int NewOptions>
-    friend struct PointContactModelTpl;
+    friend struct PointContactConstraintModelTpl;
 
-    typedef PointContactDataTpl<Scalar, Options> ConstraintData;
+    typedef PointContactConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef CoulombFrictionConeTpl<Scalar> ConstraintSet;
 
     using typename Base::SE3;
@@ -113,7 +114,7 @@ namespace pinocchio
     ///
     /// \brief Default constructor
     ///
-    PointContactModelTpl()
+    PointContactConstraintModelTpl()
     : Base()
     {
     }
@@ -130,7 +131,7 @@ namespace pinocchio
     /// expressed.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    PointContactModelTpl(
+    PointContactConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement,
@@ -149,7 +150,7 @@ namespace pinocchio
     /// expressed.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    PointContactModelTpl(
+    PointContactConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const SE3 & joint1_placement)
@@ -165,7 +166,7 @@ namespace pinocchio
     /// \param[in] joint2_id Index of the joint 2 in the model tree.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    PointContactModelTpl(
+    PointContactConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndex joint1_id,
       const JointIndex joint2_id)
@@ -183,7 +184,7 @@ namespace pinocchio
     /// universe).
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    PointContactModelTpl(
+    PointContactConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
     : Base(model, joint1_id)
     {
@@ -193,9 +194,9 @@ namespace pinocchio
 
     /// \brief Cast operator
     template<typename NewScalar>
-    typename CastType<NewScalar, PointContactModelTpl>::type cast() const
+    typename CastType<NewScalar, PointContactConstraintModelTpl>::type cast() const
     {
-      typedef typename CastType<NewScalar, PointContactModelTpl>::type ReturnType;
+      typedef typename CastType<NewScalar, PointContactConstraintModelTpl>::type ReturnType;
       ReturnType res;
       Base::template cast<NewScalar>(res);
       return res;
@@ -204,12 +205,12 @@ namespace pinocchio
     ///
     /// \brief Comparison operator
     ///
-    /// \param[in] other Other PointContactModelTpl to compare with.
+    /// \param[in] other Other PointContactConstraintModelTpl to compare with.
     ///
     /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
     /// must be the same).
     ///
-    bool operator==(const PointContactModelTpl & other) const
+    bool operator==(const PointContactConstraintModelTpl & other) const
     {
       return base() == other.base();
     }
@@ -217,12 +218,12 @@ namespace pinocchio
     ///
     /// \brief Oposite of the comparison operator.
     ///
-    /// \param[in] other Other PointContactModelTpl to compare with.
+    /// \param[in] other Other PointContactConstraintModelTpl to compare with.
     ///
     /// \returns false if the two *this is not equal to other (at least type, joint1_id or placement
     /// attributs is different).
     ///
-    bool operator!=(const PointContactModelTpl & other) const
+    bool operator!=(const PointContactConstraintModelTpl & other) const
     {
       return !(*this == other);
     }
@@ -252,7 +253,7 @@ namespace pinocchio
     /// \copydoc RootBase::classname
     static std::string classnameImpl()
     {
-      return std::string("PointContactModel");
+      return std::string("PointContactConstraintModel");
     }
 
     /// \copydoc RootBase::shortname
@@ -270,21 +271,23 @@ namespace pinocchio
     // Methods for algorithms --------
 
     /// \copydoc RootBase::set
-    ConstraintSet setImpl() const
+    ConstraintSet setImpl(const ConstraintData & cdata) const
     {
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
       return ConstraintSet(m_friction);
     }
 
   protected:
     Scalar m_friction = Scalar(0.5);
 
-  }; // struct PointContactModelTpl<_Scalar,_Options>
+  }; // struct PointContactConstraintModelTpl<_Scalar,_Options>
 
   ///
   /// \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
-  struct PointContactDataTpl : PointConstraintDataBase<PointContactDataTpl<_Scalar, _Options>>
+  struct PointContactConstraintDataTpl
+  : PointConstraintDataBase<PointContactConstraintDataTpl<_Scalar, _Options>>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -294,9 +297,9 @@ namespace pinocchio
       Options = _Options
     };
 
-    typedef PointContactModelTpl<Scalar, Options> ConstraintModel;
-    typedef PointContactDataTpl ConstraintData;
-    typedef PointConstraintDataBase<PointContactDataTpl> Base;
+    typedef PointContactConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef PointContactConstraintDataTpl ConstraintData;
+    typedef PointConstraintDataBase<PointContactConstraintDataTpl> Base;
 
     using typename Base::SE3;
 
@@ -323,12 +326,12 @@ namespace pinocchio
     // Constructors ------------------
 
     /// \brief Default constructor
-    PointContactDataTpl()
+    PointContactConstraintDataTpl()
     {
     }
 
     /// \brief Constructor from a constraint_model
-    explicit PointContactDataTpl(const ConstraintModel & constraint_model)
+    explicit PointContactConstraintDataTpl(const ConstraintModel & constraint_model)
     : Base(constraint_model)
     {
     }
@@ -336,13 +339,13 @@ namespace pinocchio
     // Operators ---------------------
 
     /// \brief Comparison operator
-    bool operator==(const PointContactDataTpl & other) const
+    bool operator==(const PointContactConstraintDataTpl & other) const
     {
       return base() == other.base();
     }
 
     /// \brief Comparison operator
-    bool operator!=(const PointContactDataTpl & other) const
+    bool operator!=(const PointContactConstraintDataTpl & other) const
     {
       return !(*this == other);
     }
@@ -354,7 +357,7 @@ namespace pinocchio
     /// \copydoc Base::classname
     static std::string classnameImpl()
     {
-      return std::string("PointContactData");
+      return std::string("PointContactConstraintData");
     }
 
     /// \copydoc Base::shortname
@@ -362,7 +365,7 @@ namespace pinocchio
     {
       return classname();
     }
-  }; // struct PointContactDataTpl<_Scalar,_Options>
+  }; // struct PointContactConstraintDataTpl<_Scalar,_Options>
 
 } // namespace pinocchio
 

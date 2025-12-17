@@ -20,6 +20,10 @@ namespace pinocchio
   namespace internal
   {
 
+    // -----------------------------------------
+    // VISITORS DISPATCHING ON THE SET ---------
+    // -----------------------------------------
+
     template<typename ForceVectorLike, typename ResultVectorLike>
     struct ProjectionVisitor
     : visitors::ConstraintUnaryVisitorBase<ProjectionVisitor<ForceVectorLike, ResultVectorLike>>
@@ -34,12 +38,11 @@ namespace pinocchio
       template<typename ConstraintModel>
       static void algo(
         const ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const ForceVectorLike & force,
         ResultVectorLike & result)
       {
-        cmodel.set().project(force, result);
-        // result = cmodel.set().project(force);
-        //        assert(set.dual().isInside(result, Scalar(1e-12)));
+        cmodel.set(cdata).project(force, result);
       }
 
       using Base::run;
@@ -47,10 +50,11 @@ namespace pinocchio
       template<typename ConstraintModel>
       static void run(
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const ForceVectorLike & force,
         ResultVectorLike & result)
       {
-        algo(cmodel.derived(), force, result);
+        algo(cmodel.derived(), cdata.derived(), force, result);
       }
 
       template<
@@ -59,13 +63,12 @@ namespace pinocchio
         template<typename S, int O> class ConstraintCollectionTpl>
       static void run(
         const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+        const pinocchio::ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
         const ForceVectorLike & force,
         ResultVectorLike & result)
       {
-        //        typedef boost::fusion::vector<const ForceVectorLike &> ArgsType1;
-        //        ArgsType args(force.derived(), result.const_cast_derived());
         ArgsType args(force, result); //, result.const_cast_derived());
-        run(cmodel, args);
+        run(cmodel, cdata, args);
       }
     };
 
@@ -100,7 +103,7 @@ namespace pinocchio
         SegmentType2 res = x_proj.segment(index, csize);
 
         typedef ProjectionVisitor<SegmentType1, SegmentType2> Algo;
-        Algo::run(cmodel, force_segment, res);
+        Algo::run(cmodel, cdata, force_segment, res);
 
         index += csize;
       }
@@ -123,12 +126,12 @@ namespace pinocchio
       template<typename ConstraintModel>
       static void algo(
         const ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const ForceVectorLike & force,
         const ScaleVectorLike & scale,
         ResultVectorLike & result)
       {
-        cmodel.set().scaledProject(force, scale, result);
-        //        assert(set.dual().isInside(result, Scalar(1e-12)));
+        cmodel.set(cdata).scaledProject(force, scale, result);
       }
 
       using Base::run;
@@ -136,11 +139,12 @@ namespace pinocchio
       template<typename ConstraintModel>
       static void run(
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const ForceVectorLike & force,
         const ScaleVectorLike & scale,
         ResultVectorLike & result)
       {
-        algo(cmodel.derived(), force, scale, result);
+        algo(cmodel.derived(), cdata.derived(), force, scale, result);
       }
 
       template<
@@ -149,6 +153,7 @@ namespace pinocchio
         template<typename S, int O> class ConstraintCollectionTpl>
       static void run(
         const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+        const pinocchio::ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
         const ForceVectorLike & force,
         const ScaleVectorLike & scale,
         ResultVectorLike & result)
@@ -156,7 +161,7 @@ namespace pinocchio
         //        typedef boost::fusion::vector<const ForceVectorLike &> ArgsType1;
         //        ArgsType args(force.derived(), result.const_cast_derived());
         ArgsType args(force, scale, result); //, result.const_cast_derived());
-        run(cmodel, args);
+        run(cmodel, cdata, args);
       }
     };
 
@@ -195,7 +200,7 @@ namespace pinocchio
         SegmentType3 res = x_proj.segment(index, csize);
 
         typedef ScaledProjectionVisitor<SegmentType1, SegmentType2, SegmentType3> Algo;
-        Algo::run(cmodel, force_segment, scale_segment, res);
+        Algo::run(cmodel, cdata, force_segment, scale_segment, res);
 
         index += csize;
       }
@@ -216,10 +221,11 @@ namespace pinocchio
       template<typename ConstraintModel>
       static void algo(
         const ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const VelocityVectorLike & velocity,
         ResultVectorLike & result)
       {
-        algo_step(cmodel.set(), velocity, result);
+        algo_step(cmodel.set(cdata), velocity, result);
       }
 
       template<typename Vector1Like, typename Vector2Like>
@@ -268,10 +274,11 @@ namespace pinocchio
       template<typename ConstraintModel>
       static void run(
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const VelocityVectorLike & velocity,
         ResultVectorLike & result)
       {
-        algo(cmodel.derived(), velocity, result);
+        algo(cmodel.derived(), cdata.derived(), velocity, result);
       }
 
       template<
@@ -280,11 +287,12 @@ namespace pinocchio
         template<typename S, int O> class ConstraintCollectionTpl>
       static void run(
         const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+        const pinocchio::ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
         const VelocityVectorLike & velocity,
         ResultVectorLike & result)
       {
         ArgsType args(velocity, result);
-        run(cmodel.derived(), args);
+        run(cmodel.derived(), cdata.derived(), args);
       }
     }; // struct DualProjectionVisitor
 
@@ -319,7 +327,7 @@ namespace pinocchio
         SegmentType2 res_segment = x_proj.segment(index, csize);
 
         typedef DualProjectionVisitor<SegmentType1, SegmentType2> Algo;
-        Algo::run(cmodel, velocity_segment, res_segment);
+        Algo::run(cmodel, cdata, velocity_segment, res_segment);
         index += csize;
       }
     }
@@ -341,10 +349,11 @@ namespace pinocchio
       template<typename ConstraintModel>
       static Scalar algo(
         const ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const VelocityVectorLike & velocity,
         const ForceVectorLike & force)
       {
-        return algo_step(cmodel.set(), velocity, force);
+        return algo_step(cmodel.set(cdata), velocity, force);
       }
 
       template<typename Vector1Like, typename Vector2Like>
@@ -417,20 +426,22 @@ namespace pinocchio
       template<typename ConstraintModel>
       static Scalar run(
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const VelocityVectorLike & velocity,
         const ForceVectorLike & force)
       {
-        return algo(cmodel.derived(), velocity, force);
+        return algo(cmodel.derived(), cdata.derived(), velocity, force);
       }
 
       template<int Options, template<typename S, int O> class ConstraintCollectionTpl>
       static Scalar run(
         const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+        const pinocchio::ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
         const VelocityVectorLike & velocity,
         const ForceVectorLike & force)
       {
         ArgsType args(velocity, force);
-        return run(cmodel.derived(), args);
+        return run(cmodel.derived(), cdata.derived(), args);
       }
     }; // struct ComplementarityVisitor
 
@@ -467,12 +478,56 @@ namespace pinocchio
 
         typedef ComplementarityVisitor<Scalar, SegmentType1, SegmentType2> Algo;
         const Scalar constraint_complementarity =
-          Algo::run(cmodel, velocity_segment, force_segment);
+          Algo::run(cmodel, cdata, velocity_segment, force_segment);
 
         complementarity = math::max(complementarity, constraint_complementarity);
         index += csize;
       }
     }
+
+    // -----------------------------------------
+    // VISITORS DISPATCHING ON THE CONSTRAINT --
+    // -----------------------------------------
+
+    // Default Implementation
+    template<typename ConstraintModelDerived>
+    struct DeSaxeCorrectionImpl
+    {
+      typedef ConstraintModelBase<ConstraintModelDerived> ConstraintModel;
+      typedef typename ConstraintModel::ConstraintData ConstraintDataDerived;
+
+      template<typename VelocityVectorLike, typename ResultVectorLike>
+      static void run(
+        const ConstraintModel & cmodel,
+        const ConstraintDataDerived & cdata,
+        const VelocityVectorLike & velocity,
+        ResultVectorLike & result)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(cmodel);
+        PINOCCHIO_UNUSED_VARIABLE(cdata);
+        PINOCCHIO_UNUSED_VARIABLE(velocity);
+        result.setZero();
+      }
+    };
+
+    // Specialization for PointContact
+    template<typename _Scalar, int _Options>
+    struct DeSaxeCorrectionImpl<PointContactConstraintModelTpl<_Scalar, _Options>>
+    {
+      typedef ConstraintModelBase<PointContactConstraintModelTpl<_Scalar, _Options>>
+        ConstraintModel;
+      typedef typename ConstraintModel::ConstraintData ConstraintDataDerived;
+
+      template<typename VelocityVectorLike, typename ResultVectorLike>
+      static void run(
+        const ConstraintModel & cmodel,
+        const ConstraintDataDerived & cdata,
+        const VelocityVectorLike & velocity,
+        ResultVectorLike & result)
+      {
+        result = cmodel.set(cdata).computeNormalCorrection(velocity);
+      }
+    };
 
     template<typename VelocityVectorLike, typename ResultVectorLike>
     struct DeSaxeCorrectionVisitor
@@ -490,39 +545,22 @@ namespace pinocchio
       template<typename ConstraintModel>
       static void algo(
         const ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const VelocityVectorLike & velocity,
         ResultVectorLike & result)
       {
-        return algo_step(cmodel.set(), velocity, result);
-      }
-
-      template<typename Vector1Like, typename Vector2Like>
-      static void algo_step(
-        const CoulombFrictionConeTpl<double> & set,
-        const Eigen::MatrixBase<Vector1Like> & velocity,
-        const Eigen::MatrixBase<Vector2Like> & result)
-      {
-        result.const_cast_derived() = set.computeNormalCorrection(velocity);
-      }
-
-      template<typename ConstraintSet, typename Vector1Like, typename Vector2Like>
-      static void algo_step(
-        const ConstraintSet & set,
-        const Eigen::MatrixBase<Vector1Like> & velocity,
-        const Eigen::MatrixBase<Vector2Like> & result)
-      {
-        PINOCCHIO_UNUSED_VARIABLE(set);
-        PINOCCHIO_UNUSED_VARIABLE(velocity);
-        result.const_cast_derived().setZero();
+        typedef DeSaxeCorrectionImpl<ConstraintModel> Impl;
+        return Impl::run(cmodel.derived(), cdata.derived(), velocity, result);
       }
 
       template<typename ConstraintModel>
       static void run(
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
         const VelocityVectorLike & velocity,
         ResultVectorLike & result)
       {
-        algo(cmodel.derived(), velocity, result);
+        algo(cmodel.derived(), cdata.derived(), velocity, result);
       }
 
       template<
@@ -531,11 +569,12 @@ namespace pinocchio
         template<typename S, int O> class ConstraintCollectionTpl>
       static void run(
         const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+        const pinocchio::ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
         const VelocityVectorLike & velocity,
         ResultVectorLike & result)
       {
         ArgsType args(velocity, result);
-        run(cmodel.derived(), args);
+        run(cmodel.derived(), cdata.derived(), args);
       }
     }; // struct DeSaxeCorrectionVisitor
 
@@ -569,83 +608,11 @@ namespace pinocchio
         SegmentType2 result_segment = correction.segment(index, csize);
         typedef DeSaxeCorrectionVisitor<SegmentType1, SegmentType2> Step;
 
-        Step::run(cmodel, velocity_segment, result_segment);
+        Step::run(cmodel, cdata, velocity_segment, result_segment);
 
         index += csize;
       }
     }
-
-    template<typename ConstraintSet, typename ConstraintAllocator, typename VectorLikeIn>
-    typename ConstraintSet::Scalar computePrimalFeasibility(
-      const std::vector<ConstraintSet, ConstraintAllocator> & sets,
-      const Eigen::DenseBase<VectorLikeIn> & forces)
-    {
-      typedef typename ConstraintSet::Vector3 Vector3;
-      typedef typename ConstraintSet::Scalar Scalar;
-
-      Eigen::Index index = 0;
-      Scalar norm(0);
-      for (const auto & set : sets)
-      {
-        const auto size = set.size();
-        Vector3 df_projected =
-          set.project(forces.segment(index, size)) - forces.segment(index, size);
-        norm = math::max(norm, df_projected.norm());
-        index += size;
-      }
-
-      return norm;
-    }
-
-    template<
-      typename ConstraintSet,
-      typename ConstraintAllocator,
-      typename ForceVector,
-      typename VelocityVector>
-    typename ConstraintSet::Scalar computeReprojectionError(
-      const std::vector<ConstraintSet, ConstraintAllocator> & sets,
-      const Eigen::DenseBase<ForceVector> & forces,
-      const Eigen::DenseBase<VelocityVector> & velocities)
-    {
-      typedef typename ConstraintSet::Vector3 Vector3;
-      typedef typename ConstraintSet::Scalar Scalar;
-
-      Eigen::Index index = 0;
-      Scalar norm(0);
-      for (const auto & set : sets)
-      {
-        const auto size = set.size();
-        const Vector3 df_projected =
-          forces.segment(index, size)
-          - set.project(forces.segment(index, size) - velocities.segment(index, size));
-        norm = math::max(norm, df_projected.norm());
-        index += size;
-      }
-
-      return norm;
-    }
-
-    // template<typename Scalar, typename ConstraintAllocator, typename VectorLikeIn>
-    // Scalar computeDualFeasibility(DelassusOperatorBase<DelassusDerived> & delassus,
-    //                               const Eigen::MatrixBase<VectorLike> & g,
-    //                               const
-    //                               std::vector<CoulombFrictionConeTpl<Scalar>,ConstraintAllocator>
-    //                               & cones, const Eigen::DenseBase<VectorLikeIn> & forces)
-    //{
-    //   typedef CoulombFrictionConeTpl<Scalar> Cone;
-    //   typedef typename Cone::Vector3 Vector3;
-    //
-    //   Eigen::Index index = 0;
-    //   Scalar norm = 0;
-    //   for(const auto & cone: cones)
-    //   {
-    //     const Vector3 df_projected = cone.project(forces.template segment<3>(index)) -
-    //     forces.template segment<3>(index); norm = math::max(complementarity,
-    //     df_projected.norm()); index += 3;
-    //   }
-    //
-    //   return norm;
-    // }
 
     template<typename Scalar, typename ResultVectorLike>
     struct GetTimeScalingFromConstraint

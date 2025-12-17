@@ -60,8 +60,8 @@ namespace pinocchio
       void visit(PyClass & cl) const
       {
         cl.def(bp::init<>(bp::arg("self"), "Default constructor."))
-          .def(bp::init<const Model &>(
-            bp::args("self", "model"),
+          .def(bp::init<const Model &, const Data &>(
+            bp::args("self", "model", "data"),
             "Constructor from a model.")[mimic_not_supported_function<>(1)])
           .def(bp::init<
                const Model &, const Data &, const RigidConstraintModelVector &,
@@ -109,18 +109,18 @@ namespace pinocchio
           .def(
             "resize",
             (void (*)(
-              Self & self, const Model &, const RigidConstraintModelVector &,
+              Self & self, const Model &, const Data &, const RigidConstraintModelVector &,
               const RigidConstraintDataVector &))&resize,
-            (bp::arg("self"), bp::arg("model"), bp::arg("constraint_models"),
+            (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
              bp::arg("constraint_datas")),
             "Resizes the Cholesky decompostion according to the input constraint models")
 
           .def(
             "resize",
             (void (*)(
-              Self & self, const Model &, const ConstraintModelVector &,
+              Self & self, const Model &, const Data &, const ConstraintModelVector &,
               const ConstraintDataVector &))&resize,
-            (bp::arg("self"), bp::arg("model"), bp::arg("constraint_models"),
+            (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
              bp::arg("constraint_datas")),
             "Resizes the Cholesky decompostion according to the input constraint models")
 
@@ -332,10 +332,11 @@ namespace pinocchio
       static void resize(
         Self & self,
         const Model & model,
+        const Data & data,
         const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
         const std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas)
       {
-        self.resize(model, contact_models, contact_datas);
+        self.resize(model, data, contact_models, contact_datas);
       }
 
       template<

@@ -76,7 +76,7 @@ namespace pinocchio
   /// \brief Contact model structure containg all the info describing the rigid contact model
   ///
   template<typename Derived>
-  struct PointConstraintModelBase : BinaryKinematicsConstraintBase<Derived>
+  struct PointConstraintModelBase : BinaryKinematicsConstraintModelBase<Derived>
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -86,7 +86,7 @@ namespace pinocchio
       Options = traits<Derived>::Options
     };
 
-    typedef BinaryKinematicsConstraintBase<Derived> Base;
+    typedef BinaryKinematicsConstraintModelBase<Derived> Base;
     typedef typename Base::BaseCommonParameters BaseCommonParameters;
     typedef ConstraintModelBase<Derived> RootBase;
 
@@ -106,6 +106,8 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Vector3 VectorConstraintSize;
 
+    using Base::getA1;
+    using Base::getA2;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
     using RootBase::residualSize;
@@ -174,12 +176,27 @@ namespace pinocchio
     }
 
     ///
+    /// \brief Contructor with from a given type and .
+    ///
+    /// \param[in] type Type of the contact.
+    /// \param[in] joint1_id Index of the joint 1 in the model tree.
+    ///
+    /// \remarks The second joint id (joint2_id) is set to be 0 (corresponding to the index of the
+    /// universe).
+    ///
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    PointConstraintModelBase(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
+    : Base(model, joint1_id)
+    {
+    }
+
+    ///
     /// \brief Contructor with from a given type, joint1_id and placement.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     /// \param[in] joint1_placement Placement of the constraint w.r.t the frame of joint1.
-    /// \param[in] reference_frame Reference frame in which the constraints quantities are
     /// expressed.
     ///
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
@@ -204,22 +221,6 @@ namespace pinocchio
       const JointIndex joint1_id,
       const JointIndex joint2_id)
     : Base(model, joint1_id, joint2_id)
-    {
-    }
-
-    ///
-    /// \brief Contructor with from a given type and .
-    ///
-    /// \param[in] type Type of the contact.
-    /// \param[in] joint1_id Index of the joint 1 in the model tree.
-    ///
-    /// \remarks The second joint id (joint2_id) is set to be 0 (corresponding to the index of the
-    /// universe).
-    ///
-    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    PointConstraintModelBase(
-      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model, const JointIndex joint1_id)
-    : Base(model, joint1_id)
     {
     }
 
@@ -259,114 +260,6 @@ namespace pinocchio
     }
 
     // Methods for rigid body --------
-
-    /// \brief Returns the constraint projector associated with joint 1.
-    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
-    /// the constraint associated with joint 1.
-    template<ReferenceFrame rf>
-    Matrix36 getA1(const ConstraintData & cdata, ReferenceFrameTag<rf>) const
-    {
-      Matrix36 res;
-
-      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
-      {
-#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
-  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
-  res.col(axis_id).noalias() = oM1.rotation().transpose() * v_tmp;
-
-        const SE3 & oM1 = cdata.oMc1;
-        Vector3 v_tmp;
-        res.template leftCols<3>() = -oM1.rotation().transpose();
-        INTERNAL_LOOP(0, -oM1.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(1, -oM1.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(2, -oM1.translation(), res.template rightCols<3>());
-
-        for (int i = 0; i < 3; ++i)
-        {
-          res.template rightCols<3>().col(i) +=
-            cdata.constraint_position_error.cross(oM1.rotation().transpose().col(i));
-        }
-
-#undef INTERNAL_LOOP
-      }
-      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
-      {
-#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
-  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
-  res.col(axis_id).noalias() = iM1.rotation().transpose() * v_tmp;
-
-        const SE3 & iM1 = this->joint1_placement;
-        Vector3 v_tmp;
-        res.template leftCols<3>() = -iM1.rotation().transpose();
-        INTERNAL_LOOP(0, -iM1.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(1, -iM1.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(2, -iM1.translation(), res.template rightCols<3>());
-
-        for (int i = 0; i < 3; ++i)
-        {
-          res.template rightCols<3>().col(i) +=
-            cdata.constraint_position_error.cross(iM1.rotation().transpose().col(i));
-        }
-      }
-      else
-      {
-        assert(false && "Should never happened");
-      }
-
-#undef INTERNAL_LOOP
-
-      return res;
-    }
-
-    /// \brief Returns the constraint projector associated with joint 2.
-    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
-    /// the constraint associated with joint 2.
-    template<ReferenceFrame rf>
-    Matrix36 getA2(const ConstraintData & cdata, ReferenceFrameTag<rf>) const
-    {
-      Matrix36 res;
-      typedef typename SE3::Vector3 Vector3;
-
-      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
-      {
-#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
-  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
-  res.col(axis_id).noalias() = oM1.rotation().transpose() * v_tmp;
-
-        const SE3 & oM1 = cdata.oMc1;
-        const SE3 & oM2 = cdata.oMc2;
-        res.template leftCols<3>() = oM1.rotation().transpose();
-        Vector3 v_tmp;
-        INTERNAL_LOOP(0, oM2.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(1, oM2.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(2, oM2.translation(), res.template rightCols<3>());
-
-#undef INTERNAL_LOOP
-      }
-      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
-      {
-        const SE3 & j2Mc2 = this->joint2_placement;
-        const SE3 & c1Mc2 = cdata.c1Mc2;
-        const typename SE3::Matrix3 c1Rj2 = c1Mc2.rotation() * j2Mc2.rotation().transpose();
-        res.template leftCols<3>() = c1Rj2;
-        Vector3 v_tmp;
-#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
-  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
-  res.col(axis_id).noalias() = c1Rj2 * v_tmp;
-
-        INTERNAL_LOOP(0, j2Mc2.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(1, j2Mc2.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(2, j2Mc2.translation(), res.template rightCols<3>());
-
-#undef INTERNAL_LOOP
-      }
-      else
-      {
-        assert(false && "Should never happened");
-      }
-
-      return res;
-    }
 
     ///
     /// \brief This function computes the spatial inertia associated with the constraint.
@@ -846,6 +739,110 @@ namespace pinocchio
           data.joint_cross_coupling.get({this->joint2_id, this->joint1_id}) += I12.transpose();
         }
       }
+    }
+
+    /// \copydoc Base::getA1
+    template<ReferenceFrame rf>
+    Matrix36 getA1Impl(const ConstraintData & cdata, ReferenceFrameTag<rf>) const
+    {
+      Matrix36 res;
+
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      {
+#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
+  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
+  res.col(axis_id).noalias() = oM1.rotation().transpose() * v_tmp;
+
+        const SE3 & oM1 = cdata.oMc1;
+        Vector3 v_tmp;
+        res.template leftCols<3>() = -oM1.rotation().transpose();
+        INTERNAL_LOOP(0, -oM1.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(1, -oM1.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(2, -oM1.translation(), res.template rightCols<3>());
+
+        for (int i = 0; i < 3; ++i)
+        {
+          res.template rightCols<3>().col(i) +=
+            cdata.constraint_position_error.cross(oM1.rotation().transpose().col(i));
+        }
+
+#undef INTERNAL_LOOP
+      }
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      {
+#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
+  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
+  res.col(axis_id).noalias() = iM1.rotation().transpose() * v_tmp;
+
+        const SE3 & iM1 = this->joint1_placement;
+        Vector3 v_tmp;
+        res.template leftCols<3>() = -iM1.rotation().transpose();
+        INTERNAL_LOOP(0, -iM1.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(1, -iM1.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(2, -iM1.translation(), res.template rightCols<3>());
+
+        for (int i = 0; i < 3; ++i)
+        {
+          res.template rightCols<3>().col(i) +=
+            cdata.constraint_position_error.cross(iM1.rotation().transpose().col(i));
+        }
+      }
+      else
+      {
+        assert(false && "Should never happened");
+      }
+
+#undef INTERNAL_LOOP
+
+      return res;
+    }
+
+    /// \copydoc Base::getA2
+    template<ReferenceFrame rf>
+    Matrix36 getA2Impl(const ConstraintData & cdata, ReferenceFrameTag<rf>) const
+    {
+      Matrix36 res;
+      typedef typename SE3::Vector3 Vector3;
+
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      {
+#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
+  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
+  res.col(axis_id).noalias() = oM1.rotation().transpose() * v_tmp;
+
+        const SE3 & oM1 = cdata.oMc1;
+        const SE3 & oM2 = cdata.oMc2;
+        res.template leftCols<3>() = oM1.rotation().transpose();
+        Vector3 v_tmp;
+        INTERNAL_LOOP(0, oM2.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(1, oM2.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(2, oM2.translation(), res.template rightCols<3>());
+
+#undef INTERNAL_LOOP
+      }
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      {
+        const SE3 & j2Mc2 = this->joint2_placement;
+        const SE3 & c1Mc2 = cdata.c1Mc2;
+        const typename SE3::Matrix3 c1Rj2 = c1Mc2.rotation() * j2Mc2.rotation().transpose();
+        res.template leftCols<3>() = c1Rj2;
+        Vector3 v_tmp;
+#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
+  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
+  res.col(axis_id).noalias() = c1Rj2 * v_tmp;
+
+        INTERNAL_LOOP(0, j2Mc2.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(1, j2Mc2.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(2, j2Mc2.translation(), res.template rightCols<3>());
+
+#undef INTERNAL_LOOP
+      }
+      else
+      {
+        assert(false && "Should never happened");
+      }
+
+      return res;
     }
   }; // PointConstraintModelBase<Derived>
 

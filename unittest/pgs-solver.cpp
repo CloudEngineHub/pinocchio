@@ -61,7 +61,7 @@ struct TestBoxTpl
     // cholesky of the Delassus matrix
     crba(model, data, q0, Convention::WORLD);
     ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-    chol.resize(model, constraint_models, constraint_datas);
+    chol.resize(model, data, constraint_models, constraint_datas);
     chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
     const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix();
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(ball)
 
   const double dt = 1e-3;
 
-  typedef PointContactModel ConstraintModel;
+  typedef PointContactConstraintModel ConstraintModel;
   typedef TestBoxTpl<ConstraintModel> TestBox;
   std::vector<ConstraintModel> constraint_models;
 
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(ball)
 void buildStackOfCubesModel(
   std::vector<double> masses,
   ::pinocchio::Model & model,
-  std::vector<PointContactModel> & constraint_models)
+  std::vector<PointContactConstraintModel> & constraint_models)
 {
   const SE3::Vector3 box_dims = SE3::Vector3::Ones();
   const int n_cubes = (int)masses.size();
@@ -213,7 +213,7 @@ void buildStackOfCubesModel(
         SE3::Matrix3::Identity(), rot * local_placement_box_1.translation());
       const SE3 local_placement_2(
         SE3::Matrix3::Identity(), rot * local_placement_box_2.translation());
-      PointContactModel cm(
+      PointContactConstraintModel cm(
         model, (JointIndex)i, local_placement_1, (JointIndex)i + 1, local_placement_2);
       cm.setFriction(friction_value);
       constraint_models.push_back(cm);
@@ -239,7 +239,7 @@ Eigen::Vector3d computeFtotOfFirstBoxInStackOfBoxes(const Eigen::VectorXd & cont
 BOOST_AUTO_TEST_CASE(box)
 {
   Model model;
-  typedef PointContactModel ConstraintModel;
+  typedef PointContactConstraintModel ConstraintModel;
   typedef TestBoxTpl<ConstraintModel> TestBox;
   std::vector<ConstraintModel> constraint_models;
   const double box_mass = 1;
@@ -338,7 +338,7 @@ BOOST_AUTO_TEST_CASE(stack_of_boxes)
   }
 
   Model model;
-  typedef PointContactModel ConstraintModel;
+  typedef PointContactConstraintModel ConstraintModel;
   typedef TestBoxTpl<ConstraintModel> TestBox;
   std::vector<ConstraintModel> constraint_models;
 
@@ -495,7 +495,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   constraint_models[0].setFrictionLowerLimit(Eigen::VectorXd::Constant(6, -1.));
   constraint_models[0].setFrictionUpperLimit(Eigen::VectorXd::Constant(6, +1.));
-  const auto box_set = constraint_models[0].set();
+  const auto box_set = constraint_models[0].set(constraint_datas[0]);
 
   const Eigen::VectorXd v_free = v0 + dt * aba(model, data, q0, v0, tau0, Convention::WORLD);
 
@@ -504,7 +504,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   data.q_in = q0;
   calc(model, data, constraint_models, constraint_datas);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -625,7 +625,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -763,7 +763,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -906,7 +906,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -1040,7 +1040,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -1170,7 +1170,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -1302,7 +1302,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, constraint_models, constraint_datas);
+  chol.resize(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();

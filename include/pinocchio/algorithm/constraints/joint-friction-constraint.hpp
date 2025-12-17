@@ -334,29 +334,43 @@ namespace pinocchio
 
     // Methods for algorithms --------
 
+    /// \copydoc RootBase::set
+    ConstraintSet setImpl(const ConstraintData & cdata) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+      return ConstraintSet(m_friction_lower_limit, m_friction_upper_limit);
+    }
+
     /// \copydoc RootBase::getRowSparsityPattern
-    const BooleanVector &
-    getRowSparsityPatternImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
+    template<template<typename, int> class JointCollectionTpl>
+    const BooleanVector & getRowSparsityPatternImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
 
       return row_sparsity_pattern[size_t(row_id)];
     }
 
     /// \copydoc RootBase::getRowIndexes
-    const EigenIndexVector &
-    getRowIndexesImpl(const ConstraintData & cdata, const Eigen::Index row_id) const
+    template<template<typename, int> class JointCollectionTpl>
+    const EigenIndexVector & getRowIndexesImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return row_active_indexes[size_t(row_id)];
-    }
 
-    /// \copydoc RootBase::set
-    ConstraintSet setImpl() const
-    {
-      return ConstraintSet(m_friction_lower_limit, m_friction_upper_limit);
+      return row_active_indexes[size_t(row_id)];
     }
 
     /// \copydoc RootBase::calc

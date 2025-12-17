@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
     for (int k = 0; k < num_projections; ++k)
     {
       const Eigen::VectorXd f = Eigen::VectorXd::Random(total_active_dofs);
-      const Eigen::VectorXd f_proj = constraint.set().project(f);
+      const Eigen::VectorXd f_proj = constraint.set(constraint_data).project(f);
 
       BOOST_CHECK((f_proj.array() >= 0).all());
       // BOOST_CHECK((f_proj.tail(nb_lower_active_dofs).array() >= 0).all());

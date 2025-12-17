@@ -40,11 +40,11 @@ namespace pinocchio
   typedef PointAnchorConstraintDataTpl<context::Scalar> PointAnchorConstraintData;
 
   template<typename Scalar, int Options = 0>
-  struct PointContactModelTpl;
-  typedef PointContactModelTpl<context::Scalar> PointContactModel;
+  struct PointContactConstraintModelTpl;
+  typedef PointContactConstraintModelTpl<context::Scalar> PointContactConstraintModel;
   template<typename Scalar, int Options = 0>
-  struct PointContactDataTpl;
-  typedef PointContactDataTpl<context::Scalar> PointContactData;
+  struct PointContactConstraintDataTpl;
+  typedef PointContactConstraintDataTpl<context::Scalar> PointContactConstraintData;
 
   template<typename Scalar, int Options = 0>
   struct FrameAnchorConstraintModelTpl;

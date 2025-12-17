@@ -101,15 +101,15 @@ namespace pinocchio
         typedef
           typename RigidConstraintModel::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
         cl.add_property(
-          "corrector",
+          "m_baumgarte_parameters",
           bp::make_function( //
             +[](Self & self) -> BaumgarteCorrectorParameters & {
-              return self.baumgarte_corrector_parameters_impl();
+              return self.baumgarte_corrector_parameters();
             },
             bp::return_internal_reference<>()),
           bp::make_function( //
             +[](Self & self, const BaumgarteCorrectorParameters & copy) {
-              self.baumgarte_corrector_parameters_impl() = copy;
+              self.baumgarte_corrector_parameters() = copy;
             },
             bp::return_internal_reference<>()),
           "Baumgarte parameters associated with the constraint.");

@@ -9,8 +9,6 @@
 
 #include "pinocchio/bindings/python/algorithm/constraints/constraint-model.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraint-data.hpp"
-#include "pinocchio/bindings/python/algorithm/constraints/constraint-model-inheritance.hpp"
-#include "pinocchio/bindings/python/algorithm/constraints/constraint-data-inheritance.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraints-models.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraints-datas.hpp"
 #include "pinocchio/bindings/python/utils/std-aligned-vector.hpp"
@@ -53,7 +51,6 @@ namespace pinocchio
           bp::class_<T>(
             sanitizedClassname<T>().c_str(), sanitizedClassname<T>().c_str(), bp::init<>())
             .def(ConstraintDataBasePythonVisitor<T>())
-            .def(ConstraintDataInheritancePythonVisitor<T, typename T::Base>())
             .def(PrintableVisitor<T>()));
         bp::implicitly_convertible<T, context::ConstraintData>();
       }
@@ -72,7 +69,6 @@ namespace pinocchio
           bp::class_<T>(
             sanitizedClassname<T>().c_str(), sanitizedClassname<T>().c_str(), bp::no_init)
             .def(ConstraintModelBasePythonVisitor<T>())
-            .def(ConstraintModelInheritancePythonVisitor<T, typename T::Base>())
             .def(PrintableVisitor<T>()));
         bp::implicitly_convertible<T, context::ConstraintModel>();
       }

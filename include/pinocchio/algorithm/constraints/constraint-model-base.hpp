@@ -255,29 +255,10 @@ namespace pinocchio
       }
     }
 
-    /// \brief Returns the colwise sparsity associated with a given row of the active set of
-    /// the constraints.
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    const BooleanVector &
-    getRowSparsityPattern(const ConstraintData & cdata, const Eigen::Index row_id) const
-    {
-      return derived().getRowSparsityPatternImpl(cdata, row_id);
-    }
-
-    /// \brief Returns the vector of the active indexes associated with a given row
-    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
-    /// calling the calc method.
-    const EigenIndexVector &
-    getRowIndexes(const ConstraintData & cdata, const Eigen::Index row_id) const
-    {
-      return derived().getRowIndexesImpl(cdata, row_id);
-    }
-
     /// \brief Returns an instance of the associated constraint set operator.
-    ConstraintSet set() const
+    ConstraintSet set(const ConstraintData & cdata) const
     {
-      return derived().setImpl();
+      return derived().setImpl(cdata);
     }
 
     /// \brief Fill the compliance of size residualSize relted to the courant state of the
@@ -294,6 +275,33 @@ namespace pinocchio
       {
         derived().retrieveComplianceImpl(cdata, res.const_cast_derived());
       }
+    }
+
+    /// \brief Returns the colwise sparsity associated with a given row of the active set of
+    /// the constraints.
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    template<template<typename, int> class JointCollectionTpl>
+    const BooleanVector & getRowSparsityPattern(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      return derived().getRowSparsityPatternImpl(model, data, cdata, row_id);
+    }
+
+    /// \brief Returns the vector of the active indexes associated with a given row
+    /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
+    /// calling the calc method.
+    template<template<typename, int> class JointCollectionTpl>
+    const EigenIndexVector & getRowIndexes(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      return derived().getRowIndexesImpl(model, data, cdata, row_id);
     }
 
     /// \brief Evaluate the constraint values at the current state given by data and store the
@@ -533,10 +541,10 @@ namespace pinocchio
 
     // Methods for algorithms --------
     // residualSizeImpl(const cdata)  // Not needed for <= CONSTANT
-    // getRowSparsityPatternImpl(const cdata)
-    // getRowIndexesImpl(const cdata)
-    // setImpl()  // Not needed if has_set=False
+    // setImpl(const cdata)  // Not needed if has_set=False
     // retrieveComplianceImpl(cdata, ...)
+    // getRowSparsityPatternImpl(const model, const data, const cdata, ...)
+    // getRowIndexesImpl(const model, const data, const cdata, ...)
     // calcImpl(const model, const data, cdata)  // The only one mutating cdata
     // jacobianImpl(const model, const data, const cdata, ...)
     // jacobianMatrixProductImpl(const model, const data, const cdata, ...)
