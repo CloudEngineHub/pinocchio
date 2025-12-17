@@ -34,7 +34,11 @@ namespace pinocchio
     typedef Eigen::Map<PlainMatrixType> MapType;
     typedef Eigen::Map<PlainMatrixType> & RefMapType;
     typedef const Eigen::Map<PlainMatrixType> & ConstRefMapType;
-    typedef const Eigen::Map<const PlainMatrixType> ConstMapType;
+
+    typedef Eigen::Map<const PlainMatrixType> ConstMapType;
+    typedef Eigen::Map<const PlainMatrixType> & RefConstMapType;
+    typedef const Eigen::Map<const PlainMatrixType> & ConstRefConstMapType;
+
     typedef Eigen::Index Index;
 
     enum
@@ -60,7 +64,8 @@ namespace pinocchio
     ///
     EigenStorageTpl(const Index rows, const Index cols, const Index max_rows, const Index max_cols)
     : m_storage(max_rows * max_cols)
-    , m_map(MapType(m_storage.data(), rows, cols))
+    , m_map({m_storage.data(), rows, cols})
+    , m_const_map({m_storage.data(), rows, cols})
     {
     }
 
@@ -72,6 +77,7 @@ namespace pinocchio
     ///
     EigenStorageTpl(const Index rows, const Index cols)
     : m_map(NULL, rows, cols)
+    , m_const_map(NULL, rows, cols)
     {
       _init2(rows, cols);
     }
@@ -83,12 +89,14 @@ namespace pinocchio
     ///
     EigenStorageTpl(const Index size, const Index max_size)
     : m_map(NULL, size)
+    , m_const_map(NULL, size)
     {
       _init2(rows, cols);
     }
 #else
     EigenStorageTpl(const Index arg0, const Index arg1)
     : m_map(NULL, arg0, arg1)
+    , m_const_map(NULL, arg0, arg1)
     {
       _init2(arg0, arg1);
     }
@@ -97,6 +105,7 @@ namespace pinocchio
     /// \brief Default constructor
     EigenStorageTpl()
     : m_map(NULL, 0, IsVectorAtCompileTime ? 1 : 0)
+    , m_const_map(NULL, 0, IsVectorAtCompileTime ? 1 : 0)
     {
     }
 
@@ -104,6 +113,7 @@ namespace pinocchio
     explicit EigenStorageTpl(const Index size)
     : m_storage(size)
     , m_map(m_storage.data(), size)
+    , m_const_map(m_storage.data(), size)
     {
     }
 
@@ -111,6 +121,7 @@ namespace pinocchio
     EigenStorageTpl(const EigenStorageTpl & other)
     : m_storage(other.m_storage.head(other.m_map.size()))
     , m_map(m_storage.data(), other.m_map.rows(), other.m_map.cols())
+    , m_const_map(m_storage.data(), other.m_map.rows(), other.m_map.cols())
     {
     }
 
@@ -121,6 +132,7 @@ namespace pinocchio
     {
       m_storage = other.m_storage.head(other.m_map.size());
       new (&m_map) MapType(m_storage.data(), other.m_map.rows(), other.m_map.cols());
+      new (&m_const_map) MapType(m_storage.data(), other.m_map.rows(), other.m_map.cols());
 
       return *this;
     }
@@ -144,6 +156,7 @@ namespace pinocchio
       if (new_size > capacity())
         m_storage.resize(2 * new_size); // Double the size of the storage
       new (&m_map) MapType(m_storage.data(), rows, cols);
+      new (&m_const_map) MapType(m_storage.data(), rows, cols);
     }
 
     void resize(const Index new_size)
@@ -152,6 +165,7 @@ namespace pinocchio
       if (new_size > capacity())
         m_storage.resize(2 * new_size); // Double the size of the storage
       new (&m_map) MapType(m_storage.data(), new_size);
+      new (&m_const_map) MapType(m_storage.data(), new_size);
     }
 
     /// \brief Reserve some place if the capacity is not enough.
@@ -164,6 +178,7 @@ namespace pinocchio
       {
         m_storage.resize(new_size);
         new (&m_map) MapType(m_storage.data(), m_map.rows(), m_map.cols());
+        new (&m_const_map) MapType(m_storage.data(), m_map.rows(), m_map.cols());
       }
     }
 
@@ -174,6 +189,7 @@ namespace pinocchio
       {
         m_storage.resize(new_size);
         new (&m_map) MapType(m_storage.data(), m_map.size());
+        new (&m_const_map) MapType(m_storage.data(), m_map.size());
       }
     }
 
@@ -238,6 +254,18 @@ namespace pinocchio
       return m_map;
     }
 
+    /// \brief Returns a const map toward the internal matrix.
+    ConstRefConstMapType const_map() const
+    {
+      return m_const_map;
+    }
+
+    /// \brief Returns a const map toward the internal matrix.
+    RefConstMapType const_map()
+    {
+      return m_const_map;
+    }
+
     /// \brief Returns the number of rows
     Index rows() const
     {
@@ -279,12 +307,14 @@ namespace pinocchio
 
     /// \brief Map
     MapType m_map;
+    ConstMapType m_const_map;
 
     template<typename T>
     void _init2(const T rows, const T cols, std::enable_if_t<!IsVectorAtCompileTime, T> * = 0)
     {
       m_storage = StorageVector(Eigen::Index(rows * cols));
       new (&m_map) MapType(m_storage.data(), rows, cols);
+      new (&m_const_map) ConstMapType(m_storage.data(), rows, cols);
     }
 
     template<typename T>
@@ -292,6 +322,7 @@ namespace pinocchio
     {
       m_storage = StorageVector(max_size);
       new (&m_map) MapType(m_storage.data(), size);
+      new (&m_const_map) ConstMapType(m_storage.data(), size);
     }
   }; // struct EigenStorageTpl
 
