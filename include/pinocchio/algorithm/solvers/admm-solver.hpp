@@ -432,6 +432,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
+    using Base::isValid;
     using Base::nan;
 
     /// \brief Default constructor.
