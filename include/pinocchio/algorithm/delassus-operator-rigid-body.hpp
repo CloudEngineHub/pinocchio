@@ -201,15 +201,6 @@ namespace pinocchio
   protected:
     void compute_or_update_decomposition(bool apply_on_the_right, bool solve_in_place);
 
-    ///
-    /// \brief Update the internal factorization because the damping or compliance vectors have been
-    /// modified
-    ///
-    void updateDecomposition()
-    {
-      compute_or_update_decomposition(false, true);
-    }
-
   public:
     ///
     /// \brief Update the intermediate computations before calling solveInPlace or operator*
