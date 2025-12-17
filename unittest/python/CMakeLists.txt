@@ -32,6 +32,7 @@ set(${PROJECT_NAME}_PYTHON_TESTS
     bindings_joint_algorithms
     bindings_constraints
     # Solvers
+    bindings_pgs
     bindings_admm
     # Algo derivatives
     bindings_kinematics_derivatives
