@@ -20,8 +20,8 @@ namespace pinocchio
   typedef PGSSolverSettingsTpl<context::Scalar> PGSSolverSettings;
 
   template<typename Scalar>
-  struct PGSSolverSolutionTpl;
-  typedef PGSSolverSolutionTpl<context::Scalar> PGSSolverSolution;
+  struct PGSSolverResultTpl;
+  typedef PGSSolverResultTpl<context::Scalar> PGSSolverResult;
 
   template<typename Scalar>
   struct PGSSolverStatsTpl;
@@ -38,8 +38,8 @@ namespace pinocchio
   typedef ADMMSolverSettingsTpl<context::Scalar> ADMMSolverSettings;
 
   template<typename Scalar>
-  struct ADMMSolverSolutionTpl;
-  typedef ADMMSolverSolutionTpl<context::Scalar> ADMMSolverSolution;
+  struct ADMMSolverResultTpl;
+  typedef ADMMSolverResultTpl<context::Scalar> ADMMSolverResult;
 
   template<typename Scalar>
   struct ADMMSolverStatsTpl;

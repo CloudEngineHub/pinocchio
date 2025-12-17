@@ -33,11 +33,11 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const ADMMSolverSettings & settings,
-    ADMMSolverSolution & solution)
+    ADMMSolverResult & solution)
   {
     // for easier access
     static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
-    ADMMSolverSolution & sol = solution;
+    ADMMSolverResult & sol = solution;
     ADMMSolverWorkspace & wk = workspace_;
     DelassusDerived & G = delassus.derived();
 

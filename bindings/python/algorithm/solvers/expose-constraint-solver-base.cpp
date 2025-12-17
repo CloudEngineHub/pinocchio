@@ -16,7 +16,7 @@ namespace pinocchio
     typedef context::Scalar Scalar;
 
     typedef ConstraintSolverSettingsBaseTpl<Scalar> ConstraintSolverSettingsBase;
-    typedef ConstraintSolverSolutionBaseTpl<Scalar> ConstraintSolverSolutionBase;
+    typedef ConstraintSolverResultBaseTpl<Scalar> ConstraintSolverResultBase;
     typedef ConstraintSolverStatsBaseTpl<Scalar> ConstraintSolverStatsBase;
     typedef ConstraintSolverBaseTpl<Scalar> ConstraintSolverBase;
 
@@ -57,27 +57,27 @@ namespace pinocchio
     }
 
     // ============================================================================
-    // Expose ConstraintSolverSolutionBase
+    // Expose ConstraintSolverResultBase
     // ============================================================================
 
-    void exposeConstraintSolverSolutionBase()
+    void exposeConstraintSolverResultBase()
     {
-      bp::class_<ConstraintSolverSolutionBase>(
-        "ConstraintSolverSolutionBase", "Base class for constraint solver solution.",
+      bp::class_<ConstraintSolverResultBase>(
+        "ConstraintSolverResultBase", "Base class for constraint solver solution.",
         bp::no_init) // Abstract base class, no direct construction
 
         .PINOCCHIO_ADD_PROPERTY_READONLY(
-          ConstraintSolverSolutionBase, iterations, "Number of iterations")
+          ConstraintSolverResultBase, iterations, "Number of iterations")
         .PINOCCHIO_ADD_PROPERTY_READONLY(
-          ConstraintSolverSolutionBase, converged, "Whether solver converged")
+          ConstraintSolverResultBase, converged, "Whether solver converged")
         .PINOCCHIO_ADD_PROPERTY_READONLY(
-          ConstraintSolverSolutionBase, primal_feasibility, "Final primal feasibility")
+          ConstraintSolverResultBase, primal_feasibility, "Final primal feasibility")
         .PINOCCHIO_ADD_PROPERTY_READONLY(
-          ConstraintSolverSolutionBase, dual_feasibility, "Final dual feasibility")
+          ConstraintSolverResultBase, dual_feasibility, "Final dual feasibility")
         .PINOCCHIO_ADD_PROPERTY_READONLY(
-          ConstraintSolverSolutionBase, complementarity, "Final complementarity")
+          ConstraintSolverResultBase, complementarity, "Final complementarity")
 
-        .def("reset", &ConstraintSolverSolutionBase::reset, bp::arg("self"), "Reset the solution");
+        .def("reset", &ConstraintSolverResultBase::reset, bp::arg("self"), "Reset the solution");
     }
 
     // ============================================================================
@@ -137,7 +137,7 @@ namespace pinocchio
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
       exposeConstraintSolverBase();
       exposeConstraintSolverSettingsBase();
-      exposeConstraintSolverSolutionBase();
+      exposeConstraintSolverResultBase();
       exposeConstraintSolverStatsBase();
 #endif
     }

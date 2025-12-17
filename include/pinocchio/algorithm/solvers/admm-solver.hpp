@@ -109,7 +109,7 @@ namespace pinocchio
     typedef const Eigen::Ref<const VectorXs> ConstRefVectorXs;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
 
-    typedef ADMMSolverSolutionTpl<Scalar> ADMMSolverSolution;
+    typedef ADMMSolverResultTpl<Scalar> ADMMSolverResult;
     typedef internal::ADMMSolverWorkspaceTpl<Scalar> ADMMSolverWorkspace;
     typedef ADMMSolverSettingsTpl<Scalar> ADMMSolverSettings;
     typedef ADMMSolverStatsTpl<Scalar> ADMMSolverStats;
@@ -154,7 +154,7 @@ namespace pinocchio
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const ADMMSolverSettings & settings,
-      ADMMSolverSolution & solution);
+      ADMMSolverResult & solution);
 
     /// \brief Reset the constraint solver as if it has never run.
     void reset()
@@ -425,10 +425,10 @@ namespace pinocchio
   /// \brief Struct describing the solution of the ADMM constraint solver
   /// after calling the `solve` method.
   template<typename _Scalar>
-  struct ADMMSolverSolutionTpl : ConstraintSolverSolutionBaseTpl<_Scalar, ADMMConstraintSolverTpl>
+  struct ADMMSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar, ADMMConstraintSolverTpl>
   {
     typedef _Scalar Scalar;
-    typedef ConstraintSolverSolutionBaseTpl<Scalar, ADMMConstraintSolverTpl> Base;
+    typedef ConstraintSolverResultBaseTpl<Scalar, ADMMConstraintSolverTpl> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
@@ -436,7 +436,7 @@ namespace pinocchio
     using Base::nan;
 
     /// \brief Default constructor.
-    ADMMSolverSolutionTpl()
+    ADMMSolverResultTpl()
     : Base()
     , problem_size(0)
     , delassus_decomposition_update_count(0)
@@ -553,7 +553,7 @@ namespace pinocchio
     /// \brief Desaxce term of the solution
     VectorXsStorage desaxce_storage;
     typename VectorXsStorage::RefMapType desaxce;
-  }; // struct ADMMSolverSolutionTpl
+  }; // struct ADMMSolverResultTpl
 
   ///
   /// \brief Struct to track per iteration progress of ADMM constraint solver.

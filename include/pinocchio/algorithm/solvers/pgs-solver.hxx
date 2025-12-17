@@ -555,10 +555,10 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const PGSSolverSettings & settings,
-    PGSSolverSolution & solution)
+    PGSSolverResult & solution)
   {
     // for easier access
-    PGSSolverSolution & sol = solution;
+    PGSSolverResult & sol = solution;
     PGSSolverWorkspace & wk = workspace_;
     const MatrixType & G = delassus.derived();
 

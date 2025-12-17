@@ -38,7 +38,7 @@ namespace pinocchio
 
     typedef internal::PGSSolverWorkspaceTpl<Scalar> PGSSolverWorkspace;
     typedef PGSSolverSettingsTpl<Scalar> PGSSolverSettings;
-    typedef PGSSolverSolutionTpl<Scalar> PGSSolverSolution;
+    typedef PGSSolverResultTpl<Scalar> PGSSolverResult;
     typedef PGSSolverStatsTpl<Scalar> PGSSolverStats;
 
     explicit PGSConstraintSolverTpl(std::size_t problem_size = 0)
@@ -75,7 +75,7 @@ namespace pinocchio
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const PGSSolverSettings & settings,
-      PGSSolverSolution & solution);
+      PGSSolverResult & solution);
 
     ///
     /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
@@ -103,7 +103,7 @@ namespace pinocchio
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const PGSSolverSettings & settings,
-      PGSSolverSolution & solution)
+      PGSSolverResult & solution)
     {
       return solve(
         delassus.derived().matrix(), g, constraint_models, constraint_datas, settings, solution);
@@ -234,10 +234,10 @@ namespace pinocchio
   /// \brief Struct describing the solution of the PGS constraint solver
   /// after calling the `solve` method.
   template<typename _Scalar>
-  struct PGSSolverSolutionTpl : ConstraintSolverSolutionBaseTpl<_Scalar, PGSConstraintSolverTpl>
+  struct PGSSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar, PGSConstraintSolverTpl>
   {
     typedef _Scalar Scalar;
-    typedef ConstraintSolverSolutionBaseTpl<Scalar, PGSConstraintSolverTpl> Base;
+    typedef ConstraintSolverResultBaseTpl<Scalar, PGSConstraintSolverTpl> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
@@ -245,7 +245,7 @@ namespace pinocchio
     using Base::nan;
 
     /// \brief Default constructor.
-    PGSSolverSolutionTpl()
+    PGSSolverResultTpl()
     : Base()
     , problem_size(0)
     , x(x_storage.map())
@@ -319,7 +319,7 @@ namespace pinocchio
     /// \brief Dual solution.
     VectorXsStorage y_storage;
     typename VectorXsStorage::RefMapType y;
-  }; // struct PGSSolverSolutionTpl
+  }; // struct PGSSolverResultTpl
 
   ///
   /// \brief Struct to track per iteration progress of PGS constraint solver.

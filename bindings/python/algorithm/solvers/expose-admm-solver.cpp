@@ -29,11 +29,11 @@ namespace pinocchio
 
     typedef ADMMConstraintSolverTpl<Scalar> ADMMSolver;
     typedef typename ADMMSolver::ADMMSolverSettings ADMMSolverSettings;
-    typedef typename ADMMSolver::ADMMSolverSolution ADMMSolverSolution;
+    typedef typename ADMMSolver::ADMMSolverResult ADMMSolverResult;
     typedef typename ADMMSolver::ADMMSolverStats ADMMSolverStats;
 
     typedef ConstraintSolverSettingsBaseTpl<Scalar> ConstraintSolverSettingsBase;
-    typedef ConstraintSolverSolutionBaseTpl<Scalar> ConstraintSolverSolutionBase;
+    typedef ConstraintSolverResultBaseTpl<Scalar> ConstraintSolverResultBase;
     typedef ConstraintSolverStatsBaseTpl<Scalar> ConstraintSolverStatsBase;
     typedef ConstraintSolverBaseTpl<Scalar> ConstraintSolverBase;
 
@@ -129,46 +129,46 @@ namespace pinocchio
     }
 
     // ============================================================================
-    // Expose ADMMSolverSolution (inheriting from base)
+    // Expose ADMMSolverResult (inheriting from base)
     // ============================================================================
 
     // Wrapper functions for retrieve methods
     static void
-    retrievePrimalSolution_wrapper(const ADMMSolverSolution & solution, VectorXs & primal_solution)
+    retrievePrimalSolution_wrapper(const ADMMSolverResult & solution, VectorXs & primal_solution)
     {
       solution.retrievePrimalSolution(primal_solution);
     }
 
     static void
-    retrieveDualSolution_wrapper(const ADMMSolverSolution & solution, VectorXs & dual_solution)
+    retrieveDualSolution_wrapper(const ADMMSolverResult & solution, VectorXs & dual_solution)
     {
       solution.retrieveDualSolution(dual_solution);
     }
 
     static void
-    retrieveDesaxceTerm_wrapper(const ADMMSolverSolution & solution, VectorXs & desaxce_term)
+    retrieveDesaxceTerm_wrapper(const ADMMSolverResult & solution, VectorXs & desaxce_term)
     {
       solution.retrieveDesaxceTerm(desaxce_term);
     }
 
-    void exposeADMMSolverSolution()
+    void exposeADMMSolverResult()
     {
-      bp::class_<ADMMSolverSolution, bp::bases<ConstraintSolverSolutionBase>>(
-        "ADMMSolverSolution", "Solution of the ADMM constraint solver.",
+      bp::class_<ADMMSolverResult, bp::bases<ConstraintSolverResultBase>>(
+        "ADMMSolverResult", "Solution of the ADMM constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
 
         // ADMM specific properties (base class properties are inherited)
-        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverSolution, problem_size, "Problem size")
+        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverResult, problem_size, "Problem size")
         .PINOCCHIO_ADD_PROPERTY_READONLY(
-          ADMMSolverSolution, delassus_decomposition_update_count,
+          ADMMSolverResult, delassus_decomposition_update_count,
           "Number of Delassus decomposition updates")
-        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverSolution, rho, "Final rho value")
+        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverResult, rho, "Final rho value")
         .PINOCCHIO_ADD_PROPERTY_READONLY(
-          ADMMSolverSolution, spectral_rho_power, "Final spectral rho power")
-        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverSolution, mu_prox, "Final proximal parameter")
+          ADMMSolverResult, spectral_rho_power, "Final spectral rho power")
+        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverResult, mu_prox, "Final proximal parameter")
 
         .def(
-          "resize", &ADMMSolverSolution::resize, bp::args("self", "problem_size"),
+          "resize", &ADMMSolverResult::resize, bp::args("self", "problem_size"),
           "Resize solution vectors")
 
         // Retrieve methods
@@ -312,7 +312,7 @@ namespace pinocchio
 
       // Expose Settings, Solution, Stats (they inherit from base)
       exposeADMMSolverSettings();
-      exposeADMMSolverSolution();
+      exposeADMMSolverResult();
       exposeADMMSolverStats();
 
       // Expose the solver itself (inherits from base)

@@ -89,7 +89,7 @@ namespace pinocchio
   ///
   /// \brief Base struct for settings to pass to the solve method of a constraint solver.
   template<typename _Scalar, template<typename S> class ConstraintSolverFriendClass>
-  struct ConstraintSolverSolutionBaseTpl
+  struct ConstraintSolverResultBaseTpl
   {
     typedef _Scalar Scalar;
     static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
@@ -97,7 +97,7 @@ namespace pinocchio
     friend struct ConstraintSolverFriendClass<Scalar>;
 
     /// \brief Default constructor.
-    ConstraintSolverSolutionBaseTpl()
+    ConstraintSolverResultBaseTpl()
     : iterations(0)
     , converged(false)
     , primal_feasibility(nan)
@@ -155,7 +155,7 @@ namespace pinocchio
       is_valid_ = true;
     }
 
-  }; // struct ConstraintSolverSolutionBaseTpl
+  }; // struct ConstraintSolverResultBaseTpl
 
   ///
   /// \brief Base struct to track a constraint solver progress per iteration.

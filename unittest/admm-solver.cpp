@@ -99,14 +99,14 @@ struct TestBoxTpl
     admm_settings.mu_prox = 1e-6;
     admm_settings.stat_record = true;
     admm_settings.solve_ncp = true;
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     has_converged = admm_solver.solve(
-      G_expression, g, constraint_models, constraint_datas, admm_settings, admm_solution);
-    BOOST_CHECK(admm_solution.problem_size == static_cast<std::size_t>(G_expression.rows()));
+      G_expression, g, constraint_models, constraint_datas, admm_settings, admm_result);
+    BOOST_CHECK(admm_result.problem_size == static_cast<std::size_t>(G_expression.rows()));
     BOOST_CHECK(admm_solver.isValid() == true);
-    BOOST_CHECK(admm_solution.isValid() == true);
-    admm_solution.retrievePrimalSolution(primal_solution);
+    BOOST_CHECK(admm_result.isValid() == true);
+    admm_result.retrievePrimalSolution(primal_solution);
 
     if (test_warmstart)
     {
@@ -114,12 +114,12 @@ struct TestBoxTpl
       has_converged =
         has_converged
         && admm_solver.solve(
-          G_expression, g, constraint_models, constraint_datas, admm_settings, admm_solution);
-      admm_solution.retrievePrimalSolution(primal_solution);
+          G_expression, g, constraint_models, constraint_datas, admm_settings, admm_result);
+      admm_result.retrievePrimalSolution(primal_solution);
     }
 
-    admm_solution.retrieveDualSolution(dual_solution);
-    n_iter = admm_solution.iterations;
+    admm_result.retrieveDualSolution(dual_solution);
+    n_iter = admm_result.iterations;
     const Eigen::VectorXd tau_ext = constraint_jacobian.transpose() * primal_solution / dt;
 
     v_next =
@@ -548,11 +548,11 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   admm_settings.relative_tol_complementarity = 1e-14;
   admm_settings.preconditioner.emplace(preconditioner_vec);
   admm_settings.primal_guess.emplace(primal_solution);
-  ADMMSolverSolution admm_solution;
+  ADMMSolverResult admm_result;
 
   const bool has_converged = admm_solver.solve(
-    G_expression, g, constraint_models, constraint_datas, admm_settings, admm_solution);
-  admm_solution.retrievePrimalSolution(primal_solution);
+    G_expression, g, constraint_models, constraint_datas, admm_settings, admm_result);
+  admm_result.retrievePrimalSolution(primal_solution);
   BOOST_CHECK(has_converged);
 
   dual_solution = G * primal_solution + g;
@@ -675,17 +675,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_against_lower_bound;
     Eigen::VectorXd dual_solution2;
-    admm_solution.retrieveDualSolution(dual_solution2);
+    admm_result.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(dual_solution.isZero(1e-6));
@@ -716,17 +716,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    admm_solution.retrieveDualSolution(dual_solution2);
+    admm_result.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -821,17 +821,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_against_lower_bound;
     Eigen::VectorXd dual_solution2;
-    admm_solution.retrieveDualSolution(dual_solution2);
+    admm_result.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(dual_solution.isZero(1e-6));
@@ -867,17 +867,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    admm_solution.retrieveDualSolution(dual_solution2);
+    admm_result.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -972,17 +972,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_against_lower_bound;
     Eigen::VectorXd dual_solution2;
-    admm_solution.retrieveDualSolution(dual_solution2);
+    admm_result.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(dual_solution.isZero(1e-6));
@@ -1018,17 +1018,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    admm_solution.retrieveDualSolution(dual_solution2);
+    admm_result.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -1114,18 +1114,18 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
     constraint_velocity /= dt;
     Eigen::VectorXd dual_solution;
-    admm_solution.retrieveDualSolution(dual_solution);
+    admm_result.retrieveDualSolution(dual_solution);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
@@ -1156,17 +1156,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    admm_solution.retrieveDualSolution(dual_solution2);
+    admm_result.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -1252,17 +1252,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
     Eigen::VectorXd dual_solution;
-    admm_solution.retrieveDualSolution(dual_solution);
+    admm_result.retrieveDualSolution(dual_solution);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
@@ -1293,17 +1293,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    admm_solution.retrieveDualSolution(dual_solution2);
+    admm_result.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -1392,18 +1392,18 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
 
     Eigen::VectorXd dual_solution;
-    admm_solution.retrieveDualSolution(dual_solution);
+    admm_result.retrieveDualSolution(dual_solution);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(std::abs(constraint_velocity[0]) < 1e-6);
@@ -1436,17 +1436,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     admm_settings.relative_tol_complementarity = 1e-14;
     admm_settings.preconditioner.emplace(preconditioner_vec);
     admm_settings.primal_guess.emplace(primal_solution);
-    ADMMSolverSolution admm_solution;
+    ADMMSolverResult admm_result;
 
     const bool has_converged = admm_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, admm_settings,
-      admm_solution);
-    admm_solution.retrievePrimalSolution(primal_solution);
+      admm_result);
+    admm_result.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    admm_solution.retrieveDualSolution(dual_solution2);
+    admm_result.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());

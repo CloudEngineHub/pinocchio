@@ -25,11 +25,11 @@ namespace pinocchio
 
     typedef PGSConstraintSolverTpl<Scalar> PGSSolver;
     typedef typename PGSSolver::PGSSolverSettings PGSSolverSettings;
-    typedef typename PGSSolver::PGSSolverSolution PGSSolverSolution;
+    typedef typename PGSSolver::PGSSolverResult PGSSolverResult;
     typedef typename PGSSolver::PGSSolverStats PGSSolverStats;
 
     typedef ConstraintSolverSettingsBaseTpl<Scalar> ConstraintSolverSettingsBase;
-    typedef ConstraintSolverSolutionBaseTpl<Scalar> ConstraintSolverSolutionBase;
+    typedef ConstraintSolverResultBaseTpl<Scalar> ConstraintSolverResultBase;
     typedef ConstraintSolverStatsBaseTpl<Scalar> ConstraintSolverStatsBase;
     typedef ConstraintSolverBaseTpl<Scalar> ConstraintSolverBase;
 
@@ -50,33 +50,33 @@ namespace pinocchio
     }
 
     // ============================================================================
-    // Expose PGSSolverSolution (inheriting from base)
+    // Expose PGSSolverResult (inheriting from base)
     // ============================================================================
 
     // Wrapper functions for retrieve methods
-    static void retrievePrimalSolution_pgs_wrapper(
-      const PGSSolverSolution & solution, VectorXs & primal_solution)
+    static void
+    retrievePrimalSolution_pgs_wrapper(const PGSSolverResult & solution, VectorXs & primal_solution)
     {
       solution.retrievePrimalSolution(primal_solution);
     }
 
     static void
-    retrieveDualSolution_pgs_wrapper(const PGSSolverSolution & solution, VectorXs & dual_solution)
+    retrieveDualSolution_pgs_wrapper(const PGSSolverResult & solution, VectorXs & dual_solution)
     {
       solution.retrieveDualSolution(dual_solution);
     }
 
-    void exposePGSSolverSolution()
+    void exposePGSSolverResult()
     {
-      bp::class_<PGSSolverSolution, bp::bases<ConstraintSolverSolutionBase>>(
-        "PGSSolverSolution", "Solution of the PGS constraint solver.",
+      bp::class_<PGSSolverResult, bp::bases<ConstraintSolverResultBase>>(
+        "PGSSolverResult", "Solution of the PGS constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
 
         // PGS specific properties (base class properties are inherited)
-        .PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolverSolution, problem_size, "Problem size")
+        .PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolverResult, problem_size, "Problem size")
 
         .def(
-          "resize", &PGSSolverSolution::resize, bp::args("self", "problem_size"),
+          "resize", &PGSSolverResult::resize, bp::args("self", "problem_size"),
           "Resize solution vectors")
 
         // Retrieve methods
@@ -188,7 +188,7 @@ namespace pinocchio
 
       // Expose Settings, Solution, Stats (they inherit from base)
       exposePGSSolverSettings();
-      exposePGSSolverSolution();
+      exposePGSSolverResult();
       exposePGSSolverStats();
 
       // Expose the solver itself (inherits from base)
