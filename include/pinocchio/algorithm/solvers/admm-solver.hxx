@@ -32,7 +32,8 @@ namespace pinocchio
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const ADMMSolverSettings & settings)
+    const ADMMSolverSettings & settings,
+    ADMMSolverSolution & solution)
   {
     // for easier access
     static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
@@ -52,13 +53,14 @@ namespace pinocchio
     //
     std::optional<Scalar> rho_init = settings.rho_init;
     Scalar spectral_rho_power_init = settings.spectral_rho_power_init;
-    if (settings.warmstart_rho_with_prev_sol && isReset() == false)
+    if (settings.warmstart_rho_with_prev_sol && sol.isValid())
     {
       // override rho_init with previous solution's rho value
       rho_init = sol.rho;
       spectral_rho_power_init = sol.spectral_rho_power;
     }
     sol.reset(problem_size);
+    assert(sol.isValid() == false);
     assert(sol.problem_size == problem_size);
     assert(sol.iterations == 0);
     //
@@ -74,8 +76,8 @@ namespace pinocchio
     //
     settings.checkValidity();
 
-    // the solver can now be marked as reset
-    is_reset_ = true;
+    // the solver is now marked as reset
+    is_valid_ = false;
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
     if (settings.measure_timings)
@@ -546,9 +548,10 @@ namespace pinocchio
     sol.spectral_rho_power = wk.spectral_rho_power;
     sol.mu_prox = wk.mu_prox;
     sol.converged = abs_prec_reached || rel_prec_reached;
+    sol.makeValid();
 
-    // the solver has run, we mark it as not reset
-    is_reset_ = false;
+    // the solver has run, we mark it as valid
+    is_valid_ = true;
 
     return sol.converged;
   }

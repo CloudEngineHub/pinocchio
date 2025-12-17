@@ -15,6 +15,10 @@
 namespace pinocchio
 {
 
+  // fwd declaration for below
+  template<typename Scalar>
+  struct ConstraintSolverBaseTpl;
+
   ///
   /// \brief Base struct for settings to pass to the solve method of a constraint solver.
   template<typename _Scalar>
@@ -84,11 +88,13 @@ namespace pinocchio
 
   ///
   /// \brief Base struct for settings to pass to the solve method of a constraint solver.
-  template<typename _Scalar>
+  template<typename _Scalar, template<typename S> class ConstraintSolverFriendClass>
   struct ConstraintSolverSolutionBaseTpl
   {
     typedef _Scalar Scalar;
     static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
+
+    friend struct ConstraintSolverFriendClass<Scalar>;
 
     /// \brief Default constructor.
     ConstraintSolverSolutionBaseTpl()
@@ -97,6 +103,7 @@ namespace pinocchio
     , primal_feasibility(nan)
     , dual_feasibility(nan)
     , complementarity(nan)
+    , is_valid_(false)
     {
     }
 
@@ -108,6 +115,16 @@ namespace pinocchio
       primal_feasibility = nan;
       dual_feasibility = nan;
       complementarity = nan;
+
+      is_valid_ = false;
+    }
+
+    /// \brief Returns true if the solution is in a valid state.
+    /// If it is, it represents the result of a meaningful computation.
+    /// Otherwise, it does not.
+    bool isValid() const
+    {
+      return is_valid_;
     }
 
     /// \brief Number of iterations of the solver
@@ -124,6 +141,19 @@ namespace pinocchio
 
     /// \brief Value of the complementarity
     Scalar complementarity;
+
+  protected:
+    /// \brief Whether or not the solution is in a valid state.
+    /// If it is, it represents the result of a meaningful computation.
+    /// Otherwise, it does not.
+    bool is_valid_;
+
+    /// \brief Make the solution valid.
+    /// This function should only be used by the class or friends of the class.
+    void makeValid()
+    {
+      is_valid_ = true;
+    }
 
   }; // struct ConstraintSolverSolutionBaseTpl
 
