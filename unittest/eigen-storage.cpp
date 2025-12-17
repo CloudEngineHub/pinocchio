@@ -37,19 +37,24 @@ BOOST_AUTO_TEST_CASE(eigen_storage_matrix)
   BOOST_CHECK(storage.cols() == cols);
 
   EigenStorageMatrix::RefMapType matrix_map = storage.map();
+  EigenStorageMatrix::RefConstMapType matrix_const_map = storage.const_map();
   BOOST_CHECK(matrix_map.data() == storage.data());
+  BOOST_CHECK(matrix_const_map.data() == storage.data());
 
   matrix_map.setIdentity();
   BOOST_CHECK(storage.map().isIdentity(0.));
   BOOST_CHECK(static_cast<const EigenStorageMatrix &>(storage).map().isIdentity(0.));
+  BOOST_CHECK(matrix_const_map.isIdentity(0.));
   matrix_map.setOnes();
   BOOST_CHECK(storage.map().isOnes(0.));
   BOOST_CHECK(static_cast<const EigenStorageMatrix &>(storage).map().isOnes(0.));
+  BOOST_CHECK(matrix_const_map.isOnes(0.));
 
   // Check copy
   EigenStorageMatrix storage_copy(storage);
   BOOST_CHECK(storage_copy.data() != storage.data());
   BOOST_CHECK(storage_copy.map() == storage.map());
+  BOOST_CHECK(storage_copy.const_map() == storage.const_map());
   BOOST_CHECK(storage_copy.capacity() == storage.capacity());
   BOOST_CHECK(storage_copy.storage() == storage.storage());
 
@@ -57,7 +62,9 @@ BOOST_AUTO_TEST_CASE(eigen_storage_matrix)
   const Eigen::Index new_rows = 2 * rows, new_cols = cols;
   storage.conservativeResize(new_rows, new_cols);
   BOOST_CHECK(matrix_map.data() == storage.data());
+  BOOST_CHECK(matrix_const_map.data() == storage.data());
   BOOST_CHECK(storage.map().topLeftCorner(rows, cols).isOnes(0.));
+  BOOST_CHECK(storage.const_map().topLeftCorner(rows, cols).isOnes(0.));
 }
 
 BOOST_AUTO_TEST_CASE(cast)
