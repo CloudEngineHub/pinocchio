@@ -78,7 +78,7 @@ namespace pinocchio
     template<typename VectorLike>
     bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
-      assert(prec >= 0 && "prec should be positive");
+      assert(check_expression_if_real<Scalar>(prec >= 0) && "prec should be positive");
       PINOCCHIO_UNUSED_VARIABLE(x);
       PINOCCHIO_UNUSED_VARIABLE(prec);
       return true;

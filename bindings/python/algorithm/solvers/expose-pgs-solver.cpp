@@ -102,8 +102,9 @@ namespace pinocchio
       bp::class_<PGSSolverStats, bp::bases<ConstraintSolverStatsBase>>(
         "PGSSolverStats", "Per-iteration statistics of the PGS constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
-        .def(bp::init<std::size_t>(
-          bp::args("self", "max_iterations"), "Constructor with maximum iterations."));
+        .def(
+          bp::init<std::size_t>(
+            bp::args("self", "max_iterations"), "Constructor with maximum iterations."));
       // Note: No PGS-specific stats beyond base class
     }
 
@@ -154,6 +155,7 @@ namespace pinocchio
 
         PINOCCHIO_UNUSED_VARIABLE(ptr);
 
+#ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
         class_
           .def(
             "solve",
@@ -182,6 +184,7 @@ namespace pinocchio
               "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
               "result"),
             "Solve the constrained conic problem with given settings and result.");
+#endif // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
       }
 
       void run(boost::blank * ptr = 0)

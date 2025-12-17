@@ -240,7 +240,8 @@ namespace pinocchio
     void setFriction(Scalar friction)
     {
       PINOCCHIO_THROW_IF(
-        friction < 0, std::runtime_error, "friction must be > 0 for contact constraints.");
+        check_expression_if_real<Scalar>(friction < 0), std::runtime_error,
+        "friction must be > 0 for contact constraints.");
       m_friction = friction;
     }
 

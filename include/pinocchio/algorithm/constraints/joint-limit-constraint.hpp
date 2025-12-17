@@ -403,14 +403,14 @@ namespace pinocchio
         const Eigen::Index idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
         activable_position_limit[constraint_id] = lb[idx_q];
         activable_position_margin[constraint_id] = margin[idx_q];
-        assert(margin[idx_q] >= 0);
+        assert(check_expression_if_real<Scalar>(margin[idx_q] >= 0));
       }
       for (; constraint_id < maxResidualSize(); ++constraint_id)
       {
         const Eigen::Index idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
         activable_position_limit[constraint_id] = ub[idx_q];
         activable_position_margin[constraint_id] = margin[idx_q];
-        assert(margin[idx_q] >= 0);
+        assert(check_expression_if_real<Scalar>(margin[idx_q] >= 0));
       }
     }
 

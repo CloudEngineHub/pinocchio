@@ -8,6 +8,7 @@
 #include "pinocchio/math/fwd.hpp"
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/sets/set-base.hpp"
+#include "pinocchio/math/matrix.hpp"
 
 namespace pinocchio
 {
@@ -54,7 +55,8 @@ namespace pinocchio
     {
       assert(lb.size() == ub.size());
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        (lb.array() <= ub.array()).all(), "Some components of lb are greater than ub");
+        arrayCompareAll(lb, ub, internal::ComparisonOperators::LE),
+        "Some components of lb are greater than ub");
     }
 
     /// \brief Generic constructor which can take any `Parameter` struct.
@@ -118,8 +120,8 @@ namespace pinocchio
     template<typename VectorLike>
     bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
-      assert(prec >= 0 && "prec should be positive");
-      return (x - project(x)).norm() <= prec;
+      assert(check_expression_if_real<Scalar>(prec >= 0) && "prec should be positive");
+      return check_expression_if_real<Scalar>((x - project(x)).norm() <= prec);
     }
 
     /// \copydoc Base::project
@@ -128,7 +130,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLikeIn> & x,
       const Eigen::MatrixBase<VectorLikeOut> & res_) const
     {
-      res_.const_cast_derived() = x.array().max(lb.array()).min(ub.array());
+      pinocchio::arrayBound(x, lb, ub, res_);
     }
 
     /// \copydoc Base::scaledProject
@@ -140,8 +142,8 @@ namespace pinocchio
     {
       PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
       assert((scale.array() > 0).all() && "scale vector should be positive");
-      res_.const_cast_derived() =
-        x.array().max(lb.array() / scale.array()).min(ub.array() / scale.array());
+      pinocchio::arrayBound(
+        x, (lb.array() / scale.array()).matrix(), (ub.array() / scale.array()).matrix(), res_);
       PINOCCHIO_EIGEN_MALLOC_ALLOWED();
     }
 

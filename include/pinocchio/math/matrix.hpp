@@ -508,6 +508,37 @@ namespace pinocchio
   }
   namespace internal
   {
+    template<typename M, bool value = is_floating_point<typename M::Scalar>::value>
+    struct arrayMinCoeffAlgo
+    {
+      static typename M::Scalar run(const Eigen::MatrixBase<M> & x)
+      {
+        return x.array().minCoeff();
+      }
+    };
+    template<typename M>
+    struct arrayMinCoeffAlgo<M, false>
+    {
+      static typename M::Scalar run(const Eigen::MatrixBase<M> & x)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(x);
+        return typename M::Scalar(0.);
+      }
+    };
+  } // namespace internal
+
+  /// \brief Compute matrix minimum coefficient
+  ///
+  /// \param[in] x Input matrix
+  /// \return Matrix minimal coefficient
+  ///
+  template<typename M>
+  inline typename Eigen::MatrixBase<M>::Scalar arrayMinCoeff(const Eigen::MatrixBase<M> & x)
+  {
+    return internal::arrayMinCoeffAlgo<M>::run(x);
+  }
+  namespace internal
+  {
     template<
       typename MatrixLike1,
       typename MatrixLike2,

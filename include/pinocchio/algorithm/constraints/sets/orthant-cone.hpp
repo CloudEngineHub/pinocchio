@@ -6,6 +6,8 @@
 #define __pinocchio_algorithm_constraints_sets_orthant_cone_hpp__
 
 #include "pinocchio/math/fwd.hpp"
+#include "pinocchio/math/matrix.hpp"
+
 #include "pinocchio/algorithm/constraints/sets/cone-base.hpp"
 
 namespace pinocchio
@@ -77,8 +79,8 @@ namespace pinocchio
     template<typename VectorLike>
     bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
-      assert(prec >= 0 && "prec should be positive");
-      return x.minCoeff() >= -prec;
+      assert(check_expression_if_real<Scalar>(prec >= 0) && "prec should be positive");
+      return check_expression_if_real<Scalar>(pinocchio::arrayMinCoeff(x) >= -prec);
     }
 
     /// \copydoc Base::project
