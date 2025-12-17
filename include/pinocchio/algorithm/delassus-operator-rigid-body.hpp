@@ -143,6 +143,7 @@ namespace pinocchio
     , m_constraint_datas_ref(constraint_datas_ref)
     , m_custom_data(helper::get_ref(model_ref))
     , m_solve_in_place_dirty(true)
+    , m_damping_dirty(true)
     , m_compliance_dampling_sum_dirty(true)
     , m_damping_storage(m_size)
     , m_damping(m_damping_storage.map())
@@ -260,7 +261,7 @@ namespace pinocchio
 
     bool isDirty() const
     {
-      return m_solve_in_place_dirty || m_compliance_dampling_sum_dirty;
+      return m_solve_in_place_dirty || m_compliance_dampling_sum_dirty || m_damping_dirty;
     }
 
     template<typename MatrixIn, typename MatrixOut>
@@ -272,6 +273,7 @@ namespace pinocchio
     {
       m_damping = damping_vector;
       m_compliance_dampling_sum_dirty = true;
+      m_damping_dirty = false;
       m_solve_in_place_dirty = true;
     }
 
@@ -406,6 +408,7 @@ namespace pinocchio
 
     mutable CustomData m_custom_data;
     bool m_solve_in_place_dirty;
+    bool m_damping_dirty;
     mutable bool m_compliance_dampling_sum_dirty;
 
     EigenStorageVector m_damping_storage;
