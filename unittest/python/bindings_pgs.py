@@ -34,7 +34,8 @@ class TestPGS(TestCase):
         settings.relative_tol_feasibility = 1e-14
         settings.absolute_tol_complementarity = 1e-13
         settings.relative_tol_complementarity = 1e-14
-        solver.solve(delassus, g, constraint_models, constraint_datas, settings)
+        result = pin.PGSSolverResult()
+        solver.solve(delassus, g, constraint_models, constraint_datas, settings, result)
 
     @unittest.skipUnless(coal_found, "Needs Coal.")
     def test_cassie(self, display=False, stat_record=True):
@@ -101,16 +102,17 @@ class TestPGS(TestCase):
         settings.relative_tol_feasibility = 1e-14
         settings.absolute_tol_complementarity = 1e-13
         settings.relative_tol_complementarity = 1e-14
+        result = pin.PGSSolverResult()
 
         has_converged = solver.solve(
-            delassus, g, constraint_models, constraint_datas, settings
+            delassus, g, constraint_models, constraint_datas, settings, result
         )
 
         self.assertTrue(has_converged, "Solver did not converge.")
-        print(f"{solver.solution.iterations}")
-        print(f"{solver.solution.primal_feasibility}")
-        print(f"{solver.solution.dual_feasibility}")
-        print(f"{solver.solution.complementarity}")
+        print(f"{result.iterations}")
+        print(f"{result.primal_feasibility}")
+        print(f"{result.dual_feasibility}")
+        print(f"{result.complementarity}")
 
         if stat_record and matplotlib_found:
             self.plotContactSolver(solver)
