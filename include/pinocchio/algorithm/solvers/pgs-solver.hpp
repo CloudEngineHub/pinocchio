@@ -245,9 +245,9 @@ namespace pinocchio
     PGSSolverResultTpl()
     : Base()
     , problem_size(0)
+    , primal_guess(std::nullopt)
     , x(x_storage.map())
     , y(y_storage.map())
-    , primal_guess(std::nullopt)
     {
     }
 
