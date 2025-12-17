@@ -35,7 +35,8 @@ namespace pinocchio
   template<typename Scalar, int Options>
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
   ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
-    const ModelTpl<S1, O1, JointCollectionTpl> & model)
+    const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    const DataTpl<S1, O1, JointCollectionTpl> & data)
   : D(D_storage.map())
   , Dinv(Dinv_storage.map())
   , U(U_storage.map())
@@ -45,7 +46,6 @@ namespace pinocchio
   {
     std::vector<ConstraintModel> empty_constraint_models;
     std::vector<ConstraintData> empty_constraint_datas;
-    auto data = model.createData();
     resize(model, data, empty_constraint_models, empty_constraint_datas);
   }
 
@@ -551,10 +551,11 @@ namespace pinocchio
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
   ContactCholeskyDecompositionTpl<Scalar, Options>
   ContactCholeskyDecompositionTpl<Scalar, Options>::getMassMatrixChoeslkyDecomposition(
-    const ModelTpl<S1, O1, JointCollectionTpl> & model) const
+    const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    const DataTpl<S1, O1, JointCollectionTpl> & data) const
   {
     typedef ContactCholeskyDecompositionTpl<Scalar, Options> ReturnType;
-    ReturnType res(model);
+    ReturnType res(model, data);
 
     res.D = D.tail(nv);
     res.Dinv = Dinv.tail(nv);

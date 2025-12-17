@@ -60,8 +60,8 @@ namespace pinocchio
       void visit(PyClass & cl) const
       {
         cl.def(bp::init<>(bp::arg("self"), "Default constructor."))
-          .def(bp::init<const Model &>(
-            bp::args("self", "model"),
+          .def(bp::init<const Model &, const Data &>(
+            bp::args("self", "model", "data"),
             "Constructor from a model.")[mimic_not_supported_function<>(1)])
           .def(bp::init<
                const Model &, const Data &, const RigidConstraintModelVector &,

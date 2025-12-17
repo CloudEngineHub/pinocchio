@@ -151,7 +151,8 @@ BOOST_AUTO_TEST_CASE(contact_operator_equal)
   VectorXd manipulator_q = randomConfiguration(manipulator_model);
   crba(manipulator_model, manipulator_data, manipulator_q, Convention::WORLD);
 
-  ContactCholeskyDecomposition humanoid_chol(humanoid_model), manipulator_chol(manipulator_model);
+  ContactCholeskyDecomposition humanoid_chol(humanoid_model, humanoid_data),
+    manipulator_chol(manipulator_model, manipulator_data);
   humanoid_chol.compute(humanoid_model, humanoid_data, contact_models_empty, contact_datas_empty);
   manipulator_chol.compute(
     manipulator_model, manipulator_data, contact_models_empty, contact_datas_empty);
@@ -313,7 +314,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_simple)
 
   // test retrieve Mass Matrix Cholesky Decomposition
   ContactCholeskyDecomposition mass_matrix_chol =
-    contact_chol_decomposition.getMassMatrixChoeslkyDecomposition(model);
+    contact_chol_decomposition.getMassMatrixChoeslkyDecomposition(model, data);
 
   // test Operational Space Inertia Matrix
   MatrixXd iosim = contact_chol_decomposition.getInverseOperationalSpaceInertiaMatrix();
@@ -2067,7 +2068,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_check_resize)
 
   // Test resize
   {
-    ContactCholeskyDecomposition contact_chol_decomposition_empty(model);
+    ContactCholeskyDecomposition contact_chol_decomposition_empty(model, data);
     {
       RigidConstraintModelStdVector contact_models_empty;
       RigidConstraintDataStdVector contact_datas_empty;

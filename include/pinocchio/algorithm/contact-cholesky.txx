@@ -84,7 +84,7 @@ namespace pinocchio
       getMassMatrixChoeslkyDecomposition<
         context::Scalar,
         context::Options,
-        JointCollectionDefaultTpl>(const context::Model &) const;
+        JointCollectionDefaultTpl>(const context::Model &, const context::Data &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Uv<context::MatrixXs>(

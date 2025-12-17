@@ -21,7 +21,6 @@ bool isZero(
   const Eigen::Tensor<Scalar, 3, Options> & tensor3,
   const Scalar & prec = Eigen::NumTraits<Scalar>::epsilon())
 {
-  typedef Eigen::Tensor<Scalar, 3, Options> Tensor3x;
   auto dims = tensor3.dimensions();
   const Eigen::DenseIndex outer_offset = dims[1] * dims[2];
   bool is_zero = true;
