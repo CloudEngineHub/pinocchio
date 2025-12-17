@@ -497,7 +497,7 @@ namespace pinocchio
       typedef typename ConstraintModel::ConstraintData ConstraintDataDerived;
 
       template<typename VelocityVectorLike, typename ResultVectorLike>
-      static void impl(
+      static void run(
         const ConstraintModel & cmodel,
         const ConstraintDataDerived & cdata,
         const VelocityVectorLike & velocity,
@@ -519,7 +519,7 @@ namespace pinocchio
       typedef typename ConstraintModel::ConstraintData ConstraintDataDerived;
 
       template<typename VelocityVectorLike, typename ResultVectorLike>
-      static void impl(
+      static void run(
         const ConstraintModel & cmodel,
         const ConstraintDataDerived & cdata,
         const VelocityVectorLike & velocity,
@@ -550,7 +550,7 @@ namespace pinocchio
         ResultVectorLike & result)
       {
         typedef DeSaxeCorrectionImpl<ConstraintModel> Impl;
-        return Impl::impl(cmodel.derived(), cdata.derived(), velocity, result);
+        return Impl::run(cmodel.derived(), cdata.derived(), velocity, result);
       }
 
       template<typename ConstraintModel>
