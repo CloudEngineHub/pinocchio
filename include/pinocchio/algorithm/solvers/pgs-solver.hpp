@@ -13,7 +13,7 @@
 
 #include "pinocchio/container/eigen-storage.hpp"
 
-#include <boost/optional.hpp>
+#include <optional>
 #include <limits>
 
 namespace pinocchio

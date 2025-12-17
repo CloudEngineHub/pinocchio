@@ -227,9 +227,8 @@ namespace pinocchio
 #endif // PINOCCHIO_WITH_HPP_FCL
 
     ConstraintSolverBaseTpl()
-    :
 #ifdef PINOCCHIO_WITH_HPP_FCL
-      timer(false)
+    : timer(false)
 #endif // PINOCCHIO_WITH_HPP_FCL
     {
     }
