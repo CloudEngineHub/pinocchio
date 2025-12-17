@@ -87,14 +87,12 @@ namespace pinocchio
   }; // struct ConstraintSolverSettingsBaseTpl
 
   ///
-  /// \brief Base struct for settings to pass to the solve method of a constraint solver.
-  template<typename _Scalar, template<typename S> class ConstraintSolverFriendClass>
+  /// \brief Base struct for result of a constraint solver.
+  template<typename _Scalar>
   struct ConstraintSolverResultBaseTpl
   {
     typedef _Scalar Scalar;
     static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
-
-    friend struct ConstraintSolverFriendClass<Scalar>;
 
     /// \brief Default constructor.
     ConstraintSolverResultBaseTpl()

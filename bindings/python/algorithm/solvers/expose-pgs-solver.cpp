@@ -76,6 +76,9 @@ namespace pinocchio
         .PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolverResult, problem_size, "Problem size")
 
         .def(
+          "reset", static_cast<void (PGSSolverResult::*)(std::size_t)>(&PGSSolverResult::reset),
+          (bp::arg("self"), bp::arg("problem_size") = 0), "Reset the result")
+        .def(
           "resize", &PGSSolverResult::resize, bp::args("self", "problem_size"),
           "Resize solution vectors")
 
@@ -121,9 +124,10 @@ namespace pinocchio
       const VectorXs & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const PGSSolverSettings & settings)
+      const PGSSolverSettings & settings,
+      PGSSolverResult & result)
     {
-      return solver.solve(delassus, g, constraint_models, constraint_datas, settings);
+      return solver.solve(delassus, g, constraint_models, constraint_datas, settings, result);
     }
 #endif
 
@@ -156,22 +160,28 @@ namespace pinocchio
             solve_pgs_wrapper<
               context::MatrixXs, ConstraintModel, ConstraintModelAllocator, ConstraintData,
               ConstraintDataAllocator>,
-            bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "settings"),
-            "Solve the constrained conic problem with given settings.")
+            bp::args(
+              "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
+              "result"),
+            "Solve the constrained conic problem with given settings and result.")
           .def(
             "solve",
             solve_pgs_wrapper<
               context::DelassusOperatorDense, ConstraintModel, ConstraintModelAllocator,
               ConstraintData, ConstraintDataAllocator>,
-            bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "settings"),
-            "Solve the constrained conic problem with given settings.")
+            bp::args(
+              "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
+              "result"),
+            "Solve the constrained conic problem with given settings and result.")
           .def(
             "solve",
             solve_pgs_wrapper<
               ContactCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
               ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
-            bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "settings"),
-            "Solve the constrained conic problem with given settings.");
+            bp::args(
+              "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
+              "result"),
+            "Solve the constrained conic problem with given settings and result.");
       }
 
       void run(boost::blank * ptr = 0)
@@ -197,11 +207,11 @@ namespace pinocchio
         bp::init<std::size_t>(
           bp::args("self", "problem_size"), "Constructor with problem dimension."));
 
-      cl.PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolver, solution, "Access the solution of the solver")
-        .PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolver, stats, "Access the statistics of the solver")
+      cl.PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolver, stats, "Access the statistics of the solver")
         .def(
-          "isReset", &PGSSolver::isReset, bp::arg("self"),
-          "Check if the solver workspace has been reset");
+          "isValid", &PGSSolver::isValid, bp::arg("self"),
+          "Check if the solver is in a valid state (has solved a constraint problem)")
+        .def("reset", &PGSSolver::reset, bp::arg("self"), "Reset the solver to initial state");
 
       // Expose solve methods for different constraint models
       PGSSolveMethodExposer<PGSSolver> solve_exposer(cl);

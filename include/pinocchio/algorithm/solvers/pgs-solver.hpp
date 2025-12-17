@@ -226,13 +226,17 @@ namespace pinocchio
   /// after calling the `solve` method.
   /// Also contains the warmstart of the solution to the constraint problem.
   template<typename _Scalar>
-  struct PGSSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar, PGSConstraintSolverTpl>
+  struct PGSSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
-    typedef ConstraintSolverResultBaseTpl<Scalar, PGSConstraintSolverTpl> Base;
+    typedef ConstraintSolverResultBaseTpl<Scalar> Base;
+
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+
+    // make PGS solver a friend so that it can use `makeValid`
+    friend struct PGSConstraintSolverTpl<Scalar>;
 
     using Base::isValid;
     using Base::nan;

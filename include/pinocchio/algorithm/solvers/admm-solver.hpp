@@ -431,13 +431,17 @@ namespace pinocchio
   /// after calling the `solve` method.
   /// Also contains the warmstart of the solution to the constraint problem.
   template<typename _Scalar>
-  struct ADMMSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar, ADMMConstraintSolverTpl>
+  struct ADMMSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
-    typedef ConstraintSolverResultBaseTpl<Scalar, ADMMConstraintSolverTpl> Base;
+    typedef ConstraintSolverResultBaseTpl<Scalar> Base;
+
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+
+    // make ADMM solver a friend so that it can use `makeValid`
+    friend struct ADMMConstraintSolverTpl<Scalar>;
 
     using Base::isValid;
     using Base::nan;

@@ -63,7 +63,7 @@ namespace pinocchio
     void exposeConstraintSolverResultBase()
     {
       bp::class_<ConstraintSolverResultBase>(
-        "ConstraintSolverResultBase", "Base class for constraint solver solution.",
+        "ConstraintSolverResultBase", "Base class for constraint solver result.",
         bp::no_init) // Abstract base class, no direct construction
 
         .PINOCCHIO_ADD_PROPERTY_READONLY(
@@ -77,7 +77,10 @@ namespace pinocchio
         .PINOCCHIO_ADD_PROPERTY_READONLY(
           ConstraintSolverResultBase, complementarity, "Final complementarity")
 
-        .def("reset", &ConstraintSolverResultBase::reset, bp::arg("self"), "Reset the solution");
+        .def(
+          "isValid", &ConstraintSolverResultBase::isValid, bp::arg("self"),
+          "Check if result is valid (represents a meaningful computation)")
+        .def("reset", &ConstraintSolverResultBase::reset, bp::arg("self"), "Reset the result");
     }
 
     // ============================================================================

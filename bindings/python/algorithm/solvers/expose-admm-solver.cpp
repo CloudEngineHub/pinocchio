@@ -97,8 +97,8 @@ namespace pinocchio
           "rho_init", &getRhoInitWrapper, &setRhoInitWrapper,
           "Initial value of rho parameter (optional). If None, will be estimated from Delassus.")
         .PINOCCHIO_ADD_PROPERTY(
-          ADMMSolverSettings, warmstart_rho_with_prev_sol,
-          "Whether to warmstart rho with previous solution")
+          ADMMSolverSettings, warmstart_rho_with_previous_result,
+          "Whether to warmstart rho with previous result")
         .PINOCCHIO_ADD_PROPERTY(ADMMSolverSettings, admm_update_rule, "ADMM update rule")
         .PINOCCHIO_ADD_PROPERTY(ADMMSolverSettings, admm_proximal_rule, "ADMM proximal rule")
         .PINOCCHIO_ADD_PROPERTY(ADMMSolverSettings, mu_prox, "Proximal penalty parameter")
@@ -112,6 +112,8 @@ namespace pinocchio
         .PINOCCHIO_ADD_PROPERTY(
           ADMMSolverSettings, rho_min_update_frequency, "Minimum frequency for rho updates")
         .PINOCCHIO_ADD_PROPERTY(ADMMSolverSettings, rho_momentum, "Momentum on rho updates")
+        .PINOCCHIO_ADD_PROPERTY(ADMMSolverSettings, rho_min, "Minimum value for rho parameter")
+        .PINOCCHIO_ADD_PROPERTY(ADMMSolverSettings, rho_max, "Maximum value for rho parameter")
         .PINOCCHIO_ADD_PROPERTY(
           ADMMSolverSettings, spectral_rho_power_init, "Initial rho power for SPECTRAL rule")
         .PINOCCHIO_ADD_PROPERTY(
@@ -167,6 +169,9 @@ namespace pinocchio
           ADMMSolverResult, spectral_rho_power, "Final spectral rho power")
         .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverResult, mu_prox, "Final proximal parameter")
 
+        .def(
+          "reset", static_cast<void (ADMMSolverResult::*)(std::size_t)>(&ADMMSolverResult::reset),
+          (bp::arg("self"), bp::arg("problem_size") = 0), "Reset the result")
         .def(
           "resize", &ADMMSolverResult::resize, bp::args("self", "problem_size"),
           "Resize solution vectors")
@@ -227,9 +232,10 @@ namespace pinocchio
       const VectorXs & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const ADMMSolverSettings & settings)
+      const ADMMSolverSettings & settings,
+      ADMMSolverResult & result)
     {
-      return solver.solve(delassus, g, constraint_models, constraint_datas, settings);
+      return solver.solve(delassus, g, constraint_models, constraint_datas, settings, result);
     }
 #endif
 
@@ -262,22 +268,28 @@ namespace pinocchio
             solve_admm_wrapper<
               ContactCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
               ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
-            bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "settings"),
-            "Solve the constrained conic problem with given settings.")
+            bp::args(
+              "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
+              "result"),
+            "Solve the constrained conic problem with given settings and result.")
           .def(
             "solve",
             solve_admm_wrapper<
               context::DelassusOperatorDense, ConstraintModel, ConstraintModelAllocator,
               ConstraintData, ConstraintDataAllocator>,
-            bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "settings"),
-            "Solve the constrained conic problem with given settings.")
+            bp::args(
+              "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
+              "result"),
+            "Solve the constrained conic problem with given settings and result.")
           .def(
             "solve",
             solve_admm_wrapper<
               context::DelassusOperatorSparse, ConstraintModel, ConstraintModelAllocator,
               ConstraintData, ConstraintDataAllocator>,
-            bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "settings"),
-            "Solve the constrained conic problem with given settings.");
+            bp::args(
+              "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
+              "result"),
+            "Solve the constrained conic problem with given settings and result.");
 
 #ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
         {
@@ -289,8 +301,10 @@ namespace pinocchio
             solve_admm_wrapper<
               DelassusOperatorSparseAccelerate, ConstraintModel, ConstraintModelAllocator,
               ConstraintData, ConstraintDataAllocator>,
-            bp::args("self", "delassus", "g", "constraint_models", "constraint_datas", "settings"),
-            "Solve the constrained conic problem with given settings.");
+            bp::args(
+              "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
+              "result"),
+            "Solve the constrained conic problem with given settings and result.");
         }
 #endif
       }
@@ -322,11 +336,11 @@ namespace pinocchio
         bp::init<std::size_t>(
           bp::args("self", "problem_size"), "Constructor with problem dimension."));
 
-      cl.PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolver, solution, "Access the solution of the solver")
-        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolver, stats, "Access the statistics of the solver")
+      cl.PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolver, stats, "Access the statistics of the solver")
         .def(
-          "isReset", &ADMMSolver::isReset, bp::arg("self"),
-          "Check if the solver workspace has been reset");
+          "isValid", &ADMMSolver::isValid, bp::arg("self"),
+          "Check if the solver is in a valid state (has solved a constraint problem)")
+        .def("reset", &ADMMSolver::reset, bp::arg("self"), "Reset the solver to initial state");
 
       // Expose solve methods for different constraint models
       ADMMSolveMethodExposer<ADMMSolver> solve_exposer(cl);
