@@ -79,7 +79,7 @@ struct TestBoxTpl
 
     // Configure the member PGS solver
     PGSConstraintSolver pgs_solver;
-    BOOST_CHECK(pgs_solver.isReset() == true);
+    BOOST_CHECK(pgs_solver.isValid() == false);
     PGSSolverSettings pgs_settings; // default settings
     pgs_settings.max_iterations = 100000;
     pgs_settings.absolute_tol_feasibility = absolute_tol;
@@ -87,24 +87,26 @@ struct TestBoxTpl
     pgs_settings.absolute_tol_complementarity = absolute_tol;
     pgs_settings.relative_tol_complementarity = relative_tol;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
-    has_converged =
-      pgs_solver.solve(G_expression, g, constraint_models, constraint_datas, pgs_settings);
-    BOOST_CHECK(pgs_solver.solution.problem_size == static_cast<std::size_t>(G_expression.rows()));
-    BOOST_CHECK(pgs_solver.isReset() == false);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+    has_converged = pgs_solver.solve(
+      G_expression, g, constraint_models, constraint_datas, pgs_settings, pgs_solution);
+    BOOST_CHECK(pgs_solution.problem_size == static_cast<std::size_t>(G_expression.rows()));
+    BOOST_CHECK(pgs_solver.isValid() == true);
+    pgs_solution.retrievePrimalSolution(primal_solution);
 
     if (test_warmstart)
     {
       pgs_settings.primal_guess.emplace(primal_solution);
       has_converged =
         has_converged
-        && pgs_solver.solve(G_expression, g, constraint_models, constraint_datas, pgs_settings);
-      pgs_solver.solution.retrievePrimalSolution(primal_solution);
+        && pgs_solver.solve(
+          G_expression, g, constraint_models, constraint_datas, pgs_settings, pgs_solution);
+      pgs_solution.retrievePrimalSolution(primal_solution);
     }
 
-    pgs_solver.solution.retrieveDualSolution(dual_solution);
-    n_iter = pgs_solver.solution.iterations;
+    pgs_solution.retrieveDualSolution(dual_solution);
+    n_iter = pgs_solution.iterations;
     const Eigen::VectorXd tau_ext = constraint_jacobian.transpose() * primal_solution / dt;
 
     v_next =
@@ -531,10 +533,11 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   pgs_settings.absolute_tol_complementarity = 1e-13;
   pgs_settings.relative_tol_complementarity = 1e-14;
   pgs_settings.primal_guess.emplace(primal_solution);
+  PGSSolverSolution pgs_solution;
 
-  const bool has_converged =
-    pgs_solver.solve(G_expression, g, constraint_models, constraint_datas, pgs_settings);
-  pgs_solver.solution.retrievePrimalSolution(primal_solution);
+  const bool has_converged = pgs_solver.solve(
+    G_expression, g, constraint_models, constraint_datas, pgs_settings, pgs_solution);
+  pgs_solution.retrievePrimalSolution(primal_solution);
   BOOST_CHECK(has_converged);
 
   dual_solution = G * primal_solution + g;
@@ -655,15 +658,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_against_lower_bound;
     Eigen::VectorXd dual_solution2;
-    pgs_solver.solution.retrieveDualSolution(dual_solution2);
+    pgs_solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(dual_solution.isZero(1e-6));
@@ -692,15 +697,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    pgs_solver.solution.retrieveDualSolution(dual_solution2);
+    pgs_solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -793,15 +800,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_against_lower_bound;
     Eigen::VectorXd dual_solution2;
-    pgs_solver.solution.retrieveDualSolution(dual_solution2);
+    pgs_solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(dual_solution.isZero(1e-6));
@@ -835,15 +844,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    pgs_solver.solution.retrieveDualSolution(dual_solution2);
+    pgs_solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -936,15 +947,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_against_lower_bound;
     Eigen::VectorXd dual_solution2;
-    pgs_solver.solution.retrieveDualSolution(dual_solution2);
+    pgs_solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(dual_solution.isZero(1e-6));
@@ -978,15 +991,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    pgs_solver.solution.retrieveDualSolution(dual_solution2);
+    pgs_solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -1070,16 +1085,18 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
     constraint_velocity /= dt;
     Eigen::VectorXd dual_solution;
-    pgs_solver.solution.retrieveDualSolution(dual_solution);
+    pgs_solution.retrieveDualSolution(dual_solution);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
@@ -1108,15 +1125,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    pgs_solver.solution.retrieveDualSolution(dual_solution2);
+    pgs_solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -1200,15 +1219,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
     Eigen::VectorXd dual_solution;
-    pgs_solver.solution.retrieveDualSolution(dual_solution);
+    pgs_solution.retrieveDualSolution(dual_solution);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
@@ -1237,15 +1258,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    pgs_solver.solution.retrieveDualSolution(dual_solution2);
+    pgs_solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());
@@ -1332,16 +1355,18 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
 
     Eigen::VectorXd dual_solution;
-    pgs_solver.solution.retrieveDualSolution(dual_solution);
+    pgs_solution.retrieveDualSolution(dual_solution);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(std::abs(constraint_velocity[0]) < 1e-6);
@@ -1372,15 +1397,17 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     pgs_settings.absolute_tol_complementarity = 1e-13;
     pgs_settings.relative_tol_complementarity = 1e-14;
     pgs_settings.primal_guess.emplace(primal_solution);
+    PGSSolverSolution pgs_solution;
 
     const bool has_converged = pgs_solver.solve(
-      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings);
-    pgs_solver.solution.retrievePrimalSolution(primal_solution);
+      G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
+      pgs_solution);
+    pgs_solution.retrievePrimalSolution(primal_solution);
     BOOST_CHECK(has_converged);
 
     dual_solution = G_plain * primal_solution + g_move_away;
     Eigen::VectorXd dual_solution2;
-    pgs_solver.solution.retrieveDualSolution(dual_solution2);
+    pgs_solution.retrieveDualSolution(dual_solution2);
 
     BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
     BOOST_CHECK(primal_solution.isZero());

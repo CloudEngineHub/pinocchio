@@ -43,10 +43,9 @@ namespace pinocchio
 
     explicit PGSConstraintSolverTpl(std::size_t problem_size = 0)
     : Base()
-    , solution()
     , stats()
     , workspace_(problem_size)
-    , is_reset_(true)
+    , is_valid_(false)
     {
     }
 
@@ -59,6 +58,8 @@ namespace pinocchio
     /// \param[in] constraint_models Vector of constraint models.
     /// \param[in] constraint_datas Vector of constraint datas.
     /// \param[in] settings Settings for the PGS solver.
+    /// \param[in/out] solution Solution to the constraint problem. Also contains the warmstart to
+    /// solve the problem.
     ///
     /// \returns True if the problem has converged.
     template<
@@ -73,7 +74,8 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const PGSSolverSettings & settings);
+      const PGSSolverSettings & settings,
+      PGSSolverSolution & solution);
 
     ///
     /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
@@ -84,6 +86,8 @@ namespace pinocchio
     /// \param[in] constraint_models Vector of constraint models.
     /// \param[in] constraint_datas Vector of constraint datas.
     /// \param[in] settings Settings for the PGS solver.
+    /// \param[in/out] solution Solution to the constraint problem. Also contains the warmstart to
+    /// solve the problem.
     ///
     /// \returns True if the problem has converged.
     template<
@@ -98,34 +102,32 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const PGSSolverSettings & settings)
+      const PGSSolverSettings & settings,
+      PGSSolverSolution & solution)
     {
-      return solve(delassus.derived().matrix(), g, constraint_models, constraint_datas, settings);
+      return solve(
+        delassus.derived().matrix(), g, constraint_models, constraint_datas, settings, solution);
     }
 
     /// \brief Reset the constraint solver as if it has never run.
     void reset()
     {
-      solution.reset();
       stats.reset();
       workspace_.reset();
-      is_reset_ = true;
+      is_valid_ = false;
     }
 
-    /// \brief Returns true if solver is in reset state (it has not run).
-    /// Otherwise, its solution and stats are valid.
-    bool isReset() const
+    /// \brief Returns true if solver is in a valid state (it has solved a constraint problem).
+    /// If so, its stats are valid.
+    bool isValid() const
     {
-      return is_reset_;
+      return is_valid_;
     }
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
     /// \brief Timer for the `solve` method
     using Base::timer;
 #endif // PINOCCHIO_WITH_HPP_FCL
-
-    /// \brief Solution of the PGS solver
-    PGSSolverSolution solution;
 
     /// \brief Per-iteration stats of the PGS solver.
     PGSSolverStats stats;
@@ -137,8 +139,8 @@ namespace pinocchio
     PGSSolverWorkspace workspace_;
 
     /// \brief Flag to check whether or not the solver is in a reset state.
-    /// If not, the solution and stats are valid.
-    bool is_reset_;
+    /// If not, its stats are valid.
+    bool is_valid_;
 
   }; // struct PGSConstraintSolverTpl
 
@@ -232,13 +234,14 @@ namespace pinocchio
   /// \brief Struct describing the solution of the PGS constraint solver
   /// after calling the `solve` method.
   template<typename _Scalar>
-  struct PGSSolverSolutionTpl : ConstraintSolverSolutionBaseTpl<_Scalar>
+  struct PGSSolverSolutionTpl : ConstraintSolverSolutionBaseTpl<_Scalar, PGSConstraintSolverTpl>
   {
     typedef _Scalar Scalar;
-    typedef ConstraintSolverSolutionBaseTpl<Scalar> Base;
+    typedef ConstraintSolverSolutionBaseTpl<Scalar, PGSConstraintSolverTpl> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
+    using Base::isValid;
     using Base::nan;
 
     /// \brief Default constructor.
