@@ -35,7 +35,9 @@ namespace pinocchio
   {
     m_constraint_models_ref = constraint_models_ref;
     m_constraint_datas_ref = constraint_datas_ref;
-    updateComplianceFromConstraintModels();
+
+    retrieveCompliance(
+      helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref), m_compliance);
 
     computeJointMinimalOrdering(model(), data(), helper::get_ref(constraint_models_ref));
     m_dirty = true;

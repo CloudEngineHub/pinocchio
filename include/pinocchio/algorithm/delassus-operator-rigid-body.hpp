@@ -383,24 +383,6 @@ namespace pinocchio
       m_dirty = false;
     }
 
-    /// \brief update compliance based on compliance of constraint models
-    void updateComplianceFromConstraintModels()
-    {
-      const ConstraintModelVector & constraint_models_ref = constraint_models();
-      const ConstraintDataVector & constraint_datas_ref = constraint_datas();
-
-      Eigen::Index cindex = 0;
-      for (size_t i = 0; i < constraint_models_ref.size(); ++i)
-      {
-        const auto & cmodel = helper::get_ref(constraint_models_ref[i]);
-        const auto & cdata = helper::get_ref(constraint_datas_ref[i]);
-
-        const auto csize = cmodel.residualSize(cdata);
-        cmodel.retrieveCompliance(cdata, m_compliance.segment(cindex, csize));
-        cindex += csize;
-      }
-    }
-
     void updateSumComplianceDamping()
     {
       m_sum_compliance_damping = m_damping + m_compliance;
