@@ -301,6 +301,18 @@ namespace pinocchio
              && m_storage.head(size()) == other.m_storage.head(size());
     }
 
+    /// \brief Returns the storage capacity in bytes (i.e. sizeof(Scalar) * capacity()).
+    std::size_t capacityInBytes() const
+    {
+      return sizeof(Scalar) * capacity();
+    }
+
+    /// \brief Returns the current data size in bytes (i.e. sizeof(Scalar) * size()).
+    std::size_t sizeInBytes() const
+    {
+      return sizeof(Scalar) * size();
+    }
+
   protected:
     /// \brief Internal vector containing the stored quantities
     StorageVector m_storage;
