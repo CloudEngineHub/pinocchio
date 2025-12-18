@@ -121,9 +121,9 @@ namespace pinocchio
     bool rel_prec_reached = false;
     if (
       check_expression_if_real<Scalar, false>(
-        res.complementarity <= settings.absolute_tol_complementarity)
+        res.complementarity <= settings.absolute_complementarity_tol)
       && check_expression_if_real<Scalar, false>(
-        res.dual_feasibility <= settings.absolute_tol_feasibility))
+        res.dual_feasibility <= settings.absolute_feasibility_tol))
     {
       abs_prec_reached = true;
       wk.z = wk.rhs; // store dual solution
@@ -356,15 +356,15 @@ namespace pinocchio
         // -- absolute check
         if (
           check_expression_if_real<Scalar, false>(
-            res.complementarity <= settings.absolute_tol_complementarity)
+            res.complementarity <= settings.absolute_complementarity_tol)
           && check_expression_if_real<Scalar, false>(
             res.dual_feasibility
-            <= settings.absolute_tol_feasibility
-                 + settings.relative_tol_feasibility * math::max(g_norm_inf, z_norm_inf))
+            <= settings.absolute_feasibility_tol
+                 + settings.relative_feasibility_tol * math::max(g_norm_inf, z_norm_inf))
           && check_expression_if_real<Scalar, false>(
             res.primal_feasibility
-            <= settings.absolute_tol_feasibility
-                 + settings.relative_tol_feasibility * math::max(x_norm_inf, y_norm_inf)))
+            <= settings.absolute_feasibility_tol
+                 + settings.relative_feasibility_tol * math::max(x_norm_inf, y_norm_inf)))
         {
           abs_prec_reached = true;
         }
@@ -377,13 +377,13 @@ namespace pinocchio
         if (
           check_expression_if_real<Scalar, false>(
             dx_norm
-            <= settings.relative_tol_feasibility * math::max(x_norm_inf, x_previous_norm_inf))
+            <= settings.relative_feasibility_tol * math::max(x_norm_inf, x_previous_norm_inf))
           && check_expression_if_real<Scalar, false>(
             dy_norm
-            <= settings.relative_tol_feasibility * math::max(y_norm_inf, y_previous_norm_inf))
+            <= settings.relative_feasibility_tol * math::max(y_norm_inf, y_previous_norm_inf))
           && check_expression_if_real<Scalar, false>(
             dz_norm
-            <= settings.relative_tol_feasibility * math::max(z_norm_inf, z_previous_norm_inf)))
+            <= settings.relative_feasibility_tol * math::max(z_norm_inf, z_previous_norm_inf)))
         {
           rel_prec_reached = true;
         }

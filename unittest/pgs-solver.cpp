@@ -82,10 +82,10 @@ struct TestBoxTpl
     BOOST_CHECK(pgs_solver.isValid() == false);
     PGSSolverSettings pgs_settings; // default settings
     pgs_settings.max_iterations = 100000;
-    pgs_settings.absolute_tol_feasibility = absolute_tol;
-    pgs_settings.relative_tol_feasibility = relative_tol;
-    pgs_settings.absolute_tol_complementarity = absolute_tol;
-    pgs_settings.relative_tol_complementarity = relative_tol;
+    pgs_settings.absolute_feasibility_tol = absolute_tol;
+    pgs_settings.relative_feasibility_tol = relative_tol;
+    pgs_settings.absolute_complementarity_tol = absolute_tol;
+    pgs_settings.relative_complementarity_tol = relative_tol;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -528,10 +528,10 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
   PGSSolverSettings pgs_settings;
-  pgs_settings.absolute_tol_feasibility = 1e-13;
-  pgs_settings.relative_tol_feasibility = 1e-14;
-  pgs_settings.absolute_tol_complementarity = 1e-13;
-  pgs_settings.relative_tol_complementarity = 1e-14;
+  pgs_settings.absolute_feasibility_tol = 1e-13;
+  pgs_settings.relative_feasibility_tol = 1e-14;
+  pgs_settings.absolute_complementarity_tol = 1e-13;
+  pgs_settings.relative_complementarity_tol = 1e-14;
   PGSSolverResult pgs_result;
   pgs_result.primal_guess.emplace(primal_solution);
 
@@ -653,10 +653,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -692,10 +692,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -795,10 +795,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -839,10 +839,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -942,10 +942,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -986,10 +986,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -1080,10 +1080,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -1120,10 +1120,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -1214,10 +1214,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -1253,10 +1253,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -1350,10 +1350,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 
@@ -1392,10 +1392,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
-    pgs_settings.absolute_tol_feasibility = 1e-13;
-    pgs_settings.relative_tol_feasibility = 1e-14;
-    pgs_settings.absolute_tol_complementarity = 1e-13;
-    pgs_settings.relative_tol_complementarity = 1e-14;
+    pgs_settings.absolute_feasibility_tol = 1e-13;
+    pgs_settings.relative_feasibility_tol = 1e-14;
+    pgs_settings.absolute_complementarity_tol = 1e-13;
+    pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
     pgs_result.primal_guess.emplace(primal_solution);
 

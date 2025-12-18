@@ -30,10 +30,10 @@ class TestPGS(TestCase):
         dim_pb = g.shape[0]
         solver = pin.PGSConstraintSolver(dim_pb)
         settings = pin.PGSSolverSettings()
-        settings.absolute_tol_feasibility = 1e-13
-        settings.relative_tol_feasibility = 1e-14
-        settings.absolute_tol_complementarity = 1e-13
-        settings.relative_tol_complementarity = 1e-14
+        settings.absolute_feasibility_tol = 1e-13
+        settings.relative_feasibility_tol = 1e-14
+        settings.absolute_complementarity_tol = 1e-13
+        settings.relative_complementarity_tol = 1e-14
         result = pin.PGSSolverResult()
         solver.solve(delassus, g, constraint_models, constraint_datas, settings, result)
 
@@ -98,10 +98,10 @@ class TestPGS(TestCase):
         dim_pb = g.shape[0]
         solver = pin.PGSConstraintSolver(dim_pb)
         settings = pin.PGSSolverSettings()
-        settings.absolute_tol_feasibility = 1e-13
-        settings.relative_tol_feasibility = 1e-14
-        settings.absolute_tol_complementarity = 1e-13
-        settings.relative_tol_complementarity = 1e-14
+        settings.absolute_feasibility_tol = 1e-13
+        settings.relative_feasibility_tol = 1e-14
+        settings.absolute_complementarity_tol = 1e-13
+        settings.relative_complementarity_tol = 1e-14
         result = pin.PGSSolverResult()
 
         has_converged = solver.solve(

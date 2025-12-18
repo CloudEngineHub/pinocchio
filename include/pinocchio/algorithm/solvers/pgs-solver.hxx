@@ -661,11 +661,11 @@ namespace pinocchio
       // -- absolute
       if (
         check_expression_if_real<Scalar, false>(
-          res.primal_feasibility <= settings.absolute_tol_feasibility)
+          res.primal_feasibility <= settings.absolute_feasibility_tol)
         && check_expression_if_real<Scalar, false>(
-          res.dual_feasibility <= settings.absolute_tol_feasibility)
+          res.dual_feasibility <= settings.absolute_feasibility_tol)
         && check_expression_if_real<Scalar, false>(
-          res.complementarity <= settings.absolute_tol_complementarity))
+          res.complementarity <= settings.absolute_complementarity_tol))
       {
         abs_prec_reached = true;
       }
@@ -679,7 +679,7 @@ namespace pinocchio
       const Scalar x_norm_inf = wk.x.template lpNorm<Eigen::Infinity>();
       if (check_expression_if_real<Scalar, false>(
             proximal_metric
-            <= settings.relative_tol_feasibility * math::max(x_norm_inf, x_previous_norm_inf)))
+            <= settings.relative_feasibility_tol * math::max(x_norm_inf, x_previous_norm_inf)))
       {
         rel_prec_reached = true;
       }

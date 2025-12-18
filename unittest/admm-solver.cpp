@@ -85,10 +85,10 @@ struct TestBoxTpl
     BOOST_CHECK(admm_solver.isValid() == false);
     ADMMSolverSettings admm_settings; // default settings
     admm_settings.max_iterations = 10000;
-    admm_settings.absolute_tol_feasibility = 1e-10;
-    admm_settings.relative_tol_feasibility = 1e-12;
-    admm_settings.absolute_tol_complementarity = 1e-10;
-    admm_settings.relative_tol_complementarity = 1e-12;
+    admm_settings.absolute_feasibility_tol = 1e-10;
+    admm_settings.relative_feasibility_tol = 1e-12;
+    admm_settings.absolute_complementarity_tol = 1e-10;
+    admm_settings.relative_complementarity_tol = 1e-12;
     admm_settings.lanczos_size = static_cast<std::size_t>(g.size());
     admm_settings.rho_init = std::nullopt;
     admm_settings.admm_update_rule =
@@ -544,10 +544,10 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
   ADMMSolverSettings admm_settings;
-  admm_settings.absolute_tol_feasibility = 1e-13;
-  admm_settings.relative_tol_feasibility = 1e-14;
-  admm_settings.absolute_tol_complementarity = 1e-13;
-  admm_settings.relative_tol_complementarity = 1e-14;
+  admm_settings.absolute_feasibility_tol = 1e-13;
+  admm_settings.relative_feasibility_tol = 1e-14;
+  admm_settings.absolute_complementarity_tol = 1e-13;
+  admm_settings.relative_complementarity_tol = 1e-14;
   ADMMSolverResult admm_result;
   admm_result.preconditioner.emplace(preconditioner_vec);
   admm_result.primal_guess.emplace(primal_solution);
@@ -671,10 +671,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -712,10 +712,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -817,10 +817,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -863,10 +863,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -968,10 +968,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -1014,10 +1014,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -1110,10 +1110,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -1152,10 +1152,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -1248,10 +1248,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -1289,10 +1289,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -1388,10 +1388,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
@@ -1432,10 +1432,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
     ADMMSolverSettings admm_settings;
-    admm_settings.absolute_tol_feasibility = 1e-13;
-    admm_settings.relative_tol_feasibility = 1e-14;
-    admm_settings.absolute_tol_complementarity = 1e-13;
-    admm_settings.relative_tol_complementarity = 1e-14;
+    admm_settings.absolute_feasibility_tol = 1e-13;
+    admm_settings.relative_feasibility_tol = 1e-14;
+    admm_settings.absolute_complementarity_tol = 1e-13;
+    admm_settings.relative_complementarity_tol = 1e-14;
     ADMMSolverResult admm_result;
     admm_result.preconditioner.emplace(preconditioner_vec);
     admm_result.primal_guess.emplace(primal_solution);
