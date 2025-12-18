@@ -351,7 +351,7 @@ namespace pinocchio
       typename M2,
       bool value = is_floating_point<typename M1::Scalar>::value
                    && is_floating_point<typename M2::Scalar>::value>
-    struct arrayCompareAllAlgo
+    struct compareAllAlgo
     {
       static bool run(
         const Eigen::MatrixBase<M1> & m1,
@@ -376,7 +376,7 @@ namespace pinocchio
       }
     };
     template<typename M1, typename M2>
-    struct arrayCompareAllAlgo<M1, M2, false>
+    struct compareAllAlgo<M1, M2, false>
     {
       static bool run(
         const Eigen::MatrixBase<M1> & m1,
@@ -400,12 +400,12 @@ namespace pinocchio
   /// \returns true if op is true on all m1 and m2 elements
   ///
   template<typename M1, typename M2>
-  inline bool arrayCompareAll(
+  inline bool compareAll(
     const Eigen::MatrixBase<M1> & m1,
     const Eigen::MatrixBase<M2> & m2,
     internal::ComparisonOperators op)
   {
-    return internal::arrayCompareAllAlgo<M1, M2>::run(m1, m2, op);
+    return internal::compareAllAlgo<M1, M2>::run(m1, m2, op);
   }
   namespace internal
   {
@@ -418,7 +418,7 @@ namespace pinocchio
                    && is_floating_point<typename Lower::Scalar>::value
                    && is_floating_point<typename Upper::Scalar>::value
                    && is_floating_point<typename Res::Scalar>::value>
-    struct arrayBoundAlgo
+    struct clipAlgo
     {
       static void run(
         const Eigen::MatrixBase<M> & x,
@@ -430,7 +430,7 @@ namespace pinocchio
       }
     };
     template<typename M, typename Lower, typename Upper, typename Res>
-    struct arrayBoundAlgo<M, Lower, Upper, Res, false>
+    struct clipAlgo<M, Lower, Upper, Res, false>
     {
       static void run(
         const Eigen::MatrixBase<M> & x,
@@ -445,7 +445,7 @@ namespace pinocchio
     };
   } // namespace internal
   ///
-  /// \brief Bound a matrix between upper and lower bound
+  /// \brief Clip a matrix between upper and lower bound
   ///
   /// \param[in] x Input matrix
   /// \param[in] lower lower bound matrix
@@ -453,13 +453,13 @@ namespace pinocchio
   /// \param[out] res result
   ///
   template<typename M, typename Lower, typename Upper, typename Res>
-  inline void arrayBound(
+  inline void clip(
     const Eigen::MatrixBase<M> & x,
     const Eigen::MatrixBase<Lower> & lower,
     const Eigen::MatrixBase<Upper> & upper,
     const Eigen::MatrixBase<Res> & res)
   {
-    internal::arrayBoundAlgo<M, Lower, Upper, Res>::run(x, lower, upper, res);
+    internal::clipAlgo<M, Lower, Upper, Res>::run(x, lower, upper, res);
   }
   namespace internal
   {
@@ -468,7 +468,7 @@ namespace pinocchio
       typename Res,
       bool value = is_floating_point<typename M::Scalar>::value
                    && is_floating_point<typename Res::Scalar>::value>
-    struct arrayMinAlgo
+    struct clampUpperAlgo
     {
       static void run(
         const Eigen::MatrixBase<M> & x,
@@ -479,7 +479,7 @@ namespace pinocchio
       }
     };
     template<typename M, typename Res>
-    struct arrayMinAlgo<M, Res, false>
+    struct clampUpperAlgo<M, Res, false>
     {
       static void run(
         const Eigen::MatrixBase<M> & x,
@@ -492,24 +492,24 @@ namespace pinocchio
     };
   } // namespace internal
   ///
-  /// \brief Apply an upper bound to a matrix
+  /// \brief Clamp matrix \p x upper bound to \p upper
   ///
   /// \param[in] x Input matrix
-  /// \param[in] min Matrix upper bound
+  /// \param[in] upper Matrix upper bound
   /// \param[out] res result
   ///
   template<typename M, typename Res>
-  inline void arrayMin(
+  inline void clampUpper(
     const Eigen::MatrixBase<M> & x,
-    typename Eigen::MatrixBase<M>::Scalar min,
+    typename Eigen::MatrixBase<M>::Scalar upper,
     const Eigen::MatrixBase<Res> & res)
   {
-    internal::arrayMinAlgo<M, Res>::run(x, min, res);
+    internal::clampUpperAlgo<M, Res>::run(x, upper, res);
   }
   namespace internal
   {
     template<typename M, bool value = is_floating_point<typename M::Scalar>::value>
-    struct arrayMinCoeffAlgo
+    struct minCoeffAlgo
     {
       static typename M::Scalar run(const Eigen::MatrixBase<M> & x)
       {
@@ -517,7 +517,7 @@ namespace pinocchio
       }
     };
     template<typename M>
-    struct arrayMinCoeffAlgo<M, false>
+    struct minCoeffAlgo<M, false>
     {
       static typename M::Scalar run(const Eigen::MatrixBase<M> & x)
       {
@@ -533,9 +533,9 @@ namespace pinocchio
   /// \return Matrix minimal coefficient
   ///
   template<typename M>
-  inline typename Eigen::MatrixBase<M>::Scalar arrayMinCoeff(const Eigen::MatrixBase<M> & x)
+  inline typename Eigen::MatrixBase<M>::Scalar minCoeff(const Eigen::MatrixBase<M> & x)
   {
-    return internal::arrayMinCoeffAlgo<M>::run(x);
+    return internal::minCoeffAlgo<M>::run(x);
   }
   namespace internal
   {

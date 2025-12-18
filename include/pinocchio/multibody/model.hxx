@@ -122,13 +122,13 @@ namespace pinocchio
       max_velocity.size(), joint_model.nv(),
       "The joint maximum velocity vector is not of right size");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
-      arrayCompareAll(min_effort, max_effort, internal::ComparisonOperators::LE),
+      compareAll(min_effort, max_effort, internal::ComparisonOperators::LE),
       "Some components of min_effort are greater than max_effort");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
-      arrayCompareAll(min_joint_friction, max_joint_friction, internal::ComparisonOperators::LE),
+      compareAll(min_joint_friction, max_joint_friction, internal::ComparisonOperators::LE),
       "Some components of min_dry_friction are greater than max_dry_friction");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
-      arrayCompareAll(min_velocity, max_velocity, internal::ComparisonOperators::LE),
+      compareAll(min_velocity, max_velocity, internal::ComparisonOperators::LE),
       "Some components of min_velocity are greater than max_velocity");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       min_config.size(), joint_model.nq(),

@@ -55,7 +55,7 @@ namespace pinocchio
     {
       assert(lb.size() == ub.size());
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        arrayCompareAll(lb, ub, internal::ComparisonOperators::LE),
+        compareAll(lb, ub, internal::ComparisonOperators::LE),
         "Some components of lb are greater than ub");
     }
 
@@ -130,7 +130,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLikeIn> & x,
       const Eigen::MatrixBase<VectorLikeOut> & res_) const
     {
-      pinocchio::arrayBound(x, lb, ub, res_);
+      pinocchio::clip(x, lb, ub, res_);
     }
 
     /// \copydoc Base::scaledProject
@@ -142,7 +142,7 @@ namespace pinocchio
     {
       PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
       assert((scale.array() > 0).all() && "scale vector should be positive");
-      pinocchio::arrayBound(
+      pinocchio::clip(
         x, (lb.array() / scale.array()).matrix(), (ub.array() / scale.array()).matrix(), res_);
       PINOCCHIO_EIGEN_MALLOC_ALLOWED();
     }

@@ -80,7 +80,7 @@ namespace pinocchio
     bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
       assert(check_expression_if_real<Scalar>(prec >= 0) && "prec should be positive");
-      return check_expression_if_real<Scalar>(pinocchio::arrayMinCoeff(x) >= -prec);
+      return check_expression_if_real<Scalar>(pinocchio::minCoeff(x) >= -prec);
     }
 
     /// \copydoc Base::project
