@@ -69,8 +69,8 @@ namespace pinocchio
     {
       typedef typename CastType<NewScalar, BaumgarteCorrectorParametersTpl>::type ReturnType;
       ReturnType res;
-      res.Kp = NewScalar(Kp);
-      res.Kd = NewScalar(Kd);
+      res.Kp = ScalarCast<NewScalar, Scalar>::cast(Kp);
+      res.Kd = ScalarCast<NewScalar, Scalar>::cast(Kd);
       return res;
     }
 

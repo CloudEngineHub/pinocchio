@@ -43,6 +43,7 @@ function(ADD_PINOCCHIO_UNIT_TEST name)
         PARSERS
         EXTRA
         COLLISION
+        CPPAD
         PARALLEL
         VISUALIZERS
         PYTHON_PARSER
@@ -97,6 +98,10 @@ function(ADD_PINOCCHIO_UNIT_TEST name)
       if(unit_test_PARALLE OR (unit_test_PARALLEL_OPTIONAL AND TARGET ${PROJECT_NAME}_parallel))
         target_link_libraries(${TEST_NAME} PUBLIC ${PROJECT_NAME}_collision_parallel)
       endif()
+    endif()
+
+    if(unit_test_CPPAD)
+      target_link_libraries(${TEST_NAME} PUBLIC ${PROJECT_NAME}_cppad)
     endif()
 
     if(unit_test_EXTRA OR (unit_test_EXTRA_OPTIONAL AND TARGET ${PROJECT_NAME}_extra))

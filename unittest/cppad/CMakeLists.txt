@@ -5,7 +5,7 @@
 # Automatic differentiation
 macro(ADD_CPPAD_UNIT_TEST name)
   include_directories(SYSTEM ${cppad_INCLUDE_DIR})
-  add_pinocchio_unit_test(${name} PACKAGES ${cppad_LIBRARY})
+  add_pinocchio_unit_test(${name} CPPAD)
   get_cpp_test_name(${name} ${CMAKE_CURRENT_SOURCE_DIR} TEST_NAME)
   add_dependencies(${PROJECT_NAME}-test-cpp-cppad ${TEST_NAME})
 endmacro()
