@@ -137,13 +137,13 @@ namespace pinocchio
     : Base()
     , m_size(
         residualSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref)))
+    , m_min_damping_value(min_damping_value)
     , m_model_ref(model_ref)
     , m_data_ref(data_ref)
     , m_constraint_models_ref(constraint_models_ref)
     , m_constraint_datas_ref(constraint_datas_ref)
     , m_custom_data(helper::get_ref(model_ref))
     , m_solve_in_place_dirty(true)
-    , m_damping_dirty(true)
     , m_compliance_dampling_sum_dirty(true)
     , m_damping_storage(m_size)
     , m_damping(m_damping_storage.map())
@@ -161,7 +161,8 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         min_damping_value >= Scalar(0) && "The damping value should be positive.");
 
-      updateDamping(min_damping_value);
+      m_damping.fill(m_min_damping_value);
+      m_compliance.setZero();
       update(constraint_models_ref, constraint_datas_ref);
     }
 
@@ -261,7 +262,7 @@ namespace pinocchio
 
     bool isDirty() const
     {
-      return m_solve_in_place_dirty || m_compliance_dampling_sum_dirty || m_damping_dirty;
+      return m_solve_in_place_dirty || m_compliance_dampling_sum_dirty;
     }
 
     template<typename MatrixIn, typename MatrixOut>
@@ -273,7 +274,6 @@ namespace pinocchio
     {
       m_damping = damping_vector;
       m_compliance_dampling_sum_dirty = true;
-      m_damping_dirty = false;
       m_solve_in_place_dirty = true;
     }
 
@@ -401,6 +401,7 @@ namespace pinocchio
 
     // Holders
     Eigen::Index m_size;
+    const Scalar m_min_damping_value;
     ModelHolder m_model_ref;
     DataHolder m_data_ref;
     ConstraintModelVectorHolder m_constraint_models_ref;
@@ -408,7 +409,6 @@ namespace pinocchio
 
     mutable CustomData m_custom_data;
     bool m_solve_in_place_dirty;
-    bool m_damping_dirty;
     mutable bool m_compliance_dampling_sum_dirty;
 
     EigenStorageVector m_damping_storage;

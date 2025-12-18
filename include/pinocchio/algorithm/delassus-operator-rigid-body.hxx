@@ -42,8 +42,6 @@ namespace pinocchio
 
     // resize quantities
     m_damping_storage.resize(m_size);
-    if (old_size < m_size)
-      m_damping_dirty = true;
     m_compliance_storage.resize(m_size);
     m_sum_compliance_damping_storage.resize(m_size);
     m_sum_compliance_damping_inverse_storage.resize(m_size);
@@ -54,7 +52,9 @@ namespace pinocchio
     assert(m_sum_compliance_damping_inverse_storage.size() == m_size);
 
     // reset or set values
-    // m_damping.setZero();
+    if (old_size < m_size)
+      m_damping.tail(m_size - old_size).fill(m_min_damping_value);
+
     retrieveCompliance(
       helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref), m_compliance);
 
@@ -76,8 +76,6 @@ namespace pinocchio
     ConstraintModel,
     Holder>::compute_or_update_decomposition(bool apply_on_the_right, bool solve_in_place)
   {
-    assert(!m_damping_dirty && "The damping has not been set.");
-
     typedef typename Data::Inertia Inertia;
     using Matrix6 = typename Inertia::Matrix6;
 
