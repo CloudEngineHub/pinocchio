@@ -358,6 +358,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/openmp.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/reference.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/shared-ptr.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/size-in-bytes.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/static-if.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/std-vector.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/string-generator.hpp
