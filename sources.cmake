@@ -65,8 +65,8 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hpp
