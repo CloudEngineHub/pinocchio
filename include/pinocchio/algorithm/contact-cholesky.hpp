@@ -2,8 +2,8 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_contact_cholesky_fwd_hpp__
-#define __pinocchio_algorithm_contact_cholesky_fwd_hpp__
+#ifndef __pinocchio_algorithm_contact_cholesky_hpp__
+#define __pinocchio_algorithm_contact_cholesky_hpp__
 
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/math/matrix-block.hpp"
@@ -507,4 +507,4 @@ namespace pinocchio
 // (https://github.com/stack-of-tasks/pinocchio/pull/2469)
 #include "pinocchio/algorithm/contact-cholesky.hxx"
 
-#endif // ifndef __pinocchio_algorithm_contact_cholesky_fwd_hpp__
+#endif // ifndef __pinocchio_algorithm_contact_cholesky_hpp__
