@@ -144,7 +144,6 @@ namespace pinocchio
     , m_constraint_datas_ref(constraint_datas_ref)
     , m_custom_data(helper::get_ref(model_ref))
     , m_solve_in_place_dirty(true)
-    , m_compliance_dampling_sum_dirty(true)
     , m_damping_storage(m_size)
     , m_damping(m_damping_storage.map())
     , m_compliance_storage(m_size)
@@ -262,7 +261,7 @@ namespace pinocchio
 
     bool isDirty() const
     {
-      return m_solve_in_place_dirty || m_compliance_dampling_sum_dirty;
+      return m_solve_in_place_dirty;
     }
 
     template<typename MatrixIn, typename MatrixOut>
@@ -273,8 +272,7 @@ namespace pinocchio
     void updateDamping(const Eigen::MatrixBase<VectorLike> & damping_vector)
     {
       m_damping = damping_vector;
-      m_compliance_dampling_sum_dirty = true;
-      m_solve_in_place_dirty = true;
+      updateSumComplianceDamping();
     }
 
     void updateDamping(const Scalar & mu)
@@ -291,18 +289,12 @@ namespace pinocchio
     void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliance_vector)
     {
       m_compliance = compliance_vector;
-      m_compliance_dampling_sum_dirty = true;
-      m_solve_in_place_dirty = true;
+      updateSumComplianceDamping();
     }
 
     void updateCompliance(const Scalar & compliance_value)
     {
       updateCompliance(Vector::Constant(size(), compliance_value));
-    }
-
-    void update()
-    {
-      updateSumComplianceDamping();
     }
 
     typename EigenStorageVector::ConstRefConstMapType getCompliance() const
@@ -396,7 +388,7 @@ namespace pinocchio
     {
       m_sum_compliance_damping = m_damping + m_compliance;
       m_sum_compliance_damping_inverse = m_sum_compliance_damping.cwiseInverse();
-      m_compliance_dampling_sum_dirty = false;
+      m_solve_in_place_dirty = true;
     }
 
     // Holders
@@ -408,8 +400,7 @@ namespace pinocchio
     ConstraintDataVectorHolder m_constraint_datas_ref;
 
     mutable CustomData m_custom_data;
-    bool m_solve_in_place_dirty;
-    mutable bool m_compliance_dampling_sum_dirty;
+    mutable bool m_solve_in_place_dirty;
 
     EigenStorageVector m_damping_storage;
     typename EigenStorageVector::RefMapType m_damping;

@@ -59,8 +59,7 @@ namespace pinocchio
       helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref), m_compliance);
 
     computeJointMinimalOrdering(model(), data(), helper::get_ref(constraint_models_ref));
-    m_compliance_dampling_sum_dirty = true;
-    m_solve_in_place_dirty = true;
+    updateSumComplianceDamping();
   }
 
   template<
@@ -78,11 +77,6 @@ namespace pinocchio
   {
     typedef typename Data::Inertia Inertia;
     using Matrix6 = typename Inertia::Matrix6;
-
-    if (m_compliance_dampling_sum_dirty)
-    {
-      updateSumComplianceDamping();
-    }
 
     const Model & model_ref = model();
     Data & data_ref = data();
@@ -190,10 +184,6 @@ namespace pinocchio
     applyOnTheRight(
       const Eigen::MatrixBase<MatrixIn> & rhs, const Eigen::MatrixBase<MatrixOut> & res_) const
   {
-    PINOCCHIO_THROW_IF(
-      m_compliance_dampling_sum_dirty, std::logic_error,
-      "The DelassusOperator has dirty quantities. Please call update first.");
-
     MatrixOut & res = res_.const_cast_derived();
     PINOCCHIO_CHECK_SAME_MATRIX_SIZE(rhs, res);
 
