@@ -13,7 +13,7 @@ namespace pinocchio
 {
   namespace helper
   {
-    template<typename template<>, typename = void>
+    template<typename T, typename = void>
     struct has_method_sizeInBytes : std::false_type
     {
     };
