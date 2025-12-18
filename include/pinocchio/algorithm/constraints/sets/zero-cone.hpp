@@ -5,6 +5,8 @@
 #ifndef __pinocchio_algorithm_constraints_sets_zero_cone_hpp__
 #define __pinocchio_algorithm_constraints_sets_zero_cone_hpp__
 
+#include "pinocchio/math/matrix.hpp"
+
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/algorithm/constraints/sets/cone-base.hpp"
 
@@ -78,8 +80,8 @@ namespace pinocchio
     template<typename VectorLike>
     bool isInsideImpl(const Eigen::MatrixBase<VectorLike> & x, const Scalar prec = Scalar(0)) const
     {
-      assert(prec >= 0 && "prec should be positive");
-      return x.isZero(prec);
+      assert(check_expression_if_real<Scalar>(prec >= 0) && "prec should be positive");
+      return pinocchio::isZero(x, prec);
     }
 
     /// \copydoc Base::project

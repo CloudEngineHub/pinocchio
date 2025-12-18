@@ -198,8 +198,9 @@ namespace pinocchio
       bp::class_<ADMMSolverStats, bp::bases<ConstraintSolverStatsBase>>(
         "ADMMSolverStats", "Per-iteration statistics of the ADMM constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
-        .def(bp::init<std::size_t>(
-          bp::args("self", "max_iterations"), "Constructor with maximum iterations."))
+        .def(
+          bp::init<std::size_t>(
+            bp::args("self", "max_iterations"), "Constructor with maximum iterations."))
 
         // ADMM specific properties (base class properties are inherited)
         .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverStats, rho, "History of rho values")
@@ -262,6 +263,7 @@ namespace pinocchio
 
         PINOCCHIO_UNUSED_VARIABLE(ptr);
 
+#ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
         class_
           .def(
             "solve",
@@ -291,7 +293,7 @@ namespace pinocchio
               "result"),
             "Solve the constrained conic problem with given settings and result.");
 
-#ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
+  #ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
         {
           typedef Eigen::AccelerateLLT<context::SparseMatrix> AccelerateLLT;
           typedef DelassusOperatorSparseTpl<context::Scalar, context::Options, AccelerateLLT>
@@ -306,7 +308,8 @@ namespace pinocchio
               "result"),
             "Solve the constrained conic problem with given settings and result.");
         }
-#endif
+  #endif // ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
+#endif   // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
       }
 
       void run(boost::blank * ptr = 0)

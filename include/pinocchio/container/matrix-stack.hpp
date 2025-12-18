@@ -7,10 +7,14 @@
 
 #include "pinocchio/fwd.hpp"
 #include <cstddef>
+#include <type_traits>
 
 namespace pinocchio
 {
-  template<typename MatrixLike, std::size_t Alignment = alignof(std::max_align_t)>
+  template<
+    typename MatrixLike,
+    std::size_t Alignment = alignof(std::max_align_t),
+    typename Enable = void>
   struct MatrixStackTpl;
 
   template<typename NewScalar, typename MatrixLike, std::size_t Alignment>
@@ -26,7 +30,10 @@ namespace pinocchio
   };
 
   template<typename MatrixLike, std::size_t _Alignment>
-  struct MatrixStackTpl
+  struct MatrixStackTpl<
+    MatrixLike,
+    _Alignment,
+    std::enable_if_t<std::is_arithmetic_v<typename MatrixLike::Scalar>>>
   {
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike) PlainMatrixType;
     typedef typename PlainMatrixType::Scalar Scalar;
@@ -485,6 +492,219 @@ namespace pinocchio
     MapVector m_matrix_maps;
     void * m_data_ptr;
     std::size_t m_memory_capacity;
+  }; // struct MatrixStackTpltemplate<typename MatrixLike, std::size_t _Alignment>
+
+  /// MatrixStackTpl specialization for non primitive scalar type.
+  /// This implementation doesn't take care of alignment because
+  /// Custom scalar like casadi or cppad doesn't need it.
+  template<typename MatrixLike, std::size_t _Alignment>
+  struct MatrixStackTpl<
+    MatrixLike,
+    _Alignment,
+    std::enable_if_t<!std::is_arithmetic_v<typename MatrixLike::Scalar>>>
+  {
+    typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike) PlainMatrixType;
+    typedef typename PlainMatrixType::Scalar Scalar;
+    typedef typename Eigen::Index Index;
+
+    typedef PlainMatrixType MapType;
+    typedef MapType value_type;
+    typedef MapType & RefMapType;
+    typedef const MapType & ConstRefMapType;
+
+    typedef const Eigen::Map<const PlainMatrixType> ConstMapType;
+    typedef ConstMapType & RefConstMapType;
+
+    typedef std::vector<MapType> MapVector;
+
+    typedef typename MapVector::iterator iterator;
+    typedef typename MapVector::const_iterator const_iterator;
+
+    /// \brief Default constructor
+    MatrixStackTpl() = default;
+
+    /// \brief Constructor
+    ///
+    /// \param[in] max_elts Maximum number of matrices contained in the stack
+    /// \param[in] max_elt_size Maximal size of each matrices (rows() x cols()) if known at
+    /// construction time. Default value to 0.
+    ///
+    explicit MatrixStackTpl(const std::size_t max_elts, const std::size_t max_elt_size = 0)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(max_elt_size);
+      if (max_elts > 0)
+      {
+        m_matrix_maps.reserve(max_elts);
+      }
+    }
+
+    /// @brief Equality comparison operator.
+    /// @param other MatrixStackTpl to compare with.
+    /// @returns true if the underlying maps are equal.
+    bool operator==(const MatrixStackTpl & other) const
+    {
+      if (this == &other)
+        return true;
+      return m_matrix_maps == other.m_matrix_maps;
+    }
+
+    /// @brief Inequality comparison operator.
+    /// @param other MatrixStackTpl to compare with.
+    /// @return true if the underlying maps are not equal.
+    bool operator!=(const MatrixStackTpl & other) const
+    {
+      return !(*this == other);
+    }
+
+    template<typename Matrix>
+    void push_back(const Eigen::MatrixBase<Matrix> & matrix)
+    {
+      m_matrix_maps.push_back(matrix);
+    }
+
+    template<typename... Args>
+    void emplace_back(Args &&... args)
+    {
+      m_matrix_maps.emplace_back(std::forward<Args>(args)...);
+    }
+
+    void
+    push_back(const Index rows, const Index cols, const std::function<void(MapType)> init_func = {})
+    {
+      m_matrix_maps.emplace_back(rows, cols);
+      if (init_func)
+        init_func(m_matrix_maps.back());
+    }
+
+    /// \brief Returns a reference to the last element in the container.
+    RefMapType back()
+    {
+      return m_matrix_maps.back();
+    }
+    /// \brief Returns a reference to the last element in the container.
+    ConstRefMapType back() const
+    {
+      return m_matrix_maps.back();
+    }
+
+    ///  \brief Checks if the container has no elements.
+    ///
+    ///  \returns true if the container is empty, false otherwise.
+    bool empty() const
+    {
+      return m_matrix_maps.empty();
+    }
+
+    /// \brief Increase the capacity of the vector of matrix maps.
+    void reserve(size_t new_cap)
+    {
+      m_matrix_maps.reserve(new_cap);
+    }
+
+    std::size_t capacity() const
+    {
+      return m_matrix_maps.capacity();
+    }
+
+    /// \brief Returns a reference to the element at specified location pos.
+    RefMapType operator[](const std::size_t pos)
+    {
+      return m_matrix_maps[pos];
+    }
+    /// \brief Returns a reference to the element at specified location pos.
+    ConstRefMapType operator[](const std::size_t pos) const
+    {
+      return m_matrix_maps[pos];
+    }
+
+    /// \brief Returns the number of elements in the container.
+    std::size_t size() const
+    {
+      return m_matrix_maps.size();
+    }
+
+    /// \brief Returns a pointer to the underlying array serving as element storage.
+    void * data()
+    {
+      return m_matrix_maps.data();
+    }
+    /// \brief Returns a pointer to the underlying array serving as element storage.
+    const void * data() const
+    {
+      return m_matrix_maps.data();
+    }
+
+    /// \brief Erases the specified elements from the container.
+    /// \remarks The data associated with the pos element is not reused after erasing.
+    iterator erase(iterator pos)
+    {
+      return m_matrix_maps.erase(pos);
+    }
+
+    /// \brief Erases the specified elements from the container.
+    /// \remarks The data associated with the pos element is not reused after erasing.
+    iterator erase(const_iterator pos)
+    {
+      return m_matrix_maps.erase(pos);
+    }
+
+    void clear()
+    {
+      m_matrix_maps.clear();
+    }
+
+    iterator begin()
+    {
+      return m_matrix_maps.begin();
+    }
+
+    iterator end()
+    {
+      return m_matrix_maps.end();
+    }
+
+    const_iterator begin() const
+    {
+      return m_matrix_maps.begin();
+    }
+
+    const_iterator end() const
+    {
+      return m_matrix_maps.end();
+    }
+
+    iterator rbegin()
+    {
+      return m_matrix_maps.cbegin();
+    }
+
+    iterator rend()
+    {
+      return m_matrix_maps.cend();
+    }
+
+    const_iterator rbegin() const
+    {
+      return m_matrix_maps.cbegin();
+    }
+
+    const_iterator rend() const
+    {
+      return m_matrix_maps.cend();
+    }
+
+    void apply(const std::function<void(MapType)> & func)
+    {
+      std::for_each(begin(), end(), func);
+    }
+
+    void apply(const std::function<void(const MapType)> & func) const
+    {
+      std::for_each(begin(), end(), func);
+    }
+
+  protected:
+    MapVector m_matrix_maps;
   }; // struct MatrixStackTpl
 
 } // namespace pinocchio

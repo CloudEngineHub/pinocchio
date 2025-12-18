@@ -81,16 +81,18 @@ namespace pinocchio
         const int q_index = idx_q + j_qi; // index in the plain joint configuration vector q
         const int q_reduce_index = nq_reduce + j_qi;
 
-        if (!(lb[q_index] == -std::numeric_limits<Scalar>::max()
-              || lb[q_index] == -std::numeric_limits<Scalar>::infinity()))
+        if (!(check_expression_if_real<Scalar>(lb[q_index] == -std::numeric_limits<Scalar>::max())
+              || check_expression_if_real<Scalar>(
+                lb[q_index] == -std::numeric_limits<Scalar>::infinity())))
         {
           is_joint_selected = true;
           activable_idx_in_selected_lower.push_back(idx_selected);
           activable_idx_qs_reduce_lower.push_back(q_reduce_index);
           activable_idx_qs_lower.push_back(q_index);
         }
-        if (!(ub[q_index] == +std::numeric_limits<Scalar>::max()
-              || ub[q_index] == +std::numeric_limits<Scalar>::infinity()))
+        if (!(check_expression_if_real<Scalar>(ub[q_index] == +std::numeric_limits<Scalar>::max())
+              || check_expression_if_real<Scalar>(
+                ub[q_index] == +std::numeric_limits<Scalar>::infinity())))
         {
           is_joint_selected = true;
           activable_idx_in_selected_upper.push_back(idx_selected);
@@ -217,7 +219,8 @@ namespace pinocchio
       const Eigen::Index i_ = static_cast<Eigen::Index>(i);
       const Eigen::Index idx_q = activable_idx_qs[i];
       activable_constraint_residual[i_] = data.q_in[idx_q] - activable_position_limit[i_];
-      if (activable_constraint_residual[i_] <= activable_position_margin[i_])
+      if (check_expression_if_real<Scalar>(
+            activable_constraint_residual[i_] <= activable_position_margin[i_]))
       {
         active_idx_in_activable.push_back(i);
         // Update proxis as well
@@ -232,7 +235,8 @@ namespace pinocchio
       const Eigen::Index i_ = static_cast<Eigen::Index>(i);
       const Eigen::Index idx_q = activable_idx_qs[i];
       activable_constraint_residual[i_] = activable_position_limit[i_] - data.q_in[idx_q];
-      if (activable_constraint_residual[i_] <= activable_position_margin[i_])
+      if (check_expression_if_real<Scalar>(
+            activable_constraint_residual[i_] <= activable_position_margin[i_]))
       {
         active_idx_in_activable.push_back(i);
         // Update proxis as well

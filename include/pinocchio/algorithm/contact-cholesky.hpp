@@ -44,6 +44,9 @@ namespace pinocchio
   , damping(damping_storage.map())
   , delassus_block(delassus_block_storage.map())
   {
+    typedef ConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef ConstraintDataTpl<Scalar, Options> ConstraintData;
+
     std::vector<ConstraintModel> empty_constraint_models;
     std::vector<ConstraintData> empty_constraint_datas;
     resize(model, data, empty_constraint_models, empty_constraint_datas);

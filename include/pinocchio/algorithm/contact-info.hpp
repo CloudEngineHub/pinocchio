@@ -865,7 +865,7 @@ namespace pinocchio
       typedef RigidConstraintModelTpl<NewScalar, Options> ReturnType;
       ReturnType res;
       res.type = type;
-      res.base() = base();
+      Base::template cast<NewScalar>(res);
       res.reference_frame = reference_frame;
       res.desired_contact_placement = desired_contact_placement.template cast<NewScalar>();
       res.desired_contact_velocity = desired_contact_velocity.template cast<NewScalar>();

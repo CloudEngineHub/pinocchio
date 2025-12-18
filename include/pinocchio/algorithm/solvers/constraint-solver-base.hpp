@@ -51,13 +51,17 @@ namespace pinocchio
     void checkValidity() const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        absolute_tol_feasibility >= Scalar(0), "absolute_tol_feasibility should be >= 0.");
+        check_expression_if_real<Scalar>(absolute_tol_feasibility >= Scalar(0)),
+        "absolute_tol_feasibility should be >= 0.");
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        relative_tol_feasibility >= Scalar(0), "relative_tol_feasibility should be >= 0.");
+        check_expression_if_real<Scalar>(relative_tol_feasibility >= Scalar(0)),
+        "relative_tol_feasibility should be >= 0.");
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        absolute_tol_complementarity >= Scalar(0), "absolute_tol_complementarity should be >= 0.");
+        check_expression_if_real<Scalar>(absolute_tol_complementarity >= Scalar(0)),
+        "absolute_tol_complementarity should be >= 0.");
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-        relative_tol_complementarity >= Scalar(0), "relative_tol_complementarity should be >= 0.");
+        check_expression_if_real<Scalar>(relative_tol_complementarity >= Scalar(0)),
+        "relative_tol_complementarity should be >= 0.");
     }
 
     /// \brief Maximum number of iterations of the solver.
@@ -92,15 +96,14 @@ namespace pinocchio
   struct ConstraintSolverResultBaseTpl
   {
     typedef _Scalar Scalar;
-    static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
 
     /// \brief Default constructor.
     ConstraintSolverResultBaseTpl()
     : iterations(0)
     , converged(false)
-    , primal_feasibility(nan)
-    , dual_feasibility(nan)
-    , complementarity(nan)
+    , primal_feasibility(std::numeric_limits<Scalar>::quiet_NaN())
+    , dual_feasibility(std::numeric_limits<Scalar>::quiet_NaN())
+    , complementarity(std::numeric_limits<Scalar>::quiet_NaN())
     , is_valid_(false)
     {
     }
@@ -110,9 +113,9 @@ namespace pinocchio
     {
       iterations = 0;
       converged = false;
-      primal_feasibility = nan;
-      dual_feasibility = nan;
-      complementarity = nan;
+      primal_feasibility = std::numeric_limits<Scalar>::quiet_NaN();
+      dual_feasibility = std::numeric_limits<Scalar>::quiet_NaN();
+      complementarity = std::numeric_limits<Scalar>::quiet_NaN();
 
       is_valid_ = false;
     }
@@ -227,9 +230,8 @@ namespace pinocchio
 #endif // PINOCCHIO_WITH_HPP_FCL
 
     ConstraintSolverBaseTpl()
-    :
 #ifdef PINOCCHIO_WITH_HPP_FCL
-      timer(false)
+    : timer(false)
 #endif // PINOCCHIO_WITH_HPP_FCL
     {
     }
