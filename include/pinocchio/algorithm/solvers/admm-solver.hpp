@@ -243,7 +243,7 @@ namespace pinocchio
       bool warmstart_rho_with_previous_result = false,
       ADMMUpdateRule admm_update_rule = ADMMUpdateRule::OSQP,
       ADMMProximalRule admm_proximal_rule = ADMMProximalRule::MANUAL,
-      Scalar mu_prox = 1e-6,
+      Scalar mu_prox = Scalar(1e-6),
       Scalar tau_prox = Scalar(1),
       Scalar tau = Scalar(0.5),
       Scalar ratio_primal_dual = Scalar(10),

@@ -418,7 +418,7 @@ namespace pinocchio
                                      - (af1.linear() + vf1.angular().cross(vf1.linear()));
       acceleration_error.noalias() -= af1.angular().cross(position_error);
       acceleration_error.noalias() += vf1.angular().cross(vf1.angular().cross(position_error));
-      acceleration_error.noalias() -= 2 * vf1.angular().cross(velocity_error_component1);
+      acceleration_error.noalias() -= Scalar(2) * vf1.angular().cross(velocity_error_component1);
       acceleration_error.noalias() -= this->desired_constraint_acceleration;
 
       cdata.A1_world = this->getA1(cdata, WorldFrameTag());
