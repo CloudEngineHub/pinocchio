@@ -9,6 +9,8 @@
 #include <type_traits>
 #include <utility> // for std::declval
 
+#include "pinocchio/utils/fwd.hpp"
+
 namespace pinocchio
 {
   namespace helper
