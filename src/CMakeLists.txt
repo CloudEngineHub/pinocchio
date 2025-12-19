@@ -226,7 +226,7 @@ endif(PINOCCHIO_BUILD_WITH_TRACY)
 # This target will also have hpp-fcl and workspace module in it.
 pinocchio_specific_type(default DEFAULT_SCOPE)
 if(PINOCCHIO_BUILD_WITH_TRACY)
-  target_link_libraries(${PROJECT_NAME}_default INTERFACE ${PROFILING_LIB_NAME})
+  target_link_libraries(${PROJECT_NAME}_default ${DEFAULT_SCOPE} ${PROFILING_LIB_NAME})
 endif(PINOCCHIO_BUILD_WITH_TRACY)
 
 # Some core library algorithms have different behavior if PINOCCHIO_WITH_HPP_FCL is defined. Since
@@ -235,10 +235,13 @@ endif(PINOCCHIO_BUILD_WITH_TRACY)
 if(BUILD_WITH_HPP_FCL_SUPPORT)
   target_compile_definitions(
     pinocchio_default
-    PUBLIC PINOCCHIO_WITH_HPP_FCL
-    PRIVATE COAL_DISABLE_HPP_FCL_WARNINGS)
+    ${DEFAULT_SCOPE} PINOCCHIO_WITH_HPP_FCL)
+  # Set private define only if pinocchio_default is not an interface library
+  if(${DEFAULT_SCOPE} STREQUAL "PUBLIC")
+    target_compile_definitions(pinocchio_default PRIVATE COAL_DISABLE_HPP_FCL_WARNINGS)
+  endif()
   target_include_directories(
-    pinocchio_default PUBLIC $<TARGET_PROPERTY:hpp-fcl::hpp-fcl,INTERFACE_INCLUDE_DIRECTORIES>)
+    pinocchio_default ${DEFAULT_SCOPE} $<TARGET_PROPERTY:hpp-fcl::hpp-fcl,INTERFACE_INCLUDE_DIRECTORIES>)
 endif()
 
 # Define the extra target This target hold extra algorithms.
