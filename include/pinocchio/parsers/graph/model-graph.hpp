@@ -13,8 +13,6 @@
 #include "pinocchio/parsers/graph/frames.hpp"
 #include "pinocchio/parsers/graph/geometries.hpp"
 
-#include <Eigen/Core>
-
 #include <boost/optional.hpp>
 #include <boost/graph/adjacency_list.hpp>
 

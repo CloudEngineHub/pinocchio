@@ -11,8 +11,6 @@
 
 #include "pinocchio/parsers/graph/model-graph.hpp"
 
-#include <Eigen/Core>
-
 #include <vector>
 
 namespace pinocchio

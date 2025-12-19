@@ -19,9 +19,6 @@
 #include "pinocchio/parsers/graph/model-graph.hpp"
 #include "pinocchio/parsers/graph/model-configuration-converter.hpp"
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-
 #include <boost/variant.hpp>
 
 #include <stdexcept>

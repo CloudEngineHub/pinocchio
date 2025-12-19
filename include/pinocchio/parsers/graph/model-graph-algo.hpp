@@ -10,8 +10,6 @@
 #include "pinocchio/parsers/graph/model-graph.hpp"
 #include "pinocchio/parsers/graph/joints.hpp"
 
-#include <Eigen/Core>
-
 #include <string>
 #include <vector>
 

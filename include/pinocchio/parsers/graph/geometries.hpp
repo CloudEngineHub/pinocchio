@@ -7,8 +7,6 @@
 
 #include "pinocchio/parsers/graph/fwd.hpp"
 
-#include <Eigen/Core>
-
 #include <boost/variant/variant.hpp>
 
 #include <string>

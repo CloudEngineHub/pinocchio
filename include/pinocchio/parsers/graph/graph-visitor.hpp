@@ -14,8 +14,6 @@
 #include "pinocchio/parsers/graph/model-graph.hpp"
 #include "pinocchio/parsers/graph/joints.hpp"
 
-#include <Eigen/Core>
-
 #include <boost/graph/depth_first_search.hpp>
 
 #include <boost/variant/static_visitor.hpp>
