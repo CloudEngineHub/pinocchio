@@ -902,6 +902,7 @@ namespace pinocchio
     {
       typedef _Scalar Scalar;
 
+      /// \brief Default constructor.
       ADMMSpectralUpdateRuleTpl(
         const Scalar ratio_primal_dual,
         const Scalar L,
@@ -911,26 +912,10 @@ namespace pinocchio
       , rho_increment(std::pow(L / m, rho_power_factor))
       {
         PINOCCHIO_CHECK_INPUT_ARGUMENT(m > Scalar(0), "m should be positive.");
+        PINOCCHIO_CHECK_INPUT_ARGUMENT(L > m, "L should be > m");
       }
 
-      Scalar getRatioPrimalDual() const
-      {
-        return ratio_primal_dual;
-      }
-      void setRatioPrimalDual(const Scalar ratio_primal_dual)
-      {
-        this->ratio_primal_dual = ratio_primal_dual;
-      }
-
-      Scalar getRhoIncrement() const
-      {
-        return rho_increment;
-      }
-      void setRhoIncrement(const Scalar cond, const Scalar rho_power_factor)
-      {
-        rho_increment = std::pow(cond, rho_power_factor);
-      }
-
+      /// \brief Compute rho based on primal and dual feasibility.
       void eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
       {
         if (primal_feasibility > ratio_primal_dual * dual_feasibility)
@@ -956,7 +941,7 @@ namespace pinocchio
         return rho;
       }
 
-      /// \brief Compute the  scaling spectral factor of the ADMM penalty term from the current
+      /// \brief Compute the scaling spectral factor of the ADMM penalty term from the current
       /// largest and lowest eigenvalues and the ADMM penalty term.
       static inline Scalar computeRhoPower(const Scalar L, const Scalar m, const Scalar rho)
       {
@@ -966,8 +951,11 @@ namespace pinocchio
         return rho_power;
       }
 
-    protected:
+      /// \brief Primal/dual ratio below/above which rho is updated.
       Scalar ratio_primal_dual;
+
+      /// \brief Factor by which rho gets divided/multiplied when primal/dual is below/above
+      /// ratio_primal_dual.
       Scalar rho_increment;
     };
 
@@ -978,6 +966,7 @@ namespace pinocchio
     {
       typedef _Scalar Scalar;
 
+      /// \brief Constructor from primal/dual ratio and increase/decrease factors.
       ADMMLinearUpdateRuleTpl(
         const Scalar ratio_primal_dual, const Scalar increase_factor, const Scalar decrease_factor)
       : ratio_primal_dual(ratio_primal_dual)
@@ -990,6 +979,8 @@ namespace pinocchio
           decrease_factor > Scalar(1), "decrease_factor should be greater than one.");
       }
 
+      /// \brief Constructor from primal/dual ratio and factor (same one used to increase and
+      /// decrease rho).
       ADMMLinearUpdateRuleTpl(const Scalar ratio_primal_dual, const Scalar factor)
       : ratio_primal_dual(ratio_primal_dual)
       , increase_factor(factor)
@@ -998,6 +989,7 @@ namespace pinocchio
         PINOCCHIO_CHECK_INPUT_ARGUMENT(factor > Scalar(1), "factor should be greater than one.");
       }
 
+      /// \brief Compute rho based on primal and dual feasibility.
       void eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
       {
         if (primal_feasibility > ratio_primal_dual * dual_feasibility)
@@ -1010,9 +1002,14 @@ namespace pinocchio
         }
       }
 
-    protected:
+      /// \brief Primal/dual ratio below/above which rho is updated.
       Scalar ratio_primal_dual;
-      Scalar increase_factor, decrease_factor;
+
+      /// \brief Factor by which rho gets multipled when primal/dual is above ratio.
+      Scalar increase_factor;
+
+      /// \brief Factor by which rho gets divided when primal/dual is below ratio.
+      Scalar decrease_factor;
     };
 
     ///
@@ -1022,7 +1019,8 @@ namespace pinocchio
     {
       typedef _Scalar Scalar;
 
-      ADMMOSQPUpdateRuleTpl(const Scalar ratio_primal_dual, const Scalar eps_reg)
+      /// \brief Default constructor given a primal/dual ratio and a regularisation factor.
+      ADMMOSQPUpdateRuleTpl(const Scalar ratio_primal_dual, const Scalar eps_reg = 1e-8)
       : ratio_primal_dual(ratio_primal_dual)
       , eps_reg(eps_reg)
       {
@@ -1031,18 +1029,22 @@ namespace pinocchio
         PINOCCHIO_CHECK_INPUT_ARGUMENT(eps_reg > Scalar(0), "eps_reg should be positive.");
       }
 
+      /// \brief Compute rho based on primal and dual feasibility.
       void eval(const Scalar primal_feasibility, const Scalar dual_feasibility, Scalar & rho) const
       {
         if (
-          primal_feasibility > this->ratio_primal_dual * dual_feasibility //
-          || dual_feasibility > this->ratio_primal_dual * primal_feasibility)
+          primal_feasibility > ratio_primal_dual * dual_feasibility //
+          || dual_feasibility > ratio_primal_dual * primal_feasibility)
         {
-          rho *= std::sqrt(primal_feasibility / (dual_feasibility + this->eps_reg));
+          rho *= std::sqrt(primal_feasibility / (dual_feasibility + eps_reg));
         }
       }
 
-    protected:
+      /// \brief Primal/dual ratio below/above which rho is updated.
       Scalar ratio_primal_dual;
+
+      /// \brief Regularisation factor to avoid dividing by 0.
+      /// Default is 1e-8.
       Scalar eps_reg;
     };
   } // namespace internal
