@@ -30,7 +30,6 @@ set(${PROJECT_NAME}_PYTHON_TESTS
     bindings_rnea
     bindings_aba
     bindings_joint_algorithms
-    bindings_constraints
     # Solvers
     bindings_pgs
     bindings_admm
@@ -111,6 +110,7 @@ endfunction()
 if(BUILD_WITH_HPP_FCL_SUPPORT)
   set(${PROJECT_NAME}_PYTHON_TESTS ${${PROJECT_NAME}_PYTHON_TESTS} bindings_geometry_object)
   set(${PROJECT_NAME}_PYTHON_TESTS ${${PROJECT_NAME}_PYTHON_TESTS} bindings_fcl_transform)
+  set(${PROJECT_NAME}_PYTHON_TESTS ${${PROJECT_NAME}_PYTHON_TESTS} bindings_constraints)
 endif()
 
 if(urdfdom_FOUND)

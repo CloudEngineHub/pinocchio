@@ -169,7 +169,8 @@ namespace pinocchio
   , constraints_on_joint((std::size_t)model.njoints)
   , joint_neighbours((std::size_t)model.njoints)
   , joint_cross_coupling(model.njoints, model.njoints)
-  , joint_coupling_info(model.njoints, model.njoints)
+  // Boolean value must be initialized to avoid error when serializing
+  , joint_coupling_info(MatrixXb::Zero(model.njoints, model.njoints))
   , projected_joint_cross_coupling(model.njoints, model.njoints)
   , joint_apparent_inertia(
       std::size_t(model.njoints),
