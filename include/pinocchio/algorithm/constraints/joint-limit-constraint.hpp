@@ -258,20 +258,20 @@ namespace pinocchio
       Base::cast(res);
       BaseCommonParameters::template cast<NewScalar>(res);
 
-      res.selected_joints = selected_joints;
-      res.selected_row_sparsity_pattern = selected_row_sparsity_pattern;
-      res.selected_row_indexes = selected_row_indexes;
-      res.selected_joint_nqs = selected_joint_nqs;
-      res.selected_joint_nvs = selected_joint_nvs;
-      res.selected_joint_idx_vs = selected_joint_idx_vs;
-      res.nq_reduce = nq_reduce;
-      res.max_of_nvs = max_of_nvs;
-      res.activable_idx_in_selected = activable_idx_in_selected;
-      res.activable_idx_qs = activable_idx_qs;
-      res.activable_idx_qs_reduce = activable_idx_qs_reduce;
-      res.activable_position_limit = activable_position_limit.template cast<NewScalar>();
-      res.activable_position_margin = activable_position_margin.template cast<NewScalar>();
-      res.lower_max_residual_size = lower_max_residual_size;
+      res.m_selected_joints = m_selected_joints;
+      res.m_selected_row_sparsity_pattern = m_selected_row_sparsity_pattern;
+      res.m_selected_row_indexes = m_selected_row_indexes;
+      res.m_selected_joint_nqs = m_selected_joint_nqs;
+      res.m_selected_joint_nvs = m_selected_joint_nvs;
+      res.m_selected_joint_idx_vs = m_selected_joint_idx_vs;
+      res.m_nq_reduce = m_nq_reduce;
+      res.m_max_of_nvs = m_max_of_nvs;
+      res.m_activable_idx_in_selected = m_activable_idx_in_selected;
+      res.m_activable_idx_qs = m_activable_idx_qs;
+      res.m_activable_idx_qs_reduce = m_activable_idx_qs_reduce;
+      res.m_activable_position_limit = m_activable_position_limit.template cast<NewScalar>();
+      res.m_activable_position_margin = m_activable_position_margin.template cast<NewScalar>();
+      res.m_lower_max_residual_size = m_lower_max_residual_size;
 
       return res;
     }
@@ -287,19 +287,19 @@ namespace pinocchio
     bool operator==(const JointLimitConstraintModelTpl & other) const
     {
       return base() == other.base() && base_common_parameters() == other.base_common_parameters()
-             && selected_joints == other.selected_joints
-             && selected_row_sparsity_pattern == other.selected_row_sparsity_pattern
-             && selected_row_indexes == other.selected_row_indexes
-             && selected_joint_nqs == other.selected_joint_nqs
-             && selected_joint_nvs == other.selected_joint_nvs
-             && selected_joint_idx_vs == other.selected_joint_idx_vs && nq_reduce == other.nq_reduce
-             && max_of_nvs == other.max_of_nvs
-             && activable_idx_in_selected == other.activable_idx_in_selected
-             && activable_idx_qs == other.activable_idx_qs
-             && activable_idx_qs_reduce == other.activable_idx_qs_reduce
-             && activable_position_limit == other.activable_position_limit
-             && activable_position_margin == other.activable_position_margin
-             && lower_max_residual_size == other.lower_max_residual_size;
+             && m_selected_joints == other.m_selected_joints
+             && m_selected_row_sparsity_pattern == other.m_selected_row_sparsity_pattern
+             && m_selected_row_indexes == other.m_selected_row_indexes
+             && m_selected_joint_nqs == other.m_selected_joint_nqs
+             && m_selected_joint_nvs == other.m_selected_joint_nvs
+             && m_selected_joint_idx_vs == other.m_selected_joint_idx_vs
+             && m_nq_reduce == other.m_nq_reduce && m_max_of_nvs == other.m_max_of_nvs
+             && m_activable_idx_in_selected == other.m_activable_idx_in_selected
+             && m_activable_idx_qs == other.m_activable_idx_qs
+             && m_activable_idx_qs_reduce == other.m_activable_idx_qs_reduce
+             && m_activable_position_limit == other.m_activable_position_limit
+             && m_activable_position_margin == other.m_activable_position_margin
+             && m_lower_max_residual_size == other.m_lower_max_residual_size;
     }
 
     /// \brief Comparison operator
@@ -314,55 +314,55 @@ namespace pinocchio
       if (this != &other)
       {
         base_common_parameters() = other.base_common_parameters();
-        selected_joints = other.selected_joints;
-        selected_row_sparsity_pattern = other.selected_row_sparsity_pattern;
-        selected_row_indexes = other.selected_row_indexes;
-        selected_joint_nqs = other.selected_joint_nqs;
-        selected_joint_nvs = other.selected_joint_nvs;
-        selected_joint_idx_vs = other.selected_joint_idx_vs;
-        nq_reduce = other.nq_reduce;
-        max_of_nvs = other.max_of_nvs;
-        activable_idx_in_selected = other.activable_idx_in_selected;
-        activable_idx_qs = other.activable_idx_qs;
-        activable_idx_qs_reduce = other.activable_idx_qs_reduce;
-        activable_position_limit = other.activable_position_limit;
-        activable_position_margin = other.activable_position_margin;
-        lower_max_residual_size = other.lower_max_residual_size;
+        m_selected_joints = other.m_selected_joints;
+        m_selected_row_sparsity_pattern = other.m_selected_row_sparsity_pattern;
+        m_selected_row_indexes = other.m_selected_row_indexes;
+        m_selected_joint_nqs = other.m_selected_joint_nqs;
+        m_selected_joint_nvs = other.m_selected_joint_nvs;
+        m_selected_joint_idx_vs = other.m_selected_joint_idx_vs;
+        m_nq_reduce = other.m_nq_reduce;
+        m_max_of_nvs = other.m_max_of_nvs;
+        m_activable_idx_in_selected = other.m_activable_idx_in_selected;
+        m_activable_idx_qs = other.m_activable_idx_qs;
+        m_activable_idx_qs_reduce = other.m_activable_idx_qs_reduce;
+        m_activable_position_limit = other.m_activable_position_limit;
+        m_activable_position_margin = other.m_activable_position_margin;
+        m_lower_max_residual_size = other.m_lower_max_residual_size;
       }
       return *this;
     }
 
     /// Specialized accessors --------
 
-    /// \copydoc selected_joints
+    /// \copydoc m_selected_joints
     const JointIndexVector & getSelectedJoints() const
     {
-      return selected_joints;
+      return m_selected_joints;
     }
-    /// \copydoc nq_reduce
+    /// \copydoc m_nq_reduce
     int getNqReduce() const
     {
-      return nq_reduce;
+      return m_nq_reduce;
     }
-    /// \copydoc max_of_nvs
+    /// \copydoc m_max_of_nvs
     int getMaxOfNvs() const
     {
-      return max_of_nvs;
+      return m_max_of_nvs;
     }
-    /// \copydoc activable_position_limit
+    /// \copydoc m_activable_position_limit
     const VectorXs & getActivablePositionLimit() const
     {
-      return activable_position_limit;
+      return m_activable_position_limit;
     }
-    /// \copydoc activable_position_margin
+    /// \copydoc m_activable_position_margin
     const VectorXs & getActivablePositionMargin() const
     {
-      return activable_position_margin;
+      return m_activable_position_margin;
     }
     /// \brief Return the maximum residual size of constraints that are lower limits
     int lowerMaxResidualSize() const
     {
-      return lower_max_residual_size;
+      return m_lower_max_residual_size;
     }
     /// \brief Return the maximum residual size of constraints that are upper limits
     int upperMaxResidualSize() const
@@ -397,27 +397,27 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike3> & margin)
     {
       // Fill bound limit and margin for lower and upper for activable constraints
-      activable_position_limit = VectorXs::Zero(Eigen::Index(maxResidualSize()));
-      activable_position_margin = VectorXs::Zero(Eigen::Index(maxResidualSize()));
+      m_activable_position_limit = VectorXs::Zero(Eigen::Index(maxResidualSize()));
+      m_activable_position_margin = VectorXs::Zero(Eigen::Index(maxResidualSize()));
       Eigen::Index constraint_id = 0;
       for (; constraint_id < lowerMaxResidualSize(); ++constraint_id)
       {
-        const Eigen::Index idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
-        activable_position_limit[constraint_id] = lb[idx_q];
-        activable_position_margin[constraint_id] = margin[idx_q];
+        const Eigen::Index idx_q = m_activable_idx_qs[static_cast<size_t>(constraint_id)];
+        m_activable_position_limit[constraint_id] = lb[idx_q];
+        m_activable_position_margin[constraint_id] = margin[idx_q];
         assert(check_expression_if_real<Scalar>(margin[idx_q] >= 0));
       }
       for (; constraint_id < maxResidualSize(); ++constraint_id)
       {
-        const Eigen::Index idx_q = activable_idx_qs[static_cast<size_t>(constraint_id)];
-        activable_position_limit[constraint_id] = ub[idx_q];
-        activable_position_margin[constraint_id] = margin[idx_q];
+        const Eigen::Index idx_q = m_activable_idx_qs[static_cast<size_t>(constraint_id)];
+        m_activable_position_limit[constraint_id] = ub[idx_q];
+        m_activable_position_margin[constraint_id] = margin[idx_q];
         assert(check_expression_if_real<Scalar>(margin[idx_q] >= 0));
       }
     }
 
-    // selected_row_sparsity_pattern, selected_row_indexes,
-    // activable_idx_in_selected, activable_idx_qs_reduce
+    // m_selected_row_sparsity_pattern, m_selected_row_indexes,
+    // m_activable_idx_in_selected, m_activable_idx_qs_reduce
     // not exposed as they only privately allow getRowActiv[e/able]SparsityPattern and
     // getRowActiv[e/able]Indexes
 
@@ -450,7 +450,7 @@ namespace pinocchio
     /// \copydoc RootBase::maxResidualSizeImpl
     int maxResidualSizeImpl() const
     {
-      return int(activable_idx_in_selected.size());
+      return int(m_activable_idx_in_selected.size());
     }
 
     // Methods for algorithms --------
@@ -495,7 +495,7 @@ namespace pinocchio
       PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
-      return selected_row_sparsity_pattern[idx];
+      return m_selected_row_sparsity_pattern[idx];
     }
 
     /// \copydoc RootBase::getRowIndexes
@@ -510,7 +510,7 @@ namespace pinocchio
       PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
-      return selected_row_indexes[idx];
+      return m_selected_row_indexes[idx];
     }
 
     /// \copydoc RootBase::calc
@@ -662,47 +662,47 @@ namespace pinocchio
 
     /// \brief List of selected joints, i.e. joint can that can be indeed reach its bounds.
     /// size = nActivableJoints
-    JointIndexVector selected_joints;
+    JointIndexVector m_selected_joints;
 
     /// \brief Sparsity pattern for each selected joints.
     /// size = nActivableJoints
-    VectorOfBooleanVector selected_row_sparsity_pattern;
-    VectofOfEigenIndexVector selected_row_indexes;
+    VectorOfBooleanVector m_selected_row_sparsity_pattern;
+    VectofOfEigenIndexVector m_selected_row_indexes;
 
     /// \brief Vector of size for selected joints
-    std::vector<int> selected_joint_nqs, selected_joint_nvs, selected_joint_idx_vs;
+    std::vector<int> m_selected_joint_nqs, m_selected_joint_nvs, m_selected_joint_idx_vs;
 
     /// \brief nq size given the selected joints
-    /// nq_reduce = SUM(j in selected_joints) j.nq
-    int nq_reduce;
+    /// m_nq_reduce = SUM(j in m_selected_joints) j.nq
+    int m_nq_reduce;
 
     /// \brief max of nv of the selected joints
-    /// max_of_nvs = MAX(j in selected_joints) j.nv
-    int max_of_nvs;
+    /// m_max_of_nvs = MAX(j in m_selected_joints) j.nv
+    int m_max_of_nvs;
 
-    /// \brief give for each activable constraint the index of related joint in selected_joints
+    /// \brief give for each activable constraint the index of related joint in m_selected_joints
     /// size = maxResidualSize
-    VectorOfSize activable_idx_in_selected;
+    VectorOfSize m_activable_idx_in_selected;
 
     /// \brief give for each activable constraint the index in [0, Nq] for the activable constraint
     /// size = maxResidualsize
-    EigenIndexVector activable_idx_qs;
+    EigenIndexVector m_activable_idx_qs;
 
     /// \brief give for each activable constraint the index in [0, Nqred] for the activable
     /// constraint size = maxResidualsize
-    EigenIndexVector activable_idx_qs_reduce;
+    EigenIndexVector m_activable_idx_qs_reduce;
 
     /// \brief Limit value of lower and upper bound in the constraint (size size()=lsize+usize)
     /// size = maxResidualsize
-    VectorXs activable_position_limit;
+    VectorXs m_activable_position_limit;
 
     /// \brief Margin value of lower and upper bound in the constraint (size size()=lsize+usize)
     /// size = maxResidualsize
-    VectorXs activable_position_margin;
+    VectorXs m_activable_position_margin;
 
     /// \brief number of activable lower bound limits. By convention for i=0..lmrs lower limit and
-    /// i=lmrs..mrs upper limits. lower_max_residual_size <= maxResidualsize
-    int lower_max_residual_size;
+    /// i=lmrs..mrs upper limits. m_lower_max_residual_size <= maxResidualsize
+    int m_lower_max_residual_size;
 
     /// \brief Baumgarte correction parameters of the constraint model
     using BaseCommonParameters::m_baumgarte_parameters;
@@ -802,10 +802,10 @@ namespace pinocchio
         == constraint_model.upperResidualSize(*this) == 0);
 
       // Allocate slices for rowise_tangent_map
-      for (size_t sel_id = 0; sel_id < constraint_model.selected_joints.size(); sel_id++)
+      for (size_t sel_id = 0; sel_id < constraint_model.m_selected_joints.size(); sel_id++)
       {
-        const int joint_nq = constraint_model.selected_joint_nqs[sel_id];
-        const int joint_nv = constraint_model.selected_joint_nvs[sel_id];
+        const int joint_nq = constraint_model.m_selected_joint_nqs[sel_id];
+        const int joint_nv = constraint_model.m_selected_joint_nvs[sel_id];
         for (int i = 0; i < joint_nq; ++i)
           rowise_tangent_map.push_back(1, joint_nv);
       }
@@ -889,17 +889,17 @@ namespace pinocchio
     /// \brief give for each active constraint the row_id of sparsity pattern (size = csize)
     /// size = residualSize
     /// \note it is a proxy to avoid double derefrence as :
-    /// activable_idx_in_selected[active_idx_in_activable[i]] = active_idx_in_selected[i]
+    /// m_activable_idx_in_selected[active_idx_in_activable[i]] = active_idx_in_selected[i]
     VectorOfSize active_idx_in_selected;
 
     /// \brief give for each active constraint of sparsity pattern (size = csize)
     /// size = residualSize
     /// \note it is a proxy to avoid double derefrence as :
-    /// activable_idx_qs_reduce[active_idx_in_activable[i]] = active_idx_qs_reduce[i]
+    /// m_activable_idx_qs_reduce[active_idx_in_activable[i]] = active_idx_qs_reduce[i]
     EigenIndexVector active_idx_qs_reduce;
 
     /// \brief number of active lower bound limits activable (<= residualSize)
-    /// It is the number of element in active_idx_in_activable that are < lower_max_residual_size
+    /// It is the number of element in active_idx_in_activable that are < m_lower_max_residual_size
     int lower_residual_size;
 
     /// \brief Residual of all potential constraints

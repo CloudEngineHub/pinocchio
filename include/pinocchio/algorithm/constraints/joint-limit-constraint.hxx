@@ -40,13 +40,13 @@ namespace pinocchio
     // Loop on all q components of activable jointds to identify activable lower and upper
     // constraints, and for each track row_id of related activable joint, idx_q in the configuration
     // and idx_q_reduce in the subpart of q due to activable joints
-    VectorOfSize & activable_idx_in_selected_lower = activable_idx_in_selected;
+    VectorOfSize & activable_idx_in_selected_lower = m_activable_idx_in_selected;
     VectorOfSize activable_idx_in_selected_upper;
 
-    EigenIndexVector & activable_idx_qs_reduce_lower = activable_idx_qs_reduce;
+    EigenIndexVector & activable_idx_qs_reduce_lower = m_activable_idx_qs_reduce;
     EigenIndexVector activable_idx_qs_reduce_upper;
 
-    EigenIndexVector & activable_idx_qs_lower = activable_idx_qs;
+    EigenIndexVector & activable_idx_qs_lower = m_activable_idx_qs;
     EigenIndexVector activable_idx_qs_upper;
 
     // Prepare the structure to compute sparsity pattern
@@ -60,8 +60,8 @@ namespace pinocchio
     // It correspond to sub-looping on joint composite
     // It was done in the past, but for coherence with the algorithms, that consider the
     // joint composite as a block it has been removed.
-    nq_reduce = 0;
-    max_of_nvs = 1;
+    m_nq_reduce = 0;
+    m_max_of_nvs = 1;
     for (const JointIndex joint_id : activable_joints)
     {
       const JointModel & jmodel = model.joints[joint_id];
@@ -79,7 +79,7 @@ namespace pinocchio
           continue;
 
         const int q_index = idx_q + j_qi; // index in the plain joint configuration vector q
-        const int q_reduce_index = nq_reduce + j_qi;
+        const int q_reduce_index = m_nq_reduce + j_qi;
 
         if (!(check_expression_if_real<Scalar>(lb[q_index] == -std::numeric_limits<Scalar>::max())
               || check_expression_if_real<Scalar>(
@@ -105,14 +105,14 @@ namespace pinocchio
       // so calculate its sparsity pattern
       if (is_joint_selected)
       {
-        selected_joints.push_back(joint_id);
-        selected_joint_nqs.push_back(nq);
-        selected_joint_nvs.push_back(nv);
-        selected_joint_idx_vs.push_back(idx_v);
+        m_selected_joints.push_back(joint_id);
+        m_selected_joint_nqs.push_back(nq);
+        m_selected_joint_nvs.push_back(nv);
+        m_selected_joint_idx_vs.push_back(idx_v);
 
         idx_selected += 1;
-        nq_reduce += nq;
-        max_of_nvs = std::max(max_of_nvs, nv);
+        m_nq_reduce += nq;
+        m_max_of_nvs = std::max(m_max_of_nvs, nv);
 
         // Compute the row indexes of the joint
         const auto & joint_support = model.supports[joint_id];
@@ -134,38 +134,38 @@ namespace pinocchio
           const int extended_row_id = idx_v + k;
           extended_support.push_back(extended_row_id);
         }
-        selected_row_indexes.push_back(extended_support);
+        m_selected_row_indexes.push_back(extended_support);
       }
     }
 
-    // Fill selected_row_sparsity_pattern from selected_row_indexes content
-    selected_row_sparsity_pattern.resize(
-      selected_row_indexes.size(), BooleanVector::Zero(model.nv));
-    for (size_t idx_sel = 0; idx_sel < selected_row_indexes.size(); ++idx_sel)
+    // Fill m_selected_row_sparsity_pattern from m_selected_row_indexes content
+    m_selected_row_sparsity_pattern.resize(
+      m_selected_row_indexes.size(), BooleanVector::Zero(model.nv));
+    for (size_t idx_sel = 0; idx_sel < m_selected_row_indexes.size(); ++idx_sel)
     {
-      auto & sparsity_pattern = selected_row_sparsity_pattern[idx_sel];
-      const auto & extended_support = selected_row_indexes[idx_sel];
+      auto & sparsity_pattern = m_selected_row_sparsity_pattern[idx_sel];
+      const auto & extended_support = m_selected_row_indexes[idx_sel];
       for (const auto val : extended_support)
         sparsity_pattern[val] = true;
     }
 
     // Recover max sizes of constraint
-    lower_max_residual_size = static_cast<int>(activable_idx_in_selected_lower.size());
+    m_lower_max_residual_size = static_cast<int>(activable_idx_in_selected_lower.size());
 
     const int upper_max_residual_size = static_cast<int>(activable_idx_in_selected_upper.size());
     PINOCCHIO_ONLY_USED_FOR_DEBUG(upper_max_residual_size);
-    const int max_residual_size = lower_max_residual_size + upper_max_residual_size;
+    const int max_residual_size = m_lower_max_residual_size + upper_max_residual_size;
     PINOCCHIO_ONLY_USED_FOR_DEBUG(max_residual_size);
 
     // Recompose one vectors for all constraint with the convention lower | upper
-    activable_idx_in_selected.insert(
-      activable_idx_in_selected.end(), activable_idx_in_selected_upper.begin(),
+    m_activable_idx_in_selected.insert(
+      m_activable_idx_in_selected.end(), activable_idx_in_selected_upper.begin(),
       activable_idx_in_selected_upper.end());
-    activable_idx_qs_reduce.insert(
-      activable_idx_qs_reduce.end(), activable_idx_qs_reduce_upper.begin(),
+    m_activable_idx_qs_reduce.insert(
+      m_activable_idx_qs_reduce.end(), activable_idx_qs_reduce_upper.begin(),
       activable_idx_qs_reduce_upper.end());
-    activable_idx_qs.insert(
-      activable_idx_qs.end(), activable_idx_qs_upper.begin(), activable_idx_qs_upper.end());
+    m_activable_idx_qs.insert(
+      m_activable_idx_qs.end(), activable_idx_qs_upper.begin(), activable_idx_qs_upper.end());
 
     assert(maxResidualSize() == max_residual_size);
 
@@ -217,15 +217,15 @@ namespace pinocchio
     for (; i < static_cast<std::size_t>(lowerMaxResidualSize()); i++)
     {
       const Eigen::Index i_ = static_cast<Eigen::Index>(i);
-      const Eigen::Index idx_q = activable_idx_qs[i];
-      activable_constraint_residual[i_] = data.q_in[idx_q] - activable_position_limit[i_];
+      const Eigen::Index idx_q = m_activable_idx_qs[i];
+      activable_constraint_residual[i_] = data.q_in[idx_q] - m_activable_position_limit[i_];
       if (check_expression_if_real<Scalar>(
-            activable_constraint_residual[i_] <= activable_position_margin[i_]))
+            activable_constraint_residual[i_] <= m_activable_position_margin[i_]))
       {
         active_idx_in_activable.push_back(i);
         // Update proxis as well
-        active_idx_in_selected.push_back(activable_idx_in_selected[i]);
-        active_idx_qs_reduce.push_back(activable_idx_qs_reduce[i]);
+        active_idx_in_selected.push_back(m_activable_idx_in_selected[i]);
+        active_idx_qs_reduce.push_back(m_activable_idx_qs_reduce[i]);
         lower_residual_size += 1;
       }
     }
@@ -233,15 +233,15 @@ namespace pinocchio
     for (; i < static_cast<std::size_t>(maxResidualSize()); i++)
     {
       const Eigen::Index i_ = static_cast<Eigen::Index>(i);
-      const Eigen::Index idx_q = activable_idx_qs[i];
-      activable_constraint_residual[i_] = activable_position_limit[i_] - data.q_in[idx_q];
+      const Eigen::Index idx_q = m_activable_idx_qs[i];
+      activable_constraint_residual[i_] = m_activable_position_limit[i_] - data.q_in[idx_q];
       if (check_expression_if_real<Scalar>(
-            activable_constraint_residual[i_] <= activable_position_margin[i_]))
+            activable_constraint_residual[i_] <= m_activable_position_margin[i_]))
       {
         active_idx_in_activable.push_back(i);
         // Update proxis as well
-        active_idx_in_selected.push_back(activable_idx_in_selected[i]);
-        active_idx_qs_reduce.push_back(activable_idx_qs_reduce[i]);
+        active_idx_in_selected.push_back(m_activable_idx_in_selected[i]);
+        active_idx_qs_reduce.push_back(m_activable_idx_qs_reduce[i]);
       }
     }
 
@@ -266,7 +266,7 @@ namespace pinocchio
 
     // Fill the compact tangent map for the system in configuration q_in
     auto & compact_tangent_map = cdata.compact_tangent_map;
-    pinocchio::compactTangentMap(model, selected_joints, data.q_in, compact_tangent_map);
+    pinocchio::compactTangentMap(model, m_selected_joints, data.q_in, compact_tangent_map);
 
     // For each constraint, recover the residual and store the rowise tangent map
     const std::size_t csize = static_cast<std::size_t>(residualSize(cdata));
@@ -282,7 +282,7 @@ namespace pinocchio
       const Eigen::Index idx_in_activable =
         Eigen::Index(cdata.active_idx_in_activable[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
 
       // Recover the constraint residual
       constraint_residual[Eigen::Index(constraint_id)] =
@@ -321,8 +321,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       jacobian_matrix.row(Eigen::Index(constraint_id)).segment(idx_v, constraint_size) =
         rowise_tangent_map[idx_q_reduce];
@@ -332,8 +332,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       jacobian_matrix.row(Eigen::Index(constraint_id)).segment(idx_v, constraint_size) =
         -rowise_tangent_map[idx_q_reduce];
@@ -373,8 +373,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       const auto lazy_product_expression =
         rowise_tangent_map[idx_q_reduce] * mat.middleRows(idx_v, constraint_size);
@@ -388,8 +388,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       const auto lazy_product_expression =
         -rowise_tangent_map[idx_q_reduce] * mat.middleRows(idx_v, constraint_size);
@@ -433,8 +433,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       const auto lazy_product_expression =
         rowise_tangent_map[idx_q_reduce].transpose() * mat.row(Eigen::Index(constraint_id));
@@ -448,8 +448,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       const auto lazy_product_expression =
         -rowise_tangent_map[idx_q_reduce].transpose() * mat.row(Eigen::Index(constraint_id));
@@ -487,8 +487,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const JointIndex joint_id = selected_joints[idx_in_selected];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
+      const JointIndex joint_id = m_selected_joints[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
 
       const auto & constraint_damping_value =
         diagonal_constraint_inertia[Eigen::Index(constraint_id)];
@@ -533,8 +533,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       const auto constraint_jacobian = rowise_tangent_map[idx_q_reduce];
 
@@ -546,8 +546,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       const auto constraint_jacobian = -rowise_tangent_map[idx_q_reduce];
 
@@ -583,8 +583,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       const auto constraint_jacobian = rowise_tangent_map[idx_q_reduce];
 
@@ -596,8 +596,8 @@ namespace pinocchio
     {
       const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
       const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = selected_joint_nvs[idx_in_selected];
-      const Eigen::Index idx_v = selected_joint_idx_vs[idx_in_selected];
+      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
+      const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
       const auto constraint_jacobian = -rowise_tangent_map[idx_q_reduce];
 
