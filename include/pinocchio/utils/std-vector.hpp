@@ -10,6 +10,7 @@
 
 #include "pinocchio/utils/fwd.hpp"
 #include "pinocchio/utils/template-template-parameter.hpp"
+#include "pinocchio/utils/size-in-bytes.hpp"
 
 namespace pinocchio
 {
@@ -388,6 +389,20 @@ namespace pinocchio
     }
 
   } // namespace helper
+
+  template<typename T, class Allocator>
+  struct sizeInBytesImpl<std::vector<T, Allocator>>
+  {
+    static std::size_t run(const std::vector<T, Allocator> & vector)
+    {
+      std::size_t size_value = 0;
+      for (const auto & elt : vector)
+      {
+        size_value += sizeInBytes(elt);
+      }
+      return size_value;
+    }
+  }; // sizeInBytesImpl
 } // namespace pinocchio
 
 #endif // __pinocchio_utils_std_vector_hpp__
