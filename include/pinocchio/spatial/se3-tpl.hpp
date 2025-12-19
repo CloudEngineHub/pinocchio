@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2015-2024 CNRS INRIA
+// Copyright (c) 2015-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
@@ -411,6 +412,14 @@ namespace pinocchio
     ///
     template<typename OtherScalar>
     static SE3Tpl Interpolate(const SE3Tpl & A, const SE3Tpl & B, const OtherScalar & alpha);
+
+    ///
+    /// \brief Returns the size of the SE3Tpl object in bytes.
+    ///
+    static constexpr std::size_t sizeInBytes()
+    {
+      return sizeof(SE3Tpl);
+    }
 
   protected:
     AngularType rot;

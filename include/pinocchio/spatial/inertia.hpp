@@ -228,9 +228,16 @@ namespace pinocchio
       X.disp(os);
       return os;
     }
-  };
 
-  // class InertiaBase
+    ///
+    /// \brief Returns the size of the Derived object in bytes.
+    ///
+    std::size_t sizeInBytes() const
+    {
+      return derived().sizeInBytes();
+    }
+  }; // class InertiaBase
+
   template<typename T, int U>
   struct traits<InertiaTpl<T, U>>
   {
@@ -938,6 +945,14 @@ namespace pinocchio
     //      || (m_mass == Scalar(0) && (m_inertia.data().array() == Scalar(0)).all());
     //    }
 
+    ///
+    /// \brief Returns the size of the InertiaTpl object in bytes.
+    ///
+    static constexpr std::size_t sizeInBytes()
+    {
+      return sizeof(InertiaTpl);
+    }
+
   protected:
     Scalar m_mass;
     Vector3 m_com;
@@ -1103,7 +1118,15 @@ namespace pinocchio
       pi.disp_impl(os);
       return os;
     }
-  };
+
+    ///
+    /// \brief Returns the size of the PseudoInertiaTpl object in bytes.
+    ///
+    static constexpr std::size_t sizeInBytes()
+    {
+      return sizeof(PseudoInertiaTpl);
+    }
+  }; // class PseudoInertiaTpl
 
   /**
    * @brief A structure representing log Cholesky parameters.
@@ -1314,7 +1337,16 @@ namespace pinocchio
       lcp.disp_impl(os);
       return os;
     }
-  };
+
+    ///
+    /// \brief Returns the size of the LogCholeskyParametersTpl object in bytes.
+    ///
+    static constexpr std::size_t sizeInBytes()
+    {
+      return sizeof(LogCholeskyParametersTpl);
+    }
+
+  }; // class
 
 } // namespace pinocchio
 

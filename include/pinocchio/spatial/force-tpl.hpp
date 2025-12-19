@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2015-2018 CNRS
-// Copyright (c) 2018-2024 INRIA
+// Copyright (c) 2018-2025 INRIA
 // Copyright (c) 2015-2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
@@ -225,6 +225,14 @@ namespace pinocchio
       typedef ForceTpl<NewScalar, Options> ReturnType;
       ReturnType res(linear().template cast<NewScalar>(), angular().template cast<NewScalar>());
       return res;
+    }
+
+    ///
+    /// \brief Returns the size of the ForceTpl object in bytes.
+    ///
+    static constexpr std::size_t sizeInBytes()
+    {
+      return sizeof(ForceTpl);
     }
 
   protected:

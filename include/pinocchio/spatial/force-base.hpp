@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2015-2020 CNRS INRIA
+// Copyright (c) 2015-2018 CNRS
+// Copyright (c) 2018-2025 INRIA
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
@@ -282,6 +283,14 @@ namespace pinocchio
     {
       X.disp(os);
       return os;
+    }
+
+    ///
+    /// \brief Returns the size of the Derived object in bytes.
+    ///
+    std::size_t sizeInBytes() const
+    {
+      return derived().sizeInBytes();
     }
 
   }; // class ForceBase
