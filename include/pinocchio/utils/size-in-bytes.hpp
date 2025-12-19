@@ -47,6 +47,12 @@ namespace pinocchio
       return sizeInBytesImpl<T>::run(value);
   }
 
+  template<typename T>
+  std::size_t sizeInBytes()
+  {
+    return sizeof(T);
+  }
+
 } // namespace pinocchio
 
 #endif // __pinocchio_utils_size_in_bytes_hpp__
