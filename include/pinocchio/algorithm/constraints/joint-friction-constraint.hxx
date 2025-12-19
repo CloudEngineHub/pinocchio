@@ -11,10 +11,10 @@ namespace pinocchio
   template<template<typename, int> class JointCollectionTpl>
   void JointFrictionConstraintModelTpl<Scalar, Options>::init(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const JointIndexVector & active_joints)
+    const JointIndexVector & m_active_joints)
   {
-    active_dofs.reserve(size_t(model.nv));
-    for (const JointIndex joint_id : active_joints)
+    m_active_dofs.reserve(size_t(model.nv));
+    for (const JointIndex joint_id : m_active_joints)
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         joint_id < model.joints.size(),
@@ -27,7 +27,7 @@ namespace pinocchio
       for (int k = 0; k < nv; ++k)
       {
         const int row_id = idx_v + k;
-        active_dofs.push_back(row_id);
+        m_active_dofs.push_back(row_id);
       }
 
       EigenIndexVector extended_support;
@@ -50,20 +50,20 @@ namespace pinocchio
       {
         const int row_id = idx_v + k;
         extended_support.push_back(row_id);
-        row_active_indexes.push_back(extended_support);
+        m_row_active_indexes.push_back(extended_support);
       }
     }
 
-    const size_t total_size = active_dofs.size();
+    const size_t total_size = m_active_dofs.size();
     assert(
-      row_active_indexes.size() == total_size && "The two vectors should be of the same size.");
+      m_row_active_indexes.size() == total_size && "The two vectors should be of the same size.");
 
-    // Fill row_sparsity_pattern from row_active_indexes content
-    row_sparsity_pattern.resize(total_size, BooleanVector::Zero(model.nv));
+    // Fill m_row_sparsity_pattern from m_row_active_indexes content
+    m_row_sparsity_pattern.resize(total_size, BooleanVector::Zero(model.nv));
     for (size_t row_id = 0; row_id < total_size; ++row_id)
     {
-      auto & sparsity_pattern = row_sparsity_pattern[row_id];
-      const auto & extended_support = row_active_indexes[row_id];
+      auto & sparsity_pattern = m_row_sparsity_pattern[row_id];
+      const auto & extended_support = m_row_active_indexes[row_id];
 
       for (const auto val : extended_support)
         sparsity_pattern[val] = true;
@@ -72,10 +72,10 @@ namespace pinocchio
     {
       // Fill lower/upper bound based on input model
       // These values can be changed later if needed
-      m_friction_lower_limit.resize(static_cast<Eigen::Index>(active_dofs.size()));
-      m_friction_upper_limit.resize(static_cast<Eigen::Index>(active_dofs.size()));
+      m_friction_lower_limit.resize(static_cast<Eigen::Index>(m_active_dofs.size()));
+      m_friction_upper_limit.resize(static_cast<Eigen::Index>(m_active_dofs.size()));
       Eigen::Index idx = 0;
-      for (const auto dof : active_dofs)
+      for (const auto dof : m_active_dofs)
       {
         m_friction_lower_limit.coeffRef(idx) = model.lowerDryFrictionLimit.coeff(dof);
         m_friction_upper_limit.coeffRef(idx) = model.upperDryFrictionLimit.coeff(dof);
@@ -109,9 +109,9 @@ namespace pinocchio
       "The input/output Jacobian matrix does not have the right number of cols.");
 
     jacobian_matrix.setZero();
-    for (size_t row_id = 0; row_id < active_dofs.size(); ++row_id)
+    for (size_t row_id = 0; row_id < m_active_dofs.size(); ++row_id)
     {
-      const auto col_id = active_dofs[row_id];
+      const auto col_id = m_active_dofs[row_id];
       jacobian_matrix(Eigen::Index(row_id), col_id) = Scalar(1);
     }
   }
@@ -142,9 +142,9 @@ namespace pinocchio
     if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
-    for (size_t row_id = 0; row_id < active_dofs.size(); ++row_id)
+    for (size_t row_id = 0; row_id < m_active_dofs.size(); ++row_id)
     {
-      const auto col_id = active_dofs[row_id];
+      const auto col_id = m_active_dofs[row_id];
 
       if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(Eigen::Index(row_id)) -= mat.row(col_id);
@@ -179,9 +179,9 @@ namespace pinocchio
     if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
       res.setZero();
 
-    for (size_t row_id = 0; row_id < active_dofs.size(); ++row_id)
+    for (size_t row_id = 0; row_id < m_active_dofs.size(); ++row_id)
     {
-      const auto col_id = active_dofs[row_id];
+      const auto col_id = m_active_dofs[row_id];
 
       if constexpr (std::is_same<AssignmentOperatorTag<op>, RmTo>::value)
         res.row(col_id) -= mat.row(Eigen::Index(row_id));
@@ -209,9 +209,9 @@ namespace pinocchio
 
     auto & joint_torques = joint_torques_.const_cast_derived();
 
-    for (size_t dof_id = 0; dof_id < active_dofs.size(); ++dof_id)
+    for (size_t dof_id = 0; dof_id < m_active_dofs.size(); ++dof_id)
     {
-      const auto row_id = active_dofs[dof_id];
+      const auto row_id = m_active_dofs[dof_id];
 
       joint_torques.row(row_id) += constraint_forces.row(Eigen::Index(dof_id));
     }
@@ -236,9 +236,9 @@ namespace pinocchio
 
     auto & constraint_motions = constraint_motions_.const_cast_derived();
 
-    for (size_t dof_id = 0; dof_id < active_dofs.size(); ++dof_id)
+    for (size_t dof_id = 0; dof_id < m_active_dofs.size(); ++dof_id)
     {
-      const auto row_id = active_dofs[dof_id];
+      const auto row_id = m_active_dofs[dof_id];
 
       constraint_motions.row(Eigen::Index(dof_id)) = joint_motions.row(row_id);
     }
@@ -264,7 +264,7 @@ namespace pinocchio
       "The diagonal_constraint_inertia is of wrong size.");
 
     Eigen::Index row_id = 0;
-    for (const JointIndex joint_id : active_joints)
+    for (const JointIndex joint_id : m_active_joints)
     {
       const auto joint_nv = model.nvs[joint_id];
       const auto joint_diagonal_constraint_inertia =

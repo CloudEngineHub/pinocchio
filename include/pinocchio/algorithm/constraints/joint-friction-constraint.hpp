@@ -184,14 +184,14 @@ namespace pinocchio
     {
     }
 
-    /// \brief Constructor from model and active_joints.
+    /// \brief Constructor from model and m_active_joints.
     template<template<typename, int> class JointCollectionTpl>
     JointFrictionConstraintModelTpl(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const JointIndexVector & active_joints)
-    : active_joints(active_joints)
+      const JointIndexVector & m_active_joints)
+    : m_active_joints(m_active_joints)
     {
-      init(model, active_joints);
+      init(model, m_active_joints);
     }
 
     // Operators ---------------------
@@ -209,9 +209,9 @@ namespace pinocchio
       if (this == &other)
         return true;
       return base() == other.base() && base_common_parameters() == other.base_common_parameters()
-             && active_dofs == other.active_dofs
-             && row_sparsity_pattern == other.row_sparsity_pattern
-             && row_active_indexes == other.row_active_indexes
+             && m_active_dofs == other.m_active_dofs
+             && m_row_sparsity_pattern == other.m_row_sparsity_pattern
+             && m_row_active_indexes == other.m_row_active_indexes
              && m_friction_lower_limit == other.m_friction_lower_limit
              && m_friction_upper_limit == other.m_friction_upper_limit;
     }
@@ -231,10 +231,10 @@ namespace pinocchio
       Base::cast(res);
       BaseCommonParameters::template cast<NewScalar>(res);
 
-      res.active_joints = active_joints;
-      res.active_dofs = active_dofs;
-      res.row_sparsity_pattern = row_sparsity_pattern;
-      res.row_active_indexes = row_active_indexes;
+      res.m_active_joints = m_active_joints;
+      res.m_active_dofs = m_active_dofs;
+      res.m_row_sparsity_pattern = m_row_sparsity_pattern;
+      res.m_row_active_indexes = m_row_active_indexes;
       res.m_friction_lower_limit = m_friction_lower_limit.template cast<NewScalar>();
       res.m_friction_upper_limit = m_friction_upper_limit.template cast<NewScalar>();
       return res;
@@ -245,13 +245,13 @@ namespace pinocchio
     /// \brief Returns the vector of active joints
     const JointIndexVector & getActiveJoints() const
     {
-      return active_joints;
+      return m_active_joints;
     }
 
     /// \brief Returns the vector of active rows
     const EigenIndexVector & getActiveDofs() const
     {
-      return active_dofs;
+      return m_active_dofs;
     }
 
     /// \brief Returns a const reference to `lower_friction_limit`
@@ -329,7 +329,7 @@ namespace pinocchio
     /// \copydoc RootBase::maxResidualSizeImpl
     int maxResidualSizeImpl() const
     {
-      return int(active_dofs.size());
+      return int(m_active_dofs.size());
     }
 
     // Methods for algorithms --------
@@ -354,7 +354,7 @@ namespace pinocchio
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
 
-      return row_sparsity_pattern[size_t(row_id)];
+      return m_row_sparsity_pattern[size_t(row_id)];
     }
 
     /// \copydoc RootBase::getRowIndexes
@@ -370,7 +370,7 @@ namespace pinocchio
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
 
-      return row_active_indexes[size_t(row_id)];
+      return m_row_active_indexes[size_t(row_id)];
     }
 
     /// \copydoc RootBase::calc
@@ -499,16 +499,16 @@ namespace pinocchio
     template<template<typename, int> class JointCollectionTpl>
     void init(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const JointIndexVector & active_joints);
+      const JointIndexVector & m_active_joints);
 
     // ------------------------------
     // MEMBERS
     // ------------------------------
 
-    JointIndexVector active_joints;
-    EigenIndexVector active_dofs;
-    VectorOfBooleanVector row_sparsity_pattern;
-    VectofOfEigenIndexVector row_active_indexes;
+    JointIndexVector m_active_joints;
+    EigenIndexVector m_active_dofs;
+    VectorOfBooleanVector m_row_sparsity_pattern;
+    VectofOfEigenIndexVector m_row_active_indexes;
 
     VectorXs m_friction_lower_limit;
     VectorXs m_friction_upper_limit;

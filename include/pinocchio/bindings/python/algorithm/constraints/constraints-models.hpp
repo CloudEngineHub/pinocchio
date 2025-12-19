@@ -64,7 +64,7 @@ namespace pinocchio
       typedef context::JointFrictionConstraintModel Self;
       typedef context::VectorXs VectorXs;
       cl.def(bp::init<const context::Model &, const JointIndexVector &>(
-               (bp::arg("self"), bp::arg("model"), bp::arg("active_joints")),
+               (bp::arg("self"), bp::arg("model"), bp::arg("m_active_joints")),
                "Contructor from given joint index vector "
                "implied in the constraint."))
         .def(

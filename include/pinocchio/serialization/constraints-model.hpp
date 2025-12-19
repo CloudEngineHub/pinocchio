@@ -147,12 +147,12 @@ namespace boost
       : public ::pinocchio::JointFrictionConstraintModelTpl<Scalar, Options>
       {
         typedef ::pinocchio::JointFrictionConstraintModelTpl<Scalar, Options> Base;
-        using Base::active_dofs;
-        using Base::active_joints;
+        using Base::m_active_dofs;
+        using Base::m_active_joints;
         using Base::m_friction_lower_limit;
         using Base::m_friction_upper_limit;
-        using Base::row_active_indexes;
-        using Base::row_sparsity_pattern;
+        using Base::m_row_active_indexes;
+        using Base::m_row_sparsity_pattern;
       };
     } // namespace internal
 
@@ -171,10 +171,10 @@ namespace boost
 
       typedef internal::JointFrictionConstraintModelAccessor<Scalar, Options> Accessor;
       auto & cmodel_ = reinterpret_cast<Accessor &>(cmodel);
-      ar & make_nvp("active_joints", cmodel_.active_joints);
-      ar & make_nvp("active_dofs", cmodel_.active_dofs);
-      ar & make_nvp("row_sparsity_pattern", cmodel_.row_sparsity_pattern);
-      ar & make_nvp("row_active_indexes", cmodel_.row_active_indexes);
+      ar & make_nvp("m_active_joints", cmodel_.m_active_joints);
+      ar & make_nvp("m_active_dofs", cmodel_.m_active_dofs);
+      ar & make_nvp("m_row_sparsity_pattern", cmodel_.m_row_sparsity_pattern);
+      ar & make_nvp("m_row_active_indexes", cmodel_.m_row_active_indexes);
       ar & make_nvp("friction_lower_limit", cmodel_.m_friction_lower_limit);
       ar & make_nvp("friction_upper_limit", cmodel_.m_friction_upper_limit);
     }
