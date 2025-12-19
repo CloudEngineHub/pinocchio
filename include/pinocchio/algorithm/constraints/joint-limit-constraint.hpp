@@ -216,6 +216,7 @@ namespace pinocchio
     }
 
     /// \brief Constructor from model, activable joints, lower and upper joint limits.
+    /// \note lb and ub must be of size nq. They are the bounds of the entire model.
     template<
       template<typename, int> class JointCollectionTpl,
       typename VectorLowerConfiguration,
@@ -230,6 +231,7 @@ namespace pinocchio
     }
 
     /// \brief Constructor from model, activable joints, lower, upper and margin joint limits.
+    /// \note lb, ub and margin must be of size nq. They are the bounds of the entire model.
     template<
       template<typename, int> class JointCollectionTpl,
       typename VectorLowerConfiguration,
