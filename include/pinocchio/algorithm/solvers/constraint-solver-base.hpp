@@ -104,7 +104,7 @@ namespace pinocchio
     , primal_feasibility(std::numeric_limits<Scalar>::quiet_NaN())
     , dual_feasibility(std::numeric_limits<Scalar>::quiet_NaN())
     , complementarity(std::numeric_limits<Scalar>::quiet_NaN())
-    , is_valid_(false)
+    , m_is_valid(false)
     {
     }
 
@@ -117,7 +117,7 @@ namespace pinocchio
       dual_feasibility = std::numeric_limits<Scalar>::quiet_NaN();
       complementarity = std::numeric_limits<Scalar>::quiet_NaN();
 
-      is_valid_ = false;
+      m_is_valid = false;
     }
 
     /// \brief Returns true if the solution is in a valid state.
@@ -125,7 +125,7 @@ namespace pinocchio
     /// Otherwise, it does not.
     bool isValid() const
     {
-      return is_valid_;
+      return m_is_valid;
     }
 
     /// \brief Number of iterations of the solver
@@ -147,13 +147,13 @@ namespace pinocchio
     /// \brief Whether or not the solution is in a valid state.
     /// If it is, it represents the result of a meaningful computation.
     /// Otherwise, it does not.
-    bool is_valid_;
+    bool m_is_valid;
 
     /// \brief Make the solution valid.
     /// This function should only be used by the class or friends of the class.
     void makeValid()
     {
-      is_valid_ = true;
+      m_is_valid = true;
     }
 
   }; // struct ConstraintSolverResultBaseTpl

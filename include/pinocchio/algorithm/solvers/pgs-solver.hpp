@@ -44,8 +44,8 @@ namespace pinocchio
     explicit PGSConstraintSolverTpl(std::size_t problem_size = 0)
     : Base()
     , stats()
-    , workspace_(problem_size)
-    , is_valid_(false)
+    , m_workspace(problem_size)
+    , m_is_valid(false)
     {
     }
 
@@ -113,15 +113,15 @@ namespace pinocchio
     void reset()
     {
       stats.reset();
-      workspace_.reset();
-      is_valid_ = false;
+      m_workspace.reset();
+      m_is_valid = false;
     }
 
     /// \brief Returns true if solver is in a valid state (it has solved a constraint problem).
     /// If so, its stats are valid.
     bool isValid() const
     {
-      return is_valid_;
+      return m_is_valid;
     }
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
@@ -136,11 +136,11 @@ namespace pinocchio
     /// \brief Workspace of the PGS solver.
     /// This is an internal of the solver and is not meant to be accessed by
     /// users.
-    PGSSolverWorkspace workspace_;
+    PGSSolverWorkspace m_workspace;
 
     /// \brief Flag to check whether or not the solver is in a reset state.
     /// If not, its stats are valid.
-    bool is_valid_;
+    bool m_is_valid;
 
   }; // struct PGSConstraintSolverTpl
 

@@ -38,7 +38,7 @@ namespace pinocchio
     // for easier access
     static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
     ADMMSolverResult & res = result;
-    ADMMSolverWorkspace & wk = workspace_;
+    ADMMSolverWorkspace & wk = m_workspace;
     DelassusDerived & G = delassus.derived();
 
     // Configure/reset workspace, stats and result
@@ -83,7 +83,7 @@ namespace pinocchio
     assert(res.iterations == 0);
 
     // -- init of internals done - the solver is now marked as reset
-    is_valid_ = false;
+    m_is_valid = false;
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
     if (settings.measure_timings)
@@ -511,7 +511,7 @@ namespace pinocchio
     res.makeValid();
 
     // the solver has run, we mark it as valid
-    is_valid_ = true;
+    m_is_valid = true;
 
     return res.converged;
   }

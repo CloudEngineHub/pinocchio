@@ -560,7 +560,7 @@ namespace pinocchio
     // for easier access
     const MatrixType & G = delassus.derived();
     PGSSolverResult & res = result;
-    PGSSolverWorkspace & wk = workspace_;
+    PGSSolverWorkspace & wk = m_workspace;
 
     // Configure/reset workspace, stats and results.
     // note: the order matters as workspace is initialized using
@@ -603,7 +603,7 @@ namespace pinocchio
     assert(res.iterations == 0);
 
     // the solver can now be marked as reset
-    is_valid_ = false;
+    m_is_valid = false;
 
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
 
@@ -728,7 +728,7 @@ namespace pinocchio
     res.makeValid();
 
     // the solver has run, we mark it as valid
-    is_valid_ = true;
+    m_is_valid = true;
 
     return res.converged;
   }
