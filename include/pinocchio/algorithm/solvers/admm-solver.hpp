@@ -440,6 +440,8 @@ namespace pinocchio
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
+    static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
+
     // make ADMM solver a friend so that it can use `makeValid`
     friend struct ADMMConstraintSolverTpl<Scalar>;
 
@@ -452,9 +454,9 @@ namespace pinocchio
     , preconditioner(std::nullopt)
     , primal_guess(std::nullopt)
     , dual_guess(std::nullopt)
-    , rho(std::numeric_limits<Scalar>::quiet_NaN())
-    , spectral_rho_power(std::numeric_limits<Scalar>::quiet_NaN())
-    , mu_prox(std::numeric_limits<Scalar>::quiet_NaN())
+    , rho(nan)
+    , spectral_rho_power(nan)
+    , mu_prox(nan)
     , x(x_storage.map())
     , y(y_storage.map())
     , z(z_storage.map())
@@ -473,17 +475,17 @@ namespace pinocchio
       primal_guess.reset();
       dual_guess.reset();
 
-      rho = std::numeric_limits<Scalar>::quiet_NaN();
-      spectral_rho_power = std::numeric_limits<Scalar>::quiet_NaN();
-      mu_prox = std::numeric_limits<Scalar>::quiet_NaN();
+      rho = nan;
+      spectral_rho_power = nan;
+      mu_prox = nan;
 
       resize(problem_size);
 
       // set solution to nan - solver has not run
-      x.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
-      y.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
-      z.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
-      desaxce.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+      x.setConstant(nan);
+      y.setConstant(nan);
+      z.setConstant(nan);
+      desaxce.setConstant(nan);
     }
 
     /// \brief Resize the primal/dual/desaxce vectors of the solution.
@@ -680,6 +682,8 @@ namespace pinocchio
       typedef LanczosDecompositionTpl<MatrixXs> LanczosDecomposition;
       typedef AndersonAccelerationTpl<Scalar> AndersonAcceleration;
 
+      static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
+
       /// \brief Constructor given problem_size, lanczos_size and anderson_capacity.
       ADMMSolverWorkspaceTpl(
         std::size_t problem_size = 0, //
@@ -691,9 +695,9 @@ namespace pinocchio
       , delassus_decomposition_update_count(0)
       , delassus_smallest_eigenvalue(std::nullopt)
       , delassus_largest_eigenvalue(std::nullopt)
-      , rho(std::numeric_limits<Scalar>::quiet_NaN())
-      , spectral_rho_power(std::numeric_limits<Scalar>::quiet_NaN())
-      , mu_prox(std::numeric_limits<Scalar>::quiet_NaN())
+      , rho(nan)
+      , spectral_rho_power(nan)
+      , mu_prox(nan)
       , lanczos_decomposition(
           static_cast<Eigen::Index>(math::max(std::size_t(2), problem_size)), //
           static_cast<Eigen::Index>(
@@ -730,7 +734,6 @@ namespace pinocchio
         delassus_decomposition_update_count = 0;
         delassus_smallest_eigenvalue.reset();
         delassus_largest_eigenvalue.reset();
-        constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
 
         rho = nan;
         spectral_rho_power = nan;
