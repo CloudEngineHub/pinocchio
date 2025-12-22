@@ -560,7 +560,7 @@ namespace pinocchio
     // for easier access
     const MatrixType & G = delassus.derived();
     PGSSolverResult & res = result;
-    PGSSolverWorkspace & wk = m_workspace;
+    PGSSolverWorkspace & ws = m_workspace;
 
     // Configure/reset workspace, stats and results.
     // note: the order matters as workspace is initialized using
@@ -575,9 +575,9 @@ namespace pinocchio
     settings.checkValidity();
 
     // -- reset workspace
-    wk.reset(problem_size);
-    assert(wk.problem_size == problem_size);
-    assert(wk.x.size() == np);
+    ws.reset(problem_size);
+    assert(ws.problem_size == problem_size);
+    assert(ws.x.size() == np);
 
     // -- reset per-iteration statistics
     stats.reset();
@@ -589,14 +589,14 @@ namespace pinocchio
     // -- retrieve warmstart from results, then reset results
     if (res.primal_guess)
     {
-      wk.x = res.primal_guess.value();
+      ws.x = res.primal_guess.value();
     }
     else
     {
-      wk.x.setZero();
+      ws.x.setZero();
     }
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.x.size(), np);
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(wk.y.size(), np);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(ws.x.size(), np);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(ws.y.size(), np);
     res.reset(problem_size);
     assert(res.isValid() == false);
     assert(res.problem_size == problem_size);
@@ -616,13 +616,13 @@ namespace pinocchio
 
     bool abs_prec_reached = false;
     bool rel_prec_reached = false;
-    Scalar x_previous_norm_inf = wk.x.template lpNorm<Eigen::Infinity>();
+    Scalar x_previous_norm_inf = ws.x.template lpNorm<Eigen::Infinity>();
     const std::size_t num_constraints = constraint_models.size();
 
     res.iterations = 0;
     for (; res.iterations <= settings.max_iterations; ++res.iterations)
     {
-      wk.x_previous = wk.x;
+      ws.x_previous = ws.x;
 
       res.complementarity = Scalar(0);
       res.dual_feasibility = Scalar(0);
@@ -637,11 +637,11 @@ namespace pinocchio
         const Eigen::Index constraint_size = cmodel.residualSize(cdata);
 
         auto G_block = G.block(row_id, row_id, constraint_size, constraint_size);
-        auto impulse = wk.x.segment(row_id, constraint_size);
-        auto velocity = wk.y.segment(row_id, constraint_size);
+        auto impulse = ws.x.segment(row_id, constraint_size);
+        auto velocity = ws.y.segment(row_id, constraint_size);
 
         // Update dual variable
-        velocity.noalias() = G.middleRows(row_id, constraint_size) * wk.x;
+        velocity.noalias() = G.middleRows(row_id, constraint_size) * ws.x;
         velocity += g.segment(row_id, constraint_size);
 
         typedef PGSConstraintProjectionStepVisitor<
@@ -675,8 +675,8 @@ namespace pinocchio
       }
 
       // -- relative
-      const Scalar proximal_metric = (wk.x - wk.x_previous).template lpNorm<Eigen::Infinity>();
-      const Scalar x_norm_inf = wk.x.template lpNorm<Eigen::Infinity>();
+      const Scalar proximal_metric = (ws.x - ws.x_previous).template lpNorm<Eigen::Infinity>();
+      const Scalar x_norm_inf = ws.x.template lpNorm<Eigen::Infinity>();
       if (check_expression_if_real<Scalar, false>(
             proximal_metric
             <= settings.relative_feasibility_tol * math::max(x_norm_inf, x_previous_norm_inf)))
@@ -691,17 +691,17 @@ namespace pinocchio
       // Record stats
       if (settings.stat_record)
       {
-        wk.tmp.noalias() = G * wk.x;
-        wk.tmp += g;
+        ws.tmp.noalias() = G * ws.x;
+        ws.tmp += g;
         if (settings.solve_ncp)
         {
-          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, wk.tmp, wk.rhs);
-          wk.tmp += wk.rhs;
+          internal::computeDeSaxeCorrection(constraint_models, constraint_datas, ws.tmp, ws.rhs);
+          ws.tmp += ws.rhs;
         }
-        wk.rhs = wk.tmp;
-        internal::computeDualConeProjection(constraint_models, constraint_datas, wk.rhs, wk.rhs);
-        wk.tmp -= wk.rhs;
-        const Scalar dual_feasibility_ncp = wk.tmp.template lpNorm<Eigen::Infinity>();
+        ws.rhs = ws.tmp;
+        internal::computeDualConeProjection(constraint_models, constraint_datas, ws.rhs, ws.rhs);
+        ws.tmp -= ws.rhs;
+        const Scalar dual_feasibility_ncp = ws.tmp.template lpNorm<Eigen::Infinity>();
 
         stats.primal_feasibility.push_back(res.primal_feasibility);
         stats.dual_feasibility.push_back(res.dual_feasibility);
@@ -722,8 +722,8 @@ namespace pinocchio
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
 
     // Retrieve solution
-    res.x = wk.x;
-    res.y = wk.y;
+    res.x = ws.x;
+    res.y = ws.y;
     res.converged = abs_prec_reached || rel_prec_reached;
     res.makeValid();
 
