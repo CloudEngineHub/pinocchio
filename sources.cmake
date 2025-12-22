@@ -667,7 +667,7 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-kinematics.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-geometry.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-aba-derivatives.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-contact-solvers.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-constraint-solvers.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-contact-inverse-dynamics.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-joints.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-constrained-dynamics.cpp
