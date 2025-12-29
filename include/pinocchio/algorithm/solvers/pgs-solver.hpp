@@ -235,7 +235,7 @@ namespace pinocchio
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
-    static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
+    static constexpr Scalar nan_value = std::numeric_limits<Scalar>::quiet_NaN();
 
     // make PGS solver a friend so that it can use `makeValid`
     friend struct PGSConstraintSolverTpl<Scalar>;
@@ -264,8 +264,8 @@ namespace pinocchio
       resize(problem_size);
 
       // set solution to nan - solver has not run
-      x.setConstant(nan);
-      y.setConstant(nan);
+      x.setConstant(nan_value);
+      y.setConstant(nan_value);
     }
 
     /// \brief Resize the primal/dual vectors of the solution.
@@ -380,7 +380,7 @@ namespace pinocchio
       typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
       typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
-      static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
+      static constexpr Scalar nan_value = std::numeric_limits<Scalar>::quiet_NaN();
 
       /// \brief Constructor given problem_size.
       PGSSolverWorkspaceTpl(std::size_t problem_size = 0)
@@ -402,11 +402,11 @@ namespace pinocchio
         resize(problem_size);
 
 #ifndef NDEBUG
-        x.setConstant(nan);
-        x_previous.setConstant(nan);
-        y.setConstant(nan);
-        tmp.setConstant(nan);
-        rhs.setConstant(nan);
+        x.setConstant(nan_value);
+        x_previous.setConstant(nan_value);
+        y.setConstant(nan_value);
+        tmp.setConstant(nan_value);
+        rhs.setConstant(nan_value);
 #endif
       }
 

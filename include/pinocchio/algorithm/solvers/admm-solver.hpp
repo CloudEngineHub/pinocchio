@@ -440,7 +440,7 @@ namespace pinocchio
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
-    static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
+    static constexpr Scalar nan_value = std::numeric_limits<Scalar>::quiet_NaN();
 
     // make ADMM solver a friend so that it can use `makeValid`
     friend struct ADMMConstraintSolverTpl<Scalar>;
@@ -454,9 +454,9 @@ namespace pinocchio
     , preconditioner(std::nullopt)
     , primal_guess(std::nullopt)
     , dual_guess(std::nullopt)
-    , rho(nan)
-    , spectral_rho_power(nan)
-    , mu_prox(nan)
+    , rho(nan_value)
+    , spectral_rho_power(nan_value)
+    , mu_prox(nan_value)
     , x(x_storage.map())
     , y(y_storage.map())
     , z(z_storage.map())
@@ -475,17 +475,17 @@ namespace pinocchio
       primal_guess.reset();
       dual_guess.reset();
 
-      rho = nan;
-      spectral_rho_power = nan;
-      mu_prox = nan;
+      rho = nan_value;
+      spectral_rho_power = nan_value;
+      mu_prox = nan_value;
 
       resize(problem_size);
 
       // set solution to nan - solver has not run
-      x.setConstant(nan);
-      y.setConstant(nan);
-      z.setConstant(nan);
-      desaxce.setConstant(nan);
+      x.setConstant(nan_value);
+      y.setConstant(nan_value);
+      z.setConstant(nan_value);
+      desaxce.setConstant(nan_value);
     }
 
     /// \brief Resize the primal/dual/desaxce vectors of the solution.
@@ -682,7 +682,7 @@ namespace pinocchio
       typedef LanczosDecompositionTpl<MatrixXs> LanczosDecomposition;
       typedef AndersonAccelerationTpl<Scalar> AndersonAcceleration;
 
-      static constexpr Scalar nan = std::numeric_limits<Scalar>::quiet_NaN();
+      static constexpr Scalar nan_value = std::numeric_limits<Scalar>::quiet_NaN();
 
       /// \brief Constructor given problem_size, lanczos_size and anderson_capacity.
       ADMMSolverWorkspaceTpl(
@@ -695,9 +695,9 @@ namespace pinocchio
       , delassus_decomposition_update_count(0)
       , delassus_smallest_eigenvalue(std::nullopt)
       , delassus_largest_eigenvalue(std::nullopt)
-      , rho(nan)
-      , spectral_rho_power(nan)
-      , mu_prox(nan)
+      , rho(nan_value)
+      , spectral_rho_power(nan_value)
+      , mu_prox(nan_value)
       , lanczos_decomposition(
           static_cast<Eigen::Index>(math::max(std::size_t(2), problem_size)), //
           static_cast<Eigen::Index>(
@@ -735,28 +735,28 @@ namespace pinocchio
         delassus_smallest_eigenvalue.reset();
         delassus_largest_eigenvalue.reset();
 
-        rho = nan;
-        spectral_rho_power = nan;
-        mu_prox = nan;
+        rho = nan_value;
+        spectral_rho_power = nan_value;
+        mu_prox = nan_value;
 
         resize(problem_size, lanczos_size, anderson_capacity);
 
 #ifndef NDEBUG
         // for debugging purposes
-        x.setConstant(nan);
-        x_previous.setConstant(nan);
-        x_anderson.setConstant(nan);
-        y.setConstant(nan);
-        y_previous.setConstant(nan);
-        z.setConstant(nan);
-        z_previous.setConstant(nan);
-        z_anderson.setConstant(nan);
-        desaxce.setConstant(nan);
-        rhs.setConstant(nan);
-        tmp.setConstant(nan);
-        primal_feasibility_vector.setConstant(nan);
-        anderson_primal_feasibility_vector.setConstant(nan);
-        dual_feasibility_vector.setConstant(nan);
+        x.setConstant(nan_value);
+        x_previous.setConstant(nan_value);
+        x_anderson.setConstant(nan_value);
+        y.setConstant(nan_value);
+        y_previous.setConstant(nan_value);
+        z.setConstant(nan_value);
+        z_previous.setConstant(nan_value);
+        z_anderson.setConstant(nan_value);
+        desaxce.setConstant(nan_value);
+        rhs.setConstant(nan_value);
+        tmp.setConstant(nan_value);
+        primal_feasibility_vector.setConstant(nan_value);
+        anderson_primal_feasibility_vector.setConstant(nan_value);
+        dual_feasibility_vector.setConstant(nan_value);
 #endif
       }
 
