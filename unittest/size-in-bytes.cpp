@@ -9,6 +9,13 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
+template<typename Matrix>
+Eigen::Map<Matrix> make_map(const Eigen::PlainObjectBase<Matrix> & _mat)
+{
+  auto & mat = _mat.const_cast_derived();
+  return {mat.data(), mat.rows(), mat.cols()};
+}
+
 using namespace pinocchio;
 
 template<int size>
@@ -61,6 +68,13 @@ BOOST_AUTO_TEST_CASE(test_eigen_matrix)
 
   const Eigen::MatrixXd mat(mat33);
   BOOST_CHECK(sizeInBytes(mat) - sizeInBytes(mat33) == 1);
+}
+
+BOOST_AUTO_TEST_CASE(test_eigen_map)
+{
+  const Eigen::Matrix3d mat;
+  const auto mat_map = make_map(mat);
+  BOOST_CHECK(sizeInBytes(mat_map) == sizeInBytes(mat));
 }
 
 BOOST_AUTO_TEST_CASE(test_fundamental_types)

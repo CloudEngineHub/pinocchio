@@ -580,7 +580,20 @@ namespace pinocchio
       std::size_t size_value = sizeof(Scalar) * std::size_t(matrix.size()) + sizeof(Matrix0x0);
       return size_value;
     }
-  }; // sizeInBytesImpl
+  }; // struct sizeInBytesImpl<Eigen::PlainObjectBase<Derived>>
+
+  template<typename PlainObjectType, int MapOptions, typename StrideType>
+  struct sizeInBytesImpl<Eigen::Map<PlainObjectType, MapOptions, StrideType>>
+  {
+    static std::size_t run(const Eigen::Map<PlainObjectType, MapOptions, StrideType> & map)
+    {
+      typedef typename PlainObjectType::Scalar Scalar;
+      std::size_t size_value = sizeof(Scalar) * std::size_t(map.size());
+      return size_value;
+    }
+
+  }; // struct sizeInBytesImpl<Eigen::Map<PlainObjectType,MapOptions,StrideType>>
+
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_utils_eigen_hpp__
