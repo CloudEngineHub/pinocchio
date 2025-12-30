@@ -8,10 +8,12 @@
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/multibody/data.hpp"
 #include "pinocchio/utils/reference.hpp"
+#include "pinocchio/utils/size-in-bytes.hpp"
 
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 
 #include <algorithm>
+#include <cstddef>
 
 namespace pinocchio
 {
@@ -1114,6 +1116,17 @@ namespace pinocchio
     compute(
       model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu),
       use_explicit_delassus);
+  }
+
+  template<typename Scalar, int Options>
+  std::size_t ContactCholeskyDecompositionTpl<Scalar, Options>::sizeInBytes() const
+  {
+    return U_storage.sizeInBytes() + D_storage.sizeInBytes() + Dinv_storage.sizeInBytes()
+           + compliance_storage.sizeInBytes() + damping_storage.sizeInBytes()
+           + delassus_block_storage.sizeInBytes() + pinocchio::sizeInBytes(parents_fromRow)
+           + pinocchio::sizeInBytes(nv_subtree_fromRow)
+      // + pinocchio::sizeInBytes(rowise_sparsity_pattern)
+      ;
   }
 
   PINOCCHIO_COMPILER_DIAGNOSTIC_POP

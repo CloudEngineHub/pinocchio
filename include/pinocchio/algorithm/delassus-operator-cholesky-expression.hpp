@@ -269,6 +269,13 @@ namespace pinocchio
       return size();
     }
 
+    /// \brief Returns the current memory footprint of this object in bytes.
+    /// \details Sums up the sizes of all internal data members.
+    std::size_t sizeInBytes() const
+    {
+      return self.sizeInBytes();
+    }
+
   protected:
     const ContactCholeskyDecomposition & self;
   }; // DelassusCholeskyExpression

@@ -427,11 +427,14 @@ namespace pinocchio
     void inverse(const Eigen::MatrixBase<MatrixType> & res) const;
 
     // data
+  protected:
     EigenStorageVector D_storage;
-    typename EigenStorageVector::RefMapType D;
     EigenStorageVector Dinv_storage;
-    typename EigenStorageVector::RefMapType Dinv;
     EigenStorageRowMatrix U_storage;
+
+  public:
+    typename EigenStorageVector::RefMapType D;
+    typename EigenStorageVector::RefMapType Dinv;
     typename EigenStorageRowMatrix::RefMapType U;
 
     ///@{
@@ -464,6 +467,10 @@ namespace pinocchio
     template<typename S1, int O1>
     bool operator!=(const ContactCholeskyDecompositionTpl<S1, O1> & other) const;
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
+
+    /// \brief Returns the current memory footprint of this object in bytes.
+    /// \details Sums up the sizes of all internal data members.
+    std::size_t sizeInBytes() const;
 
   protected:
     EigenIndexVector parents_fromRow;
