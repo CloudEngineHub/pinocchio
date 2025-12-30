@@ -556,6 +556,31 @@ namespace pinocchio
   {
     return {std::forward<Eigen::NoAlias<MatrixExpression, StorageBase>>(matrix_expression)};
   }
+
+  template<typename Derived>
+  struct sizeInBytesImpl<
+    Derived,
+    typename std::enable_if<std::is_base_of<Eigen::PlainObjectBase<Derived>, Derived>::value>::type>
+  {
+    template<typename U = Derived>
+    static typename std::enable_if<helper::has_fixed_size_v<U>, std::size_t>::type
+    run(const Eigen::PlainObjectBase<Derived> & matrix)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(matrix);
+      std::size_t size_value = sizeof(Derived);
+      return size_value;
+    }
+
+    template<typename U = Derived>
+    static typename std::enable_if<!helper::has_fixed_size_v<U>, std::size_t>::type
+    run(const Eigen::PlainObjectBase<Derived> & matrix)
+    {
+      typedef typename Derived::Scalar Scalar;
+      typedef Eigen::Matrix<Scalar, 0, 0> Matrix0x0;
+      std::size_t size_value = sizeof(Scalar) * std::size_t(matrix.size()) + sizeof(Matrix0x0);
+      return size_value;
+    }
+  }; // sizeInBytesImpl
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_utils_eigen_hpp__
