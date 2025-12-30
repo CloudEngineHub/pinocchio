@@ -14,6 +14,7 @@
 #include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
 #include "pinocchio/utils/template-template-parameter.hpp"
+#include "pinocchio/utils/size-in-bytes.hpp"
 
 namespace pinocchio
 {
@@ -346,6 +347,13 @@ namespace pinocchio
       MotionVector a, oa_augmented;
       VectorXs u, ddq;
       ForceVector f, of_augmented;
+
+      std::size_t sizeInBytes() const
+      {
+        return pinocchio::sizeInBytes(a) + pinocchio::sizeInBytes(oa_augmented)
+               + pinocchio::sizeInBytes(u) + pinocchio::sizeInBytes(ddq) + pinocchio::sizeInBytes(f)
+               + pinocchio::sizeInBytes(of_augmented);
+      }
     };
 
     const InternalData & getInternalData() const
@@ -376,6 +384,15 @@ namespace pinocchio
     AugmentedMassMatrixOperator getAugmentedMassMatrixOperator() const
     {
       return AugmentedMassMatrixOperator(*this);
+    }
+
+    /// \brief Returns the current memory footprint of the struct in bytes.
+    std::size_t sizeInBytes() const
+    {
+      return m_damping_storage.sizeInBytes() + m_compliance_storage.sizeInBytes()
+             + m_sum_compliance_damping_storage.sizeInBytes()
+             + m_sum_compliance_damping_inverse_storage.sizeInBytes()
+             + m_internal_data.sizeInBytes();
     }
 
   protected:
