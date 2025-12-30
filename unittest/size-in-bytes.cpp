@@ -5,6 +5,7 @@
 #include "pinocchio/utils/size-in-bytes.hpp"
 #include "pinocchio/utils/std-array.hpp"
 #include "pinocchio/utils/std-vector.hpp"
+#include "pinocchio/utils/eigen.hpp"
 
 #include <cstddef>
 #include <iostream>
@@ -54,6 +55,15 @@ BOOST_AUTO_TEST_CASE(test_std_array)
 {
   std::array<SimpleStruct1, 100> array;
   BOOST_CHECK(sizeInBytes(array) == array.size() * array[0].sizeInBytes());
+}
+
+BOOST_AUTO_TEST_CASE(test_eigen_matrix)
+{
+  const Eigen::Matrix3d mat33;
+  BOOST_CHECK(sizeInBytes(mat33) == sizeof(mat33));
+
+  const Eigen::MatrixXd mat(mat33);
+  BOOST_CHECK(sizeInBytes(mat) - sizeInBytes(mat33) == 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
