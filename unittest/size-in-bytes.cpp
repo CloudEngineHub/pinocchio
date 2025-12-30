@@ -3,9 +3,6 @@
 //
 
 #include "pinocchio/utils/size-in-bytes.hpp"
-#include "pinocchio/utils/std-array.hpp"
-#include "pinocchio/utils/std-vector.hpp"
-#include "pinocchio/utils/eigen.hpp"
 
 #include <cstddef>
 #include <iostream>

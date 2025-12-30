@@ -108,4 +108,8 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+#include "pinocchio/utils/eigen.hpp"
+#include "pinocchio/utils/std-array.hpp"
+#include "pinocchio/utils/std-vector.hpp"
+
 #endif // __pinocchio_utils_size_in_bytes_hpp__
