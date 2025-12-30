@@ -21,6 +21,7 @@
 #include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/proximal.hpp"
 #include "pinocchio/utils/reference.hpp"
+#include "pinocchio/utils/size-in-bytes.hpp"
 
 #include "utils/model-generator.hpp"
 
@@ -159,6 +160,58 @@ BOOST_AUTO_TEST_CASE(default_constructor_const_reference_wrapper)
   BOOST_CHECK(&delassus_operator.data() == &data);
   BOOST_CHECK(&delassus_operator.constraint_models() == &constraint_models);
   BOOST_CHECK(&delassus_operator.constraint_datas() == &constraint_datas);
+}
+
+BOOST_AUTO_TEST_CASE(size_in_bytes)
+{
+  typedef FrameAnchorConstraintModelTpl<double> ConstraintModel;
+  typedef DelassusOperatorRigidBodySystemsTpl<
+    double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
+    DelassusOperatorRigidBodyReferenceWrapper;
+  typedef
+    typename DelassusOperatorRigidBodyReferenceWrapper::ConstraintModelVector ConstraintModelVector;
+  typedef
+    typename DelassusOperatorRigidBodyReferenceWrapper::ConstraintDataVector ConstraintDataVector;
+
+  Model model;
+  std::reference_wrapper<Model> model_ref = model;
+  buildModels::humanoidRandom(model, true);
+  model.gravity.setZero();
+  const Eigen::VectorXd q_neutral = neutral(model);
+  const Eigen::VectorXd v = Eigen::VectorXd::Random(model.nv);
+  const Eigen::VectorXd tau = Eigen::VectorXd::Random(model.nv);
+
+  const std::string RF = "rleg6_joint";
+  const std::string LF = "lleg6_joint";
+
+  Data data(model);
+  std::reference_wrapper<Data> data_ref = data;
+
+  ConstraintModelVector constraint_models;
+  ConstraintDataVector constraint_datas;
+  const ConstraintModel cm_RF_LF_LOCAL(
+    model, model.getJointId(RF), SE3::Random(), model.getJointId(LF), SE3::Random());
+
+  constraint_models.push_back(cm_RF_LF_LOCAL);
+  constraint_datas.push_back(cm_RF_LF_LOCAL.createData());
+  const ConstraintModel cm_LF_LOCAL(model, model.getJointId(LF), SE3::Random());
+  constraint_models.push_back(cm_LF_LOCAL);
+  constraint_datas.push_back(cm_LF_LOCAL.createData());
+
+  computeJointJacobians(model, data, q_neutral);
+  data.q_in = q_neutral;
+  calc(model, data, constraint_models, constraint_datas);
+
+  std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
+  std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;
+
+  const double damping_value = 1e-4;
+
+  const auto delassus_operator = DelassusOperatorRigidBodyReferenceWrapper(
+    model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
+
+  const auto size_in_bytes = delassus_operator.sizeInBytes();
+  BOOST_CHECK(size_in_bytes > delassus_operator.getInternalData().sizeInBytes());
 }
 
 BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
