@@ -39,7 +39,7 @@ namespace pinocchio
    *
    * @tparam T Type of the object whose size in bytes will be computed.
    */
-  template<typename T>
+  template<typename T, typename Enable = void>
   struct sizeInBytesImpl
   {
     /**
