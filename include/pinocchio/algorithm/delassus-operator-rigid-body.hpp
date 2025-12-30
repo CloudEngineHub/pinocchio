@@ -348,6 +348,8 @@ namespace pinocchio
       VectorXs u, ddq;
       ForceVector f, of_augmented;
 
+      /// \brief Returns the current memory footprint of this object in bytes.
+      /// \details Sums up the sizes of all internal data members.
       std::size_t sizeInBytes() const
       {
         return pinocchio::sizeInBytes(a) + pinocchio::sizeInBytes(oa_augmented)
@@ -386,7 +388,8 @@ namespace pinocchio
       return AugmentedMassMatrixOperator(*this);
     }
 
-    /// \brief Returns the current memory footprint of the struct in bytes.
+    /// \brief Returns the current memory footprint of this object in bytes.
+    /// \details Sums up the sizes of all internal data members.
     std::size_t sizeInBytes() const
     {
       return m_damping_storage.sizeInBytes() + m_compliance_storage.sizeInBytes()
