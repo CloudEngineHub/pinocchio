@@ -80,6 +80,8 @@ namespace pinocchio
     {
       return value.sizeInBytes();
     }
+    else if constexpr (std::is_fundamental_v<T>)
+      return sizeof(T);
     else
       return sizeInBytesImpl<T>::run(value);
   }
