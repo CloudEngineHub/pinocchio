@@ -304,13 +304,13 @@ namespace pinocchio
     /// \brief Returns the storage capacity in bytes (i.e. sizeof(Scalar) * capacity()).
     std::size_t capacityInBytes() const
     {
-      return sizeof(Scalar) * capacity();
+      return sizeof(Scalar) * std::size_t(capacity());
     }
 
     /// \brief Returns the current data size in bytes (i.e. sizeof(Scalar) * size()).
     std::size_t sizeInBytes() const
     {
-      return sizeof(Scalar) * size();
+      return sizeof(Scalar) * std::size_t(size());
     }
 
   protected:
