@@ -31,7 +31,7 @@ namespace pinocchio
         return obj;
       }
 
-      result_type operator()(boost::blank) const
+      result_type operator()(BlankConstraintData) const
       {
         bp::object obj;
         return obj;

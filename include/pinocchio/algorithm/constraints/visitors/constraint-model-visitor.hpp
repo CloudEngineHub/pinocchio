@@ -211,10 +211,10 @@ namespace pinocchio
             bf::append(boost::ref(cdata.derived()), args));
         }
 
-        ReturnType operator()(const boost::blank &) const
+        ReturnType operator()(const BlankConstraintModel &) const
         {
           PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint model is of type boost::blank.");
+            std::invalid_argument, "The constraint model is of type BlankConstraintModel.");
           return internal::NoRun<ReturnType>::run();
         }
 
@@ -253,10 +253,10 @@ namespace pinocchio
             cdata.derived());
         }
 
-        ReturnType operator()(const boost::blank &) const
+        ReturnType operator()(const BlankConstraintModel &) const
         {
           PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint model is of type boost::blank.");
+            std::invalid_argument, "The constraint model is of type BlankConstraintModel.");
           return internal::NoRun<ReturnType>::run();
         }
 
@@ -304,10 +304,10 @@ namespace pinocchio
               args));
         }
 
-        ReturnType operator()(const boost::blank &) const
+        ReturnType operator()(const BlankConstraintModel &) const
         {
           PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint model is of type boost::blank.");
+            std::invalid_argument, "The constraint model is of type BlankConstraintModel.");
           return internal::NoRun<ReturnType>::run();
         }
 
@@ -355,10 +355,10 @@ namespace pinocchio
               boost::ref(cmodel.derived()), boost::ref(boost::get<ConstraintDataGet>(cdata))));
         }
 
-        ReturnType operator()(const boost::blank &) const
+        ReturnType operator()(const BlankConstraintModel &) const
         {
           PINOCCHIO_THROW_PRETTY(
-            std::invalid_argument, "The constraint model is of type boost::blank.");
+            std::invalid_argument, "The constraint model is of type BlankConstraintModel.");
           return internal::NoRun<ReturnType>::run();
         }
 
@@ -423,10 +423,10 @@ namespace pinocchio
       {
         return cmodel.shortname();
       }
-      std::string operator()(const boost::blank &) const
+      std::string operator()(const BlankConstraintModel &) const
       {
         PINOCCHIO_THROW_PRETTY(
-          std::invalid_argument, "The constraint model is of type boost::blank.");
+          std::invalid_argument, "The constraint model is of type BlankConstraintModel.");
         return internal::NoRun<std::string>::run();
       }
 
@@ -461,10 +461,10 @@ namespace pinocchio
       {
         return cdata.shortname();
       }
-      std::string operator()(const boost::blank &) const
+      std::string operator()(const BlankConstraintData &) const
       {
         PINOCCHIO_THROW_PRETTY(
-          std::invalid_argument, "The constraint data is of type boost::blank.");
+          std::invalid_argument, "The constraint data is of type BlankConstraintData.");
         return internal::NoRun<std::string>::run();
       }
 

@@ -18,6 +18,12 @@ namespace boost
   namespace serialization
   {
 
+    template<typename Archive>
+    void serialize(Archive &, ::pinocchio::BlankConstraintData &, const unsigned int)
+    {
+      // do nothing
+    }
+
     template<typename Archive, typename Derived>
     void serialize(
       Archive & ar, ::pinocchio::ConstraintDataBase<Derived> & cdata, const unsigned int version)

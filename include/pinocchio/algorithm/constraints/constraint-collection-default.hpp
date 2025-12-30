@@ -5,6 +5,7 @@
 #ifndef __pinocchio_algorithm_constraints_constraint_collection_default_hpp__
 #define __pinocchio_algorithm_constraints_constraint_collection_default_hpp__
 
+#include "fwd.hpp"
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 #include <boost/variant.hpp>
 
@@ -35,7 +36,7 @@ namespace pinocchio
     typedef FrameAnchorConstraintDataTpl<Scalar, Options> FrameAnchorConstraintData;
 
     typedef boost::variant<
-      boost::blank,
+      BlankConstraintModel,
       PointAnchorConstraintModel,
       PointContactConstraintModel,
       JointFrictionConstraintModel,
@@ -44,7 +45,7 @@ namespace pinocchio
       ConstraintModelVariant;
 
     typedef boost::variant<
-      boost::blank,
+      BlankConstraintData,
       PointAnchorConstraintData,
       PointContactConstraintData,
       JointFrictionConstraintData,

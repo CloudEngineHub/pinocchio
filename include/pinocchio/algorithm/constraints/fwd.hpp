@@ -10,6 +10,14 @@
 
 namespace pinocchio
 {
+  // Blank constraint model and data
+  struct BlankConstraintModel : boost::blank
+  {
+  };
+  struct BlankConstraintData : boost::blank
+  {
+  };
+
   // Constraints
   template<typename Scalar, int Options = 0>
   struct RigidConstraintModelTpl;

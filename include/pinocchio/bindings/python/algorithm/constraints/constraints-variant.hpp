@@ -55,7 +55,7 @@ namespace pinocchio
         bp::implicitly_convertible<T, context::ConstraintData>();
       }
 
-      void operator()(boost::blank)
+      void operator()(BlankConstraintData)
       {
       }
     };
@@ -73,7 +73,7 @@ namespace pinocchio
         bp::implicitly_convertible<T, context::ConstraintModel>();
       }
 
-      void operator()(boost::blank)
+      void operator()(BlankConstraintModel)
       {
       }
     };
@@ -87,7 +87,11 @@ namespace pinocchio
           std::string("StdVec_") + sanitizedClassname<T>().c_str());
       }
 
-      void operator()(boost::blank)
+      void operator()(BlankConstraintModel)
+      {
+      }
+
+      void operator()(BlankConstraintData)
       {
       }
     };
