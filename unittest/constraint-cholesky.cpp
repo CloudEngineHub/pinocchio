@@ -1769,6 +1769,16 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_generic)
   BOOST_CHECK(contact_chol_decomposition.D.isApprox(contact_chol_decomposition_ref.D));
   BOOST_CHECK(contact_chol_decomposition.Dinv.isApprox(contact_chol_decomposition_ref.Dinv));
   BOOST_CHECK(contact_chol_decomposition.U.isApprox(contact_chol_decomposition_ref.U));
+
+  // Test sizeInBytes
+  {
+    BOOST_CHECK(contact_chol_decomposition.sizeInBytes() > 0);
+    BOOST_CHECK(
+      contact_chol_decomposition.sizeInBytes()
+      > sizeInBytes(contact_chol_decomposition.getDamping()));
+    BOOST_CHECK(
+      contact_chol_decomposition.sizeInBytes() == contact_chol_decomposition_ref.sizeInBytes());
+  }
 }
 
 BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
