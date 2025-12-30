@@ -322,7 +322,7 @@ namespace pinocchio
     ///
     /// \brief Returns the current compliance vector.
     ///
-    const typename EigenStorageVector::MapType getCompliance() const;
+    const typename EigenStorageVector::ConstMapType getCompliance() const;
 
     ///
     /// \brief Update the damping terms on the upper left block part of the KKT matrix. The damping
@@ -352,7 +352,7 @@ namespace pinocchio
     ///
     /// \brief Returns the current damping vector.
     ///
-    const typename EigenStorageVector::MapType getDamping() const;
+    const typename EigenStorageVector::ConstMapType getDamping() const;
 
     /// \brief Size of the decomposition.
     Eigen::Index size() const;

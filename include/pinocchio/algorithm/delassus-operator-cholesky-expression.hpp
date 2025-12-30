@@ -181,7 +181,7 @@ namespace pinocchio
     ///
     /// \brief Returns the current compliance vector.
     ///
-    const typename EigenStorageVector::MapType getCompliance() const
+    const typename EigenStorageVector::ConstMapType getCompliance() const
     {
       return self.getCompliance();
     }
@@ -189,7 +189,7 @@ namespace pinocchio
     ///
     /// \brief Returns the current damping vector.
     ///
-    const typename EigenStorageVector::MapType getDamping() const
+    const typename EigenStorageVector::ConstMapType getDamping() const
     {
       return self.getDamping();
     }

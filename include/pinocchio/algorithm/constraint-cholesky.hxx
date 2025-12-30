@@ -947,17 +947,17 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::EigenStorageVector::MapType
+  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::EigenStorageVector::ConstMapType
   ContactCholeskyDecompositionTpl<Scalar, Options>::getCompliance() const
   {
-    return compliance;
+    return compliance_storage.const_map();
   }
 
   template<typename Scalar, int Options>
-  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::EigenStorageVector::MapType
+  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::EigenStorageVector::ConstMapType
   ContactCholeskyDecompositionTpl<Scalar, Options>::getDamping() const
   {
-    return damping;
+    return damping_storage.const_map();
   }
 
   template<typename Scalar, int Options>
