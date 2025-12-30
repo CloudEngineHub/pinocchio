@@ -440,8 +440,6 @@ namespace pinocchio
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
-    static constexpr Scalar nan_value = std::numeric_limits<Scalar>::quiet_NaN();
-
     // make ADMM solver a friend so that it can use `makeValid`
     friend struct ADMMConstraintSolverTpl<Scalar>;
 
@@ -454,9 +452,9 @@ namespace pinocchio
     , preconditioner(std::nullopt)
     , primal_guess(std::nullopt)
     , dual_guess(std::nullopt)
-    , rho(nan_value)
-    , spectral_rho_power(nan_value)
-    , mu_prox(nan_value)
+    , rho(std::numeric_limits<Scalar>::quiet_NaN())
+    , spectral_rho_power(std::numeric_limits<Scalar>::quiet_NaN())
+    , mu_prox(std::numeric_limits<Scalar>::quiet_NaN())
     , x(x_storage.map())
     , y(y_storage.map())
     , z(z_storage.map())
@@ -475,17 +473,17 @@ namespace pinocchio
       primal_guess.reset();
       dual_guess.reset();
 
-      rho = nan_value;
-      spectral_rho_power = nan_value;
-      mu_prox = nan_value;
+      rho = std::numeric_limits<Scalar>::quiet_NaN();
+      spectral_rho_power = std::numeric_limits<Scalar>::quiet_NaN();
+      mu_prox = std::numeric_limits<Scalar>::quiet_NaN();
 
       resize(problem_size);
 
       // set solution to nan - solver has not run
-      x.setConstant(nan_value);
-      y.setConstant(nan_value);
-      z.setConstant(nan_value);
-      desaxce.setConstant(nan_value);
+      x.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+      y.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+      z.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+      desaxce.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
     }
 
     /// \brief Resize the primal/dual/desaxce vectors of the solution.
@@ -682,8 +680,6 @@ namespace pinocchio
       typedef LanczosDecompositionTpl<MatrixXs> LanczosDecomposition;
       typedef AndersonAccelerationTpl<Scalar> AndersonAcceleration;
 
-      static constexpr Scalar nan_value = std::numeric_limits<Scalar>::quiet_NaN();
-
       /// \brief Constructor given problem_size, lanczos_size and anderson_capacity.
       ADMMSolverWorkspaceTpl(
         std::size_t problem_size = 0, //
@@ -695,9 +691,9 @@ namespace pinocchio
       , delassus_decomposition_update_count(0)
       , delassus_smallest_eigenvalue(std::nullopt)
       , delassus_largest_eigenvalue(std::nullopt)
-      , rho(nan_value)
-      , spectral_rho_power(nan_value)
-      , mu_prox(nan_value)
+      , rho(std::numeric_limits<Scalar>::quiet_NaN())
+      , spectral_rho_power(std::numeric_limits<Scalar>::quiet_NaN())
+      , mu_prox(std::numeric_limits<Scalar>::quiet_NaN())
       , lanczos_decomposition(
           static_cast<Eigen::Index>(math::max(std::size_t(2), problem_size)), //
           static_cast<Eigen::Index>(
@@ -735,28 +731,28 @@ namespace pinocchio
         delassus_smallest_eigenvalue.reset();
         delassus_largest_eigenvalue.reset();
 
-        rho = nan_value;
-        spectral_rho_power = nan_value;
-        mu_prox = nan_value;
+        rho = std::numeric_limits<Scalar>::quiet_NaN();
+        spectral_rho_power = std::numeric_limits<Scalar>::quiet_NaN();
+        mu_prox = std::numeric_limits<Scalar>::quiet_NaN();
 
         resize(problem_size, lanczos_size, anderson_capacity);
 
 #ifndef NDEBUG
         // for debugging purposes
-        x.setConstant(nan_value);
-        x_previous.setConstant(nan_value);
-        x_anderson.setConstant(nan_value);
-        y.setConstant(nan_value);
-        y_previous.setConstant(nan_value);
-        z.setConstant(nan_value);
-        z_previous.setConstant(nan_value);
-        z_anderson.setConstant(nan_value);
-        desaxce.setConstant(nan_value);
-        rhs.setConstant(nan_value);
-        tmp.setConstant(nan_value);
-        primal_feasibility_vector.setConstant(nan_value);
-        anderson_primal_feasibility_vector.setConstant(nan_value);
-        dual_feasibility_vector.setConstant(nan_value);
+        x.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        x_previous.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        x_anderson.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        y.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        y_previous.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        z.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        z_previous.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        z_anderson.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        desaxce.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        rhs.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        tmp.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        primal_feasibility_vector.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        anderson_primal_feasibility_vector.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+        dual_feasibility_vector.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
 #endif
       }
 

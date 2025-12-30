@@ -36,7 +36,6 @@ namespace pinocchio
     ADMMSolverResult & result)
   {
     // for easier access
-    static constexpr Scalar nan_value = std::numeric_limits<Scalar>::quiet_NaN();
     ADMMSolverResult & res = result;
     ADMMSolverWorkspace & ws = m_workspace;
     DelassusDerived & G = delassus.derived();
@@ -177,9 +176,9 @@ namespace pinocchio
       Scalar anderson_primal_feasibility;
       Scalar anderson_previous_primal_feasibility = std::numeric_limits<Scalar>::max();
 
-      Scalar dx_norm = nan_value;
-      Scalar dy_norm = nan_value;
-      Scalar dz_norm = nan_value;
+      Scalar dx_norm = std::numeric_limits<Scalar>::quiet_NaN();
+      Scalar dy_norm = std::numeric_limits<Scalar>::quiet_NaN();
+      Scalar dz_norm = std::numeric_limits<Scalar>::quiet_NaN();
       const Scalar g_norm_inf = g.template lpNorm<Eigen::Infinity>();
       Scalar x_norm_inf = ws.x.template lpNorm<Eigen::Infinity>();
       Scalar y_norm_inf = ws.y.template lpNorm<Eigen::Infinity>();
