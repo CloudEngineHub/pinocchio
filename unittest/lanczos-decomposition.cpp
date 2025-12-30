@@ -6,7 +6,7 @@
 
 #include "pinocchio/math/lanczos-decomposition.hpp"
 #include "pinocchio/algorithm/delassus-operator-dense.hpp"
-#include "pinocchio/algorithm/contact-cholesky.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/diagonal-preconditioner.hpp"
 #include "pinocchio/algorithm/delassus-operator-preconditioned.hpp"

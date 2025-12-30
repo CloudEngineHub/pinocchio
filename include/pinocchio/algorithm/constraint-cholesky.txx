@@ -2,11 +2,10 @@
 // Copyright (c) 2022-2025 INRIA
 //
 
-#include "pinocchio/spatial/fwd.hpp"
+#ifndef __pinocchio_algorithm_constraint_cholesky_txx__
+#define __pinocchio_algorithm_constraint_cholesky_txx__
 
 #ifndef PINOCCHIO_SKIP_ALGORITHM_CONTACT_CHOLESKY
-
-  #include "pinocchio/algorithm/contact-cholesky.hpp"
 
 namespace pinocchio
 {
@@ -15,16 +14,17 @@ namespace pinocchio
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   namespace details
   {
-    template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI context::VectorXs &
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI context::VectorXs &
     inverseAlgo<context::Scalar, context::Options, context::VectorXs>(
       const ContactCholeskyDecompositionTpl<context::Scalar, context::Options> &,
       const Eigen::Index,
       const Eigen::MatrixBase<context::VectorXs> &);
   }
-  template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI
+
+  extern template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
     ContactCholeskyDecompositionTpl<context::Scalar, context::Options>;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::resize<
     context::Scalar,
     context::Options,
@@ -38,21 +38,21 @@ namespace pinocchio
     const context::RigidConstraintModelVector &,
     const context::RigidConstraintDataVector &);
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
     getInverseOperationalSpaceInertiaMatrix<context::MatrixXs>(
       const Eigen::MatrixBase<context::MatrixXs> &, bool) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
     getOperationalSpaceInertiaMatrix<context::MatrixXs>(
       const Eigen::MatrixBase<context::MatrixXs> &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::getInverseMassMatrix<
     context::MatrixXs>(const Eigen::MatrixBase<context::MatrixXs> &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::compute<
     context::Scalar,
     context::Options,
@@ -68,17 +68,17 @@ namespace pinocchio
     const context::Scalar,
     bool use_explicit_delassus = false);
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::solveInPlace<
     context::MatrixXs>(const Eigen::MatrixBase<context::MatrixXs> &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
     ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Matrix
     ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::solve<context::MatrixXs>(
       const Eigen::MatrixBase<
         ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Matrix> &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
     ContactCholeskyDecompositionTpl<context::Scalar, context::Options>
     ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
       getMassMatrixChoeslkyDecomposition<
@@ -86,31 +86,34 @@ namespace pinocchio
         context::Options,
         JointCollectionDefaultTpl>(const context::Model &, const context::Data &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Uv<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Utv<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Uiv<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Utiv<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::matrix<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
-  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::inverse<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
+
   PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
 } // namespace pinocchio
 
 #endif // PINOCCHIO_SKIP_ALGORITHM_CONTACT_CHOLESKY
+
+#endif // ifndef __pinocchio_algorithm_constraint_cholesky_txx__

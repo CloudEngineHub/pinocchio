@@ -2,8 +2,8 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_contact_cholesky_hxx__
-#define __pinocchio_algorithm_contact_cholesky_hxx__
+#ifndef __pinocchio_algorithm_constraint_cholesky_hxx__
+#define __pinocchio_algorithm_constraint_cholesky_hxx__
 
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/multibody/data.hpp"
@@ -1119,4 +1119,4 @@ namespace pinocchio
   PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_contact_cholesky_hxx__
+#endif // ifndef __pinocchio_algorithm_constraint_cholesky_hxx__

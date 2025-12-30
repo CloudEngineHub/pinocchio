@@ -8,7 +8,7 @@
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
 #include "pinocchio/algorithm/delassus-operator-dense.hpp"
-#include "pinocchio/algorithm/contact-cholesky.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 
 namespace pinocchio
 {

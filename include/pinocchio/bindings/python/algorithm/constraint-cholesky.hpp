@@ -8,7 +8,7 @@
 #include <eigenpy/memory.hpp>
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/algorithm/contact-cholesky.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 
 #include "pinocchio/algorithm/delassus-operator-dense.hpp"
 #include "pinocchio/algorithm/delassus-operator-sparse.hpp"

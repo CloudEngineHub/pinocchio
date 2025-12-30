@@ -5,7 +5,7 @@
 #include "pinocchio/bindings/python/algorithm/algorithms.hpp"
 #include "pinocchio/bindings/python/algorithm/contact-info.hpp"
 #include "pinocchio/bindings/python/algorithm/proximal.hpp"
-#include "pinocchio/bindings/python/algorithm/contact-cholesky.hpp"
+#include "pinocchio/bindings/python/algorithm/constraint-cholesky.hpp"
 
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/utils/model-checker.hpp"

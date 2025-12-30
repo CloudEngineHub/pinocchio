@@ -13,7 +13,7 @@
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/geometry.hpp"
 #include "pinocchio/algorithm/center-of-mass.hpp"
-#include "pinocchio/algorithm/contact-cholesky.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/spatial/fwd.hpp"

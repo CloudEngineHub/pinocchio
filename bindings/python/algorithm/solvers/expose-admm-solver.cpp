@@ -4,7 +4,7 @@
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/algorithm/solvers/admm-solver.hpp"
-#include "pinocchio/algorithm/contact-cholesky.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/delassus-operator-dense.hpp"
 #include "pinocchio/algorithm/delassus-operator-sparse.hpp"
 

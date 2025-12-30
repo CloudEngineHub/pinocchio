@@ -65,12 +65,13 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-info.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-jacobian.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-inverse-dynamics.hpp
@@ -486,7 +487,7 @@ set(${PROJECT_NAME}_CORE_GENERATED_PUBLIC_HEADERS
 
 set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/aba-derivatives.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.txx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/frames-derivatives.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/regressor.txx
@@ -540,7 +541,7 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
     ${PROJECT_SOURCE_DIR}/src/algorithm/centroidal.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/aba-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/crba.cpp
-    ${PROJECT_SOURCE_DIR}/src/algorithm/contact-cholesky.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/constraint-cholesky.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/joint-configuration.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/center-of-mass-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/proximal.cpp
@@ -561,7 +562,7 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/spatial/inertia.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/spatial/se3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/algorithm/contact-info.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/algorithm/contact-cholesky.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/algorithm/constraint-cholesky.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/algorithm/contact-solver-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/algorithm/delassus-operator.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/algorithm/proximal.hpp

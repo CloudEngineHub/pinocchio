@@ -8,7 +8,7 @@
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/rnea-derivatives.hpp"
 #include "pinocchio/algorithm/kinematics-derivatives.hpp"
-#include "pinocchio/algorithm/contact-cholesky.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/constrained-dynamics-derivatives.hxx"
 
 namespace pinocchio

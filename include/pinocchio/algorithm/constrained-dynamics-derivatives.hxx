@@ -11,7 +11,7 @@
 #include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/frames.hpp"
 #include "pinocchio/algorithm/frames-derivatives.hpp"
-#include "pinocchio/algorithm/contact-cholesky.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/utils/motion.hpp"
 
 namespace pinocchio
