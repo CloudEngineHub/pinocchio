@@ -142,7 +142,7 @@ namespace pinocchio
     , m_data_ref(data_ref)
     , m_constraint_models_ref(constraint_models_ref)
     , m_constraint_datas_ref(constraint_datas_ref)
-    , m_custom_data(helper::get_ref(model_ref))
+    , m_internal_data(helper::get_ref(model_ref))
     , m_solve_in_place_dirty(true)
     , m_damping_storage(m_size)
     , m_damping(m_damping_storage.map())
@@ -350,12 +350,12 @@ namespace pinocchio
 
     const InternalData & getInternalData() const
     {
-      return m_custom_data;
+      return m_internal_data;
     }
 
     InternalData & getInternalData()
     {
-      return m_custom_data;
+      return m_internal_data;
     }
 
     struct AugmentedMassMatrixOperator
@@ -399,7 +399,7 @@ namespace pinocchio
     ConstraintModelVectorHolder m_constraint_models_ref;
     ConstraintDataVectorHolder m_constraint_datas_ref;
 
-    mutable InternalData m_custom_data;
+    mutable InternalData m_internal_data;
     mutable bool m_solve_in_place_dirty;
 
     EigenStorageVector m_damping_storage;

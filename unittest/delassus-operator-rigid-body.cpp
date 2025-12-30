@@ -754,10 +754,10 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
 
     for (Model::JointIndex joint_id = 1; joint_id < Model::JointIndex(model.njoints); ++joint_id)
     {
-      //      const InternalData & custom_data = delassus_operator.getInternalData();
+      //      const InternalData & internal_data = delassus_operator.getInternalData();
       BOOST_CHECK(data.joints[joint_id].S().isApprox(data_aba.joints[joint_id].S()));
       BOOST_CHECK(data.liMi[joint_id].isApprox(data_aba.liMi[joint_id]));
-      //      BOOST_CHECK(custom_data.oMi[joint_id].isApprox(data_aba.oMi[joint_id])); //
+      //      BOOST_CHECK(internal_data.oMi[joint_id].isApprox(data_aba.oMi[joint_id])); //
       //      minimal::ABA does not compute this quantity
       BOOST_CHECK(data.Yaba[joint_id].isApprox(data_aba.Yaba[joint_id]));
     }

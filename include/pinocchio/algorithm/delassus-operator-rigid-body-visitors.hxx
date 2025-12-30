@@ -197,21 +197,22 @@ namespace pinocchio
       const pinocchio::JointDataBase<typename JointModel::JointDataDerived> & jdata,
       const Model & model,
       const Data & data,
-      InternalData & custom_data)
+      InternalData & internal_data)
     {
       const JointIndex joint_i = jmodel.id();
       const JointIndex parent = model.parents[joint_i];
 
       // Compare to ABA, the sign of f[joint_i] is reversed
-      jmodel.jointVelocitySelector(custom_data.u) += jdata.S().transpose() * custom_data.f[joint_i];
+      jmodel.jointVelocitySelector(internal_data.u) +=
+        jdata.S().transpose() * internal_data.f[joint_i];
 
       if (parent > 0)
       {
-        auto & pa = custom_data.f[joint_i];
+        auto & pa = internal_data.f[joint_i];
         // Compare to ABA, the sign of f[joint_i] is reversed
         DO_NOT_PROMOTE_STATIC_EVAL(pa.toVector().noalias()) -=
-          jdata.UDinv() * jmodel.jointVelocitySelector(custom_data.u);
-        custom_data.f[parent] += data.liMi[joint_i].act(pa);
+          jdata.UDinv() * jmodel.jointVelocitySelector(internal_data.u);
+        internal_data.f[parent] += data.liMi[joint_i].act(pa);
       }
     }
   };
@@ -233,28 +234,28 @@ namespace pinocchio
       const pinocchio::JointDataBase<typename JointModel::JointDataDerived> & jdata,
       const Model & model,
       const Data & data,
-      InternalData & custom_data)
+      InternalData & internal_data)
     {
       typedef typename Model::JointIndex JointIndex;
 
       const JointIndex joint_i = jmodel.id();
       const JointIndex parent = model.parents[joint_i];
 
-      auto ddq_joint = jmodel.jointVelocitySelector(custom_data.ddq);
+      auto ddq_joint = jmodel.jointVelocitySelector(internal_data.ddq);
       if (parent > 0)
       {
-        custom_data.a[joint_i] += data.liMi[joint_i].actInv(custom_data.a[parent]);
+        internal_data.a[joint_i] += data.liMi[joint_i].actInv(internal_data.a[parent]);
         PROMOTE_STATIC_EVAL(ddq_joint.noalias()) =
-          jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u);
+          jdata.Dinv() * jmodel.jointVelocitySelector(internal_data.u);
         PROMOTE_STATIC_EVAL(ddq_joint.noalias()) -=
-          jdata.UDinv().transpose() * custom_data.a[joint_i].toVector();
-        custom_data.a[joint_i] += jdata.S() * ddq_joint;
+          jdata.UDinv().transpose() * internal_data.a[joint_i].toVector();
+        internal_data.a[joint_i] += jdata.S() * ddq_joint;
       }
       else
       {
         PROMOTE_STATIC_EVAL(ddq_joint.noalias()) =
-          jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u);
-        custom_data.a[joint_i] = jdata.S() * ddq_joint;
+          jdata.Dinv() * jmodel.jointVelocitySelector(internal_data.u);
+        internal_data.a[joint_i] = jdata.S() * ddq_joint;
       }
     }
 
@@ -277,7 +278,7 @@ namespace pinocchio
       const pinocchio::JointDataBase<typename JointModel::JointDataDerived> & jdata,
       const Model & model,
       const Data & data,
-      InternalData & custom_data)
+      InternalData & internal_data)
     {
       typedef typename Model::Scalar Scalar;
       typedef typename Data::Force Force;
@@ -292,10 +293,10 @@ namespace pinocchio
 
       const auto Jcols = jmodel.jointCols(data.J);
 
-      Force & ofi = custom_data.of_augmented[joint_i];
+      Force & ofi = internal_data.of_augmented[joint_i];
 
       // Compare to ABA, the sign of ofi is reversed
-      PROMOTE_STATIC_EVAL(jmodel.jointVelocitySelector(custom_data.u).noalias()) +=
+      PROMOTE_STATIC_EVAL(jmodel.jointVelocitySelector(internal_data.u).noalias()) +=
         Jcols.transpose() * ofi.toVector();
 
       if (joint_neighbours.size())
@@ -304,7 +305,7 @@ namespace pinocchio
         typedef Eigen::Map<VectorNV, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorNV;
         MapVectorNV res = MapVectorNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, jmodel.nv(), 1));
         DO_NOT_PROMOTE_STATIC_EVAL(res.noalias()) =
-          (jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u));
+          (jdata.Dinv() * jmodel.jointVelocitySelector(internal_data.u));
 
         for (JointIndex joint_j : joint_neighbours)
         {
@@ -312,7 +313,7 @@ namespace pinocchio
           const auto & projected_crosscoupling_ji_Jcols =
             projected_joint_cross_coupling[JointPair(joint_j, joint_i)];
 
-          Force & ofj = custom_data.of_augmented[joint_j];
+          Force & ofj = internal_data.of_augmented[joint_j];
           // Compare to ABA, the sign of ofj is reversed
           DO_NOT_PROMOTE_STATIC_EVAL(ofj.toVector().noalias()) -=
             projected_crosscoupling_ji_Jcols * res;
@@ -323,8 +324,8 @@ namespace pinocchio
       {
         // Compare to ABA, the sign of ofi is reversed
         DO_NOT_PROMOTE_STATIC_EVAL(ofi.toVector().noalias()) -=
-          jdata.UDinv() * jmodel.jointVelocitySelector(custom_data.u);
-        custom_data.of_augmented[parent] += ofi;
+          jdata.UDinv() * jmodel.jointVelocitySelector(internal_data.u);
+        internal_data.of_augmented[parent] += ofi;
       }
     }
   };
@@ -347,7 +348,7 @@ namespace pinocchio
       const pinocchio::JointDataBase<typename JointModel::JointDataDerived> & jdata,
       const Model & model,
       const Data & data,
-      InternalData & custom_data)
+      InternalData & internal_data)
     {
       typedef typename Model::Scalar Scalar;
       typedef typename Model::JointIndex JointIndex;
@@ -359,8 +360,8 @@ namespace pinocchio
       const auto & joint_neighbours = data.joint_neighbours[joint_i];
       const auto & projected_joint_cross_coupling = data.projected_joint_cross_coupling;
 
-      auto & oai = custom_data.oa_augmented[joint_i];
-      oai = custom_data.oa_augmented[parent];
+      auto & oai = internal_data.oa_augmented[joint_i];
+      oai = internal_data.oa_augmented[parent];
 
       if (joint_neighbours.size())
       {
@@ -376,17 +377,17 @@ namespace pinocchio
           const auto & projected_crosscoupling_ji_Jcols =
             projected_joint_cross_coupling[JointPair(joint_j, joint_i)];
 
-          const auto & oaj = custom_data.oa_augmented[joint_j];
+          const auto & oaj = internal_data.oa_augmented[joint_j];
           DO_NOT_PROMOTE_STATIC_EVAL(projected_coupling_forces.noalias()) +=
             projected_crosscoupling_ji_Jcols.transpose() * oaj.toVector();
         }
 
-        jmodel.jointVelocitySelector(custom_data.u).noalias() -= projected_coupling_forces;
+        jmodel.jointVelocitySelector(internal_data.u).noalias() -= projected_coupling_forces;
       }
 
-      auto ddq_segment = jmodel.jointVelocitySelector(custom_data.ddq);
+      auto ddq_segment = jmodel.jointVelocitySelector(internal_data.ddq);
       PROMOTE_STATIC_EVAL(ddq_segment.noalias()) =
-        jdata.Dinv() * jmodel.jointVelocitySelector(custom_data.u);
+        jdata.Dinv() * jmodel.jointVelocitySelector(internal_data.u);
       PROMOTE_STATIC_EVAL(ddq_segment.noalias()) -= jdata.UDinv().transpose() * oai.toVector();
       DO_NOT_PROMOTE_STATIC_EVAL(oai.toVector().noalias()) += J_cols * ddq_segment;
     }
