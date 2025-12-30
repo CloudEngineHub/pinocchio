@@ -325,7 +325,7 @@ namespace pinocchio
     template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const;
 
-    struct CustomData
+    struct InternalData
     {
       typedef typename Data::Motion Motion;
       typedef typename Data::Force Force;
@@ -333,7 +333,7 @@ namespace pinocchio
       typedef typename PINOCCHIO_ALIGNED_STD_VECTOR(Motion) MotionVector;
       typedef typename PINOCCHIO_ALIGNED_STD_VECTOR(Force) ForceVector;
 
-      CustomData(const Model & model)
+      InternalData(const Model & model)
       : a(size_t(model.njoints), Motion::Zero())
       , oa_augmented(size_t(model.njoints), Motion::Zero())
       , u(model.nv)
@@ -348,12 +348,12 @@ namespace pinocchio
       ForceVector f, of_augmented;
     };
 
-    const CustomData & getCustomData() const
+    const InternalData & getInternalData() const
     {
       return m_custom_data;
     }
 
-    CustomData & getCustomData()
+    InternalData & getInternalData()
     {
       return m_custom_data;
     }
@@ -399,7 +399,7 @@ namespace pinocchio
     ConstraintModelVectorHolder m_constraint_models_ref;
     ConstraintDataVectorHolder m_constraint_datas_ref;
 
-    mutable CustomData m_custom_data;
+    mutable InternalData m_custom_data;
     mutable bool m_solve_in_place_dirty;
 
     EigenStorageVector m_damping_storage;

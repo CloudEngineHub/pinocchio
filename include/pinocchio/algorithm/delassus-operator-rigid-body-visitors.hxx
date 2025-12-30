@@ -187,9 +187,9 @@ namespace pinocchio
   {
     typedef typename DelassusOperator::Model Model;
     typedef typename DelassusOperator::Data Data;
-    typedef typename DelassusOperator::CustomData CustomData;
+    typedef typename DelassusOperator::InternalData InternalData;
 
-    typedef boost::fusion::vector<const Model &, const Data &, CustomData &> ArgsType;
+    typedef boost::fusion::vector<const Model &, const Data &, InternalData &> ArgsType;
 
     template<typename JointModel>
     static void algo(
@@ -197,7 +197,7 @@ namespace pinocchio
       const pinocchio::JointDataBase<typename JointModel::JointDataDerived> & jdata,
       const Model & model,
       const Data & data,
-      CustomData & custom_data)
+      InternalData & custom_data)
     {
       const JointIndex joint_i = jmodel.id();
       const JointIndex parent = model.parents[joint_i];
@@ -223,9 +223,9 @@ namespace pinocchio
   {
     typedef typename DelassusOperator::Model Model;
     typedef typename DelassusOperator::Data Data;
-    typedef typename DelassusOperator::CustomData CustomData;
+    typedef typename DelassusOperator::InternalData InternalData;
 
-    typedef boost::fusion::vector<const Model &, const Data &, CustomData &> ArgsType;
+    typedef boost::fusion::vector<const Model &, const Data &, InternalData &> ArgsType;
 
     template<typename JointModel>
     static void algo(
@@ -233,7 +233,7 @@ namespace pinocchio
       const pinocchio::JointDataBase<typename JointModel::JointDataDerived> & jdata,
       const Model & model,
       const Data & data,
-      CustomData & custom_data)
+      InternalData & custom_data)
     {
       typedef typename Model::JointIndex JointIndex;
 
@@ -267,9 +267,9 @@ namespace pinocchio
   {
     typedef typename DelassusOperator::Model Model;
     typedef typename DelassusOperator::Data Data;
-    typedef typename DelassusOperator::CustomData CustomData;
+    typedef typename DelassusOperator::InternalData InternalData;
 
-    typedef boost::fusion::vector<const Model &, const Data &, CustomData &> ArgsType;
+    typedef boost::fusion::vector<const Model &, const Data &, InternalData &> ArgsType;
 
     template<typename JointModel>
     static void algo(
@@ -277,7 +277,7 @@ namespace pinocchio
       const pinocchio::JointDataBase<typename JointModel::JointDataDerived> & jdata,
       const Model & model,
       const Data & data,
-      CustomData & custom_data)
+      InternalData & custom_data)
     {
       typedef typename Model::Scalar Scalar;
       typedef typename Data::Force Force;
@@ -336,10 +336,10 @@ namespace pinocchio
   {
     typedef typename DelassusOperator::Model Model;
     typedef typename DelassusOperator::Data Data;
-    typedef typename DelassusOperator::CustomData CustomData;
+    typedef typename DelassusOperator::InternalData InternalData;
     typedef std::pair<JointIndex, JointIndex> JointPair;
 
-    typedef boost::fusion::vector<const Model &, const Data &, CustomData &> ArgsType;
+    typedef boost::fusion::vector<const Model &, const Data &, InternalData &> ArgsType;
 
     template<typename JointModel>
     static void algo(
@@ -347,7 +347,7 @@ namespace pinocchio
       const pinocchio::JointDataBase<typename JointModel::JointDataDerived> & jdata,
       const Model & model,
       const Data & data,
-      CustomData & custom_data)
+      InternalData & custom_data)
     {
       typedef typename Model::Scalar Scalar;
       typedef typename Model::JointIndex JointIndex;

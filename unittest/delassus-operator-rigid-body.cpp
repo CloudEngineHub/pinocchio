@@ -290,10 +290,10 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
       BOOST_CHECK(data.liMi[joint_id].isApprox(data_aba.liMi[joint_id]));
       BOOST_CHECK(data.Yaba[joint_id].isApprox(data_aba.Yaba[joint_id]));
     }
-    BOOST_CHECK(delassus_operator.getCustomData().u.isApprox(data_aba.u));
+    BOOST_CHECK(delassus_operator.getInternalData().u.isApprox(data_aba.u));
 
     const Eigen::VectorXd Minv_Jt_rhs_gt = Minv_gt * Jt_rhs_gt;
-    BOOST_CHECK(delassus_operator.getCustomData().ddq.isApprox(Minv_Jt_rhs_gt));
+    BOOST_CHECK(delassus_operator.getInternalData().ddq.isApprox(Minv_Jt_rhs_gt));
 
     const auto res_gt = (delassus_dense_gt * rhs).eval();
     BOOST_CHECK(res.isApprox(res_gt));
@@ -728,13 +728,13 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
     // Eval Jt*rhs vs internal computations. This test is useful to check intermediate computation.
     //    Eigen::VectorXd Jt_rhs(model.nv);
     //    evalConstraintJacobianTransposeMatrixProduct(model,data,constraint_models,constraint_datas,rhs,Jt_rhs);
-    //    BOOST_CHECK(delassus_operator.getCustomData().u.isApprox(Jt_rhs));
+    //    BOOST_CHECK(delassus_operator.getInternalData().u.isApprox(Jt_rhs));
     //
-    //    std::cout << "delassus_operator.getCustomData().u: " <<
-    //    delassus_operator.getCustomData().u.transpose() << std::endl; std::cout << "Jt_rhs: " <<
+    //    std::cout << "delassus_operator.getInternalData().u: " <<
+    //    delassus_operator.getInternalData().u.transpose() << std::endl; std::cout << "Jt_rhs: " <<
     //    Jt_rhs.transpose() << std::endl; const Eigen::VectorXd Jt_rhs_gt =
     //    constraints_jacobian_gt.transpose() * rhs;
-    //    BOOST_CHECK(delassus_operator.getCustomData().u.isApprox(Jt_rhs_gt));
+    //    BOOST_CHECK(delassus_operator.getInternalData().u.isApprox(Jt_rhs_gt));
     //
     //    pinocchio::container::aligned_vector<Data::Force> joint_forces_gt(
     //      size_t(model.njoints), Data::Force::Zero());
@@ -754,26 +754,28 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
 
     for (Model::JointIndex joint_id = 1; joint_id < Model::JointIndex(model.njoints); ++joint_id)
     {
-      //      const CustomData & custom_data = delassus_operator.getCustomData();
+      //      const InternalData & custom_data = delassus_operator.getInternalData();
       BOOST_CHECK(data.joints[joint_id].S().isApprox(data_aba.joints[joint_id].S()));
       BOOST_CHECK(data.liMi[joint_id].isApprox(data_aba.liMi[joint_id]));
       //      BOOST_CHECK(custom_data.oMi[joint_id].isApprox(data_aba.oMi[joint_id])); //
       //      minimal::ABA does not compute this quantity
       BOOST_CHECK(data.Yaba[joint_id].isApprox(data_aba.Yaba[joint_id]));
     }
-    BOOST_CHECK(delassus_operator.getCustomData().u.isApprox(data_aba.u));
+    BOOST_CHECK(delassus_operator.getInternalData().u.isApprox(data_aba.u));
 
-    //    std::cout << "delassus_operator.getCustomData().u: " <<
-    //    delassus_operator.getCustomData().u.transpose() << std::endl; std::cout << "data_aba.u: "
+    //    std::cout << "delassus_operator.getInternalData().u: " <<
+    //    delassus_operator.getInternalData().u.transpose() << std::endl; std::cout << "data_aba.u:
+    //    "
     //    << data_aba.u.transpose() << std::endl;
     //
     const Eigen::VectorXd Minv_Jt_rhs_gt = Minv_gt * Jt_rhs_gt;
     //
-    //    //    std::cout << "Minv_Jt_rhs: " << delassus_operator.getCustomData().ddq.transpose() <<
+    //    //    std::cout << "Minv_Jt_rhs: " << delassus_operator.getInternalData().ddq.transpose()
+    //    <<
     //    //    std::endl; std::cout << "Minv_Jt_rhs_gt: " << Minv_Jt_rhs_gt.transpose() <<
     //    std::endl;
     //
-    BOOST_CHECK(delassus_operator.getCustomData().ddq.isApprox(Minv_Jt_rhs_gt));
+    BOOST_CHECK(delassus_operator.getInternalData().ddq.isApprox(Minv_Jt_rhs_gt));
     //
     const auto res_gt = (delassus_dense_gt * rhs).eval();
     BOOST_CHECK(res.isApprox(res_gt));
@@ -1066,10 +1068,10 @@ void test_apply_on_the_right(
     BOOST_CHECK(data.liMi[joint_id].isApprox(data_aba.liMi[joint_id]));
     BOOST_CHECK(data.Yaba[joint_id].isApprox(data_aba.Yaba[joint_id]));
   }
-  BOOST_CHECK(delassus_operator.getCustomData().u.isApprox(data_aba.u));
+  BOOST_CHECK(delassus_operator.getInternalData().u.isApprox(data_aba.u));
 
   const Eigen::VectorXd Minv_Jt_rhs_gt = Minv_gt * Jt_rhs_gt;
-  BOOST_CHECK(delassus_operator.getCustomData().ddq.isApprox(Minv_Jt_rhs_gt));
+  BOOST_CHECK(delassus_operator.getInternalData().ddq.isApprox(Minv_Jt_rhs_gt));
 
   const auto res_gt = (delassus_dense_gt * rhs).eval();
   BOOST_CHECK(res.isApprox(res_gt));
