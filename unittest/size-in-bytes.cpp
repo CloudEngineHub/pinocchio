@@ -66,4 +66,14 @@ BOOST_AUTO_TEST_CASE(test_eigen_matrix)
   BOOST_CHECK(sizeInBytes(mat) - sizeInBytes(mat33) == 1);
 }
 
+BOOST_AUTO_TEST_CASE(test_fundamental_types)
+{
+  BOOST_CHECK(sizeInBytes(bool(1)) == sizeof(bool));
+  BOOST_CHECK(sizeInBytes(char(1)) == sizeof(char));
+  BOOST_CHECK(sizeInBytes(int(1)) == sizeof(int));
+  BOOST_CHECK(sizeInBytes(float(1)) == sizeof(float));
+  BOOST_CHECK(sizeInBytes(double(1)) == sizeof(double));
+  BOOST_CHECK(sizeInBytes((long double)(1)) == sizeof(long double));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
