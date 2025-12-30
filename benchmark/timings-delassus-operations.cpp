@@ -47,7 +47,7 @@ struct DelassusFixture : ModelFixture
     contact_data_6D6D.push_back(pinocchio::RigidConstraintData(*ci_RF_6D));
     contact_data_6D6D.push_back(pinocchio::RigidConstraintData(*ci_LF_6D));
 
-    contact_chol_6D6D = pinocchio::ContactCholeskyDecomposition(model);
+    contact_chol_6D6D = pinocchio::ContactCholeskyDecomposition(model, data);
 
     prox_settings.max_iter = 10;
     prox_settings.mu = 1e8;

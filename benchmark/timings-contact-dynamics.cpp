@@ -39,7 +39,7 @@ struct ContactFixture : ModelFixture
     ci_LF_6D = std::make_unique<pinocchio::RigidConstraintModel>(
       pinocchio::CONTACT_6D, model, LF_id, pinocchio::LOCAL);
 
-    contact_chol_empty = pinocchio::ContactCholeskyDecomposition(model);
+    contact_chol_empty = pinocchio::ContactCholeskyDecomposition(model, data);
 
     contact_models_6D.clear();
     contact_models_6D.push_back(*ci_RF_6D);
