@@ -304,10 +304,13 @@ If you have participated in the development of **Pinocchio**, please add your na
 -   [TriFingerSimulation](https://github.com/open-dynamic-robot-initiative/trifinger_simulation): TriFinger Robot Simulation (a Robot to perform RL on manipulation).
 -   [Casadi_Kin_Dyn](https://github.com/ADVRHumanoids/casadi_kin_dyn): IIT Package for generation of symbolic (SX) expressions of robot kinematics and dynamics.
 -   [PyRoboPlan](https://github.com/sea-bass/pyroboplan): An educational Python library for manipulator motion planning using the Pinocchio Python bindings.
+-   [RoboPlan](https://github.com/open-planning/roboplan): A modern robot motion planning library based on Pinocchio, built in C++ with Python bindings (successor to PyRoboPlan).
 -   [ProxSuite-NLP](https://github.com/Simple-Robotics/proxsuite-nlp): A primal-dual augmented Lagrangian solver for nonlinear programming on manifolds.
 -   [Aligator](https://github.com/Simple-Robotics/aligator): A versatile and efficient framework for constrained trajectory optimization.
 -   [Simple](https://github.com/Simple-Robotics/Simple): The Simple Simulator: Simulation Made Simple.
 -   [LoIK](https://github.com/Simple-Robotics/LoIK): Low-Complexity Inverse Kinematics.
+-   [PlaCo](https://github.com/Rhoban/placo): Rhoban's planning and control library, featuring task-space inverse kinematics and dynamics high-level API for whole-body control tasks.
+-   [CRISP controllers](https://github.com/utiasDSL/crisp_controllers): Collection of real-time, C++ controllers for compliant torque-based control for manipulators compatible with `ros2_control`.
 
 ## Acknowledgments
 
