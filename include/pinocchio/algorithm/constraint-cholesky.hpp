@@ -341,8 +341,6 @@ namespace pinocchio
     ///
     void updateDamping(const Scalar & mu);
 
-    void computedelassus_blockFromU();
-
     ///
     /// \brief Returns the current damping vector.
     ///
@@ -467,6 +465,8 @@ namespace pinocchio
     std::size_t sizeInBytes() const;
 
   protected:
+    void computeDelassusBlock();
+
     EigenIndexVector parents_fromRow;
     EigenIndexVector nv_subtree_fromRow;
 

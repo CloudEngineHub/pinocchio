@@ -374,7 +374,7 @@ namespace pinocchio
 
     // Setting numerical damping
     {
-      computedelassus_blockFromU();
+      computeDelassusBlock();
       updateDamping(mus);
     }
   }
@@ -400,7 +400,7 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::computedelassus_blockFromU()
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusBlock()
   {
     // delassus_block.setZero();
     const Eigen::Index total_size = size();
