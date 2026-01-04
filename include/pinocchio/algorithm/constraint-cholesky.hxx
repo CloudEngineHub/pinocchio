@@ -164,33 +164,13 @@ namespace pinocchio
     //      nv_subtree_fromRow.fill(0);
 
     // Fill nv_subtree_fromRow for model
-    for (JointIndex joint_id = 1; joint_id < (JointIndex)(model.njoints); joint_id++)
+    for (int i = 0; i < model.nv; ++i)
     {
-      const JointIndex parent_id = model.parents[joint_id];
+      if (data.parents_fromRow[size_t(i)] >= 0)
+        parents_fromRow[i + total_constraint_size] =
+          data.parents_fromRow[size_t(i)] + total_constraint_size;
 
-      const auto & joint = model.joints[joint_id];
-      const auto & parent_joint = model.joints[parent_id];
-      const int nvj = joint.nv();
-      const int idx_vj = joint.idx_v();
-
-      if (parent_id > 0)
-        parents_fromRow[idx_vj + total_constraint_size] =
-          parent_joint.idx_v() + parent_joint.nv() - 1 + total_constraint_size;
-      else
-        parents_fromRow[idx_vj + total_constraint_size] = -1;
-
-      const JointIndex last_child =
-        model.subtrees[joint_id].size() > 0 ? model.subtrees[joint_id].back() : JointIndex(0);
-      nv_subtree_fromRow[idx_vj + total_constraint_size] =
-        model.joints[last_child].idx_v() + model.joints[last_child].nv() - idx_vj;
-
-      for (int row = 1; row < nvj; ++row)
-      {
-        parents_fromRow[idx_vj + total_constraint_size + row] =
-          idx_vj + row - 1 + total_constraint_size;
-        nv_subtree_fromRow[idx_vj + total_constraint_size + row] =
-          nv_subtree_fromRow[idx_vj + total_constraint_size] - row;
-      }
+      nv_subtree_fromRow[i + total_constraint_size] = data.nvSubtree_fromRow[size_t(i)];
     }
 
     Eigen::Index row_id = 0;
