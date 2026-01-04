@@ -293,8 +293,7 @@ namespace pinocchio
       "different.");
     PINOCCHIO_ONLY_USED_FOR_DEBUG(model);
 
-    const Eigen::Index total_size = size();
-    const Eigen::Index total_constraint_size = total_size - nv;
+    const Eigen::Index total_constraint_size = constraintDim();
 
     const auto & M = data.M;
 
@@ -394,8 +393,7 @@ namespace pinocchio
   template<typename Scalar, int Options>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(const Scalar & compliance)
   {
-    const Eigen::Index total_size = size();
-    const Eigen::Index total_constraint_size = total_size - nv;
+    const Eigen::Index total_constraint_size = constraintDim();
     updateCompliance(Vector::Constant(total_constraint_size, compliance));
   }
 
@@ -403,8 +401,7 @@ namespace pinocchio
   void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusBlock()
   {
     // delassus_block.setZero();
-    const Eigen::Index total_size = size();
-    const Eigen::Index total_constraint_size = total_size - nv;
+    const auto total_constraint_size = constraintDim();
     const auto UtopRight = U.topRightCorner(total_constraint_size, nv);
     const auto Dtail = D.tail(nv);
 
@@ -474,10 +471,7 @@ namespace pinocchio
   {
     //      PINOCCHIO_CHECK_INPUT_ARGUMENT(check_expression_if_real<Scalar>(mu >= 0), "mu should be
     //      positive.");
-
-    const Eigen::Index total_size = size();
-    const Eigen::Index total_constraint_size = total_size - nv;
-    updateDamping(Vector::Constant(total_constraint_size, mu));
+    updateDamping(Vector::Constant(constraintDim(), mu));
   }
 
   template<typename Scalar, int Options>
@@ -552,7 +546,7 @@ namespace pinocchio
 
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
-        const Eigen::Index total_constraint_size = chol.size() - chol.nv;
+        const Eigen::Index total_constraint_size = chol.constraintDim();
 
         // TODO: exploit the Sparsity pattern of the first rows of U
         for (Eigen::Index k = 0; k < total_constraint_size; ++k)
@@ -668,7 +662,7 @@ namespace pinocchio
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
           vec.size() == chol.size(), "The input vector is of wrong size");
 
-        const Eigen::Index total_constraint_size = chol.size() - chol.nv;
+        const Eigen::Index total_constraint_size = chol.constraintDim();
         for (Eigen::Index k = chol.size() - 2; k >= total_constraint_size; --k)
           vec_[k] -= chol.U.row(k)
                        .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
