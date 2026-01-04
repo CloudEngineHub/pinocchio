@@ -536,9 +536,10 @@ namespace pinocchio
         }
 
         for (Eigen::Index k = total_constraint_size; k <= chol.size() - 2; ++k)
-          vec[k] += chol.U.row(k)
-                      .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
-                      .dot(vec.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
+        {
+          const Eigen::Index slice_dim = chol.nv_subtree_fromRow[k] - 1;
+          vec[k] += chol.U.row(k).segment(k + 1, slice_dim).dot(vec.segment(k + 1, slice_dim));
+        }
       }
     };
   } // namespace details
@@ -587,8 +588,11 @@ namespace pinocchio
         const Eigen::Index total_constraint_size = chol.constraintDim();
 
         for (Eigen::Index k = chol.size() - 2; k >= total_constraint_size; --k)
-          vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1) +=
-            chol.U.row(k).segment(k + 1, chol.nv_subtree_fromRow[k] - 1).transpose() * vec_[k];
+        {
+          const Eigen::Index slice_dim = chol.nv_subtree_fromRow[k] - 1;
+          vec_.segment(k + 1, slice_dim) +=
+            chol.U.row(k).segment(k + 1, slice_dim).transpose() * vec_[k];
+        }
 
         // TODO: exploit the Sparsity pattern of the first rows of U
         for (Eigen::Index k = total_constraint_size - 1; k >= 0; --k)
@@ -644,10 +648,10 @@ namespace pinocchio
 
         const Eigen::Index total_constraint_size = chol.constraintDim();
         for (Eigen::Index k = chol.size() - 2; k >= total_constraint_size; --k)
-          vec_[k] -= chol.U.row(k)
-                       .segment(k + 1, chol.nv_subtree_fromRow[k] - 1)
-                       .dot(vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1));
-
+        {
+          const Eigen::Index slice_dim = chol.nv_subtree_fromRow[k] - 1;
+          vec_[k] -= chol.U.row(k).segment(k + 1, slice_dim).dot(vec_.segment(k + 1, slice_dim));
+        }
         // TODO: exploit the Sparsity pattern of the first rows of U
         for (Eigen::Index k = total_constraint_size - 1; k >= 0; --k)
         {
@@ -709,8 +713,11 @@ namespace pinocchio
         }
 
         for (Eigen::Index k = total_constraint_size; k <= chol.size() - 2; ++k)
-          vec_.segment(k + 1, chol.nv_subtree_fromRow[k] - 1) -=
-            chol.U.row(k).segment(k + 1, chol.nv_subtree_fromRow[k] - 1).transpose() * vec_[k];
+        {
+          const Eigen::Index slice_dim = chol.nv_subtree_fromRow[k] - 1;
+          vec_.segment(k + 1, slice_dim) -=
+            chol.U.row(k).segment(k + 1, slice_dim).transpose() * vec_[k];
+        }
       }
     };
   } // namespace details
