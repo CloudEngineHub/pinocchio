@@ -16,6 +16,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#include "pinocchio/algorithm/contact.hxx"
-
 #endif // ifndef __pinocchio_algorithm_contact_hpp__

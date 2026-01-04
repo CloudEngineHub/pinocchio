@@ -70,7 +70,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-info.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-jacobian.hpp
