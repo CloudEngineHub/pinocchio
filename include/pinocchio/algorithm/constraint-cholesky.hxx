@@ -405,8 +405,8 @@ namespace pinocchio
     // delassus_block.setZero();
     const Eigen::Index total_size = size();
     const Eigen::Index total_constraint_size = total_size - nv;
-    const Matrix & UtopRight = U.topRightCorner(total_constraint_size, nv);
-    const Vector & Dtail = D.tail(nv);
+    const auto UtopRight = U.topRightCorner(total_constraint_size, nv);
+    const auto Dtail = D.tail(nv);
 
     // // Upper left triangular part of U
     //   for (Eigen::Index j = total_constraint_size - 1; j >= 0; --j)
