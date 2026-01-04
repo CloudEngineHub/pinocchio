@@ -282,8 +282,7 @@ namespace pinocchio
     DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Eigen::MatrixBase<VectorLike> & mus,
-    bool use_explicit_delassus)
+    const Eigen::MatrixBase<VectorLike> & mus)
   {
     assert(model.check(data) && "data is not consistent with model.");
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
@@ -301,6 +300,7 @@ namespace pinocchio
 
     const size_t num_constraints = constraint_models.size();
 
+    // Fill the mass matrix part
     D.tail(model.nv) = M.diagonal();
     U.bottomRightCorner(model.nv, model.nv).template triangularView<Eigen::StrictlyUpper>() =
       M.template triangularView<Eigen::StrictlyUpper>();
@@ -319,7 +319,7 @@ namespace pinocchio
       current_row += constraint_size;
     }
 
-    // Cholesky
+    // Cholesky decomposition
     for (Eigen::Index j = nv - 1; j >= 0; --j)
     {
       // Classic Cholesky decomposition related to the mass matrix
@@ -373,15 +373,9 @@ namespace pinocchio
     retrieveCompliance(constraint_models, constraint_datas, compliance);
 
     // Setting numerical damping
-    if (use_explicit_delassus)
     {
       computedelassus_blockFromU();
-      updateDampingdelassus_block(mus);
-    }
-
-    else
-    {
-      updateDamping(mus, false);
+      updateDamping(mus);
     }
   }
 
@@ -439,12 +433,12 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename VectorLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDampingdelassus_block(
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
     const Eigen::MatrixBase<VectorLike> & vec)
   {
     EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
     damping = vec;
-    const Eigen::Index constraint_size = constraintDim();
+    const auto constraint_size = constraintDim();
 
     auto UTopLeft = U.topLeftCorner(constraint_size, constraint_size);
     UTopLeft.setIdentity();
@@ -453,6 +447,7 @@ namespace pinocchio
     for (Eigen::Index j = constraint_size - 1; j >= 0; --j)
     {
       const Eigen::Index slice_dim = constraint_size - j - 1;
+
       typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
       MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, slice_dim, 1));
       DUt_partial.noalias() =
@@ -460,8 +455,6 @@ namespace pinocchio
 
       D[j] = -delassus_block(j, j) - damping[j] - compliance[j]
              - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
-      // std::cout << "j = " << j << ", slice_dim = " << slice_dim << " D[j] = " << D[j] <<
-      // std::endl;
 
       assert(
         check_expression_if_real<Scalar>(D[j] != Scalar(0))
@@ -477,55 +470,14 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  template<typename VectorLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
-    const Eigen::MatrixBase<VectorLike> & vec, bool use_explicit_delasssus)
-  {
-    EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
-    damping = vec;
-    if (use_explicit_delasssus)
-    {
-      updateDampingdelassus_block(vec);
-    }
-    else
-    {
-      const Eigen::Index total_size = size();
-      const Eigen::Index total_constraint_size = total_size - nv;
-
-      // Upper left triangular part of U
-      for (Eigen::Index j = total_constraint_size - 1; j >= 0; --j)
-      {
-        const Eigen::Index slice_dim = total_size - j - 1;
-        typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
-        MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, slice_dim, 1));
-
-        DUt_partial.noalias() =
-          U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
-
-        D[j] = -damping[j] - compliance[j] - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
-        assert(
-          check_expression_if_real<Scalar>(D[j] != Scalar(0))
-          && "The diagonal element is equal to zero.");
-        Dinv[j] = Scalar(1) / D[j];
-
-        for (Eigen::Index _i = j - 1; _i >= 0; _i--)
-        {
-          U(_i, j) = -U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial) * Dinv[j];
-        }
-      }
-    }
-  }
-
-  template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
-    const Scalar & mu, bool use_explicit_delassus)
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(const Scalar & mu)
   {
     //      PINOCCHIO_CHECK_INPUT_ARGUMENT(check_expression_if_real<Scalar>(mu >= 0), "mu should be
     //      positive.");
 
     const Eigen::Index total_size = size();
     const Eigen::Index total_constraint_size = total_size - nv;
-    updateDamping(Vector::Constant(total_constraint_size, mu), use_explicit_delassus);
+    updateDamping(Vector::Constant(total_constraint_size, mu));
   }
 
   template<typename Scalar, int Options>
@@ -1110,12 +1062,10 @@ namespace pinocchio
     DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const S1 mu,
-    bool use_explicit_delassus)
+    const S1 mu)
   {
     compute(
-      model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu),
-      use_explicit_delassus);
+      model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu));
   }
 
   template<typename Scalar, int Options>

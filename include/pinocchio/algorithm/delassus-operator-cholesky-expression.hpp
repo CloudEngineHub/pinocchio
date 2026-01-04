@@ -238,10 +238,9 @@ namespace pinocchio
     /// positiveness of the matrix.
     ///
     template<typename VectorLike>
-    void
-    updateDamping(const Eigen::MatrixBase<VectorLike> & mus, bool use_explicit_delassus = false)
+    void updateDamping(const Eigen::MatrixBase<VectorLike> & mus)
     {
-      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mus, use_explicit_delassus);
+      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mus);
     }
 
     ///

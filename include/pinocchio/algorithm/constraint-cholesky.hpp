@@ -262,8 +262,7 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const S1 mu = S1(0.),
-      bool use_explicit_delassus = false);
+      const S1 mu = S1(0.));
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
@@ -299,8 +298,7 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const Eigen::MatrixBase<VectorLike> & mus,
-      bool use_explicit_delassus = false);
+      const Eigen::MatrixBase<VectorLike> & mus);
 
     ///
     /// \brief Update the compliance terms on the upper left block part of the KKT matrix. The
@@ -332,8 +330,7 @@ namespace pinocchio
     /// property of the KKT matrix.
     ///
     template<typename VectorLike>
-    void
-    updateDamping(const Eigen::MatrixBase<VectorLike> & mus, bool use_explicit_delassus = false);
+    void updateDamping(const Eigen::MatrixBase<VectorLike> & mus);
 
     ///
     /// \brief Update the damping term on the upper left block part of the KKT matrix. The damping
@@ -342,12 +339,9 @@ namespace pinocchio
     /// \param[in] mu Regularization factor allowing to enforce the definite property of the KKT
     /// matrix.
     ///
-    void updateDamping(const Scalar & mu, bool use_explicit_delassus = false);
+    void updateDamping(const Scalar & mu);
 
     void computedelassus_blockFromU();
-
-    template<typename VectorLike>
-    void updateDampingdelassus_block(const Eigen::MatrixBase<VectorLike> & mus);
 
     ///
     /// \brief Returns the current damping vector.
