@@ -160,6 +160,13 @@ namespace pinocchio
       return self;
     }
 
+    /// \brief Returns the Constraint Cholesky decomposition associated to this
+    /// DelassusCholeskyExpression.
+    ContactCholeskyDecomposition & cholesky()
+    {
+      return self;
+    }
+
     Matrix matrix(bool enforce_symmetry = false) const
     {
       return self.getInverseOperationalSpaceInertiaMatrix(enforce_symmetry);
