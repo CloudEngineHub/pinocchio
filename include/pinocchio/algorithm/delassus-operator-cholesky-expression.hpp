@@ -56,7 +56,7 @@ namespace pinocchio
       RowsAtCompileTime = traits<DelassusCholeskyExpressionTpl>::RowsAtCompileTime
     };
 
-    explicit DelassusCholeskyExpressionTpl(const ContactCholeskyDecomposition & self)
+    explicit DelassusCholeskyExpressionTpl(ContactCholeskyDecomposition & self)
     : Base()
     , self(self)
     {
@@ -64,48 +64,34 @@ namespace pinocchio
 
     template<typename MatrixIn, typename MatrixOut>
     void applyOnTheRight(
-      const Eigen::MatrixBase<MatrixIn> & x,
-      const Eigen::MatrixBase<MatrixOut> & res,
-      bool use_explicit_delassus = false) const
-    {
-      if (use_explicit_delassus)
-      {
-        applyOnTheRightExplicit(x, res);
-        return;
-      }
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), self.constraintDim());
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), self.constraintDim());
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), x.cols());
-
-      const auto U1 = self.U.topLeftCorner(self.constraintDim(), self.constraintDim());
-      {
-        PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-        typedef Eigen::Map<RowMatrix> MapType;
-        MapType tmp_mat = MapType(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, x.rows(), x.cols()));
-        //            tmp_mat.noalias() = U1.adjoint() * x;
-        triangularMatrixMatrixProduct<Eigen::UnitLower>(U1.adjoint(), x.derived(), tmp_mat);
-
-        // The following commented lines produced some memory allocation.
-        // Should be replaced by a manual loop
-        //          tmp_mat.array().colwise() *= -self.D.head(self.constraintDim()).array();
-        for (Eigen::Index i = 0; i < x.cols(); ++i)
-          tmp_mat.col(i).array() *= -self.D.head(self.constraintDim()).array();
-
-        //            res.const_cast_derived().noalias() = U1 * tmp_mat;
-        triangularMatrixMatrixProduct<Eigen::UnitUpper>(U1, tmp_mat, res.const_cast_derived());
-        PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-      }
-    }
-
-    template<typename MatrixIn, typename MatrixOut>
-    void applyOnTheRightExplicit(
       const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res) const
     {
+
       PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), self.constraintDim());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), self.constraintDim());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), x.cols());
 
       res.const_cast_derived().noalias() = self.delassus_block * x;
+      res.const_cast_derived().noalias() += self.sum_compliance_damping.asDiagonal() * x;
+
+      // const auto U1 = self.U.topLeftCorner(self.constraintDim(), self.constraintDim());
+      // {
+      //   PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
+      //   typedef Eigen::Map<RowMatrix> MapType;
+      //   MapType tmp_mat = MapType(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, x.rows(), x.cols()));
+      //   //            tmp_mat.noalias() = U1.adjoint() * x;
+      //   triangularMatrixMatrixProduct<Eigen::UnitLower>(U1.adjoint(), x.derived(), tmp_mat);
+
+      //   // The following commented lines produced some memory allocation.
+      //   // Should be replaced by a manual loop
+      //   //          tmp_mat.array().colwise() *= -self.D.head(self.constraintDim()).array();
+      //   for (Eigen::Index i = 0; i < x.cols(); ++i)
+      //     tmp_mat.col(i).array() *= -self.D.head(self.constraintDim()).array();
+
+      //   //            res.const_cast_derived().noalias() = U1 * tmp_mat;
+      //   triangularMatrixMatrixProduct<Eigen::UnitUpper>(U1, tmp_mat, res.const_cast_derived());
+      //   PINOCCHIO_EIGEN_MALLOC_ALLOWED();
+      // }
     }
 
     template<typename MatrixLike>
@@ -117,10 +103,19 @@ namespace pinocchio
         "updateBarrierHessian not implemented for DelassusCholeskyExpressionTpl.");
     }
 
+    void compute()
+    {
+      self.computeDelassusCholeskyDecomposition();
+    }
+
     template<typename MatrixDerived>
     void solveInPlace(const Eigen::MatrixBase<MatrixDerived> & x) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), self.constraintDim());
+
+      PINOCCHIO_THROW_IF(
+        self.isDirty(), std::logic_error,
+        "The DelassusOperator has dirty quantities. Please call the compute() method first.");
 
       const auto U1 = self.U.topLeftCorner(self.constraintDim(), self.constraintDim())
                         .template triangularView<Eigen::UnitUpper>();
@@ -276,7 +271,7 @@ namespace pinocchio
     }
 
   protected:
-    const ContactCholeskyDecomposition & self;
+    ContactCholeskyDecomposition & self;
   }; // DelassusCholeskyExpression
 
 } // namespace pinocchio

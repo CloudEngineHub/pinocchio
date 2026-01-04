@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2019-2024 INRIA
+// Copyright (c) 2019-2025 INRIA
 //
 
 #define PINOCCHIO_EIGEN_CHECK_MALLOC
@@ -322,10 +322,12 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_simple)
   BOOST_CHECK(iosim.size() == 0);
   BOOST_CHECK(osim.size() == 0);
 
-  BOOST_CHECK(mass_matrix_chol == contact_chol_decomposition);
   BOOST_CHECK(mass_matrix_chol.U.isApprox(data_ref.U));
+  BOOST_CHECK(mass_matrix_chol.U == contact_chol_decomposition.U);
   BOOST_CHECK(mass_matrix_chol.D.isApprox(data_ref.D));
+  BOOST_CHECK(mass_matrix_chol.D == contact_chol_decomposition.D);
   BOOST_CHECK(mass_matrix_chol.Dinv.isApprox(data_ref.Dinv));
+  BOOST_CHECK(mass_matrix_chol.Dinv == contact_chol_decomposition.Dinv);
 }
 
 BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
@@ -1630,6 +1632,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_updateDamping)
 
     contact_chol_decomposition.updateDamping(mu2);
     BOOST_CHECK(contact_chol_decomposition.getDamping().isConstant(mu2));
+    contact_chol_decomposition.computeDelassusCholeskyDecomposition();
 
     ContactCholeskyDecomposition contact_chol_decomposition_ref;
     contact_chol_decomposition_ref.resize(model, data, contact_models, contact_datas);
@@ -1645,6 +1648,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_updateDamping)
     contact_chol_decomposition.resize(model, data, contact_models, contact_datas);
     contact_chol_decomposition.compute(model, data, contact_models, contact_datas, mu1);
     contact_chol_decomposition.getDelassusCholeskyExpression().updateDamping(mu2);
+    contact_chol_decomposition.getDelassusCholeskyExpression().compute();
 
     ContactCholeskyDecomposition contact_chol_decomposition_ref;
     contact_chol_decomposition_ref.resize(model, data, contact_models, contact_datas);

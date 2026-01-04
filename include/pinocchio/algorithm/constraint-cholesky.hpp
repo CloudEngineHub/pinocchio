@@ -301,6 +301,12 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & mus);
 
     ///
+    /// \brief Computes the Cholesky decompostion of the Delassus part. This function should be
+    /// called after a call to updateDamping() or updateCompliance().
+    ///
+    void computeDelassusCholeskyDecomposition();
+
+    ///
     /// \brief Update the compliance terms on the upper left block part of the KKT matrix. The
     /// compliance terms should be all positives.
     ///
@@ -464,8 +470,19 @@ namespace pinocchio
     /// \details Sums up the sizes of all internal data members.
     std::size_t sizeInBytes() const;
 
+    /// \returns True if the decomposition is dirty, related to change of the damping or compliance
+    /// terms.
+    /// \remarks compute() will solve the issue by performing a new Cholesky decomposition of the
+    /// Delassus block.
+    bool isDirty() const
+    {
+      return decomposition_dirty;
+    }
+
   protected:
-    void computeDelassusBlock();
+    void computeDelassusMatrix();
+
+    void updateSumComplianceDamping();
 
     EigenIndexVector parents_fromRow;
     EigenIndexVector nv_subtree_fromRow;
@@ -483,8 +500,16 @@ namespace pinocchio
     EigenStorageVector damping_storage;
     typename EigenStorageVector::RefMapType damping;
 
+    /// \brief Store the sum of compliance and damping vectors
+    EigenStorageVector sum_compliance_damping_storage;
+    typename EigenStorageVector::RefMapType sum_compliance_damping;
+
+    /// \brief Store the Delassus block
     EigenStorageRowMatrix delassus_block_storage;
     typename EigenStorageRowMatrix::RefMapType delassus_block;
+
+    /// \brief Check if the decomposition is dirty
+    bool decomposition_dirty;
   };
 
 } // namespace pinocchio

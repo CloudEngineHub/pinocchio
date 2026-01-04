@@ -29,7 +29,9 @@ namespace pinocchio
   , U(U_storage.map())
   , compliance(compliance_storage.map())
   , damping(damping_storage.map())
+  , sum_compliance_damping(sum_compliance_damping_storage.map())
   , delassus_block(delassus_block_storage.map())
+  , decomposition_dirty(true)
   {
   }
 
@@ -43,7 +45,9 @@ namespace pinocchio
   , U(U_storage.map())
   , compliance(compliance_storage.map())
   , damping(damping_storage.map())
+  , sum_compliance_damping(sum_compliance_damping_storage.map())
   , delassus_block(delassus_block_storage.map())
+  , decomposition_dirty(true)
   {
     typedef ConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef ConstraintDataTpl<Scalar, Options> ConstraintData;
@@ -72,7 +76,9 @@ namespace pinocchio
   , U(U_storage.map())
   , compliance(compliance_storage.map())
   , damping(damping_storage.map())
+  , sum_compliance_damping(sum_compliance_damping_storage.map())
   , delassus_block(delassus_block_storage.map())
+  , decomposition_dirty(true)
   {
     PINOCCHIO_UNUSED_VARIABLE(data);
     resize(model, data, constraint_models, constraint_datas);
@@ -86,7 +92,9 @@ namespace pinocchio
   , U(U_storage.map())
   , compliance(compliance_storage.map())
   , damping(damping_storage.map())
+  , sum_compliance_damping(sum_compliance_damping_storage.map())
   , delassus_block(delassus_block_storage.map())
+  , decomposition_dirty(true)
   {
     *this = other;
   }
@@ -107,6 +115,10 @@ namespace pinocchio
     U_storage = other.U_storage;
     compliance_storage = other.compliance_storage;
     damping_storage = other.damping_storage;
+    sum_compliance_damping_storage = other.sum_compliance_damping_storage;
+    delassus_block_storage = other.delassus_block_storage;
+
+    decomposition_dirty = other.decomposition_dirty;
 
     return *this;
   }
@@ -239,6 +251,8 @@ namespace pinocchio
     compliance.setZero();
     damping_storage.resize(total_constraint_size);
     damping.setZero();
+    sum_compliance_damping_storage.resize(total_constraint_size);
+    decomposition_dirty = true;
 
     D_storage.resize(total_size);
     Dinv_storage.resize(total_size);
@@ -348,26 +362,31 @@ namespace pinocchio
       }
     }
 
-    // Setting physical compliance
-    retrieveCompliance(constraint_models, constraint_datas, compliance);
+    // Update damping
+    updateDamping(mus);
 
-    // Setting numerical damping
-    {
-      computeDelassusBlock();
-      updateDamping(mus);
-    }
+    // Retrive physical compliance
+    typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
+    MapVector contraint_compliance =
+      MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraint_size, 1));
+    retrieveCompliance(constraint_models, constraint_datas, contraint_compliance);
+    updateCompliance(contraint_compliance);
+
+    // Compute the Delassus matrix from the current decomposition
+    computeDelassusMatrix();
+
+    // Compute the Cholesky decomposition of the Delassus block
+    computeDelassusCholeskyDecomposition();
   }
 
   template<typename Scalar, int Options>
   template<typename VectorLike>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(
-    const Eigen::MatrixBase<VectorLike> & vec)
+    const Eigen::MatrixBase<VectorLike> & compliance_vector)
   {
     EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
-    compliance = vec;
-
-    // The diagonal term of the KKT should be updated with the new compliance
-    updateDamping(getDamping());
+    compliance = compliance_vector;
+    updateSumComplianceDamping();
   }
 
   template<typename Scalar, int Options>
@@ -378,9 +397,8 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusBlock()
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusMatrix()
   {
-    // delassus_block.setZero();
     const auto total_constraint_size = constraintDim();
     const auto UtopRight = U.topRightCorner(total_constraint_size, nv);
     const auto Dtail = D.tail(nv);
@@ -409,16 +427,14 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  template<typename VectorLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
-    const Eigen::MatrixBase<VectorLike> & vec)
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusCholeskyDecomposition()
   {
-    EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
-    damping = vec;
     const auto constraint_size = constraintDim();
 
-    auto UTopLeft = U.topLeftCorner(constraint_size, constraint_size);
-    UTopLeft.setIdentity();
+    auto U_delassus_block = U.topLeftCorner(constraint_size, constraint_size);
+    U_delassus_block.diagonal().setOnes();
+    // U_delassus_block.template triangularView<Eigen::StrictlyLower>() = delassus_block.template
+    // triangularView<Eigen::StrictlyLower>();
 
     // Upper left triangular part of U
     for (Eigen::Index j = constraint_size - 1; j >= 0; --j)
@@ -430,7 +446,7 @@ namespace pinocchio
       DUt_partial.noalias() =
         U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
 
-      D[j] = -delassus_block(j, j) - damping[j] - compliance[j]
+      D[j] = -delassus_block(j, j) - sum_compliance_damping[j]
              - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
 
       assert(
@@ -440,10 +456,28 @@ namespace pinocchio
 
       for (Eigen::Index _i = j - 1; _i >= 0; _i--)
       {
-        U(_i, j) =
-          (-delassus_block(_i, j) - U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial)) * Dinv[j];
+        U(_i, j) = -delassus_block(_i, j) - U.row(_i).segment(j + 1, slice_dim).dot(DUt_partial);
+        U(_i, j) *= Dinv[j];
       }
     }
+
+    decomposition_dirty = false;
+  }
+
+  template<typename Scalar, int Options>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateSumComplianceDamping()
+  {
+    sum_compliance_damping = damping + compliance;
+    decomposition_dirty = true;
+  }
+
+  template<typename Scalar, int Options>
+  template<typename VectorLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+    const Eigen::MatrixBase<VectorLike> & damping_vector)
+  {
+    damping = damping_vector;
+    updateSumComplianceDamping();
   }
 
   template<typename Scalar, int Options>
@@ -459,6 +493,10 @@ namespace pinocchio
   void ContactCholeskyDecompositionTpl<Scalar, Options>::solveInPlace(
     const Eigen::MatrixBase<MatrixLike> & mat_) const
   {
+    PINOCCHIO_THROW_IF(
+      decomposition_dirty, std::logic_error,
+      "The ContactCholeskyDecompositionTpl has dirty quantities. Please call the "
+      "computeDelassusCholeskyDecomposition() method first.");
     auto & mat = mat_.const_cast_derived();
 
     Uiv(mat);
@@ -780,6 +818,11 @@ namespace pinocchio
     is_same &= (nv_subtree_fromRow == other.nv_subtree_fromRow);
     //        is_same &= (rowise_sparsity_pattern == other.rowise_sparsity_pattern);
 
+    is_same &= (compliance_storage == other.compliance_storage);
+    is_same &= (damping_storage == other.damping_storage);
+    is_same &= (sum_compliance_damping_storage == other.sum_compliance_damping_storage);
+    is_same &= (delassus_block_storage == other.delassus_block_storage);
+    is_same &= (decomposition_dirty == other.decomposition_dirty);
     return is_same;
   }
 
@@ -941,7 +984,7 @@ namespace pinocchio
   typename ContactCholeskyDecompositionTpl<Scalar, Options>::DelassusCholeskyExpression
   ContactCholeskyDecompositionTpl<Scalar, Options>::getDelassusCholeskyExpression() const
   {
-    return DelassusCholeskyExpression(*this);
+    return DelassusCholeskyExpression(const_cast<ContactCholeskyDecompositionTpl &>(*this));
   }
 
   template<typename Scalar, int Options>
@@ -1054,8 +1097,8 @@ namespace pinocchio
   {
     return U_storage.sizeInBytes() + D_storage.sizeInBytes() + Dinv_storage.sizeInBytes()
            + compliance_storage.sizeInBytes() + damping_storage.sizeInBytes()
-           + delassus_block_storage.sizeInBytes() + pinocchio::sizeInBytes(parents_fromRow)
-           + pinocchio::sizeInBytes(nv_subtree_fromRow)
+           + sum_compliance_damping_storage.sizeInBytes() + delassus_block_storage.sizeInBytes()
+           + pinocchio::sizeInBytes(parents_fromRow) + pinocchio::sizeInBytes(nv_subtree_fromRow)
       // + pinocchio::sizeInBytes(rowise_sparsity_pattern)
       ;
   }
