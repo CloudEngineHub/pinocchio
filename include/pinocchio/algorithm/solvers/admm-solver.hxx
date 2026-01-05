@@ -166,6 +166,7 @@ namespace pinocchio
       Scalar prox_value = settings.tau_prox * ws.mu_prox + settings.tau * ws.rho;
       ws.rhs.setConstant(prox_value);
       G.updateDamping(ws.rhs);
+      G.updateDecomposition();
       Scalar old_prox_value = prox_value;
       ws.delassus_decomposition_update_count++;
 
@@ -461,6 +462,7 @@ namespace pinocchio
               PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop updateDamping");
               ws.rhs.setConstant(prox_value);
               G.updateDamping(ws.rhs);
+              G.updateDecomposition();
               ws.delassus_decomposition_update_count++;
               old_prox_value = prox_value;
             }
@@ -593,6 +595,7 @@ namespace pinocchio
     ws.delassus_smallest_eigenvalue = min_compliance + ws.mu_prox;
     ws.rhs.setConstant(ws.mu_prox);
     G.updateDamping(ws.rhs);
+    G.updateDecomposition();
     ws.delassus_decomposition_update_count++;
 
     // Initialization of the primal/dual variables.
