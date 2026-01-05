@@ -167,6 +167,16 @@ namespace pinocchio
       derived().updateDamping(mu);
     }
 
+    void updateDecomposition()
+    {
+      derived().updateDecomposition();
+    }
+
+    bool isDirty() const
+    {
+      return derived().isDirty();
+    }
+
     template<typename MatrixLike>
     void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
     {
