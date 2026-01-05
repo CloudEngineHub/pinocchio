@@ -131,7 +131,6 @@ namespace pinocchio
     template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
-      updateDecomposition(); // only if needed
       PINOCCHIO_THROW_IF(
         isDirty(), std::logic_error,
         "The DelassusOperator has dirty quantities. Please call updateDecomposition() first.");
