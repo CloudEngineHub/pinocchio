@@ -131,7 +131,10 @@ namespace pinocchio
     template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
-      runCholeskyDecomposition(); // only if needed
+      updateDecomposition(); // only if needed
+      PINOCCHIO_THROW_IF(
+        isDirty(), std::logic_error,
+        "The DelassusOperator has dirty quantities. Please call updateDecomposition() first.");
       m_cholesky_decomposition.solveInPlace(mat.const_cast_derived());
     }
 
