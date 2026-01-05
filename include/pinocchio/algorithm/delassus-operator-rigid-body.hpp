@@ -222,6 +222,16 @@ namespace pinocchio
       compute_or_update_decomposition(apply_on_the_right, solve_in_place);
     }
 
+    ///
+    /// \brief Update the decomposition after a call to updateDamping or updateCompliance.
+    ///
+    /// \remarks isDirty() allows to retrieve the current status of the decomposition.
+    ///
+    void updateDecomposition()
+    {
+      compute(false, true);
+    }
+
   public:
     const Model & model() const
     {

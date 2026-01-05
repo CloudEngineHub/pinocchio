@@ -103,9 +103,19 @@ namespace pinocchio
         "updateBarrierHessian not implemented for DelassusCholeskyExpressionTpl.");
     }
 
-    void compute()
+    ///
+    /// \brief Update the decomposition after a call to updateDamping or updateCompliance.
+    ///
+    /// \remarks isDirty() allows to retrieve the current status of the decomposition.
+    ///
+    void updateDecomposition()
     {
       self.computeDelassusCholeskyDecomposition();
+    }
+
+    bool isDirty() const
+    {
+      return self.isDirty();
     }
 
     template<typename MatrixDerived>
