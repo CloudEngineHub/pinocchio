@@ -7,6 +7,7 @@
 
 #include "pinocchio/utils/fwd.hpp"
 #include <pinocchio/math/matrix-product.hpp>
+#include "pinocchio/utils/size-in-bytes.hpp"
 
 #include <ratio>
 #include <type_traits>
