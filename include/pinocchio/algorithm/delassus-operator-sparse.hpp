@@ -26,11 +26,8 @@ namespace pinocchio
       using Base::m_P;
       using Base::m_Pinv;
 
-      template<typename Rhs, typename Dest, typename Temporary>
-      void _solve_impl(
-        const Eigen::MatrixBase<Rhs> & b,
-        Eigen::MatrixBase<Dest> & dest,
-        Eigen::MatrixBase<Temporary> & tmp) const
+      template<typename Rhs, typename Dest>
+      void _solve_impl(const Eigen::MatrixBase<Rhs> & b, Eigen::MatrixBase<Dest> & dest) const
       {
         //    eigen_assert(m_factorizationIsOk && "The decomposition is not in a valid state for
         //    solving, you must first call either compute() or symbolic()/numeric()");
@@ -39,6 +36,11 @@ namespace pinocchio
         if (m_info != Eigen::Success)
           return;
 
+        typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Rhs) PlainMatrix;
+        typedef typename PlainMatrix::Scalar Scalar;
+
+        typedef Eigen::Map<PlainMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapPlainMatrix;
+        MapPlainMatrix tmp = MapPlainMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, b.rows(), b.cols()));
         if (m_P.size() > 0)
           tmp.noalias() = m_P * b;
         else
@@ -71,12 +73,11 @@ namespace pinocchio
     {
       typedef Eigen::AccelerateImpl<MatrixType, UpLo, Solver, EnforceSquare> SparseCholeskySolver;
 
-      template<typename Rhs, typename Dest, typename Temporary>
+      template<typename Rhs, typename Dest>
       static void run(
         const SparseCholeskySolver & solver,
         const Eigen::MatrixBase<Rhs> & mat,
-        const Eigen::MatrixBase<Dest> & dest,
-        Eigen::MatrixBase<Temporary> & /*tmp*/)
+        const Eigen::MatrixBase<Dest> & dest)
       {
         dest.const_cast_derived() = solver.solve(mat.derived());
       }
@@ -86,12 +87,11 @@ namespace pinocchio
     template<typename SparseCholeskySolver>
     struct SparseSolveInPlaceMethod
     {
-      template<typename Rhs, typename Dest, typename Temporary>
+      template<typename Rhs, typename Dest>
       static void run(
         const SparseCholeskySolver & solver,
         const Eigen::MatrixBase<Rhs> & mat,
-        const Eigen::MatrixBase<Dest> & dest,
-        Eigen::MatrixBase<Temporary> & tmp)
+        const Eigen::MatrixBase<Dest> & dest)
       {
         static_assert(
           std::is_base_of<
@@ -100,7 +100,7 @@ namespace pinocchio
         typedef SimplicialCholeskyWrapper<SparseCholeskySolver> CholeskyWrapper;
 
         const CholeskyWrapper & wrapper = reinterpret_cast<const CholeskyWrapper &>(solver);
-        wrapper._solve_impl(mat, dest.const_cast_derived(), tmp.derived());
+        wrapper._solve_impl(mat, dest.const_cast_derived());
       }
     };
 
@@ -148,13 +148,12 @@ namespace pinocchio
     template<typename MatrixDerived>
     explicit DelassusOperatorSparseTpl(const Eigen::SparseMatrixBase<MatrixDerived> & mat)
     : Base()
-    , delassus_matrix(mat)
-    , damped_delassus_matrix(mat)
-    , cholsky_decomposition(mat)
-    , cholesky_decomposition_dirty(true)
-    , damping(Vector::Zero(mat.rows()))
-    , compliance(Vector::Zero(mat.rows()))
-    , tmp(mat.rows())
+    , m_delassus_matrix(mat)
+    , m_damped_delassus_matrix(mat)
+    , m_cholsky_decomposition(mat)
+    , m_cholesky_decomposition_dirty(true)
+    , m_damping(Vector::Zero(mat.rows()))
+    , m_compliance(Vector::Zero(mat.rows()))
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), mat.cols());
     }
@@ -164,15 +163,15 @@ namespace pinocchio
     {
       for (Eigen::Index k = 0; k < size(); ++k)
       {
-        damped_delassus_matrix.coeffRef(k, k) += -compliance[k] + compliance_vector[k];
+        m_damped_delassus_matrix.coeffRef(k, k) += -m_compliance[k] + compliance_vector[k];
       }
-      compliance = compliance_vector;
-      cholesky_decomposition_dirty = true;
+      m_compliance = compliance_vector;
+      m_cholesky_decomposition_dirty = true;
     }
 
-    void updateCompliance(const Scalar & compliance)
+    void updateCompliance(const Scalar & m_compliance)
     {
-      updateCompliance(Vector::Constant(size(), compliance));
+      updateCompliance(Vector::Constant(size(), m_compliance));
     }
 
     template<typename VectorLike>
@@ -180,10 +179,10 @@ namespace pinocchio
     {
       for (Eigen::Index k = 0; k < size(); ++k)
       {
-        damped_delassus_matrix.coeffRef(k, k) += -damping[k] + damping_vector[k];
+        m_damped_delassus_matrix.coeffRef(k, k) += -m_damping[k] + damping_vector[k];
       }
-      damping = damping_vector;
-      cholesky_decomposition_dirty = true;
+      m_damping = damping_vector;
+      m_cholesky_decomposition_dirty = true;
     }
 
     void updateDamping(const Scalar & mu)
@@ -195,14 +194,14 @@ namespace pinocchio
     {
       PINOCCHIO_EIGEN_MALLOC_SAVE_STATUS();
       PINOCCHIO_EIGEN_MALLOC_ALLOWED();
-      cholsky_decomposition.factorize(damped_delassus_matrix);
+      m_cholsky_decomposition.factorize(m_damped_delassus_matrix);
       PINOCCHIO_EIGEN_MALLOC_RESTORE_STATUS();
-      cholesky_decomposition_dirty = false;
+      m_cholesky_decomposition_dirty = false;
     }
 
     bool isDirty() const
     {
-      return cholesky_decomposition_dirty;
+      return m_cholesky_decomposition_dirty;
     }
 
     template<typename MatrixLike>
@@ -220,7 +219,7 @@ namespace pinocchio
         isDirty(), std::logic_error,
         "The DelassusOperator has dirty quantities. Please call updateDecomposition() first.");
       internal::SparseSolveInPlaceMethod<CholeskyDecomposition>::run(
-        cholsky_decomposition, mat.derived(), mat.const_cast_derived(), tmp);
+        m_cholsky_decomposition, mat.derived(), mat.const_cast_derived());
     }
 
     template<typename MatrixLike>
@@ -238,7 +237,7 @@ namespace pinocchio
       const Eigen::MatrixBase<MatrixDerivedOut> & res) const
     {
       res.const_cast_derived() = x;
-      cholsky_decomposition._solve_impl(x, res.const_cast_derived());
+      m_cholsky_decomposition._solve_impl(x, res.const_cast_derived());
     }
 
     template<typename MatrixIn, typename MatrixOut>
@@ -247,64 +246,63 @@ namespace pinocchio
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), size());
       MatrixOut & res = res_.const_cast_derived();
-      res.noalias() = delassus_matrix * x;
-      res.array() += compliance.array() * x.array();
-      res.array() += damping.array() * x.array();
+      res.noalias() = m_delassus_matrix * x;
+      res.array() += m_compliance.array() * x.array();
+      res.array() += m_damping.array() * x.array();
     }
 
     Eigen::Index size() const
     {
-      return delassus_matrix.rows();
+      return m_delassus_matrix.rows();
     }
     Eigen::Index rows() const
     {
-      return delassus_matrix.rows();
+      return m_delassus_matrix.rows();
     }
     Eigen::Index cols() const
     {
-      return delassus_matrix.cols();
+      return m_delassus_matrix.cols();
     }
 
     SparseMatrix matrix(bool enforce_symmetry = false) const
     {
-      damped_delassus_matrix = delassus_matrix;
-      damped_delassus_matrix += compliance.asDiagonal();
-      damped_delassus_matrix += damping.asDiagonal();
+      m_damped_delassus_matrix = m_delassus_matrix;
+      m_damped_delassus_matrix += m_compliance.asDiagonal();
+      m_damped_delassus_matrix += m_damping.asDiagonal();
       if (enforce_symmetry)
       {
         // TODO: enforce symmetry for sparse matrices
         PINOCCHIO_THROW(
           std::invalid_argument, "enforceSymmetry not implemented for sparse matrices");
       }
-      return damped_delassus_matrix;
+      return m_damped_delassus_matrix;
     }
 
     const Vector & getCompliance() const
     {
-      return compliance;
+      return m_compliance;
     }
 
     const Vector & getDamping() const
     {
-      return damping;
+      return m_damping;
     }
 
     SparseMatrix inverse() const
     {
       SparseMatrix identity_matrix(size(), size());
       identity_matrix.setIdentity();
-      SparseMatrix res = cholsky_decomposition.solve(identity_matrix);
+      SparseMatrix res = m_cholsky_decomposition.solve(identity_matrix);
       return res;
     }
 
   protected:
-    SparseMatrix delassus_matrix;
-    mutable SparseMatrix damped_delassus_matrix;
-    CholeskyDecomposition cholsky_decomposition;
-    bool cholesky_decomposition_dirty;
-    Vector damping;
-    Vector compliance;
-    mutable Vector tmp;
+    SparseMatrix m_delassus_matrix;
+    mutable SparseMatrix m_damped_delassus_matrix;
+    CholeskyDecomposition m_cholsky_decomposition;
+    bool m_cholesky_decomposition_dirty;
+    Vector m_damping;
+    Vector m_compliance;
 
   }; // struct DelassusOperatorSparseTpl
 
