@@ -444,6 +444,7 @@ namespace pinocchio
     friend struct ADMMConstraintSolverTpl<Scalar>;
 
     using Base::isValid;
+
     /// \brief Default constructor.
     ADMMSolverResultTpl()
     : Base()
@@ -613,11 +614,12 @@ namespace pinocchio
     /// \brief Reserve enough storage for max_it iterations.
     void reserve(std::size_t max_iterations)
     {
-      rho.reserve(size_t(max_iterations));
-      mu_prox.reserve(size_t(max_iterations));
-      anderson_size.reserve(size_t(max_iterations));
-      linear_system_residual.reserve(size_t(max_iterations));
-      linear_system_consistency.reserve(size_t(max_iterations));
+      Base::reserve(max_iterations);
+      rho.reserve(max_iterations);
+      mu_prox.reserve(max_iterations);
+      anderson_size.reserve(max_iterations);
+      linear_system_residual.reserve(max_iterations);
+      linear_system_consistency.reserve(max_iterations);
     }
 
     /// \brief Reset stats.

@@ -181,10 +181,10 @@ namespace pinocchio
     /// \brief Reserve enough storage for max_it iterations.
     void reserve(std::size_t max_iterations)
     {
-      primal_feasibility.reserve(size_t(max_iterations));
-      dual_feasibility.reserve(size_t(max_iterations));
-      dual_feasibility_ncp.reserve(size_t(max_iterations));
-      complementarity.reserve(size_t(max_iterations));
+      primal_feasibility.reserve(max_iterations);
+      dual_feasibility.reserve(max_iterations);
+      dual_feasibility_ncp.reserve(max_iterations);
+      complementarity.reserve(max_iterations);
     }
 
     /// \brief Reset stats.
