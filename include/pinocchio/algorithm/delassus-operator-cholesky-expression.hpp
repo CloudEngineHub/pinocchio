@@ -125,7 +125,7 @@ namespace pinocchio
 
       PINOCCHIO_THROW_IF(
         self.isDirty(), std::logic_error,
-        "The DelassusOperator has dirty quantities. Please call the compute() method first.");
+        "The DelassusOperator has dirty quantities. Please call updateDecomposition() first.");
 
       const auto U1 = self.U.topLeftCorner(self.constraintDim(), self.constraintDim())
                         .template triangularView<Eigen::UnitUpper>();

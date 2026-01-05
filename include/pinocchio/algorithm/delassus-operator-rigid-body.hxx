@@ -305,8 +305,7 @@ namespace pinocchio
 
     PINOCCHIO_THROW_IF(
       m_solve_in_place_dirty, std::logic_error,
-      "The DelassusOperator has dirty quantities. Please call the compute(false,true) or "
-      "compute(true,true) method first.");
+      "The DelassusOperator has dirty quantities. Please call updateDecomposition() first.");
 
     const Model & model_ref = model();
     const Data & data_ref = data();
