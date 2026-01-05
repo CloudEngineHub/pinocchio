@@ -1648,7 +1648,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_updateDamping)
     contact_chol_decomposition.resize(model, data, contact_models, contact_datas);
     contact_chol_decomposition.compute(model, data, contact_models, contact_datas, mu1);
     contact_chol_decomposition.getDelassusCholeskyExpression().updateDamping(mu2);
-    contact_chol_decomposition.getDelassusCholeskyExpression().compute();
+    contact_chol_decomposition.getDelassusCholeskyExpression().updateDecomposition();
 
     ContactCholeskyDecomposition contact_chol_decomposition_ref;
     contact_chol_decomposition_ref.resize(model, data, contact_models, contact_datas);
