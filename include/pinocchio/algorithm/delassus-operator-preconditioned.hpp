@@ -67,6 +67,29 @@ namespace pinocchio
       this->updateDamping(Vector::Constant(ref().size(), mu));
     }
 
+    template<typename VectorLike>
+    void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliance_vector)
+    {
+      // G_bar + mu * Id = P * (G + mu * P^{-2}) * P
+      m_preconditioner.scaleSquare(compliance_vector, m_tmp_vec);
+      ref().updateCompliance(m_tmp_vec);
+    }
+
+    void updateCompliance(const Scalar mu)
+    {
+      this->updateCompliance(Vector::Constant(ref().size(), mu));
+    }
+
+    bool isDirty() const
+    {
+      return ref().isDirty();
+    }
+
+    void updateDecomposition()
+    {
+      ref().updateDecomposition();
+    }
+
     template<typename MatrixLike>
     void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
     {
@@ -132,9 +155,15 @@ namespace pinocchio
              * m_preconditioner.getDiagonal().asDiagonal();
     }
 
-    const Vector & getDamping() const
+    Vector getDamping() const
     {
       m_preconditioner.unscaleSquare(ref().getDamping(), m_tmp_vec);
+      return m_tmp_vec;
+    }
+
+    Vector getCompliance() const
+    {
+      m_preconditioner.unscaleSquare(ref().getCompliance(), m_tmp_vec);
       return m_tmp_vec;
     }
 
