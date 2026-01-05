@@ -6,8 +6,7 @@
 #define __pinocchio_utils_eigen_hpp__
 
 #include "pinocchio/utils/fwd.hpp"
-#include <pinocchio/math/matrix-product.hpp>
-#include "pinocchio/utils/size-in-bytes.hpp"
+#include "pinocchio/math/matrix-product.hpp"
 
 #include <ratio>
 #include <type_traits>
