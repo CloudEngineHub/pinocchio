@@ -167,11 +167,15 @@ namespace pinocchio
       derived().updateDamping(mu);
     }
 
+    /// \brief Update the decomposition, following for instance, a call to updateDamping or
+    /// updateCompliance
     void updateDecomposition()
     {
       derived().updateDecomposition();
     }
 
+    /// \returns true if the Delassus is not valid, for instance, after a call to updateDamping or
+    /// updateCompliance
     bool isDirty() const
     {
       return derived().isDirty();
