@@ -141,7 +141,7 @@ namespace pinocchio
       return static_cast<const DelassusOperatorDerived &>(*this);
     }
 
-    explicit DelassusOperatorBase()
+    DelassusOperatorBase()
     {
     }
 
