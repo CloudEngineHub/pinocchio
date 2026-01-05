@@ -147,6 +147,7 @@ BOOST_AUTO_TEST_CASE(delassus_dense_compliant)
   Eigen::MatrixXd damping = damping_vec.asDiagonal();
   delassus.updateDamping(damping_vec);
   BOOST_CHECK(delassus.getDamping().isApprox(damping_vec));
+  delassus.updateDecomposition();
   delassus.solve(rhs, res);
   const Eigen::MatrixXd compliant_matrix_inv = (compliant_matrix + damping).inverse();
   Eigen::VectorXd res_solve = compliant_matrix_inv * rhs;
