@@ -83,9 +83,9 @@ namespace pinocchio
     }
 
     template<typename VectorLike>
-    void updateCompliance(const Eigen::MatrixBase<VectorLike> & vec)
+    void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliance_vector)
     {
-      compliance = vec;
+      compliance = compliance_vector;
       m_cholesky_decomposition_dirty = true;
     }
 
@@ -95,15 +95,20 @@ namespace pinocchio
     }
 
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & vec)
+    void updateDamping(const Eigen::MatrixBase<VectorLike> & damping_vector)
     {
-      damping = vec;
+      damping = damping_vector;
       m_cholesky_decomposition_dirty = true;
     }
 
     void updateDamping(const Scalar & mu)
     {
       updateDamping(Vector::Constant(size(), mu));
+    }
+
+    bool isDirty() const
+    {
+      return m_cholesky_decomposition_dirty;
     }
 
     template<typename MatrixLike>
@@ -232,13 +237,7 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    void runProtectedCholeskyDecomposition() const
-    {
-      runCholeskyDecomposition();
-    }
-
-  protected:
-    void runCholeskyDecomposition() const
+    void updateDecomposition()
     {
       if (m_cholesky_decomposition_dirty)
       {
@@ -250,6 +249,7 @@ namespace pinocchio
       }
     }
 
+  protected:
     Matrix delassus_matrix;
     mutable Matrix mat_tmp;
     mutable CholeskyDecomposition m_cholesky_decomposition;
