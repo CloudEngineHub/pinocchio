@@ -55,6 +55,9 @@ namespace pinocchio
     // Joint Spherical ZYX
     typedef JointModelSphericalZYXTpl<Scalar, Options> JointModelSphericalZYX;
 
+    // Joint Ellipsoid
+    typedef JointModelEllipsoidTpl<Scalar, Options> JointModelEllipsoid;
+
     // Joint Translation
     typedef JointModelTranslationTpl<Scalar, Options> JointModelTranslation;
 
@@ -93,6 +96,7 @@ namespace pinocchio
       JointModelRevoluteUnaligned,
       JointModelSpherical,
       JointModelSphericalZYX,
+      JointModelEllipsoid,
       JointModelPX,
       JointModelPY,
       JointModelPZ,
@@ -142,6 +146,9 @@ namespace pinocchio
     // Joint Spherical ZYX
     typedef JointDataSphericalZYXTpl<Scalar, Options> JointDataSphericalZYX;
 
+    // Joint Ellipsoid
+    typedef JointDataEllipsoidTpl<Scalar, Options> JointDataEllipsoid;
+
     // Joint Translation
     typedef JointDataTranslationTpl<Scalar, Options> JointDataTranslation;
 
@@ -180,6 +187,7 @@ namespace pinocchio
       JointDataRevoluteUnaligned,
       JointDataSpherical,
       JointDataSphericalZYX,
+      JointDataEllipsoid,
       JointDataPX,
       JointDataPY,
       JointDataPZ,
