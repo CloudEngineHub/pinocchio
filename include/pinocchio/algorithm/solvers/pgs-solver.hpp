@@ -292,6 +292,27 @@ namespace pinocchio
       dual_solution = y;
     }
 
+    /// \brief Retrieve constraint impulses.
+    template<typename VectorLike>
+    void
+    retrieveConstraintImpulses(const Eigen::MatrixBase<VectorLike> & constraint_impulses_) const
+    {
+      auto & constraint_impulses = constraint_impulses_.const_cast_derived();
+      constraint_impulses = x;
+    }
+
+    /// \brief Retrieve constraint velocities.
+    /// At the optimum we have y = Gx + g.
+    /// WARNING: the PGS solver does not take into account desaxce terms for now.
+    /// It only solves the CCP (not the NCP).
+    template<typename VectorLike>
+    void
+    retrieveConstraintVelocities(const Eigen::MatrixBase<VectorLike> & constraint_velocities_) const
+    {
+      auto & constraint_velocities = constraint_velocities_.const_cast_derived();
+      constraint_velocities = y;
+    }
+
     /// \brief Number of iterations of the solver.
     using Base::iterations;
 

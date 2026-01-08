@@ -498,6 +498,15 @@ namespace pinocchio
       desaxce_storage.resize(np);
     }
 
+    /// \brief Retrieve non-projected primal solution.
+    template<typename VectorLike>
+    void retrieveNonProjectedPrimalSolution(
+      const Eigen::MatrixBase<VectorLike> & non_projected_primal_solution_) const
+    {
+      auto & non_projected_primal_solution = non_projected_primal_solution_.const_cast_derived();
+      non_projected_primal_solution = x;
+    }
+
     /// \brief Retrieve primal solution.
     template<typename VectorLike>
     void retrievePrimalSolution(const Eigen::MatrixBase<VectorLike> & primal_solution_) const
@@ -507,6 +516,7 @@ namespace pinocchio
     }
 
     /// \brief Retrieve dual solution.
+    /// At the optimum we have Gx + g + desaxce - z = 0.
     template<typename VectorLike>
     void retrieveDualSolution(const Eigen::MatrixBase<VectorLike> & dual_solution_) const
     {
@@ -520,6 +530,26 @@ namespace pinocchio
     {
       auto & desaxce_term = desaxce_term_.const_cast_derived();
       desaxce_term = desaxce;
+    }
+
+    /// \brief Retrieve constraint impulses.
+    template<typename VectorLike>
+    void
+    retrieveConstraintImpulses(const Eigen::MatrixBase<VectorLike> & constraint_impulses_) const
+    {
+      auto & constraint_impulses = constraint_impulses_.const_cast_derived();
+      constraint_impulses = y;
+    }
+
+    /// \brief Retrieve constraint velocities.
+    /// At the optimum we have Gx + g + desaxce - z = 0.
+    /// We have sigma = Gx + g and z = Gx + g + desaxce, thus sigma = z - desaxce,
+    template<typename VectorLike>
+    void
+    retrieveConstraintVelocities(const Eigen::MatrixBase<VectorLike> & constraint_velocities_) const
+    {
+      auto & constraint_velocities = constraint_velocities_.const_cast_derived();
+      constraint_velocities = z - desaxce;
     }
 
     /// \brief Number of iterations of the solver.
@@ -582,7 +612,7 @@ namespace pinocchio
     VectorXsStorage z_storage;
     typename VectorXsStorage::RefMapType z;
 
-    /// \brief Desaxce term of the solution
+    /// \brief Desaxce term of the solution.
     VectorXsStorage desaxce_storage;
     typename VectorXsStorage::RefMapType desaxce;
   }; // struct ADMMSolverResultTpl
