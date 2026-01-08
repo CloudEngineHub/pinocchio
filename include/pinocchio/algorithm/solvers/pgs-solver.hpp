@@ -408,7 +408,7 @@ namespace pinocchio
       , rhs(rhs_storage.map())
       , tmp(tmp_storage.map())
       {
-        resize(problem_size);
+        reset(problem_size);
       }
 
       /// \brief Reset the workspace.

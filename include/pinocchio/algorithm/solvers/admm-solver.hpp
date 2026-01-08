@@ -745,7 +745,7 @@ namespace pinocchio
       , anderson_primal_feasibility_vector(anderson_primal_feasibility_vector_storage.map())
       , dual_feasibility_vector(dual_feasibility_vector_storage.map())
       {
-        resize(problem_size, lanczos_size, anderson_capacity);
+        reset(problem_size, lanczos_size, anderson_capacity);
       }
 
       /// \brief Reset the workspace.
