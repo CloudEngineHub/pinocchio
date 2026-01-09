@@ -9,9 +9,9 @@
 
   #include "pinocchio/macros.hpp"
   #include "pinocchio/algorithm/solvers/clarabel-solver.hpp"
+  #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
   #include "pinocchio/utils/reference.hpp"
 
-  #include <Eigen/Core>
   #include <cpp/SupportedConeT.hpp>
 
 namespace pinocchio
@@ -19,135 +19,276 @@ namespace pinocchio
 
   namespace internal
   {
+
+    template<typename VelocityVectorLike, typename ResultVectorLike>
+    struct ClarabelDeSaxceShiftVisitor
+    : visitors::ConstraintUnaryVisitorBase<
+        ClarabelDeSaxceShiftVisitor<VelocityVectorLike, ResultVectorLike>>
+    {
+
+      typedef boost::fusion::vector<const VelocityVectorLike &, ResultVectorLike &> ArgsType;
+
+      typedef visitors::ConstraintUnaryVisitorBase<
+        ClarabelDeSaxceShiftVisitor<VelocityVectorLike, ResultVectorLike>>
+        Base;
+      using Base::run;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const ConstraintModelBase<ConstraintModel> & cmodel,
+        const VelocityVectorLike & velocity,
+        ResultVectorLike & result)
+      {
+        algo_impl(cmodel.derived(), velocity, result);
+      }
+
+      template<typename Scalar>
+      static void algo_impl(
+        const PointContactConstraintModelTpl<Scalar> & cmodel,
+        const VelocityVectorLike & velocity,
+        ResultVectorLike & result)
+      {
+        const Scalar mu = cmodel.getFriction();
+        const Scalar vt_norm = velocity.template tail<2>().norm();
+        // we follow clarabel convention
+        result << mu * vt_norm, Scalar(0), Scalar(0);
+      }
+
+      template<typename ConstraintModel>
+      static void algo_impl(
+        const ConstraintModelBase<ConstraintModel> & cmodel,
+        const VelocityVectorLike & velocity,
+        ResultVectorLike & result)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(cmodel);
+        PINOCCHIO_UNUSED_VARIABLE(velocity);
+        PINOCCHIO_UNUSED_VARIABLE(result);
+        std::ostringstream msg;
+        msg << cmodel.shortname() << " not yet supported in ClarabelConstraintSolver.";
+        PINOCCHIO_THROW_PRETTY(std::runtime_error, msg.str());
+      }
+
+      template<typename ConstraintModel>
+      static void run(
+        const ConstraintModelBase<ConstraintModel> & cmodel,
+        const VelocityVectorLike & velocity,
+        ResultVectorLike & result)
+      {
+        algo(cmodel.derived(), velocity, result);
+      }
+
+      template<
+        typename Scalar,
+        int Options,
+        template<typename S, int O> class ConstraintCollectionTpl>
+      static void run(
+        const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+        const VelocityVectorLike & velocity,
+        ResultVectorLike & result)
+      {
+        ArgsType args(velocity, result);
+        run(cmodel.derived(), args);
+      }
+    }; // struct ClarabelDeSaxceShiftVisitor
+
     template<
-      typename Scalar,
       typename ConstraintModel,          //
       typename ConstraintModelAllocator, //
-      typename VectorLikeFriction>
-    void constructFrictionCones(
+      typename ConstraintData,           //
+      typename ConstraintDataAllocator,  //
+      typename VectorLikeIn,             //
+      typename VectorLikeOut>
+    void computeClarabelDeSaxceShift(
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      std::vector<clarabel::SupportedConeT<Scalar>> & cones,
-      const Eigen::MatrixBase<VectorLikeFriction> & frictions_)
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const Eigen::MatrixBase<VectorLikeIn> & velocity,
+      const Eigen::MatrixBase<VectorLikeOut> & shift_)
     {
-      using VectorLikeFrictionType = typename std::decay_t<VectorLikeFriction>::PlainObject;
-      enum
+      assert(velocity.size() == shift_.size());
+      VectorLikeOut & shift = shift_.const_cast_derived();
+
+      typedef typename VectorLikeIn::ConstSegmentReturnType SegmentType1;
+      typedef typename VectorLikeOut::SegmentReturnType SegmentType2;
+
+      Eigen::Index cindex = 0;
+      for (std::size_t i = 0; i < constraint_models.size(); ++i)
       {
-        Options = VectorLikeFrictionType::Options
-      };
-      using Vector3s = Eigen::Matrix<Scalar, 3, 1>;
+        const auto & cmodel = helper::get_ref(constraint_models[i]);
+        const auto & cdata = helper::get_ref(constraint_datas[i]);
+        const auto csize = cmodel.residualSize(cdata);
 
-      auto & frictions = frictions_.const_cast_derived();
+        SegmentType1 velocity_segment = velocity.segment(cindex, csize);
+        SegmentType2 shift_segment = shift.segment(cindex, csize);
 
-      const Eigen::Index nc = static_cast<Eigen::Index>(constraint_models.size());
-      for (Eigen::Index i = 0; i < nc; ++i)
-      {
-        const auto & cmodel = helper::get_ref(constraint_models[static_cast<std::size_t>(i)]);
+        typedef ClarabelDeSaxceShiftVisitor<SegmentType1, SegmentType2> Func;
+        Func::run(cmodel, velocity_segment, shift_segment);
 
-        frictions.template segment<3>(3 * i) = -Vector3s(cmodel.set().mu, 1, 1);
-        cones.emplace_back(clarabel::SecondOrderConeT<Scalar>(3));
-
-        // using ContactModel = ::pinocchio::FrictionalPointConstraintModelTpl<Scalar, Options>;
-        // if (const ContactModel * fpc_model = boost::get<const ContactModel>(&cmodel))
-        // {
-        //   frictions.template segment<3>(3 * i) = -Vector3s(fpc_model->set().mu, 1, 1);
-        //   cones.emplace_back(clarabel::SecondOrderConeT<Scalar>(3));
-        // }
-        // else
-        // {
-        //   PINOCCHIO_THROW_PRETTY(std::runtime_error, "Constraint not supported yet");
-        // }
+        cindex += csize;
       }
     }
 
+    template<typename Scalar, typename FrictionVectorLike>
+    struct ConstructClarabelConesVisitor
+    : visitors::ConstraintUnaryVisitorBase<
+        ConstructClarabelConesVisitor<Scalar, FrictionVectorLike>>
+    {
+
+      typedef std::vector<::clarabel::SupportedConeT<Scalar>> ClarabelConeVector;
+      typedef boost::fusion::vector<ClarabelConeVector &, FrictionVectorLike &> ArgsType;
+
+      typedef visitors::ConstraintUnaryVisitorBase<
+        ConstructClarabelConesVisitor<Scalar, FrictionVectorLike>>
+        Base;
+      using Base::run;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const ConstraintModelBase<ConstraintModel> & cmodel,
+        ClarabelConeVector & clarabel_cones,
+        FrictionVectorLike & friction)
+      {
+        algo_impl(cmodel.derived(), clarabel_cones, friction);
+      }
+
+      static void algo_impl(
+        const PointContactConstraintModelTpl<Scalar> & cmodel,
+        ClarabelConeVector & clarabel_cones,
+        FrictionVectorLike & friction)
+      {
+        const Scalar mu = cmodel.getFriction();
+        // we follow clarabel convention
+        friction << -mu, -Scalar(1), -Scalar(1);
+        clarabel_cones.emplace_back(clarabel::SecondOrderConeT<Scalar>(3));
+      }
+
+      template<typename ConstraintModel>
+      static void algo_impl(
+        const ConstraintModelBase<ConstraintModel> & cmodel,
+        ClarabelConeVector & clarabel_cones,
+        FrictionVectorLike & friction)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(cmodel);
+        PINOCCHIO_UNUSED_VARIABLE(clarabel_cones);
+        PINOCCHIO_UNUSED_VARIABLE(friction);
+        std::ostringstream msg;
+        msg << cmodel.shortname() << " not yet supported in ClarabelConstraintSolver.";
+        PINOCCHIO_THROW_PRETTY(std::runtime_error, msg.str());
+      }
+
+      template<typename ConstraintModel>
+      static void run(
+        const ConstraintModelBase<ConstraintModel> & cmodel,
+        ClarabelConeVector & clarabel_cones,
+        FrictionVectorLike & friction)
+      {
+        algo(cmodel.derived(), clarabel_cones, friction);
+      }
+
+      template<int Options, template<typename S, int O> class ConstraintCollectionTpl>
+      static void run(
+        const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+        ClarabelConeVector & clarabel_cones,
+        FrictionVectorLike & friction)
+      {
+        ArgsType args(clarabel_cones, friction);
+        run(cmodel.derived(), args);
+      }
+    }; // struct ClarabelDeSaxceShiftVisitor
+
     template<
+      typename Scalar,                   //
       typename ConstraintModel,          //
       typename ConstraintModelAllocator, //
-      typename VectorInLike,             //
-      typename VectorOutLike>
-    void computeDeSaxceShift(
+      typename ConstraintData,           //
+      typename ConstraintDataAllocator,  //
+      typename VectorLikeFrictions>
+    void constructClarabelCones(
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const Eigen::MatrixBase<VectorInLike> & velocity,
-      const Eigen::MatrixBase<VectorOutLike> & shift_)
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      std::vector<::clarabel::SupportedConeT<Scalar>> & clarabel_cones,
+      Eigen::MatrixBase<VectorLikeFrictions> & frictions_)
     {
-      using VectorInLikeInnerType = typename std::decay_t<VectorInLike>::PlainObject;
-      using Scalar = typename VectorInLikeInnerType::Scalar;
-      enum
+      clarabel_cones.clear();
+      clarabel_cones.reserve(constraint_models.size());
+      VectorLikeFrictions & frictions = frictions_.const_cast_derived();
+
+      typedef typename VectorLikeFrictions::SegmentReturnType SegmentType;
+
+      Eigen::Index cindex = 0;
+      for (std::size_t i = 0; i < constraint_models.size(); ++i)
       {
-        Options = VectorInLikeInnerType::Options
-      };
-      using Vector3s = Eigen::Matrix<Scalar, 3, 1>;
-      using pinocchio::helper::get_ref;
+        const auto & cmodel = helper::get_ref(constraint_models[i]);
+        const auto & cdata = helper::get_ref(constraint_datas[i]);
+        const auto csize = cmodel.residualSize(cdata);
 
-      VectorOutLike & shift = shift_.const_cast_derived();
-      const auto nc = static_cast<Eigen::Index>(constraint_models.size());
-      Eigen::Index idx = 0;
-      for (Eigen::Index i = 0; i < nc /*num constraints*/; ++i)
-      {
-        const auto & cmodel = get_ref(constraint_models[static_cast<std::size_t>(i)]);
+        SegmentType friction_segment = frictions.segment(cindex, csize);
 
-        const Scalar mu = cmodel.set().mu;
-        const Scalar vt_norm = velocity.template segment<2>(idx + 1).norm();
-        shift.template segment<3>(idx) = Vector3s(mu * vt_norm, 0, 0);
-        idx += 3;
+        typedef ConstructClarabelConesVisitor<Scalar, SegmentType> Func;
+        Func::run(cmodel, clarabel_cones, friction_segment);
 
-        // using ContactModel = ::pinocchio::FrictionalPointConstraintModelTpl<Scalar, Options>;
-        // if (const ContactModel * fpc_model = boost::get<const ContactModel>(&cmodel))
-        // {
-        //   const Scalar mu = fpc_model->set().mu;
-        //   const Scalar vt_norm = velocity.template segment<2>(idx + 1).norm();
-        //   shift.template segment<3>(idx) = Vector3s(mu * vt_norm, 0, 0);
-        //   idx += 3;
-        // }
-        // else
-        // {
-        //   PINOCCHIO_THROW_PRETTY(std::runtime_error, "Constraint not supported yet");
-        // }
+        cindex += csize;
       }
     }
+
   } // namespace internal
 
-  template<typename Scalar, int Options>
+  template<typename Scalar>
   template<
-    typename DelassusOperator,
+    typename DelassusDerived,
     typename VectorLike,
     typename ConstraintModel,
     typename ConstraintModelAllocator,
-    typename ConstraintDataVector>
-  void ClarabelContactSolverTpl<Scalar, Options>::solve(
-    const DelassusOperator & delassus,
+    typename ConstraintData,
+    typename ConstraintDataAllocator>
+  bool ClarabelConstraintSolverTpl<Scalar>::solve(
+    DelassusOperatorBase<DelassusDerived> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const ConstraintDataVector & constraint_datas,
-    const boost::optional<Eigen::Ref<const VectorXs>> & preconditioner,
-    const boost::optional<Eigen::Ref<const VectorXs>> & primal_guess,
-    const boost::optional<Eigen::Ref<const VectorXs>> & dual_guess,
-    bool is_ncp,
-    bool record_stats,
-    bool verbose)
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const ClarabelSolverSettings & settings,
+    ClarabelSolverResult & result)
   {
-    assert(g.size() == problem_size_ && "Drift vector size mismatch");
+    // for easier access
+    ClarabelSolverResult & res = result;
+    ClarabelSolverWorkspace & ws = workspace_;
 
-    // Resize solution vectors if needed
-    if (primal_solution_.size() != problem_size_)
+    if (!delassus.derived().getDamping().isZero())
     {
-      primal_solution_.resize(problem_size_);
-      dual_solution_.resize(problem_size_);
+      delassus.updateDamping(1e-12);
+      delassus.updateDecomposition();
     }
+
+    const std::size_t problem_size = static_cast<std::size_t>(g.size());
+
+    // -- check if settings are valid
+    settings.checkValidity();
+
+    // -- reset workspace
+    // -- note: for now we only deal with point contact constraint so primal, dual and slack sizes
+    // match
+    ws.reset(problem_size);
+    assert(g.size() == static_cast<Eigen::Index>(problem_size) && "Drift vector size mismatch");
+
+    // Resize result vectors if needed
+    res.reset(problem_size);
 
     // Build problem matrices for Clarabel
     // The contact problem is: min (1/2) lambda^T G lambda + g^T lambda
     //                         s.t. lambda in K (cone constraints)
-    // In pinocchio, the convention is that the second-order cone is {(x, y, z), sqrt(x^2 + y^2) <=
-    // z}. In Clarabel, the second-order cone convention is {(x, y, z), sqrt(y^2 + z^2) <= x} So we
-    // have to do a permutation. Get the dense Delassus matrix and the free velocity g
+    // In Simple, the convention is that the second-order cone is {(x, y, z), sqrt(x^2 + y^2) <= z}.
+    // In Clarabel, the second-order cone convention is {(x, y, z), sqrt(y^2 + z^2) <= x}
+    // So we have to do a permutation.
+    // Get the dense Delassus matrix and the free velocity g
     using MapVectorXs = Eigen::Map<VectorXs>;
     using MapMatrixXs = Eigen::Map<MatrixXs>;
-    MapMatrixXs G_dense(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, problem_size_, problem_size_));
-    MapVectorXs q(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, problem_size_, 1));
-    MapVectorXs q_new(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, problem_size_, 1));
-    MapVectorXs b(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, problem_size_, 1));
-    MapVectorXs frictions(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, problem_size_, 1));
-    delassus.matrix(G_dense, true); // true = enforce symmetry
+    const Eigen::Index np = static_cast<Eigen::Index>(problem_size);
+    // we use alloca for a heap-allocation-free implementation
+    MapMatrixXs G_dense(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, np, np));
+    MapVectorXs q(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, np, 1));
+    MapVectorXs q_new(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, np, 1));
+    MapVectorXs b(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, np, 1));
+    MapVectorXs frictions(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, np, 1));
+    G_dense = delassus.derived().matrix(true); // true = enforce symmetry
     // permutate columns
     for (Eigen::Index i = 0; i < G_dense.cols(); i += 3)
     {
@@ -174,103 +315,112 @@ namespace pinocchio
     // For the contact problem formulation, we have:
     // A * lambda + s = b, where s in K (friction cone)
     // We encode the friction coefficient in the diagonal A matrix
-    std::vector<clarabel::SupportedConeT<Scalar>> cones;
-    cones.reserve(constraint_models.size());
     b.setZero();
-    internal::constructFrictionCones(constraint_models, cones, frictions);
-
-    SparseMatrix A(problem_size_, problem_size_);
-    A.reserve(Eigen::VectorXi::Constant(problem_size_, 1));
-    for (Eigen::Index i = 0; i < problem_size_; ++i)
+    internal::constructClarabelCones(
+      constraint_models, constraint_datas, ws.clarabel_cones, frictions);
+    // Apply permutation to friction coefficients to match Clarabel's cone convention
+    SparseMatrix A(np, np);
+    A.reserve(Eigen::VectorXi::Constant(np, 1));
+    for (Eigen::Index i = 0; i < np; ++i)
     {
       const Scalar value = frictions(i);
       A.coeffRef(i, i) = value;
     }
     A.makeCompressed();
 
-    // Create Clarabel settings
-    clarabel::DefaultSettings<Scalar> settings =
+    // Create Clarabel settings from input
+    clarabel::DefaultSettings<Scalar> clarabel_settings =
       clarabel::DefaultSettings<Scalar>::default_settings();
-    settings.max_iter = static_cast<uint32_t>(max_iterations_);
-    settings.tol_gap_abs = absolute_tolerance_;
-    settings.tol_gap_rel = relative_tolerance_;
-    settings.tol_feas = absolute_tolerance_;
-    settings.tol_infeas_abs = absolute_tolerance_;
-    settings.tol_infeas_rel = relative_tolerance_;
-    settings.tol_ktratio = relative_tolerance_;
-    settings.time_limit = 100000;
-    settings.verbose = verbose;
+    clarabel_settings.max_iter = static_cast<uint32_t>(settings.max_iterations);
+    clarabel_settings.tol_gap_abs = settings.absolute_complementarity_tol;
+    clarabel_settings.tol_gap_rel = settings.relative_complementarity_tol;
+    clarabel_settings.tol_feas = settings.absolute_feasibility_tol;
+    clarabel_settings.tol_infeas_abs = settings.absolute_feasibility_tol;
+    clarabel_settings.tol_infeas_rel = settings.relative_feasibility_tol;
+    clarabel_settings.tol_ktratio = settings.tol_ktratio;
+    clarabel_settings.time_limit = 100000;
+    clarabel_settings.verbose = settings.verbose;
 
     // Create the Clarabel solver
-    clarabel_solver_ =
-      std::make_shared<clarabel::DefaultSolver<Scalar>>(P, q, A, b, cones, settings);
+    ws.clarabel_solver = std::make_shared<clarabel::DefaultSolver<Scalar>>(
+      P, q, A, b, ws.clarabel_cones, clarabel_settings);
 
     // Solve the problem
-    clarabel_solver_->solve();
-    num_iterations_ = static_cast<int>(clarabel_solver_->info().iterations);
-    prev_x_ = clarabel_solver_->solution().x;
-    prev_z_ = clarabel_solver_->solution().z;
-    internal::computeDeSaxceShift(constraint_models, prev_z_, shift_);
+    ws.clarabel_solver->solve();
 
-    bool match = !is_ncp || (shift_.norm() <= absolute_tolerance_);
-    const int max_ncp_loops = 25;
-    int ncp_loops = 1;
-    prev_shift_ = shift_;
-    // if (!match)
-    // {
-    //   std::cout << "\n";
-    // }
-    while (!match && ncp_loops <= max_ncp_loops)
+    // Track iterations
+    res.iterations = static_cast<std::size_t>(ws.clarabel_solver->info().iterations);
+
+    ws.desaxce.setZero();
+    if (settings.solve_ncp)
     {
-      q_new = q + prev_shift_;
-      clarabel_solver_->update_q(q_new);
-      clarabel_solver_->solve();
-      num_iterations_ += static_cast<int>(clarabel_solver_->info().iterations);
+      const clarabel::DefaultSolution<Scalar> & solution = ws.clarabel_solver->solution();
+      ws.sigma.noalias() = G_dense * solution.x + q;
+      internal::computeClarabelDeSaxceShift(
+        constraint_models, constraint_datas, ws.sigma, ws.desaxce);
+    }
 
-      const clarabel::DefaultSolution<Scalar> & solution = clarabel_solver_->solution();
-      internal::computeDeSaxceShift(constraint_models, solution.z, shift_);
-      // if ((prev_x_ - solution.x).norm() <= absolute_tolerance_ || (prev_z_ - solution.z).norm()
-      // <= absolute_tolerance_)
-      if ((shift_ - prev_shift_).norm() <= absolute_tolerance_) // NCP measure
+    bool match = !settings.solve_ncp || (ws.desaxce.norm() <= settings.absolute_feasibility_tol);
+    std::size_t ncp_loops = 1;
+    ws.prev_desaxce = ws.desaxce;
+    while (!match && ncp_loops <= settings.max_ncp_loops)
+    {
+      assert(settings.solve_ncp == true);
+      q_new = q + ws.prev_desaxce;
+      ws.clarabel_solver->update_q(q_new);
+      ws.clarabel_solver->solve();
+      res.iterations += static_cast<std::size_t>(ws.clarabel_solver->info().iterations);
+
+      const clarabel::DefaultSolution<Scalar> & solution = ws.clarabel_solver->solution();
+      ws.sigma.noalias() = G_dense * solution.x + q;
+      internal::computeClarabelDeSaxceShift(
+        constraint_models, constraint_datas, ws.sigma, ws.desaxce);
+      if ((ws.desaxce - ws.prev_desaxce).norm() <= settings.absolute_feasibility_tol) // NCP measure
       {
         match = true;
-        // std::cout << "-----> Solved NCP in " << ncp_loops << " outer loops\n";
       }
-      else
-      {
-        // std::cout << "(solution.x - prev_x_).norm() = " << (solution.x - prev_x_).norm();
-        // std::cout << " / (solution.z - prev_z_).norm() = " << (solution.z - prev_z_).norm();
-        // std::cout << " / (prev_shift_ - shift_).norm() = " << (prev_shift_ - shift_).norm();
-        // std::cout << " / additional iters = " << clarabel_solver_->info().iterations << "\n";
-        prev_x_ = solution.x;
-        prev_z_ = solution.z;
-        prev_shift_ = shift_;
-      }
+      ws.prev_desaxce = ws.desaxce;
       ++ncp_loops;
     }
 
-    // Extract solution
-    const clarabel::DefaultSolution<Scalar> & solution = clarabel_solver_->solution();
+    // Extract solution and store in result
+    const clarabel::DefaultSolution<Scalar> & solution = ws.clarabel_solver->solution();
 
+    // Store the solution with correct permutation for Simple's convention
     for (Eigen::Index i = 0; i < solution.x.size(); i += 3)
     {
-      primal_solution_(i) = solution.x(i + 1);
-      primal_solution_(i + 1) = solution.x(i + 2);
-      primal_solution_(i + 2) = solution.x(i);
+      res.x(i) = solution.x(i + 1);
+      res.x(i + 1) = solution.x(i + 2);
+      res.x(i + 2) = solution.x(i);
       //
-      dual_solution_(i) = solution.z(i + 1);
-      dual_solution_(i + 1) = solution.z(i + 2);
-      dual_solution_(i + 2) = solution.z(i);
+      res.z(i) = solution.z(i + 1);
+      res.z(i + 1) = solution.z(i + 2);
+      res.z(i + 2) = solution.z(i);
+      //
+      res.desaxce(i) = ws.desaxce(i + 1);
+      res.desaxce(i + 1) = ws.desaxce(i + 2);
+      res.desaxce(i + 2) = ws.desaxce(i);
+      //
+      res.sigma(i) = ws.sigma(i + 1);
+      res.sigma(i + 1) = ws.sigma(i + 2);
+      res.sigma(i + 2) = ws.sigma(i);
     }
 
-    // Suppress unused parameter and variable warnings
-    (void)constraint_datas;
-    (void)preconditioner;
-    (void)primal_guess;
-    (void)dual_guess;
-    (void)record_stats;
+    // Determine convergence based on Clarabel's solver status
+    const bool has_converged =
+      (ws.clarabel_solver->info().status == clarabel::SolverStatus::Solved);
 
-    is_initialized_ = true;
+    // Update result with convergence info
+    res.converged = has_converged;
+    res.primal_feasibility = solution.r_prim;
+    res.dual_feasibility = solution.r_dual;
+    res.complementarity = std::abs(res.x.dot(res.z));
+
+    // Mark solver and result as valid
+    is_valid_ = true;
+    res.makeValid();
+
+    return res.converged;
   }
 
 } // namespace pinocchio

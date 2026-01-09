@@ -131,6 +131,8 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/admm-solver.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/admm-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/anderson-acceleration.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/clarabel-solver.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/clarabel-solver.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/constraint-solver-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/constraint-solver-utils.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/fwd.hpp
@@ -689,6 +691,7 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-crba.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-constraint-solver-base.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-admm-solver.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-clarabel-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/solvers/expose-pgs-solver.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/module.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/utils/version.cpp

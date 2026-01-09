@@ -11,6 +11,10 @@
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/delassus.hpp"
 
+#ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
+  #include "pinocchio/algorithm/solvers/clarabel-solver.hpp"
+#endif
+
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
@@ -44,7 +48,8 @@ struct TestBoxTpl
     const Eigen::VectorXd & tau0,
     const Force & fext,
     const double dt,
-    const bool test_warmstart = false)
+    const bool test_warmstart = false,
+    const bool run_clarabel_if_available = false)
   {
     std::vector<Force> external_forces(size_t(model.njoints), Force::Zero());
     external_forces[1] = fext;
@@ -108,6 +113,34 @@ struct TestBoxTpl
     BOOST_CHECK(admm_solver.isValid() == true);
     BOOST_CHECK(admm_result.isValid() == true);
     admm_result.retrievePrimalSolution(primal_solution);
+
+#ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
+    ClarabelSolverResult clarabel_result;
+    if (run_clarabel_if_available)
+    {
+      // Run CLARABEL
+      ClarabelConstraintSolver clarabel_solver;
+      ClarabelSolverSettings clarabel_settings;
+      clarabel_settings.max_iterations = 10000;
+      clarabel_settings.absolute_feasibility_tol = 1e-10;
+      clarabel_settings.relative_feasibility_tol = 1e-12;
+      clarabel_settings.absolute_complementarity_tol = 1e-10;
+      clarabel_settings.relative_complementarity_tol = 1e-12;
+      clarabel_settings.solve_ncp = true;
+
+      clarabel_solver.solve(
+        G_expression, g, constraint_models, constraint_datas, clarabel_settings, clarabel_result);
+
+      std::cout << "NUMIT CLARABEL: " << clarabel_result.iterations
+                << " / NUMIT ADMMSolver: " << admm_result.iterations
+                << " (chol updates: " << admm_result.delassus_decomposition_update_count << ")\n";
+
+      Eigen::VectorXd clarabel_primal_sol;
+      clarabel_result.retrievePrimalSolution(clarabel_primal_sol);
+      std::cout << "||admm sol - clarabel sol|| = "
+                << (primal_solution - clarabel_primal_sol).norm() << "\n";
+    }
+#endif
 
     if (test_warmstart)
     {
@@ -179,7 +212,7 @@ BOOST_AUTO_TEST_CASE(ball)
     const Force fext = Force::Zero();
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt);
+    test(q0, v0, tau0, fext, dt, false, true);
 
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.dual_solution.isZero(2e-10));
@@ -189,7 +222,7 @@ BOOST_AUTO_TEST_CASE(ball)
     BOOST_CHECK(test.v_next.isZero(2e-10));
 
     // Test warmstart
-    test(q0, v0, tau0, fext, dt, true);
+    test(q0, v0, tau0, fext, dt, true, false);
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.dual_solution.isZero(2e-10));
     f_tot = test.primal_solution.head(3) / dt;
@@ -287,7 +320,7 @@ BOOST_AUTO_TEST_CASE(box)
     const Force fext = Force::Zero();
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt);
+    test(q0, v0, tau0, fext, dt, false, true);
 
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.dual_solution.isZero(2e-10));
@@ -309,7 +342,7 @@ BOOST_AUTO_TEST_CASE(box)
     fext.linear() *= scaling * f_sliding;
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt);
+    test(q0, v0, tau0, fext, dt, false, true);
 
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.dual_solution.isZero(1e-8));
@@ -328,7 +361,7 @@ BOOST_AUTO_TEST_CASE(box)
     fext.linear() *= scaling * f_sliding;
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt);
+    test(q0, v0, tau0, fext, dt, false, true);
 
     BOOST_CHECK(test.has_converged == true);
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - 1 / scaling * fext.linear();
@@ -380,7 +413,7 @@ BOOST_AUTO_TEST_CASE(stack_of_boxes)
     const Force fext = Force::Zero();
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt);
+    test(q0, v0, tau0, fext, dt, false, true);
 
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.dual_solution.isZero(2e-10));

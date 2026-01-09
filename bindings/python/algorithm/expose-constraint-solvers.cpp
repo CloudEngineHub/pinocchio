@@ -13,12 +13,18 @@ namespace pinocchio
     void exposeConstraintSolverBases(); // Expose base classes first
     void exposePGSConstraintSolver();
     void exposeADMMConstraintSolver();
+#ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
+    void exposeClarabelConstraintSolver();
+#endif
 
     void exposeConstraintSolvers()
     {
       exposeConstraintSolverBases(); // Must be called first!
       exposePGSConstraintSolver();
       exposeADMMConstraintSolver();
+#ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
+      exposeClarabelConstraintSolver();
+#endif
     }
 
   } // namespace python
