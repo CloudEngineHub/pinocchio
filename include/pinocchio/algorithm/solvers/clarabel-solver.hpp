@@ -2,8 +2,8 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_clarabel_solver_hpp__
-#define __pinocchio_algorithm_clarabel_solver_hpp__
+#ifndef __pinocchio_algorithm_solvers_clarabel_solver_hpp__
+#define __pinocchio_algorithm_solvers_clarabel_solver_hpp__
 
 #ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
 
@@ -190,6 +190,6 @@ namespace pinocchio
 #endif // PINOCCHIO_WITH_CLARABEL_SUPPORT
 
 // Include implementation
-#include "pinocchio/algorithm/clarabel-solver.hxx"
+#include "pinocchio/algorithm/solvers/clarabel-solver.hxx"
 
-#endif // __pinocchio_algorithm_clarabel_solver_hpp__
+#endif // __pinocchio_algorithm_solvers_clarabel_solver_hpp__
