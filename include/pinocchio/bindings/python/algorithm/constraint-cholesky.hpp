@@ -279,9 +279,8 @@ namespace pinocchio
           bp::class_<DelassusOperatorDense>(
             "DelassusOperatorDense", "Delassus Cholesky dense operator from a dense matrix.",
             bp::no_init)
-            .def(
-              bp::init < const context::RefConstMatrixXs
-              >> (bp::args("self", "matrix"), "Build from a given dense matrix"))
+            .def(bp::init<const context::RefConstMatrixXs>(
+              bp::args("self", "matrix"), "Build from a given dense matrix"))
 
             .def(DelassusOperatorBasePythonVisitor<DelassusOperatorDense>());
 #endif // PINOCCHIO_PYTHON_SKIP_CASADI_UNSUPPORTED
