@@ -50,6 +50,8 @@ namespace pinocchio
       typedef Eigen::AngleAxis<Scalar> AngleAxis;
       typedef Eigen::Ref<VectorXs> RefVectorXs;
       typedef Eigen::Ref<MatrixXs> RefMatrixXs;
+      typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
+      typedef Eigen::Ref<const MatrixXs> RefConstMatrixXs;
 
       // Spatial
       typedef SE3Tpl<Scalar, Options> SE3;

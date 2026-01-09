@@ -39,10 +39,9 @@ BOOST_PYTHON_MODULE(PINOCCHIO_PYTHON_MODULE_NAME)
   exposeSpecificTypeFeatures();
 
   eigenpy::OptionalConverter<context::VectorXs, boost::optional>::registration();
-  eigenpy::OptionalConverter<Eigen::Ref<context::VectorXs>, boost::optional>::registration();
-  eigenpy::OptionalConverter<Eigen::Ref<const context::VectorXs>, boost::optional>::registration();
-  eigenpy::OptionalConverter<
-    const Eigen::Ref<const context::VectorXs>, boost::optional>::registration();
+  eigenpy::OptionalConverter<context::RefVectorXs, boost::optional>::registration();
+  eigenpy::OptionalConverter<context::RefConstVectorXs, boost::optional>::registration();
+  eigenpy::OptionalConverter<const context::RefConstVectorXs, boost::optional>::registration();
   eigenpy::OptionalConverter<context::Scalar, boost::optional>::registration();
 
 #if defined(PINOCCHIO_PYTHON_INTERFACE_MAIN_MODULE)

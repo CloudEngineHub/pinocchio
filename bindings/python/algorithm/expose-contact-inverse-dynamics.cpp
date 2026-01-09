@@ -18,7 +18,7 @@ namespace pinocchio
 #ifndef PINOCCHIO_PYTHON_SKIP_ALGORITHM_CONSTRAINED_DYNAMICS
     typedef context::Scalar Scalar;
     typedef context::VectorXs VectorXs;
-    typedef const Eigen::Ref<const VectorXs> ConstRefVectorXs;
+    using context::RefConstVectorXs;
 
     static bp::tuple computeInverseDynamicsConstraintForces_wrapper(
       const VectorXs & c_ref,
@@ -40,15 +40,15 @@ namespace pinocchio
     static bp::tuple contactInverseDynamics_wrapper(
       const context::Model & model,
       context::Data & data,
-      ConstRefVectorXs & q,
-      ConstRefVectorXs & v,
-      ConstRefVectorXs & a,
+      const RefConstVectorXs & q,
+      const RefConstVectorXs & v,
+      const RefConstVectorXs & a,
       Scalar dt,
       const context::PointContactConstraintModelVector & contact_models,
       context::PointContactConstraintDataVector & contact_datas,
-      ConstRefVectorXs & constraint_correction,
+      RefConstVectorXs & constraint_correction,
       ProximalSettingsTpl<Scalar> & settings,
-      const boost::optional<ConstRefVectorXs> & lambda_guess = boost::none,
+      const boost::optional<RefConstVectorXs> & lambda_guess = boost::none,
       bool solve_ncp = true)
     {
       const Eigen::Index problem_size =
