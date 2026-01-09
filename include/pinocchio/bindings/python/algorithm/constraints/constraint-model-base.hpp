@@ -180,7 +180,7 @@ namespace pinocchio
         const Model & model,
         const Data & data,
         const ConstraintData & constraint_data,
-        const context::MatrixXs & matrix)
+        const context::RefConstMatrixXs & matrix)
       {
         context::MatrixXs res =
           context::MatrixXs::Zero(self.residualSize(constraint_data), matrix.cols());
@@ -193,7 +193,7 @@ namespace pinocchio
         const Model & model,
         const Data & data,
         const ConstraintData & constraint_data,
-        const context::MatrixXs & matrix)
+        const context::RefConstMatrixXs & matrix)
       {
         context::MatrixXs res = context::MatrixXs::Zero(model.nv, matrix.cols());
         self.jacobianTransposeMatrixProduct(model, data, constraint_data, matrix, res);
