@@ -69,19 +69,19 @@ namespace pinocchio
 
     // Wrapper functions for retrieve methods
     static void retrievePrimalSolution_wrapper(
-      const ClarabelSolverResult & solution, VectorXs & primal_solution)
+      const ClarabelSolverResult & solution, const Eigen::Ref<VectorXs> & primal_solution)
     {
       solution.retrievePrimalSolution(primal_solution);
     }
 
-    static void
-    retrieveDualSolution_wrapper(const ClarabelSolverResult & solution, VectorXs & dual_solution)
+    static void retrieveDualSolution_wrapper(
+      const ClarabelSolverResult & solution, const Eigen::Ref<VectorXs> & dual_solution)
     {
       solution.retrieveDualSolution(dual_solution);
     }
 
-    static void
-    retrieveDesaxceTerm_wrapper(const ClarabelSolverResult & solution, VectorXs & desaxce_term)
+    static void retrieveDesaxceTerm_wrapper(
+      const ClarabelSolverResult & solution, const Eigen::Ref<VectorXs> & desaxce_term)
     {
       solution.retrieveDesaxceTerm(desaxce_term);
     }

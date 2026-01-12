@@ -135,20 +135,20 @@ namespace pinocchio
     // ============================================================================
 
     // Wrapper functions for retrieve methods
-    static void
-    retrievePrimalSolution_wrapper(const ADMMSolverResult & solution, VectorXs & primal_solution)
+    static void retrievePrimalSolution_wrapper(
+      const ADMMSolverResult & solution, const Eigen::Ref<VectorXs> & primal_solution)
     {
       solution.retrievePrimalSolution(primal_solution);
     }
 
-    static void
-    retrieveDualSolution_wrapper(const ADMMSolverResult & solution, VectorXs & dual_solution)
+    static void retrieveDualSolution_wrapper(
+      const ADMMSolverResult & solution, const Eigen::Ref<VectorXs> & dual_solution)
     {
       solution.retrieveDualSolution(dual_solution);
     }
 
-    static void
-    retrieveDesaxceTerm_wrapper(const ADMMSolverResult & solution, VectorXs & desaxce_term)
+    static void retrieveDesaxceTerm_wrapper(
+      const ADMMSolverResult & solution, const Eigen::Ref<VectorXs> & desaxce_term)
     {
       solution.retrieveDesaxceTerm(desaxce_term);
     }
@@ -198,9 +198,8 @@ namespace pinocchio
       bp::class_<ADMMSolverStats, bp::bases<ConstraintSolverStatsBase>>(
         "ADMMSolverStats", "Per-iteration statistics of the ADMM constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
-        .def(
-          bp::init<std::size_t>(
-            bp::args("self", "max_iterations"), "Constructor with maximum iterations."))
+        .def(bp::init<std::size_t>(
+          bp::args("self", "max_iterations"), "Constructor with maximum iterations."))
 
         // ADMM specific properties (base class properties are inherited)
         .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverStats, rho, "History of rho values")

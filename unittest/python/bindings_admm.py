@@ -115,6 +115,10 @@ class TestADMM(TestCase):
             delassus, g, constraint_models, constraint_datas, settings, result
         )
 
+        primal_sol = np.zeros(result.problem_size)
+        result.retrievePrimalSolution(primal_sol)
+        print(f"{primal_sol=}")
+
         print(f"{result.iterations=}")
         print(f"{result.primal_feasibility=}")
         print(f"{result.dual_feasibility=}")
