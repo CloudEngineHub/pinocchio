@@ -233,7 +233,7 @@ namespace pinocchio
 
     /// \copydoc RootBase::retrieveCompliance
     template<typename VectorLike>
-    void retrieveCompliance(
+    void retrieveComplianceImpl(
       const ConstraintData & cdata, const Eigen::MatrixBase<VectorLike> & res) const
     {
       return ::pinocchio::visitors::retrieveCompliance(*this, cdata, res);

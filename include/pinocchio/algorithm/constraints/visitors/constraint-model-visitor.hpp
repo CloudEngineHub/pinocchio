@@ -528,10 +528,8 @@ namespace pinocchio
     /**
      * @brief      ConstraintModelMaxResidualSizeVisitor visitor
      */
-    template<typename Scalar, int Options>
     struct ConstraintModelMaxResidualSizeVisitor
-    : visitors::
-        ConstraintUnaryVisitorBase<ConstraintModelMaxResidualSizeVisitor<Scalar, Options>, int>
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelMaxResidualSizeVisitor, int>
     {
       typedef NoArg ArgsType;
 
@@ -545,16 +543,15 @@ namespace pinocchio
     template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
     int maxResidualSize(const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
     {
-      typedef ConstraintModelMaxResidualSizeVisitor<Scalar, Options> Algo;
+      typedef ConstraintModelMaxResidualSizeVisitor Algo;
       return Algo::run(cmodel);
     }
 
     /**
      * @brief      ConstraintModelResidualSizeVisitor visitor
      */
-    template<typename Scalar, int Options>
     struct ConstraintModelResidualSizeVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelResidualSizeVisitor<Scalar, Options>, int>
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelResidualSizeVisitor, int>
     {
       typedef NoArg ArgsType;
 
@@ -572,7 +569,7 @@ namespace pinocchio
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
     {
-      typedef ConstraintModelResidualSizeVisitor<Scalar, Options> Algo;
+      typedef ConstraintModelResidualSizeVisitor Algo;
       return Algo::run(cmodel, cdata);
     }
 
