@@ -262,6 +262,7 @@ BOOST_AUTO_TEST_CASE(vsSphericalZYX)
   forwardKinematics(modelSphericalZYX, dataSphericalZYX, q_s, qd_s);
   const Matrix3 & R = dataSphericalZYX.oMi[1].rotation();
   const Motion & spatial_vel_zyx = dataSphericalZYX.v[1];
+  PINOCCHIO_UNUSED_VARIABLE(spatial_vel_zyx);
 
   // Extract XYZ Euler angles from the rotation matrix
   // For XYZ convention: R = Rx(x) * Ry(y) * Rz(z)
@@ -316,6 +317,9 @@ BOOST_AUTO_TEST_CASE(vsSphericalZYX)
   Eigen::Matrix<double, 6, 1> joint_vel_e = jDataEllipsoidFK.S.matrix() * qd_e;
   Eigen::Matrix<double, 6, 1> manual_vel = jDataEllipsoidFK.S.matrix() * jDataEllipsoidFK.joint_v;
   Eigen::Matrix<double, 6, 1> joint_vel_s = jDataSphereFK.S.matrix() * qd_s;
+  PINOCCHIO_UNUSED_VARIABLE(joint_vel_e);
+  PINOCCHIO_UNUSED_VARIABLE(manual_vel);
+  PINOCCHIO_UNUSED_VARIABLE(joint_vel_s);
 
   BOOST_CHECK(dataEllipsoid.v[1].toVector().isApprox(dataSphericalZYX.v[1].toVector()));
   BOOST_CHECK(dataEllipsoid.oMi[1].isApprox(dataSphericalZYX.oMi[1]));
@@ -350,8 +354,6 @@ BOOST_AUTO_TEST_CASE(vsSphericalZYX)
 BOOST_AUTO_TEST_CASE(vsCompositeTxTyTzRxRyRz)
 {
   using namespace pinocchio;
-  typedef SE3::Vector3 Vector3;
-  typedef SE3::Matrix3 Matrix3;
 
   // Ellipsoid parameters
   double radius_x = 2.0;

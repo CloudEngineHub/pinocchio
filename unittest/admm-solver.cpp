@@ -140,6 +140,8 @@ struct TestBoxTpl
       std::cout << "||admm sol - clarabel sol|| = "
                 << (primal_solution - clarabel_primal_sol).norm() << "\n";
     }
+#else
+    PINOCCHIO_UNUSED_VARIABLE(run_clarabel_if_available);
 #endif
 
     if (test_warmstart)

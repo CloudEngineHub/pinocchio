@@ -204,8 +204,8 @@ namespace pinocchio
     , m_nq(0)
     , m_nv(0)
     , m_nvExtended(0)
-    , njoints(0)
     , jointNames()
+    , njoints(0)
     {
     }
 
@@ -216,8 +216,8 @@ namespace pinocchio
     , m_nq(0)
     , m_nv(0)
     , m_nvExtended(0)
-    , njoints(0)
     , jointNames()
+    , njoints(0)
     {
       joints.reserve(size);
       jointPlacements.reserve(size);
@@ -253,8 +253,8 @@ namespace pinocchio
     , m_nvs(1, jmodel.nv())
     , m_idx_vExtended(1, 0)
     , m_nvExtendeds(1, jmodel.nvExtended())
-    , njoints(1)
     , jointNames(1, name)
+    , njoints(1)
     {
     }
 
@@ -276,8 +276,8 @@ namespace pinocchio
     , m_nvs(other.m_nvs)
     , m_idx_vExtended(other.m_idx_vExtended)
     , m_nvExtendeds(other.m_nvExtendeds)
-    , njoints(other.njoints)
     , jointNames(other.jointNames)
+    , njoints(other.njoints)
     {
     }
 
