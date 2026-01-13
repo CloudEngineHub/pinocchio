@@ -98,8 +98,7 @@ namespace pinocchio
   /// forces acting on the system and `C` are the constraint sets. If the `g` term is augmented with
   /// the DeSaxce term, the problem becomes an NCP.
   template<typename _Scalar>
-  struct PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
-    ADMMConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
+  struct ADMMConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
     typedef ConstraintSolverBaseTpl<_Scalar> Base;
