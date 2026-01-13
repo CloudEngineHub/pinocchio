@@ -19,6 +19,7 @@ namespace pinocchio
     typedef context::Scalar Scalar;
     typedef context::VectorXs VectorXs;
     using context::RefConstVectorXs;
+    using context::RefVectorXs;
 
     static bp::tuple computeInverseDynamicsConstraintForces_wrapper(
       const VectorXs & c_ref,
@@ -40,15 +41,15 @@ namespace pinocchio
     static bp::tuple contactInverseDynamics_wrapper(
       const context::Model & model,
       context::Data & data,
-      const RefConstVectorXs & q,
-      const RefConstVectorXs & v,
-      const RefConstVectorXs & a,
+      RefConstVectorXs q,
+      RefConstVectorXs v,
+      RefConstVectorXs a,
       Scalar dt,
       const context::PointContactConstraintModelVector & contact_models,
       context::PointContactConstraintDataVector & contact_datas,
-      RefConstVectorXs & constraint_correction,
+      RefVectorXs constraint_correction,
       ProximalSettingsTpl<Scalar> & settings,
-      const boost::optional<RefConstVectorXs> & lambda_guess = boost::none,
+      const boost::optional<VectorXs> & lambda_guess = boost::none,
       bool solve_ncp = true)
     {
       const Eigen::Index problem_size =
@@ -82,9 +83,10 @@ namespace pinocchio
 
       bp::def(
         "contactInverseDynamics", contactInverseDynamics_wrapper,
-        (bp::arg("model"), "data", "q", "v", "a", "dt", "contact_models", "contact_datas",
-         "constraint_correction", bp::arg("settings"), bp::arg("lambda_guess") = boost::none,
-         bp::arg("solve_ncp") = true),
+        (bp::args(
+           "model", "data", "q", "v", "a", "dt", "contact_models", "contact_datas",
+           "constraint_correction", "settings"),
+         bp::arg("lambda_guess") = boost::none, bp::arg("solve_ncp") = true),
         "Compute the inverse dynamics with point contacts, store the result in Data and "
         "return it.\n\n"
         "Parameters:\n"
