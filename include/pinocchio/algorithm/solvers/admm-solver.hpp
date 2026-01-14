@@ -119,12 +119,21 @@ namespace pinocchio
     typedef internal::ADMMUpdateRuleContainerTpl<Scalar> ADMMUpdateRuleContainer;
 
     /// \brief Default constructor.
-    explicit ADMMConstraintSolverTpl(std::size_t problem_size = 0)
+    /// \note The user can give `max_problem_size` to preallocate maximum problem sizes data.
+    /// This is optional and the solver will automatically resize its workspace to handle
+    /// the constraint problem thrown at it.
+    /// If the solver encounters a problem which size is bigger than `max_problem_size`,
+    /// it will automatically resize its internals as well as the result output of `solve`.
+    ///
+    /// \param[in] max_problem_size maximum problem size (before automatic reallocation)
+    explicit ADMMConstraintSolverTpl(std::size_t max_problem_size = 0)
     : Base()
     , stats()
-    , m_workspace(problem_size)
+    , m_workspace(max_problem_size)
     , m_is_valid(false)
     {
+      // we need to call reset - the solver needs to look as if it never ran
+      reset();
     }
 
     ///
