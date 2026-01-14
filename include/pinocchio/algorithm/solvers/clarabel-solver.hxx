@@ -254,16 +254,14 @@ namespace pinocchio
 
     {
       DelassusDerived & G = delassus.derived();
-      static constexpr Scalar max_init_numerical_damping = Scalar(1e-10);
-      assert(G.getDamping().minCoeff() >= 0 && "The delassus damping vector should be positive.");
-      assert(
-        G.getDamping().maxCoeff() <= max_init_numerical_damping
-        && "The initial delassus damping vector should be 0.");
-      if (!(G.getDamping().maxCoeff() <= max_init_numerical_damping))
-      {
-        G.updateDamping(max_init_numerical_damping);
-        G.updateDecomposition();
-      }
+      static const Scalar max_init_numerical_damping = Eigen::NumTraits<Scalar>::dummy_precision();
+      PINOCCHIO_THROW_IF(
+        G.getDamping().minCoeff() < 0, std::runtime_error,
+        "The delassus damping vector should be positive.");
+      PINOCCHIO_THROW_IF(
+        G.getDamping().maxCoeff() >= max_init_numerical_damping, std::runtime_error,
+        "The delassus damping vector should be 0. Please call delassus.updateDamping(0) before "
+        "calling the clarabel solver.");
     }
 
     const std::size_t problem_size = static_cast<std::size_t>(g.size());

@@ -128,6 +128,10 @@ struct TestBoxTpl
       clarabel_settings.relative_complementarity_tol = 1e-12;
       clarabel_settings.solve_ncp = true;
 
+      // before calling clarabel, we need to make sure the delassus has no numerical damping
+      // we don't need to update the decomposition though as solveInPlace will not be called in
+      // clarabel.
+      G_expression.updateDamping(0.);
       clarabel_solver.solve(
         G_expression, g, constraint_models, constraint_datas, clarabel_settings, clarabel_result);
 
