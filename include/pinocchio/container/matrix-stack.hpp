@@ -286,7 +286,7 @@ namespace pinocchio
     }
 
     /// \brief Increase the capacity of the vector of matrix maps.
-    void reserve(size_t new_cap)
+    void reserve(std::size_t new_cap)
     {
       m_matrix_maps.reserve(new_cap);
     }
