@@ -307,6 +307,44 @@ namespace pinocchio
       return m_matrix_maps[pos];
     }
 
+    /// \brief Returns a typed reference to the element at specified location pos.
+    /// \tparam TargetMatrixType The desired matrix type (e.g., Eigen::Matrix<double, 3, 3>)
+    /// \param pos The position of the element
+    /// \returns An Eigen::Map with the correct static dimensions
+    template<typename TargetMatrixType>
+    Eigen::Map<TargetMatrixType, Alignment> get(const std::size_t pos)
+    {
+      auto & map = m_matrix_maps[pos];
+      PINOCCHIO_THROW_IF(
+        !(map.rows() == TargetMatrixType::RowsAtCompileTime
+          || TargetMatrixType::RowsAtCompileTime == Eigen::Dynamic),
+        std::runtime_error, "Invalid TargetMatrixType.");
+      PINOCCHIO_THROW_IF(
+        !(map.cols() == TargetMatrixType::ColsAtCompileTime
+          || TargetMatrixType::ColsAtCompileTime == Eigen::Dynamic),
+        std::runtime_error, "Invalid TargetMatrixType.");
+      return Eigen::Map<TargetMatrixType, Alignment>(map.data(), map.rows(), map.cols());
+    }
+
+    /// \brief Returns a const typed reference to the element at specified location pos.
+    /// \tparam TargetMatrixType The desired matrix type (e.g., Eigen::Matrix<double, 3, 3>)
+    /// \param pos The position of the element
+    /// \returns A const Eigen::Map with the correct static dimensions
+    template<typename TargetMatrixType>
+    Eigen::Map<const TargetMatrixType, Alignment> get(const std::size_t pos) const
+    {
+      const auto & map = m_matrix_maps[pos];
+      PINOCCHIO_THROW_IF(
+        !(map.rows() == TargetMatrixType::RowsAtCompileTime
+          || TargetMatrixType::RowsAtCompileTime == Eigen::Dynamic),
+        std::runtime_error, "Invalid TargetMatrixType.");
+      PINOCCHIO_THROW_IF(
+        !(map.cols() == TargetMatrixType::ColsAtCompileTime
+          || TargetMatrixType::ColsAtCompileTime == Eigen::Dynamic),
+        std::runtime_error, "Invalid TargetMatrixType.");
+      return Eigen::Map<const TargetMatrixType, Alignment>(map.data(), map.rows(), map.cols());
+    }
+
     /// \brief Returns the number of elements in the container.
     std::size_t size() const
     {

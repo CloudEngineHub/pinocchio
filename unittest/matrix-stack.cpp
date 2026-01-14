@@ -269,4 +269,60 @@ BOOST_AUTO_TEST_CASE(matrix_stack_no_malloc)
   }
 }
 
+BOOST_AUTO_TEST_CASE(matrix_stack_product)
+{
+  using MatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>;
+  using DiagMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, 1>;
+  using VectorXd = Eigen::Matrix<double, Eigen::Dynamic, 1>;
+  using Matrix3d = Eigen::Matrix<double, 3, 3>;
+  using Vector3d = Eigen::Matrix<double, 3, 1>;
+  using MatrixStack = pinocchio::MatrixStackTpl<MatrixXd>;
+
+  const std::size_t N = static_cast<std::size_t>(std::rand() % 10);
+
+  // random 3x3 products
+  std::vector<Matrix3d> mat3_vec;
+  std::vector<Vector3d> x3s;
+  std::vector<Vector3d> expected_y3s; // y = mat * x
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    mat3_vec.emplace_back(Matrix3d::Random());
+    x3s.emplace_back(Vector3d::Random());
+    expected_y3s.emplace_back(mat3_vec.back() * x3s.back());
+  }
+
+  // random diagonal products
+  std::vector<DiagMatrixXd> diagmat_vec;
+  std::vector<VectorXd> xds;
+  std::vector<VectorXd> expected_yds; // y = mat * x
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    const Eigen::Index size = static_cast<Eigen::Index>(std::rand() % 10);
+    diagmat_vec.emplace_back(DiagMatrixXd::Random(size));
+    xds.emplace_back(VectorXd::Random(size));
+    expected_yds.emplace_back(diagmat_vec.back().asDiagonal() * xds.back());
+  }
+
+  // create matrix stack and alternate between 3x3 and diagonal matrices
+  MatrixStack matrix_stack;
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    matrix_stack.push_back(mat3_vec[i]);
+    matrix_stack.push_back(diagmat_vec[i]);
+  }
+
+  using Matrix4d = Eigen::Matrix<double, 4, 4>;
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    const auto & mat3 = matrix_stack.get<Matrix3d>(2 * i);
+    BOOST_CHECK_THROW(matrix_stack.get<Matrix4d>(2 * i), std::runtime_error);
+    Vector3d res3 = mat3 * x3s[i];
+    BOOST_CHECK(res3 == expected_y3s[i]);
+
+    const auto & diag = matrix_stack[2 * i + 1];
+    VectorXd resd = diag.asDiagonal() * xds[i];
+    BOOST_CHECK(resd == expected_yds[i]);
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
