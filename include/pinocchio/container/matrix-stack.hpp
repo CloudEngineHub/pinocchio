@@ -315,14 +315,12 @@ namespace pinocchio
     Eigen::Map<TargetMatrixType, Alignment> get(const std::size_t pos)
     {
       auto & map = m_matrix_maps[pos];
-      PINOCCHIO_THROW_IF(
-        !(map.rows() == TargetMatrixType::RowsAtCompileTime
-          || TargetMatrixType::RowsAtCompileTime == Eigen::Dynamic),
-        std::runtime_error, "Invalid TargetMatrixType.");
-      PINOCCHIO_THROW_IF(
-        !(map.cols() == TargetMatrixType::ColsAtCompileTime
-          || TargetMatrixType::ColsAtCompileTime == Eigen::Dynamic),
-        std::runtime_error, "Invalid TargetMatrixType.");
+      assert(
+        map.rows() == TargetMatrixType::RowsAtCompileTime
+        || TargetMatrixType::RowsAtCompileTime == Eigen::Dynamic);
+      assert(
+        map.cols() == TargetMatrixType::ColsAtCompileTime
+        || TargetMatrixType::ColsAtCompileTime == Eigen::Dynamic);
       return Eigen::Map<TargetMatrixType, Alignment>(map.data(), map.rows(), map.cols());
     }
 
@@ -334,14 +332,12 @@ namespace pinocchio
     Eigen::Map<const TargetMatrixType, Alignment> get(const std::size_t pos) const
     {
       const auto & map = m_matrix_maps[pos];
-      PINOCCHIO_THROW_IF(
-        !(map.rows() == TargetMatrixType::RowsAtCompileTime
-          || TargetMatrixType::RowsAtCompileTime == Eigen::Dynamic),
-        std::runtime_error, "Invalid TargetMatrixType.");
-      PINOCCHIO_THROW_IF(
-        !(map.cols() == TargetMatrixType::ColsAtCompileTime
-          || TargetMatrixType::ColsAtCompileTime == Eigen::Dynamic),
-        std::runtime_error, "Invalid TargetMatrixType.");
+      assert(
+        map.rows() == TargetMatrixType::RowsAtCompileTime
+        || TargetMatrixType::RowsAtCompileTime == Eigen::Dynamic);
+      assert(
+        map.cols() == TargetMatrixType::ColsAtCompileTime
+        || TargetMatrixType::ColsAtCompileTime == Eigen::Dynamic);
       return Eigen::Map<const TargetMatrixType, Alignment>(map.data(), map.rows(), map.cols());
     }
 
