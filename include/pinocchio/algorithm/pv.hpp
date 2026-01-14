@@ -13,7 +13,6 @@
 // #include "pinocchio/algorithm/constraints/fwd.hpp"
 // #include "pinocchio/algorithm/contact-info.hpp"
 
-
 namespace pinocchio
 {
 
@@ -36,7 +35,6 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
     class ConstraintModelAllocator>
-  PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
   inline void initPvSolver(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
@@ -79,15 +77,13 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
   inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::TangentVectorType & pv(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & tau,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> &
-      contact_models,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
     std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
     ProximalSettingsTpl<Scalar> & settings);
 
@@ -129,18 +125,16 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
-  PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility") inline const
-    typename DataTpl<Scalar, Options, JointCollectionTpl>::TangentVectorType & constrainedABA(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const Eigen::MatrixBase<ConfigVectorType> & q,
-      const Eigen::MatrixBase<TangentVectorType1> & v,
-      const Eigen::MatrixBase<TangentVectorType2> & tau,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> &
-        contact_models,
-      std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
-      ProximalSettingsTpl<Scalar> & settings);
+  inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::TangentVectorType &
+  constrainedABA(
+    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const Eigen::MatrixBase<ConfigVectorType> & q,
+    const Eigen::MatrixBase<TangentVectorType1> & v,
+    const Eigen::MatrixBase<TangentVectorType2> & tau,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & contact_models,
+    std::vector<ConstraintData, ConstraintDataAllocator> & contact_datas,
+    ProximalSettingsTpl<Scalar> & settings);
 
 } // namespace pinocchio
 
