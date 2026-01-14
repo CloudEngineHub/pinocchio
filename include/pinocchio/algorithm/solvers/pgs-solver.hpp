@@ -56,7 +56,7 @@ namespace pinocchio
     , m_is_valid(false)
     {
       // we need to call reset - the solver needs to look as if it never ran
-      reset()
+      reset();
     }
 
     ///
