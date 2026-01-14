@@ -252,10 +252,18 @@ namespace pinocchio
     ClarabelSolverResult & res = result;
     ClarabelSolverWorkspace & ws = workspace_;
 
-    if (!delassus.derived().getDamping().isZero())
     {
-      delassus.updateDamping(1e-12);
-      delassus.updateDecomposition();
+      DelassusDerived & G = delassus.derived();
+      static constexpr Scalar max_init_numerical_damping = Scalar(1e-10);
+      assert(G.getDamping().minCoeff() >= 0 && "The delassus damping vector should be positive.");
+      assert(
+        G.getDamping().maxCoeff() <= max_init_numerical_damping
+        && "The initial delassus damping vector should be 0.");
+      if (!(G.getDamping().maxCoeff() <= max_init_numerical_damping))
+      {
+        G.updateDamping(max_init_numerical_damping);
+        G.updateDecomposition();
+      }
     }
 
     const std::size_t problem_size = static_cast<std::size_t>(g.size());
