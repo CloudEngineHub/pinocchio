@@ -13,8 +13,6 @@
 // to avoid redifinition of EIGEN_MATRIXBASE_PLUGIN for Eigen 3.3.0 and later
 // #include <cppad/example/cppad_eigen.hpp>
 
-#define EIGEN_MATRIXBASE_PLUGIN <pinocchio/autodiff/cppad/math/eigen_plugin.hpp>
-
 #include <boost/mpl/int.hpp>
 #include <cppad/cppad.hpp>
 #include <Eigen/Dense>
@@ -65,9 +63,7 @@ namespace Eigen
     template<typename Scalar>
     struct cast_impl<CppAD::AD<Scalar>, Scalar>
     {
-#if EIGEN_VERSION_AT_LEAST(3, 2, 90)
       EIGEN_DEVICE_FUNC
-#endif
       static inline Scalar run(const CppAD::AD<Scalar> & x)
       {
         return CppAD::Value(x);

@@ -28,10 +28,6 @@
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/serialization/serializable.hpp"
 
-#if EIGENPY_VERSION_AT_MOST(2, 8, 1)
-EIGENPY_DEFINE_STRUCT_ALLOCATOR_SPECIALIZATION(pinocchio::Model)
-#endif
-
 namespace pinocchio
 {
   namespace python
@@ -265,7 +261,7 @@ namespace pinocchio
             "Create a Data object for the given model.")
 
           .def(
-            "check", (bool(Model::*)(const Data &) const) & Model::check, bp::args("self", "data"),
+            "check", (bool (Model::*)(const Data &) const) & Model::check, bp::args("self", "data"),
             "Check consistency of data wrt model.")
 
           .def(

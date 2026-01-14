@@ -101,12 +101,10 @@ namespace pinocchio
     {
       creq.enable_cached_gjk_guess = true;
     }
-  #if HPP_FCL_VERSION_AT_LEAST(1, 4, 5)
     BOOST_FOREACH (hpp::fcl::DistanceRequest & dreq, distanceRequests)
     {
       dreq.enable_cached_gjk_guess = true;
     }
-  #endif
     collision_functors.reserve(geom_model.collisionPairs.size());
     contact_patch_functors.reserve(geom_model.collisionPairs.size());
     distance_functors.reserve(geom_model.collisionPairs.size());

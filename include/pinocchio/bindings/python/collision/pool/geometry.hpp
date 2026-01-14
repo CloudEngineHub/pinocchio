@@ -17,10 +17,6 @@
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/multibody/pool/geometry.hpp"
 
-#if EIGENPY_VERSION_AT_MOST(2, 8, 1)
-EIGENPY_DEFINE_STRUCT_ALLOCATOR_SPECIALIZATION(pinocchio::GeometryPool)
-#endif
-
 namespace pinocchio
 {
   namespace python
@@ -43,8 +39,9 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::init<const Model &, const GeometryModel &, bp::optional<size_t>>(
-                 bp::args("self", "model", "geometry_model", "size"), "Default constructor."))
+        cl.def(
+            bp::init<const Model &, const GeometryModel &, bp::optional<size_t>>(
+              bp::args("self", "model", "geometry_model", "size"), "Default constructor."))
           .def(bp::init<const GeometryPool &>(bp::args("self", "other"), "Copy constructor."))
 
           .def(
@@ -74,7 +71,7 @@ namespace pinocchio
             "geometry indexes.")
 
           .def(
-            "update", (void(GeometryPool::*)(const GeometryData &)) & GeometryPool::update,
+            "update", (void (GeometryPool::*)(const GeometryData &))&GeometryPool::update,
             bp::args("self", "geometry_data"),
             "Update all the geometry datas with the input geometry data value.");
       }

@@ -130,8 +130,6 @@ namespace pinocchio
   , par_cons_ind((std::size_t)model.njoints, 0)
   , a_bias((std::size_t)model.njoints, Motion::Zero())
   , KAS((std::size_t)model.njoints, MatrixXs::Zero(0, 0))
-
-#if EIGEN_VERSION_AT_LEAST(3, 2, 90) && !EIGEN_VERSION_AT_LEAST(3, 2, 93)
   , kinematic_hessians(
       6,
       std::max(1, model.nv),
@@ -152,13 +150,6 @@ namespace pinocchio
       std::max(1, model.nv),
       std::max(1, model.nv),
       std::max(1, model.nv)) // the minimum size should be 1 for compatibility reasons
-#else
-  , kinematic_hessians(6, model.nv, model.nv)
-  , d2tau_dqdq(model.nv, model.nv, model.nv)
-  , d2tau_dvdv(model.nv, model.nv, model.nv)
-  , d2tau_dqdv(model.nv, model.nv, model.nv)
-  , d2tau_dadq(model.nv, model.nv, model.nv)
-#endif
   , extended_motion_propagator((std::size_t)model.njoints, Matrix6::Zero())
   , extended_motion_propagator2((std::size_t)model.njoints, Matrix6::Zero())
   , spatial_inv_inertia((std::size_t)model.njoints, Matrix6::Zero())

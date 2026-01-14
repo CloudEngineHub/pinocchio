@@ -33,13 +33,15 @@ namespace pinocchio
       {
         //        static const Scalar dummy_precision = Eigen::NumTraits<Scalar>::dummy_precision();
 
-        cl.def(bp::init<const context::MatrixXs &, const Eigen::Index>(
-                 (bp::arg("self"), bp::arg("matrix"), bp::arg("decomposition_size")),
-                 "Default constructor from a given matrix and a given decomposition size."))
+        cl.def(
+            bp::init<const context::MatrixXs &, const Eigen::Index>(
+              (bp::arg("self"), bp::arg("matrix"), bp::arg("decomposition_size")),
+              "Default constructor from a given matrix and a given decomposition size."))
 
-          .def(bp::init<const Eigen::Index, const Eigen::Index>(
-            (bp::arg("self"), bp::arg("size"), bp::arg("decomposition_size")),
-            "Default constructor for the Lanczos decomposition from a given matrix size."))
+          .def(
+            bp::init<const Eigen::Index, const Eigen::Index>(
+              (bp::arg("self"), bp::arg("size"), bp::arg("decomposition_size")),
+              "Default constructor for the Lanczos decomposition from a given matrix size."))
 
           .def(
             "compute", &LanczosDecomposition::template compute<context::MatrixXs>,
@@ -83,11 +85,7 @@ namespace pinocchio
 
       static void expose()
       {
-#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION == 6 && EIGENPY_VERSION_AT_LEAST(2, 9, 0)
-        typedef PINOCCHIO_SHARED_PTR_HOLDER_TYPE(LanczosDecomposition) HolderType;
-#else
         typedef ::boost::python::detail::not_specified HolderType;
-#endif
         bp::class_<LanczosDecomposition, HolderType>(
           "LanczosDecomposition", "Lanczos decomposition.", bp::no_init)
           .def(LanczosDecompositionPythonVisitor());

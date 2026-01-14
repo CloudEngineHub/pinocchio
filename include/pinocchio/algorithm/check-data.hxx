@@ -68,13 +68,8 @@ namespace pinocchio
     // CHECK_DATA( data.impulse_c.size()== model.nv );
 
     CHECK_DATA(data.kinematic_hessians.dimension(0) == 6);
-#if EIGEN_VERSION_AT_LEAST(3, 2, 90) && !EIGEN_VERSION_AT_LEAST(3, 2, 93)
-    CHECK_DATA(data.kinematic_hessians.dimension(1) == std::max(1, model.nv));
-    CHECK_DATA(data.kinematic_hessians.dimension(2) == std::max(1, model.nv));
-#else
     CHECK_DATA(data.kinematic_hessians.dimension(1) == model.nv);
     CHECK_DATA(data.kinematic_hessians.dimension(2) == model.nv);
-#endif
 
     CHECK_DATA((int)data.oMf.size() == model.nframes);
 

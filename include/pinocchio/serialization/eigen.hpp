@@ -20,14 +20,10 @@
 // the workaround.
 #if defined PINOCCHIO_WITH_HPP_FCL
   #include <hpp/fcl/config.hh>
-  #if !HPP_FCL_VERSION_AT_LEAST(3, 0, 0) // hpp-fcl < 3.0.0
-    #define HPP_FCL_SKIP_EIGEN_BOOST_SERIALIZATION
-    #include <hpp/fcl/serialization/eigen.h>
-  #else // hpp-fcl >= 3.0.0
-    // Workaround a bug in GCC >= 7 and C++17.
-    // ref. https://gitlab.com/libeigen/eigen/-/issues/1676
-    #ifdef __GNUC__
-      #if __GNUC__ >= 7 && __cplusplus >= 201703L
+  // Workaround a bug in GCC >= 7 and C++17.
+  // ref. https://gitlab.com/libeigen/eigen/-/issues/1676
+  #ifdef __GNUC__
+    #if __GNUC__ >= 7 && __cplusplus >= 201703L
 namespace boost
 {
   namespace serialization
@@ -49,7 +45,6 @@ namespace Eigen
     };
   } // namespace internal
 } // namespace Eigen
-      #endif
     #endif
   #endif
 #else // !PINOCCHIO_WITH_HPP_FCL

@@ -150,7 +150,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/utils/static-if.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/algorithm/aba.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/math/eigen_plugin.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/math/quaternion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/spatial/log.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/spatial/se3-tpl.hpp
