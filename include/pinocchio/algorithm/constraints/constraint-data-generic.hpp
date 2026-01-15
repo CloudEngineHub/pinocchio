@@ -20,10 +20,7 @@ namespace pinocchio
   struct traits<ConstraintDataTpl<_Scalar, _Options, ConstraintCollectionTpl>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> ConstraintModel;
     typedef ConstraintModel Model;
     typedef boost::blank ConstraintSet;
@@ -40,10 +37,7 @@ namespace pinocchio
   {
     typedef ConstraintDataBase<ConstraintDataTpl<_Scalar, _Options, ConstraintCollectionTpl>> Base;
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef ConstraintCollectionTpl<Scalar, Options> ConstraintCollection;
     typedef typename ConstraintCollection::ConstraintDataVariant ConstraintDataVariant;

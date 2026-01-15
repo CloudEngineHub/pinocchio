@@ -303,10 +303,7 @@ namespace pinocchio
       struct ConfigurationConverterVisitor : public boost::static_visitor<void>
       {
         typedef _Scalar Scalar;
-        enum
-        {
-          Options = _Options
-        };
+        static constexpr int Options = _Options;
 
         typedef ModelConfigurationConverterTpl<Scalar, Options, JointCollectionTpl>
           ModelConfigurationConverter;
@@ -514,10 +511,7 @@ namespace pinocchio
       struct TangentConverterVisitor : public boost::static_visitor<void>
       {
         typedef _Scalar Scalar;
-        enum
-        {
-          Options = _Options
-        };
+        static constexpr int Options = _Options;
 
         typedef ModelConfigurationConverterTpl<Scalar, Options, JointCollectionTpl>
           ModelConfigurationConverter;

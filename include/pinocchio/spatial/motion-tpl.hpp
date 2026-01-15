@@ -44,10 +44,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef MotionDense<MotionTpl> Base;
     MOTION_TYPEDEF_TPL(MotionTpl);
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     using Base::operator=;
     using Base::angular;

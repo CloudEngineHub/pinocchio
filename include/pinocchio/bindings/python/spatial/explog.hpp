@@ -221,10 +221,7 @@ namespace pinocchio
     {
       EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector7Like, 7);
       typedef typename Vector7Like::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Vector7Like)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Vector7Like)::Options;
       typedef Eigen::Quaternion<Scalar, Options> Quaternion;
       typedef Eigen::Map<const Quaternion, Options> ConstQuaternionMap;
       typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;

@@ -210,10 +210,7 @@ namespace pinocchio
   : PGSConstraintProjectionStepBase<_Scalar>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
     typedef PGSConstraintProjectionStepBase<Scalar> Base;
 

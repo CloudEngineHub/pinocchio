@@ -21,10 +21,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<Derived>::Scalar Scalar;
-    enum
-    {
-      Options = traits<Derived>::Options
-    };
+    static constexpr int Options = traits<Derived>::Options;
 
     typedef typename traits<Derived>::ConstraintModel ConstraintModel;
     typedef typename traits<Derived>::ConstraintData ConstraintData;

@@ -27,10 +27,7 @@ namespace pinocchio
     struct Symmetric3PythonVisitor
     : public boost::python::def_visitor<Symmetric3PythonVisitor<Symmetric3>>
     {
-      enum
-      {
-        Options = Symmetric3::Options
-      };
+      static constexpr int Options = Symmetric3::Options;
       typedef typename Symmetric3::Scalar Scalar;
       typedef typename Symmetric3::Vector3 Vector3;
       typedef typename Symmetric3::Vector6 Vector6;

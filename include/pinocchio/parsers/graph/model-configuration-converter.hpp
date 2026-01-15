@@ -61,10 +61,7 @@ namespace pinocchio
     struct ModelConfigurationConverterTpl
     {
       typedef _Scalar Scalar;
-      enum
-      {
-        Options = _Options
-      };
+      static constexpr int Options = _Options;
       typedef JointCollectionTpl<Scalar, Options> JointCollection;
       typedef typename JointCollection::JointModelVariant JointModelVariant;
 

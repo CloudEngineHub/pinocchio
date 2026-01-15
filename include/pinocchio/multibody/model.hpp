@@ -41,10 +41,7 @@ namespace pinocchio
   struct traits<ModelTpl<_Scalar, _Options, JointCollectionTpl>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
     typedef JointCollectionTpl<Scalar, Options> JointCollection;
   };
@@ -58,10 +55,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<ModelTpl>::Scalar Scalar;
-    enum
-    {
-      Options = traits<ModelTpl>::Options
-    };
+    static constexpr int Options = traits<ModelTpl>::Options;
 
     typedef typename traits<ModelTpl>::JointCollection JointCollection;
     typedef typename traits<ModelTpl>::Data Data;

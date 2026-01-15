@@ -35,10 +35,7 @@ namespace pinocchio
     {
       typedef context::Scalar Scalar;
       typedef context::VectorXs VectorXs;
-      enum
-      {
-        Options = context::Options
-      };
+      using context::Options;
 
       bp::def(
         "computeMinverse", &computeMinverse_proxy, bp::args("model", "data", "q"),

@@ -79,10 +79,7 @@ namespace pinocchio
   namespace context
   {
     typedef PINOCCHIO_SCALAR_TYPE Scalar;
-    enum
-    {
-      Options = PINOCCHIO_OPTIONS_DEFAULT
-    };
+    static constexpr int Options = PINOCCHIO_OPTIONS_DEFAULT;
 
     PINOCCHIO_COMMON_TYPEDEF(Scalar, Options)
 

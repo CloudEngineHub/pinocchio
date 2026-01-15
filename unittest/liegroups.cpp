@@ -681,10 +681,7 @@ BOOST_AUTO_TEST_CASE(test_all)
 BOOST_AUTO_TEST_CASE(Jdifference)
 {
   typedef double Scalar;
-  enum
-  {
-    Options = 0
-  };
+  static constexpr int Options = 0;
 
   typedef boost::mpl::vector<
     VectorSpaceOperationTpl<1, Scalar, Options>, VectorSpaceOperationTpl<2, Scalar, Options>,
@@ -706,10 +703,7 @@ BOOST_AUTO_TEST_CASE(Jdifference)
 BOOST_AUTO_TEST_CASE(dIntegrateTransport)
 {
   typedef double Scalar;
-  enum
-  {
-    Options = 0
-  };
+  static constexpr int Options = 0;
 
   typedef boost::mpl::vector<
     VectorSpaceOperationTpl<1, Scalar, Options>, VectorSpaceOperationTpl<2, Scalar, Options>,
@@ -731,10 +725,7 @@ BOOST_AUTO_TEST_CASE(dIntegrateTransport)
 BOOST_AUTO_TEST_CASE(Jintegrate)
 {
   typedef double Scalar;
-  enum
-  {
-    Options = 0
-  };
+  static constexpr int Options = 0;
 
   typedef boost::mpl::vector<
     VectorSpaceOperationTpl<1, Scalar, Options>, VectorSpaceOperationTpl<2, Scalar, Options>,
@@ -759,10 +750,7 @@ BOOST_AUTO_TEST_CASE(Jintegrate)
 BOOST_AUTO_TEST_CASE(Jintegrate_Jdifference)
 {
   typedef double Scalar;
-  enum
-  {
-    Options = 0
-  };
+  static constexpr int Options = 0;
 
   typedef boost::mpl::vector<
     VectorSpaceOperationTpl<1, Scalar, Options>, VectorSpaceOperationTpl<2, Scalar, Options>,
@@ -784,10 +772,7 @@ BOOST_AUTO_TEST_CASE(Jintegrate_Jdifference)
 BOOST_AUTO_TEST_CASE(JintegrateCoeffWise)
 {
   typedef double Scalar;
-  enum
-  {
-    Options = 0
-  };
+  static constexpr int Options = 0;
 
   typedef boost::mpl::vector<
     VectorSpaceOperationTpl<1, Scalar, Options>, VectorSpaceOperationTpl<2, Scalar, Options>,
@@ -822,10 +807,7 @@ BOOST_AUTO_TEST_CASE(JintegrateCoeffWise)
 BOOST_AUTO_TEST_CASE(tangentMap)
 {
   typedef double Scalar;
-  enum
-  {
-    Options = 0
-  };
+  static constexpr int Options = 0;
 
   typedef boost::mpl::vector<
     VectorSpaceOperationTpl<1, Scalar, Options>, VectorSpaceOperationTpl<2, Scalar, Options>,

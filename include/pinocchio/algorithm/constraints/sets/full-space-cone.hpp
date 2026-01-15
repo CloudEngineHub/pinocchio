@@ -15,10 +15,7 @@ namespace pinocchio
   struct traits<FullSpaceConeTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef ZeroConeTpl<Scalar, _Options> DualCone;
   };
@@ -28,10 +25,7 @@ namespace pinocchio
   struct FullSpaceConeTpl : ConeBase<FullSpaceConeTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
     typedef ConeBase<FullSpaceConeTpl> Base;
     typedef typename traits<FullSpaceConeTpl>::DualCone DualCone;

@@ -171,10 +171,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef RigidConstraintModelTpl Self;
     typedef RigidConstraintModelTyper<Self> Typer;
@@ -943,10 +940,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef RigidConstraintModelTpl<Scalar, Options> ContactModel;
     typedef RigidConstraintDataTpl ContactData;

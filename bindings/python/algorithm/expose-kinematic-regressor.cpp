@@ -14,10 +14,7 @@ namespace pinocchio
     void exposeKinematicRegressor()
     {
       typedef context::Scalar Scalar;
-      enum
-      {
-        Options = context::Options
-      };
+      using context::Options;
 
       bp::def(
         "computeJointKinematicRegressor",

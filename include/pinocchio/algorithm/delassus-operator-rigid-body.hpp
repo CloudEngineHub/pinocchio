@@ -101,10 +101,7 @@ namespace pinocchio
     typedef DelassusOperatorBase<Self> Base;
 
     typedef typename traits<Self>::Scalar Scalar;
-    enum
-    {
-      Options = traits<Self>::Options
-    };
+    static constexpr int Options = traits<Self>::Options;
 
     typedef typename traits<Self>::Vector Vector;
     typedef typename traits<Self>::DenseMatrix DenseMatrix;

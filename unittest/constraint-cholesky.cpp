@@ -28,10 +28,7 @@ namespace pinocchio
   {
     typedef _Matrix Matrix;
     typedef typename Matrix::Scalar Scalar;
-    enum
-    {
-      Options = Matrix::Options
-    };
+    static constexpr int Options = Matrix::Options;
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Matrix) PlainMatrix;
     typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(Matrix) RowMatrix;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;

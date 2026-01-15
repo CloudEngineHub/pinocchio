@@ -135,10 +135,7 @@ namespace pinocchio
   struct traits<GeometryObject>
   {
     typedef double Scalar;
-    enum
-    {
-      Options = 0
-    };
+    static constexpr int Options = 0;
   };
 
   struct GeometryObject
@@ -149,10 +146,7 @@ namespace pinocchio
 
     typedef ModelItem<GeometryObject> Base;
     typedef typename traits<GeometryObject>::Scalar Scalar;
-    enum
-    {
-      Options = traits<GeometryObject>::Options
-    };
+    static constexpr int Options = traits<GeometryObject>::Options;
 
     typedef SE3Tpl<Scalar, Options> SE3;
 

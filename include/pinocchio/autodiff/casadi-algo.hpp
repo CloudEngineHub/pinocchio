@@ -28,10 +28,7 @@ namespace pinocchio
       typedef ::casadi::SXVector ADSVector;
       typedef ::casadi::DM DMMatrix;
       typedef ::casadi::DMVector DMVector;
-      enum
-      {
-        Options = 0
-      };
+      static constexpr int Options = 0;
 
       typedef pinocchio::ModelTpl<Scalar, Options> Model;
       typedef pinocchio::DataTpl<Scalar, Options> Data;

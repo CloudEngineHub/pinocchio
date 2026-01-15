@@ -27,10 +27,7 @@ namespace pinocchio
       NVExtended = 1
     };
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef JointDataRevoluteUnboundedTpl<Scalar, Options, axis> JointDataDerived;
     typedef JointModelRevoluteUnboundedTpl<Scalar, Options, axis> JointModelDerived;
     typedef JointMotionSubspaceRevoluteTpl<Scalar, Options, axis> Constraint_t;

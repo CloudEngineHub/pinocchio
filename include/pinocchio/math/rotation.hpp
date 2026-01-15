@@ -81,10 +81,7 @@ namespace pinocchio
     Matrix3 & rot_ = PINOCCHIO_EIGEN_CONST_CAST(Matrix3, rot);
 
     typedef typename Matrix3::Scalar Scalar;
-    enum
-    {
-      Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Matrix3)::Options
-    };
+    static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Matrix3)::Options;
     typedef Eigen::Quaternion<Scalar, Options> Quaternion;
     Quaternion quat(rot);
     normalize(quat.coeffs());

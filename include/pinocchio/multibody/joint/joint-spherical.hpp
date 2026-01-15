@@ -36,10 +36,7 @@ namespace pinocchio
   struct traits<MotionSphericalTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, 4, 4, Options> Matrix4;
@@ -205,10 +202,7 @@ namespace pinocchio
   struct traits<JointMotionSubspaceSphericalTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     enum
     {
       LINEAR = 0,
@@ -386,10 +380,7 @@ namespace pinocchio
       NVExtended = 3
     };
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef JointDataSphericalTpl<Scalar, Options> JointDataDerived;
     typedef JointModelSphericalTpl<Scalar, Options> JointModelDerived;
     typedef JointMotionSubspaceSphericalTpl<Scalar, Options> Constraint_t;

@@ -345,10 +345,8 @@ namespace pinocchio
   exp6(const MotionDense<MotionDerived> & nu)
   {
     typedef typename MotionDerived::Scalar Scalar;
-    enum
-    {
-      Options = PINOCCHIO_EIGEN_PLAIN_TYPE(typename MotionDerived::Vector3)::Options
-    };
+    static constexpr int Options =
+      PINOCCHIO_EIGEN_PLAIN_TYPE(typename MotionDerived::Vector3)::Options;
 
     typedef SE3Tpl<Scalar, Options> SE3;
 
@@ -475,10 +473,7 @@ namespace pinocchio
     PINOCCHIO_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix4Like, M, 4, 4);
 
     typedef typename Matrix4Like::Scalar Scalar;
-    enum
-    {
-      Options = Eigen::internal::traits<Matrix4Like>::Options
-    };
+    static constexpr int Options = Eigen::internal::traits<Matrix4Like>::Options;
     typedef MotionTpl<Scalar, Options> Motion;
     typedef SE3Tpl<Scalar, Options> SE3;
 
@@ -591,10 +586,7 @@ namespace pinocchio
   Jexp6(const MotionDense<MotionDerived> & nu)
   {
     typedef typename MotionDerived::Scalar Scalar;
-    enum
-    {
-      Options = MotionDerived::Options
-    };
+    static constexpr int Options = MotionDerived::Options;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> ReturnType;
 
     ReturnType res;

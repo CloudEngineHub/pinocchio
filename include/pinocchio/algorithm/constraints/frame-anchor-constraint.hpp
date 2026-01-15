@@ -74,10 +74,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef FrameAnchorConstraintModelTpl Self;
     typedef FrameConstraintModelBase<FrameAnchorConstraintModelTpl> Base;
@@ -276,10 +273,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef FrameAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef FrameAnchorConstraintDataTpl ConstraintData;

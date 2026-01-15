@@ -238,10 +238,7 @@ namespace pinocchio
       PINOCCHIO_ASSERT_MATRIX_SPECIFIC_SIZE(Vector3Like, vec, 3, 1);
 
       typedef typename Vector3Like::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Vector3Like)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Vector3Like)::Options;
       typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
       const Scalar eps = Eigen::NumTraits<Scalar>::epsilon();
 

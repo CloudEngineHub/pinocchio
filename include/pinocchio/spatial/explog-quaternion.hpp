@@ -30,10 +30,8 @@ namespace pinocchio
       assert(v.size() == 3);
 
       typedef typename Vector3Like::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(typename QuaternionLike::Coefficients)::Options
-      };
+      static constexpr int Options =
+        PINOCCHIO_EIGEN_PLAIN_TYPE(typename QuaternionLike::Coefficients)::Options;
       typedef Eigen::Quaternion<typename QuaternionLike::Scalar, Options> QuaternionPlain;
       const Scalar eps = Eigen::NumTraits<Scalar>::epsilon();
 
@@ -91,10 +89,7 @@ namespace pinocchio
     template<typename MotionDerived, typename Config_t>
     void exp6(const MotionDense<MotionDerived> & motion, Eigen::MatrixBase<Config_t> & qout)
     {
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Config_t)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Config_t)::Options;
       typedef typename Config_t::Scalar Scalar;
       typedef typename MotionDerived::Vector3 Vector3;
       typedef Eigen::Quaternion<Scalar, Options> Quaternion_t;
@@ -149,10 +144,8 @@ namespace pinocchio
     exp6(const MotionDense<MotionDerived> & motion)
     {
       typedef typename MotionDerived::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(typename MotionDerived::Vector3)::Options
-      };
+      static constexpr int Options =
+        PINOCCHIO_EIGEN_PLAIN_TYPE(typename MotionDerived::Vector3)::Options;
       typedef Eigen::Matrix<Scalar, 7, 1, Options> ReturnType;
 
       ReturnType qout;
@@ -184,10 +177,7 @@ namespace pinocchio
       exp6(const Eigen::MatrixBase<Vector6Like> & vec6)
     {
       typedef typename Vector6Like::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Vector6Like)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Vector6Like)::Options;
       typedef Eigen::Matrix<Scalar, 7, 1, Options> ReturnType;
 
       ReturnType qout;
@@ -212,10 +202,8 @@ namespace pinocchio
       const Eigen::QuaternionBase<QuaternionLike> & quat, typename QuaternionLike::Scalar & theta)
     {
       typedef typename QuaternionLike::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(typename QuaternionLike::Vector3)::Options
-      };
+      static constexpr int Options =
+        PINOCCHIO_EIGEN_PLAIN_TYPE(typename QuaternionLike::Vector3)::Options;
       typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
 
       Vector3 res;

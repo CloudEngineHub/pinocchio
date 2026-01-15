@@ -57,10 +57,7 @@ namespace pinocchio
     template<typename Motion>
     struct MotionPythonVisitor : public boost::python::def_visitor<MotionPythonVisitor<Motion>>
     {
-      enum
-      {
-        Options = traits<Motion>::Options
-      };
+      static constexpr int Options = traits<Motion>::Options;
 
       typedef typename Motion::Scalar Scalar;
       typedef ForceTpl<Scalar, Options> Force;

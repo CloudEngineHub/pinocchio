@@ -239,10 +239,8 @@ namespace pinocchio
     PINOCCHIO_ASSERT_MATRIX_SPECIFIC_SIZE(OutputType, regressor, 6, 10);
 
     typedef typename MotionVelocity::Scalar Scalar;
-    enum
-    {
-      Options = PINOCCHIO_EIGEN_PLAIN_TYPE(typename MotionVelocity::Vector3)::Options
-    };
+    static constexpr int Options =
+      PINOCCHIO_EIGEN_PLAIN_TYPE(typename MotionVelocity::Vector3)::Options;
 
     typedef Symmetric3Tpl<Scalar, Options> Symmetric3;
     typedef typename Symmetric3::SkewSquare SkewSquare;
@@ -278,10 +276,8 @@ namespace pinocchio
   bodyRegressor(const MotionDense<MotionVelocity> & v, const MotionDense<MotionAcceleration> & a)
   {
     typedef typename MotionVelocity::Scalar Scalar;
-    enum
-    {
-      Options = PINOCCHIO_EIGEN_PLAIN_TYPE(typename MotionVelocity::Vector3)::Options
-    };
+    static constexpr int Options =
+      PINOCCHIO_EIGEN_PLAIN_TYPE(typename MotionVelocity::Vector3)::Options;
     typedef Eigen::Matrix<Scalar, 6, 10, Options> ReturnType;
 
     ReturnType res;

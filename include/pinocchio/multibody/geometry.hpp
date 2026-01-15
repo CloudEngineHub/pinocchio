@@ -45,10 +45,7 @@ namespace pinocchio
   struct traits<GeometryModel>
   {
     typedef double Scalar;
-    enum
-    {
-      Options = 0
-    };
+    static constexpr int Options = 0;
   };
 
   struct GeometryModel
@@ -58,10 +55,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<GeometryModel>::Scalar Scalar;
-    enum
-    {
-      Options = traits<GeometryModel>::Options
-    };
+    static constexpr int Options = traits<GeometryModel>::Options;
 
     typedef SE3Tpl<Scalar, Options> SE3;
 
@@ -232,10 +226,7 @@ namespace pinocchio
   struct traits<GeometryData>
   {
     typedef double Scalar;
-    enum
-    {
-      Options = 0
-    };
+    static constexpr int Options = 0;
   };
 
   struct GeometryData
@@ -245,10 +236,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<GeometryData>::Scalar Scalar;
-    enum
-    {
-      Options = traits<GeometryData>::Options
-    };
+    static constexpr int Options = traits<GeometryData>::Options;
 
     typedef SE3Tpl<Scalar, Options> SE3;
     typedef std::vector<GeomIndex> GeomIndexList;

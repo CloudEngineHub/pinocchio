@@ -17,10 +17,7 @@ namespace pinocchio
   struct traits<BoxSetTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
   };
 
   /// \brief Box set defined by a lower and an upper bounds [lb;ub].
@@ -31,10 +28,7 @@ namespace pinocchio
   struct BoxSetTpl : SetBase<BoxSetTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
     typedef SetBase<BoxSetTpl> Base;
 

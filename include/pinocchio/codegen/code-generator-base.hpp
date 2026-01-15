@@ -20,10 +20,7 @@ namespace pinocchio
     typedef CppAD::cg::CG<Scalar> CGScalar;
     typedef CppAD::AD<CGScalar> ADScalar;
 
-    enum
-    {
-      Options = 0
-    };
+    static constexpr int Options = 0;
 
     typedef pinocchio::ModelTpl<Scalar, Options> Model;
     typedef pinocchio::DataTpl<Scalar, Options> Data;

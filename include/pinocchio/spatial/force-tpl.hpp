@@ -49,10 +49,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef ForceDense<ForceTpl> Base;
     FORCE_TYPEDEF_TPL(ForceTpl);
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     using Base::operator=;
     using Base::operator!=;

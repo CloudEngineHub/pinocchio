@@ -17,10 +17,7 @@ namespace pinocchio
   struct traits<TridiagonalSymmetricMatrixTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> PlainMatrixType;
   };
 
@@ -218,10 +215,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef TridiagonalSymmetricMatrixTpl Self;
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> CoeffVectorType;
     typedef typename traits<Self>::PlainMatrixType PlainMatrixType;
@@ -508,10 +502,7 @@ namespace pinocchio
     typedef _TridiagonalSymmetricMatrix TridiagonalSymmetricMatrix;
     typedef TridiagonalSymmetricMatrixInverse Self;
     typedef typename TridiagonalSymmetricMatrix::Scalar Scalar;
-    enum
-    {
-      Options = TridiagonalSymmetricMatrix::Options
-    };
+    static constexpr int Options = TridiagonalSymmetricMatrix::Options;
 
     typedef typename TridiagonalSymmetricMatrix::CoeffVectorType CoeffVectorType;
     typedef typename traits<Self>::PlainMatrixType PlainMatrixType;
