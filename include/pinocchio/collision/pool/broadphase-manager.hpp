@@ -26,10 +26,7 @@ namespace pinocchio
     typedef _BroadPhaseManagerDerived BroadPhaseManager;
     typedef GeometryPoolTpl<_Scalar, _Options, JointCollectionTpl> Base;
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef typename Base::Model Model;
     typedef typename Base::Data Data;

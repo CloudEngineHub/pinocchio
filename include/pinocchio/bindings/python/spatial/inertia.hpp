@@ -33,10 +33,7 @@ namespace pinocchio
     template<typename Inertia>
     struct InertiaPythonVisitor : public boost::python::def_visitor<InertiaPythonVisitor<Inertia>>
     {
-      enum
-      {
-        Options = Inertia::Options
-      };
+      static constexpr int Options = Inertia::Options;
       typedef typename Inertia::Scalar Scalar;
       typedef typename Inertia::Vector3 Vector3;
       typedef typename Inertia::Matrix3 Matrix3;
@@ -324,10 +321,7 @@ namespace pinocchio
     struct PseudoInertiaPythonVisitor
     : public boost::python::def_visitor<PseudoInertiaPythonVisitor<PseudoInertia>>
     {
-      enum
-      {
-        Options = PseudoInertia::Options
-      };
+      static constexpr int Options = PseudoInertia::Options;
       typedef typename PseudoInertia::Scalar Scalar;
       typedef typename PseudoInertia::Vector3 Vector3;
       typedef typename PseudoInertia::Matrix3 Matrix3;
@@ -481,10 +475,7 @@ namespace pinocchio
     struct LogCholeskyParametersPythonVisitor
     : public boost::python::def_visitor<LogCholeskyParametersPythonVisitor<LogCholeskyParameters>>
     {
-      enum
-      {
-        Options = LogCholeskyParameters::Options
-      };
+      static constexpr int Options = LogCholeskyParameters::Options;
       typedef typename LogCholeskyParameters::Scalar Scalar;
       typedef typename LogCholeskyParameters::Vector10 Vector10;
       typedef typename LogCholeskyParameters::Matrix10 Matrix10;

@@ -36,10 +36,7 @@ namespace pinocchio
   struct traits<MotionPlanarTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, 4, 4, Options> Matrix4;
@@ -237,10 +234,7 @@ namespace pinocchio
   struct traits<JointMotionSubspacePlanarTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     enum
     {
       LINEAR = 0,
@@ -474,10 +468,7 @@ namespace pinocchio
       NV = 3,
       NVExtended = 3
     };
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef _Scalar Scalar;
     typedef JointDataPlanarTpl<Scalar, Options> JointDataDerived;
     typedef JointModelPlanarTpl<Scalar, Options> JointModelDerived;

@@ -38,10 +38,7 @@ namespace pinocchio
     struct SE3PythonVisitor : public boost::python::def_visitor<SE3PythonVisitor<SE3>>
     {
       typedef typename SE3::Scalar Scalar;
-      enum
-      {
-        Options = SE3::Options
-      };
+      static constexpr int Options = SE3::Options;
       typedef typename SE3::Matrix3 Matrix3;
       typedef typename SE3::Vector3 Vector3;
       typedef typename SE3::Matrix4 Matrix4;

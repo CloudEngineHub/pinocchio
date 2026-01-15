@@ -15,10 +15,7 @@ namespace pinocchio
   struct JointWiseConstraintModelBase : ConstraintModelBase<Derived>
   {
     typedef typename traits<Derived>::Scalar Scalar;
-    enum
-    {
-      Options = traits<Derived>::Options
-    };
+    static constexpr int Options = traits<Derived>::Options;
     typedef ConstraintModelBase<Derived> Base;
 
     typedef typename traits<Derived>::ConstraintData ConstraintData;

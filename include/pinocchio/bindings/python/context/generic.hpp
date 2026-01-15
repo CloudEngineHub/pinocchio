@@ -33,10 +33,7 @@ namespace pinocchio
     {
 
       typedef PINOCCHIO_PYTHON_SCALAR_TYPE Scalar;
-      enum
-      {
-        Options = 0
-      };
+      static constexpr int Options = 0;
 
       // Eigen
       EIGENPY_MAKE_TYPEDEFS_ALL_SIZES(Scalar, Options, s);

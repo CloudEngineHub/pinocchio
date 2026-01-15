@@ -24,10 +24,7 @@ namespace pinocchio
   struct traits<JointMotionSubspaceSphericalZYXTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     enum
     {
@@ -283,10 +280,7 @@ namespace pinocchio
       NVExtended = 3
     };
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef JointDataSphericalZYXTpl<Scalar, Options> JointDataDerived;
     typedef JointModelSphericalZYXTpl<Scalar, Options> JointModelDerived;
     typedef JointMotionSubspaceSphericalZYXTpl<Scalar, Options> Constraint_t;

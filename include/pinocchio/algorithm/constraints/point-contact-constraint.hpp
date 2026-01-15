@@ -73,10 +73,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef PointConstraintModelBase<PointContactConstraintModelTpl> Base;
     typedef ConstraintModelBase<PointContactConstraintModelTpl> RootBase;
@@ -293,10 +290,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef PointContactConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef PointContactConstraintDataTpl ConstraintData;

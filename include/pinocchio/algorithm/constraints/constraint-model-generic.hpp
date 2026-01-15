@@ -100,10 +100,7 @@ namespace pinocchio
   , serialization::Serializable<ConstraintModelTpl<_Scalar, _Options, ConstraintCollectionTpl>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef ConstraintModelTpl Self;
     typedef ConstraintModelBase<Self> Base;

@@ -19,10 +19,7 @@ namespace pinocchio
   struct JointCollectionDefaultTpl
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     // Joint Revolute
     typedef JointModelRevoluteTpl<Scalar, Options, 0> JointModelRX;

@@ -15,10 +15,7 @@ namespace pinocchio
   struct ConstraintCollectionDefaultTpl
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef PointAnchorConstraintModelTpl<Scalar, Options> PointAnchorConstraintModel;
     typedef PointAnchorConstraintDataTpl<Scalar, Options> PointAnchorConstraintData;

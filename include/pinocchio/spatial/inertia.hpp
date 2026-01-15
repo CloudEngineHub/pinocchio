@@ -274,10 +274,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     SPATIAL_TYPEDEF_TEMPLATE(InertiaTpl);
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef typename Symmetric3::AlphaSkewSquare AlphaSkewSquare;
     typedef Eigen::Matrix<Scalar, 10, 1, Options> Vector10;
@@ -972,10 +969,7 @@ namespace pinocchio
   struct PseudoInertiaTpl
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, 4, 4, Options> Matrix4;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 3, 3, Options> Matrix3;
@@ -1139,10 +1133,7 @@ namespace pinocchio
   struct LogCholeskyParametersTpl
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, 10, 1, Options> Vector10;
     typedef Eigen::Matrix<Scalar, 10, 10, Options> Matrix10;
     typedef PseudoInertiaTpl<Scalar, Options> PseudoInertia;

@@ -113,10 +113,7 @@ namespace pinocchio
   , ConstraintModelCommonParameters<JointLimitConstraintModelTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef JointLimitConstraintModelTpl Self;
     typedef JointWiseConstraintModelBase<Self> Base;
@@ -717,10 +714,7 @@ namespace pinocchio
   : ConstraintDataBase<JointLimitConstraintDataTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef ConstraintDataBase<JointLimitConstraintDataTpl> Base;
     typedef std::vector<JointIndex> JointIndexVector;
 

@@ -42,10 +42,7 @@ namespace pinocchio
   struct traits<FrameTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
   };
 
   ///
@@ -57,10 +54,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef FrameTpl<_Scalar, _Options> ModelItemDerived;
     typedef typename traits<ModelItemDerived>::Scalar Scalar;
-    enum
-    {
-      Options = traits<ModelItemDerived>::Options
-    };
+    static constexpr int Options = traits<ModelItemDerived>::Options;
     typedef ModelItem<ModelItemDerived> Base;
 
     typedef SE3Tpl<Scalar, Options> SE3;

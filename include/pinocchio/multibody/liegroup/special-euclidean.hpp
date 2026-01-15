@@ -431,10 +431,7 @@ namespace pinocchio
       const AssignmentOperatorType op)
     {
       typedef typename MatrixIn_t::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixIn_t)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixIn_t)::Options;
 
       Eigen::Matrix<Scalar, 2, 2, Options> R;
       R << q[2], -q[3], q[3], q[2];
@@ -466,10 +463,7 @@ namespace pinocchio
       const AssignmentOperatorType op)
     {
       typedef typename MatrixIn_t::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixIn_t)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixIn_t)::Options;
 
       Eigen::Matrix<Scalar, 2, 2, Options> RT;
       RT << q[2], q[3], -q[3], q[2];
@@ -783,10 +777,7 @@ namespace pinocchio
       using internal::if_then_else;
 
       typedef typename ConfigOut_t::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(ConfigOut_t)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(ConfigOut_t)::Options;
 
       Eigen::Matrix<Scalar, 7, 1, Options> expv;
       quaternion::exp6(v, expv);
@@ -913,10 +904,7 @@ namespace pinocchio
       const AssignmentOperatorType op)
     {
       typedef typename TangentMap_t::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(TangentMap_t)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(TangentMap_t)::Options;
 
       ConstQuaternionMap_t quat(q.derived().template tail<4>().data());
       Eigen::Matrix<Scalar, 4, 3, Options> TMq;
@@ -951,10 +939,7 @@ namespace pinocchio
       const AssignmentOperatorType op)
     {
       typedef typename MatrixOut_t::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixOut_t)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixOut_t)::Options;
 
       ConstQuaternionMap_t quat(q.derived().template tail<4>().data());
       Eigen::Matrix<Scalar, 4, 3, Options> TMq;
@@ -987,10 +972,7 @@ namespace pinocchio
       const AssignmentOperatorType op)
     {
       typedef typename MatrixOut_t::Scalar Scalar;
-      enum
-      {
-        Options = PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixOut_t)::Options
-      };
+      static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixOut_t)::Options;
 
       ConstQuaternionMap_t quat(q.derived().template tail<4>().data());
       Eigen::Matrix<Scalar, 4, 3, Options> TMq;

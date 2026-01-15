@@ -24,10 +24,7 @@ namespace pinocchio
   struct traits<JointMotionSubspaceUniversalTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     enum
     {
       LINEAR = 0,
@@ -317,10 +314,7 @@ namespace pinocchio
       NVExtended = 2
     };
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef JointDataUniversalTpl<Scalar, Options> JointDataDerived;
     typedef JointModelUniversalTpl<Scalar, Options> JointModelDerived;
     typedef JointMotionSubspaceUniversalTpl<Scalar, Options> Constraint_t;

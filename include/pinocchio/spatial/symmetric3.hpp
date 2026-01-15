@@ -22,10 +22,7 @@ namespace pinocchio
   {
   public:
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, 3, 3, Options> Matrix3;

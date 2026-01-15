@@ -18,11 +18,7 @@ namespace pinocchio
       typedef context::Scalar Scalar;
       typedef context::SE3 SE3;
       typedef context::VectorXs VectorXs;
-      enum
-      {
-        Options = context::Options
-      };
-      typedef Eigen::Matrix<Scalar, 7, 1, Options> Vector7s;
+      typedef context::Vector7s Vector7s;
       typedef Eigen::Map<SE3::Quaternion> QuatMap;
       typedef Eigen::Map<const SE3::Quaternion> QuatConstMap;
 

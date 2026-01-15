@@ -50,10 +50,7 @@ namespace pinocchio
   struct traits<JointMotionSubspaceEllipsoidTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     enum
     {
       LINEAR = 0,
@@ -278,10 +275,7 @@ namespace pinocchio
       NVExtended = 3
     };
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef JointDataEllipsoidTpl<Scalar, Options> JointDataDerived;
     typedef JointModelEllipsoidTpl<Scalar, Options> JointModelDerived;
     typedef JointMotionSubspaceEllipsoidTpl<Scalar, Options> Constraint_t;

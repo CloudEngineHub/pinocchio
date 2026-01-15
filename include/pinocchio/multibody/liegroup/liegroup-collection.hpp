@@ -18,10 +18,7 @@ namespace pinocchio
   struct LieGroupCollectionDefaultTpl
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
 
     typedef boost::variant<
       SpecialOrthogonalOperationTpl<2, Scalar, Options>,

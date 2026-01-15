@@ -6,10 +6,7 @@ using namespace pinocchio;
 int main()
 {
   typedef double Scalar;
-  enum
-  {
-    Options = 0
-  };
+  static constexpr int Options = 0;
 
   typedef SpecialEuclideanOperationTpl<2, Scalar, Options> SE2Operation;
   SE2Operation aSE2;

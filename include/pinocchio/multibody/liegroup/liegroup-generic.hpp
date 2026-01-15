@@ -34,10 +34,7 @@ namespace pinocchio
     typedef typename LieGroupCollection::LieGroupVariant LieGroupVariant;
 
     typedef typename LieGroupCollection::Scalar Scalar;
-    enum
-    {
-      Options = LieGroupCollection::Options
-    };
+    static constexpr int Options = LieGroupCollection::Options;
 
     template<typename LieGroupDerived>
     LieGroupGenericTpl(const LieGroupBase<LieGroupDerived> & lg_base)

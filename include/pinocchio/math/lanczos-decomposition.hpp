@@ -22,10 +22,7 @@ namespace pinocchio
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(_Matrix) PlainMatrix;
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(typename PlainMatrix::ColXpr) Vector;
     typedef typename _Matrix::Scalar Scalar;
-    enum
-    {
-      Options = _Matrix::Options
-    };
+    static constexpr int Options = _Matrix::Options;
     typedef TridiagonalSymmetricMatrixTpl<Scalar, Options> TridiagonalMatrix;
 
     /// \brief Default constructor for the Lanczos decomposition from an input matrix

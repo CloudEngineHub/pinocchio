@@ -21,10 +21,7 @@ namespace pinocchio
       {
         typedef context::Scalar Scalar;
         typedef context::VectorXs VectorXs;
-        enum
-        {
-          Options = context::Options
-        };
+        static constexpr int Options = context::Options;
 
         // using the cholesky scope
         bp::scope current_scope = getOrCreatePythonNamespace("cholesky");

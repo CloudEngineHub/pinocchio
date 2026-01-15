@@ -173,10 +173,7 @@ template<typename _Scalar, int _Options>
 struct ManipulatorJointCollectionNoThrow
 {
   typedef _Scalar Scalar;
-  enum
-  {
-    Options = _Options
-  };
+  static constexpr int Options = _Options;
 
   // Joint Revolute
   typedef ::pinocchio::JointModelRevoluteTpl<Scalar, Options, 0> JointModelRX;
@@ -197,10 +194,7 @@ template<typename _Scalar, int _Options>
 struct ManipulatorJointCollectionThrow
 {
   typedef _Scalar Scalar;
-  enum
-  {
-    Options = _Options
-  };
+  static constexpr int Options = _Options;
 
   // Joint Revolute
   typedef ::pinocchio::JointModelRevoluteTpl<Scalar, Options, 0> JointModelRX;

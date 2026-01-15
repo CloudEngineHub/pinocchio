@@ -26,10 +26,7 @@ namespace pinocchio
     typedef JointMotionSubspaceTpl<Eigen::Dynamic, _Scalar, _Options, _MaxDim>
       RefJointMotionSubspace;
     typedef typename traits<RefJointMotionSubspace>::Scalar Scalar;
-    enum
-    {
-      Options = traits<RefJointMotionSubspace>::Options
-    };
+    static constexpr int Options = traits<RefJointMotionSubspace>::Options;
     enum
     {
       LINEAR = traits<RefJointMotionSubspace>::LINEAR,

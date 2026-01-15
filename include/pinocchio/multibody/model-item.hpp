@@ -15,10 +15,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<Derived>::Scalar Scalar;
-    enum
-    {
-      Options = traits<Derived>::Options
-    };
+    static constexpr int Options = traits<Derived>::Options;
     typedef SE3Tpl<Scalar, Options> SE3;
 
     /// \brief Name of the kinematic element

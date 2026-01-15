@@ -36,10 +36,7 @@ namespace pinocchio
   struct traits<MotionPrismaticUnalignedTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, 4, 4, Options> Matrix4;
@@ -206,10 +203,7 @@ namespace pinocchio
   struct traits<JointMotionSubspacePrismaticUnalignedTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     enum
     {
       LINEAR = 0,
@@ -482,10 +476,7 @@ namespace pinocchio
       NVExtended = 1
     };
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef JointDataPrismaticUnalignedTpl<Scalar, Options> JointDataDerived;
     typedef JointModelPrismaticUnalignedTpl<Scalar, Options> JointModelDerived;
     typedef JointMotionSubspacePrismaticUnalignedTpl<Scalar, Options> Constraint_t;

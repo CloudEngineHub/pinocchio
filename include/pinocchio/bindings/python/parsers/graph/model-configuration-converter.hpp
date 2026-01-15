@@ -21,10 +21,7 @@ namespace pinocchio
           ModelConfigurationConverterVisitor<_Scalar, _Options, JointCollectionTpl>>
       {
         typedef _Scalar Scalar;
-        enum
-        {
-          Options = _Options
-        };
+        static constexpr int Options = _Options;
         typedef JointCollectionTpl<Scalar, Options> JointCollection;
         typedef ModelConfigurationConverterTpl<Scalar, Options, JointCollectionTpl>
           ModelConfigurationConverter;

@@ -40,10 +40,7 @@ namespace pinocchio
     typedef DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition> Self;
     typedef DelassusOperatorBase<Self> Base;
     typedef typename ContactCholeskyDecomposition::EigenStorageVector EigenStorageVector;
-    enum
-    {
-      Options = ContactCholeskyDecomposition::Options,
-    };
+    static constexpr int Options = ContactCholeskyDecomposition::Options;
     typedef DelassusOperatorDenseTpl<Scalar, Options> DelassusOperatorDense;
 
     typedef

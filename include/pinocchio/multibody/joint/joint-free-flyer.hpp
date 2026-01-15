@@ -24,10 +24,7 @@ namespace pinocchio
   struct traits<JointMotionSubspaceIdentityTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
     enum
     {
@@ -172,10 +169,7 @@ namespace pinocchio
       NVExtended = 6
     };
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options
-    };
+    static constexpr int Options = _Options;
     typedef JointDataFreeFlyerTpl<Scalar, Options> JointDataDerived;
     typedef JointModelFreeFlyerTpl<Scalar, Options> JointModelDerived;
     typedef JointMotionSubspaceIdentityTpl<Scalar, Options> Constraint_t;
