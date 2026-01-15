@@ -64,17 +64,12 @@ namespace pinocchio
     ///
     /// \brief Default constructor of a frame.
     ///
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     FrameTpl()
     : Base()
-    , parent(Base::parentJoint)
-    , previousFrame(Base::parentFrame)
     , type()
     , inertia(Inertia::Zero())
     {
     } // needed by std::vector
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Builds a frame defined by its name, its joint parent id, its placement and its type.
@@ -85,8 +80,6 @@ namespace pinocchio
     /// \param[in] type The type of the frame, see the enum FrameType.
     /// \param[in] inertia Inertia info attached to the frame.
     ///
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     FrameTpl(
       const std::string & name,
       const JointIndex parentJoint,
@@ -94,13 +87,10 @@ namespace pinocchio
       const FrameType type,
       const Inertia & inertia = Inertia::Zero())
     : Base(name, parentJoint, 0, frame_placement)
-    , parent(Base::parentJoint)
-    , previousFrame(Base::parentFrame)
     , type(type)
     , inertia(inertia)
     {
     }
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Builds a frame defined by its name, its joint parent id, its placement and its type.
@@ -112,8 +102,6 @@ namespace pinocchio
     /// \param[in] type The type of the frame, see the enum FrameType.
     /// \param[in] inertia Inertia info attached to the frame.
     ///
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     FrameTpl(
       const std::string & name,
       const JointIndex parent_joint,
@@ -122,49 +110,36 @@ namespace pinocchio
       const FrameType type,
       const Inertia & inertia = Inertia::Zero())
     : Base(name, parent_joint, parent_frame, frame_placement)
-    , parent(Base::parentJoint)
-    , previousFrame(Base::parentFrame)
     , type(type)
     , inertia(inertia)
     {
     }
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Copy constructor
     ///
     /// \param[in] other Frame to copy
     ///
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     FrameTpl(const FrameTpl & other)
     : Base(other.name, other.parentJoint, other.parentFrame, other.placement)
-    , parent(Base::parentJoint)
-    , previousFrame(Base::parentFrame)
     , type(other.type)
     , inertia(other.inertia)
     {
     }
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Copy constructor by casting
     ///
     /// \param[in] other Frame to copy
     ///
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     template<typename S2, int O2>
     explicit FrameTpl(const FrameTpl<S2, O2> & other)
     : Base(
         other.name, other.parentJoint, other.parentFrame, other.placement.template cast<Scalar>())
-    , parent(Base::parentJoint)
-    , previousFrame(Base::parentFrame)
     , type(other.type)
     , inertia(other.inertia.template cast<Scalar>())
     {
     }
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Copy assignment operator. It needs to be user-define because references cannot be
@@ -220,14 +195,6 @@ namespace pinocchio
     }
 
     // data
-    /// \brief Index of the parent joint.
-    /// \deprecated use \ref parentJoint instead
-    PINOCCHIO_DEPRECATED JointIndex & parent;
-
-    /// \brief Index of the previous frame.
-    /// \deprecated use \ref parentFrame instead
-    PINOCCHIO_DEPRECATED FrameIndex & previousFrame;
-
     using Base::name;
     using Base::parentFrame;
     using Base::parentJoint;

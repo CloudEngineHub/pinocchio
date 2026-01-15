@@ -1,3 +1,25 @@
+# Porting from Pinocchio 3 to 4
+
+\section PortingIntro4 Contents
+
+This section describes how to port your code from the Pinocchio 3 to Pinocchio 4.
+
+\section PortingC4 C++ changes
+
+All Pinocchio 3 deprecated headers had been removed:
+- Replace `pinocchio/math/casadi.hpp` by `pinocchio/autodiff/casadi.hpp`
+- Replace `pinocchio/algorithm/parallel/geometry.hpp` by `pinocchio/collision/parallel/geometry.hpp`
+- Replace `pinocchio/spatial/fcl-pinocchio-conversions.hpp` by `pinocchio/collision/fcl-pinocchio-conversions.hpp`
+- Replace `pinocchio/parsers/sample-models.hpp` by `pinocchio/multibody/sample-models.hpp`
+- Replace `pinocchio/bindings/python/parsers/python.hpp` by `pinocchio/parsers/python.hpp`
+- Replace `pinocchio/math/cppad.hpp` by `pinocchio/autodiff/cppad.hpp`
+- Replace `pinocchio/math/cppadcg.hpp` by `pinocchio/codegen/cppadcg.hpp`
+
+All Pinocchio 3 deprecated functions had been removed:
+- Replace `FrameTpl::parent` by `FrameTpl::parentJoint`
+- Replace `FrameTpl::previousFrame` by `FrameTpl::parentFrame`
+- Replace `GeometryObject` constructor argument order has changed
+
 # Porting from Pinocchio 2 to 3
 
 \section PortingIntro3 Contents
