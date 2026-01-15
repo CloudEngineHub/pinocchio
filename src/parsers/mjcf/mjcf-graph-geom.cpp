@@ -3,12 +3,12 @@
 //
 
 #include "pinocchio/parsers/mjcf/mjcf-graph.hpp"
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
 
-  #include <hpp/fcl/mesh_loader/loader.h>
-  #include <hpp/fcl/mesh_loader/assimp.h>
+  #include <coal/mesh_loader/loader.h>
+  #include <coal/mesh_loader/assimp.h>
 
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
 namespace pinocchio
 {
@@ -62,15 +62,15 @@ namespace pinocchio
       }
 
       /**
-       * @brief      Get a fcl::CollisionObject from an mjcf geometry, searching
+       * @brief      Get a coal::CollisionGeometry from an mjcf geometry, searching
        *             for it in specified package directories
        *
        * @param[in]  geom  A mjcf geometry object
-       * @return     A shared pointer on the geometry converted as a fcl::CollisionGeometry
+       * @return     A shared pointer on the geometry converted as a coal::CollisionGeometry
        */
-#ifdef PINOCCHIO_WITH_HPP_FCL
-      static std::shared_ptr<fcl::CollisionGeometry> retrieveCollisionGeometry(
-        ::hpp::fcl::MeshLoaderPtr & meshLoader,
+#ifdef PINOCCHIO_WITH_COLLISION
+      static std::shared_ptr<coal::CollisionGeometry> retrieveCollisionGeometry(
+        ::coal::MeshLoaderPtr & meshLoader,
         const MjcfGeom & geom,
         const MjcfGraph & currentGraph,
         std::string & meshPath,
@@ -92,7 +92,7 @@ namespace pinocchio
             // Scale vertices
             for (Eigen::Index i = 0; i < vertices.rows(); ++i)
               vertices.row(i) = vertices.row(i).cwiseProduct(currentMesh.scale.transpose());
-            auto model = std::make_shared<hpp::fcl::BVHModel<fcl::OBBRSS>>();
+            auto model = std::make_shared<coal::BVHModel<coal::OBBRSS>>();
             model->beginModel();
             model->addVertices(vertices);
             model->endModel();
@@ -101,7 +101,7 @@ namespace pinocchio
           }
           meshPath = currentMesh.filePath;
           meshScale = currentMesh.scale;
-          hpp::fcl::BVHModelPtr_t bvh = meshLoader->load(meshPath, meshScale);
+          coal::BVHModelPtr_t bvh = meshLoader->load(meshPath, meshScale);
           return bvh;
         }
         else if (geom.geomType == "cylinder")
@@ -110,7 +110,7 @@ namespace pinocchio
           meshScale << 1, 1, 1;
           double radius = geom.size(0);
           double height = geom.size(1) * 2;
-          return std::make_shared<fcl::Cylinder>(radius, height);
+          return std::make_shared<coal::Cylinder>(radius, height);
         }
         else if (geom.geomType == "box")
         {
@@ -119,14 +119,14 @@ namespace pinocchio
           double x = geom.size(0);
           double y = geom.size(1);
           double z = geom.size(2);
-          return std::make_shared<fcl::Box>(x, y, z);
+          return std::make_shared<coal::Box>(x, y, z);
         }
         else if (geom.geomType == "sphere")
         {
           meshPath = "SPHERE";
           meshScale << 1, 1, 1;
           double radius = geom.size(0);
-          return std::make_shared<fcl::Sphere>(radius);
+          return std::make_shared<coal::Sphere>(radius);
         }
         else if (geom.geomType == "ellipsoid")
         {
@@ -135,7 +135,7 @@ namespace pinocchio
           double rx = geom.size(0);
           double ry = geom.size(1);
           double rz = geom.size(2);
-          return std::make_shared<fcl::Ellipsoid>(rx, ry, rz);
+          return std::make_shared<coal::Ellipsoid>(rx, ry, rz);
         }
         else if (geom.geomType == "capsule")
         {
@@ -143,13 +143,13 @@ namespace pinocchio
           meshScale << 1, 1, 1;
           double radius = geom.size(0);
           double height = geom.size(1) * 2;
-          return std::make_shared<fcl::Capsule>(radius, height);
+          return std::make_shared<coal::Capsule>(radius, height);
         }
         else if (geom.geomType == "plane")
         {
           meshPath = "PLANE";
           meshScale << 1, 1, 1;
-          return std::make_shared<fcl::Halfspace>(0, 0, 1, 0);
+          return std::make_shared<coal::Halfspace>(0, 0, 1, 0);
         }
         else
         {
@@ -160,14 +160,14 @@ namespace pinocchio
         }
       }
 #else
-      static std::shared_ptr<fcl::CollisionGeometry> retrieveCollisionGeometry(
-        ::hpp::fcl::MeshLoaderPtr &,
+      static std::shared_ptr<coal::CollisionGeometry> retrieveCollisionGeometry(
+        ::coal::MeshLoaderPtr &,
         const MjcfGeom &,
         const MjcfGraph &,
         std::string &,
         Eigen::Vector3d &)
       {
-        return std::make_shared<fcl::CollisionGeometry>();
+        return std::make_shared<coal::CollisionGeometry>();
       }
 #endif
 
@@ -175,12 +175,12 @@ namespace pinocchio
       /// @param currentBody Body from which geometries will be collected
       /// @param type Type of geometry to parse (COLLISION or VISUAL)
       /// @param geomModel geometry model to fill
-      /// @param meshLoader mesh loader from hpp::fcl
+      /// @param meshLoader mesh loader from coal
       static void addLinksToGeomModel(
         const MjcfBody & currentBody,
         const MjcfGraph & currentGraph,
         GeometryModel & geomModel,
-        ::hpp::fcl::MeshLoaderPtr & meshLoader,
+        ::coal::MeshLoaderPtr & meshLoader,
         const GeometryType & type,
         bool isWorldBody = false)
       {
@@ -581,14 +581,12 @@ namespace pinocchio
       }
 
       void MjcfGraph::parseGeomTree(
-        const GeometryType & type,
-        GeometryModel & geomModel,
-        ::hpp::fcl::MeshLoaderPtr & meshLoader)
+        const GeometryType & type, GeometryModel & geomModel, ::coal::MeshLoaderPtr & meshLoader)
       {
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
         if (!meshLoader)
-          meshLoader = std::make_shared<fcl::MeshLoader>(fcl::MeshLoader());
-#endif // ifdef PINOCCHIO_WITH_HPP_FCL
+          meshLoader = std::make_shared<coal::MeshLoader>(coal::MeshLoader());
+#endif // ifdef PINOCCHIO_WITH_COLLISION
 
         addLinksToGeomModel(worldBody, *this, geomModel, meshLoader, type, true);
         for (const auto & entry : bodiesList)

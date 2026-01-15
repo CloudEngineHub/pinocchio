@@ -24,7 +24,7 @@
 Besides, **Pinocchio** provides the analytical derivatives of the main Rigid-Body Algorithms, such as the Recursive Newton-Euler Algorithm or the Articulated-Body Algorithm.
 
 **Pinocchio** was originally designed for robotics applications, but it can be used in other contexts (biomechanics, computer graphics, vision, etc.).
-It is built upon Eigen for linear algebra and FCL for collision detection. **Pinocchio** includes a Python interface for fast code prototyping, [directly accessible](https://github.com/conda-forge/pinocchio-feedstock#installing-pinocchio) through [Conda](https://docs.conda.io/en/latest/).
+It is built upon Eigen for linear algebra and **coal** for collision detection. **Pinocchio** includes a Python interface for fast code prototyping, [directly accessible](https://github.com/conda-forge/pinocchio-feedstock#installing-pinocchio) through [Conda](https://docs.conda.io/en/latest/).
 
 **Pinocchio** is now at the heart of various robotics software as [Crocoddyl](https://github.com/loco-3d/crocoddyl/tree/devel), an open-source and efficient Differential Dynamic Programming solver for robotics, the [Stack-of-Tasks](http://stack-of-tasks.github.io), an open-source and versatile hierarchical controller framework, or the [Humanoid Path Planner](https://humanoid-path-planner.github.io/hpp-doc), open-source software for Motion and Manipulation Planning.
 

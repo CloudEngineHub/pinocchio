@@ -65,7 +65,7 @@ function(ADD_PINOCCHIO_UNIT_TEST name)
     target_compile_definitions(
       ${TEST_NAME}
       PRIVATE ${TEST_PRIVATE_DEFINITIONS} BOOST_TEST_DYN_LINK BOOST_TEST_MODULE=${MODULE_NAME}
-              PINOCCHIO_MODEL_DIR=\"${PINOCCHIO_MODEL_DIR}\" COAL_DISABLE_HPP_FCL_WARNINGS)
+              PINOCCHIO_MODEL_DIR=\"${PINOCCHIO_MODEL_DIR}\")
 
     # There is no RPATH in Windows, then we must use the PATH to find the DLL
     if(WIN32)
@@ -253,7 +253,7 @@ if(BUILD_WITH_URDF_SUPPORT)
     COLLISION_OPTIONAL)
 
   add_pinocchio_unit_test(value PARSERS)
-  if(BUILD_WITH_HPP_FCL_SUPPORT)
+  if(BUILD_WITH_COLLISION_SUPPORT)
     add_pinocchio_unit_test(geometry-object COLLISION)
     add_pinocchio_unit_test(
       geometry-model

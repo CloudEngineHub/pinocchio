@@ -52,7 +52,7 @@ namespace pinocchio
        * the URDF tree
        *
        * @param[in]  tree           The URDF kinematic tree
-       * @param[in]  meshLoader     The FCL mesh loader to avoid duplications of already loaded
+       * @param[in]  meshLoader     The coal mesh loader to avoid duplications of already loaded
        * geometries
        * @param[in]  link           The current URDF link
        * @param      model          The model to which is the GeometryModel associated
@@ -69,7 +69,7 @@ namespace pinocchio
         const GeometryType type,
         GeometryModel & geomModel,
         const std::vector<std::string> & package_dirs,
-        ::hpp::fcl::MeshLoaderPtr meshLoader);
+        ::coal::MeshLoaderPtr meshLoader);
 
     } // namespace details
 
@@ -80,7 +80,7 @@ namespace pinocchio
       const GeometryType type,
       GeometryModel & geomModel,
       const std::vector<std::string> & package_dirs,
-      ::hpp::fcl::MeshLoaderPtr meshLoader)
+      ::coal::MeshLoaderPtr meshLoader)
     {
       std::ifstream xmlStream(filename.c_str());
       if (!xmlStream.is_open())
@@ -98,7 +98,7 @@ namespace pinocchio
       const GeometryType type,
       GeometryModel & geomModel,
       const std::vector<std::string> & package_dirs,
-      ::hpp::fcl::MeshLoaderPtr meshLoader)
+      ::coal::MeshLoaderPtr meshLoader)
     {
       details::UrdfGeomVisitor<Scalar, Options, JointCollectionTpl> visitor(model);
       details::parseTreeForGeom(visitor, xmlStream, type, geomModel, package_dirs, meshLoader);

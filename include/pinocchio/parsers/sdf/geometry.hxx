@@ -25,7 +25,7 @@ namespace pinocchio
        * the URDF tree
        *
        * @param[in]  tree           The URDF kinematic tree
-       * @param[in]  meshLoader     The FCL mesh loader to avoid duplications of already loaded
+       * @param[in]  meshLoader     The coal mesh loader to avoid duplications of already loaded
        * geometries
        * @param[in]  link           The current URDF link
        * @param      model          The model to which is the GeometryModel associated
@@ -38,7 +38,7 @@ namespace pinocchio
        */
       PINOCCHIO_PARSERS_DLLAPI void addLinkGeometryToGeomModel(
         const SdfGraph & graph,
-        ::hpp::fcl::MeshLoaderPtr & meshLoader,
+        ::coal::MeshLoaderPtr & meshLoader,
         const ::sdf::ElementPtr link,
         GeometryModel & geomModel,
         const std::vector<std::string> & package_dirs,
@@ -51,7 +51,7 @@ namespace pinocchio
         const std::string & rootLinkName,
         const GeometryType type,
         const std::vector<std::string> & package_dirs,
-        ::hpp::fcl::MeshLoaderPtr meshLoader);
+        ::coal::MeshLoaderPtr meshLoader);
     } // namespace details
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
@@ -62,7 +62,7 @@ namespace pinocchio
       GeometryModel & geomModel,
       const std::string & rootLinkName,
       const std::vector<std::string> & package_dirs,
-      ::hpp::fcl::MeshLoaderPtr meshLoader)
+      ::coal::MeshLoaderPtr meshLoader)
     {
       typedef ::pinocchio::parsers::Model Model;
       Model urdf_model = model;

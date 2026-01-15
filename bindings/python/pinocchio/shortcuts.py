@@ -5,7 +5,7 @@
 
 ## In this file, some shortcuts are provided ##
 
-from . import WITH_HPP_FCL, WITH_HPP_FCL_BINDINGS
+from . import WITH_COLLISION
 from . import pinocchio_pywrap_default as pin
 
 nle = pin.nonLinearEffects
@@ -21,7 +21,7 @@ def buildModelsFromUrdf(
         - root_joint - Joint at the base of the model (default - None)
         - root_joint_name - Name for the root_joint (default - "root_joint")
         - verbose - print information of parsing (default - False)
-        - meshLoader - object used to load meshes (default - hpp::fcl::MeshLoader)
+        - meshLoader - object used to load meshes (default - coal::MeshLoader)
         - geometry_types - Which geometry model to load. Can be pin.GeometryType.COLLISION, pin.GeometryType.VISUAL or both. (default - [pin.GeometryType.COLLISION, pin.GeometryType.VISUAL])
         - mimic - If urdf mimic joints should be parsed or not (default - False)
     Return:
@@ -82,14 +82,8 @@ def _buildModelsFromUrdf(
     else:
         model = pin.buildModelFromUrdf(filename, root_joint, root_joint_name, mimic)
 
-    if verbose and not WITH_HPP_FCL and meshLoader is not None:
-        print(
-            "Info: MeshLoader is ignored. Pinocchio has not been compiled with HPP-FCL."
-        )
-    if verbose and not WITH_HPP_FCL_BINDINGS and meshLoader is not None:
-        print(
-            "Info: MeshLoader is ignored. The HPP-FCL Python bindings have not been installed."
-        )
+    if verbose and not WITH_COLLISION and meshLoader is not None:
+        print("Info: MeshLoader is ignored. Pinocchio has not been compiled with coal.")
     if package_dirs is None:
         package_dirs = []
 
@@ -99,7 +93,7 @@ def _buildModelsFromUrdf(
         geometry_types = [geometry_types]
 
     for geometry_type in geometry_types:
-        if meshLoader is None or (not WITH_HPP_FCL and not WITH_HPP_FCL_BINDINGS):
+        if meshLoader is None or not WITH_COLLISION:
             geom_model = pin.buildGeomFromUrdf(
                 model, filename, geometry_type, package_dirs=package_dirs
             )
@@ -137,7 +131,7 @@ def buildModelsFromSdf(
         - root_joint_name - Name for the root_joint (default - "root_joint")
         - parent_guidance - Joint names which should be preferred for cases where two joints can qualify as parent. The other joint appears in the constraint_model. If empty, joint appearance order in .sdf is taken as default.
         - verbose - print information of parsing (default - False)
-        - meshLoader - object used to load meshes (default - hpp::fcl::MeshLoader)
+        - meshLoader - object used to load meshes (default - coal::MeshLoader)
         - geometry_types - Which geometry model to load. Can be pin.GeometryType.COLLISION, pin.GeometryType.VISUAL, both or None. (default - None])
     Return:
         Tuple of the models, in this order : model, collision model, and visual model.
@@ -207,14 +201,8 @@ def _buildModelsFromSdf(
         model, constraint_models = pin.buildModelFromSdf(
             filename, root_joint, root_link_name, root_joint_name, parent_guidance
         )
-    if verbose and not WITH_HPP_FCL and meshLoader is not None:
-        print(
-            "Info: MeshLoader is ignored. Pinocchio has not been compiled with HPP-FCL."
-        )
-    if verbose and not WITH_HPP_FCL_BINDINGS and meshLoader is not None:
-        print(
-            "Info: MeshLoader is ignored. The HPP-FCL Python bindings have not been installed."
-        )
+    if verbose and not WITH_COLLISION and meshLoader is not None:
+        print("Info: MeshLoader is ignored. Pinocchio has not been compiled with coal.")
     if package_dirs is None:
         package_dirs = []
 
@@ -224,7 +212,7 @@ def _buildModelsFromSdf(
         geometry_types = [geometry_types]
 
     for geometry_type in geometry_types:
-        if meshLoader is None or (not WITH_HPP_FCL and not WITH_HPP_FCL_BINDINGS):
+        if meshLoader is None or not WITH_COLLISION:
             geom_model = pin.buildGeomFromSdf(
                 model, filename, geometry_type, root_link_name, package_dirs
             )
@@ -245,7 +233,7 @@ def buildModelsFromMJCF(filename, *args, **kwargs):
         - root_joint - Joint at the base of the model (default - None)
         - root_joint_name - Name for the root_joint (default - "root_joint")
         - verbose - print information of parsing (default - False)
-        - meshLoader - object used to load meshes (default - hpp::fcl::MeshLoader)
+        - meshLoader - object used to load meshes (default - coal::MeshLoader)
         - geometry_types - Which geometry model to load. Can be pin.GeometryType.COLLISION, pin.GeometryType.VISUAL or both. (default - [pin.GeometryType.COLLISION, pin.GeometryType.VISUAL])
         - constraints - Boolean to know if constraint models are wanted (default - False)
     Return:
@@ -297,15 +285,8 @@ def _buildModelsFromMJCF(
     else:
         model = pin.buildModelFromMJCF(filename, root_joint, root_joint_name)
 
-    if verbose and not WITH_HPP_FCL and meshLoader is not None:
-        print(
-            "Info: MeshLoader is ignored. Pinocchio has not been compiled with HPP-FCL."
-        )
-    if verbose and not WITH_HPP_FCL_BINDINGS and meshLoader is not None:
-        print(
-            "Info: MeshLoader is ignored. "
-            "The HPP-FCL Python bindings have not been installed."
-        )
+    if verbose and not WITH_COLLISION and meshLoader is not None:
+        print("Info: MeshLoader is ignored. Pinocchio has not been compiled with coal.")
 
     lst = [model]
     if constraints:
@@ -326,7 +307,7 @@ def _buildModelsFromMJCF(
         geometry_types = [geometry_types]
 
     for geometry_type in geometry_types:
-        if meshLoader is None or (not WITH_HPP_FCL and not WITH_HPP_FCL_BINDINGS):
+        if meshLoader is None or not WITH_COLLISION:
             geom_model = pin.buildGeomFromMJCF(model, filename, geometry_type)
         else:
             geom_model = pin.buildGeomFromMJCF(

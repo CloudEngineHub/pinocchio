@@ -33,8 +33,7 @@ function(ADD_PINOCCHIO_CPP_EXAMPLE EXAMPLE)
       target_link_libraries(${EXAMPLE_NAME} PUBLIC ${PROJECT_NAME}_casadi)
     endif()
 
-    target_compile_definitions(${EXAMPLE_NAME} PRIVATE ${EXAMPLE_PRIVATE_DEFINITIONS}
-                                                       COAL_DISABLE_HPP_FCL_WARNINGS)
+    target_compile_definitions(${EXAMPLE_NAME} PRIVATE ${EXAMPLE_PRIVATE_DEFINITIONS})
 
     modernize_target_link_libraries(
       ${EXAMPLE_NAME}

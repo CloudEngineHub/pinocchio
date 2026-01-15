@@ -68,8 +68,7 @@ function(pinocchio_add_python_cpp_module name)
   endif()
 
   add_library(${target_name} MODULE ${_exclude} ${source_file})
-  target_compile_definitions(${target_name} PRIVATE EXT_MODULE_NAME=${module_name}
-                                                    COAL_DISABLE_HPP_FCL_WARNINGS)
+  target_compile_definitions(${target_name} PRIVATE EXT_MODULE_NAME=${module_name})
   target_link_libraries(${target_name} PRIVATE pinocchio::pinocchio_default eigenpy::eigenpy)
   foreach(_dep ${ARGS_PIN_TARGETS})
     target_link_libraries(${target_name} PRIVATE ${_dep})
@@ -107,9 +106,9 @@ function(pinocchio_add_lib_unit_test name)
   add_windows_dll_path_to_test(${TEST_NAME})
 endfunction()
 
-if(BUILD_WITH_HPP_FCL_SUPPORT)
+if(BUILD_WITH_COLLISION_SUPPORT)
   set(${PROJECT_NAME}_PYTHON_TESTS ${${PROJECT_NAME}_PYTHON_TESTS} bindings_geometry_object)
-  set(${PROJECT_NAME}_PYTHON_TESTS ${${PROJECT_NAME}_PYTHON_TESTS} bindings_fcl_transform)
+  set(${PROJECT_NAME}_PYTHON_TESTS ${${PROJECT_NAME}_PYTHON_TESTS} bindings_coal_transform)
   set(${PROJECT_NAME}_PYTHON_TESTS ${${PROJECT_NAME}_PYTHON_TESTS} bindings_constraints)
 endif()
 

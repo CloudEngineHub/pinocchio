@@ -14,12 +14,9 @@
 #include <boost/throw_exception.hpp>
 #include <stdexcept>
 
-// If hpp-fcl < 3.0.0 The GCC Eigen/Boost.Serialization workaround
-// is already defined.
-// If we don't link against hpp-fcl or hpp-fcl >= 3.0.0 then we must define
+// If we don't link against coal or coal >= 3.0.0 then we must define
 // the workaround.
-#if defined PINOCCHIO_WITH_HPP_FCL
-  #include <hpp/fcl/config.hh>
+#if defined PINOCCHIO_WITH_COLLISION
   // Workaround a bug in GCC >= 7 and C++17.
   // ref. https://gitlab.com/libeigen/eigen/-/issues/1676
   #ifdef __GNUC__
@@ -47,7 +44,7 @@ namespace Eigen
 } // namespace Eigen
     #endif
   #endif
-#else // !PINOCCHIO_WITH_HPP_FCL
+#else // !PINOCCHIO_WITH_COLLISION
   // Workaround a bug in GCC >= 7 and C++17.
   // ref. https://gitlab.com/libeigen/eigen/-/issues/1676
   #ifdef __GNUC__

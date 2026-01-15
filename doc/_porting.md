@@ -20,6 +20,20 @@ All Pinocchio 3 deprecated functions had been removed:
 - Replace `FrameTpl::previousFrame` by `FrameTpl::parentFrame`
 - Replace `GeometryObject` constructor argument order has changed
 
+HPP-FCL has been replaced by coal:
+- Replace `include/pinocchio/multibody/fcl.hpp` by `include/pinocchio/multibody/coal.hpp`
+- Replace `include/pinocchio/serialization/fcl.hpp` by `include/pinocchio/serialization/coal.hpp`
+- Replace `include/pinocchio/collision/fcl-pinocchio-conversions.hpp` by `include/pinocchio/collision/coal-pinocchio-conversions.hpp`
+- Replace `pinocchio/bindings/python/collision/fcl/transform.hpp` by `pinocchio/bindings/python/collision/coal/transform.hpp`
+- Replace `PINOCCHIO_WITH_HPP_FCL` by `PINOCCHIO_WITH_COLLISION`
+- Relpace `toFclTransform3f` by `toCoalTransform3s`
+
+\section PortingPy4 Python changes
+
+HPP-FCL has been replaced by coal:
+- Replace `pinocchio.WITH_HPP_FCL` and `pinocchio.WITH_HPP_FCL_BINDINGS` by `pinocchio.WITH_COLLISION`
+- Replace `pinocchio.hppfcl` by `pinocchio.coal`
+
 # Porting from Pinocchio 2 to 3
 
 \section PortingIntro3 Contents

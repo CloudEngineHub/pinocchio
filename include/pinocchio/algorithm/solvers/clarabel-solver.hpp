@@ -120,10 +120,10 @@ namespace pinocchio
       return is_valid_;
     }
 
-  #ifdef PINOCCHIO_WITH_HPP_FCL
+  #ifdef PINOCCHIO_WITH_COLLISION
     /// \brief Timer for the `solve` method
     using Base::timer;
-  #endif // PINOCCHIO_WITH_HPP_FCL
+  #endif // PINOCCHIO_WITH_COLLISION
 
   protected:
     /// \brief Workspace of the Clarabel solver.

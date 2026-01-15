@@ -7,25 +7,14 @@
 
 #include <memory>
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
-  #include <hpp/fcl/config.hh>
-#endif // PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
+  #include <coal/config.hh>
+#endif // PINOCCHIO_WITH_COLLISION
 
-#ifdef COAL_VERSION
 namespace coal
 {
   class MeshLoader;
   typedef std::shared_ptr<MeshLoader> MeshLoaderPtr;
 } // namespace coal
-#else
-namespace hpp
-{
-  namespace fcl
-  {
-    class MeshLoader;
-    typedef std::shared_ptr<MeshLoader> MeshLoaderPtr;
-  } // namespace fcl
-} // namespace hpp
-#endif // COAL_VERSION
 
 #endif // __pinocchio_parsers_meshloader_fwd_hpp__

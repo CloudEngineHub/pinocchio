@@ -47,9 +47,9 @@ namespace pinocchio
       exposeGeometryBuilder();
       exposeModelGraph();
       exposeModelGraphAlgo();
-  #if defined(PINOCCHIO_WITH_HPP_FCL)
+  #if defined(PINOCCHIO_WITH_COLLISION)
       exposeAlgoGeometry();
-  #endif // if defined(PINOCCHIO_WITH_HPP_FCL)
+  #endif // if defined(PINOCCHIO_WITH_COLLISION)
 #endif   // if defined(PINOCCHIO_PYTHON_INTERFACE_MAIN_MODULE)
       exposeModelConfigurationConverter();
     }

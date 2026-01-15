@@ -34,7 +34,7 @@ namespace pinocchio
     {
       using namespace Eigen;
 
-      bp::register_ptr_to_python<std::shared_ptr<hpp::fcl::CollisionGeometry const>>();
+      bp::register_ptr_to_python<std::shared_ptr<coal::CollisionGeometry const>>();
 
       bp::class_<ComputeCollision>(
         "ComputeCollision", "Collision function between two geometry objects.\n\n", bp::no_init)
@@ -49,7 +49,7 @@ namespace pinocchio
       bp::def(
         "computeCollision",
         static_cast<bool (*)(
-          const GeometryModel &, GeometryData &, const PairIndex, fcl::CollisionRequest &)>(
+          const GeometryModel &, GeometryData &, const PairIndex, coal::CollisionRequest &)>(
           computeCollision),
         (bp::args("geometry_model", "geometry_data", "pair_index", "collision_request")),
         "Check if the collision objects of a collision pair for a given Geometry Model and Data "

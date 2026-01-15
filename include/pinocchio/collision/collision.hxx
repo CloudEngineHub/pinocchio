@@ -19,14 +19,14 @@ namespace pinocchio
     const GeometryModel & geom_model, GeometryData & geom_data, const PairIndex pair_id)
   {
     const CollisionPair & pair = geom_model.collisionPairs[pair_id];
-    fcl::CollisionResult & collision_result = geom_data.collisionResults[pair_id];
-    const fcl::ContactPatchRequest & patch_request = geom_data.contactPatchRequests[pair_id];
-    fcl::ContactPatchResult & patch_result = geom_data.contactPatchResults[pair_id];
+    coal::CollisionResult & collision_result = geom_data.collisionResults[pair_id];
+    const coal::ContactPatchRequest & patch_request = geom_data.contactPatchRequests[pair_id];
+    coal::ContactPatchResult & patch_result = geom_data.contactPatchResults[pair_id];
     patch_result.clear(); // if a collision did not occur, we still want to clear the patch result
     if (collision_result.isCollision() && patch_request.max_num_patch > 0)
     {
-      fcl::Transform3f oM1(toFclTransform3f(geom_data.oMg[pair.first]));
-      fcl::Transform3f oM2(toFclTransform3f(geom_data.oMg[pair.second]));
+      coal::Transform3s oM1(toCoalTransform3s(geom_data.oMg[pair.first]));
+      coal::Transform3s oM2(toCoalTransform3s(geom_data.oMg[pair.second]));
       GeometryData::ComputeContactPatch & contact_patch_functor =
         geom_data.contact_patch_functors[pair_id];
       contact_patch_functor(oM1, oM2, collision_result, patch_request, patch_result);
@@ -52,7 +52,7 @@ namespace pinocchio
     const GeometryModel & geom_model,
     GeometryData & geom_data,
     const PairIndex pair_id,
-    fcl::CollisionRequest & collision_request)
+    coal::CollisionRequest & collision_request)
   {
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       geom_model.collisionPairs.size() == geom_data.collisionResults.size());
@@ -66,11 +66,11 @@ namespace pinocchio
     collision_request.distance_upper_bound =
       collision_request.security_margin + 1e-6; // TODO: change the margin
 
-    fcl::CollisionResult & collision_result = geom_data.collisionResults[pair_id];
+    coal::CollisionResult & collision_result = geom_data.collisionResults[pair_id];
     collision_result.clear();
 
-    fcl::Transform3f oM1(toFclTransform3f(geom_data.oMg[pair.first])),
-      oM2(toFclTransform3f(geom_data.oMg[pair.second]));
+    coal::Transform3s oM1(toCoalTransform3s(geom_data.oMg[pair.first])),
+      oM2(toCoalTransform3s(geom_data.oMg[pair.second]));
 
     try
     {
@@ -83,7 +83,7 @@ namespace pinocchio
         std::invalid_argument, "Problem when trying to check the collision of collision pair #"
                                  << pair_id << " (" << pair.first << "," << pair.second << ")"
                                  << std::endl
-                                 << "hpp-fcl original error:\n"
+                                 << "coal original error:\n"
                                  << e.what() << std::endl);
     }
     catch (std::logic_error & e)
@@ -92,7 +92,7 @@ namespace pinocchio
         std::logic_error, "Problem when trying to check the collision of collision pair #"
                             << pair_id << " (" << pair.first << "," << pair.second << ")"
                             << std::endl
-                            << "hpp-fcl original error:\n"
+                            << "coal original error:\n"
                             << e.what() << std::endl);
     }
 
@@ -103,7 +103,7 @@ namespace pinocchio
     const GeometryModel & geom_model, GeometryData & geom_data, const PairIndex pair_id)
   {
     PINOCCHIO_CHECK_INPUT_ARGUMENT(pair_id < geom_model.collisionPairs.size());
-    fcl::CollisionRequest & collision_request = geom_data.collisionRequests[pair_id];
+    coal::CollisionRequest & collision_request = geom_data.collisionRequests[pair_id];
 
     return computeCollision(geom_model, geom_data, pair_id, collision_request);
   }
@@ -164,9 +164,9 @@ namespace pinocchio
   /* --- RADIUS -------------------------------------------------------------------- */
 
   /// Given p1..3 being either "min" or "max", return one of the corners of the
-  /// AABB cub of the FCL object.
-#define PINOCCHIO_GEOM_AABB(FCL, p1, p2, p3)                                                       \
-  SE3::Vector3(FCL->aabb_local.p1##_[0], FCL->aabb_local.p2##_[1], FCL->aabb_local.p3##_[2])
+  /// AABB cub of the coal object.
+#define PINOCCHIO_GEOM_AABB(COAL, p1, p2, p3)                                                      \
+  SE3::Vector3(COAL->aabb_local.p1##_[0], COAL->aabb_local.p2##_[1], COAL->aabb_local.p3##_[2])
 
   /// For all bodies of the model, compute the point of the geometry model
   /// that is the further from the center of the joint. This quantity is used
@@ -184,7 +184,7 @@ namespace pinocchio
 
       // Force computation of the Local AABB
       // TODO: change for a more elegant solution
-      const_cast<hpp::fcl::CollisionGeometry &>(*geometry).computeLocalAABB();
+      const_cast<coal::CollisionGeometry &>(*geometry).computeLocalAABB();
 
       const GeometryModel::SE3 & jMb = geom_object.placement; // placement in joint.
       const Model::JointIndex i = geom_object.parentJoint;

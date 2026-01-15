@@ -2,15 +2,15 @@
 // Copyright (c) 2015-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_fcl_hpp__
-#define __pinocchio_multibody_fcl_hpp__
+#ifndef __pinocchio_multibody_coal_hpp__
+#define __pinocchio_multibody_coal_hpp__
 
 #include "pinocchio/spatial/se3.hpp"
 #include "pinocchio/multibody/fwd.hpp"
 #include "pinocchio/multibody/model-item.hpp"
 #include "pinocchio/container/aligned-vector.hpp"
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
 
   #if (WIN32)
     // It appears that std::snprintf is missing for Windows.
@@ -36,12 +36,12 @@ namespace std
     #endif
   #endif
 
-  #include <hpp/fcl/collision_object.h>
-  #include <hpp/fcl/collision.h>
-  #include <hpp/fcl/contact_patch.h>
-  #include <hpp/fcl/distance.h>
-  #include <hpp/fcl/shape/geometric_shapes.h>
-  #include "pinocchio/collision/fcl-pinocchio-conversions.hpp"
+  #include <coal/collision_object.h>
+  #include <coal/collision.h>
+  #include <coal/contact_patch.h>
+  #include <coal/distance.h>
+  #include <coal/shape/geometric_shapes.h>
+  #include "pinocchio/collision/coal-pinocchio-conversions.hpp"
 #endif
 
 #include <map>
@@ -56,9 +56,9 @@ namespace std
 namespace pinocchio
 {
 
-#ifndef PINOCCHIO_WITH_HPP_FCL
+#ifndef PINOCCHIO_WITH_COLLISION
 
-  namespace fcl
+  namespace coal
   {
 
     struct FakeCollisionGeometry
@@ -83,20 +83,18 @@ namespace pinocchio
 
     typedef FakeCollisionGeometry CollisionGeometry;
 
-  } // namespace fcl
+  } // namespace coal
 
 #else
 
-  namespace fcl = hpp::fcl;
-
-  inline bool operator==(const fcl::CollisionObject & lhs, const fcl::CollisionObject & rhs)
+  inline bool operator==(const ::coal::CollisionObject & lhs, const ::coal::CollisionObject & rhs)
   {
     return lhs.collisionGeometry() == rhs.collisionGeometry()
            && lhs.getAABB().min_ == rhs.getAABB().min_ && lhs.getAABB().max_ == rhs.getAABB().max_;
   }
 
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_multibody_fcl_hpp__
+#endif // ifndef __pinocchio_multibody_coal_hpp__
