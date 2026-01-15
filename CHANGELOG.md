@@ -36,6 +36,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - macros.hpp : remove macros already provided by jrl-cmakemodules
 - bindings/python : removed header `utils/registration.hpp`, delegate to `<eigenpy/registration.hpp>` instead
 - bindings/python : deprecate and remove contents of `utils/copyable.hpp`, `utils/registration.hpp` and `utils/deprecation.hpp`, include corresponding eigenpy headers instead
+- Remove pinocchio 3 deprecated files and functions
+- Remove PINOCCHIO_WITH_CXX{11,14,17}_SUPPORT define
+- Remove support to Eigen < 3.4
+- Remove support to coal < 3
+- Remove support to eigenpy < 3
 
 ## [3.9.0] - 2026-01-05
 
