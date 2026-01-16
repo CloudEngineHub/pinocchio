@@ -18,10 +18,6 @@
 #include "pinocchio/bindings/python/utils/cast.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
 
-#if EIGENPY_VERSION_AT_MOST(2, 8, 1)
-EIGENPY_DEFINE_STRUCT_ALLOCATOR_SPECIALIZATION(pinocchio::Force)
-#endif
-
 namespace pinocchio
 {
   namespace python
@@ -70,12 +66,14 @@ namespace pinocchio
         PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
         PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_SELF_ASSIGN_OVERLOADED
         cl.def(bp::init<>(bp::arg("self"), "Default constructor"))
-          .def(bp::init<const Vector3 &, const Vector3 &>(
-            (bp::arg("self"), bp::arg("linear"), bp::arg("angular")),
-            "Initialize from linear and angular components of a Wrench vector (don't mix the "
-            "order)."))
-          .def(bp::init<const Vector6 &>(
-            (bp::args("self", "array")), "Init from a vector 6 [force,torque]"))
+          .def(
+            bp::init<const Vector3 &, const Vector3 &>(
+              (bp::arg("self"), bp::arg("linear"), bp::arg("angular")),
+              "Initialize from linear and angular components of a Wrench vector (don't mix the "
+              "order)."))
+          .def(
+            bp::init<const Vector6 &>(
+              (bp::args("self", "array")), "Init from a vector 6 [force,torque]"))
           .def(bp::init<const Force &>((bp::arg("self"), bp::arg("clone")), "Copy constructor"))
 
           .add_property(
@@ -95,12 +93,12 @@ namespace pinocchio
           .add_property(
             "vector",
             bp::make_function(
-              (typename Force::ToVectorReturnType(Force::*)()) & Force::toVector,
+              (typename Force::ToVectorReturnType (Force::*)())&Force::toVector,
               bp::return_internal_reference<>()),
             &ForcePythonVisitor::setVector, "Returns the components of *this as a 6d vector.")
           .add_property(
             "np", bp::make_function(
-                    (typename Force::ToVectorReturnType(Force::*)()) & Force::toVector,
+                    (typename Force::ToVectorReturnType (Force::*)())&Force::toVector,
                     bp::return_internal_reference<>()))
 
           .def(
@@ -119,7 +117,7 @@ namespace pinocchio
             "Set the linear and angular components of *this to random values.")
 
           .def(
-            "dot", (Scalar(Force::*)(const MotionDense<context::Motion> &) const)&Force::dot,
+            "dot", (Scalar (Force::*)(const MotionDense<context::Motion> &) const) & Force::dot,
             bp::args("self", "m"), "Dot product between *this and a Motion m.")
 
           .def(bp::self + bp::self)
@@ -157,7 +155,7 @@ namespace pinocchio
 
           .def(
             "__array__", bp::make_function(
-                           (typename Force::ToVectorReturnType(Force::*)()) & Force::toVector,
+                           (typename Force::ToVectorReturnType (Force::*)())&Force::toVector,
                            bp::return_internal_reference<>()))
           .def(
             "__array__", &__array__,
@@ -180,11 +178,7 @@ namespace pinocchio
         bp::objects::register_dynamic_id<ForceBase>();
         bp::objects::register_conversion<Force, ForceDense>(false);
 
-#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION == 6 && EIGENPY_VERSION_AT_LEAST(2, 9, 0)
-        typedef PINOCCHIO_SHARED_PTR_HOLDER_TYPE(Force) HolderType;
-#else
         typedef ::boost::python::detail::not_specified HolderType;
-#endif
         bp::class_<Force, HolderType>(
           "Force",
           "Force vectors, in se3* == F^6.\n\n"

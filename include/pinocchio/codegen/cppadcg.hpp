@@ -61,9 +61,7 @@ namespace Eigen
     template<typename Scalar>
     struct cast_impl<CppAD::cg::CG<Scalar>, Scalar>
     {
-#if EIGEN_VERSION_AT_LEAST(3, 2, 90)
       EIGEN_DEVICE_FUNC
-#endif
       static inline Scalar run(const CppAD::cg::CG<Scalar> & x)
       {
         return x.getValue();
@@ -74,9 +72,7 @@ namespace Eigen
     template<typename Scalar>
     struct cast_impl<CppAD::AD<CppAD::cg::CG<Scalar>>, Scalar>
     {
-#if EIGEN_VERSION_AT_LEAST(3, 2, 90)
       EIGEN_DEVICE_FUNC
-#endif
       static inline Scalar run(const CppAD::AD<CppAD::cg::CG<Scalar>> & x)
       {
         return CppAD::Value(x).getValue();

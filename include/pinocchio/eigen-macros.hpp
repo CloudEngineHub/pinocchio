@@ -26,34 +26,19 @@
 
 /// \brief Macro giving access to the reference type of D
 #define PINOCCHIO_EIGEN_REF_CONST_TYPE(D) Eigen::internal::ref_selector<D>::type
-#if EIGEN_VERSION_AT_LEAST(3, 2, 90)
-  #define PINOCCHIO_EIGEN_REF_TYPE(D) Eigen::internal::ref_selector<D>::non_const_type
-#else
-  #define PINOCCHIO_EIGEN_REF_TYPE(D)                                                              \
-    Eigen::internal::conditional<                                                                  \
-      bool(Eigen::internal::traits<D>::Flags & Eigen::NestByRefBit), D &, D>::type
-#endif
+#define PINOCCHIO_EIGEN_REF_TYPE(D) Eigen::internal::ref_selector<D>::non_const_type
 
 /// \brief Macro giving access to the return type of the dot product operation
-#if EIGEN_VERSION_AT_LEAST(3, 3, 0)
-  #define PINOCCHIO_EIGEN_DOT_PRODUCT_RETURN_TYPE(D1, D2)                                          \
-    Eigen::ScalarBinaryOpTraits<                                                                   \
-      typename Eigen::internal::traits<D1>::Scalar,                                                \
-      typename Eigen::internal::traits<D2>::Scalar>::ReturnType
-#else
-  #define PINOCCHIO_EIGEN_DOT_PRODUCT_RETURN_TYPE(D1, D2)                                          \
-    Eigen::internal::scalar_product_traits<                                                        \
-      typename Eigen::internal::traits<D1>::Scalar,                                                \
-      typename Eigen::internal::traits<D2>::Scalar>::ReturnType
-#endif
+#define PINOCCHIO_EIGEN_DOT_PRODUCT_RETURN_TYPE(D1, D2)                                            \
+  Eigen::ScalarBinaryOpTraits<                                                                     \
+    typename Eigen::internal::traits<D1>::Scalar,                                                  \
+    typename Eigen::internal::traits<D2>::Scalar>::ReturnType
 
 /// \brief Macro for an automatic const_cast
 #define PINOCCHIO_EIGEN_CONST_CAST(TYPE, OBJ) const_cast<TYPE &>(OBJ.derived())
 
 ///  \brief Tell if Pinocchio should use the Eigen Tensor Module or not
-#if EIGEN_VERSION_AT_LEAST(3, 2, 90)
-  #define PINOCCHIO_WITH_EIGEN_TENSOR_MODULE
-#endif
+#define PINOCCHIO_WITH_EIGEN_TENSOR_MODULE
 
 /// \brief Check memory allocation for Eigen.
 /// \warning These macros do *not* work well with multithreading for Eigen <= 3.4

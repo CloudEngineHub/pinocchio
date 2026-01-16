@@ -34,9 +34,7 @@ namespace Eigen
       typename Scalar>
     struct cast_impl<boost::multiprecision::number<Backend, ExpressionTemplates>, Scalar>
     {
-#if EIGEN_VERSION_AT_LEAST(3, 2, 90)
       EIGEN_DEVICE_FUNC
-#endif
       static inline Scalar
       run(const boost::multiprecision::number<Backend, ExpressionTemplates> & x)
       {
@@ -164,30 +162,29 @@ namespace Eigen
   } // namespace internal
   #endif
 
-  #if EIGEN_VERSION_AT_LEAST(3, 2, 93)
-    #define BOOST_MP_EIGEN_SCALAR_TRAITS_DECL(A)                                                   \
-      template<                                                                                    \
-        class Backend, boost::multiprecision::expression_template_option ExpressionTemplates,      \
-        typename BinaryOp>                                                                         \
-      struct ScalarBinaryOpTraits<                                                                 \
-        boost::multiprecision::number<Backend, ExpressionTemplates>, A, BinaryOp>                  \
-      {                                                                                            \
-        /*static_assert(boost::multiprecision::is_compatible_arithmetic_type<A,                    \
-         * boost::multiprecision::number<Backend, ExpressionTemplates> >::value, "Interoperability \
-         * with this arithmetic type is not supported.");*/                                        \
-        typedef boost::multiprecision::number<Backend, ExpressionTemplates> ReturnType;            \
-      };                                                                                           \
-      template<                                                                                    \
-        class Backend, boost::multiprecision::expression_template_option ExpressionTemplates,      \
-        typename BinaryOp>                                                                         \
-      struct ScalarBinaryOpTraits<                                                                 \
-        A, boost::multiprecision::number<Backend, ExpressionTemplates>, BinaryOp>                  \
-      {                                                                                            \
-        /*static_assert(boost::multiprecision::is_compatible_arithmetic_type<A,                    \
-         * boost::multiprecision::number<Backend, ExpressionTemplates> >::value, "Interoperability \
-         * with this arithmetic type is not supported.");*/                                        \
-        typedef boost::multiprecision::number<Backend, ExpressionTemplates> ReturnType;            \
-      };
+  #define BOOST_MP_EIGEN_SCALAR_TRAITS_DECL(A)                                                     \
+    template<                                                                                      \
+      class Backend, boost::multiprecision::expression_template_option ExpressionTemplates,        \
+      typename BinaryOp>                                                                           \
+    struct ScalarBinaryOpTraits<                                                                   \
+      boost::multiprecision::number<Backend, ExpressionTemplates>, A, BinaryOp>                    \
+    {                                                                                              \
+      /*static_assert(boost::multiprecision::is_compatible_arithmetic_type<A,                      \
+       * boost::multiprecision::number<Backend, ExpressionTemplates> >::value, "Interoperability   \
+       * with this arithmetic type is not supported.");*/                                          \
+      typedef boost::multiprecision::number<Backend, ExpressionTemplates> ReturnType;              \
+    };                                                                                             \
+    template<                                                                                      \
+      class Backend, boost::multiprecision::expression_template_option ExpressionTemplates,        \
+      typename BinaryOp>                                                                           \
+    struct ScalarBinaryOpTraits<                                                                   \
+      A, boost::multiprecision::number<Backend, ExpressionTemplates>, BinaryOp>                    \
+    {                                                                                              \
+      /*static_assert(boost::multiprecision::is_compatible_arithmetic_type<A,                      \
+       * boost::multiprecision::number<Backend, ExpressionTemplates> >::value, "Interoperability   \
+       * with this arithmetic type is not supported.");*/                                          \
+      typedef boost::multiprecision::number<Backend, ExpressionTemplates> ReturnType;              \
+    };
 
   BOOST_MP_EIGEN_SCALAR_TRAITS_DECL(float)
   BOOST_MP_EIGEN_SCALAR_TRAITS_DECL(double)
@@ -247,7 +244,6 @@ namespace Eigen
       "Interoperability with this arithmetic type is not supported.");
     typedef boost::multiprecision::number<Backend, ExpressionTemplates> ReturnType;
   };
-  #endif
 
   namespace internal
   {
@@ -298,11 +294,7 @@ namespace Eigen
     struct conj_retval;
 
     template<typename Scalar, bool IsComplex>
-  #if EIGEN_VERSION_AT_LEAST(3, 3, 9)
     struct conj_default_impl;
-  #else
-    struct conj_impl;
-  #endif
 
     template<class tag, class Arg1, class Arg2, class Arg3, class Arg4>
     struct conj_retval<boost::multiprecision::detail::expression<tag, Arg1, Arg2, Arg3, Arg4>>
@@ -313,17 +305,11 @@ namespace Eigen
     };
 
     template<class tag, class Arg1, class Arg2, class Arg3, class Arg4>
-  #if EIGEN_VERSION_AT_LEAST(3, 3, 9)
     struct conj_default_impl<
       boost::multiprecision::detail::expression<tag, Arg1, Arg2, Arg3, Arg4>,
       true>
-  #else
-    struct conj_impl<boost::multiprecision::detail::expression<tag, Arg1, Arg2, Arg3, Arg4>, true>
-  #endif
     {
-  #if EIGEN_VERSION_AT_LEAST(3, 2, 90)
       EIGEN_DEVICE_FUNC
-  #endif
       static inline
         typename boost::multiprecision::detail::expression<tag, Arg1, Arg2, Arg3, Arg4>::result_type
         run(

@@ -352,66 +352,54 @@ namespace pinocchio
     LieGroup2 lg2;
 
   private:
-    // VectorSpaceOperationTpl<-1> within CartesianProductOperation will not work
-    // if Eigen version is lower than 3.2.1
-#if EIGEN_VERSION_AT_LEAST(3, 2, 1)
-  #define REMOVE_IF_EIGEN_TOO_LOW(x) x
-#else
-  #define REMOVE_IF_EIGEN_TOO_LOW(x)
-#endif
-
     template<typename Config>
     typename Config ::template ConstFixedSegmentReturnType<LieGroup1::NQ>::Type
     Q1(const Eigen::MatrixBase<Config> & q) const
     {
-      return q.derived().template head<LieGroup1::NQ>(REMOVE_IF_EIGEN_TOO_LOW(lg1.nq()));
+      return q.derived().template head<LieGroup1::NQ>(lg1.nq());
     }
     template<typename Config>
     typename Config ::template ConstFixedSegmentReturnType<LieGroup2::NQ>::Type
     Q2(const Eigen::MatrixBase<Config> & q) const
     {
-      return q.derived().template tail<LieGroup2::NQ>(REMOVE_IF_EIGEN_TOO_LOW(lg2.nq()));
+      return q.derived().template tail<LieGroup2::NQ>(lg2.nq());
     }
     template<typename Tangent>
     typename Tangent::template ConstFixedSegmentReturnType<LieGroup1::NV>::Type
     V1(const Eigen::MatrixBase<Tangent> & v) const
     {
-      return v.derived().template head<LieGroup1::NV>(REMOVE_IF_EIGEN_TOO_LOW(lg1.nv()));
+      return v.derived().template head<LieGroup1::NV>(lg1.nv());
     }
     template<typename Tangent>
     typename Tangent::template ConstFixedSegmentReturnType<LieGroup2::NV>::Type
     V2(const Eigen::MatrixBase<Tangent> & v) const
     {
-      return v.derived().template tail<LieGroup2::NV>(REMOVE_IF_EIGEN_TOO_LOW(lg2.nv()));
+      return v.derived().template tail<LieGroup2::NV>(lg2.nv());
     }
 
     template<typename Config>
     typename Config ::template FixedSegmentReturnType<LieGroup1::NQ>::Type
     Qo1(const Eigen::MatrixBase<Config> & q) const
     {
-      return PINOCCHIO_EIGEN_CONST_CAST(Config, q).template head<LieGroup1::NQ>(
-        REMOVE_IF_EIGEN_TOO_LOW(lg1.nq()));
+      return PINOCCHIO_EIGEN_CONST_CAST(Config, q).template head<LieGroup1::NQ>(lg1.nq());
     }
     template<typename Config>
     typename Config ::template FixedSegmentReturnType<LieGroup2::NQ>::Type
     Qo2(const Eigen::MatrixBase<Config> & q) const
     {
-      return PINOCCHIO_EIGEN_CONST_CAST(Config, q).template tail<LieGroup2::NQ>(
-        REMOVE_IF_EIGEN_TOO_LOW(lg2.nq()));
+      return PINOCCHIO_EIGEN_CONST_CAST(Config, q).template tail<LieGroup2::NQ>(lg2.nq());
     }
     template<typename Tangent>
     typename Tangent::template FixedSegmentReturnType<LieGroup1::NV>::Type
     Vo1(const Eigen::MatrixBase<Tangent> & v) const
     {
-      return PINOCCHIO_EIGEN_CONST_CAST(Tangent, v)
-        .template head<LieGroup1::NV>(REMOVE_IF_EIGEN_TOO_LOW(lg1.nv()));
+      return PINOCCHIO_EIGEN_CONST_CAST(Tangent, v).template head<LieGroup1::NV>(lg1.nv());
     }
     template<typename Tangent>
     typename Tangent::template FixedSegmentReturnType<LieGroup2::NV>::Type
     Vo2(const Eigen::MatrixBase<Tangent> & v) const
     {
-      return PINOCCHIO_EIGEN_CONST_CAST(Tangent, v)
-        .template tail<LieGroup2::NV>(REMOVE_IF_EIGEN_TOO_LOW(lg2.nv()));
+      return PINOCCHIO_EIGEN_CONST_CAST(Tangent, v).template tail<LieGroup2::NV>(lg2.nv());
     }
 
     template<typename Jac>
@@ -463,8 +451,6 @@ namespace pinocchio
       return PINOCCHIO_EIGEN_CONST_CAST(TM_t, TM)
         .template bottomRightCorner<LieGroup2::NQ, LieGroup2::NV>(lg2.nq(), lg2.nv());
     }
-
-#undef REMOVE_IF_EIGEN_TOO_LOW
 
   }; // struct CartesianProductOperation
 

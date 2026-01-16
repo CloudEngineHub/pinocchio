@@ -24,18 +24,6 @@
   #define PINOCCHIO_WITH_CXX20_SUPPORT
 #endif
 
-#if (__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703))
-  #define PINOCCHIO_WITH_CXX17_SUPPORT
-#endif
-
-#if (__cplusplus >= 201402L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201403))
-  #define PINOCCHIO_WITH_CXX14_SUPPORT
-#endif
-
-#if (__cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1600))
-  #define PINOCCHIO_WITH_CXX11_SUPPORT
-#endif
-
 #if defined(__APPLE__) && defined(__aarch64__)
   #define PINOCCHIO_MAC_ARM64
 #endif
@@ -134,11 +122,7 @@ namespace pinocchio
   #define PINOCCHIO_ONLY_USED_FOR_DEBUG(var) PINOCCHIO_UNUSED_VARIABLE(var)
 #endif
 
-#ifdef PINOCCHIO_WITH_CXX17_SUPPORT
-  #define PINOCCHIO_MAYBE_UNUSED [[maybe_unused]]
-#else
-  #define PINOCCHIO_MAYBE_UNUSED
-#endif
+#define PINOCCHIO_MAYBE_UNUSED [[maybe_unused]]
 
 #ifdef WIN32
   #define PINOCCHIO_FUNCTION_NAME __FUNCTION__

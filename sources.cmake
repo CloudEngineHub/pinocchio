@@ -150,7 +150,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/utils/static-if.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/algorithm/aba.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/math/eigen_plugin.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/math/quaternion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/spatial/log.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/spatial/se3-tpl.hpp
@@ -179,10 +178,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/macros.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/unsupported.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/arithmetic-operators.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/casadi.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/comparison-operators.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/cppadcg.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/cppad.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-1x1.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-2x2.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-3x3.hpp
@@ -401,15 +397,11 @@ set(${PROJECT_NAME}_COLLISION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/tree-broadphase-manager.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/fcl-pinocchio-conversions.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/pool/fwd.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/pool/broadphase-manager.hpp
-    # Deprecated header
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/fcl-pinocchio-conversions.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/pool/broadphase-manager.hpp)
 
 set(${PROJECT_NAME}_COLLISION_PARALLEL_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/parallel/broadphase.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/parallel/geometry.hpp
-    # Deprecated header
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/parallel/geometry.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/parallel/geometry.hpp)
 
 set(${PROJECT_NAME}_PARSERS_SOURCES
     ${PROJECT_SOURCE_DIR}/src/utils/file-explorer.cpp
@@ -432,7 +424,6 @@ set(${PROJECT_NAME}_PARSERS_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf/model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf/geometry.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf/mjcf-graph.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/sample-models.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/model-graph.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/model-graph-algo.hpp

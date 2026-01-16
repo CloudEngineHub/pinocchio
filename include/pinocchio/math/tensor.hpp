@@ -7,13 +7,8 @@
 
 #include "pinocchio/fwd.hpp"
 
-#if !EIGEN_VERSION_AT_LEAST(3, 2, 90)
-  #define EIGEN_DEVICE_FUNC
-#endif
-
 #ifndef PINOCCHIO_WITH_EIGEN_TENSOR_MODULE
-  #if (__cplusplus <= 199711L && EIGEN_COMP_MSVC < 1900) || defined(__CUDACC__)                    \
-    || defined(EIGEN_AVOID_STL_ARRAY)
+  #if defined(__CUDACC__) || defined(EIGEN_AVOID_STL_ARRAY)
 namespace Eigen
 {
   template<typename T, std::size_t n>
@@ -79,7 +74,7 @@ namespace Eigen
     return !(lhs == rhs);
   }
 } // namespace Eigen
-  #else
+  #else // if defined(__CUDACC__) || defined(EIGEN_AVOID_STL_ARRAY)
     #include <array>
 namespace Eigen
 {
@@ -327,9 +322,5 @@ namespace pinocchio
 #endif // ifndef PINOCCHIO_WITH_EIGEN_TENSOR_MODULE
 
 } // namespace pinocchio
-
-#if !EIGEN_VERSION_AT_LEAST(3, 2, 90)
-  #undef EIGEN_DEVICE_FUNC
-#endif
 
 #endif // ifndef __pinocchio_math_tensor_hpp__

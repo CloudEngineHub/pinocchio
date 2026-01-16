@@ -831,14 +831,12 @@ BOOST_AUTO_TEST_CASE(test_geometry_object)
     generic_test(box, TEST_SERIALIZATION_FOLDER "/Box", "Box");
   }
 
-  #if HPP_FCL_VERSION_AT_LEAST(3, 0, 0)
   {
     typedef GeometryObject::CollisionGeometryPtr CollisionGeometryPtr;
     CollisionGeometryPtr box_ptr = CollisionGeometryPtr(new hpp::fcl::Box(1., 2., 3.));
     GeometryObject geometry_object("box", 1, 2, SE3::Random(), box_ptr);
     generic_test(geometry_object, TEST_SERIALIZATION_FOLDER "/GeometryObject", "GeometryObject");
   }
-  #endif // hpp-fcl >= 3.0.0
 #endif
 }
 
@@ -860,7 +858,6 @@ BOOST_AUTO_TEST_CASE(test_geometry_model_and_data_serialization)
   }
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
-  #if HPP_FCL_VERSION_AT_LEAST(3, 0, 0)
   {
     pinocchio::GeometryModel geom_model;
     pinocchio::buildModels::humanoidGeometries(model, geom_model);
@@ -897,8 +894,7 @@ BOOST_AUTO_TEST_CASE(test_geometry_model_and_data_serialization)
 
     generic_test(geom_data, TEST_SERIALIZATION_FOLDER "/GeometryData", "GeometryData");
   }
-  #endif // hpp-fcl >= 3.0.0
-#endif   // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_HPP_FCL
 }
 
 template<typename DerivedConstraintModel>

@@ -53,8 +53,7 @@ namespace pinocchio
   ///  \tparam _Options Alignment Options of the Eigen objects contained in the data structure.
   ///
   template<typename _Scalar, int _Options>
-  struct PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
-    ContactCholeskyDecompositionTpl
+  struct ContactCholeskyDecompositionTpl
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -118,7 +117,7 @@ namespace pinocchio
       const DataTpl<S1, O1, JointCollectionTpl> & data);
 
     ///
-    /// \brief Constructor from a model and a collection of RigidConstraintModel objects.
+    /// \brief Constructor from a model and a collection of ConstraintModel objects.
     ///
     /// \param[in] model Model of the kinematic tree
     /// \param[in] data Data associated with the kinematic tree

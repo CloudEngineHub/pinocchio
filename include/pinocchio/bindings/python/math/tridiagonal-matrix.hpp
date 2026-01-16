@@ -32,8 +32,9 @@ namespace pinocchio
       {
         static const Scalar dummy_precision = Eigen::NumTraits<Scalar>::dummy_precision();
 
-        cl.def(bp::init<Eigen::Index>(
-                 (bp::arg("self"), bp::arg("size")), "Default constructor from a given size."))
+        cl.def(
+            bp::init<Eigen::Index>(
+              (bp::arg("self"), bp::arg("size")), "Default constructor from a given size."))
 #ifndef PINOCCHIO_PYTHON_SKIP_COMPARISON_OPERATIONS
           .def(bp::self == bp::self)
           .def(bp::self != bp::self)
@@ -106,11 +107,7 @@ namespace pinocchio
 
       static void expose()
       {
-#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION == 6 && EIGENPY_VERSION_AT_LEAST(2, 9, 0)
-        typedef PINOCCHIO_SHARED_PTR_HOLDER_TYPE(TridiagonalSymmetricMatrix) HolderType;
-#else
         typedef ::boost::python::detail::not_specified HolderType;
-#endif
         bp::class_<TridiagonalSymmetricMatrix, HolderType>(
           "TridiagonalSymmetricMatrix", "Tridiagonal symmetric matrix.", bp::no_init)
           .def(TridiagonalSymmetricMatrixPythonVisitor());

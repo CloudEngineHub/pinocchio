@@ -10,7 +10,6 @@
 #include <eigenpy/eigenpy.hpp>
 
 #include <memory>
-#define PINOCCHIO_SHARED_PTR_HOLDER_TYPE(T) ::std::shared_ptr<T>
 
 namespace pinocchio
 {
