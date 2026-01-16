@@ -62,31 +62,6 @@ namespace pinocchio
               "specify "
               "the parent frame index."))
           .def(
-            bp::init<
-              std::string, FrameIndex, JointIndex, CollisionGeometryPtr, const SE3 &,
-              bp::optional<
-                std::string, const Eigen::Vector3d &, bool, const Eigen::Vector4d &, std::string,
-                GeometryMaterial>>(
-              bp::args(
-                "self", "name", "parent_frame", "parent_joint", "collision_geometry", "placement",
-                "mesh_path", "mesh_scale", "override_material", "mesh_color",
-                "mesh_texture_path"
-                "mesh_material"),
-              "Deprecated. Full constructor of a GeometryObject.")
-              [eigenpy::deprecated_function<>()])
-          .def(
-            bp::init<
-              std::string, JointIndex, CollisionGeometryPtr, const SE3 &,
-              bp::optional<
-                std::string, const Eigen::Vector3d &, bool, const Eigen::Vector4d &, std::string,
-                GeometryMaterial>>(
-              bp::args(
-                "self", "name", "parent_joint", "collision_geometry", "placement", "mesh_path",
-                "mesh_scale", "override_material", "mesh_color", "mesh_texture_path",
-                "mesh_material"),
-              "Deprecated. Reduced constructor of a GeometryObject. This constructor does not "
-              "require to specify the parent frame index.")[eigenpy::deprecated_function<>()])
-          .def(
             bp::init<const GeometryObject &>(
               bp::args("self", "otherGeometryObject"), "Copy constructor"))
           .add_property(
