@@ -685,7 +685,7 @@ namespace pinocchio
     return ReturnType(mat);
   }
 
-  namespace internal
+  namespace helper
   {
     template<typename T>
     struct is_eigen_ref : std::false_type
@@ -696,7 +696,7 @@ namespace pinocchio
     struct is_eigen_ref<Eigen::Ref<PlainObjectType, Options, StrideType>> : std::true_type
     {
     };
-  } // namespace internal
+  } // namespace helper
 } // namespace pinocchio
 
 #endif // #ifndef __pinocchio_math_matrix_hpp__

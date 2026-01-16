@@ -18,7 +18,7 @@ namespace pinocchio
     std::string getEigenTypeName()
     {
       std::stringstream ss;
-      if (::pinocchio::internal::is_eigen_ref<MatrixLike>::value)
+      if (::pinocchio::helper::is_eigen_ref<MatrixLike>::value)
       {
         ss << "Ref";
       }
