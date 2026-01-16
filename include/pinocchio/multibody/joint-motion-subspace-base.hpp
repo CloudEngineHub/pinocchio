@@ -23,15 +23,9 @@
   typedef TYPENAME traits<DERIVED>::DenseBase DenseBase;                                           \
   typedef TYPENAME traits<DERIVED>::MatrixReturnType MatrixReturnType;                             \
   typedef TYPENAME traits<DERIVED>::ConstMatrixReturnType ConstMatrixReturnType;                   \
-  enum                                                                                             \
-  {                                                                                                \
-    LINEAR = traits<DERIVED>::LINEAR,                                                              \
-    ANGULAR = traits<DERIVED>::ANGULAR                                                             \
-  };                                                                                               \
-  enum                                                                                             \
-  {                                                                                                \
-    Options = traits<DERIVED>::Options                                                             \
-  };
+  static constexpr int LINEAR = traits<DERIVED>::LINEAR;                                           \
+  static constexpr int ANGULAR = traits<DERIVED>::ANGULAR;                                         \
+  static constexpr int Options = traits<DERIVED>::Options;
 
 #define PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(DERIVED)                                                  \
   PINOCCHIO_CONSTRAINT_TYPEDEF_GENERIC(DERIVED, typename)

@@ -51,11 +51,8 @@ namespace pinocchio
 
     // Retrieving traits --------------------------------------------
     typedef typename traits<Derived>::Scalar Scalar;
-    enum
-    {
-      Options = traits<Derived>::Options,
-      Size = traits<Derived>::Size
-    };
+    static constexpr int Options = traits<Derived>::Options;
+    static constexpr int Size = traits<Derived>::Size;
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       traits<Derived>::constraint_formulation_level;

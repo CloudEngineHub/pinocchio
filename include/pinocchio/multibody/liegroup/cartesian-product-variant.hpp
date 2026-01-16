@@ -28,12 +28,9 @@ namespace pinocchio
   struct traits<CartesianProductOperationVariantTpl<_Scalar, _Options, LieGroupCollectionTpl>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-      NQ = Eigen::Dynamic,
-      NV = Eigen::Dynamic
-    };
+    static constexpr int Options = _Options;
+    static constexpr int NQ = Eigen::Dynamic;
+    static constexpr int NV = Eigen::Dynamic;
   };
 
   ///

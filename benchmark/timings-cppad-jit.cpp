@@ -30,10 +30,7 @@
   #define DLL_EXT ".so"
 #endif
 
-enum
-{
-  Options = 0
-};
+static constexpr int Options = 0;
 typedef double Scalar;
 typedef CppAD::AD<Scalar> ADScalar;
 typedef CppAD::cg::CG<Scalar> CGScalar;

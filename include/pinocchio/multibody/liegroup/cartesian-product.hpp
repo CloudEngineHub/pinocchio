@@ -12,28 +12,19 @@ namespace pinocchio
   template<int dim1, int dim2>
   struct eval_set_dim
   {
-    enum
-    {
-      value = dim1 + dim2
-    };
+    static constexpr int value = dim1 + dim2;
   };
 
   template<int dim>
   struct eval_set_dim<dim, Eigen::Dynamic>
   {
-    enum
-    {
-      value = Eigen::Dynamic
-    };
+    static constexpr int value = Eigen::Dynamic;
   };
 
   template<int dim>
   struct eval_set_dim<Eigen::Dynamic, dim>
   {
-    enum
-    {
-      value = Eigen::Dynamic
-    };
+    static constexpr int value = Eigen::Dynamic;
   };
 
   template<typename LieGroup1, typename LieGroup2>
@@ -43,14 +34,9 @@ namespace pinocchio
   struct traits<CartesianProductOperation<LieGroup1, LieGroup2>>
   {
     typedef typename traits<LieGroup1>::Scalar Scalar;
-    enum
-    {
-      Options = traits<LieGroup1>::Options,
-      NQ = eval_set_dim < LieGroup1::NQ,
-      LieGroup2::NQ > ::value,
-      NV = eval_set_dim < LieGroup1::NV,
-      LieGroup2::NV > ::value
-    };
+    static constexpr int Options = traits<LieGroup1>::Options;
+    static constexpr int NQ = eval_set_dim<LieGroup1::NQ, LieGroup2::NQ>::value;
+    static constexpr int NV = eval_set_dim<LieGroup1::NV, LieGroup2::NV>::value;
   };
 
   template<typename LieGroup1, typename LieGroup2>

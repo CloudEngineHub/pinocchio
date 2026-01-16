@@ -41,16 +41,13 @@ namespace pinocchio
 
     typedef Eigen::Index Index;
 
-    enum
-    {
-      MaxResidualSizeAtCompileTime =
-        ((PlainMatrixType::MaxRowsAtCompileTime != Eigen::Dynamic)
-         && (PlainMatrixType::MaxRowsAtCompileTime != Eigen::Dynamic))
-          ? PlainMatrixType::MaxRowsAtCompileTime * PlainMatrixType::MaxColsAtCompileTime
-          : Eigen::Dynamic,
-      IsVectorAtCompileTime = MatrixLike::IsVectorAtCompileTime,
-      Options = PlainMatrixType::Options & ~Eigen::RowMajorBit
-    };
+    static constexpr int MaxResidualSizeAtCompileTime =
+      ((PlainMatrixType::MaxRowsAtCompileTime != Eigen::Dynamic)
+       && (PlainMatrixType::MaxRowsAtCompileTime != Eigen::Dynamic))
+        ? PlainMatrixType::MaxRowsAtCompileTime * PlainMatrixType::MaxColsAtCompileTime
+        : Eigen::Dynamic;
+    static constexpr bool IsVectorAtCompileTime = MatrixLike::IsVectorAtCompileTime;
+    static constexpr int Options = PlainMatrixType::Options & ~Eigen::RowMajorBit;
 
     typedef Eigen::Matrix<Scalar, MaxResidualSizeAtCompileTime, 1, Options> StorageVector;
 

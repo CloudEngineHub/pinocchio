@@ -26,7 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - use deprecation, warning macros already provided by jrl-cmakemodules
 - renamed `PINOCCHIO_PRAGMA_DEPRECATED_HEADER` to `PINOCCHIO_MOVED_HEADER`
 - docs : update documentation stylesheet, fix some Doxygen config options
-- change every definitions of an `Options` compile-time constant to be `static constexpr` variables, not enums
+- change multiple compile-time definitions from anonymous enum values to `constexpr` variables
+  - change instances of `Options`, `Flags`, joint space dimensions `NV`, Lie group `NQ` and `NV`
 - bindings/python : employ using-declarations (`using context::Options`) in the binding code for the `Options` constant
 
 ### Removed

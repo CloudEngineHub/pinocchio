@@ -103,22 +103,19 @@ namespace pinocchio
     template<int MinRowsAtCompileTime, int MinColsAtCompileTime, typename PlainMatrix>
     struct make_static_matrix
     {
-      enum
-      {
-        RowsAtCompileTime = PlainMatrix::RowsAtCompileTime == Eigen::Dynamic
-                              ? MinRowsAtCompileTime
-                              : PlainMatrix::RowsAtCompileTime,
-        ColsAtCompileTime = PlainMatrix::ColsAtCompileTime == Eigen::Dynamic
-                              ? MinColsAtCompileTime
-                              : PlainMatrix::ColsAtCompileTime,
+      static constexpr int RowsAtCompileTime = PlainMatrix::RowsAtCompileTime == Eigen::Dynamic
+                                                 ? MinRowsAtCompileTime
+                                                 : PlainMatrix::RowsAtCompileTime;
+      static constexpr int ColsAtCompileTime = PlainMatrix::ColsAtCompileTime == Eigen::Dynamic
+                                                 ? MinColsAtCompileTime
+                                                 : PlainMatrix::ColsAtCompileTime;
 
-        MaxRowsAtCompileTime = PlainMatrix::MaxRowsAtCompileTime == Eigen::Dynamic
-                                 ? MinRowsAtCompileTime
-                                 : PlainMatrix::MaxRowsAtCompileTime,
-        MaxColsAtCompileTime = PlainMatrix::MaxColsAtCompileTime == Eigen::Dynamic
-                                 ? MinColsAtCompileTime
-                                 : PlainMatrix::MaxColsAtCompileTime
-      };
+      static constexpr int MaxRowsAtCompileTime =
+        PlainMatrix::MaxRowsAtCompileTime == Eigen::Dynamic ? MinRowsAtCompileTime
+                                                            : PlainMatrix::MaxRowsAtCompileTime;
+      static constexpr int MaxColsAtCompileTime =
+        PlainMatrix::MaxColsAtCompileTime == Eigen::Dynamic ? MinColsAtCompileTime
+                                                            : PlainMatrix::MaxColsAtCompileTime;
 
       typedef Eigen::Matrix<
         typename PlainMatrix::Scalar,
@@ -382,10 +379,7 @@ namespace pinocchio
     class PromoteStaticEval
     {
     public:
-      enum
-      {
-        MaxStaticUnfolding = _MaxStaticUnfolding
-      };
+      static constexpr int MaxStaticUnfolding = _MaxStaticUnfolding;
 
       typedef typename ExpressionType::Scalar Scalar;
 

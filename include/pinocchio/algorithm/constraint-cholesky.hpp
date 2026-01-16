@@ -59,12 +59,9 @@ namespace pinocchio
 
     typedef pinocchio::Index Index;
     typedef _Scalar Scalar;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3,
-      Options = _Options
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
+    static constexpr int Options = _Options;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> Matrix;

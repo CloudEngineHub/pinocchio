@@ -24,13 +24,10 @@ namespace pinocchio
   {
     typedef _Scalar Scalar;
 
-    enum
-    {
-      Options = _Options,
-      NQ = Eigen::Dynamic,
-      NV = Eigen::Dynamic,
-      NVExtended = Eigen::Dynamic
-    };
+    static constexpr int Options = _Options;
+    static constexpr int NQ = Eigen::Dynamic;
+    static constexpr int NV = Eigen::Dynamic;
+    static constexpr int NVExtended = Eigen::Dynamic;
 
     typedef JointCollectionTpl<Scalar, Options> JointCollection;
     typedef JointDataCompositeTpl<Scalar, Options, JointCollectionTpl> JointDataDerived;

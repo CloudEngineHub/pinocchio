@@ -13,11 +13,8 @@ namespace pinocchio
   template<int _axis>
   struct CartesianAxis
   {
-    enum
-    {
-      axis = _axis,
-      dim = 3
-    };
+    static constexpr int axis = _axis;
+    static constexpr int dim = 3;
 
     typedef Eigen::Matrix<double, 3, 1> Vector3;
 

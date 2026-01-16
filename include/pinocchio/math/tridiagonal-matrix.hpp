@@ -113,10 +113,7 @@ namespace Eigen
     {
       typedef pinocchio::traits<pinocchio::TridiagonalSymmetricMatrixTpl<Scalar, Options>> Base;
       typedef typename Base::PlainMatrixType ReturnType;
-      enum
-      {
-        Flags = 0
-      };
+      static constexpr int Flags = 0;
     };
 
     template<typename Scalar, int Options>
@@ -127,10 +124,7 @@ namespace Eigen
     {
       typedef pinocchio::traits<pinocchio::TridiagonalSymmetricMatrixTpl<Scalar, Options>> Base;
       typedef typename Base::PlainMatrixType ReturnType;
-      enum
-      {
-        Flags = 0
-      };
+      static constexpr int Flags = 0;
     };
 
     template<typename TridiagonalSymmetricMatrix, typename MatrixDerived>
@@ -147,10 +141,7 @@ namespace Eigen
         MatrixDerived>>
         Base;
       typedef typename Base::PlainMatrixType ReturnType;
-      enum
-      {
-        Flags = 0
-      };
+      static constexpr int Flags = 0;
     };
 
     template<typename MatrixDerived, typename TridiagonalSymmetricMatrix>
@@ -167,10 +158,7 @@ namespace Eigen
         TridiagonalSymmetricMatrix>>
         Base;
       typedef typename Base::PlainMatrixType ReturnType;
-      enum
-      {
-        Flags = 0
-      };
+      static constexpr int Flags = 0;
     };
 
     template<typename TridiagonalSymmetricMatrix>
@@ -194,10 +182,7 @@ namespace Eigen
           MatrixDerived>>
         Base;
       typedef typename Base::PlainMatrixType ReturnType;
-      enum
-      {
-        Flags = 0
-      };
+      static constexpr int Flags = 0;
     };
 
   } // namespace internal

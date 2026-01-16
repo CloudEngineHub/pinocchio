@@ -25,11 +25,8 @@ namespace pinocchio
   {
     typedef _Scalar Scalar;
 
-    enum
-    {
-      Options = _Options,
-      Size = 3
-    };
+    static constexpr int Options = _Options;
+    static constexpr int Size = 3;
 
     // --------------------------------------------------------------
     // Traits referencing the constraint and associated types

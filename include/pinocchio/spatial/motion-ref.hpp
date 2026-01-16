@@ -13,12 +13,9 @@ namespace pinocchio
   {
     typedef typename Vector6ArgType::Scalar Scalar;
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Vector6ArgType) Vector6;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3,
-      Options = Vector6::Options
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
+    static constexpr int Options = Vector6::Options;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 4, 4, Options> Matrix4;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
@@ -220,12 +217,9 @@ namespace pinocchio
   {
     typedef typename Vector6ArgType::Scalar Scalar;
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Vector6ArgType) Vector6;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3,
-      Options = Vector6::Options
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
+    static constexpr int Options = Vector6::Options;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 4, 4, Options> Matrix4;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;

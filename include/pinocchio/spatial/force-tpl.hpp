@@ -23,12 +23,9 @@ namespace pinocchio
     typedef typename Vector6::template ConstFixedSegmentReturnType<3>::Type ConstLinearType;
     typedef typename Vector6::template ConstFixedSegmentReturnType<3>::Type ConstAngularType;
     typedef ForceTpl<Scalar, _Options> ForcePlain;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3,
-      Options = _Options
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
+    static constexpr int Options = _Options;
 
     typedef ForceRef<Vector6> ForceRefType;
   }; // traits ForceTpl

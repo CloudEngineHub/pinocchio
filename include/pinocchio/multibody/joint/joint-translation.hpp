@@ -50,11 +50,8 @@ namespace pinocchio
     typedef Matrix4 HomogeneousMatrixType;
     typedef MotionTpl<Scalar, Options> MotionPlain;
     typedef MotionPlain PlainReturnType;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
   }; // traits MotionTranslationTpl
 
   template<typename _Scalar, int _Options>
@@ -195,12 +192,9 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<TransformTranslationTpl<_Scalar, _Options>>
   {
-    enum
-    {
-      Options = _Options,
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int Options = _Options;
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
     typedef _Scalar Scalar;
     typedef SE3Tpl<Scalar, Options> PlainType;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
@@ -296,11 +290,8 @@ namespace pinocchio
     typedef _Scalar Scalar;
 
     static constexpr int Options = _Options;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
 
     typedef MotionTranslationTpl<Scalar, Options> JointMotion;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> JointForce;
@@ -321,10 +312,7 @@ namespace pinocchio
 
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceTranslationTpl)
 
-    enum
-    {
-      NV = 3
-    };
+    static constexpr int NV = 3;
 
     JointMotionSubspaceTranslationTpl()
     {
@@ -471,12 +459,9 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<JointTranslationTpl<_Scalar, _Options>>
   {
-    enum
-    {
-      NQ = 3,
-      NV = 3,
-      NVExtended = 3
-    };
+    static constexpr int NQ = 3;
+    static constexpr int NV = 3;
+    static constexpr int NVExtended = 3;
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
     typedef JointDataTranslationTpl<Scalar, Options> JointDataDerived;

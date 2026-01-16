@@ -19,19 +19,13 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int _MaxDim>
   struct traits<ScaledJointMotionSubspaceTpl<_Scalar, _Options, _MaxDim>>
   {
-    enum
-    {
-      MaxDim = _MaxDim
-    };
+    static constexpr int MaxDim = _MaxDim;
     typedef JointMotionSubspaceTpl<Eigen::Dynamic, _Scalar, _Options, _MaxDim>
       RefJointMotionSubspace;
     typedef typename traits<RefJointMotionSubspace>::Scalar Scalar;
     static constexpr int Options = traits<RefJointMotionSubspace>::Options;
-    enum
-    {
-      LINEAR = traits<RefJointMotionSubspace>::LINEAR,
-      ANGULAR = traits<RefJointMotionSubspace>::ANGULAR
-    };
+    static constexpr int LINEAR = traits<RefJointMotionSubspace>::LINEAR;
+    static constexpr int ANGULAR = traits<RefJointMotionSubspace>::ANGULAR;
     typedef typename traits<RefJointMotionSubspace>::JointMotion JointMotion;
     typedef typename traits<RefJointMotionSubspace>::JointForce JointForce;
     typedef typename traits<RefJointMotionSubspace>::DenseBase DenseBase;
@@ -87,11 +81,8 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(ScaledJointMotionSubspaceTpl)
-    enum
-    {
-      NV = Eigen::Dynamic,
-      MaxDim = _MaxDim
-    };
+    static constexpr int NV = Eigen::Dynamic;
+    static constexpr int MaxDim = _MaxDim;
     typedef JointMotionSubspaceBase<ScaledJointMotionSubspaceTpl> Base;
     using Base::nv;
 
@@ -299,14 +290,11 @@ namespace pinocchio
   {
     typedef _Scalar Scalar;
 
-    enum
-    {
-      Options = _Options,
-      NQ = Eigen::Dynamic,
-      NV = Eigen::Dynamic,
-      NVExtended = Eigen::Dynamic,
-      MaxNVMimicked = 6
-    };
+    static constexpr int Options = _Options;
+    static constexpr int NQ = Eigen::Dynamic;
+    static constexpr int NV = Eigen::Dynamic;
+    static constexpr int NVExtended = Eigen::Dynamic;
+    static constexpr int MaxNVMimicked = 6;
 
     typedef JointCollectionTpl<Scalar, Options> JointCollection;
     typedef JointDataMimicTpl<Scalar, Options, JointCollectionTpl> JointDataDerived;
@@ -559,10 +547,7 @@ namespace pinocchio
     typedef JointModelBase<JointModelMimicTpl> Base;
     typedef JointMimicTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
-    enum
-    {
-      MaxNVMimicked = traits<JointDerived>::MaxNVMimicked
-    };
+    static constexpr int MaxNVMimicked = traits<JointDerived>::MaxNVMimicked;
 
     typedef JointCollectionTpl<Scalar, Options> JointCollection;
     typedef JointModelTpl<Scalar, Options, JointCollectionTpl> JointModel;

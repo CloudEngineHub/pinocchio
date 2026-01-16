@@ -25,10 +25,7 @@ namespace pinocchio
   template<typename Derived>
   struct traits<PointConstraintModelBase<Derived>>
   {
-    enum
-    {
-      Size = 3
-    };
+    static constexpr int Size = 3;
 
     // --------------------------------------------------------------
     // Traits characterizing the constraint behaviour in CRTP

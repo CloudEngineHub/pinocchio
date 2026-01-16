@@ -29,28 +29,19 @@ namespace pinocchio
   template<ContactType contact_type>
   struct contact_dim
   {
-    enum
-    {
-      value = 0
-    };
+    static constexpr int value = 0;
   };
 
   template<>
   struct contact_dim<CONTACT_3D>
   {
-    enum
-    {
-      value = 3
-    };
+    static constexpr int value = 3;
   };
 
   template<>
   struct contact_dim<CONTACT_6D>
   {
-    enum
-    {
-      value = 6
-    };
+    static constexpr int value = 6;
   };
 
   // TODO Remove when API is stabilized
@@ -69,11 +60,8 @@ namespace pinocchio
     // Traits characterizing the constraint behaviour in CRTP
     // --------------------------------------------------------------
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-      Size = Eigen::Dynamic
-    };
+    static constexpr int Options = _Options;
+    static constexpr int Size = Eigen::Dynamic;
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::VELOCITY_LEVEL;

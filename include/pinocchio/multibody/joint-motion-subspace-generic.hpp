@@ -13,13 +13,10 @@ namespace pinocchio
   struct traits<JointMotionSubspaceTpl<_Dim, _Scalar, _Options, _MaxDim>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3,
-      Options = _Options,
-      Dim = _Dim
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
+    static constexpr int Options = _Options;
+    static constexpr int Dim = _Dim;
 
     typedef MotionTpl<Scalar, Options> JointMotion;
     typedef Eigen::Matrix<Scalar, Dim, 1, Options, _MaxDim, 1> JointForce;
@@ -72,12 +69,8 @@ namespace pinocchio
     friend class JointMotionSubspaceBase<JointMotionSubspaceTpl>;
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceTpl)
 
-    enum
-    {
-      NV = _Dim
-    };
-
-    constexpr static int MaxNV = NV < 0 ? _MaxDim : NV;
+    static constexpr int NV = _Dim;
+    static constexpr int MaxNV = NV < 0 ? _MaxDim : NV;
 
     using Base::nv;
 

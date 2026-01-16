@@ -41,12 +41,8 @@ namespace pinocchio
     Holder>>
   {
     typedef _Scalar Scalar;
-
-    enum
-    {
-      Options = _Options,
-      RowsAtCompileTime = Eigen::Dynamic
-    };
+    static constexpr int Options = _Options;
+    static constexpr int RowsAtCompileTime = Eigen::Dynamic;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> DenseMatrix;

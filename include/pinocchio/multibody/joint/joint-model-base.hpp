@@ -26,13 +26,10 @@
   typedef TYPENAME traits<Joint>::D_t D_t;                                                         \
   typedef TYPENAME traits<Joint>::UD_t UD_t;                                                       \
   typedef TYPENAME traits<Joint>::is_mimicable_t is_mimicable_t;                                   \
-  enum                                                                                             \
-  {                                                                                                \
-    Options = traits<Joint>::Options,                                                              \
-    NQ = traits<Joint>::NQ,                                                                        \
-    NV = traits<Joint>::NV,                                                                        \
-    NVExtended = traits<Joint>::NVExtended                                                         \
-  };                                                                                               \
+  static constexpr int Options = traits<Joint>::Options;                                           \
+  static constexpr int NQ = traits<Joint>::NQ;                                                     \
+  static constexpr int NV = traits<Joint>::NV;                                                     \
+  static constexpr int NVExtended = traits<Joint>::NVExtended;                                     \
   typedef TYPENAME traits<Joint>::ConfigVector_t ConfigVector_t;                                   \
   typedef TYPENAME traits<Joint>::TangentVector_t TangentVector_t
 

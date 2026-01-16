@@ -21,12 +21,9 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<JointRevoluteUnboundedUnalignedTpl<_Scalar, _Options>>
   {
-    enum
-    {
-      NQ = 2,
-      NV = 1,
-      NVExtended = 1
-    };
+    static constexpr int NQ = 2;
+    static constexpr int NV = 1;
+    static constexpr int NVExtended = 1;
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
 

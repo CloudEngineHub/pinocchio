@@ -15,11 +15,8 @@ namespace pinocchio
   struct KinematicsConstraintModelBase : ConstraintModelBase<Derived>
   {
     typedef typename traits<Derived>::Scalar Scalar;
-    enum
-    {
-      Options = traits<Derived>::Options,
-      Size = traits<Derived>::Size
-    };
+    static constexpr int Options = traits<Derived>::Options;
+    static constexpr int Size = traits<Derived>::Size;
     typedef ConstraintModelBase<Derived> Base;
     typedef typename traits<Derived>::ConstraintData ConstraintData;
     typedef typename traits<Derived>::ConstraintSet ConstraintSet;
