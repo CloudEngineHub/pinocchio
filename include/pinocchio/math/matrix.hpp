@@ -698,12 +698,53 @@ namespace pinocchio
     };
   } // namespace helper
 
+  /**
+   * @brief Create or convert Eigen::Map views of existing Eigen objects.
+   *
+   * This set of helper functions allows convenient creation and reinterpretation
+   * of Eigen matrix maps without data copies. They are useful when reshaping,
+   * templating, or interfacing generic matrix types while preserving shared memory.
+   */
+
+  /// @brief Creates an Eigen::Map that references the data of an existing Eigen dense object.
+  ///
+  /// @tparam Matrix      The Eigen matrix type to map, e.g. Eigen::MatrixXd.
+  /// @tparam MapOptions  Alignment and storage order options (default = 0).
+  /// @tparam StrideType  Optional stride specification (default = Eigen::Stride<0,0>).
+  ///
+  /// @param plain_matrix A plain (owning) Eigen matrix whose data will be viewed.
+  /// @return An Eigen::Map object referencing the same underlying data.
+  ///
+  /// Example:
+  /// @code
+  /// Eigen::MatrixXd M = Eigen::MatrixXd::Random(3,3);
+  /// auto mapped = make_map(M);
+  /// mapped(0,0) = 0.0; // also modifies M(0,0)
+  /// @endcode
+  ///
   template<typename Matrix, int MapOptions = 0, typename StrideType = Eigen::Stride<0, 0>>
   Eigen::Map<Matrix, MapOptions, StrideType> make_map(Eigen::PlainObjectBase<Matrix> & plain_matrix)
   {
     return {plain_matrix.data(), plain_matrix.rows(), plain_matrix.cols()};
   }
 
+  /// @brief Reinterpret an existing Eigen::Map as a map of a different matrix type.
+  ///
+  /// @tparam OutputMatrix The output Eigen matrix type for the new map.
+  /// @tparam InputMatrix  The input Eigen matrix type the existing map references.
+  /// @tparam MapOptions   Alignment and storage order flags.
+  /// @tparam StrideType   Stride type used in the mapping.
+  ///
+  /// @param input_map     Existing Eigen::Map to reinterpret.
+  /// @return A new Eigen::Map referencing the same data with possibly different type.
+  ///
+  /// Example:
+  /// @code
+  /// Eigen::Matrix<float,6,1> v;
+  /// Eigen::Map<Eigen::Matrix<float,3,2>> mat_map(v.data());
+  /// auto re = remap<Eigen::Matrix<float,2,3>>(mat_map);
+  /// @endcode
+  ///
   template<typename OutputMatrix, typename InputMatrix, int MapOptions, typename StrideType>
   Eigen::Map<OutputMatrix, MapOptions, StrideType>
   remap(Eigen::Map<InputMatrix, MapOptions, StrideType> input_map)
@@ -711,6 +752,16 @@ namespace pinocchio
     return {input_map.data(), input_map.rows(), input_map.cols()};
   }
 
+  /// @brief Const overload of remap for read-only Eigen::Map objects.
+  ///
+  /// @tparam OutputMatrix The desired Eigen matrix type for the reinterpreted map.
+  /// @tparam InputMatrix  The original mapped Eigen matrix type.
+  /// @tparam MapOptions   Alignment and storage order flags.
+  /// @tparam StrideType   Stride type used in the mapping.
+  ///
+  /// @param input_map     Const Eigen::Map to reinterpret.
+  /// @return A read-only Eigen::Map referencing the same memory.
+  ///
   template<typename OutputMatrix, typename InputMatrix, int MapOptions, typename StrideType>
   const Eigen::Map<const OutputMatrix, MapOptions, StrideType>
   remap(const Eigen::Map<const InputMatrix, MapOptions, StrideType> input_map)
