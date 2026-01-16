@@ -130,27 +130,11 @@ namespace pinocchio
   , par_cons_ind((std::size_t)model.njoints, 0)
   , a_bias((std::size_t)model.njoints, Motion::Zero())
   , KAS((std::size_t)model.njoints, MatrixXs::Zero(0, 0))
-  , kinematic_hessians(
-      6,
-      std::max(1, model.nv),
-      std::max(1, model.nv)) // the minimum size should be 1 for compatibility reasons
-  , d2tau_dqdq(
-      std::max(1, model.nv),
-      std::max(1, model.nv),
-      std::max(1, model.nv)) // the minimum size should be 1 for compatibility reasons
-  , d2tau_dvdv(
-      std::max(1, model.nv),
-      std::max(1, model.nv),
-      std::max(1, model.nv)) // the minimum size should be 1 for compatibility reasons
-  , d2tau_dqdv(
-      std::max(1, model.nv),
-      std::max(1, model.nv),
-      std::max(1, model.nv)) // the minimum size should be 1 for compatibility reasons
-  , d2tau_dadq(
-      std::max(1, model.nv),
-      std::max(1, model.nv),
-      std::max(1, model.nv)) // the minimum size should be 1 for compatibility reasons
-  , extended_motion_propagator((std::size_t)model.njoints, Matrix6::Zero())
+  , kinematic_hessians(6, model.nv, model.nv)
+  , d2tau_dqdq(model.nv, model.nv, model.nv)
+  , d2tau_dvdv(model.nv, model.nv, model.nv)
+  , d2tau_dqdv(model.nv, model.nv, model.nv)
+  , d2tau_dadq(model.nv, model.nv, model.nv)
   , extended_motion_propagator2((std::size_t)model.njoints, Matrix6::Zero())
   , spatial_inv_inertia((std::size_t)model.njoints, Matrix6::Zero())
   , accumulation_descendant((std::size_t)model.njoints, 0)
