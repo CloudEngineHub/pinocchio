@@ -69,4 +69,27 @@ BOOST_AUTO_TEST_CASE(test_enforceSymmetry)
   }
 }
 
+BOOST_AUTO_TEST_CASE(test_remap)
+{
+  srand(0);
+
+  typedef Eigen::MatrixXd Matrix;
+  typedef Eigen::Matrix3d Matrix3;
+
+#ifdef NDEBUG
+  const int max_test = 1e3;
+#else
+  const int max_test = 1e2;
+#endif
+  for (int i = 0; i < max_test; ++i)
+  {
+    Matrix random_matrix = Matrix3::Random();
+    auto input_map = make_map(random_matrix);
+    BOOST_CHECK(input_map == random_matrix);
+    auto re_mapped = remap<Matrix3>(input_map);
+    BOOST_CHECK(re_mapped == random_matrix);
+    BOOST_CHECK(re_mapped == input_map);
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
