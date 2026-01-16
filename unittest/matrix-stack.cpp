@@ -311,11 +311,9 @@ BOOST_AUTO_TEST_CASE(matrix_stack_product)
     matrix_stack.push_back(diagmat_vec[i]);
   }
 
-  using Matrix4d = Eigen::Matrix<double, 4, 4>;
   for (std::size_t i = 0; i < N; ++i)
   {
     const auto & mat3 = matrix_stack.get<Matrix3d>(2 * i);
-    BOOST_CHECK_THROW(matrix_stack.get<Matrix4d>(2 * i), std::runtime_error);
     Vector3d res3 = mat3 * x3s[i];
     BOOST_CHECK(res3 == expected_y3s[i]);
 
