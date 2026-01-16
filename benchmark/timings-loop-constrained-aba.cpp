@@ -15,7 +15,7 @@
 #include "pinocchio/algorithm/cholesky.hpp"
 #include "pinocchio/multibody/fwd.hpp"
 #include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/parsers/sample-models.hpp"
+#include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/algorithm/pv.hpp"
 #include "pinocchio/algorithm/loop-constrained-aba.hpp"
 
