@@ -17,12 +17,9 @@ namespace pinocchio
   typedef LieGroupBase<Derived> Base;                                                              \
   typedef TYPENAME Base::Index Index;                                                              \
   typedef TYPENAME traits<Derived>::Scalar Scalar;                                                 \
-  enum                                                                                             \
-  {                                                                                                \
-    Options = traits<Derived>::Options,                                                            \
-    NQ = Base::NQ,                                                                                 \
-    NV = Base::NV                                                                                  \
-  };                                                                                               \
+  static constexpr int Options = traits<Derived>::Options;                                         \
+  static constexpr int NQ = Base::NQ;                                                              \
+  static constexpr int NV = Base::NV;                                                              \
   typedef TYPENAME Base::ConfigVector_t ConfigVector_t;                                            \
   typedef TYPENAME Base::TangentVector_t TangentVector_t;                                          \
   typedef TYPENAME Base::JacobianMatrix_t JacobianMatrix_t;                                        \
@@ -40,12 +37,9 @@ namespace pinocchio
     typedef Derived LieGroupDerived;
     typedef int Index;
     typedef typename traits<LieGroupDerived>::Scalar Scalar;
-    enum
-    {
-      Options = traits<LieGroupDerived>::Options,
-      NQ = traits<LieGroupDerived>::NQ,
-      NV = traits<LieGroupDerived>::NV
-    };
+    static constexpr int Options = traits<LieGroupDerived>::Options;
+    static constexpr int NQ = traits<LieGroupDerived>::NQ;
+    static constexpr int NV = traits<LieGroupDerived>::NV;
 
     typedef Eigen::Matrix<Scalar, NQ, 1, Options> ConfigVector_t;
     typedef Eigen::Matrix<Scalar, NV, 1, Options> TangentVector_t;

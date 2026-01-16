@@ -261,11 +261,8 @@ namespace pinocchio
     typedef Symmetric3Tpl<T, U> Symmetric3;
     typedef PseudoInertiaTpl<T, U> PseudoInertia;
     typedef LogCholeskyParametersTpl<T, U> LogCholeskyParameters;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
   }; // traits InertiaTpl
 
   template<typename _Scalar, int _Options>

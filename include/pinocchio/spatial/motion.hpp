@@ -26,11 +26,8 @@
   typedef TYPENAME traits<Derived>::HomogeneousMatrixType HomogeneousMatrixType;                   \
   typedef TYPENAME traits<Derived>::MotionPlain MotionPlain;                                       \
   typedef TYPENAME traits<Derived>::PlainReturnType PlainReturnType;                               \
-  enum                                                                                             \
-  {                                                                                                \
-    LINEAR = traits<Derived>::LINEAR,                                                              \
-    ANGULAR = traits<Derived>::ANGULAR                                                             \
-  }
+  static constexpr int LINEAR = traits<Derived>::LINEAR;                                           \
+  static constexpr int ANGULAR = traits<Derived>::ANGULAR
 
 #define MOTION_TYPEDEF_TPL(Derived) MOTION_TYPEDEF_GENERIC(Derived, typename)
 

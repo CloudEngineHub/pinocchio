@@ -28,24 +28,18 @@ namespace pinocchio
   struct traits<SpecialOrthogonalOperationTpl<2, _Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-      NQ = 2,
-      NV = 1
-    };
+    static constexpr int Options = _Options;
+    static constexpr int NQ = 2;
+    static constexpr int NV = 1;
   };
 
   template<typename _Scalar, int _Options>
   struct traits<SpecialOrthogonalOperationTpl<3, _Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-      NQ = 4,
-      NV = 3
-    };
+    static constexpr int Options = _Options;
+    static constexpr int NQ = 4;
+    static constexpr int NV = 3;
   };
 
   template<typename _Scalar, int _Options>

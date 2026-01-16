@@ -90,11 +90,8 @@ namespace pinocchio
   typedef TYPENAME traits<derived>::Force Force;                                                   \
   typedef TYPENAME traits<derived>::Motion Motion;                                                 \
   typedef TYPENAME traits<derived>::Symmetric3 Symmetric3;                                         \
-  enum                                                                                             \
-  {                                                                                                \
-    LINEAR = traits<derived>::LINEAR,                                                              \
-    ANGULAR = traits<derived>::ANGULAR                                                             \
-  }
+  static constexpr int LINEAR = traits<derived>::LINEAR;                                           \
+  static constexpr int ANGULAR = traits<derived>::ANGULAR
 
 #define SPATIAL_TYPEDEF_TEMPLATE(derived) SPATIAL_TYPEDEF_TEMPLATE_GENERIC(derived, typename)
 

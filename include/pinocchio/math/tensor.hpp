@@ -96,11 +96,8 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef Scalar_ Scalar;
-    enum
-    {
-      Options = Options_,
-      NumIndices = NumIndices_
-    };
+    static constexpr int Options = Options_;
+    static constexpr int NumIndices = NumIndices_;
     typedef IndexType Index;
     typedef Eigen::array<Index, NumIndices_> Dimensions;
 

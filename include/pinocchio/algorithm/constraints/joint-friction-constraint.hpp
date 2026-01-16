@@ -29,11 +29,8 @@ namespace pinocchio
     // Traits characterizing the constraint behaviour in CRTP
     // --------------------------------------------------------------
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-      Size = Eigen::Dynamic
-    };
+    static constexpr int Options = _Options;
+    static constexpr int Size = Eigen::Dynamic;
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::VELOCITY_LEVEL;

@@ -24,12 +24,9 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<MotionZeroTpl<_Scalar, _Options>>
   {
-    enum
-    {
-      Options = _Options,
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int Options = _Options;
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
     typedef _Scalar Scalar;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;

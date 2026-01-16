@@ -49,11 +49,8 @@ namespace pinocchio
     typedef MotionTpl<Scalar, Options> MotionPlain;
     typedef MotionPlain PlainReturnType;
     typedef Matrix4 HomogeneousMatrixType;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
   }; // traits MotionHelicalTpl
 
   template<typename Scalar, int Options, int axis>
@@ -62,13 +59,10 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int _axis>
   struct traits<TransformHelicalTpl<_Scalar, _Options, _axis>>
   {
-    enum
-    {
-      axis = _axis,
-      Options = _Options,
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
+    static constexpr int axis = _axis;
+    static constexpr int Options = _Options;
     typedef _Scalar Scalar;
     typedef SE3Tpl<Scalar, Options> PlainType;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
@@ -424,11 +418,8 @@ namespace pinocchio
   {
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
 
     typedef MotionHelicalTpl<Scalar, Options, axis> JointMotion;
     typedef Eigen::Matrix<Scalar, 1, 1, Options> JointForce;
@@ -456,10 +447,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceHelicalTpl)
-    enum
-    {
-      NV = 1
-    };
+    static constexpr int NV = 1;
 
     typedef SpatialAxis<ANGULAR + axis> AxisAngular;
     typedef SpatialAxis<ANGULAR + axis> AxisLinear;
@@ -611,12 +599,8 @@ namespace pinocchio
   struct JointHelicalTpl
   {
     typedef _Scalar Scalar;
-
-    enum
-    {
-      Options = _Options,
-      axis = _axis
-    };
+    static constexpr int Options = _Options;
+    static constexpr int axis = _axis;
   };
 
   template<typename S1, int O1, typename S2, int O2, int axis>
@@ -726,12 +710,9 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int axis>
   struct traits<JointHelicalTpl<_Scalar, _Options, axis>>
   {
-    enum
-    {
-      NQ = 1,
-      NV = 1,
-      NVExtended = 1
-    };
+    static constexpr int NQ = 1;
+    static constexpr int NV = 1;
+    static constexpr int NVExtended = 1;
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
     typedef JointDataHelicalTpl<Scalar, Options, axis> JointDataDerived;

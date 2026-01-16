@@ -19,12 +19,9 @@ namespace pinocchio
   struct traits<VectorSpaceOperationTpl<Dim, _Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-      NQ = Dim,
-      NV = Dim
-    };
+    static constexpr int Options = _Options;
+    static constexpr int NQ = Dim;
+    static constexpr int NV = Dim;
   };
 
   template<int Dim, typename _Scalar, int _Options>

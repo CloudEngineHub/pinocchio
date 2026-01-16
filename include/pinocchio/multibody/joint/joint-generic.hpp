@@ -25,13 +25,10 @@ namespace pinocchio
   template<typename _Scalar, int _Options, template<typename S, int O> class JointCollectionTpl>
   struct traits<JointTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    enum
-    {
-      Options = _Options,
-      NQ = Eigen::Dynamic, // Dynamic because unknown at compile time
-      NV = Eigen::Dynamic,
-      NVExtended = Eigen::Dynamic
-    };
+    static constexpr int Options = _Options;
+    static constexpr int NQ = Eigen::Dynamic; // Dynamic because unknown at compile time
+    static constexpr int NV = Eigen::Dynamic;
+    static constexpr int NVExtended = Eigen::Dynamic;
 
     typedef _Scalar Scalar;
     typedef JointCollectionTpl<Scalar, Options> JointCollection;

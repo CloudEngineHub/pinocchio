@@ -11,10 +11,7 @@ namespace pinocchio
 {
 
   /// \internal
-  enum
-  {
-    MAX_JOINT_NV = 6
-  };
+  inline constexpr int MAX_JOINT_NV = 6;
   /// \endinternal
 
   /**

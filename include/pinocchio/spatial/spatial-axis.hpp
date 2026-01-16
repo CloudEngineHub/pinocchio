@@ -24,18 +24,11 @@ namespace pinocchio
   template<int _axis>
   struct SpatialAxis //: MotionBase< SpatialAxis<_axis> >
   {
-    enum
-    {
-      axis = _axis,
-      dim = 6
-    };
+    static constexpr int axis = _axis;
+    static constexpr int dim = 6;
     typedef CartesianAxis<_axis % 3> CartesianAxis3;
-
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
 
     template<typename Derived1, typename Derived2>
     inline static void cross(const MotionDense<Derived1> & min, const MotionDense<Derived2> & mout);

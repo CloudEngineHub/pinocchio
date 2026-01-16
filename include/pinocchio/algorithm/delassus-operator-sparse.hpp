@@ -112,12 +112,8 @@ namespace pinocchio
     typedef _SparseCholeskyDecomposition CholeskyDecomposition;
     typedef typename CholeskyDecomposition::MatrixType SparseMatrix;
     typedef _Scalar Scalar;
-
-    enum
-    {
-      Options = _Options,
-      RowsAtCompileTime = Eigen::Dynamic
-    };
+    static constexpr int Options = _Options;
+    static constexpr int RowsAtCompileTime = Eigen::Dynamic;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> Matrix;
@@ -133,11 +129,8 @@ namespace pinocchio
 
     typedef DelassusOperatorSparseTpl Self;
     typedef typename traits<Self>::Scalar Scalar;
-    enum
-    {
-      Options = traits<Self>::Options,
-      RowsAtCompileTime = traits<Self>::RowsAtCompileTime
-    };
+    static constexpr int Options = traits<Self>::Options;
+    static constexpr int RowsAtCompileTime = traits<Self>::RowsAtCompileTime;
 
     typedef typename traits<Self>::SparseMatrix SparseMatrix;
     typedef typename traits<Self>::Vector Vector;

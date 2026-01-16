@@ -35,12 +35,9 @@ namespace pinocchio
   struct traits<SpecialEuclideanOperationTpl<2, _Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-      NQ = 4,
-      NV = 3
-    };
+    static constexpr int Options = _Options;
+    static constexpr int NQ = 4;
+    static constexpr int NV = 3;
   };
 
   // SE(2)
@@ -644,12 +641,9 @@ namespace pinocchio
   struct traits<SpecialEuclideanOperationTpl<3, _Scalar, _Options>>
   {
     typedef _Scalar Scalar;
-    enum
-    {
-      Options = _Options,
-      NQ = 7,
-      NV = 6
-    };
+    static constexpr int Options = _Options;
+    static constexpr int NQ = 7;
+    static constexpr int NV = 6;
   };
 
   /// SE(3)

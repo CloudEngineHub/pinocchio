@@ -17,12 +17,9 @@ namespace pinocchio
   struct traits<LieGroupGenericTpl<LieGroupCollection>>
   {
     typedef typename LieGroupCollection::Scalar Scalar;
-    enum
-    {
-      Options = LieGroupCollection::Options,
-      NQ = Eigen::Dynamic,
-      NV = Eigen::Dynamic
-    };
+    static constexpr int Options = LieGroupCollection::Options;
+    static constexpr int NQ = Eigen::Dynamic;
+    static constexpr int NV = Eigen::Dynamic;
   };
 
   template<typename LieGroupCollection>

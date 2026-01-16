@@ -45,10 +45,7 @@ namespace Eigen
       pinocchio::DelassusOperatorApplyOnTheRightReturnType<DelassusOperatorDerived, MatrixDerived>>
     {
       typedef typename ::pinocchio::traits<DelassusOperatorDerived>::Matrix ReturnType;
-      enum
-      {
-        Flags = 0
-      };
+      static constexpr int Flags = 0;
     };
 
     template<

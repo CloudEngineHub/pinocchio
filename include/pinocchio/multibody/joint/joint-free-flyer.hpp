@@ -26,11 +26,8 @@ namespace pinocchio
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
     typedef MotionTpl<Scalar, Options> JointMotion;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> JointForce;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> DenseBase;
@@ -48,10 +45,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceIdentityTpl)
 
-    enum
-    {
-      NV = 6
-    };
+    static constexpr int NV = 6;
 
     template<typename Vector6Like>
     JointMotion __mult__(const Eigen::MatrixBase<Vector6Like> & vj) const
@@ -162,12 +156,9 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<JointFreeFlyerTpl<_Scalar, _Options>>
   {
-    enum
-    {
-      NQ = 7,
-      NV = 6,
-      NVExtended = 6
-    };
+    static constexpr int NQ = 7;
+    static constexpr int NV = 6;
+    static constexpr int NVExtended = 6;
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
     typedef JointDataFreeFlyerTpl<Scalar, Options> JointDataDerived;

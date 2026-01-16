@@ -51,11 +51,8 @@ namespace pinocchio
     typedef Matrix4 HomogeneousMatrixType;
     typedef MotionTpl<Scalar, Options> MotionPlain;
     typedef MotionPlain PlainReturnType;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
   }; // traits MotionPlanarTpl
 
   template<typename _Scalar, int _Options>
@@ -235,11 +232,8 @@ namespace pinocchio
   {
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
-    enum
-    {
-      LINEAR = 0,
-      ANGULAR = 3
-    };
+    static constexpr int LINEAR = 0;
+    static constexpr int ANGULAR = 3;
     typedef MotionPlanarTpl<Scalar, Options> JointMotion;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> JointForce;
     typedef Eigen::Matrix<Scalar, 6, 3, Options> DenseBase;
@@ -258,10 +252,7 @@ namespace pinocchio
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspacePlanarTpl)
 
-    enum
-    {
-      NV = 3
-    };
+    static constexpr int NV = 3;
 
     JointMotionSubspacePlanarTpl() {};
 
@@ -462,12 +453,9 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct traits<JointPlanarTpl<_Scalar, _Options>>
   {
-    enum
-    {
-      NQ = 4,
-      NV = 3,
-      NVExtended = 3
-    };
+    static constexpr int NQ = 4;
+    static constexpr int NV = 3;
+    static constexpr int NVExtended = 3;
     static constexpr int Options = _Options;
     typedef _Scalar Scalar;
     typedef JointDataPlanarTpl<Scalar, Options> JointDataDerived;

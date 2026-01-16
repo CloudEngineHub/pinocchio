@@ -22,11 +22,8 @@
   typedef TYPENAME traits<Derived>::ConstAngularType ConstAngularType;                             \
   typedef TYPENAME traits<Derived>::ConstLinearType ConstLinearType;                               \
   typedef TYPENAME traits<Derived>::ForcePlain ForcePlain;                                         \
-  enum                                                                                             \
-  {                                                                                                \
-    LINEAR = traits<Derived>::LINEAR,                                                              \
-    ANGULAR = traits<Derived>::ANGULAR                                                             \
-  }
+  static constexpr int LINEAR = traits<Derived>::LINEAR;                                           \
+  static constexpr int ANGULAR = traits<Derived>::ANGULAR
 
 #define FORCE_TYPEDEF_TPL(Derived) FORCE_TYPEDEF_GENERIC(Derived, typename)
 

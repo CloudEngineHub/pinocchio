@@ -39,10 +39,7 @@ namespace pinocchio
     typedef typename PlainMatrixType::Scalar Scalar;
     typedef typename Eigen::Index Index;
 
-    enum
-    {
-      Alignment = _Alignment
-    };
+    static constexpr int Alignment = _Alignment;
 
     typedef Eigen::Map<PlainMatrixType, Alignment> MapType;
     typedef MapType value_type;
