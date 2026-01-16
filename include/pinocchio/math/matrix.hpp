@@ -697,6 +697,26 @@ namespace pinocchio
     {
     };
   } // namespace helper
+
+  template<typename Matrix, int MapOptions = 0, typename StrideType = Eigen::Stride<0, 0>>
+  Eigen::Map<Matrix, MapOptions, StrideType> make_map(Eigen::PlainObjectBase<Matrix> & plain_matrix)
+  {
+    return {plain_matrix.data(), plain_matrix.rows(), plain_matrix.cols()};
+  }
+
+  template<typename OutputMatrix, typename InputMatrix, int MapOptions, typename StrideType>
+  Eigen::Map<OutputMatrix, MapOptions, StrideType>
+  remap(Eigen::Map<InputMatrix, MapOptions, StrideType> input_map)
+  {
+    return {input_map.data(), input_map.rows(), input_map.cols()};
+  }
+
+  template<typename OutputMatrix, typename InputMatrix, int MapOptions, typename StrideType>
+  const Eigen::Map<const OutputMatrix, MapOptions, StrideType>
+  remap(const Eigen::Map<const InputMatrix, MapOptions, StrideType> input_map)
+  {
+    return {input_map.data(), input_map.rows(), input_map.cols()};
+  }
 } // namespace pinocchio
 
 #endif // #ifndef __pinocchio_math_matrix_hpp__
