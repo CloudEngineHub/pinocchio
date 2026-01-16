@@ -21,7 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add Python example showcasing the candlewick visualizer
 
 ### Changed
-
 - bindings/python : Add missing arg names in `visualizer-visitor.hpp`
 - use deprecation, warning macros already provided by jrl-cmakemodules
 - renamed `PINOCCHIO_PRAGMA_DEPRECATED_HEADER` to `PINOCCHIO_MOVED_HEADER`
@@ -29,15 +28,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - change multiple compile-time definitions from anonymous enum values to `constexpr` variables
   - change instances of `Options`, `Flags`, joint space dimensions `NV`, Lie group `NQ` and `NV`
 - bindings/python : employ using-declarations (`using context::Options`) in the binding code for the `Options` constant
+- Replace `hpp-fcl` by `coal` (see `doc/_porting.md`):
+  - C++:
+    - Deprecate `include/pinocchio/multibody/fcl.hpp` moved at `include/pinocchio/multibody/coal.hpp`
+    - Deprecate `include/pinocchio/serialization/fcl.hpp` moved at `include/pinocchio/serialization/fcl.hpp`
+    - Deprecate `include/pinocchio/collision/fcl-pinocchio-conversions.hpp` moved at `include/pinocchio/collision/coal-pinocchio-conversions.hpp`
+    - Deprecate `pinocchio/bindings/python/collision/fcl/transform.hpp` moved at `pinocchio/bindings/python/collision/coal/transform.hpp`
+    - Deprecate `pinocchio::toFclTransform3f` replaced by `pinocchio::toCoalTransform3s`
+    - Replace `PINOCCHIO_WITH_HPP_FCL` by `PINOCCHIO_WITH_COLLISION`
+  - Python:
+    - Deprecate `pinocchio.WITH_HPP_FCL` and `pinocchio.WITH_HPP_FCL_BINDINGS` replaced by `pinocchio.WITH_COLLISION`
+    - Deprecate `pinocchio.hppfcl` replaced by `pinocchio.coal`
 
 ### Removed
-
 - Remove unused headers `deprecated-macros.hpp` and `deprecated-namespaces.hpp`
 - Remove header `pinocchio/deprecation.hpp`, directly use generated `pinocchio/deprecated.hpp`
 - macros.hpp : remove macros already provided by jrl-cmakemodules
 - bindings/python : removed header `utils/registration.hpp`, delegate to `<eigenpy/registration.hpp>` instead
 - bindings/python : deprecate and remove contents of `utils/copyable.hpp`, `utils/registration.hpp` and `utils/deprecation.hpp`, include corresponding eigenpy headers instead
-- Remove pinocchio 3 deprecated files and functions
+- Remove pinocchio 3 deprecated files and functions (see `doc/_porting.md`)
 - Remove PINOCCHIO_WITH_CXX{11,14,17}_SUPPORT define
 - Remove support to Eigen < 3.4
 - Remove support to coal < 3

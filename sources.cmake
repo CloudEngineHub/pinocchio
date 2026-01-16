@@ -217,6 +217,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/data.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/coal.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/fcl.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/force-set.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/frame.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/fwd.hpp
@@ -300,6 +301,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/matrix-stack.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/csv.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/coal.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/fcl.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/force.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/frame.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/fwd.hpp
@@ -396,6 +398,7 @@ set(${PROJECT_NAME}_COLLISION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/tree-broadphase-manager.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/tree-broadphase-manager.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/coal-pinocchio-conversions.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/fcl-pinocchio-conversions.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/pool/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/pool/broadphase-manager.hpp)
 
@@ -731,6 +734,7 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_COLLISION_SOURCES
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_COLLISION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/coal/transform.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/fcl/transform.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/broadphase-manager.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/collision.hpp)
 

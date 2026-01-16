@@ -21,18 +21,18 @@ All Pinocchio 3 deprecated functions had been removed:
 - Replace `GeometryObject` constructor argument order has changed
 
 HPP-FCL has been replaced by coal:
-- Replace `include/pinocchio/multibody/fcl.hpp` by `include/pinocchio/multibody/coal.hpp`
-- Replace `include/pinocchio/serialization/fcl.hpp` by `include/pinocchio/serialization/coal.hpp`
-- Replace `include/pinocchio/collision/fcl-pinocchio-conversions.hpp` by `include/pinocchio/collision/coal-pinocchio-conversions.hpp`
-- Replace `pinocchio/bindings/python/collision/fcl/transform.hpp` by `pinocchio/bindings/python/collision/coal/transform.hpp`
+- Deprecate `include/pinocchio/multibody/fcl.hpp` moved at `include/pinocchio/multibody/coal.hpp`
+- Deprecate `include/pinocchio/serialization/fcl.hpp` moved at `include/pinocchio/serialization/coal.hpp`
+- Deprecate `include/pinocchio/collision/fcl-pinocchio-conversions.hpp` moved at `include/pinocchio/collision/coal-pinocchio-conversions.hpp`
+- Deprecate `pinocchio/bindings/python/collision/fcl/transform.hpp` moved at `pinocchio/bindings/python/collision/coal/transform.hpp`
+- Deprecate `pinocchio::toFclTransform3f` replaced by `pinocchio::toCoalTransform3s`
 - Replace `PINOCCHIO_WITH_HPP_FCL` by `PINOCCHIO_WITH_COLLISION`
-- Relpace `toFclTransform3f` by `toCoalTransform3s`
 
 \section PortingPy4 Python changes
 
 HPP-FCL has been replaced by coal:
-- Replace `pinocchio.WITH_HPP_FCL` and `pinocchio.WITH_HPP_FCL_BINDINGS` by `pinocchio.WITH_COLLISION`
-- Replace `pinocchio.hppfcl` by `pinocchio.coal`
+- Deprecate `pinocchio.WITH_HPP_FCL` and `pinocchio.WITH_HPP_FCL_BINDINGS` replaced by `pinocchio.WITH_COLLISION`
+- Deprecate `pinocchio.hppfcl` replaced by `pinocchio.coal`
 
 # Porting from Pinocchio 2 to 3
 

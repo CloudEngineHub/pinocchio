@@ -61,6 +61,9 @@ if WITH_COLLISION:
         StdVec_DistanceResult,
     )
 
+    # Deprecated, should be removed in next major release
+    hppfcl = coal
+
 from .deprecated import *
 from .robot_wrapper import RobotWrapper
 from .shortcuts import *

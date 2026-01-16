@@ -27,3 +27,6 @@ if WITH_COLLISION:
         StdVec_Contact,
         StdVec_DistanceResult,
     )
+
+    # Deprecated, should be removed in next major release
+    hppfcl = coal
