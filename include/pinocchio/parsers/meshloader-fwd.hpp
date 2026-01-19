@@ -7,10 +7,6 @@
 
 #include <memory>
 
-#ifdef PINOCCHIO_WITH_COLLISION
-  #include <coal/config.hh>
-#endif // PINOCCHIO_WITH_COLLISION
-
 namespace coal
 {
   class MeshLoader;

@@ -269,7 +269,7 @@ namespace pinocchio
       const GeometryType type,
       GeometryModel & geom_model,
       const std::string & package_path,
-      coal::MeshLoaderPtr mesh_loader = coal::MeshLoaderPtr())
+      ::coal::MeshLoaderPtr mesh_loader = ::coal::MeshLoaderPtr())
 
     {
       const std::vector<std::string> dirs(1, package_path);
@@ -307,7 +307,7 @@ namespace pinocchio
       const GeometryType type,
       GeometryModel & geom_model,
       const std::vector<std::string> & package_paths = std::vector<std::string>(),
-      coal::MeshLoaderPtr mesh_loader = coal::MeshLoaderPtr());
+      ::coal::MeshLoaderPtr mesh_loader = ::coal::MeshLoaderPtr());
 
     /**
      * @brief      Build The GeometryModel from a URDF model. Search for meshes
@@ -339,7 +339,7 @@ namespace pinocchio
       const GeometryType type,
       GeometryModel & geom_model,
       const std::string & package_path,
-      coal::MeshLoaderPtr mesh_loader = coal::MeshLoaderPtr())
+      ::coal::MeshLoaderPtr mesh_loader = ::coal::MeshLoaderPtr())
 
     {
       const std::vector<std::string> dirs(1, package_path);
