@@ -288,7 +288,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/visitor/joint-unary-visitor.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/aligned-vector.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/archive.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-model.hpp

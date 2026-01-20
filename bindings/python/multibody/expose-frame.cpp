@@ -2,7 +2,6 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#include "pinocchio/serialization/aligned-vector.hpp"
 #include "pinocchio/serialization/frame.hpp"
 
 #include "pinocchio/bindings/python/fwd.hpp"

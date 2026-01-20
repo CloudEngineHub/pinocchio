@@ -9,7 +9,6 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/set.hpp>
 
-#include "pinocchio/serialization/aligned-vector.hpp"
 #include "pinocchio/serialization/spatial.hpp"
 #include "pinocchio/serialization/eigen.hpp"
 #include "pinocchio/serialization/joints.hpp"

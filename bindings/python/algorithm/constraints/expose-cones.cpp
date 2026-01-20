@@ -2,8 +2,6 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#include "pinocchio/serialization/aligned-vector.hpp"
-
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/set-coulomb-friction-cone.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/set-box-set.hpp"
