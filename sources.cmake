@@ -594,7 +594,6 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/pickle.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/pickle-map.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/list.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/std-aligned-vector.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/eigen.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/comparable.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/std-map.hpp

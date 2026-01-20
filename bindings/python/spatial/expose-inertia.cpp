@@ -7,7 +7,7 @@
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/spatial/inertia.hpp"
 #include "pinocchio/bindings/python/serialization/serialization.hpp"
-#include "pinocchio/bindings/python/utils/std-aligned-vector.hpp"
+#include "pinocchio/bindings/python/utils/std-vector.hpp"
 
 namespace pinocchio
 {
@@ -19,9 +19,9 @@ namespace pinocchio
       InertiaPythonVisitor<context::Inertia>::expose();
       PseudoInertiaPythonVisitor<context::PseudoInertia>::expose();
       LogCholeskyParametersPythonVisitor<context::LogCholeskyParameters>::expose();
-      StdAlignedVectorPythonVisitor<context::Inertia>::expose("StdVec_Inertia");
+      StdVectorPythonVisitor<std::vector<context::Inertia>>::expose("StdVec_Inertia");
 #ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION
-      serialize<StdAlignedVectorPythonVisitor<context::Inertia>::vector_type>();
+      serialize<std::vector<context::Inertia>>();
 #endif
     }
 

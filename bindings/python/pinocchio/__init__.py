@@ -61,6 +61,11 @@ if WITH_COLLISION:
         StdVec_DistanceResult,
     )
 
+    # Pickling support becauso Vec3s is registered by
+    # coal and pinocchio (see pinocchio/binding/python/multibody/data.hpp)
+    coal.StdVec_Vec3s.__safe_for_unpickling__ = True
+    coal.StdVec_Vec3s.__getstate_manages_dict__ = True
+
     # Deprecated, should be removed in next major release
     hppfcl = coal
 

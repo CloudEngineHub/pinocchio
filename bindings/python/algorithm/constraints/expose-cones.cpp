@@ -7,9 +7,6 @@
 #include "pinocchio/bindings/python/algorithm/constraints/set-box-set.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/set-trivial-cones.hpp"
 
-// #include "pinocchio/bindings/python/serialization/serialization.hpp"
-#include "pinocchio/bindings/python/utils/std-aligned-vector.hpp"
-
 namespace pinocchio
 {
   namespace python
