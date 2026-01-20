@@ -58,7 +58,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct MotionPrismaticUnalignedTpl : MotionBase<MotionPrismaticUnalignedTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     MOTION_TYPEDEF_TPL(MotionPrismaticUnalignedTpl);
 
     MotionPrismaticUnalignedTpl()
@@ -258,7 +257,6 @@ namespace pinocchio
   struct JointMotionSubspacePrismaticUnalignedTpl
   : JointMotionSubspaceBase<JointMotionSubspacePrismaticUnalignedTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspacePrismaticUnalignedTpl)
 
     static constexpr int NV = 1;
@@ -496,7 +494,6 @@ namespace pinocchio
   struct JointDataPrismaticUnalignedTpl
   : public JointDataBase<JointDataPrismaticUnalignedTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointPrismaticUnalignedTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
     PINOCCHIO_JOINT_DATA_BASE_DEFAULT_ACCESSOR
@@ -565,7 +562,6 @@ namespace pinocchio
   struct JointModelPrismaticUnalignedTpl
   : public JointModelBase<JointModelPrismaticUnalignedTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointPrismaticUnalignedTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
 

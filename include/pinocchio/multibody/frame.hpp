@@ -51,7 +51,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct FrameTpl : ModelItem<FrameTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef FrameTpl<_Scalar, _Options> ModelItemDerived;
     typedef typename traits<ModelItemDerived>::Scalar Scalar;
     static constexpr int Options = traits<ModelItemDerived>::Options;

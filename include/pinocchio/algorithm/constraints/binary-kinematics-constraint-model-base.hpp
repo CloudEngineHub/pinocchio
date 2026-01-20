@@ -22,7 +22,6 @@ namespace pinocchio
   : KinematicsConstraintModelBase<Derived>
   , ConstraintModelCommonParameters<Derived>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<Derived>::Scalar Scalar;
     static constexpr int Options = traits<Derived>::Options;

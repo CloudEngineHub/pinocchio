@@ -58,7 +58,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct MotionPlanarTpl : MotionBase<MotionPlanarTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     MOTION_TYPEDEF_TPL(MotionPlanarTpl);
 
     typedef CartesianAxis<2> ZAxis;
@@ -249,7 +248,6 @@ namespace pinocchio
   struct JointMotionSubspacePlanarTpl
   : JointMotionSubspaceBase<JointMotionSubspacePlanarTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspacePlanarTpl)
 
     static constexpr int NV = 3;
@@ -494,7 +492,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct JointDataPlanarTpl : public JointDataBase<JointDataPlanarTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointPlanarTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
     PINOCCHIO_JOINT_DATA_BASE_DEFAULT_ACCESSOR
@@ -540,7 +537,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct JointModelPlanarTpl : public JointModelBase<JointModelPlanarTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointPlanarTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
 

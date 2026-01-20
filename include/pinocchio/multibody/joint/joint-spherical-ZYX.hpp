@@ -43,7 +43,6 @@ namespace pinocchio
   struct JointMotionSubspaceSphericalZYXTpl
   : public JointMotionSubspaceBase<JointMotionSubspaceSphericalZYXTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceSphericalZYXTpl)
 
@@ -309,7 +308,6 @@ namespace pinocchio
   struct JointDataSphericalZYXTpl
   : public JointDataBase<JointDataSphericalZYXTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointSphericalZYXTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
     PINOCCHIO_JOINT_DATA_BASE_DEFAULT_ACCESSOR
@@ -358,7 +356,6 @@ namespace pinocchio
   struct JointModelSphericalZYXTpl
   : public JointModelBase<JointModelSphericalZYXTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointSphericalZYXTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
 

@@ -35,7 +35,6 @@ namespace pinocchio
   struct DelassusOperatorDenseTpl
   : DelassusOperatorBase<DelassusOperatorDenseTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
     typedef DelassusOperatorDenseTpl Self;

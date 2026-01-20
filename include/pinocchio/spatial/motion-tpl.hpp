@@ -38,7 +38,6 @@ namespace pinocchio
   class MotionTpl : public MotionDense<MotionTpl<_Scalar, _Options>>
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef MotionDense<MotionTpl> Base;
     MOTION_TYPEDEF_TPL(MotionTpl);
     static constexpr int Options = _Options;

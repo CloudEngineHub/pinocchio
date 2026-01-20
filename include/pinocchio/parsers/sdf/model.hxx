@@ -72,8 +72,6 @@ namespace pinocchio
       struct ContactDetailsTpl
       {
       public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
         typedef SE3Tpl<Scalar, Options> SE3;
         typedef pinocchio::JointIndex JointIndex;
 

@@ -55,7 +55,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct ContactCholeskyDecompositionTpl
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef pinocchio::Index Index;
     typedef _Scalar Scalar;

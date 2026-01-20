@@ -41,7 +41,6 @@ namespace pinocchio
   : public LieGroupBase<
       CartesianProductOperationVariantTpl<_Scalar, _Options, LieGroupCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_LIE_GROUP_TPL_PUBLIC_INTERFACE(CartesianProductOperationVariantTpl);
 

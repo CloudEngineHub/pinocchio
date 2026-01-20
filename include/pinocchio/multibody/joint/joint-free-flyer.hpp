@@ -42,7 +42,6 @@ namespace pinocchio
   struct JointMotionSubspaceIdentityTpl
   : JointMotionSubspaceBase<JointMotionSubspaceIdentityTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceIdentityTpl)
 
     static constexpr int NV = 6;
@@ -198,7 +197,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct JointDataFreeFlyerTpl : public JointDataBase<JointDataFreeFlyerTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointFreeFlyerTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
     PINOCCHIO_JOINT_DATA_BASE_DEFAULT_ACCESSOR
@@ -269,7 +267,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct JointModelFreeFlyerTpl : public JointModelBase<JointModelFreeFlyerTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointFreeFlyerTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
 

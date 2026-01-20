@@ -125,7 +125,6 @@ namespace pinocchio
   struct DelassusOperatorSparseTpl
   : DelassusOperatorBase<DelassusOperatorSparseTpl<_Scalar, _Options, SparseCholeskyDecomposition>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef DelassusOperatorSparseTpl Self;
     typedef typename traits<Self>::Scalar Scalar;

@@ -62,8 +62,6 @@ namespace pinocchio
   struct JointMotionSubspaceTpl
   : public JointMotionSubspaceBase<JointMotionSubspaceTpl<_Dim, _Scalar, _Options, _MaxDim>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     typedef JointMotionSubspaceBase<JointMotionSubspaceTpl> Base;
 
     friend class JointMotionSubspaceBase<JointMotionSubspaceTpl>;

@@ -90,8 +90,6 @@ namespace pinocchio
   : public JointDataBase<JointDataTpl<_Scalar, _Options, JointCollectionTpl>>
   , JointCollectionTpl<_Scalar, _Options>::JointDataVariant
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     typedef JointTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;
     typedef JointDataBase<JointDataTpl> Base;
 
@@ -260,8 +258,6 @@ namespace pinocchio
   : JointModelBase<JointModelTpl<_Scalar, _Options, JointCollectionTpl>>
   , JointCollectionTpl<_Scalar, _Options>::JointModelVariant
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     typedef JointTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;
 
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);

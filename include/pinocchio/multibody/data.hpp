@@ -45,7 +45,6 @@ namespace pinocchio
   , NumericalBase<DataTpl<_Scalar, _Options, JointCollectionTpl>>
   , DataEntity<DataTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<DataTpl>::Scalar Scalar;
     static constexpr int Options = traits<DataTpl>::Options;

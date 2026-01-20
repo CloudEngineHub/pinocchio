@@ -68,7 +68,6 @@ namespace pinocchio
   struct JointDataCompositeTpl
   : public JointDataBase<JointDataCompositeTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointDataBase<JointDataCompositeTpl> Base;
     typedef JointCompositeTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;
@@ -170,7 +169,6 @@ namespace pinocchio
   struct JointModelCompositeTpl
   : public JointModelBase<JointModelCompositeTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointModelBase<JointModelCompositeTpl> Base;
     typedef JointCompositeTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;

@@ -44,7 +44,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct SE3Tpl : public SE3Base<SE3Tpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_SE3_TYPEDEF_TPL(SE3Tpl);
     typedef SE3Base<SE3Tpl<_Scalar, _Options>> Base;

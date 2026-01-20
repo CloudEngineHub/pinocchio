@@ -58,7 +58,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct MotionSphericalTpl : MotionBase<MotionSphericalTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     MOTION_TYPEDEF_TPL(MotionSphericalTpl);
 
@@ -217,7 +216,6 @@ namespace pinocchio
   struct JointMotionSubspaceSphericalTpl
   : public JointMotionSubspaceBase<JointMotionSubspaceSphericalTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceSphericalTpl)
 
@@ -406,7 +404,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct JointDataSphericalTpl : public JointDataBase<JointDataSphericalTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointSphericalTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
@@ -453,7 +450,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct JointModelSphericalTpl : public JointModelBase<JointModelSphericalTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointSphericalTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);

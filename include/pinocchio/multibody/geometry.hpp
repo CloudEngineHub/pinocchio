@@ -52,7 +52,6 @@ namespace pinocchio
   : NumericalBase<GeometryModel>
   , serialization::Serializable<GeometryModel>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<GeometryModel>::Scalar Scalar;
     static constexpr int Options = traits<GeometryModel>::Options;
@@ -233,7 +232,6 @@ namespace pinocchio
   : NumericalBase<GeometryData>
   , serialization::Serializable<GeometryData>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<GeometryData>::Scalar Scalar;
     static constexpr int Options = traits<GeometryData>::Options;

@@ -14,7 +14,6 @@ namespace pinocchio
   class GeometryPoolTpl : public ModelPoolTpl<_Scalar, _Options, JointCollectionTpl>
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef ModelPoolTpl<_Scalar, _Options, JointCollectionTpl> Base;
     typedef _Scalar Scalar;

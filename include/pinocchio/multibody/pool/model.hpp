@@ -19,7 +19,6 @@ namespace pinocchio
   class ModelPoolTpl
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;

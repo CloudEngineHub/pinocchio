@@ -50,7 +50,6 @@ namespace pinocchio
   class ForceRef : public ForceDense<ForceRef<Vector6ArgType>>
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef ForceDense<ForceRef> Base;
     typedef typename traits<ForceRef>::DataRefType DataRefType;
     FORCE_TYPEDEF_TPL(ForceRef);
@@ -154,7 +153,6 @@ namespace pinocchio
   class ForceRef<const Vector6ArgType> : public ForceDense<ForceRef<const Vector6ArgType>>
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef ForceDense<ForceRef> Base;
     typedef typename traits<ForceRef>::DataRefType DataRefType;
     FORCE_TYPEDEF_TPL(ForceRef);

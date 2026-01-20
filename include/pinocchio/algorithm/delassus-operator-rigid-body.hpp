@@ -91,7 +91,6 @@ namespace pinocchio
       _ConstraintModel,
       Holder>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef DelassusOperatorRigidBodySystemsTpl Self;
     typedef DelassusOperatorBase<Self> Base;

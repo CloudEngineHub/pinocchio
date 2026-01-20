@@ -42,7 +42,6 @@ namespace pinocchio
   template<typename _Scalar>
   struct ClarabelConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     using Scalar = _Scalar;
     using Base = ConstraintSolverBaseTpl<_Scalar>;

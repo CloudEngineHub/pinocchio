@@ -17,7 +17,6 @@ namespace pinocchio
   template<typename _Matrix>
   struct LanczosDecompositionTpl
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(_Matrix) PlainMatrix;
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(typename PlainMatrix::ColXpr) Vector;

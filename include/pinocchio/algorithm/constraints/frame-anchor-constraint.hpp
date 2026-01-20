@@ -68,7 +68,6 @@ namespace pinocchio
   struct FrameAnchorConstraintModelTpl
   : FrameConstraintModelBase<FrameAnchorConstraintModelTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
@@ -267,7 +266,6 @@ namespace pinocchio
   struct FrameAnchorConstraintDataTpl
   : FrameConstraintDataBase<FrameAnchorConstraintDataTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
