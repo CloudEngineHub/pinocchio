@@ -56,7 +56,7 @@ namespace pinocchio
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
       context::Force,
-      Eigen::aligned_allocator<context::Force>,
+      std::allocator<context::Force>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>>(
@@ -65,7 +65,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const std::vector<context::Force, Eigen::aligned_allocator<context::Force>> &,
+      const std::vector<context::Force> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
@@ -78,7 +78,7 @@ namespace pinocchio
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
       context::Force,
-      Eigen::aligned_allocator<context::Force>,
+      std::allocator<context::Force>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::RowMatrixXs>>(
@@ -87,7 +87,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const std::vector<context::Force, Eigen::aligned_allocator<context::Force>> &,
+      const std::vector<context::Force> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::RowMatrixXs>> &);
@@ -113,13 +113,13 @@ namespace pinocchio
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
       context::Force,
-      Eigen::aligned_allocator<context::Force>>(
+      std::allocator<context::Force>>(
       const context::Model &,
       context::Data &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const std::vector<context::Force, Eigen::aligned_allocator<context::Force>> &);
+      const std::vector<context::Force> &);
 
     extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
       context::Scalar,
@@ -146,13 +146,13 @@ namespace pinocchio
       context::Options,
       JointCollectionDefaultTpl,
       context::Force,
-      Eigen::aligned_allocator<context::Force>,
+      std::allocator<context::Force>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>>(
       const context::Model &,
       context::Data &,
-      const std::vector<context::Force, Eigen::aligned_allocator<context::Force>> &,
+      const std::vector<context::Force> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
@@ -163,10 +163,8 @@ namespace pinocchio
     context::Options,
     JointCollectionDefaultTpl,
     context::Force,
-    Eigen::aligned_allocator<context::Force>>(
-    const context::Model &,
-    context::Data &,
-    const std::vector<context::Force, Eigen::aligned_allocator<context::Force>> &);
+    std::allocator<context::Force>>(
+    const context::Model &, context::Data &, const std::vector<context::Force> &);
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_aba_derivatives_txx__

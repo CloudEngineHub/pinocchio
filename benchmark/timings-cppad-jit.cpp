@@ -6,7 +6,6 @@
 
 #include "pinocchio/codegen/cppadcg.hpp"
 #include "pinocchio/codegen/code-generator-algo.hpp"
-#include "pinocchio/container/aligned-vector.hpp"
 
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"

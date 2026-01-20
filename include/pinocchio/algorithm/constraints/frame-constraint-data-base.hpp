@@ -32,7 +32,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) VectorOfMatrix6;
+    typedef std::vector<Matrix6> VectorOfMatrix6;
     typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> Matrix6x;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixX;
 

@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(test_FD_with_contact_cst_gamma)
   VectorXd ddq_ref = data.ddq;
   Force::Vector6 contact_force_ref = data.lambda_c;
 
-  container::aligned_vector<Force> fext((size_t)model.njoints, Force::Zero());
+  std::vector<Force> fext((size_t)model.njoints, Force::Zero());
   fext[RF_id] = ForceRef<Force::Vector6>(contact_force_ref);
 
   // check call to RNEA
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(test_FD_with_contact_varying_gamma)
   VectorXd ddq_ref = x_ref.head(model.nv);
   Force::Vector6 contact_force_ref = x_ref.tail(6);
 
-  container::aligned_vector<Force> fext((size_t)model.njoints, Force::Zero());
+  std::vector<Force> fext((size_t)model.njoints, Force::Zero());
   fext[RF_id] = ForceRef<Force::Vector6>(contact_force_ref);
 
   // check call to RNEA

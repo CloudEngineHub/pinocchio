@@ -429,21 +429,15 @@ namespace pinocchio
       typedef typename Base::ADTangentVectorType ADTangentVectorType;
 
       typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ConstraintModel;
-      typedef Eigen::aligned_allocator<ConstraintModel> ConstraintModelAllocator;
-      typedef typename std::vector<ConstraintModel, ConstraintModelAllocator> ConstraintModelVector;
+      typedef typename std::vector<ConstraintModel> ConstraintModelVector;
       typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ConstraintData;
-      typedef Eigen::aligned_allocator<ConstraintData> ConstraintDataAllocator;
-      typedef typename std::vector<ConstraintData, ConstraintDataAllocator> ConstraintDataVector;
+      typedef typename std::vector<ConstraintData> ConstraintDataVector;
 
       typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options>
         ADConstraintModel;
-      typedef Eigen::aligned_allocator<ADConstraintModel> ADConstraintModelAllocator;
-      typedef typename std::vector<ADConstraintModel, ADConstraintModelAllocator>
-        ADConstraintModelVector;
+      typedef typename std::vector<ADConstraintModel> ADConstraintModelVector;
       typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options> ADConstraintData;
-      typedef Eigen::aligned_allocator<ADConstraintData> ADConstraintDataAllocator;
-      typedef typename std::vector<ADConstraintData, ADConstraintDataAllocator>
-        ADConstraintDataVector;
+      typedef typename std::vector<ADConstraintData> ADConstraintDataVector;
 
       static Eigen::Index constraintDim(const ConstraintModelVector & contact_models)
       {
@@ -637,21 +631,15 @@ namespace pinocchio
       typedef typename Base::ADTangentVectorType ADTangentVectorType;
 
       typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ConstraintModel;
-      typedef Eigen::aligned_allocator<ConstraintModel> ConstraintModelAllocator;
-      typedef typename std::vector<ConstraintModel, ConstraintModelAllocator> ConstraintModelVector;
+      typedef typename std::vector<ConstraintModel> ConstraintModelVector;
       typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ConstraintData;
-      typedef Eigen::aligned_allocator<ConstraintData> ConstraintDataAllocator;
-      typedef typename std::vector<ConstraintData, ConstraintDataAllocator> ConstraintDataVector;
+      typedef typename std::vector<ConstraintData> ConstraintDataVector;
 
       typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options>
         ADConstraintModel;
-      typedef Eigen::aligned_allocator<ADConstraintModel> ADConstraintModelAllocator;
-      typedef typename std::vector<ADConstraintModel, ADConstraintModelAllocator>
-        ADConstraintModelVector;
+      typedef typename std::vector<ADConstraintModel> ADConstraintModelVector;
       typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options> ADConstraintData;
-      typedef Eigen::aligned_allocator<ADConstraintData> ADConstraintDataAllocator;
-      typedef typename std::vector<ADConstraintData, ADConstraintDataAllocator>
-        ADConstraintDataVector;
+      typedef typename std::vector<ADConstraintData> ADConstraintDataVector;
 
       static Eigen::Index constraintDim(const ConstraintModelVector & contact_models)
       {

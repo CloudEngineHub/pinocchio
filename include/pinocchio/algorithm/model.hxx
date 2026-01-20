@@ -789,15 +789,14 @@ namespace pinocchio
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
-    typename GeometryModelAllocator,
     typename ConfigVectorType>
   void buildReducedModel(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & input_model,
-    const std::vector<GeometryModel, GeometryModelAllocator> & list_of_geom_models,
+    const std::vector<GeometryModel> & list_of_geom_models,
     const std::vector<JointIndex> & list_of_joints_to_lock,
     const Eigen::MatrixBase<ConfigVectorType> & reference_configuration,
     ModelTpl<Scalar, Options, JointCollectionTpl> & reduced_model,
-    std::vector<GeometryModel, GeometryModelAllocator> & list_of_reduced_geom_models)
+    std::vector<GeometryModel> & list_of_reduced_geom_models)
   {
     buildReducedModel(input_model, list_of_joints_to_lock, reference_configuration, reduced_model);
 

@@ -661,9 +661,8 @@ namespace pinocchio
         /// @param frame_anchor_constraint_models Vector of contact models to add the constraints to
         void parseContactInformation(
           const Model & model,
-          PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models,
-          PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
-            & frame_anchor_constraint_models);
+          std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
+          std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models);
 
         /// @brief Fill geometry model with all the info taken from the mjcf model file
         /// @param type Type of geometry to parse (COLLISION or VISUAL)

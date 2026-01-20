@@ -15,8 +15,8 @@
 
 using namespace pinocchio;
 
-typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointContactConstraintModel) PointContactConstraintModelVector;
-typedef PINOCCHIO_ALIGNED_STD_VECTOR(PointContactConstraintData) PointContactConstraintDataVector;
+typedef std::vector<PointContactConstraintModel> PointContactConstraintModelVector;
+typedef std::vector<PointContactConstraintData> PointContactConstraintDataVector;
 
 void init(Model & model, PointContactConstraintModelVector & constraint_models)
 {

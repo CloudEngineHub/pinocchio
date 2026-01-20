@@ -32,9 +32,8 @@ function(ADD_PINOCCHIO_BENCHMARK name)
   add_executable(${bench_name} ${name}.cpp)
 
   target_compile_definitions(
-    ${bench_name}
-    PRIVATE PINOCCHIO_MODEL_DIR="${PINOCCHIO_MODEL_DIR}"
-            "EXAMPLE_ROBOT_DATA_MODEL_DIR=\"${EXAMPLE_ROBOT_DATA_MODEL_DIR}\"")
+    ${bench_name} PRIVATE PINOCCHIO_MODEL_DIR="${PINOCCHIO_MODEL_DIR}"
+                          "EXAMPLE_ROBOT_DATA_MODEL_DIR=\"${EXAMPLE_ROBOT_DATA_MODEL_DIR}\"")
 
   target_link_libraries(${bench_name} PRIVATE pinocchio_default)
   target_link_libraries(${bench_name} PRIVATE benchmark::benchmark)

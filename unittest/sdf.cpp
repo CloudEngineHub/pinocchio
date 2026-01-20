@@ -11,8 +11,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using PointAnchorConstraintModelVector =
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::PointAnchorConstraintModel);
+using PointAnchorConstraintModelVector = std::vector<pinocchio::PointAnchorConstraintModel>;
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 

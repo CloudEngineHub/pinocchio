@@ -6,7 +6,6 @@
 #define __pinocchio_multibody_geometry_hpp__
 
 #include "pinocchio/multibody/geometry-object.hpp"
-#include "pinocchio/container/aligned-vector.hpp"
 
 #include "pinocchio/serialization/serializable.hpp"
 
@@ -59,7 +58,7 @@ namespace pinocchio
     typedef SE3Tpl<Scalar, Options> SE3;
 
     typedef ::pinocchio::GeometryObject GeometryObject;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(GeometryObject) GeometryObjectVector;
+    typedef std::vector<GeometryObject> GeometryObjectVector;
     typedef std::vector<CollisionPair> CollisionPairVector;
     typedef Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXb;
     typedef Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXi;
@@ -254,7 +253,7 @@ namespace pinocchio
     /// oMg is used for pinocchio (kinematics) computation but is translated to coal type
     /// for coal (collision) computation. The copy is done in collisionObjects[i]->setTransform(.)
     ///
-    PINOCCHIO_ALIGNED_STD_VECTOR(SE3) oMg;
+    std::vector<SE3> oMg;
 
     ///
     /// \brief Vector of collision pairs.
@@ -309,13 +308,13 @@ namespace pinocchio
     PairIndex collisionPairIndex;
 
     ///  \brief Functor associated to the computation of collisions.
-    PINOCCHIO_ALIGNED_STD_VECTOR(ComputeCollision) collision_functors;
+    std::vector<ComputeCollision> collision_functors;
 
     ///  \brief Functor associated to the computation of contact patches.
-    PINOCCHIO_ALIGNED_STD_VECTOR(ComputeContactPatch) contact_patch_functors;
+    std::vector<ComputeContactPatch> contact_patch_functors;
 
     ///  \brief Functor associated to the computation of distances.
-    PINOCCHIO_ALIGNED_STD_VECTOR(ComputeDistance) distance_functors;
+    std::vector<ComputeDistance> distance_functors;
 
 #endif // PINOCCHIO_WITH_COLLISION
 

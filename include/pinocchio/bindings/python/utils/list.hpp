@@ -46,9 +46,9 @@ namespace pinocchio
     }
 
     template<typename T>
-    std::vector<T, std::allocator<T>> extract(const boost::python::list & list)
+    std::vector<T> extract(const boost::python::list & list)
     {
-      std::vector<T, std::allocator<T>> vec;
+      std::vector<T> vec;
       extract(list, vec);
       return vec;
     }

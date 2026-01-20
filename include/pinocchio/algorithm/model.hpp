@@ -175,7 +175,7 @@ namespace pinocchio
 
   /**
    *
-   *  \brief Build a reduced model and a rededuced geometry model  from a given input model, a given
+   *  \brief Build a reduced model and a reduced geometry model from a given input model, a given
    * input geometry model and a list of joint to lock.
    *
    *  \param[in] model the input model to reduce.
@@ -193,15 +193,14 @@ namespace pinocchio
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
-    typename GeometryModelAllocator,
     typename ConfigVectorType>
   void buildReducedModel(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const std::vector<GeometryModel, GeometryModelAllocator> & list_of_geom_models,
+    const std::vector<GeometryModel> & list_of_geom_models,
     const std::vector<JointIndex> & list_of_joints_to_lock,
     const Eigen::MatrixBase<ConfigVectorType> & reference_configuration,
     ModelTpl<Scalar, Options, JointCollectionTpl> & reduced_model,
-    std::vector<GeometryModel, GeometryModelAllocator> & list_of_reduced_geom_models);
+    std::vector<GeometryModel> & list_of_reduced_geom_models);
 
   /**
    *

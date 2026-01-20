@@ -72,14 +72,13 @@ namespace pinocchio
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,
-    Eigen::aligned_allocator<GeometryModel>,
     context::VectorXs>(
     const context::Model &,
-    const std::vector<GeometryModel, Eigen::aligned_allocator<GeometryModel>> &,
+    const std::vector<GeometryModel> &,
     const std::vector<JointIndex> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     context::Model &,
-    std::vector<GeometryModel, Eigen::aligned_allocator<GeometryModel>> &);
+    std::vector<GeometryModel> &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
   transformJointIntoMimic<context::Scalar, context::Options, JointCollectionDefaultTpl>(

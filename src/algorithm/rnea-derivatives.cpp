@@ -29,7 +29,7 @@ namespace pinocchio
       const context::Model &,
       context::Data &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const container::aligned_vector<context::Force> &,
+      const std::vector<context::Force> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
 
     template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void computeRNEADerivatives<
@@ -85,7 +85,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const container::aligned_vector<context::Force> &,
+      const std::vector<context::Force> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
@@ -105,7 +105,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const container::aligned_vector<context::Force> &,
+      const std::vector<context::Force> &,
       const Eigen::MatrixBase<Eigen::Ref<context::RowMatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::RowMatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
@@ -135,6 +135,6 @@ namespace pinocchio
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const container::aligned_vector<context::Force> &);
+      const std::vector<context::Force> &);
   } // namespace impl
 } // namespace pinocchio

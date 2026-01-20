@@ -75,7 +75,7 @@ namespace pinocchio
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     GeometryModel & buildGeom(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
+      std::vector<PointAnchorConstraintModel> & constraint_models,
       const std::string & filename,
       const GeometryType type,
       GeometryModel & geomModel,
@@ -144,7 +144,7 @@ namespace pinocchio
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
+      std::vector<PointAnchorConstraintModel> & constraint_models,
       const std::string & rootLinkName = "",
       const std::vector<std::string> & parentGuidance = {},
       const bool verbose = false);
@@ -167,7 +167,7 @@ namespace pinocchio
       const std::string & xmlStream,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
+      std::vector<PointAnchorConstraintModel> & constraint_models,
       const std::string & rootLinkName = "",
       const std::vector<std::string> & parentGuidance = {},
       const bool verbose = false);
@@ -192,7 +192,7 @@ namespace pinocchio
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
+      std::vector<PointAnchorConstraintModel> & constraint_models,
       const std::string & rootLinkName = "",
       const std::vector<std::string> & parentGuidance = {},
       const bool verbose = false);
@@ -215,7 +215,7 @@ namespace pinocchio
       const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
+      std::vector<PointAnchorConstraintModel> & constraint_models,
       const std::string & rootLinkName = "",
       const std::vector<std::string> & parentGuidance = {},
       const bool verbose = false);
@@ -232,7 +232,7 @@ namespace pinocchio
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
       const std::string & xmlStream,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
+      std::vector<PointAnchorConstraintModel> & constraint_models,
       const std::string & rootLinkName = "",
       const std::vector<std::string> & parentGuidance = {},
       const bool verbose = false);
@@ -249,7 +249,7 @@ namespace pinocchio
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & constraint_models,
+      std::vector<PointAnchorConstraintModel> & constraint_models,
       const std::string & rootLinkName = "",
       const std::vector<std::string> & parentGuidance = {},
       const bool verbose = false);

@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(test_std_vector_of_Model)
   Model model;
   buildModels::humanoid(model);
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(Model) models;
+  std::vector<Model> models;
   for (size_t k = 0; k < 20; ++k)
   {
     models.push_back(Model());
@@ -747,18 +747,6 @@ BOOST_AUTO_TEST_CASE(test_buildReducedModel)
     CHECK_FIELD_VALUE(rotorInertia);
 
 #undef CHECK_FIELD_VALUE
-  }
-}
-
-BOOST_AUTO_TEST_CASE(test_aligned_vector_of_model)
-{
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(Model) VectorOfModels;
-
-  VectorOfModels models;
-  for (size_t k = 0; k < 100; ++k)
-  {
-    models.push_back(Model());
-    buildModels::humanoidRandom(models[k]);
   }
 }
 

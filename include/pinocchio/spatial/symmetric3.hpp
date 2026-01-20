@@ -29,7 +29,6 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 2, 2, Options> Matrix2;
     typedef Eigen::Matrix<Scalar, 3, 2, Options> Matrix32;
 
-
   public:
     Symmetric3Tpl()
     {

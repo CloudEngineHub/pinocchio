@@ -278,9 +278,7 @@ if(BUILD_WITH_COLLISION_SUPPORT)
     SOURCES ${${PROJECT_NAME}_COLLISION_SOURCES} ${${PROJECT_NAME}_COLLISION_PUBLIC_HEADERS})
   pinocchio_config(collision ${COLLISION_LIB_NAME})
 
-  target_compile_definitions(
-    ${COLLISION_LIB_NAME}
-    PUBLIC PINOCCHIO_WITH_COLLISION)
+  target_compile_definitions(${COLLISION_LIB_NAME} PUBLIC PINOCCHIO_WITH_COLLISION)
   target_link_libraries(${COLLISION_LIB_NAME} PUBLIC ${PROJECT_NAME}_default coal::coal)
 
   # Define the collision parallel target
@@ -307,9 +305,7 @@ pinocchio_target(
 pinocchio_config(visualizers ${VISUALIZERS_LIB_NAME})
 target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC ${PROJECT_NAME}_default)
 if(BUILD_WITH_COLLISION_SUPPORT)
-  target_compile_definitions(
-    ${VISUALIZERS_LIB_NAME}
-    PUBLIC PINOCCHIO_WITH_COLLISION)
+  target_compile_definitions(${VISUALIZERS_LIB_NAME} PUBLIC PINOCCHIO_WITH_COLLISION)
   target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC coal::coal)
 endif()
 

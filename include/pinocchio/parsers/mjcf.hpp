@@ -108,8 +108,8 @@ namespace pinocchio
     void buildConstraintModelsFromXML(
       const std::string & xmlStream,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models,
-      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) & frame_anchor_constraint_models,
+      std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
+      std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
       const bool verbose = false);
 
     ///
@@ -124,12 +124,11 @@ namespace pinocchio
     /// \return Return the reference on argument billateral constraint models for convenience.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
-      & buildConstraintModelsFromXML(
-        const std::string & xmlStream,
-        ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models,
-        const bool verbose = false);
+    std::vector<PointAnchorConstraintModel> & buildConstraintModelsFromXML(
+      const std::string & xmlStream,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
+      const bool verbose = false);
 
     ///
     /// \brief Build the constraint models from a MJCF string. The associated model should be built
@@ -143,12 +142,11 @@ namespace pinocchio
     /// \return Return the reference on argument frame anchor constraint models for convenience.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
-      & buildConstraintModelsFromXML(
-        const std::string & xmlStream,
-        ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) & frame_anchor_constraint_models,
-        const bool verbose = false);
+    std::vector<FrameAnchorConstraintModel> & buildConstraintModelsFromXML(
+      const std::string & xmlStream,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
+      const bool verbose = false);
 
     /**
      * @brief      Build The GeometryModel from a Mjcf file

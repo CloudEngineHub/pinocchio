@@ -78,12 +78,12 @@ struct ContactFixture : ModelFixture
   std::unique_ptr<pinocchio::RigidConstraintModel> ci_RF_6D;
   std::unique_ptr<pinocchio::RigidConstraintModel> ci_LF_6D;
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_empty;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_datas_empty;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_6D;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_datas_6D;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_6D6D;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_datas_6D6D;
+  std::vector<pinocchio::RigidConstraintModel> contact_models_empty;
+  std::vector<pinocchio::RigidConstraintData> contact_datas_empty;
+  std::vector<pinocchio::RigidConstraintModel> contact_models_6D;
+  std::vector<pinocchio::RigidConstraintData> contact_datas_6D;
+  std::vector<pinocchio::RigidConstraintModel> contact_models_6D6D;
+  std::vector<pinocchio::RigidConstraintData> contact_datas_6D6D;
 
   pinocchio::ContactCholeskyDecomposition contact_chol_empty;
   pinocchio::ContactCholeskyDecomposition contact_chol_6D;
@@ -146,8 +146,8 @@ PINOCCHIO_DONT_INLINE static void contactABACall(
   const Eigen::VectorXd & q,
   const Eigen::VectorXd & v,
   const Eigen::VectorXd & tau,
-  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models,
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data)
+  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
+  std::vector<pinocchio::RigidConstraintData> & contact_data)
 {
   pinocchio::contactABA(model, data, q, v, tau, contact_models, contact_data);
 }
@@ -168,8 +168,8 @@ PINOCCHIO_DONT_INLINE static void pvCall(
   const Eigen::VectorXd & q,
   const Eigen::VectorXd & v,
   const Eigen::VectorXd & tau,
-  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models,
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data,
+  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
+  std::vector<pinocchio::RigidConstraintData> & contact_data,
   pinocchio::ProximalSettings & prox_settings)
 {
   pinocchio::pv(model, data, q, v, tau, contact_models, contact_data, prox_settings);
@@ -192,8 +192,8 @@ PINOCCHIO_DONT_INLINE static void constrainedABACall(
   const Eigen::VectorXd & q,
   const Eigen::VectorXd & v,
   const Eigen::VectorXd & tau,
-  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models,
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data,
+  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
+  std::vector<pinocchio::RigidConstraintData> & contact_data,
   pinocchio::ProximalSettings & prox_settings)
 {
   pinocchio::constrainedABA(model, data, q, v, tau, contact_models, contact_data, prox_settings);
@@ -215,8 +215,8 @@ PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionComputeCall(
   pinocchio::ContactCholeskyDecomposition & contact,
   const pinocchio::Model & model,
   pinocchio::Data & data,
-  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models,
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data)
+  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
+  std::vector<pinocchio::RigidConstraintData> & contact_data)
 {
   contact.compute(model, data, contact_models, contact_data);
 }
@@ -264,8 +264,8 @@ PINOCCHIO_DONT_INLINE static void constraintDynamicsCall(
   const Eigen::VectorXd & q,
   const Eigen::VectorXd & v,
   const Eigen::VectorXd & tau,
-  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models,
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data)
+  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
+  std::vector<pinocchio::RigidConstraintData> & contact_data)
 {
   pinocchio::constraintDynamics(model, data, q, v, tau, contact_models, contact_data);
 }

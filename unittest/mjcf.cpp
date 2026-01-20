@@ -455,8 +455,7 @@ BOOST_AUTO_TEST_CASE(parse_default_class)
   typedef pinocchio::SE3::Vector3 Vector3;
   typedef pinocchio::SE3::Matrix3 Matrix3;
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::PointAnchorConstraintModel)
-  constraint_models;
+  std::vector<pinocchio::PointAnchorConstraintModel> constraint_models;
   std::string filename = PINOCCHIO_MODEL_DIR + std::string("/../unittest/models/test_mjcf.xml");
 
   pinocchio::Model model_m;
@@ -1482,8 +1481,7 @@ BOOST_AUTO_TEST_CASE(test_geometry_parsing)
 
 BOOST_AUTO_TEST_CASE(test_contact_parsing)
 {
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::PointAnchorConstraintModel)
-  constraint_models;
+  std::vector<pinocchio::PointAnchorConstraintModel> constraint_models;
   std::string filename = PINOCCHIO_MODEL_DIR + std::string("/../unittest/models/closed_chain.xml");
 
   pinocchio::Model model;

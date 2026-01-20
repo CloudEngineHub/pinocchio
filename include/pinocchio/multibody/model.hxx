@@ -680,7 +680,7 @@ namespace pinocchio
   ModelTpl<Scalar, Options, JointCollectionTpl>::getFrameId(
     const std::string & name, const FrameType & type) const
   {
-    typename PINOCCHIO_ALIGNED_STD_VECTOR(Frame)::const_iterator it =
+    typename std::vector<Frame>::const_iterator it =
       std::find_if(frames.begin(), frames.end(), details::FilterFrame(name, type));
     std::ostringstream os;
     os << "Several frames match the filter - please specify the FrameType (name=\"" << name

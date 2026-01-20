@@ -76,7 +76,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & a,
-    const container::aligned_vector<ForceDerived> & fext);
+    const std::vector<ForceDerived> & fext);
 
   ///
   /// \brief Computes the non-linear effects (Corriolis, centrifual and gravitationnal effects),
@@ -164,7 +164,7 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const Eigen::MatrixBase<ConfigVectorType> & q,
-    const container::aligned_vector<ForceTpl<Scalar, Options>> & fext);
+    const std::vector<ForceTpl<Scalar, Options>> & fext);
 
   ///
   /// \brief Computes the Coriolis Matrix \f$ C(q,\dot{q}) \f$ of the Lagrangian dynamics:

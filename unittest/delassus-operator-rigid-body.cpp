@@ -789,7 +789,7 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
     //    constraints_jacobian_gt.transpose() * rhs;
     //    BOOST_CHECK(delassus_operator.getInternalData().u.isApprox(Jt_rhs_gt));
     //
-    //    pinocchio::container::aligned_vector<Data::Force> joint_forces_gt(
+    //    std::vector<Data::Force> joint_forces_gt(
     //      size_t(model.njoints), Data::Force::Zero());
     //    mapConstraintForcesToJointForces(
     //      model, data_gt, constraint_models, constraint_datas_gt, rhs, joint_forces_gt);

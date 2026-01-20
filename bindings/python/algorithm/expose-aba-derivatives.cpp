@@ -16,7 +16,7 @@ namespace pinocchio
   {
 
     namespace bp = boost::python;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(context::Force) ForceAlignedVector;
+    typedef std::vector<context::Force> ForceAlignedVector;
 
     bp::tuple computeABADerivatives(
       const context::Model & model,

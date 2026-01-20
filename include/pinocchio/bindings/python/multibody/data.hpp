@@ -91,9 +91,8 @@ namespace pinocchio
       void visit(PyClass & cl) const
       {
         cl.def(bp::init<>(bp::arg("self"), "Default constructor."))
-          .def(
-            bp::init<const context::Model &>(
-              bp::args("self", "model"), "Constructs a data structure from a given model."))
+          .def(bp::init<const context::Model &>(
+            bp::args("self", "model"), "Constructs a data structure from a given model."))
 
           .ADD_DATA_PROPERTY(
             joints,
@@ -306,9 +305,9 @@ namespace pinocchio
 #endif
           ;
 
-        typedef PINOCCHIO_ALIGNED_STD_VECTOR(Vector3) StdVec_Vector3;
-        typedef PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) StdVec_Matrix6x;
-        typedef PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) StdVec_Matrix6;
+        typedef std::vector<Vector3> StdVec_Vector3;
+        typedef std::vector<Matrix6x> StdVec_Matrix6x;
+        typedef std::vector<Matrix6> StdVec_Matrix6;
 
         StdVectorPythonVisitor<std::vector<std::vector<int>>>::expose("StdVec_StdVec_Int");
         StdAlignedVectorPythonVisitor<Vector3, false>::expose(

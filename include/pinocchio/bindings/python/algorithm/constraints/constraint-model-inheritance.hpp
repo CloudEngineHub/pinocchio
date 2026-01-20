@@ -39,28 +39,23 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(
-            bp::init<const Model &, JointIndex, const SE3 &, JointIndex, const SE3 &>(
-              (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint1_placement"),
-               bp::arg("joint2_id"), bp::arg("joint2_placement")),
-              "Contructor from given joint index and placement for the two joints "
-              "implied in the constraint."))
-          .def(
-            bp::init<const Model &, JointIndex>(
-              (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id")),
-              "Contructor from given joint index of the first joint "
-              "implied in the constraint."))
-          .def(
-            bp::init<const Model &, JointIndex, const SE3 &>(
-              (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"),
-               bp::arg("joint1_placement")),
-              "Contructor from given joint index and placement of the first joint "
-              "implied in the constraint."))
-          .def(
-            bp::init<const Model &, JointIndex, JointIndex>(
-              (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint2_id")),
-              "Contructor from given joint index for the two joints "
-              "implied in the constraint."))
+        cl.def(bp::init<const Model &, JointIndex, const SE3 &, JointIndex, const SE3 &>(
+                 (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"),
+                  bp::arg("joint1_placement"), bp::arg("joint2_id"), bp::arg("joint2_placement")),
+                 "Contructor from given joint index and placement for the two joints "
+                 "implied in the constraint."))
+          .def(bp::init<const Model &, JointIndex>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id")),
+            "Contructor from given joint index of the first joint "
+            "implied in the constraint."))
+          .def(bp::init<const Model &, JointIndex, const SE3 &>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint1_placement")),
+            "Contructor from given joint index and placement of the first joint "
+            "implied in the constraint."))
+          .def(bp::init<const Model &, JointIndex, JointIndex>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint2_id")),
+            "Contructor from given joint index for the two joints "
+            "implied in the constraint."))
           .def(
             "getA1", &getA1, bp::args("self", "constraint_data", "reference_frame"),
             "Returns the constraint projector associated with joint 1. "

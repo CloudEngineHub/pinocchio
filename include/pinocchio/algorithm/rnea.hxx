@@ -174,7 +174,7 @@ namespace pinocchio
       const Eigen::MatrixBase<ConfigVectorType> & q,
       const Eigen::MatrixBase<TangentVectorType1> & v,
       const Eigen::MatrixBase<TangentVectorType2> & a,
-      const container::aligned_vector<ForceDerived> & fext)
+      const std::vector<ForceDerived> & fext)
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(fext.size(), model.joints.size());
       assert(model.check(data) && "data is not consistent with model.");
@@ -455,7 +455,7 @@ namespace pinocchio
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const Eigen::MatrixBase<ConfigVectorType> & q,
-      const container::aligned_vector<ForceTpl<Scalar, Options>> & fext)
+      const std::vector<ForceTpl<Scalar, Options>> & fext)
     {
       assert(model.check(data) && "data is not consistent with model.");
       PINOCCHIO_CHECK_ARGUMENT_SIZE(
@@ -787,7 +787,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & a,
-    const container::aligned_vector<ForceDerived> & fext)
+    const std::vector<ForceDerived> & fext)
   {
     return impl::rnea(model, data, make_const_ref(q), make_const_ref(v), make_const_ref(a), fext);
   }
@@ -831,7 +831,7 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const Eigen::MatrixBase<ConfigVectorType> & q,
-    const container::aligned_vector<ForceTpl<Scalar, Options>> & fext)
+    const std::vector<ForceTpl<Scalar, Options>> & fext)
   {
     return impl::computeStaticTorque(model, data, make_const_ref(q), fext);
   }

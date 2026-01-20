@@ -60,13 +60,12 @@ namespace pinocchio
       typename ConfigVectorType>
     bp::tuple buildReducedModel(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const std::vector<GeometryModel, Eigen::aligned_allocator<GeometryModel>> &
-        list_of_geom_models,
+      const std::vector<GeometryModel> & list_of_geom_models,
       const std::vector<JointIndex> & list_of_joints_to_lock,
       const Eigen::MatrixBase<ConfigVectorType> & reference_configuration)
     {
       typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      std::vector<GeometryModel, Eigen::aligned_allocator<GeometryModel>> reduced_geom_models;
+      std::vector<GeometryModel> reduced_geom_models;
       Model reduced_model;
       buildReducedModel(
         model, list_of_geom_models, list_of_joints_to_lock, reference_configuration, reduced_model,
@@ -103,8 +102,7 @@ namespace pinocchio
     {
       using namespace Eigen;
 
-      typedef std::vector<GeometryModel, Eigen::aligned_allocator<GeometryModel>>
-        GeometryModelVector;
+      typedef std::vector<GeometryModel> GeometryModelVector;
       StdVectorPythonVisitor<GeometryModelVector>::expose("StdVec_GeometryModel");
 
       bp::def(
@@ -166,9 +164,8 @@ namespace pinocchio
       bp::def(
         "buildReducedModel",
         (bp::tuple(*)(
-          const Model &,
-          const std::vector<GeometryModel, Eigen::aligned_allocator<GeometryModel>> &,
-          const std::vector<JointIndex> &, const Eigen::MatrixBase<VectorXd> &))
+          const Model &, const std::vector<GeometryModel> &, const std::vector<JointIndex> &,
+          const Eigen::MatrixBase<VectorXd> &))
           buildReducedModel<double, 0, JointCollectionDefaultTpl, VectorXd>,
         bp::args(
           "model", "list_of_geom_models", "list_of_joints_to_lock", "reference_configuration"),

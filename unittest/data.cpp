@@ -149,25 +149,12 @@ BOOST_AUTO_TEST_CASE(test_copy_and_equal_op)
   BOOST_CHECK(data != data_copy);
 }
 
-BOOST_AUTO_TEST_CASE(test_container_aligned_vector)
-{
-  Model model;
-  buildModels::humanoidRandom(model);
-
-  Data data(model);
-
-  container::aligned_vector<Data::Force> & f = data.f;
-  data.f[0].setRandom();
-
-  BOOST_CHECK(data.f[0] == f[0]);
-}
-
 BOOST_AUTO_TEST_CASE(test_std_vector_of_Data)
 {
   Model model;
   buildModels::humanoidRandom(model);
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(Data) datas;
+  std::vector<Data> datas;
   for (size_t k = 0; k < 20; ++k)
     datas.push_back(Data(model));
 }

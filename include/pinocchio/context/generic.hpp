@@ -64,10 +64,10 @@ namespace pinocchio
   typedef RigidConstraintModelTpl<Scalar, Options> RigidConstraintModel;                           \
   typedef RigidConstraintDataTpl<Scalar, Options> RigidConstraintData;                             \
                                                                                                    \
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(CoulombFrictionCone) CoulombFrictionConeVector;             \
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(DualCoulombFrictionCone) DualCoulombFrictionConeVector;     \
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) RigidConstraintModelVector;           \
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) RigidConstraintDataVector;             \
+  typedef std::vector<CoulombFrictionCone> CoulombFrictionConeVector;                              \
+  typedef std::vector<DualCoulombFrictionCone> DualCoulombFrictionConeVector;                      \
+  typedef std::vector<RigidConstraintModel> RigidConstraintModelVector;                            \
+  typedef std::vector<RigidConstraintData> RigidConstraintDataVector;                              \
                                                                                                    \
   typedef SE3Tpl<Scalar, Options> SE3;                                                             \
   typedef MotionTpl<Scalar, Options> Motion;                                                       \

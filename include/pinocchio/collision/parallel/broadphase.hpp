@@ -54,7 +54,7 @@ namespace pinocchio
     const Eigen::Index batch_size = res.size();
 
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(ConfigVectorPool) ConfigVectorPoolPlain;
-    PINOCCHIO_ALIGNED_STD_VECTOR(ConfigVectorPoolPlain) q_thread(num_threads, q);
+    std::vector<ConfigVectorPoolPlain> q_thread(num_threads, q);
 
     OpenMPException openmp_exception;
 

@@ -4,7 +4,6 @@
 #ifndef __pinocchio_algorithm_rnea_second_order_derivatives_hpp__
 #define __pinocchio_algorithm_rnea_second_order_derivatives_hpp__
 
-#include "pinocchio/container/aligned-vector.hpp"
 #include "pinocchio/multibody/data.hpp"
 #include "pinocchio/multibody/model.hpp"
 

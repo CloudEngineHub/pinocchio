@@ -1303,8 +1303,8 @@ namespace pinocchio
 
       void MjcfGraph::parseContactInformation(
         const Model & model,
-        PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models,
-        PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) & frame_anchor_constraint_models)
+        std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
+        std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models)
       {
         Data data(model);
         Eigen::VectorXd qref;

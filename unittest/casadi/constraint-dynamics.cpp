@@ -43,8 +43,8 @@ BOOST_AUTO_TEST_CASE(test_constraintDynamics_casadi_algo)
   const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_data;
+  std::vector<pinocchio::RigidConstraintModel> contact_models;
+  std::vector<pinocchio::RigidConstraintData> contact_data;
 
   pinocchio::RigidConstraintModel ci_RF(
     pinocchio::CONTACT_3D, model, RF_id, pinocchio::LOCAL_WORLD_ALIGNED);

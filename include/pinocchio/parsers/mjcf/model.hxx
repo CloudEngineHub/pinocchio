@@ -53,8 +53,8 @@ namespace pinocchio
     void buildConstraintModelsFromXML(
       const std::string & xmlStream,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models,
-      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) & frame_anchor_constraint_models,
+      std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
+      std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
       const bool verbose)
     {
       typedef ::pinocchio::parsers::Model Model;
@@ -76,30 +76,26 @@ namespace pinocchio
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
-      & buildConstraintModelsFromXML(
-        const std::string & xmlStream,
-        ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) & point_anchor_constraint_models,
-        const bool verbose)
+    std::vector<PointAnchorConstraintModel> & buildConstraintModelsFromXML(
+      const std::string & xmlStream,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
+      const bool verbose)
     {
-      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
-      frame_anchor_constraint_models;
+      std::vector<FrameAnchorConstraintModel> frame_anchor_constraint_models;
       buildConstraintModelsFromXML(
         xmlStream, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
       return point_anchor_constraint_models;
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-      PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel)
-      & buildConstraintModelsFromXML(
-        const std::string & xmlStream,
-        ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-        PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) & frame_anchor_constraint_models,
-        const bool verbose)
+    std::vector<FrameAnchorConstraintModel> & buildConstraintModelsFromXML(
+      const std::string & xmlStream,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
+      const bool verbose)
     {
-      PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel)
-      point_anchor_constraint_models;
+      std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
       buildConstraintModelsFromXML(
         xmlStream, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
       return frame_anchor_constraint_models;

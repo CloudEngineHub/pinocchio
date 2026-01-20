@@ -16,8 +16,8 @@ namespace pinocchio
 {
   namespace python
   {
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(context::RigidConstraintModel) RigidConstraintModelVector;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(context::RigidConstraintData) RigidConstraintDataVector;
+    typedef std::vector<context::RigidConstraintModel> RigidConstraintModelVector;
+    typedef std::vector<context::RigidConstraintData> RigidConstraintDataVector;
 
     static const context::MatrixXs computeDelassusMatrix_proxy(
       const context::Model & model,

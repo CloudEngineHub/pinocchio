@@ -19,8 +19,8 @@ namespace pinocchio
   namespace python
   {
 
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(context::RigidConstraintModel) RigidConstraintModelVector;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(context::RigidConstraintData) RigidConstraintDataVector;
+    typedef std::vector<context::RigidConstraintModel> RigidConstraintModelVector;
+    typedef std::vector<context::RigidConstraintData> RigidConstraintDataVector;
 
     template<typename ConstraintModel, typename ConstraintData>
     static const context::VectorXs constraintDynamics_proxy(
@@ -29,9 +29,8 @@ namespace pinocchio
       const context::VectorXs & q,
       const context::VectorXs & v,
       const context::VectorXs & tau,
-      const std::vector<ConstraintModel, Eigen::aligned_allocator<ConstraintModel>> &
-        contact_models,
-      std::vector<ConstraintData, Eigen::aligned_allocator<ConstraintData>> & contact_datas,
+      const std::vector<ConstraintModel> & contact_models,
+      std::vector<ConstraintData> & contact_datas,
       context::ProximalSettings & prox_settings)
     {
       return constraintDynamics(
@@ -45,9 +44,8 @@ namespace pinocchio
       const context::VectorXs & q,
       const context::VectorXs & v,
       const context::VectorXs & tau,
-      const std::vector<ConstraintModel, Eigen::aligned_allocator<ConstraintModel>> &
-        contact_models,
-      std::vector<ConstraintData, Eigen::aligned_allocator<ConstraintData>> & contact_datas)
+      const std::vector<ConstraintModel> & contact_models,
+      std::vector<ConstraintData> & contact_datas)
     {
       return constraintDynamics(model, data, q, v, tau, contact_models, contact_datas);
     }
@@ -57,8 +55,8 @@ namespace pinocchio
     {
 
       typedef typename ConstraintModel::ConstraintData ConstraintData;
-      typedef Eigen::aligned_allocator<ConstraintModel> ConstraintModelAllocator;
-      typedef Eigen::aligned_allocator<ConstraintData> ConstraintDataAllocator;
+      typedef std::allocator<ConstraintModel> ConstraintModelAllocator;
+      typedef std::allocator<ConstraintData> ConstraintDataAllocator;
 
       bp::def(
         "initConstraintDynamics",

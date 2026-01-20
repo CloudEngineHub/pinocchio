@@ -41,8 +41,8 @@ BOOST_AUTO_TEST_CASE(closed_loop_constraint_6D_LOCAL)
   const std::string LF = "lleg6_joint";
 
   // Contact models and data
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_datas;
 
   RigidConstraintModel ci_RF_LF(
     CONTACT_6D, model, model.getJointId(RF), model.getJointId(LF), LOCAL);
