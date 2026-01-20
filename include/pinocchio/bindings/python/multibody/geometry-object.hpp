@@ -74,7 +74,7 @@ namespace pinocchio
             bp::make_setter(&GeometryObject::meshColor), "Color rgba of the mesh.")
           .def_readwrite(
             "geometry", &GeometryObject::geometry,
-            "The FCL CollisionGeometry associated to the given GeometryObject.")
+            "The coal CollisionGeometry associated to the given GeometryObject.")
           .def_readwrite(
             "name", &GeometryObject::name, "Name associated to the given GeometryObject.")
           .def_readwrite("parentJoint", &GeometryObject::parentJoint, "Index of the parent joint.")
@@ -95,7 +95,7 @@ namespace pinocchio
             "other geometry.")
           .def(
             "clone", &GeometryObject::clone, bp::arg("self"),
-            "Perform a deep copy of this. It will create a copy of the underlying FCL geometry.")
+            "Perform a deep copy of this. It will create a copy of the underlying coal geometry.")
           .add_property(
             "meshMaterial",
             bp::make_getter(&GeometryObject::meshMaterial, Converter::return_internal_reference()),
@@ -108,10 +108,10 @@ namespace pinocchio
           .def(bp::self == bp::self)
           .def(bp::self != bp::self)
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
           .def("CreateCapsule", &GeometryObjectPythonVisitor::maker_capsule)
           .staticmethod("CreateCapsule")
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
           ;
 
         // Check registration
@@ -124,14 +124,14 @@ namespace pinocchio
         }
       }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
       static GeometryObject maker_capsule(const double radius, const double length)
       {
         return GeometryObject(
           "", JointIndex(0), FrameIndex(0), SE3::Identity(),
-          std::shared_ptr<fcl::CollisionGeometry>(new fcl::Capsule(radius, length)));
+          std::shared_ptr<coal::CollisionGeometry>(new coal::Capsule(radius, length)));
       }
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
       static void expose()
       {
@@ -152,15 +152,15 @@ namespace pinocchio
             ;
         }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
         if (!register_symbolic_link_to_registered_type<CollisionObject>())
         {
-          bp::class_<CollisionObject, bp::bases<::hpp::fcl::CollisionObject>>(
-            "CollisionObject", "A Pinocchio collision object derived from FCL CollisionObject.",
+          bp::class_<CollisionObject, bp::bases<::coal::CollisionObject>>(
+            "CollisionObject", "A Pinocchio collision object derived from coal CollisionObject.",
             bp::no_init)
             .def(
               bp::init<
-                const std::shared_ptr<::hpp::fcl::CollisionGeometry> &,
+                const std::shared_ptr<::coal::CollisionGeometry> &,
                 bp::optional<const size_t, bool>>(
                 (bp::arg("self"), bp::arg("collision_geometry"),
                  bp::arg("geometryObjectIndex") = (std::numeric_limits<size_t>::max)(),
@@ -168,7 +168,7 @@ namespace pinocchio
                 "Constructor"))
             .def(
               bp::init<
-                const std::shared_ptr<::hpp::fcl::CollisionGeometry> &, SE3,
+                const std::shared_ptr<::coal::CollisionGeometry> &, SE3,
                 bp::optional<const size_t, bool>>(
                 (bp::arg("self"), bp::arg("collision_geometry"), bp::arg("placement"),
                  bp::arg("geometryObjectIndex") = (std::numeric_limits<size_t>::max)(),

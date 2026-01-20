@@ -8,9 +8,9 @@
 #include "pinocchio/math/fwd.hpp"
 #include "pinocchio/math/comparison-operators.hpp"
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
-  #include <hpp/fcl/timings.h>
-#endif // PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
+  #include <coal/timings.h>
+#endif // PINOCCHIO_WITH_COLLISION
 
 namespace pinocchio
 {
@@ -224,29 +224,29 @@ namespace pinocchio
   {
     typedef _Scalar Scalar;
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
-    typedef hpp::fcl::CPUTimes CPUTimes;
-    typedef hpp::fcl::Timer Timer;
-#endif // PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
+    typedef coal::CPUTimes CPUTimes;
+    typedef coal::Timer Timer;
+#endif // PINOCCHIO_WITH_COLLISION
 
     ConstraintSolverBaseTpl()
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
     : timer(false)
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
     {
     }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
     CPUTimes getCPUTimes() const
     {
       return timer.elapsed();
     }
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
   protected:
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
     Timer timer;
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
   }; // struct ConstraintSolverBaseTpl
 

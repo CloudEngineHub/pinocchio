@@ -14,16 +14,13 @@
 #include <boost/throw_exception.hpp>
 #include <stdexcept>
 
-// If hpp-fcl < 3.0.0 The GCC Eigen/Boost.Serialization workaround
-// is already defined.
-// If we don't link against hpp-fcl or hpp-fcl >= 3.0.0 then we must define
+// If we don't link against coal then we must define
 // the workaround.
-#if defined PINOCCHIO_WITH_HPP_FCL
-  #include <hpp/fcl/config.hh>
-  // Workaround a bug in GCC >= 7 and C++17.
-  // ref. https://gitlab.com/libeigen/eigen/-/issues/1676
-  #ifdef __GNUC__
-    #if __GNUC__ >= 7 && __cplusplus >= 201703L
+// #if !defined(PINOCCHIO_WITH_COLLISION)
+// Workaround a bug in GCC >= 7 and C++17.
+// ref. https://gitlab.com/libeigen/eigen/-/issues/1676
+#ifdef __GNUC__
+  #if __GNUC__ >= 7 && __cplusplus >= 201703L
 namespace boost
 {
   namespace serialization
@@ -45,37 +42,9 @@ namespace Eigen
     };
   } // namespace internal
 } // namespace Eigen
-    #endif
-  #endif
-#else // !PINOCCHIO_WITH_HPP_FCL
-  // Workaround a bug in GCC >= 7 and C++17.
-  // ref. https://gitlab.com/libeigen/eigen/-/issues/1676
-  #ifdef __GNUC__
-    #if __GNUC__ >= 7 && __cplusplus >= 201703L
-namespace boost
-{
-  namespace serialization
-  {
-    struct U;
-  }
-} // namespace boost
-namespace Eigen
-{
-  namespace internal
-  {
-    template<>
-    struct traits<boost::serialization::U>
-    {
-      enum
-      {
-        Flags = 0
-      };
-    };
-  } // namespace internal
-} // namespace Eigen
-    #endif
   #endif
 #endif
+// #endif // !PINOCCHIO_WITH_COLLISION
 
 // Similar workaround but for MSVC when C++17 is enabled.
 // TODO Find _MSC_VER range.

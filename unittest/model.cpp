@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(test_std_vector_of_Model)
   }
 }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
 struct AddPrefix
 {
   std::string p;
@@ -762,7 +762,7 @@ BOOST_AUTO_TEST_CASE(test_aligned_vector_of_model)
   }
 }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
 BOOST_AUTO_TEST_CASE(test_buildReducedModel_with_geom)
 {
   Model humanoid_model;
@@ -901,7 +901,7 @@ BOOST_AUTO_TEST_CASE(test_buildReducedModel_with_geom)
   BOOST_CHECK(reduced_geometry_models[1] == reduced_humanoid_geometry);
   BOOST_CHECK(reduced_geometry_models[2] == reduced_humanoid_geometry);
 }
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
 BOOST_AUTO_TEST_CASE(test_findCommonAncestor)
 {

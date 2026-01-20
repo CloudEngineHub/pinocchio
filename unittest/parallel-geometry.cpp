@@ -15,8 +15,8 @@
 #include "pinocchio/parsers/urdf.hpp"
 #include "pinocchio/parsers/srdf.hpp"
 
-#include <hpp/fcl/broadphase/broadphase_dynamic_AABB_tree.h>
-#include <hpp/fcl/mesh_loader/loader.h>
+#include <coal/broadphase/broadphase_dynamic_AABB_tree.h>
+#include <coal/mesh_loader/loader.h>
 
 #include <vector>
 #include <boost/filesystem.hpp>
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(test_geometry_pool)
 
   const std::string package_path =
     boost::filesystem::path(EXAMPLE_ROBOT_DATA_MODEL_DIR).parent_path().parent_path().string();
-  hpp::fcl::MeshLoaderPtr mesh_loader = std::make_shared<hpp::fcl::CachedMeshLoader>();
+  coal::MeshLoaderPtr mesh_loader = std::make_shared<coal::CachedMeshLoader>();
   const std::string srdf_filename =
     EXAMPLE_ROBOT_DATA_MODEL_DIR + std::string("/talos_data/srdf/talos.srdf");
   std::vector<std::string> package_paths(1, package_path);
@@ -60,8 +60,8 @@ BOOST_AUTO_TEST_CASE(test_broadphase_pool)
   Data data(model);
   GeometryModel geom_model;
 
-  hpp::fcl::CollisionGeometryPtr_t sphere_ptr(new hpp::fcl::Sphere(0.1));
-  hpp::fcl::CollisionGeometryPtr_t sphere2_ptr(new hpp::fcl::Sphere(0.1));
+  coal::CollisionGeometryPtr_t sphere_ptr(new coal::Sphere(0.1));
+  coal::CollisionGeometryPtr_t sphere2_ptr(new coal::Sphere(0.1));
 
   GeometryObject obj1("obj1", 1, SE3::Identity(), sphere_ptr);
   geom_model.addGeometryObject(obj1);
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(test_broadphase_pool)
   //  GeometryObject & go1 = geom_model.geometryObjects[obj_index];
 
   const size_t num_thread = (size_t)omp_get_max_threads();
-  typedef BroadPhaseManagerTpl<hpp::fcl::DynamicAABBTreeCollisionManager> BroadPhaseManager;
+  typedef BroadPhaseManagerTpl<coal::DynamicAABBTreeCollisionManager> BroadPhaseManager;
   typedef BroadPhaseManagerPoolBase<BroadPhaseManager, double> BroadPhaseManagerPool;
   BroadPhaseManagerPool pool(model, geom_model, num_thread);
 
@@ -118,10 +118,9 @@ BOOST_AUTO_TEST_CASE(test_broadphase_pool)
     BOOST_CHECK(res_all_before == res_all_before_ref);
   }
 
-  static_cast<hpp::fcl::Sphere *>(geom_model.geometryObjects[obj2_index].geometry.get())->radius =
-    100;
+  static_cast<coal::Sphere *>(geom_model.geometryObjects[obj2_index].geometry.get())->radius = 100;
   geom_model.geometryObjects[obj2_index].geometry->computeLocalAABB();
-  BOOST_CHECK(static_cast<hpp::fcl::Sphere *>(sphere2_ptr.get())->radius == 100);
+  BOOST_CHECK(static_cast<coal::Sphere *>(sphere2_ptr.get())->radius == 100);
 
   for (GeometryModel & geom_model_pool : pool.getGeometryModels())
   {
@@ -153,15 +152,15 @@ BOOST_AUTO_TEST_CASE(test_broadphase_pool)
 
   BOOST_CHECK(res_all_intermediate != res_all_before);
 
-  static_cast<hpp::fcl::Sphere *>(sphere2_ptr.get())->radius = 0.1;
+  static_cast<coal::Sphere *>(sphere2_ptr.get())->radius = 0.1;
 
-  hpp::fcl::CollisionGeometryPtr_t new_sphere2_ptr(
-    new hpp::fcl::Sphere(static_cast<hpp::fcl::Sphere &>(*sphere2_ptr.get())));
+  coal::CollisionGeometryPtr_t new_sphere2_ptr(
+    new coal::Sphere(static_cast<coal::Sphere &>(*sphere2_ptr.get())));
   new_sphere2_ptr->computeLocalAABB();
   geom_model.geometryObjects[obj2_index].geometry = new_sphere2_ptr;
   BOOST_CHECK(
-    static_cast<hpp::fcl::Sphere *>(geom_model.geometryObjects[obj2_index].geometry.get())->radius
-    == static_cast<hpp::fcl::Sphere *>(new_sphere2_ptr.get())->radius);
+    static_cast<coal::Sphere *>(geom_model.geometryObjects[obj2_index].geometry.get())->radius
+    == static_cast<coal::Sphere *>(new_sphere2_ptr.get())->radius);
   BOOST_CHECK(geom_model.geometryObjects[obj2_index].geometry.get() == new_sphere2_ptr.get());
   BOOST_CHECK(geom_model.geometryObjects[obj2_index].geometry.get() != sphere2_ptr.get());
   BOOST_CHECK(
@@ -218,7 +217,7 @@ BOOST_AUTO_TEST_CASE(test_talos)
 
   const std::string package_path =
     boost::filesystem::path(EXAMPLE_ROBOT_DATA_MODEL_DIR).parent_path().parent_path().string();
-  hpp::fcl::MeshLoaderPtr mesh_loader = std::make_shared<hpp::fcl::CachedMeshLoader>();
+  coal::MeshLoaderPtr mesh_loader = std::make_shared<coal::CachedMeshLoader>();
   const std::string srdf_filename =
     EXAMPLE_ROBOT_DATA_MODEL_DIR + std::string("/talos_data/srdf/talos.srdf");
   std::vector<std::string> package_paths(1, package_path);
@@ -294,7 +293,7 @@ BOOST_AUTO_TEST_CASE(test_pool_talos_memory)
 
   const std::string package_path =
     boost::filesystem::path(EXAMPLE_ROBOT_DATA_MODEL_DIR).parent_path().parent_path().string();
-  hpp::fcl::MeshLoaderPtr mesh_loader = std::make_shared<hpp::fcl::CachedMeshLoader>();
+  coal::MeshLoaderPtr mesh_loader = std::make_shared<coal::CachedMeshLoader>();
   const std::string srdf_filename =
     EXAMPLE_ROBOT_DATA_MODEL_DIR + std::string("/talos_data/srdf/talos.srdf");
   std::vector<std::string> package_paths(1, package_path);
@@ -305,7 +304,7 @@ BOOST_AUTO_TEST_CASE(test_pool_talos_memory)
   geometry_model.addAllCollisionPairs();
   pinocchio::srdf::removeCollisionPairs(model, geometry_model, srdf_filename, false);
 
-  typedef BroadPhaseManagerTpl<hpp::fcl::DynamicAABBTreeCollisionManager> BroadPhaseManager;
+  typedef BroadPhaseManagerTpl<coal::DynamicAABBTreeCollisionManager> BroadPhaseManager;
   typedef BroadPhaseManagerPoolBase<BroadPhaseManager, double> BroadPhaseManagerPool;
 
   const size_t num_thread = (size_t)omp_get_max_threads();
@@ -339,7 +338,7 @@ BOOST_AUTO_TEST_CASE(test_pool_talos)
 
   const std::string package_path =
     boost::filesystem::path(EXAMPLE_ROBOT_DATA_MODEL_DIR).parent_path().parent_path().string();
-  hpp::fcl::MeshLoaderPtr mesh_loader = std::make_shared<hpp::fcl::CachedMeshLoader>();
+  coal::MeshLoaderPtr mesh_loader = std::make_shared<coal::CachedMeshLoader>();
   const std::string srdf_filename =
     EXAMPLE_ROBOT_DATA_MODEL_DIR + std::string("/talos_data/srdf/talos.srdf");
   std::vector<std::string> package_paths(1, package_path);
@@ -382,7 +381,7 @@ BOOST_AUTO_TEST_CASE(test_pool_talos)
   }
 
   {
-    typedef BroadPhaseManagerTpl<hpp::fcl::DynamicAABBTreeCollisionManager> BroadPhaseManager;
+    typedef BroadPhaseManagerTpl<coal::DynamicAABBTreeCollisionManager> BroadPhaseManager;
     typedef BroadPhaseManagerPoolBase<BroadPhaseManager, double> BroadPhaseManagerPool;
 
     BroadPhaseManagerPool broadphase_manager_pool(model, geometry_model, num_thread);
@@ -405,7 +404,7 @@ BOOST_AUTO_TEST_CASE(test_pool_talos)
   }
 
   {
-    typedef TreeBroadPhaseManagerTpl<hpp::fcl::DynamicAABBTreeCollisionManager> BroadPhaseManager;
+    typedef TreeBroadPhaseManagerTpl<coal::DynamicAABBTreeCollisionManager> BroadPhaseManager;
     typedef BroadPhaseManagerPoolBase<BroadPhaseManager, double> BroadPhaseManagerPool;
 
     BroadPhaseManagerPool broadphase_manager_pool(model, geometry_model, num_thread);

@@ -23,7 +23,7 @@ namespace pinocchio
       bp::def(
         "buildGeometryModel", &buildGeometryModel,
         (bp::arg("g"), bp::arg("model"), bp::arg("type"),
-         bp::arg("mesh_loader") = ::hpp::fcl::MeshLoaderPtr()),
+         bp::arg("mesh_loader") = ::coal::MeshLoaderPtr()),
         "Build a pinocchio model based on the graph.");
     }
   } // namespace python

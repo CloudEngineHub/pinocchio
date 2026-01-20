@@ -30,7 +30,7 @@ namespace pinocchio
       const ModelGraph & g,
       const Model & model,
       const GeometryType type,
-      ::hpp::fcl::MeshLoaderPtr mesh_loader = ::hpp::fcl::MeshLoaderPtr());
+      ::coal::MeshLoaderPtr mesh_loader = ::coal::MeshLoaderPtr());
   } // namespace graph
 } // namespace pinocchio
 #endif // ifndef __pinocchio_parsers_graph_model_graph_algo_geometry_hpp__

@@ -34,8 +34,7 @@ function(ADD_PINOCCHIO_BENCHMARK name)
   target_compile_definitions(
     ${bench_name}
     PRIVATE PINOCCHIO_MODEL_DIR="${PINOCCHIO_MODEL_DIR}"
-            "EXAMPLE_ROBOT_DATA_MODEL_DIR=\"${EXAMPLE_ROBOT_DATA_MODEL_DIR}\""
-            COAL_DISABLE_HPP_FCL_WARNINGS)
+            "EXAMPLE_ROBOT_DATA_MODEL_DIR=\"${EXAMPLE_ROBOT_DATA_MODEL_DIR}\"")
 
   target_link_libraries(${bench_name} PRIVATE pinocchio_default)
   target_link_libraries(${bench_name} PRIVATE benchmark::benchmark)

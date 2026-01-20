@@ -1,26 +1,25 @@
 //
-// Copyright (c) 2015-2024 CNRS INRIA
+// Copyright (c) 2026 INRIA
 //
 
 #ifndef __pinocchio_collision_fcl_convertion_hpp__
 #define __pinocchio_collision_fcl_convertion_hpp__
 
-#include <hpp/fcl/math/transform.h>
-#include "pinocchio/spatial/se3.hpp"
+#include "pinocchio/macros.hpp"
+
+// clang-format off
+PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/collision/fcl-pinocchio-conversions.hpp, pinocchio/collision/coal-pinocchio-conversions.hpp)
+// clang-format on
+
+#include "pinocchio/collision/coal-pinocchio-conversions.hpp"
 
 namespace pinocchio
 {
-  template<typename Scalar>
-  inline hpp::fcl::Transform3f toFclTransform3f(const SE3Tpl<Scalar> & m)
-  {
-    SE3Tpl<double, 0> m_ = m.template cast<double>();
-    return hpp::fcl::Transform3f(m_.rotation(), m_.translation());
-  }
 
-  inline SE3 toPinocchioSE3(const hpp::fcl::Transform3f & tf)
+  template<typename Scalar>
+  PINOCCHIO_DEPRECATED inline coal::Transform3s toFclTransform3f(const SE3Tpl<Scalar> & m)
   {
-    typedef SE3::Scalar Scalar;
-    return SE3(tf.getRotation().cast<Scalar>(), tf.getTranslation().cast<Scalar>());
+    return toCoalTransform3s(m);
   }
 
 } // namespace pinocchio

@@ -140,7 +140,7 @@ namespace pinocchio
         model.upperEffortLimit.segment(idx_v, nq).fill(taumax);
       }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
       /* Add a 6DOF manipulator shoulder-elbow-wrist geometries to an existing model.
        * <model> is the the kinematic chain, constant.
        * <geom> is the geometry model where the new geoms are added.
@@ -163,21 +163,21 @@ namespace pinocchio
         parentFrame = model.getBodyId(pre + "shoulder1_body");
         GeometryObject shoulderBall(
           pre + "shoulder_object", model.frames[parentFrame].parentJoint, parentFrame,
-          SE3::Identity(), std::shared_ptr<fcl::Sphere>(new fcl::Sphere(0.05)), "SPHERE",
+          SE3::Identity(), std::shared_ptr<coal::Sphere>(new coal::Sphere(0.05)), "SPHERE",
           Eigen::Vector3d::Ones(), false, meshColor);
         geom.addGeometryObject(shoulderBall);
 
         parentFrame = model.getBodyId(pre + "elbow_body");
         GeometryObject elbowBall(
           pre + "elbow_object", model.frames[parentFrame].parentJoint, parentFrame, SE3::Identity(),
-          std::shared_ptr<fcl::Sphere>(new fcl::Sphere(0.05)), "SPHERE", Eigen::Vector3d::Ones(),
+          std::shared_ptr<coal::Sphere>(new coal::Sphere(0.05)), "SPHERE", Eigen::Vector3d::Ones(),
           false, meshColor);
         geom.addGeometryObject(elbowBall);
 
         parentFrame = model.getBodyId(pre + "wrist1_body");
         GeometryObject wristBall(
           pre + "wrist_object", model.frames[parentFrame].parentJoint, parentFrame, SE3::Identity(),
-          std::shared_ptr<fcl::Sphere>(new fcl::Sphere(0.05)), "SPHERE", Eigen::Vector3d::Ones(),
+          std::shared_ptr<coal::Sphere>(new coal::Sphere(0.05)), "SPHERE", Eigen::Vector3d::Ones(),
           false, meshColor);
         geom.addGeometryObject(wristBall);
 
@@ -185,7 +185,7 @@ namespace pinocchio
         GeometryObject upperArm(
           pre + "upperarm_object", model.frames[parentFrame].parentJoint, parentFrame,
           SE3(SE3::Matrix3::Identity(), typename SE3::Vector3(0, 0, 0.5)),
-          std::shared_ptr<fcl::Capsule>(new fcl::Capsule(0.05, .8)), "CAPSULE",
+          std::shared_ptr<coal::Capsule>(new coal::Capsule(0.05, .8)), "CAPSULE",
           Eigen::Vector3d::Ones(), false, meshColor);
         geom.addGeometryObject(upperArm);
 
@@ -193,7 +193,7 @@ namespace pinocchio
         GeometryObject lowerArm(
           pre + "lowerarm_object", model.frames[parentFrame].parentJoint, parentFrame,
           SE3(SE3::Matrix3::Identity(), typename SE3::Vector3(0, 0, 0.5)),
-          std::shared_ptr<fcl::Capsule>(new fcl::Capsule(0.05, .8)), "CAPSULE",
+          std::shared_ptr<coal::Capsule>(new coal::Capsule(0.05, .8)), "CAPSULE",
           Eigen::Vector3d::Ones(), false, meshColor);
         geom.addGeometryObject(lowerArm);
 
@@ -201,7 +201,7 @@ namespace pinocchio
         GeometryObject effectorArm(
           pre + "effector_object", model.frames[parentFrame].parentJoint, parentFrame,
           SE3(SE3::Matrix3::Identity(), typename SE3::Vector3(0, 0, 0.1)),
-          std::shared_ptr<fcl::Capsule>(new fcl::Capsule(0.05, .2)), "CAPSULE",
+          std::shared_ptr<coal::Capsule>(new coal::Capsule(0.05, .2)), "CAPSULE",
           Eigen::Vector3d::Ones(), false, meshColor);
         geom.addGeometryObject(effectorArm);
       }
@@ -225,7 +225,7 @@ namespace pinocchio
       details::addManipulator(model, mimic);
     }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     void manipulatorGeometries(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model, GeometryModel & geom)
@@ -404,7 +404,7 @@ namespace pinocchio
         "larm_");
     }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     void humanoidGeometries(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model, GeometryModel & geom)
@@ -425,7 +425,7 @@ namespace pinocchio
       parentFrame = model.getBodyId("chest1_body");
       GeometryObject chestBall(
         "chest_object", model.frames[parentFrame].parentJoint, parentFrame, SE3::Identity(),
-        std::shared_ptr<fcl::Sphere>(new fcl::Sphere(0.05)), "SPHERE", Eigen::Vector3d::Ones(),
+        std::shared_ptr<coal::Sphere>(new coal::Sphere(0.05)), "SPHERE", Eigen::Vector3d::Ones(),
         false, meshColor);
       geom.addGeometryObject(chestBall);
 
@@ -433,7 +433,7 @@ namespace pinocchio
       GeometryObject headBall(
         "head_object", model.frames[parentFrame].parentJoint, parentFrame,
         SE3(SE3::Matrix3::Identity(), typename SE3::Vector3(0, 0, 0.5)),
-        std::shared_ptr<fcl::Sphere>(new fcl::Sphere(0.25)), "SPHERE", Eigen::Vector3d::Ones(),
+        std::shared_ptr<coal::Sphere>(new coal::Sphere(0.25)), "SPHERE", Eigen::Vector3d::Ones(),
         false, meshColor);
       geom.addGeometryObject(headBall);
 
@@ -441,7 +441,7 @@ namespace pinocchio
       GeometryObject chestArm(
         "chest2_object", model.frames[parentFrame].parentJoint, parentFrame,
         SE3(SE3::Matrix3::Identity(), typename SE3::Vector3(0, 0, 0.5)),
-        std::shared_ptr<fcl::Capsule>(new fcl::Capsule(0.05, .8)), "SPHERE",
+        std::shared_ptr<coal::Capsule>(new coal::Capsule(0.05, .8)), "SPHERE",
         Eigen::Vector3d::Ones(), false, meshColor);
       geom.addGeometryObject(chestArm);
     }

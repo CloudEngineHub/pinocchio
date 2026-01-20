@@ -73,7 +73,7 @@ namespace pinocchio
     }
 
     ///
-    /// @brief Update the manager from the current geometry positions and update the underlying FCL
+    /// @brief Update the manager from the current geometry positions and update the underlying coal
     /// broad phase manager.
     ///
     /// @param[in] compute_local_aabb whether to recompute the local AABB of the collision

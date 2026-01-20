@@ -5,7 +5,7 @@
 #ifndef __pinocchio_collision_broadphase_manager_hpp__
 #define __pinocchio_collision_broadphase_manager_hpp__
 
-#include <hpp/fcl/broadphase/broadphase_collision_manager.h>
+#include <coal/broadphase/broadphase_collision_manager.h>
 
 #include "pinocchio/collision/broadphase-manager-base.hpp"
 #include "pinocchio/multibody/geometry-object-filter.hpp"
@@ -99,7 +99,7 @@ namespace pinocchio
     using Base::getModel;
 
     ///
-    /// @brief Update the manager from the current geometry positions and update the underlying FCL
+    /// @brief Update the manager from the current geometry positions and update the underlying coal
     /// broad phase manager.
     ///
     /// @param[in] compute_local_aabb whether to recompute the local AABB of the collision

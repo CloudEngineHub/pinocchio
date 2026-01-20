@@ -243,7 +243,7 @@ namespace pinocchio
     typedef Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXb;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
     typedef ::pinocchio::ComputeCollision ComputeCollision;
     typedef ::pinocchio::ComputeContactPatch ComputeContactPatch;
     typedef ::pinocchio::ComputeDistance ComputeDistance;
@@ -253,8 +253,8 @@ namespace pinocchio
     /// \brief Vector gathering the SE3 placements of the geometry objects relative to the world.
     ///        See updateGeometryPlacements to update the placements.
     ///
-    /// oMg is used for pinocchio (kinematics) computation but is translated to fcl type
-    /// for fcl (collision) computation. The copy is done in collisionObjects[i]->setTransform(.)
+    /// oMg is used for pinocchio (kinematics) computation but is translated to coal type
+    /// for coal (collision) computation. The copy is done in collisionObjects[i]->setTransform(.)
     ///
     PINOCCHIO_ALIGNED_STD_VECTOR(SE3) oMg;
 
@@ -263,38 +263,38 @@ namespace pinocchio
     ///
     std::vector<bool> activeCollisionPairs;
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
 
     ///
     /// \brief Defines what information should be computed by distance computation.
     /// There is one request per pair of geometries.
-    std::vector<fcl::DistanceRequest> distanceRequests;
+    std::vector<coal::DistanceRequest> distanceRequests;
 
     ///
     /// \brief Vector gathering the result of the distance computation for all the collision pairs.
     ///
-    std::vector<fcl::DistanceResult> distanceResults;
+    std::vector<coal::DistanceResult> distanceResults;
 
     ///
     /// \brief Defines what information should be computed by collision test.
     /// There is one request per pair of geometries.
-    std::vector<fcl::CollisionRequest> collisionRequests;
+    std::vector<coal::CollisionRequest> collisionRequests;
 
     ///
     /// \brief Vector gathering the result of the collision computation for all the collision pairs.
     ///
-    std::vector<fcl::CollisionResult> collisionResults;
+    std::vector<coal::CollisionResult> collisionResults;
 
     ///
     /// \brief Defines what information should be computed by contact patch test.
     /// There is one request per pair of geometries.
-    std::vector<fcl::ContactPatchRequest> contactPatchRequests;
+    std::vector<coal::ContactPatchRequest> contactPatchRequests;
 
     ///
     /// \brief Vector gathering the result of the contact patch computation for all the collision
     /// pairs.
     ///
-    std::vector<fcl::ContactPatchResult> contactPatchResults;
+    std::vector<coal::ContactPatchResult> contactPatchResults;
 
     ///
     /// \brief Radius of the bodies, i.e. distance of the further point of the geometry model
@@ -319,7 +319,7 @@ namespace pinocchio
     ///  \brief Functor associated to the computation of distances.
     PINOCCHIO_ALIGNED_STD_VECTOR(ComputeDistance) distance_functors;
 
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
     /// \brief Map over vector GeomModel::geometryObjects, indexed by joints.
     ///
@@ -436,7 +436,7 @@ namespace pinocchio
     ///
     void deactivateAllCollisionPairs();
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
     ///
     /// \brief Set the security margin of all the collision request in a row, according to the
     /// values stored in the associative map.
@@ -453,7 +453,7 @@ namespace pinocchio
       const bool upper = true,
       const bool sync_distance_upper_bound = false);
 
-#endif // ifdef PINOCCHIO_WITH_HPP_FCL
+#endif // ifdef PINOCCHIO_WITH_COLLISION
 
     friend std::ostream & operator<<(std::ostream & os, const GeometryData & geomData);
 
@@ -463,7 +463,7 @@ namespace pinocchio
     bool operator==(const GeometryData & other) const
     {
       return oMg == other.oMg && activeCollisionPairs == other.activeCollisionPairs
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
              && distanceRequests == other.distanceRequests
              && distanceResults == other.distanceResults
              && collisionRequests == other.collisionRequests

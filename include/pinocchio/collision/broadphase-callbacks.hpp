@@ -5,9 +5,9 @@
 #ifndef __pinocchio_collision_broadphase_callback_hpp__
 #define __pinocchio_collision_broadphase_callback_hpp__
 
-#include <hpp/fcl/broadphase/broadphase_callbacks.h>
+#include <coal/broadphase/broadphase_callbacks.h>
 
-#include "pinocchio/multibody/fcl.hpp"
+#include "pinocchio/multibody/coal.hpp"
 #include "pinocchio/multibody/geometry.hpp"
 
 #include "pinocchio/collision/collision.hpp"
@@ -16,7 +16,7 @@ namespace pinocchio
 {
 
   /// @brief Interface for Pinocchio collision callback functors
-  struct CollisionCallBackBase : hpp::fcl::CollisionCallBackBase
+  struct CollisionCallBackBase : coal::CollisionCallBackBase
   {
     CollisionCallBackBase(const GeometryModel & geometry_model, GeometryData & geometry_data)
     : geometry_model_ptr(&geometry_model)
@@ -87,7 +87,7 @@ namespace pinocchio
       //    visited.setZero();
     }
 
-    bool collide(hpp::fcl::CollisionObject * o1, hpp::fcl::CollisionObject * o2)
+    bool collide(coal::CollisionObject * o1, coal::CollisionObject * o2)
     {
 
       assert(!stop() && "must never happened");
@@ -121,10 +121,10 @@ namespace pinocchio
 
       count++;
 
-      fcl::CollisionRequest collision_request(
+      coal::CollisionRequest collision_request(
         geometry_data_ptr->collisionRequests[size_t(pair_index)]);
-      // collision_request.gjk_variant = fcl::GJKVariant::PolyakAcceleration;
-      //    collision_request.gjk_initial_guess = fcl::GJKInitialGuess::BoundingVolumeGuess;
+      // collision_request.gjk_variant = coal::GJKVariant::PolyakAcceleration;
+      //    collision_request.gjk_initial_guess = coal::GJKInitialGuess::BoundingVolumeGuess;
 
       if (
         co1.collisionGeometry().get()
@@ -137,7 +137,7 @@ namespace pinocchio
       //    if(!(co1.collisionGeometry()->aabb_local.volume() < 0 ||
       //    co2.collisionGeometry()->aabb_local.volume() <0)) { // TODO(jcarpent): check potential
       //    bug
-      //      collision_request.gjk_initial_guess = fcl::GJKInitialGuess::BoundingVolumeGuess;
+      //      collision_request.gjk_initial_guess = coal::GJKInitialGuess::BoundingVolumeGuess;
       //    }
 
       bool res;
@@ -149,10 +149,10 @@ namespace pinocchio
       catch (std::logic_error & e)
       {
         PINOCCHIO_THROW_PRETTY(
-          std::logic_error, "Geometries with index go1: "
-                              << go1_index << " or go2: " << go2_index
-                              << " have produced an internal error within HPP-FCL.\n what:\n"
-                              << e.what());
+          std::logic_error,
+          "Geometries with index go1: " << go1_index << " or go2: " << go2_index
+                                        << " have produced an internal error within coal.\n what:\n"
+                                        << e.what());
       }
 
       if (res && !collision)
@@ -222,7 +222,7 @@ namespace pinocchio
 
     /// @brief This method is called when two leafs of the broad phase are found to be in collision
     /// (i.e. when two AABBs of a geometry_model's geometries are colliding).
-    bool collide(hpp::fcl::CollisionObject * o1, hpp::fcl::CollisionObject * o2)
+    bool collide(coal::CollisionObject * o1, coal::CollisionObject * o2)
     {
       assert(!stop() && "must never happened");
 

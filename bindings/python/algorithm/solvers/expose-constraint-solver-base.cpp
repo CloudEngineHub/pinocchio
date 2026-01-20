@@ -123,7 +123,7 @@ namespace pinocchio
         "ConstraintSolverBase", "Base class for constraint solvers.",
         bp::no_init) // Abstract base class, no direct construction
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
         .def(
           "getCPUTimes", &ConstraintSolverBase::getCPUTimes, bp::arg("self"),
           "Get CPU times for the solve")

@@ -1,6 +1,6 @@
 """
 Pose a Solo-12 robot on a surface defined through a function and displayed through an
-hppfcl.HeightField.
+coal.HeightField.
 """
 
 import time
@@ -73,9 +73,9 @@ def vizGround(
     sx = xg[-1] - xg[0]
     sy = xg[-1] - xg[0]
     elev_g[:, :] = elev_g[::-1, :]
-    import hppfcl
+    import coal
 
-    heightField = hppfcl.HeightFieldAABB(sx, sy, elev_g, np.min(elev_g))
+    heightField = coal.HeightFieldAABB(sx, sy, elev_g, np.min(elev_g))
     pl = pin.SE3.Identity()
     obj = pin.GeometryObject(name, 0, pl, heightField)
     obj.meshColor[:] = color

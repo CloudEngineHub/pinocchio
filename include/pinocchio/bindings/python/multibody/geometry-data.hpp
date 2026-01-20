@@ -71,15 +71,15 @@ namespace pinocchio
             "activeCollisionPairs", &GeometryData::activeCollisionPairs,
             "Vector of active CollisionPairs")
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
           .def_readwrite(
             "distanceRequests", &GeometryData::distanceRequests,
-            "Defines which information should be computed by FCL for distance computations")
+            "Defines which information should be computed by coal for distance computations")
           .def_readwrite(
             "distanceResults", &GeometryData::distanceResults, "Vector of distance results.")
           .def_readwrite(
             "collisionRequests", &GeometryData::collisionRequests,
-            "Defines which information should be computed by FCL for collision computations.\n\n"
+            "Defines which information should be computed by coal for collision computations.\n\n"
             "Note: it is possible to define a security_margin and a break_distance for a collision "
             "request.\n"
             "Most likely, for robotics application, these thresholds will be different for each "
@@ -89,7 +89,7 @@ namespace pinocchio
             "collisionResults", &GeometryData::collisionResults, "Vector of collision results.")
           .def_readwrite(
             "contactPatchRequests", &GeometryData::contactPatchRequests,
-            "Defines which information should be computed by FCL for contact patch requests.\n")
+            "Defines which information should be computed by coal for contact patch requests.\n")
           .def_readwrite(
             "contactPatchResults", &GeometryData::contactPatchResults,
             "Vector of contact patch results.")
@@ -106,7 +106,7 @@ namespace pinocchio
             "Vector of radius of bodies, i.e. the distance between the further point of the "
             "geometry object from the joint center.\n"
             "note: This radius information might be usuful in continuous collision checking")
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
           .def(
             "fillInnerOuterObjectMaps", &GeometryData::fillInnerOuterObjectMaps,
@@ -136,14 +136,14 @@ namespace pinocchio
           .def(
             "deactivateAllCollisionPairs", &GeometryData::deactivateAllCollisionPairs,
             bp::args("self"), "Deactivate all collision pairs.")
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
           .def(
             "setSecurityMargins", &GeometryData::setSecurityMargins,
             (bp::arg("self"), bp::arg("geometry_model"), bp::arg("security_margin_map"),
              bp::arg("upper") = true, bp::arg("sync_distance_upper_bound") = true),
             "Set the security margin of all the collision request in a row, according to the "
             "values stored in the associative map.")
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
           .def(bp::self == bp::self)
           .def(bp::self != bp::self)

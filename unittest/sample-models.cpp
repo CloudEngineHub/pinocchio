@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(build_model_sample_manipulator)
   BOOST_CHECK(model_m.nq == 5);
   BOOST_CHECK(model_m.nv == 5);
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
   pinocchio::Data data(model);
   pinocchio::GeometryModel geom;
   pinocchio::buildModels::manipulatorGeometries(model, geom);
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(build_model_sample_humanoid)
   BOOST_CHECK(model.nq == 35);
   BOOST_CHECK(model.nv == 34);
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
   pinocchio::GeometryModel geom;
   pinocchio::buildModels::humanoidGeometries(model, geom);
   pinocchio::GeometryData geomdata(geom);

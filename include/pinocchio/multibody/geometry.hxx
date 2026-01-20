@@ -82,26 +82,26 @@ namespace pinocchio
   inline GeometryData::GeometryData(const GeometryModel & geom_model)
   : oMg(geom_model.ngeoms)
   , activeCollisionPairs(geom_model.collisionPairs.size(), true)
-#ifdef PINOCCHIO_WITH_HPP_FCL
-  , distanceRequests(geom_model.collisionPairs.size(), hpp::fcl::DistanceRequest(true))
+#ifdef PINOCCHIO_WITH_COLLISION
+  , distanceRequests(geom_model.collisionPairs.size(), coal::DistanceRequest(true))
   , distanceResults(geom_model.collisionPairs.size())
   , collisionRequests(
-      geom_model.collisionPairs.size(), hpp::fcl::CollisionRequest(::hpp::fcl::NO_REQUEST, 1))
+      geom_model.collisionPairs.size(), coal::CollisionRequest(::coal::NO_REQUEST, 1))
   , collisionResults(geom_model.collisionPairs.size())
   , contactPatchRequests(geom_model.collisionPairs.size()) // use default constructor
   , contactPatchResults(geom_model.collisionPairs.size())  // use default constructor
   , radius()
   , collisionPairIndex(0)
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
   , innerObjects()
   , outerObjects()
   {
-#ifdef PINOCCHIO_WITH_HPP_FCL
-    BOOST_FOREACH (hpp::fcl::CollisionRequest & creq, collisionRequests)
+#ifdef PINOCCHIO_WITH_COLLISION
+    BOOST_FOREACH (coal::CollisionRequest & creq, collisionRequests)
     {
       creq.enable_cached_gjk_guess = true;
     }
-    BOOST_FOREACH (hpp::fcl::DistanceRequest & dreq, distanceRequests)
+    BOOST_FOREACH (coal::DistanceRequest & dreq, distanceRequests)
     {
       dreq.enable_cached_gjk_guess = true;
     }
@@ -126,7 +126,7 @@ namespace pinocchio
   inline GeometryData::GeometryData(const GeometryData & other)
   : oMg(other.oMg)
   , activeCollisionPairs(other.activeCollisionPairs)
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
   , distanceRequests(other.distanceRequests)
   , distanceResults(other.distanceResults)
   , collisionRequests(other.collisionRequests)
@@ -138,7 +138,7 @@ namespace pinocchio
   , collision_functors(other.collision_functors)
   , contact_patch_functors(other.contact_patch_functors)
   , distance_functors(other.distance_functors)
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
   , innerObjects(other.innerObjects)
   , outerObjects(other.outerObjects)
   {
@@ -150,7 +150,7 @@ namespace pinocchio
     {
       oMg = other.oMg;
       activeCollisionPairs = other.activeCollisionPairs;
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
       distanceRequests = other.distanceRequests;
       distanceResults = other.distanceResults;
       collisionRequests = other.collisionRequests;
@@ -162,7 +162,7 @@ namespace pinocchio
       collision_functors = other.collision_functors;
       contact_patch_functors = other.contact_patch_functors;
       distance_functors = other.distance_functors;
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
       innerObjects = other.innerObjects;
       outerObjects = other.outerObjects;
     }
@@ -293,7 +293,7 @@ namespace pinocchio
 
   inline std::ostream & operator<<(std::ostream & os, const GeometryData & geomData)
   {
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
     os << "Number of collision pairs = " << geomData.activeCollisionPairs.size() << std::endl;
 
     for (PairIndex i = 0; i < (PairIndex)(geomData.activeCollisionPairs.size()); ++i)
@@ -302,7 +302,7 @@ namespace pinocchio
          << std::endl;
     }
 #else
-    os << "WARNING** Without fcl library, no collision checking or distance computations are "
+    os << "WARNING** Without coal library, no collision checking or distance computations are "
           "possible. Only geometry placements can be computed."
        << std::endl;
 #endif
@@ -489,7 +489,7 @@ namespace pinocchio
     }
   }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
   inline void GeometryData::setSecurityMargins(
     const GeometryModel & geom_model,
     const MatrixXs & security_margin_map,
@@ -529,7 +529,7 @@ namespace pinocchio
         collisionRequests[k].distance_upper_bound = collisionRequests[k].security_margin;
     }
   }
-#endif // ifdef PINOCCHIO_WITH_HPP_FCL
+#endif // ifdef PINOCCHIO_WITH_COLLISION
 
   inline void GeometryData::deactivateCollisionPair(const PairIndex pair_id)
   {

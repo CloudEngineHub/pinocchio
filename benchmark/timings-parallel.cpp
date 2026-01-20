@@ -9,20 +9,20 @@
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
   #include "pinocchio/collision/tree-broadphase-manager.hpp"
   #include "pinocchio/collision/parallel/geometry.hpp"
   #include "pinocchio/collision/pool/fwd.hpp"
   #include "pinocchio/collision/parallel/broadphase.hpp"
 
-  #include <hpp/fcl/broadphase/broadphase_dynamic_AABB_tree.h>
-  #include <hpp/fcl/broadphase/broadphase_dynamic_AABB_tree_array.h>
-  #include <hpp/fcl/broadphase/broadphase_SSaP.h>
-  #include <hpp/fcl/broadphase/broadphase_SaP.h>
-  #include <hpp/fcl/broadphase/broadphase_bruteforce.h>
-  #include <hpp/fcl/broadphase/broadphase_interval_tree.h>
-  #include <hpp/fcl/broadphase/broadphase_spatialhash.h>
-  #include <hpp/fcl/mesh_loader/loader.h>
+  #include <coal/broadphase/broadphase_dynamic_AABB_tree.h>
+  #include <coal/broadphase/broadphase_dynamic_AABB_tree_array.h>
+  #include <coal/broadphase/broadphase_SSaP.h>
+  #include <coal/broadphase/broadphase_SaP.h>
+  #include <coal/broadphase/broadphase_bruteforce.h>
+  #include <coal/broadphase/broadphase_interval_tree.h>
+  #include <coal/broadphase/broadphase_spatialhash.h>
+  #include <coal/mesh_loader/loader.h>
 #endif
 
 #include "pinocchio/parsers/urdf.hpp"
@@ -206,7 +206,7 @@ BENCHMARK_DEFINE_F(ParallelFixture, ABA_IN_PARALLEL)(benchmark::State & st)
 }
 BENCHMARK_REGISTER_F(ParallelFixture, ABA_IN_PARALLEL)->Apply(MultiThreadCustomArguments);
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
 
 struct GeometryFixture : ParallelFixture
 {
@@ -240,7 +240,7 @@ struct GeometryFixture : ParallelFixture
       EXAMPLE_ROBOT_DATA_MODEL_DIR + std::string("/talos_data/robots/talos_reduced.urdf");
     const std::string package_path =
       boost::filesystem::path(EXAMPLE_ROBOT_DATA_MODEL_DIR).parent_path().parent_path().string();
-    hpp::fcl::MeshLoaderPtr mesh_loader = std::make_shared<hpp::fcl::CachedMeshLoader>();
+    coal::MeshLoaderPtr mesh_loader = std::make_shared<coal::CachedMeshLoader>();
     const std::string srdf_filename =
       EXAMPLE_ROBOT_DATA_MODEL_DIR + std::string("/talos_data/srdf/talos.srdf");
     std::vector<std::string> package_paths(1, package_path);
@@ -361,7 +361,7 @@ BENCHMARK_REGISTER_F(GeometryFixture, COMPUTE_COLLISIONS_BATCH_IN_PARALLEL)
 
 PINOCCHIO_DONT_INLINE static void computeCollisionsBatchInParallelWithBroadPhaseCall(
   size_t num_threads,
-  pinocchio::BroadPhaseManagerPool<hpp::fcl::DynamicAABBTreeCollisionManager, double> & pool,
+  pinocchio::BroadPhaseManagerPool<coal::DynamicAABBTreeCollisionManager, double> & pool,
   const Eigen::MatrixXd & qs,
   VectorXb & res)
 {
@@ -373,7 +373,7 @@ BENCHMARK_DEFINE_F(GeometryFixture, COMPUTE_COLLISIONS_BATCH_IN_PARALLEL_WITH_BR
   const auto BATCH_SIZE = st.range(0);
   const auto NUM_THREADS = st.range(1);
 
-  pinocchio::BroadPhaseManagerPool<hpp::fcl::DynamicAABBTreeCollisionManager, double> pool(
+  pinocchio::BroadPhaseManagerPool<coal::DynamicAABBTreeCollisionManager, double> pool(
     model, geometry_model, static_cast<size_t>(NUM_THREADS));
   VectorXb collision_res(BATCH_SIZE);
   collision_res.fill(false);
@@ -390,7 +390,7 @@ BENCHMARK_REGISTER_F(GeometryFixture, COMPUTE_COLLISIONS_BATCH_IN_PARALLEL_WITH_
 
 PINOCCHIO_DONT_INLINE static void computeCollisionsBatchInParallelWithTreeBroadPhaseCall(
   size_t num_threads,
-  pinocchio::TreeBroadPhaseManagerPool<hpp::fcl::DynamicAABBTreeCollisionManager, double> & pool,
+  pinocchio::TreeBroadPhaseManagerPool<coal::DynamicAABBTreeCollisionManager, double> & pool,
   const Eigen::MatrixXd & qs,
   VectorXb & res)
 {
@@ -402,7 +402,7 @@ BENCHMARK_DEFINE_F(GeometryFixture, COMPUTE_COLLISIONS_BATCH_IN_PARALLEL_WITH_TR
   const auto BATCH_SIZE = st.range(0);
   const auto NUM_THREADS = st.range(1);
 
-  pinocchio::TreeBroadPhaseManagerPool<hpp::fcl::DynamicAABBTreeCollisionManager, double> pool(
+  pinocchio::TreeBroadPhaseManagerPool<coal::DynamicAABBTreeCollisionManager, double> pool(
     model, geometry_model, static_cast<size_t>(NUM_THREADS));
   VectorXb collision_res(BATCH_SIZE);
   collision_res.fill(false);
@@ -415,9 +415,9 @@ BENCHMARK_DEFINE_F(GeometryFixture, COMPUTE_COLLISIONS_BATCH_IN_PARALLEL_WITH_TR
 BENCHMARK_REGISTER_F(GeometryFixture, COMPUTE_COLLISIONS_BATCH_IN_PARALLEL_WITH_TREE_BROADPHASE)
   ->Apply(MultiThreadCustomArguments);
 
-#endif // #ifdef PINOCCHIO_WITH_HPP_FCL
+#endif // #ifdef PINOCCHIO_WITH_COLLISION
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
 PINOCCHIO_BENCHMARK_MAIN_WITH_SETUP(GeometryFixture::GlobalSetUp);
 #else
 PINOCCHIO_BENCHMARK_MAIN_WITH_SETUP(ParallelFixture::GlobalSetUp);

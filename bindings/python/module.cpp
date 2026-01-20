@@ -31,8 +31,8 @@ BOOST_PYTHON_MODULE(PINOCCHIO_PYTHON_MODULE_NAME)
   bp::import("warnings");
 
 #if defined(PINOCCHIO_PYTHON_INTERFACE_MAIN_MODULE)                                                \
-  && defined(PINOCCHIO_PYTHON_INTERFACE_WITH_HPP_FCL_PYTHON_BINDINGS)
-  bp::import("hppfcl");
+  && defined(PINOCCHIO_PYTHON_INTERFACE_WITH_COLLISION_PYTHON_BINDINGS)
+  bp::import("coal");
 #endif
 
   exposeEigenTypes();
@@ -50,12 +50,15 @@ BOOST_PYTHON_MODULE(PINOCCHIO_PYTHON_MODULE_NAME)
 
   bp::scope().attr("ScalarType") = getScalarType();
 
-  bp::scope().attr("XAxis") = bp::object(bp::handle<>(
-    eigenpy::EigenToPy<context::Vector3s>::convert(pinocchio::XAxis::vector<context::Scalar>())));
-  bp::scope().attr("YAxis") = bp::object(bp::handle<>(
-    eigenpy::EigenToPy<context::Vector3s>::convert(pinocchio::YAxis::vector<context::Scalar>())));
-  bp::scope().attr("ZAxis") = bp::object(bp::handle<>(
-    eigenpy::EigenToPy<context::Vector3s>::convert(pinocchio::ZAxis::vector<context::Scalar>())));
+  bp::scope().attr("XAxis") = bp::object(
+    bp::handle<>(
+      eigenpy::EigenToPy<context::Vector3s>::convert(pinocchio::XAxis::vector<context::Scalar>())));
+  bp::scope().attr("YAxis") = bp::object(
+    bp::handle<>(
+      eigenpy::EigenToPy<context::Vector3s>::convert(pinocchio::YAxis::vector<context::Scalar>())));
+  bp::scope().attr("ZAxis") = bp::object(
+    bp::handle<>(
+      eigenpy::EigenToPy<context::Vector3s>::convert(pinocchio::ZAxis::vector<context::Scalar>())));
 
   if (!register_symbolic_link_to_registered_type<::pinocchio::ReferenceFrame>())
   {
@@ -122,11 +125,11 @@ BOOST_PYTHON_MODULE(PINOCCHIO_PYTHON_MODULE_NAME)
   exposeExtras();
   exposeSerialization();
 
-#if defined(PINOCCHIO_PYTHON_INTERFACE_WITH_HPP_FCL_PYTHON_BINDINGS)                               \
+#if defined(PINOCCHIO_PYTHON_INTERFACE_WITH_COLLISION_PYTHON_BINDINGS)                             \
   && defined(PINOCCHIO_PYTHON_INTERFACE_MAIN_MODULE)
-  exposeFCL();
+  exposeCoal();
   exposeCollision();
-#endif // defined(PINOCCHIO_PYTHON_INTERFACE_WITH_HPP_FCL_PYTHON_BINDINGS) &&
+#endif // defined(PINOCCHIO_PYTHON_INTERFACE_WITH_COLLISION_PYTHON_BINDINGS) &&
        // defined(PINOCCHIO_PYTHON_INTERFACE_MAIN_MODULE)
 
 #if defined(PINOCCHIO_PYTHON_INTERFACE_WITH_OPENMP)                                                \
@@ -135,7 +138,7 @@ BOOST_PYTHON_MODULE(PINOCCHIO_PYTHON_MODULE_NAME)
   exposeParallelAlgorithms();
 #endif
 
-#if defined(PINOCCHIO_PYTHON_INTERFACE_WITH_HPP_FCL_PYTHON_BINDINGS)                               \
+#if defined(PINOCCHIO_PYTHON_INTERFACE_WITH_COLLISION_PYTHON_BINDINGS)                             \
   && defined(PINOCCHIO_PYTHON_INTERFACE_WITH_OPENMP)                                               \
   && defined(PINOCCHIO_PYTHON_INTERFACE_MAIN_MODULE)
   exposePoolCollision();

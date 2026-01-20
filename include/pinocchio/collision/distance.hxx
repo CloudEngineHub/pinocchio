@@ -41,7 +41,7 @@ namespace pinocchio
     return computeDistances(geom_model, geom_data);
   }
 
-  inline fcl::DistanceResult & computeDistance(
+  inline coal::DistanceResult & computeDistance(
     const GeometryModel & geom_model, GeometryData & geom_data, const PairIndex pair_id)
   {
     PINOCCHIO_CHECK_INPUT_ARGUMENT(pair_id < geom_model.collisionPairs.size());
@@ -52,12 +52,12 @@ namespace pinocchio
     PINOCCHIO_CHECK_INPUT_ARGUMENT(pair.first < geom_model.ngeoms);
     PINOCCHIO_CHECK_INPUT_ARGUMENT(pair.second < geom_model.ngeoms);
 
-    fcl::DistanceRequest & distance_request = geom_data.distanceRequests[pair_id];
-    fcl::DistanceResult & distance_result = geom_data.distanceResults[pair_id];
+    coal::DistanceRequest & distance_request = geom_data.distanceRequests[pair_id];
+    coal::DistanceResult & distance_result = geom_data.distanceResults[pair_id];
     distance_result.clear();
 
-    fcl::Transform3f oM1(toFclTransform3f(geom_data.oMg[pair.first])),
-      oM2(toFclTransform3f(geom_data.oMg[pair.second]));
+    coal::Transform3s oM1(toCoalTransform3s(geom_data.oMg[pair.first])),
+      oM2(toCoalTransform3s(geom_data.oMg[pair.second]));
 
     try
     {
@@ -69,7 +69,7 @@ namespace pinocchio
       std::stringstream ss;
       ss << "Problem when trying to compute the distance of collision pair #" << pair_id << " ("
          << pair.first << "," << pair.second << ")" << std::endl;
-      ss << "hpp-fcl original error:\n" << e.what() << std::endl;
+      ss << "coal original error:\n" << e.what() << std::endl;
       throw std::invalid_argument(ss.str());
     }
 

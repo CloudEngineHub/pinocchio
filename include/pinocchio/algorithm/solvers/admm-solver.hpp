@@ -179,10 +179,10 @@ namespace pinocchio
       return m_is_valid;
     }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
     /// \brief Timer for the `solve` method
     using Base::timer;
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 
     /// \brief Per-iteration stats of the ADMM solver.
     ADMMSolverStats stats;

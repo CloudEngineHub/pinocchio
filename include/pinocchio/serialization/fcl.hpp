@@ -1,30 +1,16 @@
 //
-// Copyright (c) 2015-2024 CNRS INRIA
+// Copyright (c) 2026 INRIA
 //
 
 #ifndef __pinocchio_multibody_fcl_serialization_hpp__
 #define __pinocchio_multibody_fcl_serialization_hpp__
 
-#include "pinocchio/multibody/fcl.hpp"
+#include "pinocchio/macros.hpp"
 
-namespace boost
-{
-  namespace serialization
-  {
+// clang-format off
+PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/serialization/fcl.hpp, pinocchio/serialization/coal.hpp)
+// clang-format on
 
-#ifndef PINOCCHIO_WITH_HPP_FCL
-
-    template<class Archive>
-    void serialize(
-      Archive & /*ar*/,
-      pinocchio::fcl::FakeCollisionGeometry & /*fake_collision_geometry*/,
-      const unsigned int /*version*/)
-    {
-    }
-
-#endif // PINOCCHIO_WITH_HPP_FCL
-
-  } // namespace serialization
-} // namespace boost
+#include "pinocchio/serialization/coal.hpp"
 
 #endif // __pinocchio_multibody_fcl_serialization_hpp__

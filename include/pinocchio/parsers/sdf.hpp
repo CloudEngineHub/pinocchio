@@ -29,13 +29,13 @@ namespace pinocchio
      * @param[in]   type         The type of objects that must be loaded (must be VISUAL or
      * COLLISION)
      * @param[in]   rootLinkName Name of the root link
-     * @param[in]   meshLoader   object used to load meshes: hpp::fcl::MeshLoader [default] or
-     * hpp::fcl::CachedMeshLoader.
+     * @param[in]   meshLoader   object used to load meshes: coal::MeshLoader [default] or
+     * coal::CachedMeshLoader.
      * @param[out]  geomModel    Reference where to put the parsed information.
      *
      * @return      Returns the reference on geom model for convenience.
      *
-     * \warning     If hpp-fcl has not been found during compilation, COLLISION objects can not be
+     * \warning     If coal has not been found during compilation, COLLISION objects can not be
      * loaded
      *
      */
@@ -47,7 +47,7 @@ namespace pinocchio
       GeometryModel & geomModel,
       const std::string & rootLinkName = "",
       const std::vector<std::string> & packageDirs = std::vector<std::string>(),
-      ::hpp::fcl::MeshLoaderPtr meshLoader = ::hpp::fcl::MeshLoaderPtr());
+      ::coal::MeshLoaderPtr meshLoader = ::coal::MeshLoaderPtr());
 
     /**
      * @brief      Build The GeometryModel from a SDF file. Search for meshes
@@ -62,13 +62,13 @@ namespace pinocchio
      *
      * @param[in]   type         The type of objects that must be loaded (must be VISUAL or
      * COLLISION)
-     * @param[in]   meshLoader   object used to load meshes: hpp::fcl::MeshLoader [default] or
-     * hpp::fcl::CachedMeshLoader.
+     * @param[in]   meshLoader   object used to load meshes: coal::MeshLoader [default] or
+     * coal::CachedMeshLoader.
      * @param[out]  geomModel    Reference where to put the parsed information.
      *
      * @return      Returns the reference on geom model for convenience.
      *
-     * \warning     If hpp-fcl has not been found during compilation, COLLISION objects can not be
+     * \warning     If coal has not been found during compilation, COLLISION objects can not be
      * loaded
      *
      */
@@ -80,7 +80,7 @@ namespace pinocchio
       const GeometryType type,
       GeometryModel & geomModel,
       const std::string & packagePath,
-      ::hpp::fcl::MeshLoaderPtr meshLoader = ::hpp::fcl::MeshLoaderPtr())
+      ::coal::MeshLoaderPtr meshLoader = ::coal::MeshLoaderPtr())
     {
       const std::vector<std::string> dirs(1, packagePath);
       return buildGeom(model, constraint_models, filename, type, geomModel, dirs, meshLoader);
@@ -100,13 +100,13 @@ namespace pinocchio
      * @param[in]   type         The type of objects that must be loaded (must be VISUAL or
      * COLLISION)
      * @param[in]   rootLinkName Name of the root link
-     * @param[in]   meshLoader   object used to load meshes: hpp::fcl::MeshLoader [default] or
-     * hpp::fcl::CachedMeshLoader.
+     * @param[in]   meshLoader   object used to load meshes: coal::MeshLoader [default] or
+     * coal::CachedMeshLoader.
      * @param[out]  geomModel    Reference where to put the parsed information.
      *
      * @return      Returns the reference on geom model for convenience.
      *
-     * \warning     If hpp-fcl has not been found during compilation, COLLISION objects can not be
+     * \warning     If coal has not been found during compilation, COLLISION objects can not be
      * loaded
      *
      */
@@ -118,7 +118,7 @@ namespace pinocchio
       GeometryModel & geomModel,
       const std::string & rootLinkName,
       const std::string & packagePath,
-      ::hpp::fcl::MeshLoaderPtr meshLoader = ::hpp::fcl::MeshLoaderPtr())
+      ::coal::MeshLoaderPtr meshLoader = ::coal::MeshLoaderPtr())
     {
       const std::vector<std::string> dirs(1, packagePath);
       return buildGeom(model, filename, type, geomModel, rootLinkName, dirs, meshLoader);

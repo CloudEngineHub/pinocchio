@@ -825,15 +825,15 @@ BOOST_AUTO_TEST_CASE(test_geometry_object)
     generic_test(geometry_object, TEST_SERIALIZATION_FOLDER "/GeometryObject", "GeometryObject");
   }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
   {
-    hpp::fcl::Box box(1., 2., 3.);
+    coal::Box box(1., 2., 3.);
     generic_test(box, TEST_SERIALIZATION_FOLDER "/Box", "Box");
   }
 
   {
     typedef GeometryObject::CollisionGeometryPtr CollisionGeometryPtr;
-    CollisionGeometryPtr box_ptr = CollisionGeometryPtr(new hpp::fcl::Box(1., 2., 3.));
+    CollisionGeometryPtr box_ptr = CollisionGeometryPtr(new coal::Box(1., 2., 3.));
     GeometryObject geometry_object("box", 1, 2, SE3::Random(), box_ptr);
     generic_test(geometry_object, TEST_SERIALIZATION_FOLDER "/GeometryObject", "GeometryObject");
   }
@@ -857,13 +857,13 @@ BOOST_AUTO_TEST_CASE(test_geometry_model_and_data_serialization)
     generic_test(geom_data, TEST_SERIALIZATION_FOLDER "/GeometryData", "GeometryData");
   }
 
-#ifdef PINOCCHIO_WITH_HPP_FCL
+#ifdef PINOCCHIO_WITH_COLLISION
   {
     pinocchio::GeometryModel geom_model;
     pinocchio::buildModels::humanoidGeometries(model, geom_model);
     // Append new objects
     {
-      using namespace hpp::fcl;
+      using namespace coal;
       BVHModel<OBBRSS> * bvh_ptr = new BVHModel<OBBRSS>();
       //      bvh_ptr->beginModel();
       //      bvh_ptr->addSubModel(p1, t1);
@@ -894,7 +894,7 @@ BOOST_AUTO_TEST_CASE(test_geometry_model_and_data_serialization)
 
     generic_test(geom_data, TEST_SERIALIZATION_FOLDER "/GeometryData", "GeometryData");
   }
-#endif // PINOCCHIO_WITH_HPP_FCL
+#endif // PINOCCHIO_WITH_COLLISION
 }
 
 template<typename DerivedConstraintModel>

@@ -224,23 +224,19 @@ endif(PINOCCHIO_BUILD_WITH_TRACY)
 
 # Define the default target (double).
 #
-# This target will also have hpp-fcl and workspace module in it.
+# This target will also have coal and workspace module in it.
 pinocchio_specific_type(default DEFAULT_SCOPE)
 if(PINOCCHIO_BUILD_WITH_TRACY)
   target_link_libraries(${PROJECT_NAME}_default ${DEFAULT_SCOPE} ${PROFILING_LIB_NAME})
 endif(PINOCCHIO_BUILD_WITH_TRACY)
 
-# Some core library algorithms have different behavior if PINOCCHIO_WITH_HPP_FCL is defined. Since
+# Some core library algorithms have different behavior if PINOCCHIO_WITH_COLLISION is defined. Since
 # some are template instantiated, or some user can link only on pinocchio_default, we muste define
-# PINOCCHIO_WITH_HPP_FCL in pinocchio_default.
-if(BUILD_WITH_HPP_FCL_SUPPORT)
-  target_compile_definitions(pinocchio_default ${DEFAULT_SCOPE} PINOCCHIO_WITH_HPP_FCL)
-  # Set private define only if pinocchio_default is not an interface library
-  if(${DEFAULT_SCOPE} STREQUAL "PUBLIC")
-    target_compile_definitions(pinocchio_default PRIVATE COAL_DISABLE_HPP_FCL_WARNINGS)
-  endif()
+# PINOCCHIO_WITH_COLLISION in pinocchio_default.
+if(BUILD_WITH_COLLISION_SUPPORT)
+  target_compile_definitions(pinocchio_default ${DEFAULT_SCOPE} PINOCCHIO_WITH_COLLISION)
   target_include_directories(pinocchio_default ${DEFAULT_SCOPE}
-                             $<TARGET_PROPERTY:hpp-fcl::hpp-fcl,INTERFACE_INCLUDE_DIRECTORIES>)
+                             $<TARGET_PROPERTY:coal::coal,INTERFACE_INCLUDE_DIRECTORIES>)
 endif()
 
 # Define the extra target This target hold extra algorithms.
@@ -273,7 +269,7 @@ if(BUILD_WITH_OPENMP_SUPPORT)
 endif()
 
 # Define the collision target.
-if(BUILD_WITH_HPP_FCL_SUPPORT)
+if(BUILD_WITH_COLLISION_SUPPORT)
   set(COLLISION_LIB_NAME "${PROJECT_NAME}_collision")
 
   pinocchio_target(
@@ -284,9 +280,8 @@ if(BUILD_WITH_HPP_FCL_SUPPORT)
 
   target_compile_definitions(
     ${COLLISION_LIB_NAME}
-    PUBLIC PINOCCHIO_WITH_HPP_FCL
-    PRIVATE COAL_DISABLE_HPP_FCL_WARNINGS)
-  target_link_libraries(${COLLISION_LIB_NAME} PUBLIC ${PROJECT_NAME}_default hpp-fcl::hpp-fcl)
+    PUBLIC PINOCCHIO_WITH_COLLISION)
+  target_link_libraries(${COLLISION_LIB_NAME} PUBLIC ${PROJECT_NAME}_default coal::coal)
 
   # Define the collision parallel target
   if(BUILD_WITH_OPENMP_SUPPORT)
@@ -311,12 +306,11 @@ pinocchio_target(
   SOURCES ${${PROJECT_NAME}_VISUALIZERS_SOURCES} ${${PROJECT_NAME}_VISUALIZERS_PUBLIC_HEADERS})
 pinocchio_config(visualizers ${VISUALIZERS_LIB_NAME})
 target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC ${PROJECT_NAME}_default)
-if(BUILD_WITH_HPP_FCL_SUPPORT)
+if(BUILD_WITH_COLLISION_SUPPORT)
   target_compile_definitions(
     ${VISUALIZERS_LIB_NAME}
-    PUBLIC PINOCCHIO_WITH_HPP_FCL
-    PRIVATE COAL_DISABLE_HPP_FCL_WARNINGS)
-  target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC hpp-fcl::hpp-fcl)
+    PUBLIC PINOCCHIO_WITH_COLLISION)
+  target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC coal::coal)
 endif()
 
 # Define the parsers target.
@@ -332,9 +326,8 @@ if(BUILD_WITH_PARSERS_SUPPORT)
   pinocchio_config(parsers ${PARSERS_LIB_NAME})
 
   target_link_libraries(${PARSERS_LIB_NAME} PUBLIC ${PROJECT_NAME}_default)
-  if(BUILD_WITH_HPP_FCL_SUPPORT)
+  if(BUILD_WITH_COLLISION_SUPPORT)
     target_link_libraries(${PARSERS_LIB_NAME} PUBLIC ${PROJECT_NAME}_collision)
-    target_compile_definitions(${PARSERS_LIB_NAME} PRIVATE COAL_DISABLE_HPP_FCL_WARNINGS)
   endif()
 
   modernize_target_link_libraries(
@@ -416,7 +409,6 @@ if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
   pinocchio_config(python_parser ${PYTHON_PARSER_LIB_NAME})
 
   target_link_libraries(${PYTHON_PARSER_LIB_NAME} PUBLIC ${PROJECT_NAME}_default Python3::Python)
-  target_compile_definitions(${PYTHON_PARSER_LIB_NAME} PRIVATE COAL_DISABLE_HPP_FCL_WARNINGS)
   target_link_boost_python(${PYTHON_PARSER_LIB_NAME} PUBLIC)
 endif()
 
@@ -432,7 +424,7 @@ endif()
 if(BUILD_WITH_OPENMP_SUPPORT)
   target_link_libraries(${PROJECT_NAME} INTERFACE ${PROJECT_NAME}_parallel)
 endif()
-if(BUILD_WITH_HPP_FCL_SUPPORT)
+if(BUILD_WITH_COLLISION_SUPPORT)
   target_link_libraries(${PROJECT_NAME} INTERFACE ${PROJECT_NAME}_collision)
   if(BUILD_WITH_OPENMP_SUPPORT)
     target_link_libraries(${PROJECT_NAME} INTERFACE ${PROJECT_NAME}_collision_parallel)

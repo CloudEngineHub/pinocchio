@@ -11,7 +11,7 @@
 
 #include "pinocchio/collision/config.hpp"
 
-#include <hpp/fcl/collision_data.h>
+#include <coal/collision_data.h>
 
 namespace pinocchio
 {
@@ -32,7 +32,7 @@ namespace pinocchio
     const GeometryModel & geom_model,
     GeometryData & geom_data,
     const PairIndex pair_id,
-    fcl::CollisionRequest & collision_request);
+    coal::CollisionRequest & collision_request);
 
   ///
   /// \brief Compute the collision status between a *SINGLE* collision pair.
