@@ -56,23 +56,15 @@ namespace Eigen
   struct NumTraits<boost::multiprecision::number<Backend, ExpressionTemplates>>
   {
     typedef boost::multiprecision::number<Backend, ExpressionTemplates> self_type;
-  #if BOOST_VERSION / 100 % 1000 >= 68
     typedef
       typename boost::multiprecision::scalar_result_from_possible_complex<self_type>::type Real;
-  #else
-    typedef self_type Real;
-  #endif
     typedef self_type NonInteger; // Not correct but we can't do much better??
     typedef double Literal;
     typedef self_type Nested;
     enum
     {
-  #if BOOST_VERSION / 100 % 1000 >= 68
       IsComplex = boost::multiprecision::number_category<self_type>::value
                   == boost::multiprecision::number_kind_complex,
-  #else
-      IsComplex = 0,
-  #endif
       IsInteger = boost::multiprecision::number_category<self_type>::value
                   == boost::multiprecision::number_kind_integer,
       ReadCost = 1,

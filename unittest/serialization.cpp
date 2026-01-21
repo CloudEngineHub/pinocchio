@@ -55,7 +55,7 @@ bool run_call_equality_op(const T & v1, const T & v2)
 }
 
 // Bug fix in Eigen::Tensor
-#ifdef PINOCCHIO_WITH_EIGEN_TENSOR_MODULE
+// This is still mandatory and tested in unittest/serialization.cpp
 template<typename Scalar, int NumIndices, int Options, typename IndexType>
 struct call_equality_op<pinocchio::Tensor<Scalar, NumIndices, Options, IndexType>>
 {
@@ -69,7 +69,6 @@ struct call_equality_op<pinocchio::Tensor<Scalar, NumIndices, Options, IndexType
     return map1 == map2;
   }
 };
-#endif
 
 template<typename Scalar, int Rows, int Cols, int Options, int MaxRows, int MaxCols>
 struct call_equality_op<Eigen::Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols>>

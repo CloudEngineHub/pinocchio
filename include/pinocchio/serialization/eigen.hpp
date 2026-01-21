@@ -195,29 +195,6 @@ namespace boost
       serialize(ar, static_cast<Base &>(m), version);
     }
 
-#if !defined(PINOCCHIO_WITH_EIGEN_TENSOR_MODULE)                                                   \
-  && ((__cplusplus <= 199711L && EIGEN_COMP_MSVC < 1900) || defined(__CUDACC__) || defined(EIGEN_AVOID_STL_ARRAY))
-    template<class Archive, typename _IndexType, std::size_t _NumIndices>
-    void save(
-      Archive & ar, const Eigen::array<_IndexType, _NumIndices> & a, const unsigned int /*version*/)
-    {
-      ar & make_nvp("array", make_array(&a.front(), _NumIndices));
-    }
-
-    template<class Archive, typename _IndexType, std::size_t _NumIndices>
-    void
-    load(Archive & ar, Eigen::array<_IndexType, _NumIndices> & a, const unsigned int /*version*/)
-    {
-      ar >> make_nvp("array", make_array(&a.front(), _NumIndices));
-    }
-
-    template<class Archive, typename _IndexType, std::size_t _NumIndices>
-    void
-    serialize(Archive & ar, Eigen::array<_IndexType, _NumIndices> & a, const unsigned int version)
-    {
-      split_free(ar, a, version);
-    }
-#else
     template<class Archive, class T, std::size_t N>
     void save(Archive & ar, const std::array<T, N> & a, const unsigned int version)
     {
@@ -230,9 +207,6 @@ namespace boost
     {
       serialize(ar, a, version);
     }
-#endif
-
-#ifdef PINOCCHIO_WITH_EIGEN_TENSOR_MODULE
 
     template<class Archive, typename _IndexType, int _NumIndices>
     void save(
@@ -253,8 +227,6 @@ namespace boost
     {
       split_free(ar, static_cast<Eigen::array<_IndexType, _NumIndices> &>(ds), version);
     }
-
-#endif
 
     template<class Archive, typename _Scalar, int _NumIndices, int _Options, typename _IndexType>
     void save(
