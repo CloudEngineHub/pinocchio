@@ -584,7 +584,16 @@ namespace pinocchio
     }
 
     // -- retrieve warmstart from results, then reset results
-    if (res.primal_guess)
+    bool has_primal_guess = res.primal_guess.has_value();
+    if (has_primal_guess)
+    {
+      if (res.primal_guess.value().size() != ws.x.size())
+      {
+        has_primal_guess = false;
+      }
+    }
+
+    if (has_primal_guess)
     {
       ws.x = res.primal_guess.value();
     }

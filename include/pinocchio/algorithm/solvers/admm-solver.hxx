@@ -598,13 +598,33 @@ namespace pinocchio
     G.updateDecomposition();
     ws.delassus_decomposition_update_count++;
 
+    // check if primal/dual have been given
+    bool has_primal_guess = res.primal_guess.has_value();
+    if (has_primal_guess)
+    {
+      // primal guess given but we need to check for size
+      if (res.primal_guess.value().size() != ws.x.size())
+      {
+        has_primal_guess = false;
+      }
+    }
+
+    bool has_dual_guess = res.dual_guess.has_value();
+    if (has_dual_guess)
+    {
+      if (res.dual_guess.value().size() != ws.z.size())
+      {
+        has_dual_guess = false;
+      }
+    }
+
     // Initialization of the primal/dual variables.
     // If both primal and dual guesses are given, the solver uses both.
     // If one is given but not the other, the solver will compute the missing one using the given
     // one.
-    if (res.primal_guess)
+    if (has_primal_guess)
     {
-      if (res.dual_guess)
+      if (has_dual_guess)
       {
         ws.z = res.dual_guess.value();
         if (settings.solve_ncp)
@@ -633,7 +653,7 @@ namespace pinocchio
     }
     else
     {
-      if (res.dual_guess)
+      if (has_dual_guess)
       {
         // Warm-start primal variable using dual guess
         ws.z = res.dual_guess.value();
