@@ -7,8 +7,12 @@
 #define __pinocchio_container_aligned_vector_hpp__
 
 #include "pinocchio/deprecated.hpp"
+#include "pinocchio/warning.hpp"
 
 #include <vector>
+
+#pragma message PINOCCHIO_WARN(                                                                    \
+  "<pinocchio/container/aligned-vector.hpp> is deprecated and will be removed")
 
 // This macro is deprecated
 #define PINOCCHIO_ALIGNED_STD_VECTOR(Type) ::pinocchio::container::aligned_vector<Type>

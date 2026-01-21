@@ -24,6 +24,7 @@ Remove use of Eigen::aligned_allocator:
   - Deprecate `PINOCCHIO_ALIGNED_STD_VECTOR` replaced by `std::vector`
   - Deprecate `PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR` replaced by `std::vector`
   - Deprecate `pinocchio::container::aligned_vector` replaced by `std::allocator`
+  - Deprecate `pinocchio/container/aligned-vector.hpp`
   - Remove `pinocchio::python::StdAlignedVectorPythonVisitor`
   - Remove header `pinocchio/serialization/aligned-vector.hpp`
   - Remove header `pinocchio/bindings/python/utils/std-aligned-vector.hpp`

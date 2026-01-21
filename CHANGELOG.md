@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Deprecate `PINOCCHIO_ALIGNED_STD_VECTOR` replaced by `std::vector`
     - Deprecate `PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR` replaced by `std::vector`
     - Deprecate `pinocchio::container::aligned_vector` replaced by `std::allocator`
+    - Deprecate `pinocchio/container/aligned-vector.hpp`
 
 ### Removed
 - Remove unused headers `deprecated-macros.hpp` and `deprecated-namespaces.hpp`
