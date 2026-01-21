@@ -3,7 +3,7 @@
 //
 
 #include "pinocchio/fwd.hpp"
-#include "pinocchio/bindings/python/utils/std-aligned-vector.hpp"
+#include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/collision/geometry-functors.hpp"
 #include "pinocchio/bindings/python/collision/collision.hpp"
 
@@ -39,12 +39,12 @@ namespace pinocchio
       bp::class_<ComputeCollision>(
         "ComputeCollision", "Collision function between two geometry objects.\n\n", bp::no_init)
         .def(GeometryFunctorPythonVisitor<ComputeCollision>());
-      StdAlignedVectorPythonVisitor<ComputeCollision>::expose("StdVec_ComputeCollision");
+      StdVectorPythonVisitor<std::vector<ComputeCollision>>::expose("StdVec_ComputeCollision");
 
       bp::class_<ComputeDistance>(
         "ComputeDistance", "Distance function between two geometry objects.\n\n", bp::no_init)
         .def(GeometryFunctorPythonVisitor<ComputeDistance>());
-      StdAlignedVectorPythonVisitor<ComputeDistance>::expose("StdVec_ComputeDistance");
+      StdVectorPythonVisitor<std::vector<ComputeDistance>>::expose("StdVec_ComputeDistance");
 
       bp::def(
         "computeCollision",

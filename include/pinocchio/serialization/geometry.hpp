@@ -21,7 +21,6 @@
 #endif // PINOCCHIO_WITH_COLLISION
 
 #include "pinocchio/multibody/geometry.hpp"
-#include "pinocchio/serialization/aligned-vector.hpp"
 #include "pinocchio/serialization/spatial.hpp"
 #include "pinocchio/serialization/coal.hpp"
 

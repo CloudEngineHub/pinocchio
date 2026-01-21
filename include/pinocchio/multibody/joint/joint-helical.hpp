@@ -86,7 +86,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int axis>
   struct TransformHelicalTpl : SE3Base<TransformHelicalTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_SE3_TYPEDEF_TPL(TransformHelicalTpl);
 
     typedef SpatialAxis<axis + LINEAR> AxisLinear;
@@ -242,8 +241,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int axis>
   struct MotionHelicalTpl : MotionBase<MotionHelicalTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     MOTION_TYPEDEF_TPL(MotionHelicalTpl);
     typedef SpatialAxis<axis + ANGULAR> AxisAngular;
     typedef typename AxisAngular::CartesianAxis3 CartesianAxis3Angular;
@@ -444,8 +441,6 @@ namespace pinocchio
   struct JointMotionSubspaceHelicalTpl
   : JointMotionSubspaceBase<JointMotionSubspaceHelicalTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceHelicalTpl)
     static constexpr int NV = 1;
 
@@ -752,7 +747,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int axis>
   struct JointDataHelicalTpl : public JointDataBase<JointDataHelicalTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointHelicalTpl<_Scalar, _Options, axis> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
     PINOCCHIO_JOINT_DATA_BASE_DEFAULT_ACCESSOR
@@ -804,7 +798,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int axis>
   struct JointModelHelicalTpl : public JointModelBase<JointModelHelicalTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointHelicalTpl<_Scalar, _Options, axis> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
 

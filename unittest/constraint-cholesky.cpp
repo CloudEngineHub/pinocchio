@@ -137,8 +137,8 @@ BOOST_AUTO_TEST_CASE(contact_operator_equal)
   pinocchio::buildModels::manipulator(manipulator_model);
   Data manipulator_data(manipulator_model);
 
-  const PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models_empty;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas_empty;
+  const std::vector<RigidConstraintModel> contact_models_empty;
+  std::vector<RigidConstraintData> contact_datas_empty;
 
   humanoid_model.lowerPositionLimit.head<3>().fill(-1.);
   humanoid_model.upperPositionLimit.head<3>().fill(1.);
@@ -178,8 +178,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_simple)
     data_ref.M.triangularView<Eigen::StrictlyUpper>().transpose();
 
   ContactCholeskyDecomposition contact_chol_decomposition;
-  const PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models_empty;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas_empty;
+  const std::vector<RigidConstraintModel> contact_models_empty;
+  std::vector<RigidConstraintData> contact_datas_empty;
   contact_chol_decomposition.resize(model, data_ref, contact_models_empty, contact_datas_empty);
 
   BOOST_CHECK(contact_chol_decomposition.D.size() == model.nv);
@@ -344,8 +344,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL);
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
@@ -638,8 +638,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_LOCAL)
   const std::string RA = "rarm6_joint";
   const std::string LA = "larm6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL);
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
@@ -870,8 +870,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL_WORLD_ALIGNED)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL_WORLD_ALIGNED);
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
@@ -973,8 +973,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_by_joint_2)
   const std::string RA = "rarm6_joint";
   const std::string LA = "larm6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, 0, model.getJointId(RF), LOCAL);
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
@@ -1184,8 +1184,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact3D_6D_WORLD_by_joint_2)
   const std::string RA = "rarm6_joint";
   const std::string LA = "larm6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, 0, model.getJointId(RF), LOCAL);
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
@@ -1306,8 +1306,8 @@ BOOST_AUTO_TEST_CASE(loop_contact_cholesky_contact6D)
   const std::string RA = "rarm6_joint";
   const std::string LA = "larm6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_datas;
   RigidConstraintModel loop_RF_LF_local(
     CONTACT_6D, model, model.getJointId(RF), model.getJointId(LF), LOCAL);
   RigidConstraintModel loop_RA_LA_lwa(
@@ -1449,8 +1449,8 @@ BOOST_AUTO_TEST_CASE(loop_contact_cholesky_contact_3d)
   const std::string RA = "rarm6_joint";
   const std::string LA = "larm6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_datas;
   RigidConstraintModel loop_RF_LF_local(
     CONTACT_3D, model, model.getJointId(RF), model.getJointId(LF), LOCAL);
   RigidConstraintModel loop_RA_LA_lwa(
@@ -1602,8 +1602,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_updateDamping)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_datas;
   RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL);
   contact_models.push_back(ci_RF);
   contact_datas.push_back(RigidConstraintData(ci_RF));
@@ -1676,9 +1676,9 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_joint_friction_constraint)
   JointFrictionConstraintModel constraint_model(model, active_joint_ids);
   JointFrictionConstraintData constraint_data(constraint_model);
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(JointFrictionConstraintModel) constraint_models;
+  std::vector<JointFrictionConstraintModel> constraint_models;
   constraint_models.push_back(constraint_model);
-  PINOCCHIO_ALIGNED_STD_VECTOR(JointFrictionConstraintData) constraint_datas;
+  std::vector<JointFrictionConstraintData> constraint_datas;
   constraint_datas.push_back(constraint_data);
 
   // Build Cholesky decomposition
@@ -1731,11 +1731,11 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_generic)
   const std::string RF_name = "rleg6_joint";
   const std::string LF_name = "lleg6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintModel) constraint_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintData) constraint_datas;
+  std::vector<ConstraintModel> constraint_models;
+  std::vector<ConstraintData> constraint_datas;
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) rigid_constraint_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintData) rigid_constraint_datas;
+  std::vector<PointAnchorConstraintModel> rigid_constraint_models;
+  std::vector<PointAnchorConstraintData> rigid_constraint_datas;
 
   PointAnchorConstraintModel ci_RF(
     model, 0, SE3::Identity(), model.getJointId(RF_name), SE3::Identity());
@@ -1798,8 +1798,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     VectorXd q = pinocchio::neutral(model);
     data.q_in = q;
 
-    PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintModel) constraint_models;
-    PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintData) constraint_datas;
+    std::vector<ConstraintModel> constraint_models;
+    std::vector<ConstraintData> constraint_datas;
 
     JointLimitConstraintModel::JointIndexVector joint_indices;
     for (int i = 1; i < model.njoints; ++i)
@@ -1857,8 +1857,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     VectorXd q = pinocchio::neutral(model);
     data.q_in = q;
 
-    PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintModel) constraint_models;
-    PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintData) constraint_datas;
+    std::vector<ConstraintModel> constraint_models;
+    std::vector<ConstraintData> constraint_datas;
 
     JointLimitConstraintModel::JointIndexVector joint_indices;
     for (int i = 1; i < model.njoints; ++i)
@@ -1913,8 +1913,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_dynamic_size)
     VectorXd q = pinocchio::neutral(model);
     data.q_in = q;
 
-    PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintModel) constraint_models;
-    PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintData) constraint_datas;
+    std::vector<ConstraintModel> constraint_models;
+    std::vector<ConstraintData> constraint_datas;
 
     JointLimitConstraintModel::JointIndexVector joint_indices;
     for (int i = 1; i < model.njoints; ++i)
@@ -1980,8 +1980,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_with_compliance)
   const std::string RF_name = "rleg6_joint";
   const std::string LF_name = "lleg6_joint";
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintModel) constraint_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintData) constraint_datas;
+  std::vector<ConstraintModel> constraint_models;
+  std::vector<ConstraintData> constraint_datas;
 
   PointAnchorConstraintModel ci_RF(
     model, 0, SE3::Identity(), model.getJointId(RF_name), SE3::Identity());
@@ -2041,8 +2041,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_check_resize)
   const std::string RF = "rleg6_joint";
   const std::string LF = "lleg6_joint";
 
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) RigidConstraintModelStdVector;
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) RigidConstraintDataStdVector;
+  typedef std::vector<RigidConstraintModel> RigidConstraintModelStdVector;
+  typedef std::vector<RigidConstraintData> RigidConstraintDataStdVector;
 
   RigidConstraintModelStdVector contact_models;
   RigidConstraintDataStdVector contact_datas;

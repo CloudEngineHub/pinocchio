@@ -156,7 +156,6 @@ namespace pinocchio
   : RigidConstraintModelTyper<RigidConstraintModelTpl<_Scalar, _Options>>
   , BinaryKinematicsConstraintModelBase<RigidConstraintModelTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
@@ -925,7 +924,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct RigidConstraintDataTpl : ConstraintDataBase<RigidConstraintDataTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
@@ -937,7 +935,7 @@ namespace pinocchio
     typedef MotionTpl<Scalar, Options> Motion;
     typedef ForceTpl<Scalar, Options> Force;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) VectorOfMatrix6;
+    typedef std::vector<Matrix6> VectorOfMatrix6;
     typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> Matrix6x;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixX;
 

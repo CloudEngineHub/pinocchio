@@ -66,7 +66,6 @@ namespace pinocchio
   class MotionRef : public MotionDense<MotionRef<Vector6ArgType>>
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef MotionDense<MotionRef> Base;
     typedef typename traits<MotionRef>::DataRefType DataRefType;
     MOTION_TYPEDEF_TPL(MotionRef);
@@ -243,7 +242,6 @@ namespace pinocchio
   class MotionRef<const Vector6ArgType> : public MotionDense<MotionRef<const Vector6ArgType>>
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef MotionDense<MotionRef> Base;
     typedef typename traits<MotionRef>::DataRefType DataRefType;
     MOTION_TYPEDEF_TPL(MotionRef);

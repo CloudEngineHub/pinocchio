@@ -69,7 +69,6 @@ namespace pinocchio
   struct JointMotionSubspaceEllipsoidTpl
   : JointMotionSubspaceBase<JointMotionSubspaceEllipsoidTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceEllipsoidTpl)
     static constexpr int NV = 3;
@@ -306,7 +305,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct JointDataEllipsoidTpl : public JointDataBase<JointDataEllipsoidTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointEllipsoidTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
     PINOCCHIO_JOINT_DATA_BASE_DEFAULT_ACCESSOR
@@ -373,7 +371,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct JointModelEllipsoidTpl : public JointModelBase<JointModelEllipsoidTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointEllipsoidTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
 

@@ -149,8 +149,8 @@ namespace pinocchio
       void run(ConstraintModelBase<ConstraintModel> * ptr = 0)
       {
         using ConstraintData = typename traits<ConstraintModel>::ConstraintData;
-        typedef Eigen::aligned_allocator<ConstraintModel> ConstraintModelAllocator;
-        typedef Eigen::aligned_allocator<ConstraintData> ConstraintDataAllocator;
+        typedef std::allocator<ConstraintModel> ConstraintModelAllocator;
+        typedef std::allocator<ConstraintData> ConstraintDataAllocator;
 
         PINOCCHIO_UNUSED_VARIABLE(ptr);
 

@@ -14,8 +14,6 @@ namespace pinocchio
   class GeometryPoolTpl : public ModelPoolTpl<_Scalar, _Options, JointCollectionTpl>
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     typedef ModelPoolTpl<_Scalar, _Options, JointCollectionTpl> Base;
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
@@ -27,8 +25,8 @@ namespace pinocchio
     typedef ::pinocchio::GeometryModel GeometryModel;
     typedef ::pinocchio::GeometryData GeometryData;
 
-    typedef std::vector<GeometryModel, Eigen::aligned_allocator<GeometryModel>> GeometryModelVector;
-    typedef std::vector<GeometryData, Eigen::aligned_allocator<GeometryData>> GeometryDataVector;
+    typedef std::vector<GeometryModel> GeometryModelVector;
+    typedef std::vector<GeometryData> GeometryDataVector;
 
     /// \brief Default constructor from a model and a pool size.
     ///

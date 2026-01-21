@@ -59,7 +59,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct MotionRevoluteUnalignedTpl : MotionBase<MotionRevoluteUnalignedTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     MOTION_TYPEDEF_TPL(MotionRevoluteUnalignedTpl);
 
     MotionRevoluteUnalignedTpl()
@@ -270,7 +269,6 @@ namespace pinocchio
   struct JointMotionSubspaceRevoluteUnalignedTpl
   : JointMotionSubspaceBase<JointMotionSubspaceRevoluteUnalignedTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceRevoluteUnalignedTpl)
 
     static constexpr int NV = 1;
@@ -528,7 +526,6 @@ namespace pinocchio
   struct JointDataRevoluteUnalignedTpl
   : public JointDataBase<JointDataRevoluteUnalignedTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointRevoluteUnalignedTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
     PINOCCHIO_JOINT_DATA_BASE_DEFAULT_ACCESSOR
@@ -590,7 +587,6 @@ namespace pinocchio
   struct JointModelRevoluteUnalignedTpl
   : public JointModelBase<JointModelRevoluteUnalignedTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointRevoluteUnalignedTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
     typedef Eigen::Matrix<Scalar, 3, 1, _Options> Vector3;

@@ -8,8 +8,6 @@
 #include "pinocchio/multibody/liegroup/liegroup-base.hpp"
 #include "pinocchio/multibody/liegroup/liegroup-collection.hpp"
 
-#include "pinocchio/container/aligned-vector.hpp"
-
 namespace pinocchio
 {
 
@@ -41,7 +39,6 @@ namespace pinocchio
   : public LieGroupBase<
       CartesianProductOperationVariantTpl<_Scalar, _Options, LieGroupCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_LIE_GROUP_TPL_PUBLIC_INTERFACE(CartesianProductOperationVariantTpl);
 
@@ -306,7 +303,7 @@ namespace pinocchio
     bool isEqual(const CartesianProductOperation<LieGroup1, LieGroup2> & other) const;
 
   protected:
-    PINOCCHIO_ALIGNED_STD_VECTOR(LieGroupGeneric) liegroups;
+    std::vector<LieGroupGeneric> liegroups;
     Index m_nq, m_nv;
     std::vector<Index> lg_nqs, lg_nvs;
     std::string m_name;

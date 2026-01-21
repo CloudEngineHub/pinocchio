@@ -15,8 +15,8 @@ namespace pinocchio
 {
   namespace python
   {
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(context::RigidConstraintModel) RigidConstraintModelVector;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(context::RigidConstraintData) RigidConstraintDataVector;
+    typedef std::vector<context::RigidConstraintModel> RigidConstraintModelVector;
+    typedef std::vector<context::RigidConstraintData> RigidConstraintDataVector;
 
     bp::tuple computeConstraintDynamicsDerivatives_proxy(
       const context::Model & model,

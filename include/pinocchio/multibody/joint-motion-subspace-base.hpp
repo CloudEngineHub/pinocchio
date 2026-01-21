@@ -56,8 +56,6 @@ namespace pinocchio
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(Derived)
 
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     Derived & derived()
     {
       return *static_cast<Derived *>(this);

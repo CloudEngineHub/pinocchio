@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(test_aba_derivatives_fext)
   VectorXd tau(VectorXd::Random(model.nv));
   VectorXd a(aba(model, data_ref, q, v, tau, Convention::LOCAL));
 
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(Force) ForceVector;
+  typedef std::vector<Force> ForceVector;
   ForceVector fext((size_t)model.njoints);
   for (ForceVector::iterator it = fext.begin(); it != fext.end(); ++it)
     (*it).setRandom();
@@ -471,7 +471,7 @@ BOOST_AUTO_TEST_CASE(test_optimized_aba_derivatives_fext)
   VectorXd v(VectorXd::Random(model.nv));
   VectorXd tau(VectorXd::Random(model.nv));
 
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(Force) ForceVector;
+  typedef std::vector<Force> ForceVector;
   ForceVector fext((size_t)model.njoints);
   for (ForceVector::iterator it = fext.begin(); it != fext.end(); ++it)
     (*it).setRandom();

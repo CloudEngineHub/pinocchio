@@ -8,8 +8,6 @@
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
 
-#include "pinocchio/container/aligned-vector.hpp"
-
 namespace pinocchio
 {
 
@@ -75,7 +73,7 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const Eigen::MatrixBase<ConfigVectorType> & q,
-    const container::aligned_vector<ForceTpl<Scalar, Options>> & fext,
+    const std::vector<ForceTpl<Scalar, Options>> & fext,
     const Eigen::MatrixBase<ReturnMatrixType> & static_torque_partial_dq);
 
   ///
@@ -174,7 +172,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & a,
-    const container::aligned_vector<ForceTpl<Scalar, Options>> & fext,
+    const std::vector<ForceTpl<Scalar, Options>> & fext,
     const Eigen::MatrixBase<MatrixType1> & rnea_partial_dq,
     const Eigen::MatrixBase<MatrixType2> & rnea_partial_dv,
     const Eigen::MatrixBase<MatrixType3> & rnea_partial_da);
@@ -254,7 +252,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & a,
-    const container::aligned_vector<ForceTpl<Scalar, Options>> & fext);
+    const std::vector<ForceTpl<Scalar, Options>> & fext);
 
 } // namespace pinocchio
 

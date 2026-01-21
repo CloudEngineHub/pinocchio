@@ -11,7 +11,7 @@
 #include "pinocchio/bindings/python/algorithm/constraints/constraint-data.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraints-models.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraints-datas.hpp"
-#include "pinocchio/bindings/python/utils/std-aligned-vector.hpp"
+#include "pinocchio/bindings/python/utils/std-vector.hpp"
 
 namespace pinocchio
 {
@@ -83,7 +83,7 @@ namespace pinocchio
       template<class T>
       void operator()(T)
       {
-        StdAlignedVectorPythonVisitor<T>::expose(
+        StdVectorPythonVisitor<std::vector<T>>::expose(
           std::string("StdVec_") + sanitizedClassname<T>().c_str());
       }
 

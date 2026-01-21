@@ -64,8 +64,8 @@ BOOST_AUTO_TEST_CASE(contact_6D)
 
   const std::string RA = "rleg6_joint";
   RigidConstraintModel ci_RA_6D(CONTACT_6D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_6D);
   contact_data.push_back(RigidConstraintData(ci_RA_6D));
 
@@ -128,8 +128,8 @@ BOOST_AUTO_TEST_CASE(contact_6D6D)
   const std::string LA = "lleg6_joint";
   RigidConstraintModel ci_LA_6D(CONTACT_6D, model, model.getJointId(LA), LOCAL);
   RigidConstraintModel ci_RA_6D(CONTACT_6D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_6D);
   contact_data.push_back(RigidConstraintData(ci_RA_6D));
   contact_models.push_back(ci_LA_6D);
@@ -184,8 +184,8 @@ BOOST_AUTO_TEST_CASE(contact_6D4)
   RigidConstraintModel ci_RA_6D(CONTACT_6D, model, model.getJointId(RA), LOCAL);
   RigidConstraintModel ci_LF_6D(CONTACT_6D, model, model.getJointId(LF), LOCAL);
   RigidConstraintModel ci_RF_6D(CONTACT_6D, model, model.getJointId(RF), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_6D);
   contact_data.push_back(RigidConstraintData(ci_RA_6D));
   contact_models.push_back(ci_LA_6D);
@@ -237,8 +237,8 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated)
 
   const std::string RA = "rleg6_joint";
   RigidConstraintModel ci_RA_6D(CONTACT_6D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_6D);
   contact_data.push_back(RigidConstraintData(ci_RA_6D));
   contact_models.push_back(ci_RA_6D);
@@ -292,8 +292,8 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated_6D3)
   RigidConstraintModel ci_RA_6D(CONTACT_6D, model, model.getJointId(RA), LOCAL);
   RigidConstraintModel ci_LF_6D(CONTACT_6D, model, model.getJointId(LF), LOCAL);
   RigidConstraintModel ci_RF_6D(CONTACT_6D, model, model.getJointId(RF), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_6D);
   contact_data.push_back(RigidConstraintData(ci_RA_6D));
   contact_models.push_back(ci_RA_6D);
@@ -344,8 +344,8 @@ BOOST_AUTO_TEST_CASE(contact_3D)
 
   const std::string RA = "rleg6_joint";
   RigidConstraintModel ci_RA_3D(CONTACT_3D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
 
@@ -393,8 +393,8 @@ BOOST_AUTO_TEST_CASE(contact_3D3D)
   const std::string LA = "lleg6_joint";
   RigidConstraintModel ci_LA_3D(CONTACT_3D, model, model.getJointId(LA), LOCAL);
   RigidConstraintModel ci_RA_3D(CONTACT_3D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
   contact_models.push_back(ci_LA_3D);
@@ -448,8 +448,8 @@ BOOST_AUTO_TEST_CASE(contact_3D4)
   RigidConstraintModel ci_RA_3D(CONTACT_3D, model, model.getJointId(RA), LOCAL);
   RigidConstraintModel ci_LF_3D(CONTACT_3D, model, model.getJointId(LF), LOCAL);
   RigidConstraintModel ci_RF_3D(CONTACT_3D, model, model.getJointId(RF), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
   contact_models.push_back(ci_LA_3D);
@@ -502,8 +502,8 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated)
   double mu = 1e-3;
   const std::string RA = "rleg6_joint";
   RigidConstraintModel ci_RA_3D(CONTACT_3D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
   contact_models.push_back(ci_RA_3D);
@@ -551,8 +551,8 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4)
 
   const std::string RA = "rleg6_joint";
   RigidConstraintModel ci_RA_3D(CONTACT_3D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
   contact_models.push_back(ci_RA_3D);
@@ -604,8 +604,8 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4_6D4)
 
   const std::string RA = "rleg6_joint";
   RigidConstraintModel ci_RA_3D(CONTACT_3D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
   contact_models.push_back(ci_RA_3D);
@@ -676,8 +676,8 @@ BOOST_AUTO_TEST_CASE(contact_3D_ancestors)
   const std::string LA = "rleg4_joint";
   RigidConstraintModel ci_LA_3D(CONTACT_3D, model, model.getJointId(LA), LOCAL);
   RigidConstraintModel ci_RA_3D(CONTACT_3D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
   contact_models.push_back(ci_LA_3D);
@@ -742,8 +742,8 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor)
   const std::string LA = "rleg4_joint";
   RigidConstraintModel ci_LA_6D(CONTACT_6D, model, model.getJointId(LA), LOCAL);
   RigidConstraintModel ci_RA_3D(CONTACT_3D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
   contact_models.push_back(ci_LA_6D);
@@ -793,8 +793,8 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor_6D4)
   const std::string LA = "rleg4_joint";
   RigidConstraintModel ci_LA_6D(CONTACT_6D, model, model.getJointId(LA), LOCAL);
   RigidConstraintModel ci_RA_3D(CONTACT_3D, model, model.getJointId(RA), LOCAL);
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
   contact_models.push_back(ci_RA_3D);
   contact_data.push_back(RigidConstraintData(ci_RA_3D));
   contact_models.push_back(ci_LA_6D);

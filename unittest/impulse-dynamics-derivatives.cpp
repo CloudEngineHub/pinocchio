@@ -40,8 +40,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_derivatives_no_contact)
   VectorXd v = VectorXd::Random(model.nv);
 
   // Contact models and data
-  const PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) empty_contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) empty_contact_data;
+  const std::vector<RigidConstraintModel> empty_contact_models;
+  std::vector<RigidConstraintData> empty_contact_data;
 
   const double mu0 = 0.;
   ProximalSettings prox_settings(1e-12, mu0, 1);
@@ -82,8 +82,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_derivatives)
   const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
 
   RigidConstraintModel ci_LF(CONTACT_6D, model, LF_id, LOCAL);
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LOCAL);
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_derivatives)
   computeImpulseDynamicsDerivatives(
     model, data, contact_models, contact_data, r_coeff, prox_settings);
 
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(Force) ForceVector;
+  typedef std::vector<Force> ForceVector;
 
   ForceVector iext((size_t)model.njoints);
   for (ForceVector::iterator it = iext.begin(); it != iext.end(); ++it)
@@ -168,8 +168,8 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
   const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
 
   RigidConstraintModel ci_LF(CONTACT_6D, model, LF_id, SE3::Random(), LOCAL);
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, SE3::Random(), LOCAL);
@@ -280,8 +280,8 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_WORLD_ALIGNED_fd)
   const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_data, contact_data_fd;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data, contact_data_fd;
 
   RigidConstraintModel ci_LF(CONTACT_6D, model, LF_id, SE3::Random(), LOCAL_WORLD_ALIGNED);
   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, SE3::Random(), LOCAL_WORLD_ALIGNED);

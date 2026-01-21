@@ -6,15 +6,20 @@
 #ifndef __pinocchio_container_aligned_vector_hpp__
 #define __pinocchio_container_aligned_vector_hpp__
 
-#include <vector>
-#include <Eigen/StdVector>
+#include "pinocchio/deprecated.hpp"
+#include "pinocchio/warning.hpp"
 
+#include <vector>
+
+#ifndef PINOCCHIO_DISABLE_ALIGNED_VECTOR_WARNINGS
+  #pragma message PINOCCHIO_WARN(                                                                  \
+    "<pinocchio/container/aligned-vector.hpp> is deprecated and will be removed")
+#endif // PINOCCHIO_DISABLE_ALIGNED_VECTOR_WARNINGS
+
+// This macro is deprecated
 #define PINOCCHIO_ALIGNED_STD_VECTOR(Type) ::pinocchio::container::aligned_vector<Type>
 
-#define PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(T)                                               \
-  PINOCCHIO_PRAGMA(message "warning: PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR is deprecated, "    \
-                           "use PINOCCHIO_ALIGNED_STD_VECTOR instead.")                            \
-  PINOCCHIO_ALIGNED_STD_VECTOR(T)
+#define PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(T) PINOCCHIO_ALIGNED_STD_VECTOR(T)
 
 namespace pinocchio
 {
@@ -22,7 +27,8 @@ namespace pinocchio
   {
 
     template<typename T>
-    using aligned_vector = std::vector<T, Eigen::aligned_allocator<T>>;
+    using aligned_vector PINOCCHIO_DEPRECATED_MESSAGE(
+      "aligned_vector is deprecated, please use std::vector") = std::vector<T>;
 
   } // namespace container
 

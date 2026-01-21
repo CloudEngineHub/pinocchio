@@ -55,7 +55,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct ContactCholeskyDecompositionTpl
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef pinocchio::Index Index;
     typedef _Scalar Scalar;
@@ -72,7 +71,7 @@ namespace pinocchio
     typedef EigenStorageTpl<RowMatrix> EigenStorageRowMatrix;
 
     typedef Eigen::Matrix<Eigen::Index, Eigen::Dynamic, 1, Options> EigenIndexVector;
-    typedef typename PINOCCHIO_ALIGNED_STD_VECTOR(EigenIndexVector) VectorOfEigenIndexVector;
+    typedef typename std::vector<EigenIndexVector> VectorOfEigenIndexVector;
     typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
 
     ///@{

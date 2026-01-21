@@ -387,8 +387,8 @@ void runContactDynamicsTest(const Model & model, Data & data)
 
   // ============ CONTACT DYNAMICS ============
   // Create contacts
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintModel) contact_models;
-  PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(RigidConstraintData) contact_data;
+  std::vector<RigidConstraintModel> contact_models;
+  std::vector<RigidConstraintData> contact_data;
 
   if (model.nframes > 1)
   {

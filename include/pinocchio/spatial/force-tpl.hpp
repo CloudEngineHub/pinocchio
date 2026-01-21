@@ -43,7 +43,6 @@ namespace pinocchio
   class ForceTpl : public ForceDense<ForceTpl<_Scalar, _Options>>
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef ForceDense<ForceTpl> Base;
     FORCE_TYPEDEF_TPL(ForceTpl);
     static constexpr int Options = _Options;

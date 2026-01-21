@@ -197,7 +197,6 @@ namespace pinocchio
   struct TridiagonalSymmetricMatrixTpl
   {
 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef TridiagonalSymmetricMatrixTpl Self;
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;

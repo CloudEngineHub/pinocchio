@@ -21,8 +21,6 @@ namespace pinocchio
   class BroadPhaseManagerPoolBase : public GeometryPoolTpl<_Scalar, _Options, JointCollectionTpl>
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     typedef _BroadPhaseManagerDerived BroadPhaseManager;
     typedef GeometryPoolTpl<_Scalar, _Options, JointCollectionTpl> Base;
     typedef _Scalar Scalar;
@@ -33,9 +31,6 @@ namespace pinocchio
     typedef typename Base::DataVector DataVector;
     typedef typename Base::GeometryModel GeometryModel;
     typedef typename Base::GeometryData GeometryData;
-
-    //    typedef std::vector<BroadPhaseManager,Eigen::aligned_allocator<BroadPhaseManager> >
-    //    BroadPhaseManagerVector;
 
     typedef std::vector<BroadPhaseManager> BroadPhaseManagerVector;
 

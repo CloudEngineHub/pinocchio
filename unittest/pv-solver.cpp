@@ -108,8 +108,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_forward_dynamics_empty)
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 
   // prox_settings.mu = 1e-5;
-  // constrainedABA(model, data, q, v, tau, empty_contact_models, empty_contact_datas, prox_settings);
-  // BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
+  // constrainedABA(model, data, q, v, tau, empty_contact_models, empty_contact_datas,
+  // prox_settings); BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 }
 
 BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
@@ -134,8 +134,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
   const Model::JointIndex LF_id = model.getJointId(LF);
 
   // Contact models and data
-  PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintData) contact_datas;
+  std::vector<FrameAnchorConstraintModel> contact_models;
+  std::vector<FrameAnchorConstraintData> contact_datas;
   FrameAnchorConstraintModel ci_RF(model, RF_id, SE3::Random());
   contact_models.push_back(ci_RF);
   contact_datas.push_back(FrameAnchorConstraintData(ci_RF));
@@ -144,8 +144,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
   contact_datas.push_back(FrameAnchorConstraintData(ci_LF));
 
   // Using old RigidConstraint API for the reference solution
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) rigid_contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) rigid_contact_datas;
+  std::vector<RigidConstraintModel> rigid_contact_models;
+  std::vector<RigidConstraintData> rigid_contact_datas;
   RigidConstraintModel rci_RF(CONTACT_6D, model, RF_id, ci_RF.joint1_placement);
   rigid_contact_models.push_back(rci_RF);
   rigid_contact_datas.push_back(RigidConstraintData(rci_RF));
@@ -157,7 +157,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
 
   ProximalSettings prox_settings(1e-12, mu0, 1);
   initConstraintDynamics(model, data_ref, rigid_contact_models, rigid_contact_datas);
-  constraintDynamics(model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
+  constraintDynamics(
+    model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
 
   initPvSolver(model, data, contact_models);
   pv(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
@@ -170,7 +171,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
   v = VectorXd::Random(model.nv);
   tau = VectorXd::Random(model.nv);
 
-  constraintDynamics(model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
+  constraintDynamics(
+    model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
   pv(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 
   // Warning: the test below is not guaranteed to work for different constraints since the order of
@@ -179,7 +181,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
   data.LA[0].template triangularView<Eigen::StrictlyUpper>() =
     data.LA[0].template triangularView<Eigen::StrictlyLower>().transpose();
   // std::cout << "OSIM from PV = " << data.LA[0] << std::endl;
-    BOOST_CHECK(data_ref.osim.isApprox(data.LA[0]));
+  BOOST_CHECK(data_ref.osim.isApprox(data.LA[0]));
 
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 
@@ -227,15 +229,15 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_3D_humanoid)
   const Model::JointIndex RF_id = model.getJointId(RF);
 
   // Contact models and data
-  PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(PointAnchorConstraintData) contact_datas;
+  std::vector<PointAnchorConstraintModel> contact_models;
+  std::vector<PointAnchorConstraintData> contact_datas;
   PointAnchorConstraintModel ci_RF(model, RF_id, SE3::Random());
   contact_models.push_back(ci_RF);
   contact_datas.push_back(PointAnchorConstraintData(ci_RF));
 
   // Using old RigidConstraint API for the reference solution
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) rigid_contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) rigid_contact_datas;
+  std::vector<RigidConstraintModel> rigid_contact_models;
+  std::vector<RigidConstraintData> rigid_contact_datas;
   RigidConstraintModel rci_RF(CONTACT_3D, model, RF_id, ci_RF.joint1_placement);
   rigid_contact_models.push_back(rci_RF);
   rigid_contact_datas.push_back(RigidConstraintData(rci_RF));
@@ -244,7 +246,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_3D_humanoid)
 
   ProximalSettings prox_settings(1e-12, mu0, 1);
   initConstraintDynamics(model, data_ref, rigid_contact_models, rigid_contact_datas);
-  constraintDynamics(model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
+  constraintDynamics(
+    model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
 
   initPvSolver(model, data, contact_models);
   pv(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
@@ -255,7 +258,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_3D_humanoid)
   v = VectorXd::Random(model.nv);
   tau = VectorXd::Random(model.nv);
 
-  constraintDynamics(model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
+  constraintDynamics(
+    model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
   pv(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 
@@ -297,8 +301,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
   const Model::JointIndex RF_id = model.getJointId(RF);
 
   // Contact models and data
-  PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintModel) contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(FrameAnchorConstraintData) contact_datas;
+  std::vector<FrameAnchorConstraintModel> contact_models;
+  std::vector<FrameAnchorConstraintData> contact_datas;
   FrameAnchorConstraintModel ci_RF(model, RF_id, SE3::Random());
   contact_models.push_back(ci_RF);
   contact_datas.push_back(FrameAnchorConstraintData(ci_RF));
@@ -307,12 +311,13 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
   contact_datas.push_back(FrameAnchorConstraintData(ci_RF2));
 
   // Using old RigidConstraint API for the reference solution
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) rigid_contact_models;
-  PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) rigid_contact_datas;
+  std::vector<RigidConstraintModel> rigid_contact_models;
+  std::vector<RigidConstraintData> rigid_contact_datas;
   RigidConstraintModel rci_RF(CONTACT_6D, model, RF_id, ci_RF.joint1_placement);
   rigid_contact_models.push_back(rci_RF);
   rigid_contact_datas.push_back(RigidConstraintData(rci_RF));
-  RigidConstraintModel rci_RF2(CONTACT_6D, model, model.getJointId("rleg5_joint"), ci_RF2.joint1_placement);
+  RigidConstraintModel rci_RF2(
+    CONTACT_6D, model, model.getJointId("rleg5_joint"), ci_RF2.joint1_placement);
   rigid_contact_models.push_back(rci_RF2);
   rigid_contact_datas.push_back(RigidConstraintData(rci_RF2));
 
@@ -320,7 +325,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
 
   ProximalSettings prox_settings(1e-14, mu0, 10);
   initConstraintDynamics(model, data_ref, rigid_contact_models, rigid_contact_datas);
-  constraintDynamics(model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
+  constraintDynamics(
+    model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
 
   computeAllTerms(model, data_ref, q, v);
 
@@ -366,7 +372,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
   v = VectorXd::Random(model.nv);
   tau = VectorXd::Random(model.nv);
 
-  constraintDynamics(model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
+  constraintDynamics(
+    model, data_ref, q, v, tau, rigid_contact_models, rigid_contact_datas, prox_settings);
   pv(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 
@@ -402,8 +409,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
 // //   const Model::JointIndex RF_id = model.getJointId(RF);
 
 // //   // Contact models and data
-// //   PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintModel) contact_models;
-// //   PINOCCHIO_ALIGNED_STD_VECTOR(RigidConstraintData) contact_datas;
+// //   std::vector<RigidConstraintModel> contact_models;
+// //   std::vector<RigidConstraintData> contact_datas;
 // //   RigidConstraintModel ci_RF(CONTACT_3D, model, RF_id, LOCAL);
 // //   ci_RF.joint1_placement.setRandom();
 // //   ci_RF.corrector.Kd = 1.;
@@ -421,7 +428,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
 
 // //   ProximalSettings prox_settings(1e-14, mu0, 10);
 // //   initConstraintDynamics(model, data_ref, contact_models, contact_datas);
-// //   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings);
+// //   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas,
+// prox_settings);
 
 // //   initPvSolver(model, data, contact_models);
 // //   pv(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
@@ -432,7 +440,8 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
 // //   v = VectorXd::Random(model.nv);
 // //   tau = VectorXd::Random(model.nv);
 
-// //   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas, prox_settings);
+// //   constraintDynamics(model, data_ref, q, v, tau, contact_models, contact_datas,
+// prox_settings);
 // //   pv(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
 // //   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 

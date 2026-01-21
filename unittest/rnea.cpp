@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(test_rnea_with_fext)
   VectorXd v(VectorXd::Random(model.nv));
   VectorXd a(VectorXd::Random(model.nv));
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(Force) fext(model.joints.size(), Force::Zero());
+  std::vector<Force> fext(model.joints.size(), Force::Zero());
 
   JointIndex rf = model.getJointId("rleg6_joint");
   Force Frf = Force::Random();
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(test_compute_static_torque)
 
   VectorXd q = randomConfiguration(model);
 
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(Force) ForceVector;
+  typedef std::vector<Force> ForceVector;
   ForceVector fext((size_t)model.njoints);
   for (ForceVector::iterator it = fext.begin(); it != fext.end(); ++it)
     (*it).setRandom();
@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE(test_rnea_mimic)
     BOOST_CHECK(tau_gg.isApprox(tau_ref_gg));
 
     // Static Torque
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::Force) ForceVector;
+    typedef std::vector<pinocchio::Force> ForceVector;
     ForceVector fext((size_t)model_mimic.njoints);
     for (ForceVector::iterator it = fext.begin(); it != fext.end(); ++it)
       (*it).setRandom();

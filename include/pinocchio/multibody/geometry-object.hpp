@@ -142,8 +142,6 @@ namespace pinocchio
   : public ModelItem<GeometryObject>
   , serialization::Serializable<GeometryObject>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     typedef ModelItem<GeometryObject> Base;
     typedef typename traits<GeometryObject>::Scalar Scalar;
     static constexpr int Options = traits<GeometryObject>::Options;

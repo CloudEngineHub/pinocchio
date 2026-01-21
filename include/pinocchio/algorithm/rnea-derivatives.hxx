@@ -192,7 +192,7 @@ namespace pinocchio
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       DataTpl<Scalar, Options, JointCollectionTpl> & data,
       const Eigen::MatrixBase<ConfigVectorType> & q,
-      const container::aligned_vector<ForceTpl<Scalar, Options>> & fext,
+      const std::vector<ForceTpl<Scalar, Options>> & fext,
       const Eigen::MatrixBase<ReturnMatrixType> & static_torque_partial_dq)
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(
@@ -556,7 +556,7 @@ namespace pinocchio
       const Eigen::MatrixBase<ConfigVectorType> & q,
       const Eigen::MatrixBase<TangentVectorType1> & v,
       const Eigen::MatrixBase<TangentVectorType2> & a,
-      const container::aligned_vector<ForceTpl<Scalar, Options>> & fext,
+      const std::vector<ForceTpl<Scalar, Options>> & fext,
       const Eigen::MatrixBase<MatrixType1> & rnea_partial_dq,
       const Eigen::MatrixBase<MatrixType2> & rnea_partial_dv,
       const Eigen::MatrixBase<MatrixType3> & rnea_partial_da)
@@ -653,7 +653,7 @@ namespace pinocchio
       const Eigen::MatrixBase<ConfigVectorType> & q,
       const Eigen::MatrixBase<TangentVectorType1> & v,
       const Eigen::MatrixBase<TangentVectorType2> & a,
-      const container::aligned_vector<ForceTpl<Scalar, Options>> & fext)
+      const std::vector<ForceTpl<Scalar, Options>> & fext)
     {
       impl::computeRNEADerivatives(
         model, data, q.derived(), v.derived(), a.derived(), fext, data.dtau_dq, data.dtau_dv,
@@ -688,7 +688,7 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const Eigen::MatrixBase<ConfigVectorType> & q,
-    const container::aligned_vector<ForceTpl<Scalar, Options>> & fext,
+    const std::vector<ForceTpl<Scalar, Options>> & fext,
     const Eigen::MatrixBase<ReturnMatrixType> & static_torque_partial_dq)
   {
     impl::computeStaticTorqueDerivatives(
@@ -736,7 +736,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & a,
-    const container::aligned_vector<ForceTpl<Scalar, Options>> & fext,
+    const std::vector<ForceTpl<Scalar, Options>> & fext,
     const Eigen::MatrixBase<MatrixType1> & rnea_partial_dq,
     const Eigen::MatrixBase<MatrixType2> & rnea_partial_dv,
     const Eigen::MatrixBase<MatrixType3> & rnea_partial_da)
@@ -778,7 +778,7 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & a,
-    const container::aligned_vector<ForceTpl<Scalar, Options>> & fext)
+    const std::vector<ForceTpl<Scalar, Options>> & fext)
   {
     impl::computeRNEADerivatives(
       model, data, make_const_ref(q), make_const_ref(v), make_const_ref(a), fext,

@@ -13,7 +13,6 @@
 #include "pinocchio/serialization/fwd.hpp"
 #include "pinocchio/serialization/eigen.hpp"
 #include "pinocchio/serialization/vector.hpp"
-#include "pinocchio/serialization/aligned-vector.hpp"
 
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/variant.hpp>

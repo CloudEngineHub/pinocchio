@@ -67,7 +67,6 @@ namespace pinocchio
   struct PointContactConstraintModelTpl
   : PointConstraintModelBase<PointContactConstraintModelTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
@@ -284,7 +283,6 @@ namespace pinocchio
   struct PointContactConstraintDataTpl
   : PointConstraintDataBase<PointContactConstraintDataTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;

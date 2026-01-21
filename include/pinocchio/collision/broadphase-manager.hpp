@@ -16,7 +16,6 @@ namespace pinocchio
   template<typename _Manager>
   struct BroadPhaseManagerTpl : public BroadPhaseManagerBase<BroadPhaseManagerTpl<_Manager>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef BroadPhaseManagerBase<BroadPhaseManagerTpl<_Manager>> Base;
     typedef std::vector<CollisionObject> CollisionObjectVector;

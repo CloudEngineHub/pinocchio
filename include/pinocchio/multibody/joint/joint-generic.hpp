@@ -8,7 +8,6 @@
 #include "pinocchio/multibody/joint/joint-collection.hpp"
 #include "pinocchio/multibody/joint/joint-composite.hpp"
 #include "pinocchio/multibody/joint/joint-basic-visitors.hxx"
-#include "pinocchio/container/aligned-vector.hpp"
 
 #include <boost/mpl/contains.hpp>
 
@@ -90,8 +89,6 @@ namespace pinocchio
   : public JointDataBase<JointDataTpl<_Scalar, _Options, JointCollectionTpl>>
   , JointCollectionTpl<_Scalar, _Options>::JointDataVariant
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     typedef JointTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;
     typedef JointDataBase<JointDataTpl> Base;
 
@@ -260,8 +257,6 @@ namespace pinocchio
   : JointModelBase<JointModelTpl<_Scalar, _Options, JointCollectionTpl>>
   , JointCollectionTpl<_Scalar, _Options>::JointModelVariant
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     typedef JointTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;
 
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
@@ -475,8 +470,8 @@ namespace pinocchio
     }
   };
 
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointData) JointDataVector;
-  typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointModel) JointModelVector;
+  typedef std::vector<JointData> JointDataVector;
+  typedef std::vector<JointModel> JointModelVector;
 
   template<
     typename Scalar,

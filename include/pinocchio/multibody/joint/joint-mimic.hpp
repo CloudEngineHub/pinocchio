@@ -78,7 +78,6 @@ namespace pinocchio
   struct ScaledJointMotionSubspaceTpl
   : JointMotionSubspaceBase<ScaledJointMotionSubspaceTpl<_Scalar, _Options, _MaxDim>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(ScaledJointMotionSubspaceTpl)
     static constexpr int NV = Eigen::Dynamic;
@@ -354,7 +353,6 @@ namespace pinocchio
   struct JointDataMimicTpl
   : public JointDataBase<JointDataMimicTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointDataBase<JointDataMimicTpl> Base;
     typedef JointMimicTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;
@@ -542,7 +540,6 @@ namespace pinocchio
   struct JointModelMimicTpl
   : public JointModelBase<JointModelMimicTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointModelBase<JointModelMimicTpl> Base;
     typedef JointMimicTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;

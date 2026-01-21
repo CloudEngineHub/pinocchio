@@ -95,7 +95,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int axis>
   struct TransformRevoluteTpl : SE3Base<TransformRevoluteTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_SE3_TYPEDEF_TPL(TransformRevoluteTpl);
     typedef typename traits<TransformRevoluteTpl>::ConstLinearType ConstLinearType;
 
@@ -236,7 +235,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int axis>
   struct MotionRevoluteTpl : MotionBase<MotionRevoluteTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     MOTION_TYPEDEF_TPL(MotionRevoluteTpl);
     typedef SpatialAxis<axis + ANGULAR> Axis;
@@ -424,7 +422,6 @@ namespace pinocchio
   struct JointMotionSubspaceRevoluteTpl
   : JointMotionSubspaceBase<JointMotionSubspaceRevoluteTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceRevoluteTpl)
     static constexpr int NV = 1;
@@ -686,7 +683,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int axis>
   struct JointDataRevoluteTpl : public JointDataBase<JointDataRevoluteTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointRevoluteTpl<_Scalar, _Options, axis> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
     PINOCCHIO_JOINT_DATA_BASE_DEFAULT_ACCESSOR
@@ -738,7 +734,6 @@ namespace pinocchio
   struct JointModelRevoluteTpl
   : public JointModelBase<JointModelRevoluteTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointRevoluteTpl<_Scalar, _Options, axis> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
 

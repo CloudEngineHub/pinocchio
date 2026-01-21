@@ -18,8 +18,6 @@
 #include "pinocchio/multibody/frame.hpp"
 #include "pinocchio/multibody/joint/joint-generic.hpp"
 
-#include "pinocchio/container/aligned-vector.hpp"
-
 #include "pinocchio/serialization/serializable.hpp"
 
 #include <map>
@@ -52,7 +50,6 @@ namespace pinocchio
   , NumericalBase<ModelTpl<_Scalar, _Options, JointCollectionTpl>>
   , ModelEntity<ModelTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<ModelTpl>::Scalar Scalar;
     static constexpr int Options = traits<ModelTpl>::Options;
@@ -75,17 +72,17 @@ namespace pinocchio
     typedef JointModelTpl<Scalar, Options, JointCollectionTpl> JointModel;
     typedef JointDataTpl<Scalar, Options, JointCollectionTpl> JointData;
 
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointModel) JointModelVector;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointData) JointDataVector;
+    typedef std::vector<JointModel> JointModelVector;
+    typedef std::vector<JointData> JointDataVector;
 
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(Frame) FrameVector;
+    typedef std::vector<Frame> FrameVector;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
 
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(Inertia) InertiaVector;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(SE3) SE3Vector;
+    typedef std::vector<Inertia> InertiaVector;
+    typedef std::vector<SE3> SE3Vector;
 
     /// \brief Dense vectorized version of a joint configuration vector.
     typedef VectorXs ConfigVectorType;

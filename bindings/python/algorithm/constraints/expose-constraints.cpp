@@ -6,7 +6,7 @@
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraints-variant.hpp"
-#include "pinocchio/bindings/python/utils/std-aligned-vector.hpp"
+#include "pinocchio/bindings/python/utils/std-vector.hpp"
 
 namespace pinocchio
 {
@@ -23,7 +23,8 @@ namespace pinocchio
       bp::to_python_converter<
         ConstraintModelVariant, ConstraintVariantVisitor<ConstraintModelVariant>>();
       ConstraintModelPythonVisitor<context::ConstraintModel>::expose();
-      StdAlignedVectorPythonVisitor<context::ConstraintModel>::expose("StdVec_ConstraintModel");
+      StdVectorPythonVisitor<std::vector<context::ConstraintModel>>::expose(
+        "StdVec_ConstraintModel");
 
       typedef context::ConstraintCollectionDefault::ConstraintDataVariant ConstraintDataVariant;
       boost::mpl::for_each<ConstraintDataVariant::types>(ConstraintDataExposer());
@@ -31,7 +32,7 @@ namespace pinocchio
       bp::to_python_converter<
         ConstraintDataVariant, ConstraintVariantVisitor<ConstraintDataVariant>>();
       ConstraintDataPythonVisitor<context::ConstraintData>::expose();
-      StdAlignedVectorPythonVisitor<context::ConstraintData>::expose("StdVec_ConstraintData");
+      StdVectorPythonVisitor<std::vector<context::ConstraintData>>::expose("StdVec_ConstraintData");
     }
   } // namespace python
 } // namespace pinocchio

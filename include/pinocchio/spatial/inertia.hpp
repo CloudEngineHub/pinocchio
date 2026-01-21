@@ -268,7 +268,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct InertiaTpl : public InertiaBase<InertiaTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     SPATIAL_TYPEDEF_TEMPLATE(InertiaTpl);
     static constexpr int Options = _Options;

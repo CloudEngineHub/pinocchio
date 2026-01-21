@@ -18,7 +18,6 @@
 #include "pinocchio/bindings/python/utils/macros.hpp"
 #include "pinocchio/bindings/python/serialization/serializable.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
-#include "pinocchio/bindings/python/utils/std-aligned-vector.hpp"
 
 namespace pinocchio
 {
@@ -306,27 +305,33 @@ namespace pinocchio
 #endif
           ;
 
-        typedef PINOCCHIO_ALIGNED_STD_VECTOR(Vector3) StdVec_Vector3;
-        typedef PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) StdVec_Matrix6x;
-        typedef PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) StdVec_Matrix6;
+        typedef std::vector<Vector3> StdVec_Vector3;
+        typedef std::vector<Matrix6x> StdVec_Matrix6x;
+        typedef std::vector<Matrix6> StdVec_Matrix6;
 
         StdVectorPythonVisitor<std::vector<std::vector<int>>>::expose("StdVec_StdVec_Int");
-        StdAlignedVectorPythonVisitor<Vector3, false>::expose(
-          "StdVec_Vector3",
-          eigenpy::details::overload_base_get_item_for_std_vector<StdVec_Vector3>());
+        // Because coal is binding std::vector<Vector3d>, exposeStdVectorEigenSpecificType
+        // can not bind all excpected method to this type.
+        // We must create an alias (coal use a different name) and add pickling method
+        // to std::vector<Vector3d> binding.
+        // Because current eigenpy API doesn't support adding attribute to already
+        // registered type, we must add them in the __init__.py
+        if (eigenpy::register_symbolic_link_to_registered_type<StdVec_Vector3>(
+              DefPickleStdVectorVisitor<StdVec_Vector3>()))
+        {
+          bp::scope().attr("StdVec_Vector3") = bp::scope().attr("StdVec_Vec3s"); // alias
+        }
+        exposeStdVectorEigenSpecificType<Vector3>("Vector3");
+        exposeStdVectorEigenSpecificType<Matrix6x>("Matrix6x");
+        exposeStdVectorEigenSpecificType<Matrix6>("Matrix6");
 
-        StdAlignedVectorPythonVisitor<Matrix6x, false>::expose(
-          "StdVec_Matrix6x",
-          eigenpy::details::overload_base_get_item_for_std_vector<StdVec_Matrix6x>());
-        StdAlignedVectorPythonVisitor<Matrix6, false>::expose(
-          "StdVec_Matrix6",
-          eigenpy::details::overload_base_get_item_for_std_vector<StdVec_Matrix6>());
         StdVectorPythonVisitor<std::vector<int>, true>::expose("StdVec_int");
 #ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION
-        serialize<typename StdAlignedVectorPythonVisitor<Vector3, false>::vector_type>();
-        serialize<typename StdAlignedVectorPythonVisitor<Matrix6x, false>::vector_type>();
-#endif
+        serialize<StdVec_Vector3>();
+        serialize<StdVec_Matrix6x>();
+        serialize<StdVec_Matrix6>();
         serialize<std::vector<int>>();
+#endif
       }
     };
 

@@ -39,6 +39,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Python:
     - Deprecate `pinocchio.WITH_HPP_FCL` and `pinocchio.WITH_HPP_FCL_BINDINGS` replaced by `pinocchio.WITH_COLLISION`
     - Deprecate `pinocchio.hppfcl` replaced by `pinocchio.coal`
+  - Don't use Eigen::aligned_allocator:
+    - Deprecate `PINOCCHIO_ALIGNED_STD_VECTOR` replaced by `std::vector`
+    - Deprecate `PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR` replaced by `std::vector`
+    - Deprecate `pinocchio::container::aligned_vector` replaced by `std::allocator`
+    - Deprecate `pinocchio/container/aligned-vector.hpp`
 
 ### Removed
 - Remove unused headers `deprecated-macros.hpp` and `deprecated-namespaces.hpp`
@@ -51,6 +56,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Remove support to Eigen < 3.4
 - Remove support to coal < 3
 - Remove support to eigenpy < 3
+- Don't use Eigen::aligned_allocator:
+  - Remove header `pinocchio/serialization/aligned-vector.hpp`
+  - Remove header `pinocchio/bindings/python/utils/std-aligned-vector.hpp`
+  - Remove `pinocchio::python::StdAlignedVectorPythonVisitor`
 
 ## [3.9.0] - 2026-01-05
 

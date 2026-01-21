@@ -8,7 +8,6 @@
 #include "pinocchio/multibody/joint/fwd.hpp"
 #include "pinocchio/multibody/joint/joint-collection.hpp"
 #include "pinocchio/multibody/joint/joint-basic-visitors.hpp"
-#include "pinocchio/container/aligned-vector.hpp"
 #include "pinocchio/spatial/act-on-set.hpp"
 
 #include "pinocchio/serialization/fwd.hpp"
@@ -68,7 +67,6 @@ namespace pinocchio
   struct JointDataCompositeTpl
   : public JointDataBase<JointDataCompositeTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointDataBase<JointDataCompositeTpl> Base;
     typedef JointCompositeTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;
@@ -78,7 +76,7 @@ namespace pinocchio
     typedef JointCollectionTpl<Scalar, Options> JointCollection;
     typedef JointDataTpl<Scalar, Options, JointCollectionTpl> JointDataVariant;
 
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointDataVariant) JointDataVector;
+    typedef std::vector<JointDataVariant> JointDataVector;
 
     // JointDataComposite()  {} // can become necessary if we want a vector of JointDataComposite ?
 
@@ -120,10 +118,10 @@ namespace pinocchio
     JointDataVector joints;
 
     /// \brief Transforms from previous joint to last joint
-    PINOCCHIO_ALIGNED_STD_VECTOR(Transformation_t) iMlast;
+    std::vector<Transformation_t> iMlast;
 
     /// \brief Transforms from previous joint to joint i
-    PINOCCHIO_ALIGNED_STD_VECTOR(Transformation_t) pjMi;
+    std::vector<Transformation_t> pjMi;
 
     ConfigVector_t joint_q;
     TangentVector_t joint_v;
@@ -170,7 +168,6 @@ namespace pinocchio
   struct JointModelCompositeTpl
   : public JointModelBase<JointModelCompositeTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointModelBase<JointModelCompositeTpl> Base;
     typedef JointCompositeTpl<_Scalar, _Options, JointCollectionTpl> JointDerived;
@@ -183,7 +180,7 @@ namespace pinocchio
     typedef MotionTpl<Scalar, Options> Motion;
     typedef InertiaTpl<Scalar, Options> Inertia;
 
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointModelVariant) JointModelVector;
+    typedef std::vector<JointModelVariant> JointModelVector;
 
     using Base::id;
     using Base::idx_q;
@@ -500,7 +497,7 @@ namespace pinocchio
     JointModelVector joints;
     /// \brief Vector of joint placements. Those placements correspond to the origin of the joint
     /// relatively to their parent.
-    PINOCCHIO_ALIGNED_STD_VECTOR(SE3) jointPlacements;
+    std::vector<SE3> jointPlacements;
 
     template<typename D>
     typename SizeDepType<NQ>::template SegmentReturn<D>::ConstType

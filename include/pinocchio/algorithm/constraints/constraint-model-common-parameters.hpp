@@ -16,7 +16,6 @@ namespace pinocchio
   template<typename Derived>
   struct ConstraintModelCommonParameters
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     template<typename OtherDerived>
     friend struct ConstraintModelCommonParameters;

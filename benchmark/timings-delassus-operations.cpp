@@ -66,8 +66,8 @@ struct DelassusFixture : ModelFixture
   std::unique_ptr<pinocchio::RigidConstraintModel> ci_RF_6D;
   std::unique_ptr<pinocchio::RigidConstraintModel> ci_LF_6D;
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_6D6D;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_data_6D6D;
+  std::vector<pinocchio::RigidConstraintModel> contact_models_6D6D;
+  std::vector<pinocchio::RigidConstraintData> contact_data_6D6D;
 
   pinocchio::ContactCholeskyDecomposition contact_chol_6D6D;
 
@@ -89,8 +89,8 @@ PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionComputeCall(
   pinocchio::ContactCholeskyDecomposition & contact,
   const pinocchio::Model & model,
   pinocchio::Data & data,
-  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models_6D6D,
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data_6D6D)
+  const std::vector<pinocchio::RigidConstraintModel> & contact_models_6D6D,
+  std::vector<pinocchio::RigidConstraintData> & contact_data_6D6D)
 {
   contact.compute(model, data, contact_models_6D6D, contact_data_6D6D);
 }
@@ -257,8 +257,8 @@ PINOCCHIO_DONT_INLINE static void computeDampedDelassusMatrixInverseCall(
   const pinocchio::Model & model,
   pinocchio::Data & data,
   const Eigen::VectorXd & q,
-  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models,
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data,
+  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
+  std::vector<pinocchio::RigidConstraintData> & contact_data,
   const Eigen::MatrixXd & damped_delassus_inverse)
 {
   pinocchio::computeDampedDelassusMatrixInverse(
@@ -294,8 +294,8 @@ PINOCCHIO_DONT_INLINE static void computeDampedDelassusMatrixInverseNoScaleNoPvC
   const pinocchio::Model & model,
   pinocchio::Data & data,
   const Eigen::VectorXd & q,
-  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models,
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data,
+  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
+  std::vector<pinocchio::RigidConstraintData> & contact_data,
   const Eigen::MatrixXd & damped_delassus_inverse)
 {
   pinocchio::computeDampedDelassusMatrixInverse(

@@ -26,7 +26,6 @@ namespace pinocchio
   struct DelassusOperatorPreconditionedTpl
   : DelassusOperatorBase<DelassusOperatorPreconditionedTpl<DelassusOperator, PreconditionerType>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef DelassusOperatorPreconditionedTpl Self;
     typedef DelassusOperatorBase<Self> Base;

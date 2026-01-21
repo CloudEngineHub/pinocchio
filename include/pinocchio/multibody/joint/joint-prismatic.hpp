@@ -57,7 +57,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int _axis>
   struct MotionPrismaticTpl : MotionBase<MotionPrismaticTpl<_Scalar, _Options, _axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     MOTION_TYPEDEF_TPL(MotionPrismaticTpl);
 
     static constexpr int axis = _axis;
@@ -219,7 +218,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options, int axis>
   struct TransformPrismaticTpl : SE3Base<TransformPrismaticTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_SE3_TYPEDEF_TPL(TransformPrismaticTpl);
 
     typedef SpatialAxis<axis + LINEAR> Axis;
@@ -336,7 +334,6 @@ namespace pinocchio
   struct JointMotionSubspacePrismaticTpl
   : JointMotionSubspaceBase<JointMotionSubspacePrismaticTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspacePrismaticTpl)
     static constexpr int NV = 1;
 
@@ -586,7 +583,6 @@ namespace pinocchio
   struct JointDataPrismaticTpl
   : public JointDataBase<JointDataPrismaticTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointPrismaticTpl<_Scalar, _Options, axis> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
     PINOCCHIO_JOINT_DATA_BASE_DEFAULT_ACCESSOR
@@ -638,7 +634,6 @@ namespace pinocchio
   struct JointModelPrismaticTpl
   : public JointModelBase<JointModelPrismaticTpl<_Scalar, _Options, axis>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef JointPrismaticTpl<_Scalar, _Options, axis> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);
 

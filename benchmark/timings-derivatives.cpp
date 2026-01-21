@@ -16,7 +16,6 @@
 #include "pinocchio/algorithm/cholesky.hpp"
 #include "pinocchio/parsers/urdf.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/container/aligned-vector.hpp"
 
 #include <iostream>
 

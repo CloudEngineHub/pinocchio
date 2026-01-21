@@ -75,7 +75,7 @@ namespace pinocchio
 #endif
 
 #ifdef PINOCCHIO_WITH_HPP_FCL
-  #pragma message PINOCCHIO_WARN(\
+  #pragma message PINOCCHIO_WARN(                                                                  \
     "PINOCCHIO_WITH_HPP_FCL define is deprecated, please use PINOCHIO_WITH_COLLISION instead")
   #define PINOCCHIO_WITH_COLLISION
 #endif

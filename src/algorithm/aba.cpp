@@ -28,13 +28,13 @@ namespace pinocchio
     Eigen::Ref<const context::VectorXs>,
     Eigen::Ref<const context::VectorXs>,
     context::Force,
-    Eigen::aligned_allocator<context::Force>>(
+    std::allocator<context::Force>>(
     const context::Model &,
     context::Data &,
     const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
     const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
     const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-    const std::vector<context::Force, Eigen::aligned_allocator<context::Force>> &,
+    const std::vector<context::Force> &,
     const Convention);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI const context::RowMatrixXs &

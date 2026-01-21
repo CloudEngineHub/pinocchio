@@ -71,8 +71,8 @@ namespace pinocchio
             type>,
       InnerConstraintData>::type ConstraintData;
 
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintModel) ConstraintModelVector;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(ConstraintData) ConstraintDataVector;
+    typedef std::vector<ConstraintModel> ConstraintModelVector;
+    typedef std::vector<ConstraintData> ConstraintDataVector;
 
     typedef const Vector & getDampingReturnType;
   };
@@ -91,7 +91,6 @@ namespace pinocchio
       _ConstraintModel,
       Holder>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef DelassusOperatorRigidBodySystemsTpl Self;
     typedef DelassusOperatorBase<Self> Base;
@@ -110,7 +109,7 @@ namespace pinocchio
 
     typedef typename Data::Force Force;
     typedef typename Data::VectorXs VectorXs;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(Force) ForceVector;
+    typedef std::vector<Force> ForceVector;
 
     typedef typename traits<Self>::ConstraintModel ConstraintModel;
     typedef typename traits<Self>::InnerConstraintModel InnerConstraintModel;
@@ -334,8 +333,8 @@ namespace pinocchio
       typedef typename Data::Motion Motion;
       typedef typename Data::Force Force;
 
-      typedef typename PINOCCHIO_ALIGNED_STD_VECTOR(Motion) MotionVector;
-      typedef typename PINOCCHIO_ALIGNED_STD_VECTOR(Force) ForceVector;
+      typedef typename std::vector<Motion> MotionVector;
+      typedef typename std::vector<Force> ForceVector;
 
       InternalData(const Model & model)
       : a(size_t(model.njoints), Motion::Zero())

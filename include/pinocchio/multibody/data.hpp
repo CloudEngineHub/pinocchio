@@ -17,7 +17,6 @@
 
 #include "pinocchio/multibody/joint/joint-generic.hpp"
 
-#include "pinocchio/container/aligned-vector.hpp"
 #include "pinocchio/container/double-entry-container.hpp"
 #include "pinocchio/container/matrix-stack.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
@@ -45,7 +44,6 @@ namespace pinocchio
   , NumericalBase<DataTpl<_Scalar, _Options, JointCollectionTpl>>
   , DataEntity<DataTpl<_Scalar, _Options, JointCollectionTpl>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef typename traits<DataTpl>::Scalar Scalar;
     static constexpr int Options = traits<DataTpl>::Options;
@@ -68,8 +66,8 @@ namespace pinocchio
     typedef JointModelTpl<Scalar, Options, JointCollectionTpl> JointModel;
     typedef JointDataTpl<Scalar, Options, JointCollectionTpl> JointData;
 
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointModel) JointModelVector;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(JointData) JointDataVector;
+    typedef std::vector<JointModel> JointModelVector;
+    typedef std::vector<JointData> JointDataVector;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
@@ -131,59 +129,59 @@ namespace pinocchio
     TangentVectorType tau_in;
 
     /// \brief Vector of joint accelerations expressed in the local frame of the joint.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) a;
+    std::vector<Motion> a;
 
     /// \brief Vector of joint accelerations expressed at the origin of the world.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) oa;
-
-    /// \brief Vector of joint accelerations expressed at the origin of the world.
-    ///        These accelerations are used in the context of augmented Lagrangian algorithms.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) oa_drift;
+    std::vector<Motion> oa;
 
     /// \brief Vector of joint accelerations expressed at the origin of the world.
     ///        These accelerations are used in the context of augmented Lagrangian algorithms.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) oa_augmented;
+    std::vector<Motion> oa_drift;
+
+    /// \brief Vector of joint accelerations expressed at the origin of the world.
+    ///        These accelerations are used in the context of augmented Lagrangian algorithms.
+    std::vector<Motion> oa_augmented;
 
     /// \brief Vector of joint accelerations due to the gravity field.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) a_gf;
+    std::vector<Motion> a_gf;
 
     /// \brief Vector of joint accelerations expressed at the origin of the world including the
     /// gravity contribution.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) oa_gf;
+    std::vector<Motion> oa_gf;
 
     /// \brief Vector of joint velocities expressed in the local frame of the joint.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) v;
+    std::vector<Motion> v;
 
     /// \brief Vector of joint velocities expressed at the origin of the world.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) ov;
+    std::vector<Motion> ov;
 
     /// \brief Vector of body forces expressed in the local frame of the joint. For each body, the
     /// force represents the sum of
     ///        all external forces acting on the body.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Force) f;
+    std::vector<Force> f;
 
     /// \brief Vector of body forces expressed at the origin of the world. For each body, the force
     /// represents the sum of
     ///        all external forces acting on the body.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Force) of;
+    std::vector<Force> of;
 
     /// \brief Vector of body forces expressed in the world frame. For each body, the force
     /// represents the sum of
     ///        all external forces acting on the body. These forces are used in the context of
     ///        augmented Lagrangian algorithms.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Force) of_augmented;
+    std::vector<Force> of_augmented;
 
     /// \brief Vector of spatial momenta expressed in the local frame of the joint.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Force) h;
+    std::vector<Force> h;
 
     /// \brief Vector of spatial momenta expressed at the origin of the world.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Force) oh;
+    std::vector<Force> oh;
 
     /// \brief Vector of absolute joint placements (wrt the world).
-    PINOCCHIO_ALIGNED_STD_VECTOR(SE3) oMi;
+    std::vector<SE3> oMi;
 
     /// \brief Vector of relative joint placements (wrt the body parent).
-    PINOCCHIO_ALIGNED_STD_VECTOR(SE3) liMi;
+    std::vector<SE3> liMi;
 
     /// \brief Vector of joint torques (dim model.nv).
     TangentVectorType tau;
@@ -200,16 +198,16 @@ namespace pinocchio
     VectorXs g;
 
     /// \brief Vector of absolute operationnel frame placements (wrt the world).
-    PINOCCHIO_ALIGNED_STD_VECTOR(SE3) oMf;
+    std::vector<SE3> oMf;
 
     /// \brief Vector of sub-tree composite rigid body inertias, i.e. the apparent inertia of the
     /// subtree supported by the joint
     ///        and expressed in the local frame of the joint..
-    PINOCCHIO_ALIGNED_STD_VECTOR(Inertia) Ycrb;
+    std::vector<Inertia> Ycrb;
 
     /// \brief Vector of sub-tree composite rigid body inertia time derivatives \f$
     /// \dot{Y}_{crb}\f$. See Data::Ycrb for more details.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) dYcrb; // TODO: change with dense symmetric matrix6
+    std::vector<Matrix6> dYcrb; // TODO: change with dense symmetric matrix6
 
     /// \brief The joint space inertia matrix (a square matrix of dim model.nv).
     MatrixXs M;
@@ -242,23 +240,23 @@ namespace pinocchio
     Matrix6x IS;
 
     /// \brief Right variation of the inertia matrix
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) vxI;
+    std::vector<Matrix6> vxI;
 
     /// \brief Left variation of the inertia matrix
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) Ivx;
+    std::vector<Matrix6> Ivx;
 
     /// \brief Combined variations of the inertia matrix \f$ B_i =  \frac{1}{2} [(v_i\times∗)I_i +
     /// (I_i v_i)\times^{∗} − I_i(v_i\times)] \f$  consistent with Christoffel symbols.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) B;
+    std::vector<Matrix6> B;
 
     /// \brief Rigid Body Inertia supported by the joint expressed in the world frame
-    PINOCCHIO_ALIGNED_STD_VECTOR(Inertia) oinertias;
+    std::vector<Inertia> oinertias;
 
     /// \brief Composite Rigid Body Inertia expressed in the world frame
-    PINOCCHIO_ALIGNED_STD_VECTOR(Inertia) oYcrb;
+    std::vector<Inertia> oYcrb;
 
     /// \brief Time variation of Composite Rigid Body Inertia expressed in the world frame
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) doYcrb;
+    std::vector<Matrix6> doYcrb;
 
     /// \brief Temporary for derivative algorithms
     Matrix6 Itmp;
@@ -274,22 +272,21 @@ namespace pinocchio
     // ABA internal data
     /// \brief Articulated Body Inertia matrix of the subtree expressed in the LOCAL coordinate
     /// frame of the joint
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) Yaba; // TODO: change with dense symmetric matrix6
+    std::vector<Matrix6> Yaba; // TODO: change with dense symmetric matrix6
 
     /// \brief Articulated Body Inertia matrix of the subtree expressed in the WORLD coordinate
     /// frame
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) oYaba; // TODO: change with dense symmetric matrix6
+    std::vector<Matrix6> oYaba; // TODO: change with dense symmetric matrix6
 
     /// \brief Articulated Body Inertia matrix with constraint augmented inertia, expressed in the
     /// WORLD coordinate frame
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6)
-    oYaba_augmented; // TODO: change with dense symmetric matrix6
+    std::vector<Matrix6> oYaba_augmented; // TODO: change with dense symmetric matrix6
 
     /// \brief Acceleration propagator
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) oL; // TODO: change with dense symmetric matrix6
+    std::vector<Matrix6> oL; // TODO: change with dense symmetric matrix6
 
     /// \brief Inverse articulated inertia
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) oK; // TODO: change with dense symmetric matrix6
+    std::vector<Matrix6> oK; // TODO: change with dense symmetric matrix6
 
     /// \brief Intermediate quantity corresponding to apparent torque [ABA]
     TangentVectorType u; // Joint Inertia
@@ -326,7 +323,7 @@ namespace pinocchio
     Inertia Ig;
 
     /// \brief Spatial forces set, used in CRBA and CCRBA
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) Fcrb;
+    std::vector<Matrix6x> Fcrb;
 
     /// \brief Dimension of the subtree motion space (for CRBA)
     std::vector<int> nvSubtree;
@@ -446,25 +443,25 @@ namespace pinocchio
     MatrixXs dlambda_dx_prox, drhs_prox;
 
     /// \brief Vector of joint placements wrt to algorithm end effector.
-    PINOCCHIO_ALIGNED_STD_VECTOR(SE3) iMf;
+    std::vector<SE3> iMf;
 
     /// \brief Vector of subtree center of mass positions expressed in the root joint of the
     /// subtree. In other words, com[j] is the CoM position of the subtree supported by joint \f$ j
     /// \f$ and expressed in the joint frame \f$ j \f$. The element com[0] corresponds to the center
     /// of mass position of the whole model and expressed in the global frame.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Vector3) com;
+    std::vector<Vector3> com;
 
     /// \brief Vector of subtree center of mass linear velocities expressed in the root joint of the
     /// subtree. In other words, vcom[j] is the CoM linear velocity of the subtree supported by
     /// joint \f$ j \f$ and expressed in the joint frame \f$ j \f$. The element vcom[0] corresponds
     /// to the velocity of the CoM of the whole model expressed in the global frame.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Vector3) vcom;
+    std::vector<Vector3> vcom;
 
     /// \brief Vector of subtree center of mass linear accelerations expressed in the root joint of
     /// the subtree. In other words, acom[j] is the CoM linear acceleration of the subtree supported
     /// by joint \f$ j \f$ and expressed in the joint frame \f$ j \f$. The element acom[0]
     /// corresponds to the acceleration of the CoM of the whole model expressed in the global frame.
-    PINOCCHIO_ALIGNED_STD_VECTOR(Vector3) acom;
+    std::vector<Vector3> acom;
 
     /// \brief Vector of subtree mass. In other words, mass[j] is the mass of the subtree supported
     /// by joint \f$ j \f$. The element mass[0] corresponds to the total mass of the model.
@@ -532,14 +529,14 @@ namespace pinocchio
     /// \brief Matrix related to potential energy regressor
     RowVectorXs potentialEnergyRegressor;
 
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6x) KA;
-    PINOCCHIO_ALIGNED_STD_VECTOR(MatrixXs) LA;
-    PINOCCHIO_ALIGNED_STD_VECTOR(VectorXs) lA;
-    PINOCCHIO_ALIGNED_STD_VECTOR(VectorXs) lambdaA;
-    PINOCCHIO_ALIGNED_STD_VECTOR(int) par_cons_ind;
-    PINOCCHIO_ALIGNED_STD_VECTOR(Motion) a_bias;
-    PINOCCHIO_ALIGNED_STD_VECTOR(MatrixXs) KAS;
-    PINOCCHIO_ALIGNED_STD_VECTOR(int) constraint_ind;
+    std::vector<Matrix6x> KA;
+    std::vector<MatrixXs> LA;
+    std::vector<VectorXs> lA;
+    std::vector<VectorXs> lambdaA;
+    std::vector<int> par_cons_ind;
+    std::vector<Motion> a_bias;
+    std::vector<MatrixXs> KAS;
+    std::vector<int> constraint_ind;
     Eigen::LLT<MatrixXs> osim_llt;
 
 #if defined(_MSC_VER)
@@ -592,17 +589,16 @@ namespace pinocchio
   #pragma warning(default : 4554) // C4554 enabled after tensor definition
 #endif
 
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6)
-    extended_motion_propagator; // Stores force propagator to the base link
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) extended_motion_propagator2;
-    PINOCCHIO_ALIGNED_STD_VECTOR(Matrix6) spatial_inv_inertia; // Stores spatial inverse inertia
-    PINOCCHIO_ALIGNED_STD_VECTOR(size_t) accumulation_descendant;
-    PINOCCHIO_ALIGNED_STD_VECTOR(size_t) accumulation_ancestor;
-    PINOCCHIO_ALIGNED_STD_VECTOR(int) constraints_supported_dim;
-    PINOCCHIO_ALIGNED_STD_VECTOR(std::set<size_t>) constraints_supported;
-    PINOCCHIO_ALIGNED_STD_VECTOR(size_t) joints_supporting_constraints;
-    PINOCCHIO_ALIGNED_STD_VECTOR(size_t) accumulation_joints;
-    PINOCCHIO_ALIGNED_STD_VECTOR(std::vector<size_t>) constraints_on_joint;
+    std::vector<Matrix6> extended_motion_propagator; // Stores force propagator to the base link
+    std::vector<Matrix6> extended_motion_propagator2;
+    std::vector<Matrix6> spatial_inv_inertia; // Stores spatial inverse inertia
+    std::vector<size_t> accumulation_descendant;
+    std::vector<size_t> accumulation_ancestor;
+    std::vector<int> constraints_supported_dim;
+    std::vector<std::set<size_t>> constraints_supported;
+    std::vector<size_t> joints_supporting_constraints;
+    std::vector<size_t> accumulation_joints;
+    std::vector<std::vector<size_t>> constraints_on_joint;
 
     typedef std::vector<JointIndex> JointIndexVector;
 
@@ -612,8 +608,7 @@ namespace pinocchio
     typedef std::pair<JointIndex, JointIndex> JointIndexPair;
 
     /// \brief Stores the cross-coupling inertias between links in LC-ABA
-    container::DoubleEntryContainer<std::vector<Matrix6, Eigen::aligned_allocator<Matrix6>>>
-      joint_cross_coupling;
+    container::DoubleEntryContainer<std::vector<Matrix6>> joint_cross_coupling;
 
     /// \brief Coupling relation between joints in the presence of coupling constraints.
     MatrixXb joint_coupling_info;

@@ -57,7 +57,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct MotionTranslationTpl : MotionBase<MotionTranslationTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     MOTION_TYPEDEF_TPL(MotionTranslationTpl);
 
@@ -218,7 +217,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct TransformTranslationTpl : SE3Base<TransformTranslationTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     PINOCCHIO_SE3_TYPEDEF_TPL(TransformTranslationTpl);
     typedef typename traits<TransformTranslationTpl>::Vector3 Vector3;
 
@@ -308,7 +306,6 @@ namespace pinocchio
   struct JointMotionSubspaceTranslationTpl
   : JointMotionSubspaceBase<JointMotionSubspaceTranslationTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     PINOCCHIO_CONSTRAINT_TYPEDEF_TPL(JointMotionSubspaceTranslationTpl)
 
@@ -501,7 +498,6 @@ namespace pinocchio
   template<typename _Scalar, int _Options>
   struct JointDataTranslationTpl : public JointDataBase<JointDataTranslationTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointTranslationTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(JointDerived);
@@ -548,7 +544,6 @@ namespace pinocchio
   struct JointModelTranslationTpl
   : public JointModelBase<JointModelTranslationTpl<_Scalar, _Options>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef JointTranslationTpl<_Scalar, _Options> JointDerived;
     PINOCCHIO_JOINT_TYPEDEF_TEMPLATE(JointDerived);

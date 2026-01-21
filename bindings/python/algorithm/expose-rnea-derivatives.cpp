@@ -13,7 +13,7 @@ namespace pinocchio
   {
 
     namespace bp = boost::python;
-    typedef PINOCCHIO_ALIGNED_STD_VECTOR(context::Force) ForceAlignedVector;
+    typedef std::vector<context::Force> ForceAlignedVector;
 
     context::Data::MatrixXs computeGeneralizedGravityDerivatives(
       const context::Model & model, context::Data & data, const context::VectorXs & q)

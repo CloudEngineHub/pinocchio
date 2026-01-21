@@ -62,12 +62,12 @@ struct ContactFixture : ModelFixture
   std::unique_ptr<pinocchio::RigidConstraintModel> ci_RF_6D;
   std::unique_ptr<pinocchio::RigidConstraintModel> ci_LF_6D;
 
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_empty;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_data_empty;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_6D;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_data_6D;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) contact_models_6D6D;
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) contact_data_6D6D;
+  std::vector<pinocchio::RigidConstraintModel> contact_models_empty;
+  std::vector<pinocchio::RigidConstraintData> contact_data_empty;
+  std::vector<pinocchio::RigidConstraintModel> contact_models_6D;
+  std::vector<pinocchio::RigidConstraintData> contact_data_6D;
+  std::vector<pinocchio::RigidConstraintModel> contact_models_6D6D;
+  std::vector<pinocchio::RigidConstraintData> contact_data_6D6D;
 
   pinocchio::ContactCholeskyDecomposition contact_chol_empty;
   pinocchio::ContactCholeskyDecomposition contact_chol_6D;
@@ -104,8 +104,8 @@ BENCHMARK_REGISTER_F(ContactFixture, COMPUTE_ABA_DERIVATIVES)->Apply(CustomArgum
 PINOCCHIO_DONT_INLINE static void constraintDynamicsDerivativesCall(
   const pinocchio::Model & model,
   pinocchio::Data & data,
-  const PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintModel) & contact_models,
-  PINOCCHIO_ALIGNED_STD_VECTOR(pinocchio::RigidConstraintData) & contact_data)
+  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
+  std::vector<pinocchio::RigidConstraintData> & contact_data)
 {
   computeConstraintDynamicsDerivatives(model, data, contact_models, contact_data);
 }

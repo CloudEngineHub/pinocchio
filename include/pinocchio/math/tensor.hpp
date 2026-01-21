@@ -93,7 +93,6 @@ namespace pinocchio
   template<typename Scalar_, int NumIndices_, int Options_ = 0, typename IndexType = Eigen::Index>
   struct Tensor
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef Scalar_ Scalar;
     static constexpr int Options = Options_;

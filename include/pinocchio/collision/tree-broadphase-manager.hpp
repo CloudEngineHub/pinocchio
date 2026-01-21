@@ -13,7 +13,6 @@ namespace pinocchio
   template<typename _Manager>
   struct TreeBroadPhaseManagerTpl : public BroadPhaseManagerBase<TreeBroadPhaseManagerTpl<_Manager>>
   {
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     typedef _Manager Manager;
     typedef BroadPhaseManagerBase<TreeBroadPhaseManagerTpl<_Manager>> Base;

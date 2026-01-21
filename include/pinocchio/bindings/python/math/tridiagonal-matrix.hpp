@@ -32,9 +32,8 @@ namespace pinocchio
       {
         static const Scalar dummy_precision = Eigen::NumTraits<Scalar>::dummy_precision();
 
-        cl.def(
-            bp::init<Eigen::Index>(
-              (bp::arg("self"), bp::arg("size")), "Default constructor from a given size."))
+        cl.def(bp::init<Eigen::Index>(
+                 (bp::arg("self"), bp::arg("size")), "Default constructor from a given size."))
 #ifndef PINOCCHIO_PYTHON_SKIP_COMPARISON_OPERATIONS
           .def(bp::self == bp::self)
           .def(bp::self != bp::self)

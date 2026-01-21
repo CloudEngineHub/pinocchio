@@ -19,16 +19,14 @@ namespace pinocchio
   class ModelPoolTpl
   {
   public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
 
-    typedef std::vector<Model, Eigen::aligned_allocator<Model>> ModelVector;
-    typedef std::vector<Data, Eigen::aligned_allocator<Data>> DataVector;
+    typedef std::vector<Model> ModelVector;
+    typedef std::vector<Data> DataVector;
 
     /// \brief Default constructor from a model and a pool size.
     ///
