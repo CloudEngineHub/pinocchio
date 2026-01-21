@@ -20,6 +20,14 @@ All Pinocchio 3 deprecated functions had been removed:
 - Replace `FrameTpl::previousFrame` by `FrameTpl::parentFrame`
 - Replace `GeometryObject` constructor argument order has changed
 
+Remove use of Eigen::aligned_allocator:
+  - Deprecate `PINOCCHIO_ALIGNED_STD_VECTOR` replaced by `std::vector`
+  - Deprecate `PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR` replaced by `std::vector`
+  - Deprecate `pinocchio::container::aligned_vector` replaced by `std::allocator`
+  - Remove `pinocchio::python::StdAlignedVectorPythonVisitor`
+  - Remove header `pinocchio/serialization/aligned-vector.hpp`
+  - Remove header `pinocchio/bindings/python/utils/std-aligned-vector.hpp`
+
 HPP-FCL has been replaced by coal:
 - Deprecate `include/pinocchio/multibody/fcl.hpp` moved at `include/pinocchio/multibody/coal.hpp`
 - Deprecate `include/pinocchio/serialization/fcl.hpp` moved at `include/pinocchio/serialization/coal.hpp`

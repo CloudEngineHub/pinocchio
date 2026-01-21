@@ -58,6 +58,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Don't use Eigen::aligned_allocator:
   - Remove header `pinocchio/serialization/aligned-vector.hpp`
   - Remove header `pinocchio/bindings/python/utils/std-aligned-vector.hpp`
+  - Remove `pinocchio::python::StdAlignedVectorPythonVisitor`
 
 ## [3.9.0] - 2026-01-05
 
