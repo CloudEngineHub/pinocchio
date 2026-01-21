@@ -11,8 +11,10 @@
 
 #include <vector>
 
-#pragma message PINOCCHIO_WARN(                                                                    \
-  "<pinocchio/container/aligned-vector.hpp> is deprecated and will be removed")
+#ifndef PINOCCHIO_DISABLE_ALIGNED_VECTOR_WARNINGS
+  #pragma message PINOCCHIO_WARN(                                                                  \
+    "<pinocchio/container/aligned-vector.hpp> is deprecated and will be removed")
+#endif // PINOCCHIO_DISABLE_ALIGNED_VECTOR_WARNINGS
 
 // This macro is deprecated
 #define PINOCCHIO_ALIGNED_STD_VECTOR(Type) ::pinocchio::container::aligned_vector<Type>

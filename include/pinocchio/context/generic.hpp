@@ -6,7 +6,12 @@
 #define __pinocchio_context_generic_hpp__
 
 #include "pinocchio/fwd.hpp"
+
+// TODO: Remove in next major release
+// We keep this include for back compatibility purpose
+#define PINOCCHIO_DISABLE_ALIGNED_VECTOR_WARNINGS
 #include "pinocchio/container/aligned-vector.hpp"
+#undef PINOCCHIO_DISABLE_ALIGNED_VECTOR_WARNINGS
 
 namespace pinocchio
 {
