@@ -29,6 +29,9 @@ Remove use of Eigen::aligned_allocator:
   - Remove header `pinocchio/serialization/aligned-vector.hpp`
   - Remove header `pinocchio/bindings/python/utils/std-aligned-vector.hpp`
 
+Eigen 3.4 is the minimal Eigen supported version:
+  - Remove PINOCCHIO_WITH_EIGEN_TENSOR_MODULE define
+
 HPP-FCL has been replaced by coal:
 - Deprecate `include/pinocchio/multibody/fcl.hpp` moved at `include/pinocchio/multibody/coal.hpp`
 - Deprecate `include/pinocchio/serialization/fcl.hpp` moved at `include/pinocchio/serialization/coal.hpp`

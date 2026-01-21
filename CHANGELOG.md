@@ -60,6 +60,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Remove header `pinocchio/serialization/aligned-vector.hpp`
   - Remove header `pinocchio/bindings/python/utils/std-aligned-vector.hpp`
   - Remove `pinocchio::python::StdAlignedVectorPythonVisitor`
+- Eigen 3.4 is the minimal Eigen supported version:
+  - Remove Eigen < 3.4 workaround
+  - Remove PINOCCHIO_WITH_EIGEN_TENSOR_MODULE define
+- Boost 1.74 is the minimal Boost supported version:
+  - Remove Boost < 1.74 workaround
 
 ## [3.9.0] - 2026-01-05
 
