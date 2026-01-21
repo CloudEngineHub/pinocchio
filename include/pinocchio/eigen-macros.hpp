@@ -37,9 +37,6 @@
 /// \brief Macro for an automatic const_cast
 #define PINOCCHIO_EIGEN_CONST_CAST(TYPE, OBJ) const_cast<TYPE &>(OBJ.derived())
 
-///  \brief Tell if Pinocchio should use the Eigen Tensor Module or not
-#define PINOCCHIO_WITH_EIGEN_TENSOR_MODULE
-
 /// \brief Check memory allocation for Eigen.
 /// \warning These macros do *not* work well with multithreading for Eigen <= 3.4
 /// and *will* create a race condition - special care is required.

@@ -43,9 +43,7 @@ namespace pinocchio
 #endif
 
 #include "pinocchio/eigen-macros.hpp"
-#ifdef PINOCCHIO_WITH_EIGEN_TENSOR_MODULE
-  #include <unsupported/Eigen/CXX11/Tensor>
-#endif
+#include <unsupported/Eigen/CXX11/Tensor>
 
 #include "pinocchio/utils/helpers.hpp"
 #include "pinocchio/utils/cast.hpp"
