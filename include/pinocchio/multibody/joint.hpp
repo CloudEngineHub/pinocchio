@@ -20,9 +20,7 @@
 #include <boost/fusion/include/invoke.hpp>
 #include <boost/fusion/container/generation/make_vector.hpp>
 #include <boost/mpl/contains.hpp>
-#include <boost/variant/apply_visitor.hpp>
-#include <boost/variant/static_visitor.hpp>
-#include <boost/variant/get.hpp>
+#include <boost/variant.hpp>
 
 #include "pinocchio/context.hxx"
 #include "pinocchio/traits.hpp"
@@ -78,4 +76,6 @@
 #include "pinocchio/multibody/joint/joint-composite.hxx"
 
 #include "pinocchio/multibody/joint/joint-mimic.hxx"
+
+#include "pinocchio/multibody/joint/joint-collection.hxx"
 // IWYU pragma: end_exports

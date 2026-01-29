@@ -3,14 +3,12 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#ifndef __pinocchio_multibody_joint_collection_hpp__
-#define __pinocchio_multibody_joint_collection_hpp__
+#pragma once
 
-#include "pinocchio/multibody/joint/fwd.hpp"
-#include "pinocchio/multibody/joint/joints.hpp"
-
-#include <boost/variant.hpp>
-#include <boost/variant/recursive_wrapper.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -208,5 +206,3 @@ namespace pinocchio
   typedef JointCollectionDefault::JointDataVariant JointDataVariant;
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_joint_collection_hpp__

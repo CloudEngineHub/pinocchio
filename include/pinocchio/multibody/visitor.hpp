@@ -12,9 +12,7 @@
 #include <boost/blank.hpp>
 #include <boost/fusion/include/invoke.hpp>
 #include <boost/fusion/container/generation/make_vector.hpp>
-#include <boost/variant/apply_visitor.hpp>
-#include <boost/variant/static_visitor.hpp>
-#include <boost/variant/get.hpp>
+#include <boost/variant.hpp>
 
 #include "pinocchio/context.hxx"
 
