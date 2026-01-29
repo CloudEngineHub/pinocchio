@@ -19,6 +19,7 @@
 #include <boost/blank.hpp>
 #include <boost/fusion/include/invoke.hpp>
 #include <boost/fusion/container/generation/make_vector.hpp>
+#include <boost/mpl/assert.hpp>
 #include <boost/mpl/contains.hpp>
 #include <boost/variant.hpp>
 
@@ -78,4 +79,6 @@
 #include "pinocchio/multibody/joint/joint-mimic.hxx"
 
 #include "pinocchio/multibody/joint/joint-collection.hxx"
+
+#include "pinocchio/multibody/joint/joint-generic.hxx"
 // IWYU pragma: end_exports
