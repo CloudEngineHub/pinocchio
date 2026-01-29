@@ -2,14 +2,12 @@
 // Copyright (c) 2019-2021 INRIA
 //
 
-#ifndef __pinocchio_multibody_joint_mimic_hpp__
-#define __pinocchio_multibody_joint_mimic_hpp__
+#pragma once
 
-#include "pinocchio/multibody/joint/fwd.hpp"
-#include "pinocchio/multibody/joint/joint-collection.hpp"
-#include "pinocchio/macros.hpp"
-#include "pinocchio/multibody/joint/joint-base.hpp"
-#include "pinocchio/multibody/joint/joint-basic-visitors.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -955,5 +953,3 @@ namespace boost
   {
   };
 } // namespace boost
-
-#endif // ifndef __pinocchio_multibody_joint_mimic_hpp__

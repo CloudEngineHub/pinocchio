@@ -76,4 +76,6 @@
 #include "pinocchio/multibody/joint/joint-basic-visitors.hxx"
 
 #include "pinocchio/multibody/joint/joint-composite.hxx"
+
+#include "pinocchio/multibody/joint/joint-mimic.hxx"
 // IWYU pragma: end_exports
