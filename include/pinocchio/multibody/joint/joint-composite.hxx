@@ -2,15 +2,12 @@
 // Copyright (c) 2016-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_joint_composite_hpp__
-#define __pinocchio_multibody_joint_composite_hpp__
+#pragma once
 
-#include "pinocchio/multibody/joint/fwd.hpp"
-#include "pinocchio/multibody/joint/joint-collection.hpp"
-#include "pinocchio/multibody/joint/joint-basic-visitors.hpp"
-#include "pinocchio/spatial/act-on-set.hpp"
-
-#include "pinocchio/serialization/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -663,7 +660,7 @@ namespace pinocchio
     }
 
   protected:
-    friend struct Serialize<JointModelCompositeTpl>;
+    // friend struct Serialize<JointModelCompositeTpl>;
 
     template<typename, int, template<typename, int> class>
     friend struct JointModelCompositeTpl;
@@ -761,18 +758,6 @@ namespace boost
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
-#include "pinocchio/multibody/joint/joint-composite.hxx"
-
-#endif // ifndef __pinocchio_multibody_joint_composite_hpp__
-//
-// Copyright (c) 2016-2020 CNRS INRIA
-//
-
-#ifndef __pinocchio_multibody_joint_composite_hxx__
-#define __pinocchio_multibody_joint_composite_hxx__
-
-#include "pinocchio/multibody/visitor.hpp"
-
 namespace pinocchio
 {
 
@@ -1015,5 +1000,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_joint_composite_hxx__

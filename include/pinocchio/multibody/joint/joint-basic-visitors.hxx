@@ -2,10 +2,12 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_joint_basic_visitors_hpp__
-#define __pinocchio_multibody_joint_basic_visitors_hpp__
+#pragma once
 
-#include "pinocchio/multibody/joint/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -522,22 +524,6 @@ namespace pinocchio
 } // namespace pinocchio
 
 /* --- Details -------------------------------------------------------------------- */
-// Included later
-// #include "pinocchio/multibody/joint/joint-basic-visitors.hxx"
-
-#endif // ifndef __pinocchio_multibody_joint_basic_visitors_hpp__
-//
-// Copyright (c) 2016-2024 CNRS INRIA
-//
-
-#ifndef __pinocchio_multibody_joint_basic_visitors_hxx__
-#define __pinocchio_multibody_joint_basic_visitors_hxx__
-
-#include <boost/mpl/contains.hpp>
-
-#include "pinocchio/multibody/joint/joint-basic-visitors.hpp"
-#include "pinocchio/multibody/visitor.hpp"
-
 namespace pinocchio
 {
   /// @cond DEV
@@ -1667,5 +1653,3 @@ namespace pinocchio
   /// @endcond
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_joint_basic_visitors_hxx__

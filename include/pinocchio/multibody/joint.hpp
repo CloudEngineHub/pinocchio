@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <type_traits>
+#include <stdexcept>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -18,6 +19,7 @@
 #include <boost/blank.hpp>
 #include <boost/fusion/include/invoke.hpp>
 #include <boost/fusion/container/generation/make_vector.hpp>
+#include <boost/mpl/contains.hpp>
 #include <boost/variant/apply_visitor.hpp>
 #include <boost/variant/static_visitor.hpp>
 #include <boost/variant/get.hpp>
@@ -70,4 +72,8 @@
 #include "pinocchio/multibody/joint/joint-universal.hxx"
 
 #include "pinocchio/multibody/joint/joint-free-flyer.hxx"
+
+#include "pinocchio/multibody/joint/joint-basic-visitors.hxx"
+
+#include "pinocchio/multibody/joint/joint-composite.hxx"
 // IWYU pragma: end_exports
