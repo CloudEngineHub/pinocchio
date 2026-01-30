@@ -26,6 +26,7 @@
 #include "pinocchio/context.hxx"
 #include "pinocchio/traits.hpp"
 #include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
 
 #include "pinocchio/utils/static-if.hpp"
 #include "pinocchio/utils/axis-label.hpp"
