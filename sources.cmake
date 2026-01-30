@@ -175,8 +175,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/context/default.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/context/generic.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/context.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/core/binary-op.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/core/unary-op.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/eigen-macros.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/macros.hpp
@@ -239,29 +237,26 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/fcl.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/force-set.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/frame.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/geometry.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/geometry.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/geometry-object-filter.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/geometry-object.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/geometry-object.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/instance-filter.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-basic-visitors.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-basic-visitors.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-collection.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-common-operations.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-composite.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-composite.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-data-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-free-flyer.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-generic.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-generic.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-helical.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-helical-unaligned.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-mimic.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-model-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-planar.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-prismatic.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-prismatic-unaligned.hpp
@@ -275,13 +270,11 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-ellipsoid.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-translation.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-universal.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint-motion-subspace-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint-motion-subspace-generic.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint-motion-subspace.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/cartesian-product.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/cartesian-product-variant.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/cartesian-product-variant.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup-algo.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup-algo.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup-base.hpp
@@ -301,10 +294,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/pool/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/pool/geometry.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/pool/model.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/visitor/fusion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/visitor.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/visitor/joint-binary-visitor.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/visitor/joint-unary-visitor.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/archive.hpp
