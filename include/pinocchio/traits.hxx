@@ -195,4 +195,19 @@ namespace pinocchio
     struct LhsMultiplicationOp;
   }
 
+  namespace internal
+  {
+    template<typename T1, typename T2>
+    struct is_same_type
+    {
+      static const bool value = false;
+    };
+
+    template<typename T>
+    struct is_same_type<T, T>
+    {
+      static const bool value = true;
+    };
+  } // namespace internal
+
 } // namespace pinocchio
