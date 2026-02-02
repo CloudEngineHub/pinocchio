@@ -3,15 +3,12 @@
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_multibody_constraint_base_hpp__
-#define __pinocchio_multibody_constraint_base_hpp__
+#pragma once
 
-#include "pinocchio/macros.hpp"
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/spatial/motion.hpp"
-#include "pinocchio/spatial/act-on-set.hpp"
-
-#include <boost/static_assert.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint-motion-subspace.hpp"
+#endif // PINOCCHIO_LSP
 
 // S   : v   \in M^6              -> v_J \in lie(Q) ~= R^nv
 // S^T : f_J \in lie(Q)^* ~= R^nv -> f    \in F^6
@@ -190,5 +187,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_constraint_base_hpp__

@@ -3,8 +3,12 @@
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_multibody_constraint_generic_hpp__
-#define __pinocchio_multibody_constraint_generic_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint-motion-subspace.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -231,5 +235,3 @@ namespace pinocchio
   } // namespace details
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_constraint_generic_hpp__
