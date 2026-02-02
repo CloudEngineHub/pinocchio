@@ -2,10 +2,12 @@
 // Copyright (c) 2015 CNRS
 //
 
-#ifndef __pinocchio_spatial_force_set_hpp__
-#define __pinocchio_spatial_force_set_hpp__
+#pragma once
 
-#include "pinocchio/spatial/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -199,5 +201,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_spatial_force_set_hpp__
