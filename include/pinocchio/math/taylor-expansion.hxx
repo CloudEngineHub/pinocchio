@@ -2,11 +2,13 @@
 // Copyright (c) 2018-2021 INRIA
 //
 
-#ifndef __pinocchio_math_taylor_expansion_hpp__
-#define __pinocchio_math_taylor_expansion_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include <limits>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+
+  #include "pinocchio/math/taylor-expansion.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -42,5 +44,3 @@ namespace pinocchio
   }; // struct TaylorSeriesExpansion
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_math_taylor_expansion_hpp__

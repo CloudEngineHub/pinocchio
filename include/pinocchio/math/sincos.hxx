@@ -3,11 +3,16 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_math_sincos_hpp__
-#define __pinocchio_math_sincos_hpp__
+#ifndef __pinocchio_math_sincos_hxx__
+#define __pinocchio_math_sincos_hxx__
 
-#include <cmath>
-#include "pinocchio/math/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <cmath>
+#endif // PINOCCHIO_LSP
+
+// #include <cmath>
+// #include "pinocchio/math/fwd.hpp"
 
 namespace pinocchio
 {
@@ -94,4 +99,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // #ifndef __pinocchio_math_sincos_hpp__
+#endif // #ifndef __pinocchio_math_sincos_hxx__

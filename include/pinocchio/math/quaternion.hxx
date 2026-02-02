@@ -2,20 +2,24 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_math_quaternion_hpp__
-#define __pinocchio_math_quaternion_hpp__
+#ifndef __pinocchio_math_quaternion_hxx__
+#define __pinocchio_math_quaternion_hxx__
 
 #ifndef PINOCCHIO_DEFAULT_QUATERNION_NORM_TOLERANCE_VALUE
   #define PINOCCHIO_DEFAULT_QUATERNION_NORM_TOLERANCE_VALUE 1e-8
 #endif
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/comparison-operators.hpp"
-#include "pinocchio/math/matrix.hpp"
-#include "pinocchio/math/sincos.hpp"
-#include "pinocchio/utils/static-if.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+  #include <Eigen/Geometry>
 
-#include <boost/type_traits.hpp>
+  #include "pinocchio/utils/static-if.hpp"
+
+  #include "pinocchio/math/fwd.hxx"
+  #include "pinocchio/math/matrix.hpp"
+  #include "pinocchio/math/sincos.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -101,11 +105,12 @@ namespace pinocchio
 #ifndef NDEBUG
       const Scalar M =
         Scalar(3) * math::pow(Scalar(1) - epsilon, ((Scalar)-Scalar(5)) / Scalar(2)) / Scalar(4);
-      assert(static_leq::op(
-        math::fabs(static_cast<Scalar>(q.norm() - Scalar(1))),
-        math::max(
-          M * sqrt(N2) * (N2 - Scalar(1)) * (N2 - Scalar(1)) / Scalar(2),
-          Eigen::NumTraits<Scalar>::dummy_precision())));
+      assert(
+        static_leq::op(
+          math::fabs(static_cast<Scalar>(q.norm() - Scalar(1))),
+          math::max(
+            M * sqrt(N2) * (N2 - Scalar(1)) * (N2 - Scalar(1)) / Scalar(2),
+            Eigen::NumTraits<Scalar>::dummy_precision())));
 #endif
     }
 
@@ -336,4 +341,4 @@ namespace pinocchio
   } // namespace quaternion
 
 } // namespace pinocchio
-#endif // #ifndef __pinocchio_math_quaternion_hpp__
+#endif // #ifndef __pinocchio_math_quaternion_hxx__
