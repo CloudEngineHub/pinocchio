@@ -2,10 +2,12 @@
 // Copyright (c) 2020 INRIA
 //
 
-#ifndef __pinocchio_utils_check_hpp__
-#define __pinocchio_utils_check_hpp__
+#pragma once
 
-#include <type_traits>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/utils/check.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -45,5 +47,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_utils_check_hpp__
