@@ -2,12 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_check_model_hxx__
-#define __pinocchio_algorithm_check_model_hxx__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-
-#include <boost/fusion/algorithm.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/check-model.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -76,5 +76,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // __pinocchio_algorithm_check_model_hxx__

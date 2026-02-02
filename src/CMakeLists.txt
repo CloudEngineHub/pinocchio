@@ -15,7 +15,8 @@ add_library(${PROJECT_NAME}_headers INTERFACE)
 # with the content of include/pinocchio/container/boost-container-limits.hpp but it avoids any
 # compilation issue.
 target_compile_definitions(${PROJECT_NAME}_headers INTERFACE BOOST_MPL_LIMIT_LIST_SIZE=30
-                                                             BOOST_MPL_LIMIT_VECTOR_SIZE=30)
+                                                             BOOST_MPL_LIMIT_VECTOR_SIZE=30
+                                                             BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS)
 
 if(INITIALIZE_WITH_NAN)
   target_compile_definitions(${PROJECT_NAME}_headers INTERFACE EIGEN_INITIALIZE_MATRICES_BY_NAN)

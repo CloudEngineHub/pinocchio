@@ -2,14 +2,13 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_joint_configuration_hxx__
-#define __pinocchio_algorithm_joint_configuration_hxx__
+#pragma once
 
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-algo.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-joint.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/joint-configuration.hpp"
+#endif // PINOCCHIO_LSP
 
-/* --- Details -------------------------------------------------------------------- */
 namespace pinocchio
 {
 
@@ -853,5 +852,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_joint_configuration_hxx__
