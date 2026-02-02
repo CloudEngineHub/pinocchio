@@ -2,12 +2,12 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_math_rpy_hpp__
-#define __pinocchio_math_rpy_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/comparison-operators.hpp"
-#include "pinocchio/multibody/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -123,19 +123,6 @@ namespace pinocchio
         const ReferenceFrame rf = LOCAL);
   } // namespace rpy
 } // namespace pinocchio
-
-/* --- Details -------------------------------------------------------------------- */
-#include "pinocchio/math/rpy.hxx"
-
-#endif // #ifndef __pinocchio_math_rpy_hpp__
-//
-// Copyright (c) 2016-2020 CNRS INRIA
-//
-
-#ifndef __pinocchio_math_rpy_hxx__
-#define __pinocchio_math_rpy_hxx__
-
-#include "pinocchio/math/sincos.hpp"
 
 namespace pinocchio
 {
@@ -311,4 +298,3 @@ namespace pinocchio
 
   } // namespace rpy
 } // namespace pinocchio
-#endif // #ifndef __pinocchio_math_rpy_hxx__

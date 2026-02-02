@@ -11,8 +11,12 @@
 
 #include <cmath>
 #include <limits>
+#include <cstddef>
 
 #include <boost/math/constants/constants.hpp>
+
+#include "pinocchio/context.hxx"
+#include "pinocchio/multibody/fwd.hxx"
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
@@ -28,6 +32,7 @@
 #include "pinocchio/math/taylor-expansion.hxx"
 #include "pinocchio/math/matrix.hxx"
 #include "pinocchio/math/sincos.hxx"
+#include "pinocchio/math/rpy.hxx"
 #include "pinocchio/math/rotation.hxx"
 #include "pinocchio/math/quaternion.hxx"
 #include "pinocchio/math/triangular-matrix.hxx"
