@@ -20,6 +20,7 @@
 #include <set>
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <Eigen/Cholesky>
 
 #include <boost/next_prior.hpp>

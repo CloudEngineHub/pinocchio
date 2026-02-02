@@ -3,11 +3,12 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_multibody_sample_models_hpp__
-#define __pinocchio_multibody_sample_models_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/geometry.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -79,21 +80,6 @@ namespace pinocchio
 
   } // namespace buildModels
 } // namespace pinocchio
-
-#include "pinocchio/multibody/sample-models.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/multibody/sample-models.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_multibody_sample_models_hpp__
-//
-// Copyright (c) 2015-2020 CNRS INRIA
-// Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
-//
-
-#ifndef __pinocchio_multibody_sample_models_hxx__
-#define __pinocchio_multibody_sample_models_hxx__
 
 namespace pinocchio
 {
@@ -539,5 +525,3 @@ namespace pinocchio
   } // namespace buildModels
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_sample_models_hxx__
