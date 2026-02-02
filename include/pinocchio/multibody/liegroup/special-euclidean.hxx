@@ -2,22 +2,12 @@
 // Copyright (c) 2016-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_liegroup_special_euclidean_operation_hpp__
-#define __pinocchio_multibody_liegroup_special_euclidean_operation_hpp__
+#pragma once
 
-#include <limits>
-
-#include "pinocchio/macros.hpp"
-#include "pinocchio/math/quaternion.hpp"
-#include "pinocchio/math/matrix.hpp"
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/utils/static-if.hpp"
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-base.hpp"
-
-#include "pinocchio/multibody/liegroup/vector-space.hpp"
-#include "pinocchio/multibody/liegroup/cartesian-product.hpp"
-#include "pinocchio/multibody/liegroup/special-orthogonal.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -1112,5 +1102,3 @@ namespace pinocchio
   }; // struct SpecialEuclideanOperationTpl<3>
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_liegroup_special_euclidean_operation_hpp__

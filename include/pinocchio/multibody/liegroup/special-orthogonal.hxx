@@ -2,15 +2,12 @@
 // Copyright (c) 2016-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_liegroup_special_orthogonal_operation_hpp__
-#define __pinocchio_multibody_liegroup_special_orthogonal_operation_hpp__
+#pragma once
 
-#include <limits>
-
-#include "pinocchio/spatial/explog.hpp"
-#include "pinocchio/math/quaternion.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-base.hpp"
-#include "pinocchio/utils/static-if.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -743,5 +740,3 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_POP
   }; // struct SpecialOrthogonalOperationTpl<3,_Scalar,_Options>
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_liegroup_special_orthogonal_operation_hpp__

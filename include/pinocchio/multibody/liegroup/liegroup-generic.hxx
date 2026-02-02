@@ -2,11 +2,12 @@
 // Copyright (c) 2018 CNRS
 //
 
-#ifndef __pinocchio_lie_group_generic_hpp__
-#define __pinocchio_lie_group_generic_hpp__
+#pragma once
 
-#include "pinocchio/multibody/liegroup/liegroup-base.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-variant-visitors.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -90,5 +91,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_lie_group_generic_hpp__

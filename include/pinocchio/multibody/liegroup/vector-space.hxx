@@ -2,13 +2,12 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_liegroup_vector_space_operation_hpp__
-#define __pinocchio_multibody_liegroup_vector_space_operation_hpp__
+#pragma once
 
-#include "pinocchio/multibody/liegroup/liegroup-base.hpp"
-
-#include <stdexcept>
-#include <boost/integer/static_min_max.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -389,5 +388,3 @@ namespace pinocchio
   }; // struct VectorSpaceOperationTpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_liegroup_vector_space_operation_hpp__

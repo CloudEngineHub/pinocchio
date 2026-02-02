@@ -2,13 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_multibody_liegroup_liegroup_joint_hpp__
-#define __pinocchio_multibody_liegroup_liegroup_joint_hpp__
+#pragma once
 
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-algo.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-generic.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -74,5 +73,3 @@ namespace pinocchio
     return Algo::run(*this);
   }
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_multibody_liegroup_liegroup_joint_hpp__

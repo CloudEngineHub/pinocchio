@@ -2,17 +2,12 @@
 // Copyright (c) 2016-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_lie_group_hpp__
-#define __pinocchio_lie_group_hpp__
+#pragma once
 
-#include "pinocchio/multibody/liegroup/vector-space.hpp"
-#include "pinocchio/multibody/liegroup/cartesian-product.hpp"
-#include "pinocchio/multibody/liegroup/cartesian-product-variant.hpp"
-#include "pinocchio/multibody/liegroup/special-orthogonal.hpp"
-#include "pinocchio/multibody/liegroup/special-euclidean.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-collection.hpp"
-
-#include "pinocchio/multibody/joint/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -101,5 +96,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_lie_group_hpp__

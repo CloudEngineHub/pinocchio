@@ -2,15 +2,12 @@
 // Copyright (c) 2018 CNRS
 //
 
-#ifndef __pinocchio_lie_group_collection_hpp__
-#define __pinocchio_lie_group_collection_hpp__
+#pragma once
 
-#include "pinocchio/multibody/liegroup/vector-space.hpp"
-#include "pinocchio/multibody/liegroup/cartesian-product.hpp"
-#include "pinocchio/multibody/liegroup/special-orthogonal.hpp"
-#include "pinocchio/multibody/liegroup/special-euclidean.hpp"
-
-#include <boost/variant.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -35,5 +32,3 @@ namespace pinocchio
   typedef LieGroupCollectionDefaultTpl<context::Scalar> LieGroupCollectionDefault;
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_lie_group_collection_hpp__
