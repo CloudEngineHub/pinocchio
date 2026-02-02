@@ -2,10 +2,12 @@
 // Copyright (c) 2022 INRIA
 //
 
-#ifndef __pinocchio_multibody_geometry_object_filter_hpp__
-#define __pinocchio_multibody_geometry_object_filter_hpp__
+#pragma once
 
-#include "pinocchio/multibody/instance-filter.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -41,5 +43,3 @@ namespace pinocchio
   }; // struct GeometryObjectFilterSelectByJoint
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_multibody_geometry_object_filter_hpp__

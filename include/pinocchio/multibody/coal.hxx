@@ -2,12 +2,12 @@
 // Copyright (c) 2015-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_coal_hpp__
-#define __pinocchio_multibody_coal_hpp__
+#pragma once
 
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/multibody/fwd.hpp"
-#include "pinocchio/multibody/model-item.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 #ifdef PINOCCHIO_WITH_COLLISION
 
@@ -42,15 +42,6 @@ namespace std
   #include <coal/shape/geometric_shapes.h>
   #include "pinocchio/collision/coal-pinocchio-conversions.hpp"
 #endif
-
-#include <map>
-#include <vector>
-#include <utility>
-#include <memory>
-#include <limits>
-#include <assert.h>
-
-#include <boost/foreach.hpp>
 
 namespace pinocchio
 {
@@ -95,5 +86,3 @@ namespace pinocchio
 #endif // PINOCCHIO_WITH_COLLISION
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_coal_hpp__

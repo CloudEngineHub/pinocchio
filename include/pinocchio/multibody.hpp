@@ -5,6 +5,7 @@
 
 // IWYU pragma: begin_keep
 #include <cassert>
+#include <cstddef>
 #include <limits>
 #include <algorithm>
 #include <string>
@@ -45,4 +46,8 @@
 #include "pinocchio/multibody/model-item.hxx"
 #include "pinocchio/multibody/frame.hxx"
 #include "pinocchio/multibody/model.hxx"
+
+#include "pinocchio/multibody/coal.hxx"
+#include "pinocchio/multibody/instance-filter.hxx"
+#include "pinocchio/multibody/geometry-object-filter.hxx"
 // IWYU pragma: end_exports
