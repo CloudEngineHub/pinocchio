@@ -2,11 +2,12 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#ifndef __pinocchio_math_eigenvalues_hpp__
-#define __pinocchio_math_eigenvalues_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/matrix.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -208,5 +209,3 @@ namespace pinocchio
     return eigenvector.norm();
   }
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_eigenvalues_hpp__

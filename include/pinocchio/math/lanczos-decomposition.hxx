@@ -2,12 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_math_lanczos_decomposition_hpp__
-#define __pinocchio_math_lanczos_decomposition_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/tridiagonal-matrix.hpp"
-#include "pinocchio/math/gram-schmidt-orthonormalisation.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -229,5 +229,3 @@ namespace pinocchio
     Eigen::Index m_rank;
   };
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_math_lanczos_decomposition_hpp__

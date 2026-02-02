@@ -1,11 +1,12 @@
 //
 // Copyright (c) 2024 INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_math_eigenvalues_tridiagonal_matrix_hpp__
-#define __pinocchio_math_eigenvalues_tridiagonal_matrix_hpp__
-
-#include "pinocchio/math/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -209,5 +210,3 @@ namespace pinocchio
       eps)[tridiagonal_mat.cols() - 1];
   }
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_eigenvalues_tridiagonal_matrix_hpp__

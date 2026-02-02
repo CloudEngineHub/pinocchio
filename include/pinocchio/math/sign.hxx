@@ -2,8 +2,12 @@
 // Copyright (c) 2020 INRIA
 //
 
-#ifndef __pinocchio_math_sign_hpp__
-#define __pinocchio_math_sign_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -16,5 +20,3 @@ namespace pinocchio
     return (t > Scalar(0)) - (t < Scalar(0));
   }
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_sign_hpp__

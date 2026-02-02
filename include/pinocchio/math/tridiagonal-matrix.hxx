@@ -2,11 +2,12 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_math_tridiagonal_matrix_hpp__
-#define __pinocchio_math_tridiagonal_matrix_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/eigenvalues-tridiagonal-matrix.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -645,5 +646,3 @@ namespace pinocchio
     const RhsMatrixType & m_rhs;
   };
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_tridiagonal_matrix_hpp__
