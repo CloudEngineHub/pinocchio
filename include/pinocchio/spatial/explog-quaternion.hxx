@@ -2,12 +2,12 @@
 // Copyright (c) 2018-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_spatial_explog_quaternion_hpp__
-#define __pinocchio_spatial_explog_quaternion_hpp__
+#pragma once
 
-#include "pinocchio/math/quaternion.hpp"
-#include "pinocchio/spatial/explog.hpp"
-#include "pinocchio/utils/static-if.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/spatial/explog.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -332,5 +332,3 @@ namespace pinocchio
     }
   } // namespace quaternion
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_spatial_explog_quaternion_hpp__

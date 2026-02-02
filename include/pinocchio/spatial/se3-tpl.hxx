@@ -4,16 +4,29 @@
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_spatial_se3_tpl_hpp__
-#define __pinocchio_spatial_se3_tpl_hpp__
+#ifndef __pinocchio_spatial_se3_tpl_hxx__
+#define __pinocchio_spatial_se3_tpl_hxx__
 
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/spatial/se3-base.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+  #include <Eigen/Geometry>
 
-#include "pinocchio/math/quaternion.hpp"
-#include "pinocchio/math/matrix.hpp"
-#include "pinocchio/math/rotation.hpp"
-#include "pinocchio/spatial/cartesian-axis.hpp"
+  #include "pinocchio/eigen-common.hpp"
+
+  #include "pinocchio/context.hxx" // IWYU pragma: keep
+  #include "pinocchio/spatial/fwd.hxx"
+
+  #include "pinocchio/common-traits.hpp"
+  #include "pinocchio/spatial/se3-common.hxx"
+  #include "pinocchio/spatial/se3-base.hxx"
+
+  #include "pinocchio/math/matrix.hpp"
+  #include "pinocchio/math/quaternion.hpp"
+  #include "pinocchio/math/rotation.hpp"
+  #include "pinocchio/spatial/cartesian-axis.hpp"
+  #include "pinocchio/utils/cast.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -451,4 +464,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_spatial_se3_tpl_hpp__
+#endif // ifndef __pinocchio_spatial_se3_tpl_hxx__

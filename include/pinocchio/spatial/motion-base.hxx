@@ -4,8 +4,21 @@
 // Copyright (c) 2015-2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_spatial_motion_base_hpp__
-#define __pinocchio_spatial_motion_base_hpp__
+#ifndef __pinocchio_spatial_motion_base_hxx__
+#define __pinocchio_spatial_motion_base_hxx__
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+
+  #include "pinocchio/common-traits.hpp"
+
+  #include "pinocchio/context.hxx" // IWYU pragma: keep
+  #include "pinocchio/spatial/fwd.hxx"
+
+  #include "pinocchio/spatial/motion-common.hxx"
+  #include "pinocchio/spatial/se3-common.hxx"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -231,4 +244,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_spatial_motion_base_hpp__
+#endif // ifndef __pinocchio_spatial_motion_base_hxx__

@@ -2,10 +2,15 @@
 // Copyright (c) 2017-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_cartesian_axis_hpp__
-#define __pinocchio_cartesian_axis_hpp__
+#ifndef __pinocchio_cartesian_axis_hxx__
+#define __pinocchio_cartesian_axis_hxx__
 
-#include "pinocchio/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+
+  #include "pinocchio/eigen-common.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -175,4 +180,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // __pinocchio_cartesian_axis_hpp__
+#endif // __pinocchio_cartesian_axis_hxx__

@@ -2,13 +2,21 @@
 // Copyright (c) 2017-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_spatial_axis_hpp__
-#define __pinocchio_spatial_axis_hpp__
+#ifndef __pinocchio_spatial_axis_hxx__
+#define __pinocchio_spatial_axis_hxx__
 
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/spatial/cartesian-axis.hpp"
-#include "pinocchio/spatial/motion.hpp"
-#include "pinocchio/spatial/force.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+
+  #include "pinocchio/common-traits.hpp"
+  #include "pinocchio/eigen-common.hpp"
+
+  #include "pinocchio/context.hxx" // IWYU pragma: keep
+  #include "pinocchio/spatial/fwd.hxx"
+  #include "pinocchio/spatial/motion-common.hxx"
+  #include "pinocchio/spatial/cartesian-axis.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -145,4 +153,4 @@ namespace pinocchio
   typedef SpatialAxis<5> AxisWZ;
 } // namespace pinocchio
 
-#endif // __pinocchio_spatial_axis_hpp__
+#endif // __pinocchio_spatial_axis_hxx__

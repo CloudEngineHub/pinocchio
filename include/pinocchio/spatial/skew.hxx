@@ -2,10 +2,16 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_spatial_skew_hpp__
-#define __pinocchio_spatial_skew_hpp__
+#ifndef __pinocchio_spatial_skew_hxx__
+#define __pinocchio_spatial_skew_hxx__
 
-#include "pinocchio/macros.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+
+  #include "pinocchio/macros.hpp"
+  #include "pinocchio/eigen-common.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -262,4 +268,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_spatial_skew_hpp__
+#endif // ifndef __pinocchio_spatial_skew_hxx__

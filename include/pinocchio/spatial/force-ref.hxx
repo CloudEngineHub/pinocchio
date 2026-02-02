@@ -2,8 +2,22 @@
 // Copyright (c) 2017-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_spatial_force_ref_hpp__
-#define __pinocchio_spatial_force_ref_hpp__
+#ifndef __pinocchio_spatial_force_ref_hxx__
+#define __pinocchio_spatial_force_ref_hxx__
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+
+  #include "pinocchio/common-traits.hpp"
+  #include "pinocchio/eigen-common.hpp"
+
+  #include "pinocchio/context.hxx" // IWYU pragma: keep
+  #include "pinocchio/spatial/fwd.hxx"
+  #include "pinocchio/spatial/se3-common.hxx"
+  #include "pinocchio/spatial/motion-common.hxx"
+  #include "pinocchio/spatial/force-common.hxx"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -192,4 +206,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_spatial_force_ref_hpp__
+#endif // ifndef __pinocchio_spatial_force_ref_hxx__

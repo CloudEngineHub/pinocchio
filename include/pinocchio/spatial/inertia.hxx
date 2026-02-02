@@ -4,14 +4,52 @@
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_spatial_inertia_hpp__
-#define __pinocchio_spatial_inertia_hpp__
+#ifndef __pinocchio_spatial_inertia_hxx__
+#define __pinocchio_spatial_inertia_hxx__
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/spatial/symmetric3.hpp"
-#include "pinocchio/spatial/force.hpp"
-#include "pinocchio/spatial/motion.hpp"
-#include "pinocchio/spatial/skew.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+
+  #include "pinocchio/macros.hpp"
+  #include "pinocchio/common-traits.hpp"
+  #include "pinocchio/eigen-common.hpp"
+
+  #include "pinocchio/utils/cast.hpp"
+
+  #include "pinocchio/math/alias.hpp"
+
+  #include "pinocchio/context.hxx" // IWYU pragma: keep
+  #include "pinocchio/spatial/fwd.hxx"
+  #include "pinocchio/spatial/symmetric3.hpp"
+  #include "pinocchio/spatial/skew.hpp"
+#endif // PINOCCHIO_LSP
+
+#define SPATIAL_TYPEDEF_TEMPLATE_GENERIC(derived, TYPENAME)                                        \
+  typedef TYPENAME traits<derived>::Scalar Scalar;                                                 \
+  typedef TYPENAME traits<derived>::Vector3 Vector3;                                               \
+  typedef TYPENAME traits<derived>::Vector4 Vector4;                                               \
+  typedef TYPENAME traits<derived>::Vector6 Vector6;                                               \
+  typedef TYPENAME traits<derived>::Matrix3 Matrix3;                                               \
+  typedef TYPENAME traits<derived>::Matrix4 Matrix4;                                               \
+  typedef TYPENAME traits<derived>::Matrix6 Matrix6;                                               \
+  typedef TYPENAME traits<derived>::Angular_t Angular_t;                                           \
+  typedef TYPENAME traits<derived>::Linear_t Linear_t;                                             \
+  typedef TYPENAME traits<derived>::ConstAngular_t ConstAngular_t;                                 \
+  typedef TYPENAME traits<derived>::ConstLinear_t ConstLinear_t;                                   \
+  typedef TYPENAME traits<derived>::ActionMatrix_t ActionMatrix_t;                                 \
+  typedef TYPENAME traits<derived>::Quaternion_t Quaternion_t;                                     \
+  typedef TYPENAME traits<derived>::SE3 SE3;                                                       \
+  typedef TYPENAME traits<derived>::Force Force;                                                   \
+  typedef TYPENAME traits<derived>::Motion Motion;                                                 \
+  typedef TYPENAME traits<derived>::Symmetric3 Symmetric3;                                         \
+  static constexpr int LINEAR = traits<derived>::LINEAR;                                           \
+  static constexpr int ANGULAR = traits<derived>::ANGULAR
+
+#define SPATIAL_TYPEDEF_TEMPLATE(derived) SPATIAL_TYPEDEF_TEMPLATE_GENERIC(derived, typename)
+
+#define SPATIAL_TYPEDEF_NO_TEMPLATE(derived)                                                       \
+  SPATIAL_TYPEDEF_TEMPLATE_GENERIC(derived, PINOCCHIO_MACRO_EMPTY_ARG)
 
 namespace pinocchio
 {
@@ -439,7 +477,7 @@ namespace pinocchio
     /// \param[in] height of the capsule.
     static InertiaTpl FromCapsule(const Scalar mass, const Scalar radius, const Scalar height)
     {
-      const Scalar pi = boost::math::constants::pi<Scalar>();
+      const Scalar pi = PI<Scalar>();
 
       // first need to compute mass repartition between cylinder and halfsphere
       const Scalar v_cyl = pi * math::pow(radius, 2) * height;
@@ -1337,4 +1375,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_spatial_inertia_hpp__
+#endif // ifndef __pinocchio_spatial_inertia_hxx__

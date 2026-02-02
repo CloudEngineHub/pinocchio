@@ -5,42 +5,30 @@
 #ifndef __pinocchio_spatial_se3_hpp__
 #define __pinocchio_spatial_se3_hpp__
 
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/macros.hpp"
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
-#define PINOCCHIO_SE3_TYPEDEF_GENERIC(Derived, TYPENAME)                                           \
-  typedef TYPENAME traits<Derived>::Scalar Scalar;                                                 \
-  typedef TYPENAME traits<Derived>::AngularType AngularType;                                       \
-  typedef TYPENAME traits<Derived>::LinearType LinearType;                                         \
-  typedef TYPENAME traits<Derived>::AngularRef AngularRef;                                         \
-  typedef TYPENAME traits<Derived>::LinearRef LinearRef;                                           \
-  typedef TYPENAME traits<Derived>::ConstAngularRef ConstAngularRef;                               \
-  typedef TYPENAME traits<Derived>::ConstLinearRef ConstLinearRef;                                 \
-  typedef TYPENAME traits<Derived>::ActionMatrixType ActionMatrixType;                             \
-  typedef TYPENAME traits<Derived>::HomogeneousMatrixType HomogeneousMatrixType;                   \
-  typedef TYPENAME traits<Derived>::PlainType PlainType;                                           \
-  static constexpr int Options = traits<Derived>::Options;                                         \
-  static constexpr int LINEAR = traits<Derived>::LINEAR;                                           \
-  static constexpr int ANGULAR = traits<Derived>::ANGULAR
+#include "pinocchio/eigen-common.hpp"
+#include "pinocchio/common-traits.hpp"
 
-#define PINOCCHIO_SE3_TYPEDEF_TPL(Derived) PINOCCHIO_SE3_TYPEDEF_GENERIC(Derived, typename)
+// TODO replace by fwd.hpp
+#include "pinocchio/context.hxx" // IWYU pragma: keep
+#include "pinocchio/spatial/fwd.hxx"
 
-#define PINOCCHIO_SE3_TYPEDEF(Derived)                                                             \
-  PINOCCHIO_SE3_TYPEDEF_GENERIC(Derived, PINOCCHIO_MACRO_EMPTY_ARG)
+#include "pinocchio/utils/cast.hpp"
 
-namespace pinocchio
-{
+#include "pinocchio/math/matrix.hpp"
+#include "pinocchio/math/quaternion.hpp"
+#include "pinocchio/math/rotation.hpp"
 
-  /* Type returned by the "se3Action" and "se3ActionInverse" functions. */
-  template<typename D>
-  struct SE3GroupAction
-  {
-    typedef D ReturnType;
-  };
+#include "pinocchio/spatial/cartesian-axis.hpp"
+// IWYU pragma: end_keep
 
-} // namespace pinocchio
-
-#include "pinocchio/spatial/se3-base.hpp"
-#include "pinocchio/spatial/se3-tpl.hpp"
+// IWYU pragma: begin_exports
+#include "pinocchio/spatial/se3-common.hxx"
+#include "pinocchio/spatial/se3-base.hxx"
+#include "pinocchio/spatial/se3-tpl.hxx"
+// IWYU pragma: end_exports
 
 #endif // ifndef __pinocchio_spatial_se3_hpp__

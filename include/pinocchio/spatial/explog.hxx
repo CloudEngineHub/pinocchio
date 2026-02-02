@@ -3,19 +3,12 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_spatial_explog_hpp__
-#define __pinocchio_spatial_explog_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
-#include "pinocchio/utils/static-if.hpp"
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/sincos.hpp"
-#include "pinocchio/math/taylor-expansion.hpp"
-#include "pinocchio/spatial/motion.hpp"
-#include "pinocchio/spatial/skew.hpp"
-#include "pinocchio/spatial/se3.hpp"
-
-#include "pinocchio/spatial/log.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/spatial/explog.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -689,8 +682,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#include "pinocchio/spatial/explog-quaternion.hpp"
-#include "pinocchio/spatial/log.hxx"
-
-#endif // #ifndef __pinocchio_spatial_explog_hpp__

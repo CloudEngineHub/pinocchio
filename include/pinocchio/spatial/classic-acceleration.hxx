@@ -2,11 +2,12 @@
 // Copyright (c) 2019 INRIA
 //
 
-#ifndef __pinocchio_spatial_classic_acceleration_hpp__
-#define __pinocchio_spatial_classic_acceleration_hpp__
+#pragma once
 
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/motion.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/spatial/classic-acceleration.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -126,5 +127,3 @@ namespace pinocchio
     return res;
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_spatial_classic_acceleration_hpp__

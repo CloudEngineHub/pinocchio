@@ -3,11 +3,24 @@
 // Copyright (c) 2018-2024 INRIA
 //
 
-#ifndef __pinocchio_spatial_motion_dense_hpp__
-#define __pinocchio_spatial_motion_dense_hpp__
+#ifndef __pinocchio_spatial_motion_dense_hxx__
+#define __pinocchio_spatial_motion_dense_hxx__
 
-#include "pinocchio/spatial/skew.hpp"
-#include "pinocchio/math/matrix.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+
+  #include "pinocchio/common-traits.hpp"
+
+  #include "pinocchio/math/matrix.hpp"
+
+  #include "pinocchio/context.hxx" // IWYU pragma: keep
+  #include "pinocchio/spatial/fwd.hxx"
+
+  #include "pinocchio/spatial/se3-common.hxx"
+  #include "pinocchio/spatial/motion-common.hxx"
+  #include "pinocchio/spatial/skew.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -331,4 +344,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_spatial_motion_dense_hpp__
+#endif // ifndef __pinocchio_spatial_motion_dense_hxx__

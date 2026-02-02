@@ -2,8 +2,12 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_spatial_log_hxx__
-#define __pinocchio_spatial_log_hxx__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/spatial/explog.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -352,5 +356,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_spatial_log_hxx__

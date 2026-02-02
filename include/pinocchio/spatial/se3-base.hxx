@@ -4,8 +4,16 @@
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_spatial_se3_base_hpp__
-#define __pinocchio_spatial_se3_base_hpp__
+#ifndef __pinocchio_spatial_se3_base_hxx__
+#define __pinocchio_spatial_se3_base_hxx__
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/common-traits.hpp"
+  #include "pinocchio/spatial/se3-common.hxx"
+
+  #include <Eigen/Core>
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {

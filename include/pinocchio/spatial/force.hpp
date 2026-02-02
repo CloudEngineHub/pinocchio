@@ -6,32 +6,27 @@
 #ifndef __pinocchio_spatial_force_hpp__
 #define __pinocchio_spatial_force_hpp__
 
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/motion.hpp"
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
 
-#define FORCE_TYPEDEF_GENERIC(Derived, TYPENAME)                                                   \
-  typedef TYPENAME traits<Derived>::Scalar Scalar;                                                 \
-  typedef TYPENAME traits<Derived>::Vector3 Vector3;                                               \
-  typedef TYPENAME traits<Derived>::Vector6 Vector6;                                               \
-  typedef TYPENAME traits<Derived>::Matrix6 Matrix6;                                               \
-  typedef TYPENAME traits<Derived>::ToVectorReturnType ToVectorReturnType;                         \
-  typedef TYPENAME traits<Derived>::ToVectorConstReturnType ToVectorConstReturnType;               \
-  typedef TYPENAME traits<Derived>::AngularType AngularType;                                       \
-  typedef TYPENAME traits<Derived>::LinearType LinearType;                                         \
-  typedef TYPENAME traits<Derived>::ConstAngularType ConstAngularType;                             \
-  typedef TYPENAME traits<Derived>::ConstLinearType ConstLinearType;                               \
-  typedef TYPENAME traits<Derived>::ForcePlain ForcePlain;                                         \
-  static constexpr int LINEAR = traits<Derived>::LINEAR;                                           \
-  static constexpr int ANGULAR = traits<Derived>::ANGULAR
+#include "pinocchio/common-traits.hpp"
+#include "pinocchio/eigen-common.hpp"
 
-#define FORCE_TYPEDEF_TPL(Derived) FORCE_TYPEDEF_GENERIC(Derived, typename)
+#include "pinocchio/math/matrix.hpp"
 
-#define FORCE_TYPEDEF(Derived) FORCE_TYPEDEF_GENERIC(Derived, PINOCCHIO_MACRO_EMPTY_ARG)
+#include "pinocchio/context.hxx" // IWYU pragma: keep
+#include "pinocchio/spatial/fwd.hxx"
+#include "pinocchio/spatial/se3-common.hxx"
+#include "pinocchio/spatial/motion-common.hxx"
+#include "pinocchio/spatial/force-common.hxx"
+// IWYU pragma: end_keep
 
-#include "pinocchio/spatial/force-base.hpp"
-#include "pinocchio/spatial/force-dense.hpp"
-#include "pinocchio/spatial/force-tpl.hpp"
-#include "pinocchio/spatial/force-ref.hpp"
+// IWYU pragma: begin_exports
+#include "pinocchio/spatial/force-common.hxx"
+#include "pinocchio/spatial/force-base.hxx"
+#include "pinocchio/spatial/force-dense.hxx"
+#include "pinocchio/spatial/force-tpl.hxx"
+#include "pinocchio/spatial/force-ref.hxx"
+// IWYU pragma: end_exports
 
 #endif // ifndef __pinocchio_spatial_force_hpp__
