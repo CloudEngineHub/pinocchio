@@ -7,6 +7,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/SVD>
+#include <unsupported/Eigen/CXX11/Tensor>
 
 #include <cmath>
 #include <limits>
@@ -31,4 +32,5 @@
 #include "pinocchio/math/quaternion.hxx"
 #include "pinocchio/math/triangular-matrix.hxx"
 #include "pinocchio/math/matrix-block.hxx"
+#include "pinocchio/math/tensor.hxx"
 // IWYU pragma: end_exports
