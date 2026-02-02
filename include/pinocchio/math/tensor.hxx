@@ -2,11 +2,12 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#ifndef __pinocchio_math_tensor_hpp__
-#define __pinocchio_math_tensor_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
-// #incleade
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -16,5 +17,3 @@ namespace pinocchio
   using Tensor = Eigen::Tensor<Scalar_, NumIndices_, Options_, IndexType>;
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_math_tensor_hpp__
