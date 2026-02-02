@@ -2,11 +2,11 @@
 // Copyright (c) 2016-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_utils_string_generator_hpp__
-#define __pinocchio_utils_string_generator_hpp__
-
-#include <string>
-#include <cstdlib>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <string>
+  #include <cstdlib>
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -30,5 +30,3 @@ namespace pinocchio
     return res;
   }
 } // namespace pinocchio
-
-#endif // __pinocchio_utils_string_generator_hpp__

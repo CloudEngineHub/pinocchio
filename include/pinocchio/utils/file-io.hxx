@@ -4,12 +4,14 @@
 
 // modified from https://gist.github.com/rudolfovich/f250900f1a833e715260a66c87369d15
 
-#ifndef __pinocchio_utils_file_io_hpp__
-#define __pinocchio_utils_file_io_hpp__
+#pragma once
 
-#include <string>
-#include <fstream>
-#include <sstream>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <string>
+  #include <fstream>
+  #include <sstream>
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -108,5 +110,3 @@ namespace pinocchio
     }
   };
 } // namespace pinocchio
-
-#endif

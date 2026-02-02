@@ -2,10 +2,12 @@
 // Copyright (c) 2021 LAAS-CNRS
 //
 
-#ifndef __pinocchio_utils_timer2_hpp__
-#define __pinocchio_utils_timer2_hpp__
+#pragma once
 
-#include <ctime>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <ctime>
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -45,5 +47,3 @@ namespace pinocchio
     double duration_;
   };
 } // namespace pinocchio
-
-#endif

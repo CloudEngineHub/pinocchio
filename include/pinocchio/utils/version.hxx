@@ -2,13 +2,15 @@
 // Copyright (c) 2018 CNRS
 //
 
-#ifndef __pinocchio_utils_version_hpp__
-#define __pinocchio_utils_version_hpp__
+#pragma once
 
-#include "pinocchio/config.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/config.hpp"
 
-#include <string>
-#include <sstream>
+  #include <string>
+  #include <sstream>
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -44,5 +46,3 @@ namespace pinocchio
            || (PINOCCHIO_MAJOR_VERSION >= major_version && (PINOCCHIO_MINOR_VERSION > minor_version || (PINOCCHIO_MINOR_VERSION >= minor_version && PINOCCHIO_PATCH_VERSION >= patch_version)));
   }
 } // namespace pinocchio
-
-#endif // __pinocchio_utils_version_hpp__

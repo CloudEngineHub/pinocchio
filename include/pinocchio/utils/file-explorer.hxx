@@ -2,13 +2,15 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_utils_file_explorer_hpp__
-#define __pinocchio_utils_file_explorer_hpp__
+#pragma once
 
-#include <string>
-#include <vector>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <string>
+  #include <vector>
 
-#include "pinocchio/parsers/config.hpp"
+  #include "pinocchio/parsers/config.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -70,5 +72,3 @@ namespace pinocchio
   PINOCCHIO_PARSERS_DLLAPI std::vector<std::string> rosPaths();
 
 } // namespace pinocchio
-
-#endif // __pinocchio_utils_file_explorer_hpp__

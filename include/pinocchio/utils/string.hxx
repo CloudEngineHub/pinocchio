@@ -2,10 +2,13 @@
 // Copyright (c) 2021 INRIA
 //
 
-#ifndef __pinocchio_utils_string_hpp__
-#define __pinocchio_utils_string_hpp__
+#pragma once
 
-#include <string>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <stddef.h>
+  #include <string>
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -34,5 +37,3 @@ namespace pinocchio
     return has_from;
   }
 } // namespace pinocchio
-
-#endif // __pinocchio_utils_string_hpp__

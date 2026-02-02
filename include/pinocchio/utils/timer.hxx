@@ -2,12 +2,21 @@
 // Copyright (c) 2015-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_utils_timer_hpp__
-#define __pinocchio_utils_timer_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #ifdef WIN32
+    #include <Windows.h>
+    #include <stdint.h> // portable: uint64_t   MSVC: __int64
+  #else
+    #include <sys/time.h>
+  #endif
+  #include <iostream>
+  #include <stack>
+#endif // PINOCCHIO_LSP
 
 #ifdef WIN32
-  #include <Windows.h>
-  #include <stdint.h> // portable: uint64_t   MSVC: __int64
 
 int gettimeofday(struct timeval * tp, struct timezone * tzp)
 {
@@ -29,11 +38,8 @@ int gettimeofday(struct timeval * tp, struct timezone * tzp)
   tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
   return 0;
 }
-#else
-  #include <sys/time.h>
+
 #endif
-#include <iostream>
-#include <stack>
 
 #define SMOOTH(s) for (size_t _smooth = 0; _smooth < s; ++_smooth)
 
@@ -103,5 +109,3 @@ struct PinocchioTicToc
     os << toc(DEFAULT_UNIT) / SMOOTH << " " << unitName(DEFAULT_UNIT) << std::endl;
   }
 };
-
-#endif // ifndef __pinocchio_utils_timer_hpp__

@@ -2,15 +2,17 @@
 // Copyright (c) 2021-2024 INRIA
 //
 
-#ifndef __pinocchio_utils_openmp_hpp__
-#define __pinocchio_utils_openmp_hpp__
+#pragma once
 
-#include <cstdlib>
-#include <exception>
-#include <mutex>
-#include <omp.h>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <cstdlib>
+  #include <exception>
+  #include <mutex>
+  #include <omp.h>
 
-#include "pinocchio/deprecated.hpp"
+  #include "pinocchio/deprecated.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -101,5 +103,3 @@ namespace pinocchio
     const bool m_throw_on_deletion;
   }; // struct OpenMPException
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_utils_openmp_hpp__
