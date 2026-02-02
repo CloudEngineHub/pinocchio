@@ -2,14 +2,27 @@
 // Copyright (c) 2019-2024 INRIA CNRS
 //
 
-#ifndef __pinocchio_autodiff_casadi_hpp__
-#define __pinocchio_autodiff_casadi_hpp__
+#pragma once
 
 #define PINOCCHIO_WITH_CASADI_SUPPORT
 
-#include "pinocchio/math/fwd.hpp"
+// IWYU pragma: begin_keep
+#include <limits>
+#include <string>
 
 #include <casadi/casadi.hpp>
+
+#include <Eigen/Core>
+#include <Eigen/SparseCore>
+#include <unsupported/Eigen/CXX11/Tensor>
+
+#include <boost/math/constants/constants.hpp>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
+#include "pinocchio/math.hpp"
+#include "pinocchio/spatial.hpp"
+// IWYU pragma: end_keep
 
 namespace boost
 {
@@ -41,22 +54,6 @@ namespace casadi
     return x;
   }
 } // namespace casadi
-
-namespace pinocchio
-{
-  template<typename Scalar>
-  struct TaylorSeriesExpansion<::casadi::Matrix<Scalar>> : TaylorSeriesExpansion<Scalar>
-  {
-    typedef TaylorSeriesExpansion<Scalar> Base;
-
-    template<int degree>
-    static ::casadi::Matrix<Scalar> precision()
-    {
-      return ::casadi::Matrix<Scalar>(Base::template precision<degree>());
-    }
-  };
-
-} // namespace pinocchio
 
 namespace Eigen
 {
@@ -225,117 +222,12 @@ namespace pinocchio
   } // namespace casadi
 } // namespace pinocchio
 
-// Overloading of min/max operator
-namespace pinocchio
-{
-  namespace math
-  {
-    namespace internal
-    {
-      template<typename Scalar>
-      struct return_type_min<::casadi::Matrix<Scalar>, ::casadi::Matrix<Scalar>>
-      {
-        typedef ::casadi::Matrix<Scalar> type;
-      };
-
-      template<typename Scalar, typename T>
-      struct return_type_min<::casadi::Matrix<Scalar>, T>
-      {
-        typedef ::casadi::Matrix<Scalar> type;
-      };
-
-      template<typename Scalar, typename T>
-      struct return_type_min<T, ::casadi::Matrix<Scalar>>
-      {
-        typedef ::casadi::Matrix<Scalar> type;
-      };
-
-      template<typename Scalar>
-      struct call_min<::casadi::Matrix<Scalar>, ::casadi::Matrix<Scalar>>
-      {
-        static inline ::casadi::Matrix<Scalar>
-        run(const ::casadi::Matrix<Scalar> & a, const ::casadi::Matrix<Scalar> & b)
-        {
-          return fmin(a, b);
-        }
-      };
-
-      template<typename S1, typename S2>
-      struct call_min<::casadi::Matrix<S1>, S2>
-      {
-        typedef ::casadi::Matrix<S1> CasadiType;
-        static inline ::casadi::Matrix<S1> run(const ::casadi::Matrix<S1> & a, const S2 & b)
-        {
-          return fmin(a, static_cast<CasadiType>(b));
-        }
-      };
-
-      template<typename S1, typename S2>
-      struct call_min<S1, ::casadi::Matrix<S2>>
-      {
-        typedef ::casadi::Matrix<S2> CasadiType;
-        static inline ::casadi::Matrix<S2> run(const S1 & a, const ::casadi::Matrix<S2> & b)
-        {
-          return fmin(static_cast<CasadiType>(a), b);
-        }
-      };
-
-      template<typename Scalar>
-      struct return_type_max<::casadi::Matrix<Scalar>, ::casadi::Matrix<Scalar>>
-      {
-        typedef ::casadi::Matrix<Scalar> type;
-      };
-
-      template<typename Scalar, typename T>
-      struct return_type_max<::casadi::Matrix<Scalar>, T>
-      {
-        typedef ::casadi::Matrix<Scalar> type;
-      };
-
-      template<typename Scalar, typename T>
-      struct return_type_max<T, ::casadi::Matrix<Scalar>>
-      {
-        typedef ::casadi::Matrix<Scalar> type;
-      };
-
-      template<typename Scalar>
-      struct call_max<::casadi::Matrix<Scalar>, ::casadi::Matrix<Scalar>>
-      {
-        static inline ::casadi::Matrix<Scalar>
-        run(const ::casadi::Matrix<Scalar> & a, const ::casadi::Matrix<Scalar> & b)
-        {
-          return fmax(a, b);
-        }
-      };
-
-      template<typename S1, typename S2>
-      struct call_max<::casadi::Matrix<S1>, S2>
-      {
-        typedef ::casadi::Matrix<S1> CasadiType;
-        static inline ::casadi::Matrix<S1> run(const ::casadi::Matrix<S1> & a, const S2 & b)
-        {
-          return fmax(a, static_cast<CasadiType>(b));
-        }
-      };
-
-      template<typename S1, typename S2>
-      struct call_max<S1, ::casadi::Matrix<S2>>
-      {
-        typedef ::casadi::Matrix<S2> CasadiType;
-        static inline ::casadi::Matrix<S2> run(const S1 & a, const ::casadi::Matrix<S2> & b)
-        {
-          return fmax(static_cast<CasadiType>(a), b);
-        }
-      };
-    } // namespace internal
-
-  } // namespace math
-
-} // namespace pinocchio
+// IWYU pragma: begin_exports
+#include "pinocchio/autodiff/casadi/math/alias.hxx"
+// IWYU pragma: end_exports
 
 namespace Eigen
 {
-
   // Max operator
   template<typename Scalar>
   struct ScalarBinaryOpTraits<
@@ -382,11 +274,6 @@ namespace Eigen
       {
         return ::pinocchio::math::internal::call_max<LhsScalar, RhsScalar>::run(a, b);
       }
-      //      template<typename Packet>
-      //      EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const Packet packetOp(const Packet& a, const
-      //      Packet& b) const { return internal::pmax(a,b); } template<typename Packet>
-      //      EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const result_type predux(const Packet& a) const
-      //      { return internal::predux_max(a); }
     };
 
     template<typename S1, typename S2>
@@ -423,10 +310,11 @@ namespace Eigen
   } // namespace internal
 } // namespace Eigen
 
-#include "pinocchio/autodiff/casadi/spatial/se3-tpl.hpp"
-#include "pinocchio/autodiff/casadi/utils/static-if.hpp"
-#include "pinocchio/autodiff/casadi/math/matrix.hpp"
-#include "pinocchio/autodiff/casadi/math/quaternion.hpp"
-#include "pinocchio/autodiff/casadi/math/triangular-matrix.hpp"
-
-#endif // #ifndef __pinocchio_autodiff_casadi_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/autodiff/casadi/math/taylor-series-expansion.hxx"
+#include "pinocchio/autodiff/casadi/math/matrix.hxx"
+#include "pinocchio/autodiff/casadi/math/quaternion.hxx"
+#include "pinocchio/autodiff/casadi/math/triangular-matrix.hxx"
+#include "pinocchio/autodiff/casadi/spatial/se3-tpl.hxx"
+#include "pinocchio/autodiff/casadi/utils/static-if.hxx"
+// IWYU pragma: end_exports

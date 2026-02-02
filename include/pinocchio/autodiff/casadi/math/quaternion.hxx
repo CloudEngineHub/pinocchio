@@ -2,10 +2,12 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#ifndef __pinocchio_autodiff_casadi_math_quaternion_hpp__
-#define __pinocchio_autodiff_casadi_math_quaternion_hpp__
+#pragma once
 
-#include "pinocchio/math/quaternion.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/autodiff/casadi.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -81,5 +83,3 @@ namespace Eigen
     };
   } // namespace internal
 } // namespace Eigen
-
-#endif // ifndef __pinocchio_autodiff_casadi_math_quaternion_hpp__

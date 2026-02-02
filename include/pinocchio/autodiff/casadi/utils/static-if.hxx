@@ -2,10 +2,12 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#ifndef __pinocchio_autodiff_casadi_utils_static_if_hpp__
-#define __pinocchio_autodiff_casadi_utils_static_if_hpp__
+#pragma once
 
-#include "pinocchio/utils/static-if.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/autodiff/casadi.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -74,5 +76,3 @@ namespace std
     }
   };
 } // namespace std
-
-#endif // ifndef __pinocchio_autodiff_casadi_utils_static_if_hpp__

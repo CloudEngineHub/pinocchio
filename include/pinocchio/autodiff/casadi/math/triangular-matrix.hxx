@@ -2,10 +2,12 @@
 // Copyright (c) 2022-2023 INRIA
 //
 
-#ifndef __pinocchio_autodiff_casadi_math_triangular_matrix_hpp__
-#define __pinocchio_autodiff_casadi_math_triangular_matrix_hpp__
+#pragma once
 
-#include "pinocchio/math/triangular-matrix.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/autodiff/casadi.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -39,5 +41,3 @@ namespace pinocchio
     };
   } // namespace internal
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_autodiff_casadi_math_triangular_matrix_hpp__

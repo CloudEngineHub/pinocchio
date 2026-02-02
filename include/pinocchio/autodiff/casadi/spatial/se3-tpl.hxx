@@ -2,10 +2,12 @@
 // Copyright (c) 2020 INRIA
 //
 
-#ifndef __pinocchio_autodiff_casadi_spatial_se3_tpl_hpp__
-#define __pinocchio_autodiff_casadi_spatial_se3_tpl_hpp__
+#pragma once
 
-#include "pinocchio/spatial/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/autodiff/casadi.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -37,5 +39,3 @@ namespace pinocchio
   } // namespace internal
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_autodiff_casadi_spatial_se3_tpl_hpp__
