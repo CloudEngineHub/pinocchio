@@ -2,12 +2,12 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_liegroup_liegroup_operation_base_hpp__
-#define __pinocchio_multibody_liegroup_liegroup_operation_base_hpp__
+#pragma once
 
-#include "pinocchio/multibody/liegroup/fwd.hpp"
-
-#include <limits>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -782,18 +782,6 @@ namespace pinocchio
   }; // struct LieGroupBase
 
 } // namespace pinocchio
-
-#include "pinocchio/multibody/liegroup/liegroup-base.hxx"
-
-#endif // ifndef __pinocchio_multibody_liegroup_liegroup_operation_base_hpp__
-//
-// Copyright (c) 2016-2020 CNRS INRIA
-//
-
-#ifndef __pinocchio_multibody_liegroup_liegroup_operation_base_hxx__
-#define __pinocchio_multibody_liegroup_liegroup_operation_base_hxx__
-
-#include "pinocchio/macros.hpp"
 
 namespace pinocchio
 {
@@ -1573,5 +1561,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // __pinocchio_multibody_liegroup_liegroup_operation_base_hxx__

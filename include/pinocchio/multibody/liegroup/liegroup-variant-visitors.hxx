@@ -2,10 +2,12 @@
 // Copyright (c) 2018 CNRS
 //
 
-#ifndef __pinocchio_lie_group_variant_visitor_hpp__
-#define __pinocchio_lie_group_variant_visitor_hpp__
+#pragma once
 
-#include "pinocchio/multibody/liegroup/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -252,23 +254,6 @@ namespace pinocchio
     const Eigen::MatrixBase<JacobianOut_t> & J,
     const ArgumentPosition arg);
 } // namespace pinocchio
-
-/// Details
-#include "pinocchio/multibody/liegroup/liegroup-variant-visitors.hxx"
-
-#endif // ifndef __pinocchio_lie_group_variant_visitor_hpp__
-//
-// Copyright (c) 2018 CNRS
-//
-
-#ifndef __pinocchio_lie_group_variant_visitor_hxx__
-#define __pinocchio_lie_group_variant_visitor_hxx__
-
-#include "pinocchio/multibody/liegroup/liegroup-base.hpp"
-#include "pinocchio/multibody/liegroup/cartesian-product-variant.hpp"
-#include "pinocchio/multibody/visitor.hpp"
-
-#include <string>
 
 #define LIE_GROUP_VISITOR(VISITOR)                                                                 \
   VISITOR(ArgsType & args)                                                                         \
@@ -1140,5 +1125,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 #undef PINOCCHIO_LG_CHECK_VECTOR_SIZE
-
-#endif // ifndef __pinocchio_lie_group_variant_visitor_hxx__

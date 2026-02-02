@@ -2,26 +2,12 @@
 // Copyright (c) 2018-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_liegroup_liegroup_algo_hpp__
-#define __pinocchio_multibody_liegroup_liegroup_algo_hpp__
+#pragma once
 
-#include "pinocchio/multibody/joint/joint-base.hpp"
-#include "pinocchio/multibody/liegroup/liegroup.hpp"
-
-#include "pinocchio/multibody/liegroup/liegroup-algo.hxx"
-
-#endif // ifndef __pinocchio_multibody_liegroup_liegroup_algo_hpp__
-//
-// Copyright (c) 2018-2020 CNRS
-// Copyright (c) 2018-2025 INRIA
-//
-
-#ifndef __pinocchio_multibody_liegroup_liegroup_algo_hxx__
-#define __pinocchio_multibody_liegroup_liegroup_algo_hxx__
-
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/multibody/joint/joint-composite.hpp"
-#include "pinocchio/multibody/joint/joint-mimic.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -1124,5 +1110,3 @@ namespace pinocchio
   PINOCCHIO_DETAILS_CANCEL_JOINT_MIMIC_2(GetTangentToConfigurationSparsitySegmentStepAlgoAlgo);
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_liegroup_liegroup_algo_hxx__

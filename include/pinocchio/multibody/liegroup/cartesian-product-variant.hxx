@@ -2,25 +2,15 @@
 // Copyright (c) 2018 CNRS
 //
 
-#ifndef __pinocchio_cartesian_product_variant_hpp__
-#define __pinocchio_cartesian_product_variant_hpp__
+#pragma once
 
-#include "pinocchio/multibody/liegroup/liegroup-base.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-collection.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/liegroup.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
-
-  template<
-    typename Scalar,
-    int Options = context::Options,
-    template<typename, int> class LieGroupCollectionTpl = LieGroupCollectionDefaultTpl>
-  struct CartesianProductOperationVariantTpl;
-  typedef CartesianProductOperationVariantTpl<
-    context::Scalar,
-    context::Options,
-    LieGroupCollectionDefaultTpl>
-    CartesianProductOperationVariant;
 
   template<typename _Scalar, int _Options, template<typename, int> class LieGroupCollectionTpl>
   struct traits<CartesianProductOperationVariantTpl<_Scalar, _Options, LieGroupCollectionTpl>>
@@ -312,18 +302,6 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#include <pinocchio/multibody/liegroup/cartesian-product-variant.hxx>
-
-#endif // ifndef __pinocchio_cartesian_product_variant_hpp__
-//
-// Copyright (c) 2020 CNRS
-//
-
-#ifndef __pinocchio_cartesian_product_variant_hxx__
-#define __pinocchio_cartesian_product_variant_hxx__
-
-#include "pinocchio/multibody/liegroup/liegroup-variant-visitors.hpp"
 
 namespace pinocchio
 {
@@ -904,5 +882,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_cartesian_product_variant_hxx__
