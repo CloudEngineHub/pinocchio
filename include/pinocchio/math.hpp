@@ -14,6 +14,8 @@
 #include <cstddef>
 
 #include <boost/math/constants/constants.hpp>
+#include <boost/multiprecision/number.hpp>
+#include <boost/random.hpp>
 
 #include "pinocchio/context.hxx"
 #include "pinocchio/multibody/fwd.hxx"
@@ -23,6 +25,7 @@
 #include "pinocchio/alloca.hpp"
 
 #include "pinocchio/utils/static-if.hpp"
+#include "pinocchio/utils/check.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
@@ -38,4 +41,12 @@
 #include "pinocchio/math/triangular-matrix.hxx"
 #include "pinocchio/math/matrix-block.hxx"
 #include "pinocchio/math/tensor.hxx"
+#include "pinocchio/math/eigenvalues.hxx"
+#include "pinocchio/math/multiprecision.hxx"
+#include "pinocchio/math/gram-schmidt-orthonormalisation.hxx"
+#include "pinocchio/math/sign.hxx"
+#include "pinocchio/math/eigenvalues-tridiagonal-matrix.hxx"
+#include "pinocchio/math/tridiagonal-matrix.hxx"
+#include "pinocchio/math/lanczos-decomposition.hxx"
+
 // IWYU pragma: end_exports
