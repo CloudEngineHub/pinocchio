@@ -2,13 +2,12 @@
 // Copyright (c) 2019 INRIA
 //
 
-#ifndef __pinocchio_multibody_visitor_joint_binary_visitor_hpp__
-#define __pinocchio_multibody_visitor_joint_binary_visitor_hpp__
+#pragma once
 
-#include <boost/variant.hpp>
-
-#include "pinocchio/multibody/joint/joint-base.hpp"
-#include "pinocchio/multibody/visitor/fusion.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -183,8 +182,9 @@ namespace pinocchio
               boost::ref(jmodel1.derived()), boost::ref(jmodel2.derived()),
               boost::ref(
                 boost::get<typename JointModelBase<JointModelDerived1>::JointDataDerived>(jdata1)),
-              boost::ref(boost::get<typename JointModelBase<JointModelDerived2>::JointDataDerived>(
-                jdata2))));
+              boost::ref(
+                boost::get<typename JointModelBase<JointModelDerived2>::JointDataDerived>(
+                  jdata2))));
         }
 
         JointData1 & jdata1;
@@ -233,5 +233,3 @@ namespace pinocchio
 
   } // namespace fusion
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_visitor_joint_binary_visitor_hpp__

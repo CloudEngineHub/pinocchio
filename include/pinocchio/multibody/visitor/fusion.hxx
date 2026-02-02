@@ -2,23 +2,19 @@
 // Copyright (c) 2015-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_visitor_fusion_hpp__
-#define __pinocchio_multibody_visitor_fusion_hpp__
+#pragma once
 
-#define BOOST_FUSION_INVOKE_MAX_ARITY 12
-
-#include <boost/variant/static_visitor.hpp>
-#include <boost/fusion/include/invoke.hpp>
-#include <boost/fusion/container/generation/make_vector.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
   namespace fusion
   {
-
     namespace bf = boost::fusion;
     typedef boost::blank NoArg;
-
   } // namespace fusion
 } // namespace pinocchio
 
@@ -63,5 +59,3 @@ namespace boost
 
   } // namespace fusion
 } // namespace boost
-
-#endif // ifndef __pinocchio_multibody_visitor_fusion_hpp__
