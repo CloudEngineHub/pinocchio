@@ -2,10 +2,13 @@
 // Copyright (c) 2020 INRIA
 //
 
-#ifndef __pinocchio_utils_cast_hpp__
-#define __pinocchio_utils_cast_hpp__
+#ifndef __pinocchio_utils_cast_hxx__
+#define __pinocchio_utils_cast_hxx__
 
-#include "pinocchio/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -16,4 +19,4 @@ namespace pinocchio
   }
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_utils_cast_hpp__
+#endif // ifndef __pinocchio_utils_cast_hxx__

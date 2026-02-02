@@ -2,10 +2,14 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#ifndef __pinocchio_utils_static_if_hpp__
-#define __pinocchio_utils_static_if_hpp__
+#ifndef __pinocchio_utils_static_if_hxx__
+#define __pinocchio_utils_static_if_hxx__
 
-#include "pinocchio/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/macros.hpp"
+  #include "pinocchio/common-traits.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
