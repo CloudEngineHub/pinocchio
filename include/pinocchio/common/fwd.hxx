@@ -2,10 +2,12 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_common_fwd_hpp__
-#define __pinocchio_common_fwd_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/common.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -16,5 +18,3 @@ namespace pinocchio
   struct ModelEntity;
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_common_fwd_hpp__
