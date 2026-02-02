@@ -2,12 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_container_double_entry_container_hpp__
-#define __pinocchio_container_double_entry_container_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
-
-#include <functional>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/container/double-entry-container.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -306,5 +306,3 @@ namespace pinocchio
   } // namespace container
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_container_double_entry_container_hpp__

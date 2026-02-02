@@ -2,15 +2,12 @@
 // Copyright (c) 2025-2026 INRIA
 //
 
-#ifndef __pinocchio_container_matrix_stack_hpp__
-#define __pinocchio_container_matrix_stack_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
-#include "pinocchio/math/matrix-info.hpp"
-#include "pinocchio/utils/eigen-helpers.hpp"
-
-#include <cstddef>
-#include <type_traits>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/container/matrix-stack.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -1056,5 +1053,3 @@ namespace pinocchio
   }; // struct MatrixStackTpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_container_matrix_stack_hpp__
