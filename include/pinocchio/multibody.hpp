@@ -36,10 +36,12 @@
 #include "pinocchio/spatial.hpp"
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/multibody/liegroup.hpp"
+#include "pinocchio/algorithm/joint-configuration.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
 #include "pinocchio/multibody/fwd.hxx"
+#include "pinocchio/multibody/force-set.hxx"
 #include "pinocchio/multibody/model-item.hxx"
 #include "pinocchio/multibody/frame.hxx"
 #include "pinocchio/multibody/model.hxx"
