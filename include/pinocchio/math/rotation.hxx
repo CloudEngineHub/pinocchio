@@ -2,17 +2,11 @@
 // Copyright (c) 2019-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_math_rotation_hxx__
-#define __pinocchio_math_rotation_hxx__
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
-  #include <Eigen/SVD>
-
-  #include "pinocchio/eigen-common.hpp"
-
-  #include "pinocchio/math/sincos.hpp"
+  #include "pinocchio/math/rotation.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -116,5 +110,3 @@ namespace pinocchio
     return res;
   }
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_rotation_hxx__

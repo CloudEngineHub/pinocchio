@@ -6,7 +6,6 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-
   #include "pinocchio/math/taylor-expansion.hpp"
 #endif // PINOCCHIO_LSP
 

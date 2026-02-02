@@ -668,17 +668,4 @@ namespace pinocchio
     return res;
   }
 
-  template<typename Scalar, int Options>
-  template<typename OtherScalar>
-  SE3Tpl<Scalar, Options> SE3Tpl<Scalar, Options>::Interpolate(
-    const SE3Tpl & A, const SE3Tpl & B, const OtherScalar & alpha)
-  {
-    typedef SE3Tpl<Scalar, Options> ReturnType;
-    typedef MotionTpl<Scalar, Options> Motion;
-
-    Motion dv = log6(A.actInv(B));
-    ReturnType res = A * exp6(alpha * dv);
-    return res;
-  }
-
 } // namespace pinocchio

@@ -85,7 +85,7 @@ namespace pinocchio
 #include <cstddef> // std::size_t
 
 #include <type_traits>
-#include "pinocchio/common-traits.hxx" // IWYU pragma: export
+#include "pinocchio/traits.hxx" // IWYU pragma: export
 
 #include "pinocchio/alloca.hpp"
 #include "pinocchio/context.hpp"

@@ -2,14 +2,11 @@
 // Copyright (c) 2017-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_cartesian_axis_hxx__
-#define __pinocchio_cartesian_axis_hxx__
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
-
-  #include "pinocchio/eigen-common.hpp"
+  #include "pinocchio/spatial/cartesian-axis.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -179,5 +176,3 @@ namespace pinocchio
   typedef ZAxis AxisZ;
 
 } // namespace pinocchio
-
-#endif // __pinocchio_cartesian_axis_hxx__

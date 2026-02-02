@@ -5,7 +5,7 @@
 
 // IWYU pragma: begin_keep
 #include <Eigen/Core>
-#include "pinocchio/common-traits.hpp"
+#include "pinocchio/traits.hpp"
 #include "pinocchio/utils/eigen-fix.hxx"
 // IWYU pragma: end_keep
 

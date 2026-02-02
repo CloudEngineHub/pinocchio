@@ -4,12 +4,9 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include <Eigen/Core>
-#include <Eigen/SVD>
-
-#include "pinocchio/eigen-common.hpp"
-
-#include "pinocchio/math/sincos.hpp"
+#include "pinocchio/math.hpp"
 // IWYU pragma: end_keep
 
-#include "pinocchio/math/rotation.hxx" // IWYU pragma: export
+// IWYU pragma: begin_exports
+#include "pinocchio/math/rotation.hxx"
+// IWYU pragma: end_exports

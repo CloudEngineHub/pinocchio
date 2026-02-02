@@ -1,12 +1,13 @@
 //
-// Copyright (c) INRIA 2026
+// Copyright (c) 2026 INRIA
 //
 #pragma once
 
 // IWYU pragma: begin_keep
-#include "pinocchio/spatial.hpp"
+#include <Eigen/Core>
+#include <type_traits>
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/classic-acceleration.hxx"
+#include "pinocchio/traits.hxx"
 // IWYU pragma: end_exports

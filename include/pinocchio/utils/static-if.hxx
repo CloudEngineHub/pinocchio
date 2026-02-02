@@ -8,7 +8,7 @@
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/macros.hpp"
-  #include "pinocchio/common-traits.hpp"
+  #include "pinocchio/traits.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

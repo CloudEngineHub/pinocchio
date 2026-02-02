@@ -5,8 +5,10 @@
 #ifndef __pinocchio_act_on_set_hxx__
 #define __pinocchio_act_on_set_hxx__
 
-#include "pinocchio/macros.hpp"
-#include "pinocchio/spatial/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/spatial/act-on-set.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -820,5 +822,3 @@ namespace pinocchio
   } // namespace motionSet
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_act_on_set_hxx__

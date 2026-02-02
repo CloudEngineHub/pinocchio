@@ -2,8 +2,7 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_math_quaternion_hxx__
-#define __pinocchio_math_quaternion_hxx__
+#pragma once
 
 #ifndef PINOCCHIO_DEFAULT_QUATERNION_NORM_TOLERANCE_VALUE
   #define PINOCCHIO_DEFAULT_QUATERNION_NORM_TOLERANCE_VALUE 1e-8
@@ -11,14 +10,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
-  #include <Eigen/Geometry>
-
-  #include "pinocchio/utils/static-if.hpp"
-
-  #include "pinocchio/math/fwd.hxx"
-  #include "pinocchio/math/matrix.hpp"
-  #include "pinocchio/math/sincos.hpp"
+  #include "pinocchio/math/quaternion.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -341,4 +333,3 @@ namespace pinocchio
   } // namespace quaternion
 
 } // namespace pinocchio
-#endif // #ifndef __pinocchio_math_quaternion_hxx__

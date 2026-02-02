@@ -8,8 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/log-common.hxx"
-#include "pinocchio/spatial/explog.hxx"
-#include "pinocchio/spatial/explog-quaternion.hxx"
-#include "pinocchio/spatial/log.hxx"
+#include "pinocchio/spatial/act-on-set.hxx"
 // IWYU pragma: end_exports

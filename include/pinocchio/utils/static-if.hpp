@@ -5,7 +5,7 @@
 
 // IWYU pragma: begin_keep
 #include "pinocchio/macros.hpp"
-#include "pinocchio/common-traits.hpp"
+#include "pinocchio/traits.hpp"
 // IWYU pragma: end_keep
 
 #include "pinocchio/utils/static-if.hxx" // IWYU pragma: export

@@ -8,7 +8,7 @@
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include <Eigen/Core>
-  #include "pinocchio/common-traits.hpp"   // IWYU pragma: keep
+  #include "pinocchio/traits.hpp"          // IWYU pragma: keep
   #include "pinocchio/utils/eigen-fix.hxx" // IWYU pragma: keep
 
 #endif // PINOCCHIO_LSP

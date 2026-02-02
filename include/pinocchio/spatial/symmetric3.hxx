@@ -2,18 +2,11 @@
 // Copyright (c) 2014-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_spatial_symmetric3_hxx__
-#define __pinocchio_spatial_symmetric3_hxx__
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
-
-  #include "pinocchio/common-traits.hpp"
-  #include "pinocchio/eigen-common.hpp"
-
-  #include "pinocchio/context.hxx" // IWYU pragma: keep
-  #include "pinocchio/spatial/fwd.hxx"
+  #include "pinocchio/spatial/symmetric3.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -630,5 +623,3 @@ namespace pinocchio
   }; // class Symmetric3Tpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_spatial_symmetric3_hxx__

@@ -4,20 +4,11 @@
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_spatial_force_base_hxx__
-#define __pinocchio_spatial_force_base_hxx__
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
-
-  #include "pinocchio/common-traits.hpp"
-
-  #include "pinocchio/context.hxx" // IWYU pragma: keep
-  #include "pinocchio/spatial/fwd.hxx"
-  #include "pinocchio/spatial/force-common.hxx"
-  #include "pinocchio/spatial/se3-common.hxx"
-  #include "pinocchio/spatial/motion-common.hxx"
+  #include "pinocchio/spatial/force.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -309,5 +300,3 @@ namespace pinocchio
   }; // class ForceBase
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_spatial_force_base_hxx__

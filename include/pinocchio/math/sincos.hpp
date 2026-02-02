@@ -4,7 +4,9 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include <cmath>
+#include "pinocchio/math.hpp"
 // IWYU pragma: end_keep
 
-#include "pinocchio/math/sincos.hxx" // IWYU pragma: export
+// IWYU pragma: begin_exports
+#include "pinocchio/math/sincos.hxx"
+// IWYU pragma: end_exports

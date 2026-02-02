@@ -4,25 +4,11 @@
 // Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_spatial_inertia_hxx__
-#define __pinocchio_spatial_inertia_hxx__
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
-
-  #include "pinocchio/macros.hpp"
-  #include "pinocchio/common-traits.hpp"
-  #include "pinocchio/eigen-common.hpp"
-
-  #include "pinocchio/utils/cast.hpp"
-
-  #include "pinocchio/math/alias.hpp"
-
-  #include "pinocchio/context.hxx" // IWYU pragma: keep
-  #include "pinocchio/spatial/fwd.hxx"
-  #include "pinocchio/spatial/symmetric3.hpp"
-  #include "pinocchio/spatial/skew.hpp"
+  #include "pinocchio/spatial/inertia.hpp"
 #endif // PINOCCHIO_LSP
 
 #define SPATIAL_TYPEDEF_TEMPLATE_GENERIC(derived, TYPENAME)                                        \
@@ -1374,5 +1360,3 @@ namespace pinocchio
   }; // class
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_spatial_inertia_hxx__

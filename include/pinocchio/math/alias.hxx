@@ -5,11 +5,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <cmath>
-
-  #include <boost/math/constants/constants.hpp>
-
-  #include <Eigen/Core>
+  #include "pinocchio/math/alias.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

@@ -3,21 +3,11 @@
 // Copyright (c) 2016-2018 CNRS
 //
 
-#ifndef __pinocchio_math_matrix_hxx__
-#define __pinocchio_math_matrix_hxx__
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
-
-  #include "pinocchio/macros.hpp"
-  #include "pinocchio/eigen-common.hpp"
-  #include "pinocchio/alloca.hpp"
-
-  #include "pinocchio/utils/static-if.hpp"
-
-  #include "pinocchio/math/fwd.hxx"
-  #include "pinocchio/math/alias.hpp"
+  #include "pinocchio/math/matrix.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -841,5 +831,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_matrix_hxx__
