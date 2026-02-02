@@ -10,11 +10,6 @@
   #include "pinocchio/multibody.hpp"
 #endif // PINOCCHIO_LSP
 
-#include "pinocchio/container/matrix-stack.hpp"
-// #include "pinocchio/algorithm/constraint-cholesky.hpp"
-
-// #include "pinocchio/serialization/serializable.hpp"
-
 namespace pinocchio
 {
 
