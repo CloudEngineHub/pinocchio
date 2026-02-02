@@ -2,10 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_check_base_hpp__
-#define __pinocchio_algorithm_check_base_hpp__
+#pragma once
 
-#include "pinocchio/multibody/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/check-base.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -32,5 +34,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // __pinocchio_algorithm_check_base_hpp__
