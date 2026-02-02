@@ -165,11 +165,11 @@ find_package(Boost COMPONENTS unit_test_framework)
 
 # Header only
 # add_pinocchio_unit_test(alloca HEADER_ONLY)
-# add_pinocchio_unit_test(double-entry-container HEADER_ONLY)
+add_pinocchio_unit_test(double-entry-container HEADER_ONLY)
 add_pinocchio_unit_test(macros HEADER_ONLY)
 # add_pinocchio_unit_test(reference HEADER_ONLY)
 # add_pinocchio_unit_test(eigen-storage HEADER_ONLY)
-# add_pinocchio_unit_test(matrix-stack HEADER_ONLY)
+add_pinocchio_unit_test(matrix-stack HEADER_ONLY)
 # add_pinocchio_unit_test(size-in-bytes HEADER_ONLY)
 
 # Math components
@@ -177,7 +177,7 @@ add_pinocchio_unit_test(macros HEADER_ONLY)
 add_pinocchio_unit_test(matrix HEADER_ONLY)
 add_pinocchio_unit_test(block-diagonal-matrix HEADER_ONLY)
 add_pinocchio_unit_test(matrix-block-element HEADER_ONLY)
-# add_pinocchio_unit_test(eigen-tensor HEADER_ONLY)
+add_pinocchio_unit_test(eigen-tensor HEADER_ONLY)
 add_pinocchio_unit_test(sincos HEADER_ONLY)
 add_pinocchio_unit_test(quaternion HEADER_ONLY)
 # add_pinocchio_unit_test(rpy HEADER_ONLY)
@@ -337,13 +337,13 @@ add_pinocchio_unit_test(explog)
 # add_pinocchio_unit_test(model-graph PARSERS)
 # add_pinocchio_unit_test(model-configuration-converter PARSERS)
 
-# # Warning ignore with pragma doesn't work for a part of this test, so we ignore two warning globally
-# cxx_flags_by_compiler_frontend(
-#   GNU -Wno-maybe-uninitialized -Wuse-after-free=0
-#   OUTPUT LIEGROUPS_OPTIONS
-#   FILTER)
+# Warning ignore with pragma doesn't work for a part of this test, so we ignore two warning globally
+cxx_flags_by_compiler_frontend(
+  GNU -Wno-maybe-uninitialized -Wuse-after-free=0
+  OUTPUT LIEGROUPS_OPTIONS
+  FILTER)
 add_pinocchio_unit_test(liegroups)
-# add_test_cflags(liegroups ${LIEGROUPS_OPTIONS})
+add_test_cflags(liegroups ${LIEGROUPS_OPTIONS})
 
 add_pinocchio_unit_test(cartesian-product-liegroups)
 # add_pinocchio_unit_test(regressor)
