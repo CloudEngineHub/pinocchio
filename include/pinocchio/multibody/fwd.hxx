@@ -2,25 +2,45 @@
 // Copyright (c) 2017-2024 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_fwd_hpp__
-#define __pinocchio_multibody_fwd_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
-
-#include "pinocchio/multibody/joint/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+  #include <cstddef>
+  #include "pinocchio/context.hxx"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   /**
    * \addtogroup pinocchio_multibody
    * @{
    */
+  template<typename _Scalar, int _Options>
+  struct JointCollectionDefaultTpl;
+  template<
+    typename _Scalar,
+    int _Options = context::Options,
+    template<typename S, int O> class JointCollectionTpl = JointCollectionDefaultTpl>
+  struct ModelTpl;
+  template<
+    typename _Scalar,
+    int _Options = context::Options,
+    template<typename S, int O> class JointCollectionTpl = JointCollectionDefaultTpl>
+  struct DataTpl;
   template<typename Scalar, int Options = context::Options>
   struct FrameTpl;
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
+
+  template<int _Dim, typename _Scalar, int _Options = context::Options, int _MaxDim = -1>
+  struct JointMotionSubspaceTpl;
+
+  typedef JointMotionSubspaceTpl<1, context::Scalar, context::Options> JointMotionSubspace1d;
+  typedef JointMotionSubspaceTpl<3, context::Scalar, context::Options> JointMotionSubspace3d;
+  typedef JointMotionSubspaceTpl<6, context::Scalar, context::Options> JointMotionSubspace6d;
+  typedef JointMotionSubspaceTpl<Eigen::Dynamic, context::Scalar, context::Options>
+    JointMotionSubspaceXd;
 
   typedef std::size_t Index;
   typedef Index JointIndex;
@@ -29,7 +49,6 @@ namespace pinocchio
   typedef Index PairIndex;
 
   typedef FrameTpl<context::Scalar, context::Options> Frame;
-
   typedef ModelTpl<context::Scalar, context::Options> Model;
   typedef DataTpl<context::Scalar, context::Options> Data;
 
@@ -99,5 +118,3 @@ namespace pinocchio
   struct AlgorithmCheckerBase;
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_multibody_fwd_hpp__

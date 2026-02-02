@@ -2,7 +2,7 @@
 // Copyright (c) 2018-2019 INRIA
 //
 
-#include "pinocchio/math/sincos.hpp"
+#include "pinocchio/math.hpp"
 
 #include <boost/test/unit_test.hpp>
 

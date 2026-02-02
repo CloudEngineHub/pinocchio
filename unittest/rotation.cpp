@@ -2,10 +2,9 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#include <Eigen/Geometry>
+#include <pinocchio/math.hpp>
 
-#include <pinocchio/math/rotation.hpp>
-#include <pinocchio/math/sincos.hpp>
+#include <Eigen/Geometry>
 
 #include <boost/test/unit_test.hpp>
 

@@ -147,11 +147,11 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/alloca.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi-algo.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/math/matrix.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/math/quaternion.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/math/triangular-matrix.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/spatial/se3-tpl.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/utils/static-if.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/math/matrix.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/math/quaternion.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/math/triangular-matrix.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/spatial/se3-tpl.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/utils/static-if.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/algorithm/aba.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/math/quaternion.hpp

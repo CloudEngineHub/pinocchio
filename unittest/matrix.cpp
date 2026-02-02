@@ -2,7 +2,7 @@
 // Copyright (c) 2024-2026 INRIA
 //
 
-#include <pinocchio/math/matrix.hpp>
+#include <pinocchio/math.hpp>
 
 #include <Eigen/Core>
 

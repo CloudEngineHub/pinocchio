@@ -2,8 +2,8 @@
 // Copyright (c) 2019-2020 INRIA CNRS
 //
 
-#include <pinocchio/math/quaternion.hpp>
-#include <pinocchio/spatial/se3.hpp>
+#include <pinocchio/math.hpp>
+#include <pinocchio/spatial.hpp>
 
 #include <boost/test/unit_test.hpp>
 

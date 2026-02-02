@@ -17,8 +17,7 @@
  * - Pinocchio: 6us
  */
 
-#include "pinocchio/spatial/skew.hpp"
-#include "pinocchio/spatial/symmetric3.hpp"
+#include "pinocchio/spatial.hpp"
 #include "pinocchio/utils/timer.hpp"
 
 #include <Eigen/Core>

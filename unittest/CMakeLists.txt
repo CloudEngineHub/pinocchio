@@ -394,9 +394,9 @@ add_pinocchio_unit_test(orthant-cone-jordan-operation)
 #   add_subdirectory(cppadcg)
 # endif()
 
-# if(BUILD_WITH_CASADI_SUPPORT)
-#   add_subdirectory(casadi)
-# endif()
+if(BUILD_WITH_CASADI_SUPPORT)
+  add_subdirectory(casadi)
+endif()
 
 # if(BUILD_WITH_RTSAN)
 #   add_pinocchio_unit_test(dynamic-allocations)
