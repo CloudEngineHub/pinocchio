@@ -4,10 +4,9 @@
 
 #include <pinocchio/math/matrix.hpp>
 
-#include <boost/variant.hpp> // to avoid C99 warnings
+#include <Eigen/Core>
 
 #include <boost/test/unit_test.hpp>
-#include <boost/utility/binary.hpp>
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 

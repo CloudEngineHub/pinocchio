@@ -5,7 +5,13 @@
 #ifndef __pinocchio_eigen_macros_hpp__
 #define __pinocchio_eigen_macros_hpp__
 
-#include "pinocchio/utils/eigen-fix.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+  #include "pinocchio/common-traits.hpp"   // IWYU pragma: keep
+  #include "pinocchio/utils/eigen-fix.hxx" // IWYU pragma: keep
+
+#endif // PINOCCHIO_LSP
 
 /// \brief Macro giving access to the equivalent plain type of D
 #define PINOCCHIO_EIGEN_PLAIN_TYPE(D)                                                              \

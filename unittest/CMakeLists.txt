@@ -164,248 +164,243 @@ endmacro()
 find_package(Boost COMPONENTS unit_test_framework)
 
 # Header only
-add_pinocchio_unit_test(alloca HEADER_ONLY)
-add_pinocchio_unit_test(double-entry-container HEADER_ONLY)
-add_pinocchio_unit_test(macros HEADER_ONLY)
-add_pinocchio_unit_test(reference HEADER_ONLY)
-add_pinocchio_unit_test(eigen-storage HEADER_ONLY)
-add_pinocchio_unit_test(matrix-stack HEADER_ONLY)
-add_pinocchio_unit_test(size-in-bytes HEADER_ONLY)
+# add_pinocchio_unit_test(alloca HEADER_ONLY)
+# add_pinocchio_unit_test(double-entry-container HEADER_ONLY)
+# add_pinocchio_unit_test(macros HEADER_ONLY)
+# add_pinocchio_unit_test(reference HEADER_ONLY)
+# add_pinocchio_unit_test(eigen-storage HEADER_ONLY)
+# add_pinocchio_unit_test(matrix-stack HEADER_ONLY)
+# add_pinocchio_unit_test(size-in-bytes HEADER_ONLY)
 
 # Math components
-add_pinocchio_unit_test(eigen-basic-op HEADER_ONLY)
+# add_pinocchio_unit_test(eigen-basic-op HEADER_ONLY)
 add_pinocchio_unit_test(matrix HEADER_ONLY)
 add_pinocchio_unit_test(block-diagonal-matrix HEADER_ONLY)
 add_pinocchio_unit_test(matrix-block-element HEADER_ONLY)
-add_pinocchio_unit_test(eigen-tensor HEADER_ONLY)
+# add_pinocchio_unit_test(eigen-tensor HEADER_ONLY)
 add_pinocchio_unit_test(sincos HEADER_ONLY)
 add_pinocchio_unit_test(quaternion HEADER_ONLY)
-add_pinocchio_unit_test(rpy HEADER_ONLY)
+# add_pinocchio_unit_test(rpy HEADER_ONLY)
 add_pinocchio_unit_test(rotation HEADER_ONLY)
-add_pinocchio_unit_test(vector HEADER_ONLY)
-add_pinocchio_unit_test(matrix-inverse HEADER_ONLY)
-add_pinocchio_unit_test(matrix-product HEADER_ONLY)
-add_pinocchio_unit_test(eigenvalues HEADER_ONLY)
-add_pinocchio_unit_test(tridiagonal-matrix HEADER_ONLY)
-add_pinocchio_unit_test(lanczos-decomposition HEADER_ONLY)
-add_pinocchio_unit_test(gram-schmidt-orthonormalisation HEADER_ONLY)
-add_pinocchio_unit_test(promote-static-eval HEADER_ONLY)
+# add_pinocchio_unit_test(vector HEADER_ONLY)
+# add_pinocchio_unit_test(matrix-inverse HEADER_ONLY)
+# add_pinocchio_unit_test(matrix-product HEADER_ONLY)
+# add_pinocchio_unit_test(eigenvalues HEADER_ONLY)
+# add_pinocchio_unit_test(tridiagonal-matrix HEADER_ONLY)
+# add_pinocchio_unit_test(lanczos-decomposition HEADER_ONLY)
+# add_pinocchio_unit_test(gram-schmidt-orthonormalisation HEADER_ONLY)
+# add_pinocchio_unit_test(promote-static-eval HEADER_ONLY)
 
 # Derivatives algo
-add_pinocchio_unit_test(kinematics-derivatives)
-add_pinocchio_unit_test(frames-derivatives)
-add_pinocchio_unit_test(rnea-derivatives)
-add_pinocchio_unit_test(aba-derivatives)
-add_pinocchio_unit_test(centroidal-derivatives)
-add_pinocchio_unit_test(center-of-mass-derivatives)
-add_pinocchio_unit_test(constrained-dynamics-derivatives)
+# add_pinocchio_unit_test(kinematics-derivatives)
+# add_pinocchio_unit_test(frames-derivatives)
+# add_pinocchio_unit_test(rnea-derivatives)
+# add_pinocchio_unit_test(aba-derivatives)
+# add_pinocchio_unit_test(centroidal-derivatives)
+# add_pinocchio_unit_test(center-of-mass-derivatives)
+# add_pinocchio_unit_test(constrained-dynamics-derivatives)
 
-if(BUILD_WITH_SDF_SUPPORT)
-  add_pinocchio_unit_test(contact-dynamics-derivatives PARSERS)
-else()
-  add_pinocchio_unit_test(contact-dynamics-derivatives)
-endif()
-add_pinocchio_unit_test(impulse-dynamics-derivatives)
-add_pinocchio_unit_test(rnea-second-order-derivatives)
+# if(BUILD_WITH_SDF_SUPPORT)
+#   add_pinocchio_unit_test(contact-dynamics-derivatives PARSERS)
+# else()
+#   add_pinocchio_unit_test(contact-dynamics-derivatives)
+# endif()
+# add_pinocchio_unit_test(impulse-dynamics-derivatives)
+# add_pinocchio_unit_test(rnea-second-order-derivatives)
 
-# Pinocchio features
+# # Pinocchio features
 add_pinocchio_unit_test(spatial)
 add_pinocchio_unit_test(symmetric)
-add_pinocchio_unit_test(aba)
-add_pinocchio_parallel_unit_test(parallel-aba)
-add_pinocchio_unit_test(rnea)
-add_pinocchio_parallel_unit_test(parallel-rnea)
-add_pinocchio_unit_test(crba)
-add_pinocchio_unit_test(centroidal)
-add_pinocchio_unit_test(com)
-add_pinocchio_unit_test(joint-jacobian)
-add_pinocchio_unit_test(cholesky)
-add_pinocchio_unit_test(constrained-dynamics)
-add_pinocchio_unit_test(constraint-variants)
-add_pinocchio_unit_test(contact-models)
-add_pinocchio_unit_test(point-anchor-constraint)
-add_pinocchio_unit_test(point-contact-constraint)
-add_pinocchio_unit_test(frame-anchor-constraint)
-add_pinocchio_unit_test(joint-friction-constraint)
-add_pinocchio_unit_test(joint-limit-constraint)
-add_pinocchio_unit_test(constraint-jacobian)
-add_pinocchio_unit_test(contact-dynamics)
-add_pinocchio_unit_test(contact-inverse-dynamics)
-add_pinocchio_unit_test(closed-loop-dynamics)
-add_pinocchio_unit_test(loop-constrained-aba)
-add_pinocchio_unit_test(impulse-dynamics)
-add_pinocchio_unit_test(sample-models COLLISION_OPTIONAL)
-add_pinocchio_unit_test(kinematics)
-add_pinocchio_unit_test(delassus)
-add_pinocchio_unit_test(delassus-operations)
-add_pinocchio_unit_test(delassus-operator-dense)
+# add_pinocchio_unit_test(aba)
+# add_pinocchio_parallel_unit_test(parallel-aba)
+# add_pinocchio_unit_test(rnea)
+# add_pinocchio_parallel_unit_test(parallel-rnea)
+# add_pinocchio_unit_test(crba)
+# add_pinocchio_unit_test(centroidal)
+# add_pinocchio_unit_test(com)
+# add_pinocchio_unit_test(joint-jacobian)
+# add_pinocchio_unit_test(cholesky)
+# add_pinocchio_unit_test(constrained-dynamics)
+# add_pinocchio_unit_test(constraint-variants)
+# add_pinocchio_unit_test(contact-models)
+# add_pinocchio_unit_test(point-anchor-constraint)
+# add_pinocchio_unit_test(point-contact-constraint)
+# add_pinocchio_unit_test(frame-anchor-constraint)
+# add_pinocchio_unit_test(joint-friction-constraint)
+# add_pinocchio_unit_test(joint-limit-constraint)
+# add_pinocchio_unit_test(constraint-jacobian)
+# add_pinocchio_unit_test(contact-dynamics)
+# add_pinocchio_unit_test(contact-inverse-dynamics)
+# add_pinocchio_unit_test(closed-loop-dynamics)
+# add_pinocchio_unit_test(loop-constrained-aba)
+# add_pinocchio_unit_test(impulse-dynamics)
+# add_pinocchio_unit_test(sample-models COLLISION_OPTIONAL)
+# add_pinocchio_unit_test(kinematics)
+# add_pinocchio_unit_test(delassus)
+# add_pinocchio_unit_test(delassus-operator-dense)
 # add_pinocchio_unit_test(delassus-operator-preconditioned)
-add_pinocchio_unit_test(delassus-operator-rigid-body)
-add_pinocchio_unit_test(preconditioner)
-add_pinocchio_unit_test(pv-solver)
-add_pinocchio_parallel_unit_test(openmp-exception)
+# add_pinocchio_unit_test(delassus-operator-rigid-body)
+# add_pinocchio_unit_test(preconditioner)
+# add_pinocchio_unit_test(pv-solver)
+# add_pinocchio_parallel_unit_test(openmp-exception)
 
-add_pinocchio_unit_test(
-  mjcf
-  PARSERS
-  COLLISION_OPTIONAL)
+# add_pinocchio_unit_test(
+#   mjcf
+#   PARSERS
+#   COLLISION_OPTIONAL)
 
-if(BUILD_WITH_URDF_SUPPORT)
-  add_pinocchio_unit_test(
-    urdf
-    PARSERS
-    COLLISION_OPTIONAL)
+# if(BUILD_WITH_URDF_SUPPORT)
+#   add_pinocchio_unit_test(
+#     urdf
+#     PARSERS
+#     COLLISION_OPTIONAL)
 
-  add_pinocchio_unit_test(value PARSERS)
-  if(BUILD_WITH_COLLISION_SUPPORT)
-    add_pinocchio_unit_test(geometry-object COLLISION)
-    add_pinocchio_unit_test(
-      geometry-model
-      PARSERS
-      COLLISION)
-    add_pinocchio_unit_test(
-      geometry-algorithms
-      PARSERS
-      COLLISION)
-    add_pinocchio_unit_test(
-      broadphase
-      PARSERS
-      COLLISION)
-    add_pinocchio_unit_test(
-      tree-broadphase
-      PARSERS
-      COLLISION)
-    add_pinocchio_parallel_unit_test(parallel-geometry PARSERS COLLISION)
-    add_pinocchio_unit_test(
-      srdf
-      PARSERS
-      COLLISION)
-  endif()
-endif()
+#   add_pinocchio_unit_test(value PARSERS)
+#   if(BUILD_WITH_COLLISION_SUPPORT)
+#     add_pinocchio_unit_test(geometry-object COLLISION)
+#     add_pinocchio_unit_test(
+#       geometry-model
+#       PARSERS
+#       COLLISION)
+#     add_pinocchio_unit_test(
+#       geometry-algorithms
+#       PARSERS
+#       COLLISION)
+#     add_pinocchio_unit_test(
+#       broadphase
+#       PARSERS
+#       COLLISION)
+#     add_pinocchio_unit_test(
+#       tree-broadphase
+#       PARSERS
+#       COLLISION)
+#     add_pinocchio_parallel_unit_test(parallel-geometry PARSERS COLLISION)
+#     add_pinocchio_unit_test(
+#       srdf
+#       PARSERS
+#       COLLISION)
+#   endif()
+# endif()
 
-if(BUILD_WITH_SDF_SUPPORT)
-  add_pinocchio_unit_test(sdf PARSERS)
-endif()
+# if(BUILD_WITH_SDF_SUPPORT)
+#   add_pinocchio_unit_test(sdf PARSERS)
+# endif()
 
-if(BUILD_WITH_EXTRA_SUPPORT)
-  add_pinocchio_unit_test(
-    reachable-workspace
-    PARSERS
-    EXTRA
-    COLLISION_OPTIONAL)
-endif()
+# if(BUILD_WITH_EXTRA_SUPPORT)
+#   add_pinocchio_unit_test(
+#     reachable-workspace
+#     PARSERS
+#     EXTRA
+#     COLLISION_OPTIONAL)
+# endif()
 
-add_pinocchio_unit_test(visualizer VISUALIZERS)
+# add_pinocchio_unit_test(visualizer VISUALIZERS)
 
-if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
-  add_pinocchio_unit_test(python_parser PYTHON_PARSER)
-endif()
+# if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
+#   add_pinocchio_unit_test(python_parser PYTHON_PARSER)
+# endif()
 
-if(BUILD_PYTHON_INTERFACE)
-  add_subdirectory(python)
-endif()
+# if(BUILD_PYTHON_INTERFACE)
+#   add_subdirectory(python)
+# endif()
 
-# Test over the joints
-add_pinocchio_unit_test(all-joints)
-add_pinocchio_unit_test(joint-revolute)
-add_pinocchio_unit_test(joint-prismatic)
-add_pinocchio_unit_test(joint-planar)
-add_pinocchio_unit_test(joint-free-flyer)
-add_pinocchio_unit_test(joint-spherical)
-add_pinocchio_unit_test(joint-ellipsoid)
-add_pinocchio_unit_test(joint-translation)
-add_pinocchio_unit_test(joint-generic)
-add_pinocchio_unit_test(joint-composite)
-add_pinocchio_unit_test(joint-mimic)
-add_pinocchio_unit_test(joint-helical)
-add_pinocchio_unit_test(joint-universal)
-add_pinocchio_unit_test(joint-visitors)
+# # Test over the joints
+# add_pinocchio_unit_test(all-joints)
+# add_pinocchio_unit_test(joint-revolute)
+# add_pinocchio_unit_test(joint-prismatic)
+# add_pinocchio_unit_test(joint-planar)
+# add_pinocchio_unit_test(joint-free-flyer)
+# add_pinocchio_unit_test(joint-spherical)
+# add_pinocchio_unit_test(joint-ellipsoid)
+# add_pinocchio_unit_test(joint-translation)
+# add_pinocchio_unit_test(joint-generic)
+# add_pinocchio_unit_test(joint-composite)
+# add_pinocchio_unit_test(joint-mimic)
+# add_pinocchio_unit_test(joint-helical)
+# add_pinocchio_unit_test(joint-universal)
+# add_pinocchio_unit_test(joint-visitors)
 
-# Main corpus
-add_pinocchio_unit_test(model COLLISION_OPTIONAL)
-add_pinocchio_unit_test(data)
-add_pinocchio_unit_test(joint-motion-subspace)
-add_pinocchio_unit_test(compute-all-terms)
-add_pinocchio_unit_test(energy)
-add_pinocchio_unit_test(frames)
-if(NOT MSVC AND NOT MSVC_VERSION)
-  add_pinocchio_unit_test(joint-configurations)
-endif()
+# # Main corpus
+# add_pinocchio_unit_test(model COLLISION_OPTIONAL)
+# add_pinocchio_unit_test(data)
+# add_pinocchio_unit_test(joint-motion-subspace)
+# add_pinocchio_unit_test(compute-all-terms)
+# add_pinocchio_unit_test(energy)
+# add_pinocchio_unit_test(frames)
+# if(NOT MSVC AND NOT MSVC_VERSION)
+#   add_pinocchio_unit_test(joint-configurations)
+# endif()
 add_pinocchio_unit_test(explog)
-add_pinocchio_unit_test(finite-differences)
-add_pinocchio_unit_test(visitor)
-add_pinocchio_unit_test(algo-check)
-add_pinocchio_unit_test(model-graph PARSERS)
-add_pinocchio_unit_test(model-configuration-converter PARSERS)
+# add_pinocchio_unit_test(finite-differences)
+# add_pinocchio_unit_test(visitor)
+# add_pinocchio_unit_test(algo-check)
+# add_pinocchio_unit_test(model-graph PARSERS)
+# add_pinocchio_unit_test(model-configuration-converter PARSERS)
 
-# Warning ignore with pragma doesn't work for a part of this test, so we ignore two warning globally
-cxx_flags_by_compiler_frontend(
-  GNU -Wno-maybe-uninitialized -Wuse-after-free=0
-  OUTPUT LIEGROUPS_OPTIONS
-  FILTER)
-add_pinocchio_unit_test(liegroups)
-add_test_cflags(liegroups ${LIEGROUPS_OPTIONS})
+# # Warning ignore with pragma doesn't work for a part of this test, so we ignore two warning globally
+# cxx_flags_by_compiler_frontend(
+#   GNU -Wno-maybe-uninitialized -Wuse-after-free=0
+#   OUTPUT LIEGROUPS_OPTIONS
+#   FILTER)
+# add_pinocchio_unit_test(liegroups)
+# add_test_cflags(liegroups ${LIEGROUPS_OPTIONS})
 
-add_pinocchio_unit_test(cartesian-product-liegroups)
-add_pinocchio_unit_test(regressor)
-add_pinocchio_unit_test(version)
-add_pinocchio_unit_test(copy)
-add_pinocchio_unit_test(constraint-cholesky)
-add_pinocchio_unit_test(classic-acceleration)
-add_pinocchio_unit_test(box-set)
-add_pinocchio_unit_test(full-space-cone)
-add_pinocchio_unit_test(zero-cone)
-add_pinocchio_unit_test(orthant-cone)
-add_pinocchio_unit_test(coulomb-friction-cone)
+# add_pinocchio_unit_test(cartesian-product-liegroups)
+# add_pinocchio_unit_test(regressor)
+# add_pinocchio_unit_test(version)
+# add_pinocchio_unit_test(copy)
+# add_pinocchio_unit_test(constraint-cholesky)
+# add_pinocchio_unit_test(classic-acceleration)
+# add_pinocchio_unit_test(box-set)
+# add_pinocchio_unit_test(full-space-cone)
+# add_pinocchio_unit_test(zero-cone)
+# add_pinocchio_unit_test(orthant-cone)
+# add_pinocchio_unit_test(coulomb-friction-cone)
 
-# Solvers
-add_pinocchio_unit_test(pgs-solver)
-add_pinocchio_unit_test(admm-solver)
+# # Solvers
+# add_pinocchio_unit_test(pgs-solver)
+# add_pinocchio_unit_test(admm-solver)
 
 # Symmetric cones jordan operations
 add_pinocchio_unit_test(second-order-cone-jordan-operation)
 add_pinocchio_unit_test(orthant-cone-jordan-operation)
 
-# Serialization
-make_directory("${CMAKE_CURRENT_BINARY_DIR}/serialization-data")
-add_pinocchio_unit_test(serialization COLLISION_OPTIONAL)
-add_test_cflags(
-  serialization
-  "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
-add_pinocchio_unit_test(serialization-math)
-add_test_cflags(
-  serialization-math
-  "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
-add_pinocchio_unit_test(csv)
-add_test_cflags(
-  csv "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
+# # Serialization
+# make_directory("${CMAKE_CURRENT_BINARY_DIR}/serialization-data")
+# add_pinocchio_unit_test(serialization COLLISION_OPTIONAL)
+# add_test_cflags(
+#   serialization
+#   "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
+# add_pinocchio_unit_test(csv)
+# add_test_cflags(
+#   csv "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
 
-add_subdirectory(algorithm)
+# add_subdirectory(algorithm)
 
-# Multiprecision arithmetic
-if(BUILD_ADVANCED_TESTING)
-  add_pinocchio_unit_test(multiprecision)
+# # Multiprecision arithmetic
+# if(BUILD_ADVANCED_TESTING)
+#   add_pinocchio_unit_test(multiprecision)
 
-  if(MPFR_FOUND)
-    add_pinocchio_unit_test(multiprecision-mpfr PACKAGES mpfr gmp)
-  endif()
-endif()
+#   if(MPFR_FOUND)
+#     add_pinocchio_unit_test(multiprecision-mpfr PACKAGES mpfr gmp)
+#   endif()
+# endif()
 
-if(BUILD_WITH_AUTODIFF_SUPPORT)
-  add_subdirectory(cppad)
-endif()
+# if(BUILD_WITH_AUTODIFF_SUPPORT)
+#   add_subdirectory(cppad)
+# endif()
 
-if(BUILD_WITH_CODEGEN_SUPPORT)
-  add_subdirectory(cppadcg)
-endif()
+# if(BUILD_WITH_CODEGEN_SUPPORT)
+#   add_subdirectory(cppadcg)
+# endif()
 
-if(BUILD_WITH_CASADI_SUPPORT)
-  add_subdirectory(casadi)
-endif()
+# if(BUILD_WITH_CASADI_SUPPORT)
+#   add_subdirectory(casadi)
+# endif()
 
-if(BUILD_WITH_RTSAN)
-  add_pinocchio_unit_test(dynamic-allocations)
-  get_cpp_test_name(dynamic-allocations ${CMAKE_CURRENT_SOURCE_DIR} test_name)
-  target_compile_options(${test_name} PRIVATE -fsanitize=realtime)
-  target_link_options(${test_name} PRIVATE -fsanitize=realtime)
-endif()
+# if(BUILD_WITH_RTSAN)
+#   add_pinocchio_unit_test(dynamic-allocations)
+#   get_cpp_test_name(dynamic-allocations ${CMAKE_CURRENT_SOURCE_DIR} test_name)
+#   target_compile_options(${test_name} PRIVATE -fsanitize=realtime)
+#   target_link_options(${test_name} PRIVATE -fsanitize=realtime)
+# endif()

@@ -177,7 +177,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/context.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/core/binary-op.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/core/unary-op.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/eigen-macros.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/eigen-macros.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/macros.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/unsupported.hpp
@@ -345,26 +345,25 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/act-on-set.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/cartesian-axis.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/classic-acceleration.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/explog.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/explog-quaternion.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force-dense.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/explog.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/explog-quaternion.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force-dense.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force-ref.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force-tpl.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force-ref.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force-tpl.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/inertia.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/log.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/log.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-dense.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-dense.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-ref.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-tpl.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-zero.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/se3-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-ref.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-tpl.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion-zero.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/se3-base.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/se3.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/se3-tpl.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/se3-tpl.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/skew.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/spatial-axis.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/symmetric3.hpp

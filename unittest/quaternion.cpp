@@ -5,10 +5,7 @@
 #include <pinocchio/math/quaternion.hpp>
 #include <pinocchio/spatial/se3.hpp>
 
-#include <boost/variant.hpp> // to avoid C99 warnings
-
 #include <boost/test/unit_test.hpp>
-#include <boost/utility/binary.hpp>
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 

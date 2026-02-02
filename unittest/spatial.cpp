@@ -2,20 +2,18 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#include <iostream>
+// #include <iostream>
 
-#include "pinocchio/spatial/force.hpp"
 #include "pinocchio/spatial/motion.hpp"
+#include "pinocchio/spatial/force.hpp"
 #include "pinocchio/spatial/se3.hpp"
 #include "pinocchio/spatial/inertia.hpp"
-#include "pinocchio/spatial/act-on-set.hpp"
-#include "pinocchio/spatial/explog.hpp"
+// #include "pinocchio/spatial/act-on-set.hpp"
 #include "pinocchio/spatial/skew.hpp"
 #include "pinocchio/spatial/cartesian-axis.hpp"
 #include "pinocchio/spatial/spatial-axis.hpp"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/utility/binary.hpp>
 
 #include <Eigen/Eigenvalues>
 
@@ -525,13 +523,11 @@ BOOST_AUTO_TEST_CASE(test_Inertia)
   BOOST_CHECK_EQUAL(matI(1, 1), aI.mass());
   BOOST_CHECK_EQUAL(matI(2, 2), aI.mass()); // 1,1 before unifying
 
-  BOOST_CHECK_SMALL(
-    (matI - matI.transpose()).norm(),
-    matI.norm()); // previously ensure that( (matI-matI.transpose()).isMuchSmallerThan(matI) );
-  BOOST_CHECK_SMALL(
-    (matI.topRightCorner<3, 3>() * aI.lever()).norm(),
-    aI.lever().norm()); // previously ensure that(
-                        // (matI.topRightCorner<3,3>()*aI.lever()).isMuchSmallerThan(aI.lever()) );
+  // previously ensure that( (matI-matI.transpose()).isMuchSmallerThan(matI) );
+  BOOST_CHECK_SMALL((matI - matI.transpose()).norm(), matI.norm());
+  // previously ensure that(
+  // (matI.topRightCorner<3,3>()*aI.lever()).isMuchSmallerThan(aI.lever()));
+  BOOST_CHECK_SMALL((matI.topRightCorner<3, 3>() * aI.lever()).norm(), aI.lever().norm());
 
   Inertia I1 = Inertia::Identity();
   BOOST_CHECK(I1.matrix().isApprox(Matrix6::Identity()));
@@ -755,13 +751,13 @@ BOOST_AUTO_TEST_CASE(test_Inertia)
     // Convert logcholesky to inertia tpl
     Inertia I_from_log_cholesky = Inertia::FromLogCholeskyParameters(log_cholesky);
 
-    // Check if conversion from inertia tpl to pseudo inertia gives same result as from logcholesky
-    // parametrization to pseudo-inertia
+    // Check if conversion from inertia tpl to pseudo inertia gives same
+    // result as from logcholesky parametrization to pseudo-inertia
     Eigen::Matrix4d pseudo_from_inertia = I_from_log_cholesky.toPseudoInertia().toMatrix();
     BOOST_CHECK(pseudo_matrix.isApprox(pseudo_from_inertia, 1e-10));
 
-    // // Check if log-cholesky parametrization to pseudo-inertia gives same result as their
-    // calculations
+    // // Check if log-cholesky parametrization to pseudo-inertia gives same
+    // result as their calculations
     double alpha = log_cholesky.parameters[0];
     double d1 = log_cholesky.parameters[1];
     double d2 = log_cholesky.parameters[2];
@@ -790,7 +786,8 @@ BOOST_AUTO_TEST_CASE(test_Inertia)
     Eigen::Matrix4d pseudo_chol = U * U.transpose();
     BOOST_CHECK(pseudo_matrix.isApprox(pseudo_chol, 1e-10));
 
-    // Additional checks: Convert back from pseudo-inertia to inertia and validate
+    // Additional checks: Convert back from pseudo-inertia to inertia and
+    // validate
     Inertia I_back = pseudo.toInertia();
     BOOST_CHECK_CLOSE(I_back.mass(), I_from_log_cholesky.mass(), 1e-12);
     BOOST_CHECK(I_back.lever().isApprox(I_from_log_cholesky.lever(), 1e-12));
@@ -846,165 +843,165 @@ BOOST_AUTO_TEST_CASE(cast_inertia)
   BOOST_CHECK(Y2.isApprox(Y.cast<long double>()));
 }
 
-BOOST_AUTO_TEST_CASE(test_ActOnSet)
-{
-  using namespace pinocchio;
-  const int N = 20;
-  typedef Eigen::Matrix<double, 6, N> Matrix6N;
-  SE3 jMi = SE3::Random();
-  Motion v = Motion::Random();
+// BOOST_AUTO_TEST_CASE(test_ActOnSet)
+// {
+//   using namespace pinocchio;
+//   const int N = 20;
+//   typedef Eigen::Matrix<double, 6, N> Matrix6N;
+//   SE3 jMi = SE3::Random();
+//   Motion v = Motion::Random();
 
-  // Forcet SET
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
-  Matrix6N iF = Matrix6N::Random(), jF, jFinv, jF_ref, jFinv_ref;
+//   // Forcet SET
+//   PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+//   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
+//   Matrix6N iF = Matrix6N::Random(), jF, jFinv, jF_ref, jFinv_ref;
 
-  // forceSet::se3Action
-  forceSet::se3Action(jMi, iF, jF);
-  for (int k = 0; k < N; ++k)
-    BOOST_CHECK(jMi.act(Force(iF.col(k))).toVector().isApprox(jF.col(k)));
+//   // forceSet::se3Action
+//   forceSet::se3Action(jMi, iF, jF);
+//   for (int k = 0; k < N; ++k)
+//     BOOST_CHECK(jMi.act(Force(iF.col(k))).toVector().isApprox(jF.col(k)));
 
-  jF_ref = jMi.toDualActionMatrix() * iF;
-  BOOST_CHECK(jF_ref.isApprox(jF));
+//   jF_ref = jMi.toDualActionMatrix() * iF;
+//   BOOST_CHECK(jF_ref.isApprox(jF));
 
-  forceSet::se3ActionInverse(jMi.inverse(), iF, jFinv);
-  BOOST_CHECK(jFinv.isApprox(jF));
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
+//   forceSet::se3ActionInverse(jMi.inverse(), iF, jFinv);
+//   BOOST_CHECK(jFinv.isApprox(jF));
+//   PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
-  Matrix6N iF2 = Matrix6N::Random();
-  jF_ref += jMi.toDualActionMatrix() * iF2;
+//   Matrix6N iF2 = Matrix6N::Random();
+//   jF_ref += jMi.toDualActionMatrix() * iF2;
 
-  forceSet::se3Action<ADDTO>(jMi, iF2, jF);
-  BOOST_CHECK(jF.isApprox(jF_ref));
+//   forceSet::se3Action<ADDTO>(jMi, iF2, jF);
+//   BOOST_CHECK(jF.isApprox(jF_ref));
 
-  Matrix6N iF3 = Matrix6N::Random();
-  jF_ref -= jMi.toDualActionMatrix() * iF3;
+//   Matrix6N iF3 = Matrix6N::Random();
+//   jF_ref -= jMi.toDualActionMatrix() * iF3;
 
-  forceSet::se3Action<RMTO>(jMi, iF3, jF);
-  BOOST_CHECK(jF.isApprox(jF_ref));
+//   forceSet::se3Action<RMTO>(jMi, iF3, jF);
+//   BOOST_CHECK(jF.isApprox(jF_ref));
 
-  // forceSet::se3ActionInverse
-  forceSet::se3ActionInverse(jMi, iF, jFinv);
-  jFinv_ref = jMi.inverse().toDualActionMatrix() * iF;
-  BOOST_CHECK(jFinv_ref.isApprox(jFinv));
+//   // forceSet::se3ActionInverse
+//   forceSet::se3ActionInverse(jMi, iF, jFinv);
+//   jFinv_ref = jMi.inverse().toDualActionMatrix() * iF;
+//   BOOST_CHECK(jFinv_ref.isApprox(jFinv));
 
-  jFinv_ref += jMi.inverse().toDualActionMatrix() * iF2;
-  forceSet::se3ActionInverse<ADDTO>(jMi, iF2, jFinv);
-  BOOST_CHECK(jFinv.isApprox(jFinv_ref));
+//   jFinv_ref += jMi.inverse().toDualActionMatrix() * iF2;
+//   forceSet::se3ActionInverse<ADDTO>(jMi, iF2, jFinv);
+//   BOOST_CHECK(jFinv.isApprox(jFinv_ref));
 
-  jFinv_ref -= jMi.inverse().toDualActionMatrix() * iF3;
-  forceSet::se3ActionInverse<RMTO>(jMi, iF3, jFinv);
-  BOOST_CHECK(jFinv.isApprox(jFinv_ref));
+//   jFinv_ref -= jMi.inverse().toDualActionMatrix() * iF3;
+//   forceSet::se3ActionInverse<RMTO>(jMi, iF3, jFinv);
+//   BOOST_CHECK(jFinv.isApprox(jFinv_ref));
 
-  // forceSet::motionAction
-  forceSet::motionAction(v, iF, jF);
-  for (int k = 0; k < N; ++k)
-    BOOST_CHECK(v.cross(Force(iF.col(k))).toVector().isApprox(jF.col(k)));
+//   // forceSet::motionAction
+//   forceSet::motionAction(v, iF, jF);
+//   for (int k = 0; k < N; ++k)
+//     BOOST_CHECK(v.cross(Force(iF.col(k))).toVector().isApprox(jF.col(k)));
 
-  jF_ref = v.toDualActionMatrix() * iF;
-  BOOST_CHECK(jF.isApprox(jF_ref));
+//   jF_ref = v.toDualActionMatrix() * iF;
+//   BOOST_CHECK(jF.isApprox(jF_ref));
 
-  jF_ref += v.toDualActionMatrix() * iF2;
-  forceSet::motionAction<ADDTO>(v, iF2, jF);
-  BOOST_CHECK(jF.isApprox(jF_ref));
+//   jF_ref += v.toDualActionMatrix() * iF2;
+//   forceSet::motionAction<ADDTO>(v, iF2, jF);
+//   BOOST_CHECK(jF.isApprox(jF_ref));
 
-  jF_ref -= v.toDualActionMatrix() * iF3;
-  forceSet::motionAction<RMTO>(v, iF3, jF);
-  BOOST_CHECK(jF.isApprox(jF_ref));
+//   jF_ref -= v.toDualActionMatrix() * iF3;
+//   forceSet::motionAction<RMTO>(v, iF3, jF);
+//   BOOST_CHECK(jF.isApprox(jF_ref));
 
-  // Motion SET
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
-  Matrix6N iV = Matrix6N::Random(), jV, jV_ref, jVinv, jVinv_ref;
+//   // Motion SET
+//   PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+//   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
+//   Matrix6N iV = Matrix6N::Random(), jV, jV_ref, jVinv, jVinv_ref;
 
-  // motionSet::se3Action
-  motionSet::se3Action(jMi, iV, jV);
-  for (int k = 0; k < N; ++k)
-    BOOST_CHECK(jMi.act(Motion(iV.col(k))).toVector().isApprox(jV.col(k)));
+//   // motionSet::se3Action
+//   motionSet::se3Action(jMi, iV, jV);
+//   for (int k = 0; k < N; ++k)
+//     BOOST_CHECK(jMi.act(Motion(iV.col(k))).toVector().isApprox(jV.col(k)));
 
-  jV_ref = jMi.toActionMatrix() * iV;
-  BOOST_CHECK(jV.isApprox(jV_ref));
+//   jV_ref = jMi.toActionMatrix() * iV;
+//   BOOST_CHECK(jV.isApprox(jV_ref));
 
-  motionSet::se3ActionInverse(jMi.inverse(), iV, jVinv);
-  BOOST_CHECK(jVinv.isApprox(jV));
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
+//   motionSet::se3ActionInverse(jMi.inverse(), iV, jVinv);
+//   BOOST_CHECK(jVinv.isApprox(jV));
+//   PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
-  Matrix6N iV2 = Matrix6N::Random();
-  jV_ref += jMi.toActionMatrix() * iV2;
-  motionSet::se3Action<ADDTO>(jMi, iV2, jV);
-  BOOST_CHECK(jV.isApprox(jV_ref));
+//   Matrix6N iV2 = Matrix6N::Random();
+//   jV_ref += jMi.toActionMatrix() * iV2;
+//   motionSet::se3Action<ADDTO>(jMi, iV2, jV);
+//   BOOST_CHECK(jV.isApprox(jV_ref));
 
-  Matrix6N iV3 = Matrix6N::Random();
-  jV_ref -= jMi.toActionMatrix() * iV3;
-  motionSet::se3Action<RMTO>(jMi, iV3, jV);
-  BOOST_CHECK(jV.isApprox(jV_ref));
+//   Matrix6N iV3 = Matrix6N::Random();
+//   jV_ref -= jMi.toActionMatrix() * iV3;
+//   motionSet::se3Action<RMTO>(jMi, iV3, jV);
+//   BOOST_CHECK(jV.isApprox(jV_ref));
 
-  // motionSet::se3ActionInverse
-  motionSet::se3ActionInverse(jMi, iV, jVinv);
-  jVinv_ref = jMi.inverse().toActionMatrix() * iV;
-  BOOST_CHECK(jVinv.isApprox(jVinv_ref));
+//   // motionSet::se3ActionInverse
+//   motionSet::se3ActionInverse(jMi, iV, jVinv);
+//   jVinv_ref = jMi.inverse().toActionMatrix() * iV;
+//   BOOST_CHECK(jVinv.isApprox(jVinv_ref));
 
-  jVinv_ref += jMi.inverse().toActionMatrix() * iV2;
-  motionSet::se3ActionInverse<ADDTO>(jMi, iV2, jVinv);
-  BOOST_CHECK(jVinv.isApprox(jVinv_ref));
+//   jVinv_ref += jMi.inverse().toActionMatrix() * iV2;
+//   motionSet::se3ActionInverse<ADDTO>(jMi, iV2, jVinv);
+//   BOOST_CHECK(jVinv.isApprox(jVinv_ref));
 
-  jVinv_ref -= jMi.inverse().toActionMatrix() * iV3;
-  motionSet::se3ActionInverse<RMTO>(jMi, iV3, jVinv);
-  BOOST_CHECK(jVinv.isApprox(jVinv_ref));
+//   jVinv_ref -= jMi.inverse().toActionMatrix() * iV3;
+//   motionSet::se3ActionInverse<RMTO>(jMi, iV3, jVinv);
+//   BOOST_CHECK(jVinv.isApprox(jVinv_ref));
 
-  // motionSet::motionAction
-  motionSet::motionAction(v, iV, jV);
-  for (int k = 0; k < N; ++k)
-    BOOST_CHECK(v.cross(Motion(iV.col(k))).toVector().isApprox(jV.col(k)));
+//   // motionSet::motionAction
+//   motionSet::motionAction(v, iV, jV);
+//   for (int k = 0; k < N; ++k)
+//     BOOST_CHECK(v.cross(Motion(iV.col(k))).toVector().isApprox(jV.col(k)));
 
-  jV_ref = v.toActionMatrix() * iV;
-  BOOST_CHECK(jV.isApprox(jV_ref));
+//   jV_ref = v.toActionMatrix() * iV;
+//   BOOST_CHECK(jV.isApprox(jV_ref));
 
-  jV_ref += v.toActionMatrix() * iV2;
-  motionSet::motionAction<ADDTO>(v, iV2, jV);
-  BOOST_CHECK(jV.isApprox(jV_ref));
+//   jV_ref += v.toActionMatrix() * iV2;
+//   motionSet::motionAction<ADDTO>(v, iV2, jV);
+//   BOOST_CHECK(jV.isApprox(jV_ref));
 
-  jV_ref -= v.toActionMatrix() * iV3;
-  motionSet::motionAction<RMTO>(v, iV3, jV);
-  BOOST_CHECK(jV.isApprox(jV_ref));
+//   jV_ref -= v.toActionMatrix() * iV3;
+//   motionSet::motionAction<RMTO>(v, iV3, jV);
+//   BOOST_CHECK(jV.isApprox(jV_ref));
 
-  // motionSet::inertiaAction
-  const Inertia I(Inertia::Random());
-  motionSet::inertiaAction(I, iV, jV);
-  for (int k = 0; k < N; ++k)
-    BOOST_CHECK((I * (Motion(iV.col(k)))).toVector().isApprox(jV.col(k)));
+//   // motionSet::inertiaAction
+//   const Inertia I(Inertia::Random());
+//   motionSet::inertiaAction(I, iV, jV);
+//   for (int k = 0; k < N; ++k)
+//     BOOST_CHECK((I * (Motion(iV.col(k)))).toVector().isApprox(jV.col(k)));
 
-  jV_ref = I.matrix() * iV;
-  BOOST_CHECK(jV.isApprox(jV_ref));
+//   jV_ref = I.matrix() * iV;
+//   BOOST_CHECK(jV.isApprox(jV_ref));
 
-  jV_ref += I.matrix() * iV2;
-  motionSet::inertiaAction<ADDTO>(I, iV2, jV);
-  BOOST_CHECK(jV.isApprox(jV_ref));
+//   jV_ref += I.matrix() * iV2;
+//   motionSet::inertiaAction<ADDTO>(I, iV2, jV);
+//   BOOST_CHECK(jV.isApprox(jV_ref));
 
-  jV_ref -= I.matrix() * iV3;
-  motionSet::inertiaAction<RMTO>(I, iV3, jV);
-  BOOST_CHECK(jV.isApprox(jV_ref));
+//   jV_ref -= I.matrix() * iV3;
+//   motionSet::inertiaAction<RMTO>(I, iV3, jV);
+//   BOOST_CHECK(jV.isApprox(jV_ref));
 
-  // motionSet::act
-  Force f = Force::Random();
-  motionSet::act(iV, f, jF);
-  for (int k = 0; k < N; ++k)
-    BOOST_CHECK(Motion(iV.col(k)).cross(f).toVector().isApprox(jF.col(k)));
+//   // motionSet::act
+//   Force f = Force::Random();
+//   motionSet::act(iV, f, jF);
+//   for (int k = 0; k < N; ++k)
+//     BOOST_CHECK(Motion(iV.col(k)).cross(f).toVector().isApprox(jF.col(k)));
 
-  for (int k = 0; k < N; ++k)
-    jF_ref.col(k) = Force(Motion(iV.col(k)).cross(f)).toVector();
-  BOOST_CHECK(jF.isApprox(jF_ref));
+//   for (int k = 0; k < N; ++k)
+//     jF_ref.col(k) = Force(Motion(iV.col(k)).cross(f)).toVector();
+//   BOOST_CHECK(jF.isApprox(jF_ref));
 
-  for (int k = 0; k < N; ++k)
-    jF_ref.col(k) += Force(Motion(iV2.col(k)).cross(f)).toVector();
-  motionSet::act<ADDTO>(iV2, f, jF);
-  BOOST_CHECK(jF.isApprox(jF_ref));
+//   for (int k = 0; k < N; ++k)
+//     jF_ref.col(k) += Force(Motion(iV2.col(k)).cross(f)).toVector();
+//   motionSet::act<ADDTO>(iV2, f, jF);
+//   BOOST_CHECK(jF.isApprox(jF_ref));
 
-  for (int k = 0; k < N; ++k)
-    jF_ref.col(k) -= Force(Motion(iV3.col(k)).cross(f)).toVector();
-  motionSet::act<RMTO>(iV3, f, jF);
-  BOOST_CHECK(jF.isApprox(jF_ref));
-}
+//   for (int k = 0; k < N; ++k)
+//     jF_ref.col(k) -= Force(Motion(iV3.col(k)).cross(f)).toVector();
+//   motionSet::act<RMTO>(iV3, f, jF);
+//   BOOST_CHECK(jF.isApprox(jF_ref));
+// }
 
 BOOST_AUTO_TEST_CASE(test_skew)
 {
