@@ -3,12 +3,13 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_multibody_joint_base_hpp__
-#define __pinocchio_multibody_joint_base_hpp__
+#pragma once
 
-#include "pinocchio/multibody/joint/fwd.hpp"
+// IWYU pragma: begin_keep
+#include "pinocchio/multibody/joint.hpp"
+// IWYU pragma: end_keep
 
-#include "pinocchio/multibody/joint/joint-model-base.hpp"
-#include "pinocchio/multibody/joint/joint-data-base.hpp"
-
-#endif // ifndef __pinocchio_multibody_joint_base_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/multibody/joint/joint-model-base.hxx"
+#include "pinocchio/multibody/joint/joint-data-base.hxx"
+// IWYU pragma: end_exports

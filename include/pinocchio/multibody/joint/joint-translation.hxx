@@ -3,14 +3,12 @@
 // Copyright (c) 2015-2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_multibody_joint_translation_hpp__
-#define __pinocchio_multibody_joint_translation_hpp__
+#pragma once
 
-#include "pinocchio/macros.hpp"
-#include "pinocchio/multibody/joint/joint-base.hpp"
-#include "pinocchio/multibody/joint-motion-subspace.hpp"
-#include "pinocchio/spatial/inertia.hpp"
-#include "pinocchio/spatial/skew.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -646,8 +644,6 @@ namespace pinocchio
   };
 } // namespace pinocchio
 
-#include <boost/type_traits.hpp>
-
 namespace boost
 {
   template<typename Scalar, int Options>
@@ -674,5 +670,3 @@ namespace boost
   {
   };
 } // namespace boost
-
-#endif // ifndef __pinocchio_multibody_joint_translation_hpp__

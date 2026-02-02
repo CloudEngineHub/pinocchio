@@ -2,12 +2,12 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_multibody_joint_joint_common_operations_hpp__
-#define __pinocchio_multibody_joint_joint_common_operations_hpp__
+#pragma once
 
-#include "pinocchio/macros.hpp"
-#include "pinocchio/math/matrix.hpp"
-#include "pinocchio/math/matrix-inverse.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -78,5 +78,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_joint_joint_common_operations_hpp__

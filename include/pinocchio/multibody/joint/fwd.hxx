@@ -2,14 +2,15 @@
 // Copyright (c) 2016-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_joint_fwd_hpp__
-#define __pinocchio_multibody_joint_fwd_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
-
   /// \internal
   inline constexpr int MAX_JOINT_NV = 6;
   /// \endinternal
@@ -186,7 +187,3 @@ namespace pinocchio
    */
   // end of group joint
 } // namespace pinocchio
-
-#include "pinocchio/multibody/fwd.hpp"
-
-#endif // ifndef __pinocchio_multibody_joint_fwd_hpp__

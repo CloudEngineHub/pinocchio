@@ -3,11 +3,12 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_multibody_joint_data_base_hpp__
-#define __pinocchio_multibody_joint_data_base_hpp__
+#pragma once
 
-#include "pinocchio/multibody/joint/joint-base.hpp"
-#include "pinocchio/multibody/joint/joint-model-base.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint/joint-base.hpp"
+#endif // PINOCCHIO_LSP
 
 #define PINOCCHIO_JOINT_DATA_TYPEDEF_GENERIC(Joint, TYPENAME)                                      \
   PINOCCHIO_JOINT_MODEL_TYPEDEF_GENERIC(Joint, TYPENAME);                                          \
@@ -31,13 +32,6 @@
   typedef TYPENAME traits<Joint>::UDTypeRef UDTypeRef
 
 #ifdef __clang__
-
-  #define PINOCCHIO_JOINT_DATA_TYPEDEF(Joint)                                                      \
-    PINOCCHIO_JOINT_DATA_TYPEDEF_GENERIC(Joint, PINOCCHIO_EMPTY_ARG)
-  #define PINOCCHIO_JOINT_DATA_TYPEDEF_TEMPLATE(Joint)                                             \
-    PINOCCHIO_JOINT_DATA_TYPEDEF_GENERIC(Joint, typename)
-
-#elif (__GNUC__ == 4) && (__GNUC_MINOR__ == 4) && (__GNUC_PATCHLEVEL__ == 2)
 
   #define PINOCCHIO_JOINT_DATA_TYPEDEF(Joint)                                                      \
     PINOCCHIO_JOINT_DATA_TYPEDEF_GENERIC(Joint, PINOCCHIO_EMPTY_ARG)
@@ -324,5 +318,3 @@ namespace pinocchio
   }; // struct JointDataBase
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_joint_data_base_hpp__

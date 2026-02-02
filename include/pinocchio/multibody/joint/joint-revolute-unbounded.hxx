@@ -2,14 +2,12 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_joint_revolute_unbounded_hpp__
-#define __pinocchio_multibody_joint_revolute_unbounded_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/sincos.hpp"
-#include "pinocchio/spatial/inertia.hpp"
-#include "pinocchio/multibody/joint/joint-base.hpp"
-#include "pinocchio/multibody/joint/joint-revolute.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/joint.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -245,8 +243,6 @@ namespace pinocchio
   };
 } // namespace pinocchio
 
-#include <boost/type_traits.hpp>
-
 namespace boost
 {
   template<typename Scalar, int Options, int axis>
@@ -273,5 +269,3 @@ namespace boost
   {
   };
 } // namespace boost
-
-#endif // ifndef __pinocchio_multibody_joint_revolute_unbounded_hpp__
