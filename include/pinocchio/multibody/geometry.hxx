@@ -2,17 +2,12 @@
 // Copyright (c) 2015-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_geometry_hpp__
-#define __pinocchio_multibody_geometry_hpp__
+#pragma once
 
-#include "pinocchio/multibody/geometry-object.hpp"
-
-#include "pinocchio/serialization/serializable.hpp"
-
-#include <map>
-#include <list>
-#include <utility>
-#include <assert.h>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -47,9 +42,8 @@ namespace pinocchio
     static constexpr int Options = 0;
   };
 
-  struct GeometryModel
-  : NumericalBase<GeometryModel>
-  , serialization::Serializable<GeometryModel>
+  struct GeometryModel : NumericalBase<GeometryModel>
+  // , serialization::Serializable<GeometryModel>
   {
 
     typedef typename traits<GeometryModel>::Scalar Scalar;
@@ -227,9 +221,8 @@ namespace pinocchio
     static constexpr int Options = 0;
   };
 
-  struct GeometryData
-  : NumericalBase<GeometryData>
-  , serialization::Serializable<GeometryData>
+  struct GeometryData : NumericalBase<GeometryData>
+  // , serialization::Serializable<GeometryData>
   {
 
     typedef typename traits<GeometryData>::Scalar Scalar;
@@ -487,25 +480,6 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
-#include "pinocchio/multibody/geometry.hxx"
-
-#endif // ifndef __pinocchio_multibody_geometry_hpp__
-//
-// Copyright (c) 2015-2022 CNRS INRIA
-//
-
-#ifndef __pinocchio_multibody_geometry_hxx__
-#define __pinocchio_multibody_geometry_hxx__
-
-#include <algorithm>
-
-#include "pinocchio/multibody/model.hpp"
-
-#include <boost/bind/bind.hpp>
-#include <boost/utility.hpp>
-#include <boost/foreach.hpp>
-
-#include <sstream>
 /// @cond DEV
 
 namespace pinocchio
@@ -1032,5 +1006,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_multibody_geometry_hxx__

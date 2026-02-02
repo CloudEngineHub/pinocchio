@@ -2,21 +2,12 @@
 // Copyright (c) 2015-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_geometry_object_hpp__
-#define __pinocchio_multibody_geometry_object_hpp__
+#pragma once
 
-#include "pinocchio/utils/shared-ptr.hpp"
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/multibody/fwd.hpp"
-#include "pinocchio/multibody/model-item.hpp"
-#include "pinocchio/multibody/coal.hpp"
-#include "pinocchio/serialization/serializable.hpp"
-
-/// Be carefull to include this header after fwd.hpp.
-/// fwd.hpp contains some define to change the boost::variant max size.
-/// If we don't include it before, default size is choosed that can
-/// make all the build fail.
-#include <boost/variant.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -138,9 +129,8 @@ namespace pinocchio
     static constexpr int Options = 0;
   };
 
-  struct GeometryObject
-  : public ModelItem<GeometryObject>
-  , serialization::Serializable<GeometryObject>
+  struct GeometryObject : public ModelItem<GeometryObject>
+  // , serialization::Serializable<GeometryObject>
   {
     typedef ModelItem<GeometryObject> Base;
     typedef typename traits<GeometryObject>::Scalar Scalar;
@@ -622,18 +612,6 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
-#include "pinocchio/multibody/geometry-object.hxx"
-
-#endif // ifndef __pinocchio_multibody_geometry_object_hpp__
-//
-// Copyright (c) 2015-2022 CNRS INRIA
-//
-
-#ifndef __pinocchio_multibody_geometry_object_hxx__
-#define __pinocchio_multibody_geometry_object_hxx__
-
-#include <limits>
-
 namespace pinocchio
 {
 
@@ -698,5 +676,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_geometry_object_hxx__

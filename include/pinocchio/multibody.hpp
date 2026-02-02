@@ -13,7 +13,9 @@
 #include <iterator>
 #include <sstream>
 #include <utility>
+#include <memory>
 #include <vector>
+#include <stdexcept>
 #include <map>
 #include <set>
 
@@ -21,6 +23,9 @@
 #include <Eigen/Cholesky>
 
 #include <boost/next_prior.hpp>
+#include <boost/variant/variant.hpp>
+#include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 
 #include "pinocchio/context.hxx"
 #include "pinocchio/traits.hpp"
@@ -28,6 +33,7 @@
 #include "pinocchio/deprecated.hpp"
 
 #include "pinocchio/utils/static-if.hpp"
+#include "pinocchio/utils/shared-ptr.hpp"
 
 #include "pinocchio/container/double-entry-container.hpp"
 #include "pinocchio/container/matrix-stack.hpp"
@@ -49,5 +55,7 @@
 
 #include "pinocchio/multibody/coal.hxx"
 #include "pinocchio/multibody/instance-filter.hxx"
+#include "pinocchio/multibody/geometry-object.hxx"
+#include "pinocchio/multibody/geometry.hxx"
 #include "pinocchio/multibody/geometry-object-filter.hxx"
 // IWYU pragma: end_exports
