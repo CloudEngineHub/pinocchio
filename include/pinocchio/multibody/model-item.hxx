@@ -2,10 +2,12 @@
 // Copyright (c) 2021-2022 INRIA
 //
 
-#ifndef __pinocchio_multibody_model_item_hpp__
-#define __pinocchio_multibody_model_item_hpp__
+#pragma once
 
-#include "pinocchio/multibody/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -73,5 +75,3 @@ namespace pinocchio
     }
   };
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_model_item_hpp__

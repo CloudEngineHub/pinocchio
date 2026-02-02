@@ -2,15 +2,12 @@
 // Copyright (c) 2016-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_frame_hpp__
-#define __pinocchio_multibody_frame_hpp__
+#pragma once
 
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/inertia.hpp"
-#include "pinocchio/multibody/fwd.hpp"
-#include "pinocchio/multibody/model-item.hpp"
-
-#include <string>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -222,5 +219,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_frame_hpp__
