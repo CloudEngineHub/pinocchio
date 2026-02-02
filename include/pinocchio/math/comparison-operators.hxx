@@ -2,8 +2,12 @@
 // Copyright (c) 2019 INRIA
 //
 
-#ifndef __pinocchio_math_comparison_operators_hpp__
-#define __pinocchio_math_comparison_operators_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math/comparison-operators.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -45,5 +49,3 @@ namespace pinocchio
     }
   };
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_comparison_operators_hpp__

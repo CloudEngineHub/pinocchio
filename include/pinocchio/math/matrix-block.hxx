@@ -2,10 +2,12 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_math_matrix_block_hpp__
-#define __pinocchio_math_matrix_block_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math/matrix-block.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -298,5 +300,3 @@ namespace pinocchio
   // Could be specialized for only one of the two dynamics, but this usecase does not exist yet
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_math_matrix_block_hpp__
