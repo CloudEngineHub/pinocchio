@@ -3,25 +3,12 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_multibody_model_hpp__
-#define __pinocchio_multibody_model_hpp__
+#pragma once
 
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/force.hpp"
-#include "pinocchio/spatial/motion.hpp"
-#include "pinocchio/spatial/inertia.hpp"
-
-#include "pinocchio/common/model-entity.hpp"
-
-#include "pinocchio/multibody/fwd.hpp"
-#include "pinocchio/multibody/frame.hpp"
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-
-#include "pinocchio/serialization/serializable.hpp"
-
-#include <map>
-#include <iterator>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -46,8 +33,8 @@ namespace pinocchio
 
   template<typename _Scalar, int _Options, template<typename, int> class JointCollectionTpl>
   struct ModelTpl
-  : serialization::Serializable<ModelTpl<_Scalar, _Options, JointCollectionTpl>>
-  , NumericalBase<ModelTpl<_Scalar, _Options, JointCollectionTpl>>
+  // : serialization::Serializable<ModelTpl<_Scalar, _Options, JointCollectionTpl>>
+  : NumericalBase<ModelTpl<_Scalar, _Options, JointCollectionTpl>>
   , ModelEntity<ModelTpl<_Scalar, _Options, JointCollectionTpl>>
   {
 
@@ -712,25 +699,6 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
-#include "pinocchio/multibody/model.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/multibody/model.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_multibody_model_hpp__
-//
-// Copyright (c) 2015-2021 CNRS INRIA
-// Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
-//
-
-#ifndef __pinocchio_multibody_model_hxx__
-#define __pinocchio_multibody_model_hxx__
-
-#include "pinocchio/utils/string-generator.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-algo.hpp"
-#include "pinocchio/algorithm/model.hpp"
-
 /// @cond DEV
 
 namespace pinocchio
@@ -1497,5 +1465,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_multibody_model_hxx__

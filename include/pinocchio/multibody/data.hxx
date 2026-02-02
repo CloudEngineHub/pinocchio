@@ -3,28 +3,17 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_multibody_data_hpp__
-#define __pinocchio_multibody_data_hpp__
+#pragma once
 
-#include "pinocchio/math/tensor.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/force.hpp"
-#include "pinocchio/spatial/motion.hpp"
-#include "pinocchio/spatial/inertia.hpp"
-
-#include "pinocchio/common/data-entity.hpp"
-
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-
-#include "pinocchio/container/double-entry-container.hpp"
 #include "pinocchio/container/matrix-stack.hpp"
-#include "pinocchio/algorithm/constraint-cholesky.hpp"
+// #include "pinocchio/algorithm/constraint-cholesky.hpp"
 
-#include "pinocchio/serialization/serializable.hpp"
-
-#include <set>
-#include <vector>
+// #include "pinocchio/serialization/serializable.hpp"
 
 namespace pinocchio
 {
@@ -40,8 +29,8 @@ namespace pinocchio
 
   template<typename _Scalar, int _Options, template<typename, int> class JointCollectionTpl>
   struct DataTpl
-  : serialization::Serializable<DataTpl<_Scalar, _Options, JointCollectionTpl>>
-  , NumericalBase<DataTpl<_Scalar, _Options, JointCollectionTpl>>
+  // : serialization::Serializable<DataTpl<_Scalar, _Options, JointCollectionTpl>>
+  : NumericalBase<DataTpl<_Scalar, _Options, JointCollectionTpl>>
   , DataEntity<DataTpl<_Scalar, _Options, JointCollectionTpl>>
   {
 
@@ -105,7 +94,7 @@ namespace pinocchio
     // TODO Remove when API is stabilized
     PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
     PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
+    // // typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     /// \brief Vector of pinocchio::JointData associated to the pinocchio::JointModel stored in
@@ -540,8 +529,8 @@ namespace pinocchio
     Eigen::LLT<MatrixXs> osim_llt;
 
 #if defined(_MSC_VER)
-      // Eigen tensor warning: Eigen\CXX11\src/Tensor/Tensor.h(76,1): warning C4554: '&': check
-      // operator precedence for possible error
+    // Eigen tensor warning: Eigen\CXX11\src/Tensor/Tensor.h(76,1): warning C4554: '&': check
+    // operator precedence for possible error
   #pragma warning(disable : 4554)
 #endif
 
@@ -553,7 +542,7 @@ namespace pinocchio
 #endif
 
     /// \brief Cholesky decomposition of the KKT contact matrix
-    ContactCholeskyDecomposition contact_chol;
+    // ContactCholeskyDecomposition contact_chol;
 
     /// \brief RHS vector when solving the contact dynamics KKT problem
     VectorXs primal_dual_contact_solution;
@@ -562,8 +551,8 @@ namespace pinocchio
     VectorXs primal_rhs_contact;
 
 #if defined(_MSC_VER)
-      // Eigen tensor warning: Eigen\CXX11\src/Tensor/Tensor.h(76,1): warning C4554: '&': check
-      // operator precedence for possible error
+    // Eigen tensor warning: Eigen\CXX11\src/Tensor/Tensor.h(76,1): warning C4554: '&': check
+    // operator precedence for possible error
   #pragma warning(disable : 4554)
 #endif
 
@@ -649,27 +638,6 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
-#include "pinocchio/multibody/data.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/multibody/data.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_multibody_data_hpp__
-//
-// Copyright (c) 2015-2018 CNRS
-// Copyright (c) 2018-2025 INRIA
-// Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
-//
-
-#ifndef __pinocchio_multibody_data_hxx__
-#define __pinocchio_multibody_data_hxx__
-
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/utils/string-generator.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-algo.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
 
 /// @cond DEV
 
@@ -1075,5 +1043,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_multibody_data_hxx__
