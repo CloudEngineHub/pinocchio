@@ -2,8 +2,7 @@
 // Copyright (c) 2015-2018 CNRS INRIA
 //
 
-#ifndef __pinocchio_act_on_set_hxx__
-#define __pinocchio_act_on_set_hxx__
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
