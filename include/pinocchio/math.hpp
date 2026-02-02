@@ -15,13 +15,10 @@
 #include <cstddef>
 #include <type_traits>
 
-#include <boost/type_traits/is_convertible.hpp>
-#include <boost/type_traits/integral_constant.hpp>
+#include <boost/type_traits.hpp>
 #include <boost/math/constants/constants.hpp>
-#include <boost/multiprecision/detail/number_base.hpp>
 #include <boost/multiprecision/number.hpp>
 #include <boost/multiprecision/fwd.hpp>
-#include <boost/random.hpp>
 
 #include "pinocchio/context.hxx"
 #include "pinocchio/multibody/fwd.hxx"
