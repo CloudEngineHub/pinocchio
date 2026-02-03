@@ -2,11 +2,12 @@
 // Copyright (c) 2021-2022 INRIA
 //
 
-#ifndef __pinocchio_multibody_pool_geometry_hpp__
-#define __pinocchio_multibody_pool_geometry_hpp__
+#pragma once
 
-#include "pinocchio/multibody/geometry.hpp"
-#include "pinocchio/multibody/pool/model.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/pool.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -162,9 +163,11 @@ namespace pinocchio
       {
         geometry_data.oMg = geometry_data_to_copy.oMg;
         geometry_data.activeCollisionPairs = geometry_data_to_copy.activeCollisionPairs;
+#ifdef PINOCCHIO_WITH_COLLISION
         geometry_data.distanceRequests = geometry_data_to_copy.distanceRequests;
         geometry_data.collisionRequests = geometry_data_to_copy.collisionRequests;
         geometry_data.collisionPairIndex = geometry_data_to_copy.collisionPairIndex;
+#endif // ifdef PINOCCHIO_WITH_COLLISION
       }
     }
 
@@ -196,5 +199,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_pool_geometry_hpp__

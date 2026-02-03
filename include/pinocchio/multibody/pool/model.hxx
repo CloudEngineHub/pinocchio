@@ -2,16 +2,12 @@
 // Copyright (c) 2021-2022 INRIA
 //
 
-#ifndef __pinocchio_multibody_pool_model_hpp__
-#define __pinocchio_multibody_pool_model_hpp__
+#pragma once
 
-#include <algorithm>
-
-#include "pinocchio/multibody/pool/fwd.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-
-#include "pinocchio/utils/openmp.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/pool.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -160,5 +156,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_pool_model_hpp__

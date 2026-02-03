@@ -2,10 +2,12 @@
 // Copyright (c) 2021-2022 INRIA
 //
 
-#ifndef __pinocchio_multibody_pool_fwd_hpp__
-#define __pinocchio_multibody_pool_fwd_hpp__
+#pragma once
 
-#include "pinocchio/multibody/joint/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody/pool.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -25,5 +27,3 @@ namespace pinocchio
   typedef GeometryPoolTpl<context::Scalar> GeometryPool;
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_pool_fwd_hpp__
