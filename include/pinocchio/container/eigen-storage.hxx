@@ -6,15 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <algorithm>
-  #include <cstddef>
-  #include <new>
-  #include <type_traits>
-
-  #include <Eigen/Core>
-
-  #include "pinocchio/eigen-common.hpp"
-  #include "pinocchio/traits.hpp"
+  #include "pinocchio/container/eigen-storage.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
