@@ -18,7 +18,6 @@
 #include <boost/type_traits.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/multiprecision/number.hpp>
-#include <boost/multiprecision/fwd.hpp>
 
 #include "pinocchio/context.hxx"
 #include "pinocchio/multibody/fwd.hxx"
