@@ -6,7 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/serialization.hpp"
+  #include "pinocchio/serialization/archive.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

@@ -4,7 +4,13 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include "pinocchio/serialization.hpp"
+#include <iosfwd>
+#include <string>
+
+#include <boost/asio/streambuf.hpp>
+
+#include "pinocchio/serialization/static-buffer.hxx"
+#include "pinocchio/serialization/archive.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

@@ -129,8 +129,9 @@ namespace pinocchio
     static constexpr int Options = 0;
   };
 
-  struct GeometryObject : public ModelItem<GeometryObject>
-  // , serialization::Serializable<GeometryObject>
+  struct GeometryObject
+  : public ModelItem<GeometryObject>
+  , serialization::Serializable<GeometryObject>
   {
     typedef ModelItem<GeometryObject> Base;
     typedef typename traits<GeometryObject>::Scalar Scalar;
