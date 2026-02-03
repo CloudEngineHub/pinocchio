@@ -2,10 +2,20 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_container_eigen_storage_hpp__
-#define __pinocchio_container_eigen_storage_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <algorithm>
+  #include <cstddef>
+  #include <new>
+  #include <type_traits>
+
+  #include <Eigen/Core>
+
+  #include "pinocchio/eigen-common.hpp"
+  #include "pinocchio/traits.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -352,5 +362,3 @@ namespace pinocchio
   }; // struct EigenStorageTpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_container_eigen_storage_hpp__

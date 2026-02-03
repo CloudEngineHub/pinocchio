@@ -2,27 +2,12 @@
 // Copyright (c) 2021-2024 INRIA
 //
 
-#ifndef __pinocchio_serialization_multibody_geometry_hpp__
-#define __pinocchio_serialization_multibody_geometry_hpp__
+#pragma once
 
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/map.hpp>
-#include <boost/serialization/shared_ptr.hpp>
-
-#ifdef PINOCCHIO_WITH_COLLISION
-  #define COAL_SKIP_EIGEN_BOOST_SERIALIZATION
-  #include <coal/serialization/collision_data.h>
-  #undef COAL_SKIP_EIGEN_BOOST_SERIALIZATION
-  #include <coal/serialization/geometric_shapes.h>
-  #include <coal/serialization/hfield.h>
-  #include <coal/serialization/octree.h>
-  #include <coal/serialization/convex.h>
-  #include <coal/serialization/BVH_model.h>
-#endif // PINOCCHIO_WITH_COLLISION
-
-#include "pinocchio/multibody/geometry.hpp"
-#include "pinocchio/serialization/spatial.hpp"
-#include "pinocchio/serialization/coal.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -117,5 +102,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // ifndef __pinocchio_serialization_multibody_geometry_hpp__

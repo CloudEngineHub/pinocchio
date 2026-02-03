@@ -2,19 +2,12 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_multibody_data_serialization_hpp__
-#define __pinocchio_multibody_data_serialization_hpp__
+#pragma once
 
-#include <boost/serialization/variant.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/set.hpp>
-
-#include "pinocchio/serialization/spatial.hpp"
-#include "pinocchio/serialization/eigen.hpp"
-#include "pinocchio/serialization/joints.hpp"
-#include "pinocchio/serialization/frame.hpp"
-#include "pinocchio/serialization/double-entry-container.hpp"
-#include "pinocchio/serialization/matrix-stack.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 #define PINOCCHIO_MAKE_DATA_NVP(ar, data, field_name) ar & make_nvp(#field_name, data.field_name)
 
@@ -170,5 +163,3 @@ namespace boost
 } // namespace boost
 
 #undef PINOCCHIO_MAKE_DATA_NVP
-
-#endif // ifndef __pinocchio_multibody_data_serialization_hpp__

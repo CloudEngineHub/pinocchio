@@ -9,4 +9,4 @@
 
 // IWYU pragma: begin_exports
 #include "pinocchio/utils/shared-ptr.hxx"
-// IWYU pragma: export
+// IWYU pragma: end_exports

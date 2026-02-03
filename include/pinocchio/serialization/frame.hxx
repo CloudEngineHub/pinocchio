@@ -2,14 +2,12 @@
 // Copyright (c) 2019-2021 INRIA
 //
 
-#ifndef __pinocchio_serialization_frame_hpp__
-#define __pinocchio_serialization_frame_hpp__
+#pragma once
 
-#include "pinocchio/multibody/frame.hpp"
-
-#include "pinocchio/serialization/fwd.hpp"
-#include "pinocchio/serialization/se3.hpp"
-#include "pinocchio/serialization/inertia.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -41,5 +39,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // ifndef __pinocchio_serialization_frame_hpp__

@@ -2,14 +2,12 @@
 // Copyright (c) 2019 INRIA
 //
 
-#ifndef __pinocchio_serialization_symmetric3_hpp__
-#define __pinocchio_serialization_symmetric3_hpp__
+#pragma once
 
-#include "pinocchio/spatial/symmetric3.hpp"
-#include "pinocchio/serialization/fwd.hpp"
-
-#include <boost/serialization/split_free.hpp>
-#include <boost/serialization/vector.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -41,5 +39,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // ifndef __pinocchio_serialization_symmetric3_hpp__

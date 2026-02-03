@@ -2,8 +2,12 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#ifndef __pinocchio_serialization_joints_data_hpp__
-#define __pinocchio_serialization_joints_data_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -281,5 +285,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // ifndef __pinocchio_serialization_joints_data_hpp__

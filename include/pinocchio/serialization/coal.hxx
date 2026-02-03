@@ -2,10 +2,12 @@
 // Copyright (c) 2015-2024 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_coal_serialization_hpp__
-#define __pinocchio_multibody_coal_serialization_hpp__
+#pragma once
 
-#include "pinocchio/multibody/coal.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -26,5 +28,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // __pinocchio_multibody_coal_serialization_hpp__

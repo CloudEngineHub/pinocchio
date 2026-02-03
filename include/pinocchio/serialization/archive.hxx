@@ -2,47 +2,12 @@
 // Copyright (c) 2017-2022 CNRS INRIA
 //
 
-#ifndef __pinocchio_serialization_archive_hpp__
-#define __pinocchio_serialization_archive_hpp__
+#pragma once
 
-#include "pinocchio/serialization/fwd.hpp"
-#include "pinocchio/serialization/static-buffer.hpp"
-
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <stdexcept>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
-
-#if BOOST_VERSION / 100 % 1000 == 78 && __APPLE__
-  // See https://github.com/qcscine/utilities/issues/5#issuecomment-1246897049 for further details
-
-  #ifndef BOOST_ASIO_DISABLE_STD_ALIGNED_ALLOC
-    #define DEFINE_BOOST_ASIO_DISABLE_STD_ALIGNED_ALLOC
-    #define BOOST_ASIO_DISABLE_STD_ALIGNED_ALLOC
-  #endif
-
-  #include <boost/asio/streambuf.hpp>
-
-  #ifdef DEFINE_BOOST_ASIO_DISABLE_STD_ALIGNED_ALLOC
-    #undef BOOST_ASIO_DISABLE_STD_ALIGNED_ALLOC
-  #endif
-
-#else
-  #include <boost/asio/streambuf.hpp>
-#endif
-
-#include <boost/iostreams/device/array.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <boost/iostreams/stream_buffer.hpp>
-
-// Handle NAN inside TXT or XML archives
-#include <boost/math/special_functions/nonfinite_num_facets.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -336,5 +301,3 @@ namespace pinocchio
 
   } // namespace serialization
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_serialization_archive_hpp__

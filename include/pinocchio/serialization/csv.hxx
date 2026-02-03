@@ -2,12 +2,12 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_serialization_csv_hpp__
-#define __pinocchio_serialization_csv_hpp__
+#pragma once
 
-#include "pinocchio/serialization/fwd.hpp"
-
-#include <fstream>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -20,5 +20,3 @@ namespace pinocchio
     file << matrix.format(CSVFormat);
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_serialization_csv_hpp__

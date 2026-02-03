@@ -3,16 +3,12 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#ifndef __pinocchio_serialization_eigen_matrix_hpp__
-#define __pinocchio_serialization_eigen_matrix_hpp__
+#pragma once
 
-#include "pinocchio/math/tensor.hpp"
-
-#include <boost/serialization/split_free.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/array.hpp>
-#include <boost/throw_exception.hpp>
-#include <stdexcept>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 // If we don't link against coal then we must define
 // the workaround.
@@ -267,5 +263,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // ifndef __pinocchio_serialization_eigen_matrix_hpp__

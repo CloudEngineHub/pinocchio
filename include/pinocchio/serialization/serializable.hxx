@@ -2,10 +2,12 @@
 // Copyright (c) 2017-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_serialization_serializable_hpp__
-#define __pinocchio_serialization_serializable_hpp__
+#pragma once
 
-#include "pinocchio/serialization/archive.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -113,5 +115,3 @@ namespace pinocchio
 
   } // namespace serialization
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_serialization_serializable_hpp__

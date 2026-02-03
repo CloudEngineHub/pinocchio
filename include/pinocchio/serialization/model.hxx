@@ -2,19 +2,12 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#ifndef __pinocchio_serialization_model_hpp__
-#define __pinocchio_serialization_model_hpp__
+#pragma once
 
-#include <boost/serialization/string.hpp>
-#include <boost/serialization/variant.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/map.hpp>
-
-#include "pinocchio/serialization/fwd.hpp"
-#include "pinocchio/serialization/spatial.hpp"
-#include "pinocchio/serialization/eigen.hpp"
-#include "pinocchio/serialization/joints.hpp"
-#include "pinocchio/serialization/frame.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -77,5 +70,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // ifndef __pinocchio_serialization_model_hpp__

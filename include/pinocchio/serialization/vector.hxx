@@ -2,15 +2,12 @@
 // Copyright (c) 2019-2021 INRIA
 //
 
-#ifndef __pinocchio_serialization_vector_hpp__
-#define __pinocchio_serialization_vector_hpp__
+#pragma once
 
-#include <vector>
-
-#include <boost/version.hpp>
-#include <boost/core/addressof.hpp>
-#include <boost/serialization/nvp.hpp>
-#include <boost/serialization/vector.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -26,5 +23,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // ifndef __pinocchio_serialization_vector_hpp__
