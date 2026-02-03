@@ -291,7 +291,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/model.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/model-item.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/pool/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/pool/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/pool/geometry.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/pool/model.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/visitor.hpp
