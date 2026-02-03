@@ -2,11 +2,12 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_math_matrix_inverse_hpp__
-#define __pinocchio_math_matrix_inverse_hpp__
+#pragma once
 
-#include "pinocchio/math/matrix.hpp"
-#include "pinocchio/math/matrix-inverse-code-generated.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -146,5 +147,3 @@ case size:                                                                      
     internal::MatrixInversion<M1>::run(matrix, matrix_inverse.const_cast_derived());
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_math_matrix_inverse_hpp__
