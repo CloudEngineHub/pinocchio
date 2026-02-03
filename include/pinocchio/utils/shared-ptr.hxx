@@ -6,7 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <memory>
+  #include "pinocchio/utils/shared-ptr.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

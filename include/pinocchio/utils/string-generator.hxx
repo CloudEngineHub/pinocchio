@@ -1,11 +1,11 @@
 //
 // Copyright (c) 2016-2019 CNRS INRIA
 //
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <string>
-  #include <cstdlib>
+  #include "pinocchio/utils/string-generator.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

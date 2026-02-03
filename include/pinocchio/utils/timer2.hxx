@@ -6,7 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <ctime>
+  #include "pinocchio/utils/timer2.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

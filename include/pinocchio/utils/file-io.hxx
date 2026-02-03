@@ -8,9 +8,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <string>
-  #include <fstream>
-  #include <sstream>
+  #include "pinocchio/utils/file-io.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

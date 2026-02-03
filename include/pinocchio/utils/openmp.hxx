@@ -6,12 +6,8 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <cstdlib>
-  #include <exception>
-  #include <mutex>
-  #include <omp.h>
+  #include "pinocchio/utils/openmp.hpp"
 
-  #include "pinocchio/deprecated.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

@@ -6,10 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <string>
-  #include <vector>
-
-  #include "pinocchio/parsers/config.hpp"
+  #include "pinocchio/utils/file-explorer.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

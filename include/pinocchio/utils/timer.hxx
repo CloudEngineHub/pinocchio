@@ -6,14 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #ifdef WIN32
-    #include <Windows.h>
-    #include <stdint.h> // portable: uint64_t   MSVC: __int64
-  #else
-    #include <sys/time.h>
-  #endif
-  #include <iostream>
-  #include <stack>
+  #include "pinocchio/utils/timer.hpp"
 #endif // PINOCCHIO_LSP
 
 #ifdef WIN32

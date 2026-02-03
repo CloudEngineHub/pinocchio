@@ -8,6 +8,8 @@
 #include <exception>
 #include <mutex>
 #include <omp.h>
+
+#include "pinocchio/deprecated.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
