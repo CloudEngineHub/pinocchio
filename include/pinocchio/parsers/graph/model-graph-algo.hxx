@@ -2,16 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_parsers_graph_model_graph_algo_hpp__
-#define __pinocchio_parsers_graph_model_graph_algo_hpp__
+#pragma once
 
-#include "pinocchio/parsers/graph/fwd.hpp"
-
-#include "pinocchio/parsers/graph/model-graph.hpp"
-#include "pinocchio/parsers/graph/joints.hpp"
-
-#include <string>
-#include <vector>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/graph.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -104,4 +100,3 @@ namespace pinocchio
 
   } // namespace graph
 } // namespace pinocchio
-#endif // ifndef __pinocchio_parsers_graph_model_graph_algo_hpp__

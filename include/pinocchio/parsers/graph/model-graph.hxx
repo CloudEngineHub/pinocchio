@@ -2,24 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_parsers_graph_model_graph_hpp__
-#define __pinocchio_parsers_graph_model_graph_hpp__
+#pragma once
 
-#include "pinocchio/parsers/graph/fwd.hpp"
-
-#include "pinocchio/parsers/config.hpp"
-
-#include "pinocchio/parsers/graph/joints.hpp"
-#include "pinocchio/parsers/graph/frames.hpp"
-#include "pinocchio/parsers/graph/geometries.hpp"
-
-#include <boost/optional.hpp>
-#include <boost/graph/adjacency_list.hpp>
-
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <stdexcept>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/graph.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -390,5 +378,3 @@ namespace pinocchio
     };
   } // namespace graph
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_parsers_graph_model_graph_hpp__

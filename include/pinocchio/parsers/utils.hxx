@@ -2,21 +2,18 @@
 // Copyright (c) 2015 - 2016 CNRS
 //
 
-#ifndef __pinocchio_parsers_utils_hpp__
-#define __pinocchio_parsers_utils_hpp__
+#pragma once
 
-#include <limits>
-#include <sstream>
-// #include <stdexcept>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <cstddef>
+  #include <stdexcept>
+  #include <string>
+  #include <vector>
 
-#include <boost/filesystem/fstream.hpp>
-#include <boost/foreach.hpp>
-#include <boost/format.hpp>
-
-#include "pinocchio/utils/file-explorer.hpp"
-#include <boost/filesystem.hpp>
-
-#include <exception>
+  #include <boost/filesystem/path.hpp>
+  #include <boost/filesystem/operations.hpp>
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -119,5 +116,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // __pinocchio_parsers_utils_hpp__

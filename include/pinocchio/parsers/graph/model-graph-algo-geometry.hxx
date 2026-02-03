@@ -2,15 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_parsers_graph_model_graph_algo_geometry_hpp__
-#define __pinocchio_parsers_graph_model_graph_algo_geometry_hpp__
+#pragma once
 
-#include "pinocchio/parsers/graph/fwd.hpp"
-
-#include "pinocchio/multibody/geometry-object.hpp"
-
-#include "pinocchio/parsers/graph/model-graph.hpp"
-#include "pinocchio/parsers/meshloader-fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/graph.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -33,4 +30,3 @@ namespace pinocchio
       ::coal::MeshLoaderPtr mesh_loader = ::coal::MeshLoaderPtr());
   } // namespace graph
 } // namespace pinocchio
-#endif // ifndef __pinocchio_parsers_graph_model_graph_algo_geometry_hpp__
