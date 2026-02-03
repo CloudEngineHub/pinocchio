@@ -6,10 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/config.hpp"
-
-  #include <string>
-  #include <sstream>
+  #include "pinocchio/utils/version.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

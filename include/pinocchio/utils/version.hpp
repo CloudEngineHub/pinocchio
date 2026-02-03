@@ -4,10 +4,10 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include "pinocchio/config.hpp"
-
 #include <string>
 #include <sstream>
+
+#include "pinocchio/config.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
