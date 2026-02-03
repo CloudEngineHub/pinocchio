@@ -1,20 +1,12 @@
 //
-// Copyright (c) 2020 INRIA
+// Copyright (c) 2026 INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_math_sign_hpp__
-#define __pinocchio_math_sign_hpp__
+// IWYU pragma: begin_keep
+#include "pinocchio/math.hpp"
+// IWYU pragma: end_keep
 
-namespace pinocchio
-{
-  ///
-  /// \brief Returns the robust sign of t
-  ///
-  template<typename Scalar>
-  Scalar sign(const Scalar & t)
-  {
-    return (t > Scalar(0)) - (t < Scalar(0));
-  }
-} // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_sign_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/math/sign.hxx"
+// IWYU pragma: end_exports

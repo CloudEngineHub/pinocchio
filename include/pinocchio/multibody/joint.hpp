@@ -29,7 +29,6 @@
 #include "pinocchio/eigen-common.hpp"
 
 #include "pinocchio/utils/static-if.hpp"
-#include "pinocchio/utils/axis-label.hpp"
 
 #include "pinocchio/math.hpp"
 #include "pinocchio/spatial.hpp"
