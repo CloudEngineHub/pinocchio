@@ -187,18 +187,18 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-inverse.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-sum.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/comparison-operators.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-1x1.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-2x2.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-3x3.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-4x4.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-5x5.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-6x6.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-7x7.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-8x8.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-9x9.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-10x10.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-11x11.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-12x12.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-1x1.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-2x2.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-3x3.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-4x4.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-5x5.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-6x6.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-7x7.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-8x8.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-9x9.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-10x10.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-11x11.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-12x12.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigen-helpers.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigenvalues.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/fwd.hpp

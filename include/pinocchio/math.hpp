@@ -51,4 +51,20 @@
 #include "pinocchio/math/tridiagonal-matrix.hxx"
 #include "pinocchio/math/lanczos-decomposition.hxx"
 
+#include "pinocchio/math/matrix-inverse-code-generated.hxx"
+#include "pinocchio/math/details/matrix-inverse-1x1.hxx"
+#include "pinocchio/math/details/matrix-inverse-2x2.hxx"
+#include "pinocchio/math/details/matrix-inverse-3x3.hxx"
+#include "pinocchio/math/details/matrix-inverse-4x4.hxx"
+#include "pinocchio/math/details/matrix-inverse-5x5.hxx"
+#include "pinocchio/math/details/matrix-inverse-6x6.hxx"
+#include "pinocchio/math/details/matrix-inverse-7x7.hxx"
+#include "pinocchio/math/details/matrix-inverse-8x8.hxx"
+#include "pinocchio/math/details/matrix-inverse-9x9.hxx"
+#include "pinocchio/math/details/matrix-inverse-10x10.hxx"
+#include "pinocchio/math/details/matrix-inverse-11x11.hxx"
+#include "pinocchio/math/details/matrix-inverse-12x12.hxx"
+#include "pinocchio/math/matrix-inverse.hxx"
+
+
 // IWYU pragma: end_exports
