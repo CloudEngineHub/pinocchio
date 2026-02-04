@@ -16,8 +16,6 @@ namespace pinocchio
   {
     namespace details
     {
-      typedef double urdf_scalar_type;
-
       enum JointType
       {
         REVOLUTE,

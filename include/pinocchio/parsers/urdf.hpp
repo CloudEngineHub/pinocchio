@@ -25,6 +25,7 @@
 
 #include "pinocchio/spatial.hpp"
 #include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
 
 #include "pinocchio/parsers/config.hpp"
 #include "pinocchio/parsers/fwd.hxx"
@@ -32,6 +33,16 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
+namespace pinocchio
+{
+  namespace urdf
+  {
+    namespace details
+    {
+      typedef double urdf_scalar_type;
+    }
+  } // namespace urdf
+} // namespace pinocchio
 #include "pinocchio/parsers/urdf/urdf.hxx"
 #include "pinocchio/parsers/urdf/utils.hxx"
 #include "pinocchio/parsers/urdf/model.hxx"
