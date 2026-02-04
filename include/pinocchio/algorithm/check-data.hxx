@@ -163,10 +163,4 @@ namespace pinocchio
     return true;
   }
 
-  template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-  bool ModelTpl<Scalar, Options, JointCollectionTpl>::check(const Data & data) const
-  {
-    return checkData(*this, data);
-  }
-
 } // namespace pinocchio
