@@ -45,6 +45,8 @@
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/multibody/liegroup.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
+
+#include "pinocchio/serialization/serializable.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
@@ -53,6 +55,7 @@
 #include "pinocchio/multibody/model-item.hxx"
 #include "pinocchio/multibody/frame.hxx"
 #include "pinocchio/multibody/model.hxx"
+#include "pinocchio/multibody/data.hxx"
 
 #include "pinocchio/multibody/coal.hxx"
 #include "pinocchio/multibody/instance-filter.hxx"

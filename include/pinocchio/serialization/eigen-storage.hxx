@@ -2,12 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_serialization_eigen_storage_hpp__
-#define __pinocchio_serialization_eigen_storage_hpp__
+#pragma once
 
-#include "pinocchio/serialization/eigen.hpp"
-
-#include "pinocchio/container/eigen-storage.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -51,5 +51,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // __pinocchio_serialization_eigen_storage_hpp__

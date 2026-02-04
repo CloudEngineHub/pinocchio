@@ -2,11 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_serialization_double_entry_container_hpp__
-#define __pinocchio_serialization_double_entry_container_hpp__
+#pragma once
 
-#include "pinocchio/serialization/eigen.hpp"
-#include "pinocchio/container/double-entry-container.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -39,5 +40,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // ifndef __pinocchio_serialization_double_entry_container_hpp__

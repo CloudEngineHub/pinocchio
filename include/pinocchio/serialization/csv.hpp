@@ -1,24 +1,12 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2026 INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_serialization_csv_hpp__
-#define __pinocchio_serialization_csv_hpp__
+// IWYU pragma: begin_keep
+#include "pinocchio/serialization.hpp"
+// IWYU pragma: end_keep
 
-#include "pinocchio/serialization/fwd.hpp"
-
-#include <fstream>
-
-namespace pinocchio
-{
-
-  template<typename Derived>
-  void toCSVfile(const std::string & filename, const Eigen::MatrixBase<Derived> & matrix)
-  {
-    const Eigen::IOFormat CSVFormat(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", "\n");
-    std::ofstream file(filename.c_str());
-    file << matrix.format(CSVFormat);
-  }
-} // namespace pinocchio
-
-#endif // ifndef __pinocchio_serialization_csv_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/serialization/csv.hxx"
+// IWYU pragma: end_exports

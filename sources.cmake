@@ -304,16 +304,16 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-set.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/delassus.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/double-entry-container.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/double-entry-container.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen-storage.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/matrix-stack.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen-storage.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/matrix-stack.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/csv.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/coal.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/fcl.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/force.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/frame.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/geometry.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/inertia.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-data.hpp

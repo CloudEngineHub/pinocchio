@@ -1,30 +1,12 @@
 //
-// Copyright (c) 2015-2024 CNRS INRIA
+// Copyright (c) 2026 INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_multibody_coal_serialization_hpp__
-#define __pinocchio_multibody_coal_serialization_hpp__
+// IWYU pragma: begin_keep
+#include "pinocchio/serialization.hpp"
+// IWYU pragma: end_keep
 
-#include "pinocchio/multibody/coal.hpp"
-
-namespace boost
-{
-  namespace serialization
-  {
-
-#ifndef PINOCCHIO_WITH_COLLISION
-
-    template<class Archive>
-    void serialize(
-      Archive & /*ar*/,
-      pinocchio::coal::FakeCollisionGeometry & /*fake_collision_geometry*/,
-      const unsigned int /*version*/)
-    {
-    }
-
-#endif // PINOCCHIO_WITH_COLLISION
-
-  } // namespace serialization
-} // namespace boost
-
-#endif // __pinocchio_multibody_coal_serialization_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/serialization/coal.hxx"
+// IWYU pragma: end_exports

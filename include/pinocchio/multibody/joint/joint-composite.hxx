@@ -660,7 +660,7 @@ namespace pinocchio
     }
 
   protected:
-    // friend struct Serialize<JointModelCompositeTpl>;
+    friend struct Serialize<JointModelCompositeTpl>;
 
     template<typename, int, template<typename, int> class>
     friend struct JointModelCompositeTpl;

@@ -36,6 +36,8 @@
 #include "pinocchio/multibody/fwd.hxx"
 #include "pinocchio/multibody/joint-motion-subspace-base.hxx"
 #include "pinocchio/multibody/joint-motion-subspace-generic.hxx"
+
+#include "pinocchio/serialization/fwd.hxx"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

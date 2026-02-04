@@ -24,8 +24,8 @@ namespace pinocchio
 
   template<typename _Scalar, int _Options, template<typename, int> class JointCollectionTpl>
   struct DataTpl
-  // : serialization::Serializable<DataTpl<_Scalar, _Options, JointCollectionTpl>>
-  : NumericalBase<DataTpl<_Scalar, _Options, JointCollectionTpl>>
+  : serialization::Serializable<DataTpl<_Scalar, _Options, JointCollectionTpl>>
+  , NumericalBase<DataTpl<_Scalar, _Options, JointCollectionTpl>>
   , DataEntity<DataTpl<_Scalar, _Options, JointCollectionTpl>>
   {
 

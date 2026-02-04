@@ -1,43 +1,12 @@
 //
-// Copyright (c) 2019 INRIA
+// Copyright (c) 2026 INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_serialization_se3_hpp__
-#define __pinocchio_serialization_se3_hpp__
+// IWYU pragma: begin_keep
+#include "pinocchio/serialization.hpp"
+// IWYU pragma: end_keep
 
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/serialization/fwd.hpp"
-
-#include <boost/serialization/split_free.hpp>
-#include <boost/serialization/vector.hpp>
-
-namespace boost
-{
-  namespace serialization
-  {
-
-    template<class Archive, typename Scalar, int Options>
-    void
-    save(Archive & ar, const pinocchio::SE3Tpl<Scalar, Options> & M, const unsigned int /*version*/)
-    {
-      ar & make_nvp("translation", make_array(M.translation().data(), 3));
-      ar & make_nvp("rotation", make_array(M.rotation().data(), 9));
-    }
-
-    template<class Archive, typename Scalar, int Options>
-    void load(Archive & ar, pinocchio::SE3Tpl<Scalar, Options> & M, const unsigned int /*version*/)
-    {
-      ar >> make_nvp("translation", make_array(M.translation().data(), 3));
-      ar >> make_nvp("rotation", make_array(M.rotation().data(), 9));
-    }
-
-    template<class Archive, typename Scalar, int Options>
-    void serialize(Archive & ar, pinocchio::SE3Tpl<Scalar, Options> & M, const unsigned int version)
-    {
-      split_free(ar, M, version);
-    }
-
-  } // namespace serialization
-} // namespace boost
-
-#endif // ifndef __pinocchio_serialization_se3_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/serialization/se3.hxx"
+// IWYU pragma: end_exports
