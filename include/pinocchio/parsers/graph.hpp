@@ -12,10 +12,7 @@
 
 #include <boost/optional.hpp>
 #include <boost/none.hpp>
-#include <boost/variant/variant.hpp>
-#include <boost/variant/apply_visitor.hpp>
-#include <boost/variant/recursive_wrapper.hpp>
-#include <boost/variant/static_visitor.hpp>
+#include <boost/variant.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_selectors.hpp>
 #include <boost/graph/graph_traits.hpp>

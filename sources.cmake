@@ -427,17 +427,17 @@ set(${PROJECT_NAME}_GRAPH_GEOMETRY_SOURCES
     ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph-algo-geometry.cpp)
 
 set(${PROJECT_NAME}_PARSERS_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/fwd.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/meshloader-fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/fwd.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/meshloader-fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/srdf.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/srdf.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/utils.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/utils.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/file-explorer.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf/model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf/geometry.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf/mjcf-graph.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/model-graph.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/model-graph-algo.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/graph-visitor.hpp
