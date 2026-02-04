@@ -2,12 +2,12 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_parsers_fwd_hpp__
-#define __pinocchio_parsers_fwd_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/geometry.hpp"
-#include "pinocchio/algorithm/constraints/point-anchor-constraint.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/multibody.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -23,5 +23,3 @@ namespace pinocchio
 
   } // namespace parsers
 } // namespace pinocchio
-
-#endif // __pinocchio_parsers_fwd_hpp__

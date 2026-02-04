@@ -12,4 +12,4 @@
 
 // IWYU pragma: begin_exports
 #include "pinocchio/utils/file-explorer.hxx"
-// IWYU pragma: export
+// IWYU pragma: end_exports

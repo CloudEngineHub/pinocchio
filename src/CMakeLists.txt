@@ -338,19 +338,6 @@ if(BUILD_WITH_PARSERS_SUPPORT)
   if(BUILD_WITH_URDF_SUPPORT)
     target_compile_definitions(${PARSERS_LIB_NAME} PUBLIC PINOCCHIO_WITH_URDFDOM)
 
-    if(${urdfdom_VERSION} VERSION_LESS "0.3.0")
-      target_compile_definitions(${PARSERS_LIB_NAME}
-                                 PRIVATE PINOCCHIO_URDFDOM_COLLISION_WITH_GROUP_NAME)
-    endif()
-    # defines types from version 0.4.0
-    if(NOT ${urdfdom_VERSION} VERSION_LESS "0.4.0")
-      target_compile_definitions(${PARSERS_LIB_NAME} PRIVATE PINOCCHIO_URDFDOM_TYPEDEF_SHARED_PTR)
-    endif()
-    # std::shared_ptr appears from version 1.0.0
-    if(${urdfdom_VERSION} VERSION_GREATER "0.4.2")
-      target_compile_definitions(${PARSERS_LIB_NAME} PRIVATE PINOCCHIO_URDFDOM_USE_STD_SHARED_PTR)
-    endif()
-
     modernize_target_link_libraries(
       ${PARSERS_LIB_NAME}
       SCOPE PUBLIC

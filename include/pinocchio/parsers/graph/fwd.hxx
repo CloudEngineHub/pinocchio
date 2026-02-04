@@ -2,16 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_parsers_graph_fwd_hpp__
-#define __pinocchio_parsers_graph_fwd_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
-
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/inertia.hpp"
-
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/frame.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/graph.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -66,5 +62,3 @@ namespace pinocchio
 
   } // namespace graph
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_parsers_graph_fwd_hpp__

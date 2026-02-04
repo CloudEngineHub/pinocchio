@@ -1,30 +1,12 @@
 //
-// Copyright (c) 2015-2020 CNRS INRIA
+// Copyright (c) 2026 INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_parsers_urdf_utils_hpp__
-#define __pinocchio_parsers_urdf_utils_hpp__
+// IWYU pragma: begin_keep
+#include "pinocchio/parsers/urdf.hpp"
+// IWYU pragma: end_keep
 
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/spatial/se3.hpp"
-#include <urdf_model/pose.h>
-
-namespace pinocchio
-{
-  namespace urdf
-  {
-    namespace details
-    {
-      ///
-      /// \brief Convert URDF Pose quantity to SE3.
-      ///
-      /// \param[in] M The input URDF Pose.
-      ///
-      /// \return The converted pose/transform pinocchio::SE3.
-      ///
-      SE3 convertFromUrdf(const ::urdf::Pose & M);
-    } // namespace details
-  } // namespace urdf
-} // namespace pinocchio
-
-#endif // __pinocchio_parsers_urdf_utils_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/parsers/urdf/utils.hxx"
+// IWYU pragma: end_exports

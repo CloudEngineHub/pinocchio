@@ -2,12 +2,22 @@
 // Copyright (c) 2025 INRIA
 //
 
-#include "pinocchio/parsers/graph/model-graph.hpp"
-#include "pinocchio/parsers/graph/model-graph-algo-geometry.hpp"
-#include "pinocchio/parsers/graph/geometries.hpp"
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
 
+#include <boost/variant.hpp>
+
+#include <coal/BVH/BVH_model.h>
 #include <coal/mesh_loader/loader.h>
-#include <coal/mesh_loader/assimp.h>
+#include <coal/shape/geometric_shapes.h>
+#include <coal/fwd.hh>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/parsers/graph.hpp"
+#include "pinocchio/parsers/meshloader-fwd.hxx"
 
 namespace pinocchio
 {

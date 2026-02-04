@@ -2,11 +2,12 @@
 // Copyright (c) 2016-2024 CNRS INRIA
 //
 
-#ifndef __pinocchio_parsers_mjcf_geometry_hxx__
-#define __pinocchio_parsers_mjcf_geometry_hxx__
+#pragma once
 
-#include "pinocchio/parsers/mjcf.hpp"
-#include "pinocchio/parsers/mjcf/mjcf-graph.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/mjcf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -37,5 +38,3 @@ namespace pinocchio
     }
   } // namespace mjcf
 } // namespace pinocchio
-
-#endif

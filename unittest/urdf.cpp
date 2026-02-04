@@ -69,17 +69,8 @@ BOOST_AUTO_TEST_CASE(build_model_simple_humanoid)
 
 #ifdef PINOCCHIO_WITH_COLLISION
   // Check that cylinder is converted into capsule.
-  #ifdef PINOCCHIO_URDFDOM_COLLISION_WITH_GROUP_NAME
-  BOOST_CHECK_EQUAL(geomModel.geometryObjects[0].geometry->getNodeType(), coal::GEOM_CYLINDER);
-  #else // PINOCCHIO_URDFDOM_COLLISION_WITH_GROUP_NAME
   BOOST_CHECK_EQUAL(geomModel.geometryObjects[0].geometry->getNodeType(), coal::GEOM_CAPSULE);
-  #endif
-
-  #ifndef PINOCCHIO_URDFDOM_COLLISION_WITH_GROUP_NAME
-  BOOST_CHECK_EQUAL(geomModel.geometryObjects[1].geometry->getNodeType(), coal::GEOM_CONVEX);
-  #else // PINOCCHIO_URDFDOM_COLLISION_WITH_GROUP_NAME
   BOOST_CHECK_EQUAL(geomModel.geometryObjects[1].geometry->getObjectType(), coal::OT_BVH);
-  #endif
 #endif // PINOCCHIO_WITH_COLLISION
 
   pinocchio::Model model_ff;
