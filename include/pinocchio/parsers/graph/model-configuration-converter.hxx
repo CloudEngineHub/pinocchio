@@ -2,16 +2,22 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_parsers_graph_model_configuration_converter_hpp__
-#define __pinocchio_parsers_graph_model_configuration_converter_hpp__
+#pragma once
 
-#include "pinocchio/parsers/graph/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/graph.hpp"
+#endif // PINOCCHIO_LSP
+// #ifndef __pinocchio_parsers_graph_model_configuration_converter_hpp__
+// #define __pinocchio_parsers_graph_model_configuration_converter_hpp__
 
-#include "pinocchio/multibody/model.hpp"
+// #include "pinocchio/parsers/graph/fwd.hpp"
 
-#include "pinocchio/parsers/graph/model-graph.hpp"
+// #include "pinocchio/multibody/model.hpp"
 
-#include <vector>
+// #include "pinocchio/parsers/graph/model-graph.hpp"
+
+// #include <vector>
 
 namespace pinocchio
 {
@@ -135,36 +141,6 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
-#include "pinocchio/parsers/graph/model-configuration-converter.hxx"
-
-#endif // ifndef __pinocchio_parsers_graph_model_configuration_converter_hpp__
-//
-// Copyright (c) 2025 INRIA
-//
-
-#ifndef __pinocchio_parsers_graph_model_configuration_converter_hxx__
-#define __pinocchio_parsers_graph_model_configuration_converter_hxx__
-
-#include "pinocchio/macros.hpp"
-
-#include "pinocchio/math/sincos.hpp"
-
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/motion.hpp"
-
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-#include "pinocchio/multibody/joint/joints.hpp"
-
-#include "pinocchio/parsers/graph/model-graph.hpp"
-#include "pinocchio/parsers/graph/model-configuration-converter.hpp"
-
-#include <boost/variant.hpp>
-
-#include <stdexcept>
-#include <unordered_map>
-#include <vector>
-
 namespace pinocchio
 {
 
@@ -866,5 +842,3 @@ namespace pinocchio
   } // namespace graph
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_parsers_graph_model_configuration_converter_hxx__

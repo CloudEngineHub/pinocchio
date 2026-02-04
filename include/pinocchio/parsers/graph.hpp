@@ -21,6 +21,7 @@
 #include <boost/graph/graph_traits.hpp>
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 
 #include "pinocchio/context.hxx"
 #include "pinocchio/macros.hpp"
