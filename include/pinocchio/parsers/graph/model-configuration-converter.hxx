@@ -8,16 +8,6 @@
   #undef PINOCCHIO_LSP
   #include "pinocchio/parsers/graph.hpp"
 #endif // PINOCCHIO_LSP
-// #ifndef __pinocchio_parsers_graph_model_configuration_converter_hpp__
-// #define __pinocchio_parsers_graph_model_configuration_converter_hpp__
-
-// #include "pinocchio/parsers/graph/fwd.hpp"
-
-// #include "pinocchio/multibody/model.hpp"
-
-// #include "pinocchio/parsers/graph/model-graph.hpp"
-
-// #include <vector>
 
 namespace pinocchio
 {
