@@ -18,19 +18,9 @@
 #include "pinocchio/utils/template-template-parameter.hpp"
 
 #include "pinocchio/math.hpp"
+#include "pinocchio/utils/promote-static-eval.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-
-namespace pinocchio
-{
-  template<typename T, typename Enable = void>
-  struct sizeInBytesImpl;
-}
-
-#include "pinocchio/utils/promote-static-eval.hpp"
 #include "pinocchio/utils/size-in-bytes.hxx"
-#include "pinocchio/utils/eigen.hxx"
-#include "pinocchio/utils/std-array.hxx"
-#include "pinocchio/utils/std-vector.hxx"
 // IWYU pragma: end_exports

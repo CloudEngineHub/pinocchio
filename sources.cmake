@@ -362,14 +362,13 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-fix.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-helpers.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/file-io.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/openmp.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/promote-static-eval.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/reference.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/shared-ptr.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/size-in-bytes.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/static-if.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/std-array.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/std-vector.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/std-vector.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/string-generator.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/string.hpp

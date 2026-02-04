@@ -2,20 +2,13 @@
 // Copyright (c) 2025-2026 INRIA
 //
 
-<<<<<<<< HEAD:include/pinocchio/utils/promote-static-eval.hpp
-#ifndef __pinocchio_utils_promote_static_eval_hpp__
-#define __pinocchio_utils_promote_static_eval_hpp__
-|||||||| parent of acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hpp
-#ifndef __pinocchio_utils_eigen_hpp__
-#define __pinocchio_utils_eigen_hpp__
-========
 #pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/utils/size-in-bytes.hpp"
+// TODO move in .hxx
+// #include "pinocchio/utils/promote-static-eval.hpp"
 #endif // PINOCCHIO_LSP
->>>>>>>> acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hxx
 
 namespace pinocchio
 {
@@ -473,50 +466,14 @@ namespace pinocchio
   {
     return {std::forward<Eigen::NoAlias<MatrixExpression, StorageBase>>(matrix_expression)};
   }
-
-  template<typename Derived>
-  struct sizeInBytesImpl<
-    Derived,
-    typename std::enable_if<std::is_base_of<Eigen::PlainObjectBase<Derived>, Derived>::value>::type>
-  {
-    template<typename U = Derived>
-    static typename std::enable_if<helper::has_fixed_size_v<U>, std::size_t>::type
-    run(const Eigen::PlainObjectBase<Derived> & matrix)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(matrix);
-      std::size_t size_value = sizeof(Derived);
-      return size_value;
-    }
-
-    template<typename U = Derived>
-    static typename std::enable_if<!helper::has_fixed_size_v<U>, std::size_t>::type
-    run(const Eigen::PlainObjectBase<Derived> & matrix)
-    {
-      typedef typename Derived::Scalar Scalar;
-      typedef Eigen::Matrix<Scalar, 0, 0> Matrix0x0;
-      std::size_t size_value = sizeof(Scalar) * std::size_t(matrix.size()) + sizeof(Matrix0x0);
-      return size_value;
-    }
-  }; // struct sizeInBytesImpl<Eigen::PlainObjectBase<Derived>>
-
-  template<typename PlainObjectType, int MapOptions, typename StrideType>
-  struct sizeInBytesImpl<Eigen::Map<PlainObjectType, MapOptions, StrideType>>
-  {
-    static std::size_t run(const Eigen::Map<PlainObjectType, MapOptions, StrideType> & map)
-    {
-      typedef typename PlainObjectType::Scalar Scalar;
-      std::size_t size_value = sizeof(Scalar) * std::size_t(map.size());
-      return size_value;
-    }
-
-  }; // struct sizeInBytesImpl<Eigen::Map<PlainObjectType,MapOptions,StrideType>>
-
 } // namespace pinocchio
-<<<<<<<< HEAD:include/pinocchio/utils/promote-static-eval.hpp
+<<<<<<<<
+  HEAD : include / pinocchio / utils / promote - static - eval.hpp
 
 #endif // ifndef __pinocchio_utils_promote_static_eval_hpp__
-|||||||| parent of acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hpp
+  || || ||
+  || parent of acac6b9c2(utilis : Rename private headers) : include / pinocchio / utils / eigen.hpp
 
 #endif // ifndef __pinocchio_utils_eigen_hpp__
-========
->>>>>>>> acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hxx
+       == == == ==>>>>>>>> acac6b9c2(utilis : Rename private headers)
+: include / pinocchio / utils / eigen.hxx
