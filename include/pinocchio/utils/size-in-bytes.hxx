@@ -2,14 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_utils_size_in_bytes_hpp__
-#define __pinocchio_utils_size_in_bytes_hpp__
+#pragma once
 
-#include <cstddef>
-#include <type_traits>
-#include <utility> // for std::declval
-
-#include "pinocchio/utils/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/utils/size-in-bytes.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -39,6 +37,7 @@ namespace pinocchio
    *
    * @tparam T Type of the object whose size in bytes will be computed.
    */
+
   template<typename T, typename Enable>
   struct sizeInBytesImpl
   {
@@ -107,9 +106,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#include "pinocchio/utils/promote-static-eval.hpp"
-#include "pinocchio/utils/std-array.hpp"
-#include "pinocchio/utils/std-vector.hpp"
-
-#endif // __pinocchio_utils_size_in_bytes_hpp__

@@ -2,12 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_utils_std_array_hpp__
-#define __pinocchio_utils_std_array_hpp__
+#pragma once
 
-#include <array>
-
-#include "pinocchio/utils/size-in-bytes.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/utils/size-in-bytes.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -27,5 +27,3 @@ namespace pinocchio
   }; // sizeInBytesImpl
 
 } // namespace pinocchio
-
-#endif // __pinocchio_utils_std_array_hpp__

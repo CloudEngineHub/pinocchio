@@ -5,8 +5,8 @@
 #ifndef __pinocchio_utils_promote_static_eval_hpp__
 #define __pinocchio_utils_promote_static_eval_hpp__
 
-#include "pinocchio/utils/fwd.hpp"
-#include "pinocchio/utils/eigen-helpers.hpp"
+#include "pinocchio/eigen-common.hpp"
+
 #include "pinocchio/math/matrix-product.hpp"
 
 #include <ratio>
