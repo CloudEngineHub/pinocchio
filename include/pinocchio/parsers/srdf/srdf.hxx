@@ -2,10 +2,12 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_parser_srdf_hpp__
-#define __pinocchio_parser_srdf_hpp__
+#pragma once
 
-#include "pinocchio/parsers/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/srdf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -93,30 +95,6 @@ namespace pinocchio
 
   } // namespace srdf
 } // namespace pinocchio
-
-#include "pinocchio/parsers/srdf.hxx"
-
-#endif // ifndef __pinocchio_parser_srdf_hpp__
-//
-// Copyright (c) 2017-2022 CNRS INRIA
-//
-
-#ifndef __pinocchio_parser_srdf_hxx__
-#define __pinocchio_parser_srdf_hxx__
-
-#include "pinocchio/parsers/srdf.hpp"
-
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/geometry.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
-#include <iostream>
-
-// Read XML file with boost
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <fstream>
-#include <sstream>
-#include <boost/foreach.hpp>
 
 namespace pinocchio
 {
@@ -471,5 +449,3 @@ namespace pinocchio
     }
   } // namespace srdf
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_parser_srdf_hxx__
