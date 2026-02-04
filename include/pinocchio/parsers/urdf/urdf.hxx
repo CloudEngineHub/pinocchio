@@ -10,14 +10,6 @@
   #include "pinocchio/parsers/urdf.hpp"
 #endif // PINOCCHIO_LSP
 
-/// \cond
-// forward declaration of the unique type from urdfdom which is expose.
-namespace urdf
-{
-  class ModelInterface;
-}
-/// \endcond
-
 namespace pinocchio
 {
   namespace urdf
