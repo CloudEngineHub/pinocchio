@@ -2,11 +2,12 @@
 // Copyright (c) 2024 INRIA CNRS
 //
 
-#ifndef __pinocchio_parsers_mjcf_hpp__
-#define __pinocchio_parsers_mjcf_hpp__
+#pragma once
 
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/mjcf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -176,8 +177,3 @@ namespace pinocchio
 
   } // namespace mjcf
 } // namespace pinocchio
-
-#include "pinocchio/parsers/mjcf/model.hxx"
-#include "pinocchio/parsers/mjcf/geometry.hxx"
-
-#endif // ifndef __pinocchio_parsers_mjcf_hpp__

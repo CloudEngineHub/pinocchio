@@ -2,31 +2,12 @@
 // Copyright (c) 2015-2024 CNRS INRIA
 //
 
-#ifndef __pinocchio_parsers_mjcf_graph_hpp__
-#define __pinocchio_parsers_mjcf_graph_hpp__
+#pragma once
 
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/joint/joints.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/algorithm/constraints/point-anchor-constraint.hpp"
-#include "pinocchio/algorithm/constraints/frame-anchor-constraint.hpp"
-#include "pinocchio/multibody/liegroup/liegroup.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-joint.hpp"
-
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/foreach.hpp>
-#include <boost/math/constants/constants.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/logic/tribool.hpp>
-#include <boost/lexical_cast.hpp>
-
-#include <sstream>
-#include <limits>
-#include <iostream>
-#include <unordered_map>
-#include <map>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/mjcf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -711,5 +692,3 @@ namespace pinocchio
     } // namespace details
   } // namespace mjcf
 } // namespace pinocchio
-
-#endif // __pinocchio_parsers_mjcf_graph_hpp__
