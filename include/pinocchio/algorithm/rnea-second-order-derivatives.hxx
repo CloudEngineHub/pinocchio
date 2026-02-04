@@ -3,11 +3,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_rnea_second_order_derivatives_hxx__
-#define __pinocchio_algorithm_rnea_second_order_derivatives_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/multibody/visitor.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/rnea-second-order-derivatives.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -463,5 +464,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_rnea_second_order_derivatives_hxx__

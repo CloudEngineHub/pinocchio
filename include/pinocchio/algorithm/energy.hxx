@@ -2,10 +2,12 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_energy_hxx__
-#define __pinocchio_algorithm_energy_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/check.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/energy.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -210,4 +212,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-#endif // __pinocchio_algorithm_energy_hxx__

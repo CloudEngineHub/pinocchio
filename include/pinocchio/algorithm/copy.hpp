@@ -2,13 +2,15 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_copy_hpp__
-#define __pinocchio_copy_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/check.hpp"
+// IWYU pragma: begin_keep//
+#include "pinocchio/macros.hpp"
+//
+#include "pinocchio/multibody.hpp"
 
+#include <pinocchio/algorithm/check.hpp>
+// IWYU pragma: end_keep
 namespace pinocchio
 {
   ///
@@ -68,5 +70,3 @@ namespace pinocchio
 
 } // namespace pinocchio
 /// \endinternal
-
-#endif // ifndef __pinocchio_copy_hpp__

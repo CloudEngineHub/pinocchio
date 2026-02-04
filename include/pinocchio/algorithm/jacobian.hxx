@@ -2,11 +2,12 @@
 // Copyright (c) 2015-2024 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_jacobian_hxx__
-#define __pinocchio_algorithm_jacobian_hxx__
+#pragma once
 
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/algorithm/check.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/jacobian.hpp"
+#endif // PINOCCHIO_LSP
 
 /// @cond DEV
 
@@ -933,5 +934,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_algorithm_jacobian_hxx__

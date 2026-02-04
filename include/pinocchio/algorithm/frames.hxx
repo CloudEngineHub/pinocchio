@@ -1,13 +1,12 @@
 //
 // Copyright (c) 2015-2024 CNRS INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_algorithm_frames_hxx__
-#define __pinocchio_algorithm_frames_hxx__
-
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/jacobian.hpp"
-#include "pinocchio/algorithm/check.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/frames.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -461,5 +460,3 @@ namespace pinocchio
     return frame.placement.actInv(f);
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_frames_hxx__

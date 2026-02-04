@@ -2,14 +2,12 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_crba_hxx__
-#define __pinocchio_crba_hxx__
+#pragma once
 
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/spatial/act-on-set.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/multibody/joint/joint-basic-visitors.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/crba.hpp"
+#endif // PINOCCHIO_LSP
 
 /// @cond DEV
 
@@ -627,5 +625,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_crba_hxx__

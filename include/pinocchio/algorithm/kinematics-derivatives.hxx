@@ -3,13 +3,12 @@
 // Copyright (c) 2018-2026 INRIA
 //
 
-#ifndef __pinocchio_algorithm_kinematics_derivatives_hxx__
-#define __pinocchio_algorithm_kinematics_derivatives_hxx__
+#pragma once
 
-#include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/algorithm/jacobian.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/kinematics-derivatives.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -1576,5 +1575,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_kinematics_derivatives_hxx__

@@ -3,12 +3,12 @@
 // Copyright (c) 2018-2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_aba_hxx__
-#define __pinocchio_algorithm_aba_hxx__
+#pragma once
 
-#include "pinocchio/spatial/act-on-set.hpp"
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/algorithm/check.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/aba.hpp"
+#endif // PINOCCHIO_LSP
 
 /// @cond DEV
 
@@ -993,5 +993,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_algorithm_aba_hxx__

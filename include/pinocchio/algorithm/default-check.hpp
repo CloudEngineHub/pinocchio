@@ -2,12 +2,15 @@
 // Copyright (c) 2016-2018 CNRS
 //
 
-#ifndef __pinocchio_default_check_hpp__
-#define __pinocchio_default_check_hpp__
+#pragma once
+
+// IWYU pragma: begin_keep
+#include "pinocchio/multibody.hpp"
 
 #include <pinocchio/algorithm/check.hpp>
 #include <pinocchio/algorithm/aba.hpp>
 #include <pinocchio/algorithm/crba.hpp>
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -26,5 +29,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_default_check_hpp__

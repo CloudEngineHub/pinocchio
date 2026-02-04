@@ -22,7 +22,6 @@
 
 #include "pinocchio/math.hpp"
 
-#include "pinocchio/multibody/fwd.hxx"
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/liegroup.hpp"
 // IWYU pragma: end_keep

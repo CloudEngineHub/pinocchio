@@ -2,13 +2,12 @@
 // Copyright (c) 2015-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_centroidal_hxx__
-#define __pinocchio_algorithm_centroidal_hxx__
+#pragma once
 
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/spatial/act-on-set.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/check.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/centroidal.hpp"
+#endif // PINOCCHIO_LSP
 
 /// @cond DEV
 
@@ -548,5 +547,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_algorithm_centroidal_hxx__
