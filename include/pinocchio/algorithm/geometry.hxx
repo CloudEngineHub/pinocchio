@@ -2,11 +2,12 @@
 // Copyright (c) 2015-2022 CNRS INRIA
 //
 
-#ifndef __pinocchio_algo_geometry_hxx__
-#define __pinocchio_algo_geometry_hxx__
+#pragma once
 
-#include <boost/foreach.hpp>
-#include <sstream>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/geometry.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -89,5 +90,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifnded __pinocchio_algo_geometry_hxx__

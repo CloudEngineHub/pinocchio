@@ -2,13 +2,12 @@
 // Copyright (c) 2018-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_regressor_hxx__
-#define __pinocchio_algorithm_regressor_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/spatial/skew.hpp"
-#include "pinocchio/spatial/symmetric3.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/regressor.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -551,5 +550,3 @@ namespace pinocchio
     return data.potentialEnergyRegressor;
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_regressor_hxx__

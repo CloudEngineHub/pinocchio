@@ -2,11 +2,26 @@
 // Copyright (c) 2015-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_kinematics_hpp__
-#define __pinocchio_kinematics_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
+
+#include <cassert>
+#include <cstddef>
+#include <vector>
+
+#include <boost/fusion/container/vector.hpp>
+
+#include "pinocchio/macros.hpp"
+
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
+#include "pinocchio/multibody/visitor.hpp"
+
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -193,13 +208,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
-/* --- Details -------------------------------------------------------------------- */
-/* --- Details -------------------------------------------------------------------- */
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/kinematics.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/kinematics.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_kinematics_hpp__
+// IWYU pragma: end_exports

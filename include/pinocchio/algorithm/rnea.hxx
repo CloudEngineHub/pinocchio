@@ -2,13 +2,12 @@
 // Copyright (c) 2015-2022 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_rnea_hxx__
-#define __pinocchio_algorithm_rnea_hxx__
+#pragma once
 
-/// @cond DEV
-
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/algorithm/check.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/rnea.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -853,5 +852,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_algorithm_rnea_hxx__

@@ -2,11 +2,29 @@
 // Copyright (c) 2015-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_rnea_hpp__
-#define __pinocchio_algorithm_rnea_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
+
+#include <cassert>
+#include <cstddef>
+#include <vector>
+
+#include <boost/fusion/container/vector.hpp>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
+
+#include "pinocchio/math.hpp"
+
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
+
+#include "pinocchio/algorithm/check.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -217,11 +235,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/rnea.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/rnea.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_rnea_hpp__
+// IWYU pragma: end_exports

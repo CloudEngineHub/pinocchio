@@ -2,13 +2,12 @@
 // Copyright (c) 2015-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_center_of_mass_hxx__
-#define __pinocchio_algorithm_center_of_mass_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/jacobian.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/center-of-mass.hpp"
+#endif // PINOCCHIO_LSP
 
 /// @cond DEV
 
@@ -666,5 +665,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_algorithm_center_of_mass_hxx__

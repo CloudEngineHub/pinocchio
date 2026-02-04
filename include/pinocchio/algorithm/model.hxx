@@ -3,12 +3,12 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_model_hxx__
-#define __pinocchio_algorithm_model_hxx__
+#pragma once
 
-#include <algorithm>
-#include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/spatial/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/model.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -1074,5 +1074,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_model_hxx__

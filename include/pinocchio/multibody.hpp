@@ -45,6 +45,7 @@
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/multibody/liegroup.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
+#include "pinocchio/algorithm/fwd.hxx"
 
 #include "pinocchio/serialization/serializable.hpp"
 // IWYU pragma: end_keep

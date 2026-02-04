@@ -2,12 +2,12 @@
 // Copyright (c) 2016-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_kinematics_hxx__
-#define __pinocchio_kinematics_hxx__
+#pragma once
 
-#include "model.hpp"
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/algorithm/check.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/kinematics.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -432,5 +432,3 @@ namespace pinocchio
     impl::forwardKinematics(model, data, make_const_ref(q), make_const_ref(v), make_const_ref(a));
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_kinematics_hxx__

@@ -2,14 +2,12 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_compute_all_terms_hxx__
-#define __pinocchio_compute_all_terms_hxx__
+#pragma once
 
-#include "pinocchio/multibody/visitor.hpp"
-#include "pinocchio/spatial/act-on-set.hpp"
-#include "pinocchio/algorithm/center-of-mass.hpp"
-#include "pinocchio/algorithm/energy.hpp"
-#include "pinocchio/algorithm/check.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/compute-all-terms.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -243,5 +241,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// \endinternal
-
-#endif // ifndef __pinocchio_compute_all_terms_hxx__
