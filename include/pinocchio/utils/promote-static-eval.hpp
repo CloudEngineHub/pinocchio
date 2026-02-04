@@ -13,7 +13,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/utils/eigen.hpp"
+  #include "pinocchio/utils/size-in-bytes.hpp"
 #endif // PINOCCHIO_LSP
 >>>>>>>> acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hxx
 
