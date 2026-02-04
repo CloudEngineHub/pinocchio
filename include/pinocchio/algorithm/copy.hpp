@@ -8,8 +8,6 @@
 #include "pinocchio/macros.hpp"
 //
 #include "pinocchio/multibody.hpp"
-
-#include <pinocchio/algorithm/check.hpp>
 // IWYU pragma: end_keep
 
 namespace pinocchio
