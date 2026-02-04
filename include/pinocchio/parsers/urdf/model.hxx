@@ -3,22 +3,12 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_multibody_parsers_urdf_model_hxx__
-#define __pinocchio_multibody_parsers_urdf_model_hxx__
+#pragma once
 
-#include "pinocchio/math/matrix.hpp"
-#include "pinocchio/parsers/config.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
-
-#include <sstream>
-#include <boost/foreach.hpp>
-#include <boost/optional.hpp>
-#include <limits>
-#include <iostream>
-#include <boost/optional.hpp>
-#include <boost/none.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/urdf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -849,5 +839,3 @@ namespace pinocchio
 
   } // namespace urdf
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_parsers_urdf_model_hxx__

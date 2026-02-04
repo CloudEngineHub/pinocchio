@@ -2,13 +2,13 @@
 // Copyright (c) 2015-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_parsers_urdf_types_hpp__
-#define __pinocchio_parsers_urdf_types_hpp__
+#pragma once
 
-#include <urdf_model/model.h>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/urdf.hpp"
+#endif // PINOCCHIO_LSP
 
-#include <string>
-#include <exception>
 #ifdef PINOCCHIO_URDFDOM_USE_STD_SHARED_PTR
   #include <memory>
   #define PINOCCHIO_URDF_SHARED_PTR(type) std::shared_ptr<type>

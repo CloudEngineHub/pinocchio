@@ -2,12 +2,12 @@
 // Copyright (c) 2015-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_parsers_urdf_utils_hpp__
-#define __pinocchio_parsers_urdf_utils_hpp__
+#pragma once
 
-#include "pinocchio/spatial/fwd.hpp"
-#include "pinocchio/spatial/se3.hpp"
-#include <urdf_model/pose.h>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/urdf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -26,5 +26,3 @@ namespace pinocchio
     } // namespace details
   } // namespace urdf
 } // namespace pinocchio
-
-#endif // __pinocchio_parsers_urdf_utils_hpp__

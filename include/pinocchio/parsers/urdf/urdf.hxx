@@ -3,15 +3,12 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_parsers_urdf_hpp__
-#define __pinocchio_parsers_urdf_hpp__
+#pragma once
 
-#include "pinocchio/parsers/fwd.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/geometry.hpp"
-#include "pinocchio/parsers/meshloader-fwd.hpp"
-
-#include <memory>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/urdf.hpp"
+#endif // PINOCCHIO_LSP
 
 /// \cond
 // forward declaration of the unique type from urdfdom which is expose.
@@ -348,8 +345,3 @@ namespace pinocchio
 
   } // namespace urdf
 } // namespace pinocchio
-
-#include "pinocchio/parsers/urdf/model.hxx"
-#include "pinocchio/parsers/urdf/geometry.hxx"
-
-#endif // ifndef __pinocchio_parsers_urdf_hpp__

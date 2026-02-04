@@ -2,13 +2,12 @@
 // Copyright (c) 2015-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_multibody_parsers_urdf_geometry_hxx__
-#define __pinocchio_multibody_parsers_urdf_geometry_hxx__
+#pragma once
 
-#include "pinocchio/parsers/config.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-
-#include <sstream>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/urdf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -107,5 +106,3 @@ namespace pinocchio
 
   } // namespace urdf
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_parsers_urdf_geometry_hxx__
