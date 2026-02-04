@@ -3,16 +3,30 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/parsers/urdf/utils.hpp"
-#include "pinocchio/parsers/urdf/model.hxx"
-
-#include <urdf_model/model.h>
-#include <urdf_parser/urdf_parser.h>
-
-#include <sstream>
-#include <boost/foreach.hpp>
+#include <cassert>
 #include <limits>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+#include <boost/foreach.hpp>
+#include <boost/optional.hpp>
+
+#include <urdf_model/joint.h>
+#include <urdf_model/link.h>
+#include <urdf_model/model.h>
+#include <urdf_model/pose.h>
+#include <urdf_model/types.h>
+#include <urdf_parser/urdf_parser.h>
+#include <urdf_world/types.h>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/parsers/urdf.hpp"
 
 namespace pinocchio
 {
@@ -369,8 +383,9 @@ namespace pinocchio
         if (urdfTree)
           return parseRootTree(urdfTree.get(), model, rootJoint, rootJointName, mimic);
         else
-          throw std::invalid_argument("The XML stream does not contain a valid "
-                                      "URDF model.");
+          throw std::invalid_argument(
+            "The XML stream does not contain a valid "
+            "URDF model.");
       }
     } // namespace details
   } // namespace urdf

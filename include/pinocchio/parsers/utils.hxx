@@ -6,13 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <cstddef>
-  #include <stdexcept>
-  #include <string>
-  #include <vector>
-
-  #include <boost/filesystem/path.hpp>
-  #include <boost/filesystem/operations.hpp>
+  #include "pinocchio/parsers/utils.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

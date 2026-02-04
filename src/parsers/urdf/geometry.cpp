@@ -2,23 +2,43 @@
 // Copyright (c) 2015-2020 CNRS INRIA
 //
 
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/parsers/urdf/types.hpp"
-#include "pinocchio/parsers/urdf/utils.hpp"
-#include "pinocchio/parsers/utils.hpp"
+#include <cassert>
+#include <cstddef>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
-#include <urdf_model/model.h>
-#include <urdf_parser/urdf_parser.h>
+#include <Eigen/Core>
 
 #ifdef PINOCCHIO_WITH_COLLISION
-
+  #include <coal/fwd.hh>
+  #include <coal/BVH/BVH_model.h>
+  #include <coal/data_types.h>
   #include <coal/mesh_loader/loader.h>
-  #include <coal/mesh_loader/assimp.h>
-
+  #include <coal/shape/geometric_shapes.h>
 #endif // PINOCCHIO_WITH_COLLISION
+
+#include <urdf_model/color.h>
+#include <urdf_model/link.h>
+#include <urdf_model/model.h>
+#include <urdf_model/pose.h>
+#include <urdf_model/types.h>
+#include <urdf_parser/urdf_parser.h>
+#include <urdf_world/types.h>
+
+#include "pinocchio/eigen-common.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/parsers/urdf.hpp"
+#include "pinocchio/parsers/utils.hpp"
+#include "pinocchio/utils/file-explorer.hpp"
 
 namespace pinocchio
 {
