@@ -24,7 +24,7 @@
 #include <boost/integer/static_min_max.hpp>
 
 #include "pinocchio/context.hxx"
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
 

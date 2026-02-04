@@ -6,7 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/multibody/joint.hpp"
+  #include "pinocchio/context.hxx"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

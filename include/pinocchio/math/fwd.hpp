@@ -3,14 +3,12 @@
 // Copyright (c) 2018-2026 INRIA
 //
 
-#ifndef __pinocchio_math_fwd_hpp__
-#define __pinocchio_math_fwd_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
+// IWYU pragma: begin_keep
+#include <type_traits>
+// IWYU pragma: end_keep
 
-#include "pinocchio/math/fwd.hxx"   // IWYU pragma: export
-#include "pinocchio/math/alias.hxx" // IWYU pragma: export
-
-#include "pinocchio/math/assign-operators.hpp"
-
-#endif // #ifndef __pinocchio_math_fwd_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/math/fwd.hxx"
+// IWYU pragma: end_exports

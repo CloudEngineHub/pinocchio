@@ -29,7 +29,7 @@
 #include <boost/foreach.hpp>
 
 #include "pinocchio/context.hxx"
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/deprecated.hpp"
 
@@ -45,7 +45,7 @@
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/multibody/liegroup.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/fwd.hxx"
+#include "pinocchio/algorithm/fwd.hpp"
 
 #include "pinocchio/serialization/serializable.hpp"
 // IWYU pragma: end_keep

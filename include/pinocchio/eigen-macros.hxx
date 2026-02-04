@@ -8,9 +8,10 @@
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include <Eigen/Core>
-  #include "pinocchio/traits.hpp"          // IWYU pragma: keep
-  #include "pinocchio/utils/eigen-fix.hxx" // IWYU pragma: keep
-
+  // IWYU pragma: begin_keep
+  #include "pinocchio/fwd.hpp"
+  #include "pinocchio/utils/eigen-fix.hxx"
+  // IWYU pragma: end_keep
 #endif // PINOCCHIO_LSP
 
 /// \brief Macro giving access to the equivalent plain type of D

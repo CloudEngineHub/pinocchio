@@ -1,15 +1,12 @@
 //
 // Copyright (c) 2026 INRIA
 //
+
 #pragma once
 
 // IWYU pragma: begin_keep
-#include <Eigen/Core>
-
-#include "pinocchio/fwd.hpp"
-#include "pinocchio/utils/eigen-fix.hxx"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/eigen-macros.hxx"
+#include "pinocchio/multibody/liegroup/fwd.hxx"
 // IWYU pragma: end_exports

@@ -28,7 +28,7 @@
 #include "pinocchio/multibody/joint.hpp"
 
 #include "pinocchio/parsers/config.hpp"
-#include "pinocchio/parsers/fwd.hxx"
+#include "pinocchio/parsers/scalar-model.hxx"
 #include "pinocchio/parsers/meshloader-fwd.hxx"
 // IWYU pragma: end_keep
 

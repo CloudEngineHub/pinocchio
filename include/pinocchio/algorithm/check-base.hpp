@@ -7,7 +7,7 @@
 #include <Eigen/Core>
 #include <cstddef>
 #include "pinocchio/context.hxx"
-#include "pinocchio/multibody/fwd.hxx"
+#include "pinocchio/multibody/fwd.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

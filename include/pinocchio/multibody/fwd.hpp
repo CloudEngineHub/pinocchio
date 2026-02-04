@@ -1,13 +1,14 @@
-//
-// Copyright (c) 2026 INRIA
-//
+
 #pragma once
 
 // IWYU pragma: begin_keep
+#include <cstddef>
+
 #include <Eigen/Core>
-#include <type_traits>
+
+#include "pinocchio/context.hxx"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/traits.hxx"
+#include "pinocchio/multibody/fwd.hxx"
 // IWYU pragma: end_exports

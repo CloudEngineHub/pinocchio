@@ -14,7 +14,7 @@
 #include <boost/fusion/container/vector.hpp>
 
 #include "pinocchio/macros.hpp"
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 
 #include "pinocchio/math.hpp"
 

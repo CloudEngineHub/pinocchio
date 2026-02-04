@@ -4,7 +4,7 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

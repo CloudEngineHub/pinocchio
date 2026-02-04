@@ -427,7 +427,7 @@ set(${PROJECT_NAME}_GRAPH_GEOMETRY_SOURCES
     ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph-algo-geometry.cpp)
 
 set(${PROJECT_NAME}_PARSERS_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/fwd.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/scalar-model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/meshloader-fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/srdf.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/srdf.hxx

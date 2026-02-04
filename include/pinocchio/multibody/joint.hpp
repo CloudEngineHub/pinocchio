@@ -24,7 +24,7 @@
 #include <boost/variant.hpp>
 
 #include "pinocchio/context.hxx"
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
 
@@ -33,11 +33,11 @@
 #include "pinocchio/math.hpp"
 #include "pinocchio/spatial.hpp"
 
-#include "pinocchio/multibody/fwd.hxx"
+#include "pinocchio/multibody/fwd.hpp"
 #include "pinocchio/multibody/joint-motion-subspace-base.hxx"
 #include "pinocchio/multibody/joint-motion-subspace-generic.hxx"
 
-#include "pinocchio/serialization/fwd.hxx"
+#include "pinocchio/serialization/fwd.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
