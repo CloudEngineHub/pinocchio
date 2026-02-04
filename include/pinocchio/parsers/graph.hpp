@@ -46,4 +46,5 @@
 #include "pinocchio/parsers/graph/graph-visitor.hxx"
 #include "pinocchio/parsers/graph/model-graph-algo.hxx"
 #include "pinocchio/parsers/graph/model-graph-algo-geometry.hxx"
+#include "pinocchio/parsers/graph/model-configuration-converter.hxx"
 // IWYU pragma: end_exports
