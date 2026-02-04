@@ -2,8 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_utils_reference_hpp__
-#define __pinocchio_utils_reference_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/utils/reference.hpp"
+#endif // PINOCCHIO_LSP
 
 #include <functional>
 #include <memory>
@@ -206,5 +210,3 @@ namespace pinocchio
 
   } // namespace helper
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_utils_reference_hpp__

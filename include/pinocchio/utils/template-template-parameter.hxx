@@ -2,8 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_utils_template_template_parameter_hpp__
-#define __pinocchio_utils_template_template_parameter_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/utils/template-template-parameter.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -70,5 +74,3 @@ namespace pinocchio
 
   } // namespace internal
 } // namespace pinocchio
-
-#endif // __pinocchio_utils_template_template_parameter_hpp__
