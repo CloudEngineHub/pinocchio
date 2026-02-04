@@ -9,8 +9,7 @@
   #include "pinocchio/utils/reference.hpp"
 #endif // PINOCCHIO_LSP
 
-#include <functional>
-#include <memory>
+
 
 namespace pinocchio
 {

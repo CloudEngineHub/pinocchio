@@ -17,13 +17,6 @@
 #endif // PINOCCHIO_LSP
 >>>>>>>> acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hxx
 
-#include "pinocchio/eigen-common.hpp"
-
-#include "pinocchio/math/matrix-product.hpp"
-
-#include <ratio>
-#include <type_traits>
-
 namespace pinocchio
 {
 

@@ -65,6 +65,6 @@
 #include "pinocchio/math/details/matrix-inverse-11x11.hxx"
 #include "pinocchio/math/details/matrix-inverse-12x12.hxx"
 #include "pinocchio/math/matrix-inverse.hxx"
-
+#include "pinocchio/math/matrix-product.hxx"
 
 // IWYU pragma: end_exports
