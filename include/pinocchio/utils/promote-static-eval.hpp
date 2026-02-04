@@ -2,15 +2,20 @@
 // Copyright (c) 2025-2026 INRIA
 //
 
+<<<<<<<< HEAD:include/pinocchio/utils/promote-static-eval.hpp
 #ifndef __pinocchio_utils_promote_static_eval_hpp__
 #define __pinocchio_utils_promote_static_eval_hpp__
+|||||||| parent of acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hpp
+#ifndef __pinocchio_utils_eigen_hpp__
+#define __pinocchio_utils_eigen_hpp__
+========
+#pragma once
 
-#include "pinocchio/utils/fwd.hpp"
-#include "pinocchio/utils/eigen-helpers.hpp"
-#include "pinocchio/math/matrix-product.hpp"
-
-#include <ratio>
-#include <type_traits>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/utils/eigen.hpp"
+#endif // PINOCCHIO_LSP
+>>>>>>>> acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hxx
 
 namespace pinocchio
 {
@@ -507,5 +512,11 @@ namespace pinocchio
   }; // struct sizeInBytesImpl<Eigen::Map<PlainObjectType,MapOptions,StrideType>>
 
 } // namespace pinocchio
+<<<<<<<< HEAD:include/pinocchio/utils/promote-static-eval.hpp
 
 #endif // ifndef __pinocchio_utils_promote_static_eval_hpp__
+|||||||| parent of acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hpp
+
+#endif // ifndef __pinocchio_utils_eigen_hpp__
+========
+>>>>>>>> acac6b9c2 (utilis: Rename private headers):include/pinocchio/utils/eigen.hxx
