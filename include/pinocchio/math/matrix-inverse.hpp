@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/matrix-inverse.hxx
+#include "pinocchio/math/matrix-inverse.hxx"
 // IWYU pragma: end_exports
