@@ -1,0 +1,21 @@
+//
+// Copyright (c) 2026 INRIA
+//
+#pragma once
+
+// IWYU pragma: begin_keep
+#include <stddef.h>
+#include <omp.h>
+#include <vector>
+#include <iterator>
+#include <algorithm>
+
+#include "pinocchio/macros.hpp"
+
+#include "pinocchio/multibody/pool/geometry.hpp"
+#include "pinocchio/collision/broadphase-manager.hpp"
+// IWYU pragma: end_keep
+
+// IWYU pragma: begin_exports
+#include "pinocchio/collision/pool/broadphase-manager.hxx"
+// IWYU pragma: end_exports
