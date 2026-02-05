@@ -24,14 +24,6 @@ namespace pinocchio
   {
   };
 
-  namespace internal
-  {
-    template<typename T>
-    struct traits
-    {
-    };
-  } // namespace internal
-
   template<class Derived>
   struct NumericalBase
   {
@@ -104,6 +96,12 @@ namespace pinocchio
 
   typedef Eigen::Matrix<bool, Eigen::Dynamic, 1> VectorXb;
 
+  ///  \brief Forward declaration of the multiplication operation return type.
+  ///        Should be overloaded, otherwise it will procude a compilation error.
+  ///
+  template<typename Lhs, typename Rhs>
+  struct MultiplicationOp;
+
   namespace internal
   {
     /**
@@ -164,6 +162,23 @@ namespace pinocchio
      */
     template<typename T, template<typename...> class Template>
     inline constexpr bool is_specialization_of_v = is_specialization_of<T, Template>::value;
+
+    template<typename T>
+    struct traits
+    {
+    };
+
+    template<typename T1, typename T2>
+    struct is_same_type
+    {
+      static const bool value = false;
+    };
+
+    template<typename T>
+    struct is_same_type<T, T>
+    {
+      static const bool value = true;
+    };
   } // namespace internal
 
   namespace helper
@@ -183,31 +198,9 @@ namespace pinocchio
     };
   } // namespace helper
 
-  ///  \brief Forward declaration of the multiplication operation return type.
-  ///        Should be overloaded, otherwise it will procude a compilation error.
-  ///
-  template<typename Lhs, typename Rhs>
-  struct MultiplicationOp;
-
   namespace impl
   {
     template<typename Lhs, typename Rhs>
     struct LhsMultiplicationOp;
   }
-
-  namespace internal
-  {
-    template<typename T1, typename T2>
-    struct is_same_type
-    {
-      static const bool value = false;
-    };
-
-    template<typename T>
-    struct is_same_type<T, T>
-    {
-      static const bool value = true;
-    };
-  } // namespace internal
-
 } // namespace pinocchio

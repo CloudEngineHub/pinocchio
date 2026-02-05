@@ -6,8 +6,10 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
   #include <cstddef>
+
+  #include <Eigen/Core>
+
   #include "pinocchio/context.hxx"
 #endif // PINOCCHIO_LSP
 

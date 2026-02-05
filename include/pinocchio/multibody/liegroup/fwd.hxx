@@ -6,7 +6,6 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/multibody/liegroup.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

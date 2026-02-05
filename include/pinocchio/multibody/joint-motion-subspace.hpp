@@ -9,13 +9,13 @@
 #include <iosfwd>
 #include <ostream>
 
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 #include "pinocchio/eigen-common.hpp"
 
 #include "pinocchio/math.hpp"
 #include "pinocchio/spatial.hpp"
 
-#include "pinocchio/multibody/fwd.hxx"
+#include "pinocchio/multibody/fwd.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

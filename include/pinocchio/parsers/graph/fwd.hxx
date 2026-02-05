@@ -6,7 +6,9 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/parsers/graph.hpp"
+  #include "pinocchio/context.hxx"
+  #include "pinocchio/spatial/fwd.hpp"
+  #include "pinocchio/multibody/fwd.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

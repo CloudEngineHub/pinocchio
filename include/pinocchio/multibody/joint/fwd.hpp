@@ -1,6 +1,5 @@
 //
-// Copyright (c) 2015-2025 CNRS INRIA
-// Copyright (c) 2016 Wandercraft, 86 rue de Paris 91400 Orsay, France.
+// Copyright (c) 2026 INRIA
 //
 
 #pragma once
@@ -10,5 +9,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/fwd.hxx"
+#include "pinocchio/multibody/joint/fwd.hxx"
 // IWYU pragma: end_exports

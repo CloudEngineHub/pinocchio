@@ -20,7 +20,7 @@
 #include <boost/variant/get.hpp>
 
 #include "pinocchio/macros.hpp"
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 
 #include "pinocchio/spatial.hpp"
 

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2025 INRIA
 //
 
 #pragma once
@@ -10,10 +10,6 @@
 
 namespace pinocchio
 {
-
-  template<typename Derived>
-  struct DataEntity;
-  template<typename Derived>
-  struct ModelEntity;
-
+  template<typename T, typename Enable = void>
+  struct sizeInBytesImpl;
 } // namespace pinocchio

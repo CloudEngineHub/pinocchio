@@ -6,7 +6,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 #include "pinocchio/eigen-common.hpp"
 #include "pinocchio/context.hxx"
 

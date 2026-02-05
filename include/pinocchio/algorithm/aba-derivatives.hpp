@@ -18,7 +18,7 @@
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 
 #include "pinocchio/math.hpp"
 

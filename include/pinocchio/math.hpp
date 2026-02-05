@@ -20,7 +20,7 @@
 #include <boost/multiprecision/number.hpp>
 
 #include "pinocchio/context.hxx"
-#include "pinocchio/multibody/fwd.hxx"
+#include "pinocchio/multibody/fwd.hpp"
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
@@ -66,5 +66,4 @@
 #include "pinocchio/math/details/matrix-inverse-12x12.hxx"
 #include "pinocchio/math/matrix-inverse.hxx"
 #include "pinocchio/math/matrix-product.hxx"
-
 // IWYU pragma: end_exports

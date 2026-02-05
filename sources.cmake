@@ -357,22 +357,20 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/skew.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/spatial-axis.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/symmetric3.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/axis-label.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/cast.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/check.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-fix.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-helpers.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/file-io.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/fwd.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/helpers.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/openmp.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/promote-static-eval.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/reference.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/shared-ptr.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/size-in-bytes.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/static-if.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/std-array.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/std-vector.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/std-array.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/std-vector.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/string-generator.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/string.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/template-template-parameter.hpp
@@ -427,7 +425,7 @@ set(${PROJECT_NAME}_GRAPH_GEOMETRY_SOURCES
     ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph-algo-geometry.cpp)
 
 set(${PROJECT_NAME}_PARSERS_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/fwd.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/scalar-model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/meshloader-fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/srdf.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/srdf.hxx

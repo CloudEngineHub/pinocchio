@@ -6,7 +6,7 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include "pinocchio/traits.hpp"
+#include "pinocchio/fwd.hpp"
 
 #define BOOST_FUSION_INVOKE_MAX_ARITY 12
 #include <boost/blank.hpp>
@@ -18,8 +18,8 @@
 
 #include "pinocchio/math.hpp"
 
-#include "pinocchio/multibody/fwd.hxx"
-#include "pinocchio/multibody/joint/fwd.hxx"
+#include "pinocchio/multibody/fwd.hpp"
+#include "pinocchio/multibody/joint/fwd.hpp"
 #include "pinocchio/multibody/joint/joint-model-base.hxx"
 #include "pinocchio/multibody/joint/joint-data-base.hxx"
 // IWYU pragma: end_keep
