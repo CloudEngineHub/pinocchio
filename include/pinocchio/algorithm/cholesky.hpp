@@ -2,11 +2,23 @@
 // Copyright (c) 2015-2019 CNRS INRIA
 //
 
-#ifndef __pinocchio_cholesky_hpp__
-#define __pinocchio_cholesky_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+// IWYU pragma: begin_keep
+#include <cassert>
+#include <cstddef>
+#include <vector>
+#include <algorithm>
+
+#include <Eigen/Core>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
+
+#include "pinocchio/multibody.hpp"
+
+#include "pinocchio/algorithm/check-model.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -303,10 +315,6 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------------- */
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/cholesky.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/cholesky.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_cholesky_hpp__
+// IWYU pragma: end_exports

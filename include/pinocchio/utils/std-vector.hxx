@@ -6,7 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/utils/size-in-bytes.hpp"
+  #include "pinocchio/utils/std-vector.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -384,20 +384,5 @@ namespace pinocchio
     {
       return std::find(vec.begin(), vec.end(), value) != vec.end();
     }
-
   } // namespace helper
-
-  template<typename T, class Allocator>
-  struct sizeInBytesImpl<std::vector<T, Allocator>>
-  {
-    static std::size_t run(const std::vector<T, Allocator> & vector)
-    {
-      std::size_t size_value = 0;
-      for (const auto & elt : vector)
-      {
-        size_value += sizeInBytes(elt);
-      }
-      return size_value;
-    }
-  }; // sizeInBytesImpl
 } // namespace pinocchio

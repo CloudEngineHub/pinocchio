@@ -4,12 +4,9 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include <cassert>
-
-#include "pinocchio/spatial.hpp"
-#include "pinocchio/multibody/fwd.hpp"
+#include "pinocchio/multibody/visitor.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/utils/force.hxx"
+#include "pinocchio/multibody/visitor/fusion.hxx"
 // IWYU pragma: end_exports

@@ -28,6 +28,9 @@ namespace pinocchio
     inline constexpr bool has_method_sizeInBytes_v = has_method_sizeInBytes<T>::value;
   } // namespace helper
 
+  template<typename T, typename Enable = void>
+  struct sizeInBytesImpl;
+
   /**
    * @brief Helper struct providing a fallback implementation to compute the size (in bytes)
    *        of a given object or type.
@@ -37,7 +40,6 @@ namespace pinocchio
    *
    * @tparam T Type of the object whose size in bytes will be computed.
    */
-
   template<typename T, typename Enable>
   struct sizeInBytesImpl
   {
@@ -104,5 +106,71 @@ namespace pinocchio
   {
     return sizeof(T);
   }
+
+  template<typename T, class Allocator>
+  struct sizeInBytesImpl<std::vector<T, Allocator>>
+  {
+    static std::size_t run(const std::vector<T, Allocator> & vector)
+    {
+      std::size_t size_value = 0;
+      for (const auto & elt : vector)
+      {
+        size_value += sizeInBytes(elt);
+      }
+      return size_value;
+    }
+  }; // sizeInBytesImpl
+
+  template<typename T, std::size_t N>
+  struct sizeInBytesImpl<std::array<T, N>>
+  {
+    static std::size_t run(const std::array<T, N> & array)
+    {
+      std::size_t size_value = 0;
+      for (const auto & elt : array)
+      {
+        size_value += sizeInBytes(elt);
+      }
+      return size_value;
+    }
+  };
+
+  template<typename Derived>
+  struct sizeInBytesImpl<
+    Derived,
+    typename std::enable_if<std::is_base_of<Eigen::PlainObjectBase<Derived>, Derived>::value>::type>
+  {
+    template<typename U = Derived>
+    static typename std::enable_if<helper::has_fixed_size_v<U>, std::size_t>::type
+    run(const Eigen::PlainObjectBase<Derived> & matrix)
+    {
+      PINOCCHIO_UNUSED_VARIABLE(matrix);
+      std::size_t size_value = sizeof(Derived);
+      return size_value;
+    }
+
+    template<typename U = Derived>
+    static typename std::enable_if<!helper::has_fixed_size_v<U>, std::size_t>::type
+    run(const Eigen::PlainObjectBase<Derived> & matrix)
+    {
+      typedef typename Derived::Scalar Scalar;
+      typedef Eigen::Matrix<Scalar, 0, 0> Matrix0x0;
+      std::size_t size_value = sizeof(Scalar) * std::size_t(matrix.size()) + sizeof(Matrix0x0);
+      return size_value;
+    }
+  }; // struct sizeInBytesImpl<Eigen::PlainObjectBase<Derived>>
+
+  template<typename PlainObjectType, int MapOptions, typename StrideType>
+  struct sizeInBytesImpl<Eigen::Map<PlainObjectType, MapOptions, StrideType>>
+  {
+    static std::size_t run(const Eigen::Map<PlainObjectType, MapOptions, StrideType> & map)
+    {
+      typedef typename PlainObjectType::Scalar Scalar;
+      std::size_t size_value = sizeof(Scalar) * std::size_t(map.size());
+      return size_value;
+    }
+
+  }; // struct sizeInBytesImpl<Eigen::Map<PlainObjectType,MapOptions,StrideType>> }; //
+     // sizeInBytesImpl
 
 } // namespace pinocchio

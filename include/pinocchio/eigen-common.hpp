@@ -12,4 +12,5 @@
 
 // IWYU pragma: begin_exports
 #include "pinocchio/eigen-macros.hxx"
+#include "pinocchio/eigen-ref.hxx"
 // IWYU pragma: end_exports

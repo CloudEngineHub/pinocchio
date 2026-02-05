@@ -2,8 +2,7 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_parallel_omp_hpp__
-#define __pinocchio_algorithm_parallel_omp_hpp__
+#pragma once
 
 #include "pinocchio/macros.hpp"
 
@@ -11,6 +10,6 @@
 PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/algorithm/parallel/omp.hpp, pinocchio/utils/openmp.hpp)
 // clang-format on
 
+// IWYU pragma: begin_exports
 #include "pinocchio/utils/openmp.hpp"
-
-#endif // ifndef __pinocchio_algorithm_parallel_omp_hpp__
+// IWYU pragma: end_exports
