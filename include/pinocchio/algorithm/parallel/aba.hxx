@@ -11,24 +11,6 @@
 
 namespace pinocchio
 {
-  ///
-  /// \brief A parallel version of the Articulated Body algorithm. It computes the forward dynamics,
-  /// aka the joint acceleration according to the current state of the system and the desired joint
-  /// torque.
-  ///
-  /// \tparam JointCollection Collection of Joint types.
-  /// \tparam ConfigVectorPool Matrix type of the joint configuration vector.
-  /// \tparam TangentVectorPool1 Matrix type of the joint velocity vector.
-  /// \tparam TangentVectorPool2 Matrix type of the joint torque vector.
-  /// \tparam TangentVectorPool3 Matrix type of the joint acceleration vector.
-  ///
-  /// \param[in] pool Pool containing model and data for parallel computations.
-  /// \param[in] num_threads Number of threads used for parallel computations.
-  /// \param[in] q The joint configuration vector (dim model.nq x batch_size).
-  /// \param[in] v The joint velocity vector (dim model.nv x batch_size).
-  /// \param[in] tau The joint acceleration vector (dim model.nv x batch_size).
-  /// \param[out] a The joint torque vector (dim model.nv x batch_size).
-  ///
   template<
     typename Scalar,
     int Options,

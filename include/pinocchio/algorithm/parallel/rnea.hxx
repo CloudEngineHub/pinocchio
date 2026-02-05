@@ -11,23 +11,6 @@
 
 namespace pinocchio
 {
-  ///
-  /// \brief The Recursive Newton-Euler algorithm. It computes the inverse dynamics, aka the joint
-  /// torques according to the current state of the system and the desired joint accelerations.
-  ///
-  /// \tparam JointCollection Collection of Joint types.
-  /// \tparam ConfigVectorPool Matrix type of the joint configuration vector.
-  /// \tparam TangentVectorPool1 Matrix type of the joint velocity vector.
-  /// \tparam TangentVectorPool2 Matrix type of the joint acceleration vector.
-  /// \tparam TangentVectorPool3 Matrix type of the joint torque vector.
-  ///
-  /// \param[in] pool Pool containing model and data for parallel computations.
-  /// \param[in] num_threads Number of threads used for parallel computations.
-  /// \param[in] q The joint configuration vector (dim model.nq x batch_size).
-  /// \param[in] v The joint velocity vector (dim model.nv x batch_size).
-  /// \param[in] a The joint acceleration vector (dim model.nv x batch_size).
-  /// \param[out] tau The joint torque vector (dim model.nv x batch_size).
-  ///
   template<
     typename Scalar,
     int Options,
