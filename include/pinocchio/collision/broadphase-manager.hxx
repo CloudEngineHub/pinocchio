@@ -2,13 +2,12 @@
 // Copyright (c) 2022 INRIA
 //
 
-#ifndef __pinocchio_collision_broadphase_manager_hpp__
-#define __pinocchio_collision_broadphase_manager_hpp__
+#pragma once
 
-#include <coal/broadphase/broadphase_collision_manager.h>
-
-#include "pinocchio/collision/broadphase-manager-base.hpp"
-#include "pinocchio/multibody/geometry-object-filter.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/collision/broadphase-manager.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -206,16 +205,9 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
-#include "pinocchio/collision/broadphase-manager.hxx"
-
-#endif // ifndef __pinocchio_collision_broadphase_manager_hpp__
-//
-// Copyright (c) 2022 INRIA
-//
-
-#ifndef __pinocchio_collision_broadphase_manager_hxx__
-#define __pinocchio_collision_broadphase_manager_hxx__
+/* --- Details -------------------------------------------------------------- */
+/* --- Details -------------------------------------------------------------- */
+/* --- Details -------------------------------------------------------------- */
 
 namespace pinocchio
 {
@@ -449,5 +441,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_collision_broadphase_manager_hxx__
