@@ -6,23 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <cstdlib>
-  #include <fstream>
-  #include <iostream>
-  #include <string>
-  #include <vector>
-
-  #include <Eigen/Core>
-
-  #include <casadi/casadi.hpp>
-
-  #include "pinocchio/autodiff/casadi.hpp"
-  #include "pinocchio/multibody.hpp"
-  #include "pinocchio/algorithm/aba-derivatives.hpp"
-  #include "pinocchio/algorithm/aba.hpp"
-  #include "pinocchio/algorithm/joint-configuration.hpp"
-// #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
-// #include "pinocchio/algorithm/constrained-dynamics.hpp"
+  #include "pinocchio/autodiff/casadi-algo.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
