@@ -162,7 +162,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/common/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/common/model-entity.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/code-generator-algo.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/code-generator-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg-algo.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/aligned-vector.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/boost-container-limits.hpp

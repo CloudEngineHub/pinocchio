@@ -19,6 +19,8 @@
 
 #include "pinocchio/eigen-common.hpp"
 
+#include "pinocchio/codegen/cppadcg.hpp"
+
 #include "pinocchio/multibody.hpp"
 
 #include "pinocchio/algorithm/joint-configuration.hpp"

@@ -17,8 +17,10 @@
 #include <boost/mpl/int.hpp>
 
 #include <cppad/cg.hpp>
+#include <cppad/cg/support/cppadcg_eigen.hpp>
 
 #include "pinocchio/math.hpp"
+#include "pinocchio/autodiff/cppad.hpp"
 // IWYU pragma: end_keep
 
 namespace boost
