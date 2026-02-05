@@ -6,10 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <cassert>
-
-  #include "pinocchio/spatial.hpp"
-  #include "pinocchio/multibody/fwd.hpp"
+  #include "pinocchio/algorithm/utils/motion.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
