@@ -6,17 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <cstddef>
-
-  #include <omp.h>
-
-  #include <Eigen/Core>
-
-  #include "pinocchio/macros.hpp"
-
-  #include "pinocchio/utils/openmp.hpp"
-  #include "pinocchio/multibody/pool.hpp"
-  #include "pinocchio/algorithm/rnea.hpp"
+  #include "pinocchio/algorithm/parallel/rnea.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
