@@ -2,10 +2,12 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#ifndef __pinocchio_autodiff_cppad_utils_static_if_hpp__
-#define __pinocchio_autodiff_cppad_utils_static_if_hpp__
+#pragma once
 
-#include "pinocchio/utils/static-if.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/autodiff/cppad.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -40,5 +42,3 @@ namespace pinocchio
     };
   } // namespace internal
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_autodiff_cppad_utils_static_if_hpp__

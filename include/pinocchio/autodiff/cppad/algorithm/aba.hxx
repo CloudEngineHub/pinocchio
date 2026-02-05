@@ -2,8 +2,12 @@
 // Copyright (c) 2019-2020 INRIA CNRS
 //
 
-#ifndef __pinocchio_autodiff_cppad_algorithm_aba_hpp__
-#define __pinocchio_autodiff_cppad_algorithm_aba_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/autodiff/cppad.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -37,5 +41,3 @@ namespace pinocchio
     };
   } // namespace internal
 } // namespace pinocchio
-
-#endif // __pinocchio_autodiff_cppad_algorithm_aba_hpp__

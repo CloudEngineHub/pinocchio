@@ -2,11 +2,12 @@
 // Copyright (c) 2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_autodiff_cppad_spatial_log_hxx__
-#define __pinocchio_autodiff_cppad_spatial_log_hxx__
+#pragma once
 
-#include "pinocchio/spatial/log.hpp"
-#include "pinocchio/spatial/explog.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/autodiff/cppad.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -260,5 +261,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_autodiff_cppad_spatial_log_hxx__
