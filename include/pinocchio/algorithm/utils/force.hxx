@@ -2,12 +2,15 @@
 // Copyright (c) 2020 INRIA
 //
 
-#ifndef __pinocchio_algorithm_utils_force_hpp__
-#define __pinocchio_algorithm_utils_force_hpp__
+#pragma once
 
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/force.hpp"
-#include "pinocchio/multibody/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <cassert>
+
+  #include "pinocchio/spatial.hpp"
+  #include "pinocchio/multibody/fwd.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -108,5 +111,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_algorithm_utils_force_hpp__
