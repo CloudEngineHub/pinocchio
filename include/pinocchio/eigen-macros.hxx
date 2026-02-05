@@ -2,8 +2,7 @@
 // Copyright (c) 2017-2024 CNRS INRIA
 //
 
-#ifndef __pinocchio_eigen_macros_hpp__
-#define __pinocchio_eigen_macros_hpp__
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
@@ -11,7 +10,7 @@
   // IWYU pragma: begin_keep
   #include "pinocchio/fwd.hpp"
   #include "pinocchio/utils/eigen-fix.hxx"
-  // IWYU pragma: end_keep
+// IWYU pragma: end_keep
 #endif // PINOCCHIO_LSP
 
 /// \brief Macro giving access to the equivalent plain type of D
@@ -89,5 +88,3 @@ namespace pinocchio
   } // namespace internal
 } // namespace pinocchio
 #endif // ifdef PINOCCHIO_EIGEN_CHECK_MALLOC
-
-#endif // ifndef __pinocchio_eigen_macros_hpp__
