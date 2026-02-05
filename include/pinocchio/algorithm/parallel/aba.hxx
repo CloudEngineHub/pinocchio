@@ -1,32 +1,42 @@
 //
-// Copyright (c) 2021-2022 INRIA
+// Copyright (c) 2022 INRIA
 //
 
-#ifndef __pinocchio_algorithm_parallel_rnea_hpp__
-#define __pinocchio_algorithm_parallel_rnea_hpp__
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <cstddef>
 
-#include "pinocchio/multibody/pool/model.hpp"
-#include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/utils/openmp.hpp"
+  #include <omp.h>
+
+  #include <Eigen/Core>
+
+  #include "pinocchio/macros.hpp"
+
+  #include "pinocchio/utils/openmp.hpp"
+  #include "pinocchio/multibody/fwd.hpp"
+  #include "pinocchio/multibody/pool.hpp"
+  #include "pinocchio/algorithm/aba.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
   ///
-  /// \brief The Recursive Newton-Euler algorithm. It computes the inverse dynamics, aka the joint
-  /// torques according to the current state of the system and the desired joint accelerations.
+  /// \brief A parallel version of the Articulated Body algorithm. It computes the forward dynamics,
+  /// aka the joint acceleration according to the current state of the system and the desired joint
+  /// torque.
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam ConfigVectorPool Matrix type of the joint configuration vector.
   /// \tparam TangentVectorPool1 Matrix type of the joint velocity vector.
-  /// \tparam TangentVectorPool2 Matrix type of the joint acceleration vector.
-  /// \tparam TangentVectorPool3 Matrix type of the joint torque vector.
+  /// \tparam TangentVectorPool2 Matrix type of the joint torque vector.
+  /// \tparam TangentVectorPool3 Matrix type of the joint acceleration vector.
   ///
   /// \param[in] pool Pool containing model and data for parallel computations.
   /// \param[in] num_threads Number of threads used for parallel computations.
   /// \param[in] q The joint configuration vector (dim model.nq x batch_size).
   /// \param[in] v The joint velocity vector (dim model.nv x batch_size).
-  /// \param[in] a The joint acceleration vector (dim model.nv x batch_size).
-  /// \param[out] tau The joint torque vector (dim model.nv x batch_size).
+  /// \param[in] tau The joint acceleration vector (dim model.nv x batch_size).
+  /// \param[out] a The joint torque vector (dim model.nv x batch_size).
   ///
   template<
     typename Scalar,
@@ -36,13 +46,13 @@ namespace pinocchio
     typename TangentVectorPool1,
     typename TangentVectorPool2,
     typename TangentVectorPool3>
-  void rneaInParallel(
+  void abaInParallel(
     const size_t num_threads,
     ModelPoolTpl<Scalar, Options, JointCollectionTpl> & pool,
     const Eigen::MatrixBase<ConfigVectorPool> & q,
     const Eigen::MatrixBase<TangentVectorPool1> & v,
-    const Eigen::MatrixBase<TangentVectorPool2> & a,
-    const Eigen::MatrixBase<TangentVectorPool3> & tau)
+    const Eigen::MatrixBase<TangentVectorPool2> & tau,
+    const Eigen::MatrixBase<TangentVectorPool3> & a)
   {
     typedef ModelPoolTpl<Scalar, Options, JointCollectionTpl> Pool;
     typedef typename Pool::Model Model;
@@ -56,7 +66,7 @@ namespace pinocchio
     const ModelVector & models = pool.getModels();
     const Model & model_check = models[0];
     DataVector & datas = pool.getDatas();
-    TangentVectorPool3 & res = tau.const_cast_derived();
+    TangentVectorPool3 & res = a.const_cast_derived();
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(q.rows(), model_check.nq);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(v.rows(), model_check.nv);
@@ -78,9 +88,7 @@ namespace pinocchio
       const int thread_id = omp_get_thread_num();
       const Model & model = models[(size_t)thread_id];
       Data & data = datas[(size_t)thread_id];
-      res.col(i) = rnea(model, data, q.col(i), v.col(i), a.col(i));
+      res.col(i) = aba(model, data, q.col(i), v.col(i), tau.col(i), Convention::WORLD);
     }
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_parallel_rnea_hpp__
