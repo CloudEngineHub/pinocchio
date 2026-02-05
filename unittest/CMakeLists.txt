@@ -375,7 +375,7 @@ add_pinocchio_unit_test(csv)
 add_test_cflags(
   csv "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
 
-# add_subdirectory(algorithm)
+add_subdirectory(algorithm)
 
 # # Multiprecision arithmetic
 # if(BUILD_ADVANCED_TESTING)
