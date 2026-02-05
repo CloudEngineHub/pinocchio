@@ -6,7 +6,6 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-
 #include <Eigen/Core>
 
 #include <omp.h>
