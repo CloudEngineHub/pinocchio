@@ -152,9 +152,9 @@ namespace pinocchio
         ArgsType;
 
       template<typename JointModel>
-      static typename std::enable_if<
-        !std::is_same<JointModel, JointModelMimicTpl<Scalar, Options, JointCollectionTpl>>::value,
-        JointModel>::type
+      static std::enable_if_t<
+        !std::is_same_v<JointModel, JointModelMimicTpl<Scalar, Options, JointCollectionTpl>>,
+        JointModel>
       updateMimicIds(
         const JointModel & jmodel, const Model & /*old_model*/, const Model & /*new_model*/)
       {
@@ -162,9 +162,9 @@ namespace pinocchio
       }
 
       template<typename JointModel>
-      static typename std::enable_if<
-        std::is_same<JointModel, JointModelMimicTpl<Scalar, Options, JointCollectionTpl>>::value,
-        JointModel>::type
+      static std::enable_if_t<
+        std::is_same_v<JointModel, JointModelMimicTpl<Scalar, Options, JointCollectionTpl>>,
+        JointModel>
       updateMimicIds(
         const JointModelMimicTpl<Scalar, Options, JointCollectionTpl> & jmodel,
         const Model & old_model,

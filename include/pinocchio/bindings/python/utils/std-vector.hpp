@@ -19,9 +19,9 @@ namespace eigenpy
   template<typename Derived>
   struct has_operator_equal<
     Derived,
-    typename std::enable_if<
-      std::is_base_of<::pinocchio::NumericalBase<Derived>, Derived>::value,
-      Derived>::type> : has_operator_equal<typename ::pinocchio::NumericalBase<Derived>::Scalar>
+    std::enable_if_t<
+      std::is_base_of_v<::pinocchio::NumericalBase<Derived>, Derived>,
+      Derived>> : has_operator_equal<typename ::pinocchio::NumericalBase<Derived>::Scalar>
   {
   };
 

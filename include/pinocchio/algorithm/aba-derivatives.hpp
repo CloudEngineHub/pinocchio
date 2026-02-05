@@ -162,10 +162,10 @@ namespace pinocchio
     typename ConfigVectorType,
     typename TangentVectorType1,
     typename TangentVectorType2>
-  typename std::enable_if<
+    std::enable_if_t<
     ConfigVectorType::IsVectorAtCompileTime || TangentVectorType1::IsVectorAtCompileTime
       || TangentVectorType2::IsVectorAtCompileTime,
-    void>::type
+    void>
   computeABADerivatives(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
@@ -244,10 +244,10 @@ namespace pinocchio
     typename MatrixType1,
     typename MatrixType2,
     typename MatrixType3>
-  typename std::enable_if<
+  std::enable_if_t<
     !(MatrixType1::IsVectorAtCompileTime || MatrixType2::IsVectorAtCompileTime
       || MatrixType3::IsVectorAtCompileTime),
-    void>::type
+    void>
   computeABADerivatives(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,

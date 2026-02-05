@@ -352,10 +352,10 @@ namespace pinocchio
       }
 
     protected:
-      typename std::conditional<
+      std::conditional_t<
         helper::is_eigen_noalias_v<ExpressionType>,
         ExpressionType,
-        ExpressionType &>::type m_expression;
+        ExpressionType &> m_expression;
 
       template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, int Option>
       EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE ExpressionType &
