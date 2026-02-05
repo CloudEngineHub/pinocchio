@@ -8,7 +8,6 @@
 // IWYU pragma: begin_keep
 #include "pinocchio/fwd.hpp"
 
-#define BOOST_FUSION_INVOKE_MAX_ARITY 12
 #include <boost/blank.hpp>
 #include <boost/fusion/include/invoke.hpp>
 #include <boost/fusion/container/generation/make_vector.hpp>

@@ -2,8 +2,6 @@
 // Copyright (c) 2015 CNRS
 //
 
-#define BOOST_FUSION_INVOKE_MAX_ARITY 10
-
 // #include "pinocchio/spatial/fwd.hpp"
 // #include "pinocchio/spatial/se3.hpp"
 // #include "pinocchio/multibody/joint.hpp"

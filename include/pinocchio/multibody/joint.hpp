@@ -14,7 +14,6 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#define BOOST_FUSION_INVOKE_MAX_ARITY 12
 #include <boost/type_traits.hpp>
 #include <boost/blank.hpp>
 #include <boost/fusion/include/invoke.hpp>
