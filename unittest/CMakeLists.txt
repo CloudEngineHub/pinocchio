@@ -386,9 +386,9 @@ add_subdirectory(algorithm)
 #   endif()
 # endif()
 
-# if(BUILD_WITH_AUTODIFF_SUPPORT)
-#   add_subdirectory(cppad)
-# endif()
+if(BUILD_WITH_AUTODIFF_SUPPORT)
+  add_subdirectory(cppad)
+endif()
 
 # if(BUILD_WITH_CODEGEN_SUPPORT)
 #   add_subdirectory(cppadcg)
