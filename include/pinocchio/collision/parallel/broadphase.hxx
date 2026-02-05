@@ -2,15 +2,12 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#ifndef __pinocchio_collision_parallel_broadphase_hpp__
-#define __pinocchio_collision_parallel_broadphase_hpp__
+#pragma once
 
-#include "pinocchio/collision/pool/broadphase-manager.hpp"
-#include "pinocchio/collision/broadphase.hpp"
-#include "pinocchio/algorithm/geometry.hpp"
-#include "pinocchio/utils/openmp.hpp"
-
-#include <cstdint>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/collision/parallel/broadphase.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -27,8 +24,8 @@ namespace pinocchio
     BroadPhaseManagerPoolBase<BroadPhaseManagerDerived, Scalar, Options, JointCollectionTpl> & pool,
     const Eigen::MatrixBase<ConfigVectorPool> & q,
     const Eigen::MatrixBase<CollisionVectorResult> & res,
-    const bool stopAtFirstCollisionInConfiguration = false,
-    const bool stopAtFirstCollisionInBatch = false)
+    const bool stopAtFirstCollisionInConfiguration,
+    const bool stopAtFirstCollisionInBatch)
   {
     typedef BroadPhaseManagerPoolBase<BroadPhaseManagerDerived, Scalar, Options, JointCollectionTpl>
       Pool;
@@ -129,7 +126,7 @@ namespace pinocchio
     BroadPhaseManagerPoolBase<BroadPhaseManagerDerived, Scalar, Options, JointCollectionTpl> & pool,
     const std::vector<Eigen::MatrixXd> & trajectories,
     std::vector<VectorXb> & res,
-    const bool stopAtFirstCollisionInTrajectory = false)
+    const bool stopAtFirstCollisionInTrajectory)
   {
     typedef BroadPhaseManagerPoolBase<BroadPhaseManagerDerived, Scalar, Options, JointCollectionTpl>
       Pool;
@@ -189,5 +186,3 @@ namespace pinocchio
     openmp_exception.rethrowException();
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_collision_parallel_broadphase_hpp__

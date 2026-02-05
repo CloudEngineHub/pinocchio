@@ -2,15 +2,12 @@
 // Copyright (c) 2021-2024 INRIA
 //
 
-#ifndef __pinocchio_collision_parallel_geometry_hpp__
-#define __pinocchio_collision_parallel_geometry_hpp__
+#pragma once
 
-#include "pinocchio/multibody/pool/geometry.hpp"
-#include "pinocchio/algorithm/geometry.hpp"
-#include "pinocchio/collision/collision.hpp"
-#include "pinocchio/utils/openmp.hpp"
-
-#include <cstdint>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/collision/parallel/geometry.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -19,7 +16,7 @@ namespace pinocchio
     const size_t num_threads,
     const GeometryModel & geom_model,
     GeometryData & geom_data,
-    const bool stopAtFirstCollision = false)
+    const bool stopAtFirstCollision)
   {
     bool is_colliding = false;
 
@@ -72,7 +69,7 @@ namespace pinocchio
     const GeometryModel & geom_model,
     GeometryData & geom_data,
     const Eigen::MatrixBase<ConfigVectorType> & q,
-    const bool stopAtFirstCollision = false)
+    const bool stopAtFirstCollision)
   {
     updateGeometryPlacements(model, data, geom_model, geom_data, q);
     return computeCollisionsInParallel(num_threads, geom_model, geom_data, stopAtFirstCollision);
@@ -89,8 +86,8 @@ namespace pinocchio
     GeometryPoolTpl<Scalar, Options, JointCollectionTpl> & pool,
     const Eigen::MatrixBase<ConfigVectorPool> & q,
     const Eigen::MatrixBase<CollisionVectorResult> & res,
-    const bool stopAtFirstCollisionInConfiguration = false,
-    const bool stopAtFirstCollisionInBatch = false)
+    const bool stopAtFirstCollisionInConfiguration,
+    const bool stopAtFirstCollisionInBatch)
   {
     typedef GeometryPoolTpl<Scalar, Options, JointCollectionTpl> Pool;
     typedef typename Pool::Model Model;
@@ -186,5 +183,3 @@ namespace pinocchio
     openmp_exception.rethrowException();
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_collision_parallel_geometry_hpp__
