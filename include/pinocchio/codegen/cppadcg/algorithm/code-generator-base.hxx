@@ -2,13 +2,12 @@
 // Copyright (c) 2018-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_utils_code_generator_base_hpp__
-#define __pinocchio_utils_code_generator_base_hpp__
+#pragma once
 
-#include "pinocchio/codegen/cppadcg.hpp"
-
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/codegen/cppadcg-algo.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -207,5 +206,3 @@ namespace pinocchio
   }; // struct CodeGenBase
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_utils_code_generator_base_hpp__

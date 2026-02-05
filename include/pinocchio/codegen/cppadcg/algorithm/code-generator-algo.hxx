@@ -2,19 +2,12 @@
 // Copyright (c) 2018-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_codegen_code_generator_algo_hpp__
-#define __pinocchio_codegen_code_generator_algo_hpp__
+#pragma once
 
-#include "pinocchio/codegen/code-generator-base.hpp"
-
-#include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
-#include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
-#include "pinocchio/algorithm/constrained-dynamics.hpp"
-#include "pinocchio/algorithm/aba-derivatives.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/codegen/cppadcg-algo.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -685,372 +678,372 @@ namespace pinocchio
     ADTangentVectorType ad_v, ad_tau;
   };
 
-  template<typename _Scalar>
-  struct CodeGenConstraintDynamicsDerivatives : public CodeGenBase<_Scalar>
-  {
-    typedef CodeGenBase<_Scalar> Base;
-    typedef typename Base::Scalar Scalar;
-    typedef typename Base::ADScalar ADScalar;
+  // template<typename _Scalar>
+  // struct CodeGenConstraintDynamicsDerivatives : public CodeGenBase<_Scalar>
+  // {
+  //   typedef CodeGenBase<_Scalar> Base;
+  //   typedef typename Base::Scalar Scalar;
+  //   typedef typename Base::ADScalar ADScalar;
 
-    typedef typename Base::Model Model;
+  //   typedef typename Base::Model Model;
 
-    typedef typename Base::ADConfigVectorType ADConfigVectorType;
-    typedef typename Base::ADTangentVectorType ADTangentVectorType;
-    typedef typename Base::MatrixXs MatrixXs;
-    typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs) RowMatrixXs;
-    typedef typename Base::VectorXs VectorXs;
+  //   typedef typename Base::ADConfigVectorType ADConfigVectorType;
+  //   typedef typename Base::ADTangentVectorType ADTangentVectorType;
+  //   typedef typename Base::MatrixXs MatrixXs;
+  //   typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs) RowMatrixXs;
+  //   typedef typename Base::VectorXs VectorXs;
 
-    typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ContactModel;
-    typedef typename std::vector<ContactModel> ContactModelVector;
-    typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ContactData;
-    typedef typename std::vector<ContactData> ContactDataVector;
+  //   typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ContactModel;
+  //   typedef typename std::vector<ContactModel> ContactModelVector;
+  //   typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ContactData;
+  //   typedef typename std::vector<ContactData> ContactDataVector;
 
-    typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options> ADContactModel;
-    typedef typename std::vector<ADContactModel> ADContactModelVector;
-    typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options> ADContactData;
-    typedef typename std::vector<ADContactData> ADContactDataVector;
+  //   typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options> ADContactModel;
+  //   typedef typename std::vector<ADContactModel> ADContactModelVector;
+  //   typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options> ADContactData;
+  //   typedef typename std::vector<ADContactData> ADContactDataVector;
 
-    typedef typename Base::ADData ADData;
-    typedef typename ADData::MatrixXs ADMatrixXs;
-    typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(ADMatrixXs) RowADMatrixXs;
+  //   typedef typename Base::ADData ADData;
+  //   typedef typename ADData::MatrixXs ADMatrixXs;
+  //   typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(ADMatrixXs) RowADMatrixXs;
 
-    Eigen::Index constraintDim(const ContactModelVector & contact_models) const
-    {
-      Eigen::Index num_total_constraints = 0;
-      for (typename ContactModelVector::const_iterator it = contact_models.begin();
-           it != contact_models.end(); ++it)
-      {
-        PINOCCHIO_CHECK_INPUT_ARGUMENT(
-          it->size() > 0, "The dimension of the constraint must be positive");
-        num_total_constraints += it->size();
-      }
-      return num_total_constraints;
-    }
+  //   Eigen::Index constraintDim(const ContactModelVector & contact_models) const
+  //   {
+  //     Eigen::Index num_total_constraints = 0;
+  //     for (typename ContactModelVector::const_iterator it = contact_models.begin();
+  //          it != contact_models.end(); ++it)
+  //     {
+  //       PINOCCHIO_CHECK_INPUT_ARGUMENT(
+  //         it->size() > 0, "The dimension of the constraint must be positive");
+  //       num_total_constraints += it->size();
+  //     }
+  //     return num_total_constraints;
+  //   }
 
-    CodeGenConstraintDynamicsDerivatives(
-      const Model & model,
-      const ContactModelVector & contact_models,
-      const std::string & function_name = "partial_constraintDynamics",
-      const std::string & library_name = "cg_partial_constraintDynamics_eval")
-    : Base(
-        model,
-        model.nq + 2 * model.nv,
-        3 * model.nv * model.nv + 3 * constraintDim(contact_models) * model.nv,
-        function_name,
-        library_name)
-    , nc(constraintDim(contact_models))
-    , dddq_dq(model.nv, model.nv)
-    , dddq_dv(model.nv, model.nv)
-    , dddq_dtau(model.nv, model.nv)
-    {
-      dlambda_dq.resize(nc, model.nv);
-      dlambda_dq.setZero();
-      dlambda_dv.resize(nc, model.nv);
-      dlambda_dv.setZero();
-      dlambda_dtau.resize(nc, model.nv);
-      dlambda_dtau.setZero();
+  //   CodeGenConstraintDynamicsDerivatives(
+  //     const Model & model,
+  //     const ContactModelVector & contact_models,
+  //     const std::string & function_name = "partial_constraintDynamics",
+  //     const std::string & library_name = "cg_partial_constraintDynamics_eval")
+  //   : Base(
+  //       model,
+  //       model.nq + 2 * model.nv,
+  //       3 * model.nv * model.nv + 3 * constraintDim(contact_models) * model.nv,
+  //       function_name,
+  //       library_name)
+  //   , nc(constraintDim(contact_models))
+  //   , dddq_dq(model.nv, model.nv)
+  //   , dddq_dv(model.nv, model.nv)
+  //   , dddq_dtau(model.nv, model.nv)
+  //   {
+  //     dlambda_dq.resize(nc, model.nv);
+  //     dlambda_dq.setZero();
+  //     dlambda_dv.resize(nc, model.nv);
+  //     dlambda_dv.setZero();
+  //     dlambda_dtau.resize(nc, model.nv);
+  //     dlambda_dtau.setZero();
 
-      ad_q = ADConfigVectorType(model.nq);
-      ad_q = neutral(ad_model);
-      ad_v = ADTangentVectorType(model.nv);
-      ad_v.setZero();
-      ad_tau = ADTangentVectorType(model.nv);
-      ad_tau.setZero();
+  //     ad_q = ADConfigVectorType(model.nq);
+  //     ad_q = neutral(ad_model);
+  //     ad_v = ADTangentVectorType(model.nv);
+  //     ad_v.setZero();
+  //     ad_tau = ADTangentVectorType(model.nv);
+  //     ad_tau.setZero();
 
-      x = VectorXs::Zero(Base::getInputDimension());
+  //     x = VectorXs::Zero(Base::getInputDimension());
 
-      for (int k = 0; k < contact_models.size(); ++k)
-      {
-        ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
-      }
+  //     for (int k = 0; k < contact_models.size(); ++k)
+  //     {
+  //       ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
+  //     }
 
-      for (int k = 0; k < ad_contact_models.size(); ++k)
-      {
-        ad_contact_datas.push_back(ADContactData(ad_contact_models[k]));
-      }
+  //     for (int k = 0; k < ad_contact_models.size(); ++k)
+  //     {
+  //       ad_contact_datas.push_back(ADContactData(ad_contact_models[k]));
+  //     }
 
-      pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
-      Base::build_jacobian = false;
-    }
+  //     pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
+  //     Base::build_jacobian = false;
+  //   }
 
-    virtual ~CodeGenConstraintDynamicsDerivatives()
-    {
-    }
+  //   virtual ~CodeGenConstraintDynamicsDerivatives()
+  //   {
+  //   }
 
-    void buildMap()
-    {
-      CppAD::Independent(ad_X);
+  //   void buildMap()
+  //   {
+  //     CppAD::Independent(ad_X);
 
-      Eigen::Index it = 0;
-      ad_q = ad_X.segment(it, ad_model.nq);
-      it += ad_model.nq;
-      ad_v = ad_X.segment(it, ad_model.nv);
-      it += ad_model.nv;
-      ad_tau = ad_X.segment(it, ad_model.nv);
-      it += ad_model.nv;
+  //     Eigen::Index it = 0;
+  //     ad_q = ad_X.segment(it, ad_model.nq);
+  //     it += ad_model.nq;
+  //     ad_v = ad_X.segment(it, ad_model.nv);
+  //     it += ad_model.nv;
+  //     ad_tau = ad_X.segment(it, ad_model.nv);
+  //     it += ad_model.nv;
 
-      pinocchio::constraintDynamics(
-        ad_model, ad_data, ad_q, ad_v, ad_tau, ad_contact_models, ad_contact_datas);
-      pinocchio::computeConstraintDynamicsDerivatives(
-        ad_model, ad_data, ad_contact_models, ad_contact_datas);
-      assert(ad_Y.size() == Base::getOutputDimension());
+  //     pinocchio::constraintDynamics(
+  //       ad_model, ad_data, ad_q, ad_v, ad_tau, ad_contact_models, ad_contact_datas);
+  //     pinocchio::computeConstraintDynamicsDerivatives(
+  //       ad_model, ad_data, ad_contact_models, ad_contact_datas);
+  //     assert(ad_Y.size() == Base::getOutputDimension());
 
-      Eigen::Index it_Y = 0;
-      Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_data.ddq_dq;
-      it_Y += ad_model.nv * ad_model.nv;
-      Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_data.ddq_dv;
-      it_Y += ad_model.nv * ad_model.nv;
-      Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_data.ddq_dtau;
-      it_Y += ad_model.nv * ad_model.nv;
-      Eigen::Map<ADMatrixXs>(ad_Y.data() + it_Y, nc, ad_model.nv) = ad_data.dlambda_dq;
-      it_Y += nc * ad_model.nv;
-      Eigen::Map<ADMatrixXs>(ad_Y.data() + it_Y, nc, ad_model.nv) = ad_data.dlambda_dv;
-      it_Y += nc * ad_model.nv;
-      Eigen::Map<ADMatrixXs>(ad_Y.data() + it_Y, nc, ad_model.nv) = ad_data.dlambda_dtau;
-      it_Y += nc * ad_model.nv;
-      ad_fun.Dependent(ad_X, ad_Y);
-      ad_fun.optimize("no_compare_op");
-    }
+  //     Eigen::Index it_Y = 0;
+  //     Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_data.ddq_dq;
+  //     it_Y += ad_model.nv * ad_model.nv;
+  //     Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_data.ddq_dv;
+  //     it_Y += ad_model.nv * ad_model.nv;
+  //     Eigen::Map<RowADMatrixXs>(ad_Y.data() + it_Y, ad_model.nv, ad_model.nv) = ad_data.ddq_dtau;
+  //     it_Y += ad_model.nv * ad_model.nv;
+  //     Eigen::Map<ADMatrixXs>(ad_Y.data() + it_Y, nc, ad_model.nv) = ad_data.dlambda_dq;
+  //     it_Y += nc * ad_model.nv;
+  //     Eigen::Map<ADMatrixXs>(ad_Y.data() + it_Y, nc, ad_model.nv) = ad_data.dlambda_dv;
+  //     it_Y += nc * ad_model.nv;
+  //     Eigen::Map<ADMatrixXs>(ad_Y.data() + it_Y, nc, ad_model.nv) = ad_data.dlambda_dtau;
+  //     it_Y += nc * ad_model.nv;
+  //     ad_fun.Dependent(ad_X, ad_Y);
+  //     ad_fun.optimize("no_compare_op");
+  //   }
 
-    template<typename ConfigVectorType, typename TangentVector1, typename TangentVector2>
-    void evalFunction(
-      const Eigen::MatrixBase<ConfigVectorType> & q,
-      const Eigen::MatrixBase<TangentVector1> & v,
-      const Eigen::MatrixBase<TangentVector2> & tau)
-    {
-      // fill x
-      Eigen::Index it_x = 0;
-      x.segment(it_x, ad_model.nq) = q;
-      it_x += ad_model.nq;
-      x.segment(it_x, ad_model.nv) = v;
-      it_x += ad_model.nv;
-      x.segment(it_x, ad_model.nv) = tau;
-      it_x += ad_model.nv;
+  //   template<typename ConfigVectorType, typename TangentVector1, typename TangentVector2>
+  //   void evalFunction(
+  //     const Eigen::MatrixBase<ConfigVectorType> & q,
+  //     const Eigen::MatrixBase<TangentVector1> & v,
+  //     const Eigen::MatrixBase<TangentVector2> & tau)
+  //   {
+  //     // fill x
+  //     Eigen::Index it_x = 0;
+  //     x.segment(it_x, ad_model.nq) = q;
+  //     it_x += ad_model.nq;
+  //     x.segment(it_x, ad_model.nv) = v;
+  //     it_x += ad_model.nv;
+  //     x.segment(it_x, ad_model.nv) = tau;
+  //     it_x += ad_model.nv;
 
-      Base::evalFunction(x);
+  //     Base::evalFunction(x);
 
-      // fill partial derivatives
-      Eigen::Index it_y = 0;
-      dddq_dq = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
-      it_y += ad_model.nv * ad_model.nv;
-      dddq_dv = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
-      it_y += ad_model.nv * ad_model.nv;
-      dddq_dtau = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
-      it_y += ad_model.nv * ad_model.nv;
-      dlambda_dq = Eigen::Map<MatrixXs>(Base::y.data() + it_y, nc, ad_model.nv);
-      it_y += nc * ad_model.nv;
-      dlambda_dv = Eigen::Map<MatrixXs>(Base::y.data() + it_y, nc, ad_model.nv);
-      it_y += nc * ad_model.nv;
-      dlambda_dtau = Eigen::Map<MatrixXs>(Base::y.data() + it_y, nc, ad_model.nv);
-      it_y += nc * ad_model.nv;
-    }
+  //     // fill partial derivatives
+  //     Eigen::Index it_y = 0;
+  //     dddq_dq = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
+  //     it_y += ad_model.nv * ad_model.nv;
+  //     dddq_dv = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
+  //     it_y += ad_model.nv * ad_model.nv;
+  //     dddq_dtau = Eigen::Map<RowMatrixXs>(Base::y.data() + it_y, ad_model.nv, ad_model.nv);
+  //     it_y += ad_model.nv * ad_model.nv;
+  //     dlambda_dq = Eigen::Map<MatrixXs>(Base::y.data() + it_y, nc, ad_model.nv);
+  //     it_y += nc * ad_model.nv;
+  //     dlambda_dv = Eigen::Map<MatrixXs>(Base::y.data() + it_y, nc, ad_model.nv);
+  //     it_y += nc * ad_model.nv;
+  //     dlambda_dtau = Eigen::Map<MatrixXs>(Base::y.data() + it_y, nc, ad_model.nv);
+  //     it_y += nc * ad_model.nv;
+  //   }
 
-  protected:
-    using Base::ad_data;
-    using Base::ad_fun;
-    using Base::ad_model;
-    using Base::ad_X;
-    using Base::ad_Y;
-    using Base::y;
+  // protected:
+  //   using Base::ad_data;
+  //   using Base::ad_fun;
+  //   using Base::ad_model;
+  //   using Base::ad_X;
+  //   using Base::ad_Y;
+  //   using Base::y;
 
-    Eigen::Index nc;
-    ADContactModelVector ad_contact_models;
-    ADContactDataVector ad_contact_datas;
+  //   Eigen::Index nc;
+  //   ADContactModelVector ad_contact_models;
+  //   ADContactDataVector ad_contact_datas;
 
-    VectorXs x;
-    MatrixXs dddq_dq, dddq_dv, dddq_dtau;
-    MatrixXs dlambda_dq, dlambda_dv, dlambda_dtau;
+  //   VectorXs x;
+  //   MatrixXs dddq_dq, dddq_dv, dddq_dtau;
+  //   MatrixXs dlambda_dq, dlambda_dv, dlambda_dtau;
 
-    ADConfigVectorType ad_q;
-    ADTangentVectorType ad_v, ad_tau;
-  };
+  //   ADConfigVectorType ad_q;
+  //   ADTangentVectorType ad_v, ad_tau;
+  // };
 
-  template<typename _Scalar>
-  struct CodeGenConstraintDynamics : public CodeGenBase<_Scalar>
-  {
-    typedef CodeGenBase<_Scalar> Base;
-    typedef typename Base::Scalar Scalar;
-    typedef typename Base::ADScalar ADScalar;
+  // template<typename _Scalar>
+  // struct CodeGenConstraintDynamics : public CodeGenBase<_Scalar>
+  // {
+  //   typedef CodeGenBase<_Scalar> Base;
+  //   typedef typename Base::Scalar Scalar;
+  //   typedef typename Base::ADScalar ADScalar;
 
-    typedef typename Base::Model Model;
+  //   typedef typename Base::Model Model;
 
-    typedef typename Base::ADConfigVectorType ADConfigVectorType;
-    typedef typename Base::ADTangentVectorType ADTangentVectorType;
-    typedef typename Base::MatrixXs MatrixXs;
-    typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs) RowMatrixXs;
-    typedef typename Base::VectorXs VectorXs;
+  //   typedef typename Base::ADConfigVectorType ADConfigVectorType;
+  //   typedef typename Base::ADTangentVectorType ADTangentVectorType;
+  //   typedef typename Base::MatrixXs MatrixXs;
+  //   typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs) RowMatrixXs;
+  //   typedef typename Base::VectorXs VectorXs;
 
-    typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ContactModel;
-    typedef typename std::vector<ContactModel> ContactModelVector;
-    typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ContactData;
-    typedef typename std::vector<ContactData> ContactDataVector;
+  //   typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ContactModel;
+  //   typedef typename std::vector<ContactModel> ContactModelVector;
+  //   typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ContactData;
+  //   typedef typename std::vector<ContactData> ContactDataVector;
 
-    typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options> ADContactModel;
-    typedef typename std::vector<ADContactModel> ADContactModelVector;
-    typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options> ADContactData;
-    typedef typename std::vector<ADContactData> ADContactDataVector;
+  //   typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options> ADContactModel;
+  //   typedef typename std::vector<ADContactModel> ADContactModelVector;
+  //   typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options> ADContactData;
+  //   typedef typename std::vector<ADContactData> ADContactDataVector;
 
-    typedef typename Base::ADData ADData;
-    typedef typename ADData::MatrixXs ADMatrixXs;
-    typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(ADMatrixXs) RowADMatrixXs;
+  //   typedef typename Base::ADData ADData;
+  //   typedef typename ADData::MatrixXs ADMatrixXs;
+  //   typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(ADMatrixXs) RowADMatrixXs;
 
-    Eigen::Index constraintDim(const ContactModelVector & contact_models) const
-    {
-      Eigen::Index num_total_constraints = 0;
-      for (typename ContactModelVector::const_iterator it = contact_models.begin();
-           it != contact_models.end(); ++it)
-      {
-        PINOCCHIO_CHECK_INPUT_ARGUMENT(
-          it->size() > 0, "The dimension of the constraint must be positive");
-        num_total_constraints += it->size();
-      }
-      return num_total_constraints;
-    }
+  //   Eigen::Index constraintDim(const ContactModelVector & contact_models) const
+  //   {
+  //     Eigen::Index num_total_constraints = 0;
+  //     for (typename ContactModelVector::const_iterator it = contact_models.begin();
+  //          it != contact_models.end(); ++it)
+  //     {
+  //       PINOCCHIO_CHECK_INPUT_ARGUMENT(
+  //         it->size() > 0, "The dimension of the constraint must be positive");
+  //       num_total_constraints += it->size();
+  //     }
+  //     return num_total_constraints;
+  //   }
 
-    CodeGenConstraintDynamics(
-      const Model & model,
-      const ContactModelVector & contact_models,
-      const std::string & function_name = "constraintDynamics",
-      const std::string & library_name = "cg_constraintDynamics_eval")
-    : Base(
-        model,
-        model.nq + 2 * model.nv,
-        model.nv + constraintDim(contact_models),
-        function_name,
-        library_name)
-    , nc(constraintDim(contact_models))
-    , da_dq(MatrixXs::Zero(model.nv, model.nq))
-    , da_dv(MatrixXs::Zero(model.nv, model.nv))
-    , da_dtau(MatrixXs::Zero(model.nv, model.nv))
-    , ddq(model.nv)
-    {
-      lambda_c.resize(nc);
-      lambda_c.setZero();
-      dlambda_dq.resize(nc, model.nq);
-      dlambda_dq.setZero();
-      dlambda_dv.resize(nc, model.nv);
-      dlambda_dv.setZero();
-      dlambda_dtau.resize(nc, model.nv);
-      dlambda_dtau.setZero();
+  //   CodeGenConstraintDynamics(
+  //     const Model & model,
+  //     const ContactModelVector & contact_models,
+  //     const std::string & function_name = "constraintDynamics",
+  //     const std::string & library_name = "cg_constraintDynamics_eval")
+  //   : Base(
+  //       model,
+  //       model.nq + 2 * model.nv,
+  //       model.nv + constraintDim(contact_models),
+  //       function_name,
+  //       library_name)
+  //   , nc(constraintDim(contact_models))
+  //   , da_dq(MatrixXs::Zero(model.nv, model.nq))
+  //   , da_dv(MatrixXs::Zero(model.nv, model.nv))
+  //   , da_dtau(MatrixXs::Zero(model.nv, model.nv))
+  //   , ddq(model.nv)
+  //   {
+  //     lambda_c.resize(nc);
+  //     lambda_c.setZero();
+  //     dlambda_dq.resize(nc, model.nq);
+  //     dlambda_dq.setZero();
+  //     dlambda_dv.resize(nc, model.nv);
+  //     dlambda_dv.setZero();
+  //     dlambda_dtau.resize(nc, model.nv);
+  //     dlambda_dtau.setZero();
 
-      ad_q = ADConfigVectorType(model.nq);
-      ad_q = neutral(ad_model);
-      ad_v = ADTangentVectorType(model.nv);
-      ad_v.setZero();
-      ad_tau = ADTangentVectorType(model.nv);
-      ad_tau.setZero();
+  //     ad_q = ADConfigVectorType(model.nq);
+  //     ad_q = neutral(ad_model);
+  //     ad_v = ADTangentVectorType(model.nv);
+  //     ad_v.setZero();
+  //     ad_tau = ADTangentVectorType(model.nv);
+  //     ad_tau.setZero();
 
-      x = VectorXs::Zero(Base::getInputDimension());
+  //     x = VectorXs::Zero(Base::getInputDimension());
 
-      for (int k = 0; k < contact_models.size(); ++k)
-      {
-        ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
-      }
+  //     for (int k = 0; k < contact_models.size(); ++k)
+  //     {
+  //       ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
+  //     }
 
-      for (int k = 0; k < ad_contact_models.size(); ++k)
-      {
-        ad_contact_datas.push_back(ADContactData(ad_contact_models[k]));
-      }
-      pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
-    }
+  //     for (int k = 0; k < ad_contact_models.size(); ++k)
+  //     {
+  //       ad_contact_datas.push_back(ADContactData(ad_contact_models[k]));
+  //     }
+  //     pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
+  //   }
 
-    virtual ~CodeGenConstraintDynamics()
-    {
-    }
+  //   virtual ~CodeGenConstraintDynamics()
+  //   {
+  //   }
 
-    void buildMap()
-    {
-      CppAD::Independent(ad_X);
+  //   void buildMap()
+  //   {
+  //     CppAD::Independent(ad_X);
 
-      Eigen::Index it = 0;
-      ad_q = ad_X.segment(it, ad_model.nq);
-      it += ad_model.nq;
-      ad_v = ad_X.segment(it, ad_model.nv);
-      it += ad_model.nv;
-      ad_tau = ad_X.segment(it, ad_model.nv);
-      it += ad_model.nv;
+  //     Eigen::Index it = 0;
+  //     ad_q = ad_X.segment(it, ad_model.nq);
+  //     it += ad_model.nq;
+  //     ad_v = ad_X.segment(it, ad_model.nv);
+  //     it += ad_model.nv;
+  //     ad_tau = ad_X.segment(it, ad_model.nv);
+  //     it += ad_model.nv;
 
-      pinocchio::constraintDynamics(
-        ad_model, ad_data, ad_q, ad_v, ad_tau, ad_contact_models, ad_contact_datas);
-      ad_Y.head(ad_model.nv) = ad_data.ddq;
-      ad_Y.segment(ad_model.nv, nc) = ad_data.lambda_c;
+  //     pinocchio::constraintDynamics(
+  //       ad_model, ad_data, ad_q, ad_v, ad_tau, ad_contact_models, ad_contact_datas);
+  //     ad_Y.head(ad_model.nv) = ad_data.ddq;
+  //     ad_Y.segment(ad_model.nv, nc) = ad_data.lambda_c;
 
-      ad_fun.Dependent(ad_X, ad_Y);
-      ad_fun.optimize("no_compare_op");
-    }
+  //     ad_fun.Dependent(ad_X, ad_Y);
+  //     ad_fun.optimize("no_compare_op");
+  //   }
 
-    template<typename ConfigVectorType, typename TangentVector1, typename TangentVector2>
-    void evalFunction(
-      const Eigen::MatrixBase<ConfigVectorType> & q,
-      const Eigen::MatrixBase<TangentVector1> & v,
-      const Eigen::MatrixBase<TangentVector2> & tau)
-    {
-      // fill x
-      Eigen::Index it_x = 0;
-      x.segment(it_x, ad_model.nq) = q;
-      it_x += ad_model.nq;
-      x.segment(it_x, ad_model.nv) = v;
-      it_x += ad_model.nv;
-      x.segment(it_x, ad_model.nv) = tau;
-      it_x += ad_model.nv;
+  //   template<typename ConfigVectorType, typename TangentVector1, typename TangentVector2>
+  //   void evalFunction(
+  //     const Eigen::MatrixBase<ConfigVectorType> & q,
+  //     const Eigen::MatrixBase<TangentVector1> & v,
+  //     const Eigen::MatrixBase<TangentVector2> & tau)
+  //   {
+  //     // fill x
+  //     Eigen::Index it_x = 0;
+  //     x.segment(it_x, ad_model.nq) = q;
+  //     it_x += ad_model.nq;
+  //     x.segment(it_x, ad_model.nv) = v;
+  //     it_x += ad_model.nv;
+  //     x.segment(it_x, ad_model.nv) = tau;
+  //     it_x += ad_model.nv;
 
-      Base::evalFunction(x);
+  //     Base::evalFunction(x);
 
-      Eigen::Index it_y = 0;
-      ddq = Base::y.segment(it_y, ad_model.nv);
-      it_y += ad_model.nv;
-      lambda_c = Base::y.segment(it_y, nc);
-    }
+  //     Eigen::Index it_y = 0;
+  //     ddq = Base::y.segment(it_y, ad_model.nv);
+  //     it_y += ad_model.nv;
+  //     lambda_c = Base::y.segment(it_y, nc);
+  //   }
 
-    using Base::evalJacobian;
-    template<typename ConfigVectorType, typename TangentVector1, typename TangentVector2>
-    void evalJacobian(
-      const Eigen::MatrixBase<ConfigVectorType> & q,
-      const Eigen::MatrixBase<TangentVector1> & v,
-      const Eigen::MatrixBase<TangentVector2> & a)
-    {
-      // fill x
-      Eigen::Index it = 0;
-      x.segment(it, ad_model.nq) = q;
-      it += ad_model.nq;
-      x.segment(it, ad_model.nv) = v;
-      it += ad_model.nv;
-      x.segment(it, ad_model.nv) = a;
-      it += ad_model.nv;
+  //   using Base::evalJacobian;
+  //   template<typename ConfigVectorType, typename TangentVector1, typename TangentVector2>
+  //   void evalJacobian(
+  //     const Eigen::MatrixBase<ConfigVectorType> & q,
+  //     const Eigen::MatrixBase<TangentVector1> & v,
+  //     const Eigen::MatrixBase<TangentVector2> & a)
+  //   {
+  //     // fill x
+  //     Eigen::Index it = 0;
+  //     x.segment(it, ad_model.nq) = q;
+  //     it += ad_model.nq;
+  //     x.segment(it, ad_model.nv) = v;
+  //     it += ad_model.nv;
+  //     x.segment(it, ad_model.nv) = a;
+  //     it += ad_model.nv;
 
-      evalJacobian(x);
-      it = 0;
-      da_dq = Base::jac.middleCols(it, ad_model.nq).topRows(ad_model.nv);
-      dlambda_dq = Base::jac.middleCols(it, ad_model.nq).bottomRows(nc);
-      it += ad_model.nq;
-      da_dv = Base::jac.middleCols(it, ad_model.nv).topRows(ad_model.nv);
-      dlambda_dv = Base::jac.middleCols(it, ad_model.nv).bottomRows(nc);
-      it += ad_model.nv;
-      da_dtau = Base::jac.middleCols(it, ad_model.nv).topRows(ad_model.nv);
-      dlambda_dtau = Base::jac.middleCols(it, ad_model.nv).bottomRows(nc);
-      it += ad_model.nv;
-    }
-    VectorXs lambda_c, ddq;
-    MatrixXs da_dq, da_dv, da_dtau;
-    MatrixXs dlambda_dq, dlambda_dv, dlambda_dtau;
+  //     evalJacobian(x);
+  //     it = 0;
+  //     da_dq = Base::jac.middleCols(it, ad_model.nq).topRows(ad_model.nv);
+  //     dlambda_dq = Base::jac.middleCols(it, ad_model.nq).bottomRows(nc);
+  //     it += ad_model.nq;
+  //     da_dv = Base::jac.middleCols(it, ad_model.nv).topRows(ad_model.nv);
+  //     dlambda_dv = Base::jac.middleCols(it, ad_model.nv).bottomRows(nc);
+  //     it += ad_model.nv;
+  //     da_dtau = Base::jac.middleCols(it, ad_model.nv).topRows(ad_model.nv);
+  //     dlambda_dtau = Base::jac.middleCols(it, ad_model.nv).bottomRows(nc);
+  //     it += ad_model.nv;
+  //   }
+  //   VectorXs lambda_c, ddq;
+  //   MatrixXs da_dq, da_dv, da_dtau;
+  //   MatrixXs dlambda_dq, dlambda_dv, dlambda_dtau;
 
-  protected:
-    using Base::ad_data;
-    using Base::ad_fun;
-    using Base::ad_model;
-    using Base::ad_X;
-    using Base::ad_Y;
-    using Base::y;
+  // protected:
+  //   using Base::ad_data;
+  //   using Base::ad_fun;
+  //   using Base::ad_model;
+  //   using Base::ad_X;
+  //   using Base::ad_Y;
+  //   using Base::y;
 
-    ADContactModelVector ad_contact_models;
-    ADContactDataVector ad_contact_datas;
+  //   ADContactModelVector ad_contact_models;
+  //   ADContactDataVector ad_contact_datas;
 
-    Eigen::Index nc;
-    VectorXs x;
+  //   Eigen::Index nc;
+  //   VectorXs x;
 
-    ADConfigVectorType ad_q;
-    ADTangentVectorType ad_v, ad_tau;
-  };
+  //   ADConfigVectorType ad_q;
+  //   ADTangentVectorType ad_v, ad_tau;
+  // };
 
   template<typename _Scalar>
   struct CodeGenIntegrate : public CodeGenBase<_Scalar>
@@ -1286,5 +1279,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_codegen_code_generator_algo_hpp__
