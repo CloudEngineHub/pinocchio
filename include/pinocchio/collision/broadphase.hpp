@@ -2,17 +2,18 @@
 // Copyright (c) 2022 INRIA
 //
 
-#ifndef __pinocchio_collision_broadphase_hpp__
-#define __pinocchio_collision_broadphase_hpp__
+#pragma once
+
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
 
 #include <coal/broadphase/broadphase_collision_manager.h>
 
-#include "pinocchio/multibody/coal.hpp"
-
-#include "pinocchio/algorithm/geometry.hpp"
+#include "pinocchio/multibody.hpp"
 
 #include "pinocchio/collision/broadphase-manager.hpp"
 #include "pinocchio/collision/broadphase-callbacks.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -33,13 +34,7 @@ namespace pinocchio
   template<typename BroadPhaseManagerDerived>
   bool computeCollisions(
     BroadPhaseManagerBase<BroadPhaseManagerDerived> & broadphase_manager,
-    CollisionCallBackBase * callback)
-  {
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(broadphase_manager.check(callback));
-    broadphase_manager.collide(callback);
-    callback->done();
-    return callback->collision;
-  }
+    CollisionCallBackBase * callback);
 
   ///
   /// \brief Calls computeCollision for every active pairs of GeometryData.
@@ -56,14 +51,7 @@ namespace pinocchio
   template<typename BroadPhaseManagerDerived>
   bool computeCollisions(
     BroadPhaseManagerBase<BroadPhaseManagerDerived> & broadphase_manager,
-    const bool stopAtFirstCollision = false)
-  {
-    CollisionCallBackDefault callback(
-      broadphase_manager.getGeometryModel(), broadphase_manager.getGeometryData(),
-      stopAtFirstCollision);
-
-    return computeCollisions(broadphase_manager, &callback);
-  }
+    const bool stopAtFirstCollision = false);
 
   ///
   /// Compute the forward kinematics, update the geometry placements and run the collision detection
@@ -96,14 +84,7 @@ namespace pinocchio
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     BroadPhaseManagerBase<BroadPhaseManagerDerived> & broadphase_manager,
     CollisionCallBackBase * callback,
-    const Eigen::MatrixBase<ConfigVectorType> & q)
-  {
-    updateGeometryPlacements(
-      model, data, broadphase_manager.getGeometryModel(), broadphase_manager.getGeometryData(), q);
-
-    broadphase_manager.update(false);
-    return computeCollisions(broadphase_manager, &callback);
-  }
+    const Eigen::MatrixBase<ConfigVectorType> & q);
 
   ///
   /// Compute the forward kinematics, update the geometry placements and run the collision detection
@@ -135,22 +116,10 @@ namespace pinocchio
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     BroadPhaseManagerBase<BroadPhaseManagerDerived> & broadphase_manager,
     const Eigen::MatrixBase<ConfigVectorType> & q,
-    const bool stopAtFirstCollision = false)
-  {
-    updateGeometryPlacements(
-      model, data, broadphase_manager.getGeometryModel(), broadphase_manager.getGeometryData(), q);
-
-    broadphase_manager.update(false);
-
-    CollisionCallBackDefault callback(
-      broadphase_manager.getGeometryModel(), broadphase_manager.getGeometryData(),
-      stopAtFirstCollision);
-    return computeCollisions(broadphase_manager, &callback);
-  }
+    const bool stopAtFirstCollision = false);
 
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
+// IWYU pragma: begin_exports
 #include "pinocchio/collision/broadphase.hxx"
-
-#endif // ifndef __pinocchio_collision_broadphase_hpp__
+// IWYU pragma: end_exports

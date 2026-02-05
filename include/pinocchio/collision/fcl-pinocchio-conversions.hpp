@@ -2,16 +2,19 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_collision_fcl_convertion_hpp__
-#define __pinocchio_collision_fcl_convertion_hpp__
-
+#pragma once
+// IWYU pragma: begin_keep
 #include "pinocchio/macros.hpp"
+#include "pinocchio/deprecated.hpp"
+
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/collision/coal-pinocchio-conversions.hpp"
+// IWYU pragma: end_keep
 
 // clang-format off
 PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/collision/fcl-pinocchio-conversions.hpp, pinocchio/collision/coal-pinocchio-conversions.hpp)
 // clang-format on
-
-#include "pinocchio/collision/coal-pinocchio-conversions.hpp"
 
 namespace pinocchio
 {
@@ -23,5 +26,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_collision_fcl_convertion_hpp__

@@ -2,12 +2,12 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_collision_distance_hxx__
-#define __pinocchio_collision_distance_hxx__
+#pragma once
 
-#include "pinocchio/collision/distance.hpp"
-#include "pinocchio/algorithm/geometry.hpp"
-#include "pinocchio/multibody/geometry.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/collision/distance.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -104,5 +104,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_collision_distance_hxx__
