@@ -133,7 +133,7 @@ function(PINOCCHIO_TARGET target_name)
   endif()
 
   if(ENABLE_TEMPLATE_INSTANTIATION AND NOT ARGS_INTERFACE)
-    set(PINOCCHIO_CONTEXT_FILE_VALUE "pinocchio/context/${ARGS_SCALAR}.hpp")
+    set(PINOCCHIO_CONTEXT_FILE_VALUE "pinocchio/context/${ARGS_SCALAR}.hxx")
     target_compile_definitions(
       ${LIB_NAME}
       PUBLIC PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

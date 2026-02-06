@@ -18,6 +18,7 @@
 
 #include <boost/math/constants/constants.hpp>
 
+#include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
 #include "pinocchio/math.hpp"
@@ -312,6 +313,7 @@ namespace Eigen
 
 // IWYU pragma: begin_exports
 #include "pinocchio/autodiff/casadi/math/taylor-series-expansion.hxx"
+#include "pinocchio/autodiff/casadi/math/alias.hxx"
 #include "pinocchio/autodiff/casadi/math/matrix.hxx"
 #include "pinocchio/autodiff/casadi/math/quaternion.hxx"
 #include "pinocchio/autodiff/casadi/math/triangular-matrix.hxx"

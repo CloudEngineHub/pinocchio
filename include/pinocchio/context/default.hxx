@@ -5,6 +5,8 @@
 
 #define PINOCCHIO_SCALAR_TYPE PINOCCHIO_SCALAR_TYPE_DEFAULT
 
-#include "pinocchio/context/generic.hxx" // IWYU pragma: export
+// IWYU pragma: begin_exports
+#include "pinocchio/context/generic.hxx"
+// IWYU pragma: end_exports
 
 #undef PINOCCHIO_SCALAR_TYPE

@@ -32,6 +32,7 @@
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/deprecated.hpp"
+#include "pinocchio/config.hpp"
 
 #include "pinocchio/utils/static-if.hpp"
 #include "pinocchio/utils/shared-ptr.hpp"
