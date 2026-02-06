@@ -1,12 +1,15 @@
 //
 // Copyright (c) 2015-2024 CNRS INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_collision_coal_convertion_hpp__
-#define __pinocchio_collision_coal_convertion_hpp__
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
 
 #include <coal/math/transform.h>
-#include "pinocchio/spatial/se3.hpp"
+
+#include "pinocchio/spatial.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -24,5 +27,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_collision_coal_convertion_hpp__
