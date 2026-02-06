@@ -5,7 +5,7 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 #include "pinocchio/spatial/fwd.hpp"
 #include "pinocchio/multibody/fwd.hpp"
 // IWYU pragma: end_keep

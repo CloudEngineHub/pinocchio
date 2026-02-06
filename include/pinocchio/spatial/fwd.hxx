@@ -5,7 +5,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/context.hxx"
+  #include "pinocchio/context.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

@@ -169,12 +169,12 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/double-entry-container.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/eigen-storage.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/matrix-stack.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/context/casadi.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/context/cppad.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/context/cppadcg.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/context/default.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/context/generic.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/context/casadi.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/context/cppad.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/context/cppadcg.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/context/default.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/context.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/context.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/eigen-macros.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/macros.hpp

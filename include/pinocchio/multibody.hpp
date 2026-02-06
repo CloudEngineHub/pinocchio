@@ -28,7 +28,7 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/deprecated.hpp"

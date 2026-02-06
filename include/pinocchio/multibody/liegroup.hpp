@@ -23,7 +23,7 @@
 #include <boost/fusion/sequence/intrinsic/at.hpp>
 #include <boost/integer/static_min_max.hpp>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"

@@ -11,7 +11,7 @@
 
 #include <omp.h>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 #include "pinocchio/macros.hpp"
 
 #include "pinocchio/utils/openmp.hpp"

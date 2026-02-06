@@ -2,10 +2,7 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#include "pinocchio/context.hxx"
-#ifdef PINOCCHIO_TEMPLATE_INSTANTIATION_HEADER
-  #include PINOCCHIO_TEMPLATE_INSTANTIATION_HEADER
-#endif // ifdef PINOCCHIO_EXPLICIT_INSTANTIATION_HEADER
+#include "pinocchio/context/template-instantiation.hxx"
 #include "pinocchio/multibody.hpp"
 
 namespace pinocchio
