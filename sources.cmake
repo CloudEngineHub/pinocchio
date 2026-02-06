@@ -519,10 +519,7 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/compute-all-terms.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/kinematics.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/center-of-mass-derivatives.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/kinematics-derivatives.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/model.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/data.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.txx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/kinematics-derivatives.txx)
 
 set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
     # ${PROJECT_SOURCE_DIR}/src/algorithm/cholesky.cpp
@@ -557,9 +554,8 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
     # ${PROJECT_SOURCE_DIR}/src/algorithm/kinematics-derivatives.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/constraints/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/model.cpp
-    # ${PROJECT_SOURCE_DIR}/src/multibody/data.cpp
-    # ${PROJECT_SOURCE_DIR}/src/multibody/sample-models.cpp)
-    )
+    ${PROJECT_SOURCE_DIR}/src/multibody/data.cpp
+    ${PROJECT_SOURCE_DIR}/src/multibody/sample-models.cpp)
 
 # Define Pinocchio Python binding sources and headers
 
