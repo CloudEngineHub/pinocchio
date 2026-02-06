@@ -90,3 +90,27 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
+
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+  #ifndef PINOCCHIO_SKIP_ALGORITHM_GEOMETRY
+namespace pinocchio
+{
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void updateGeometryPlacements<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    context::VectorXs>(
+    const Model &,
+    Data &,
+    const GeometryModel &,
+    GeometryData &,
+    const Eigen::MatrixBase<context::VectorXs> &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  updateGeometryPlacements<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, const Data &, const GeometryModel &, GeometryData &);
+
+} // namespace pinocchio
+  #endif // ifdef PINOCCHIO_SKIP_ALGORITHM_GEOMETRY
+#endif   // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

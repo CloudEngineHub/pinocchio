@@ -664,4 +664,124 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+namespace pinocchio
+{
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI context::Scalar
+  computeTotalMass<context::Scalar, context::Options, JointCollectionDefaultTpl>(const Model &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI context::Scalar
+  computeTotalMass<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, Data &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  computeSubtreeMasses<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, Data &);
+  namespace impl
+  {
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::Vector3 &
+    centerOfMass<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const bool computeSubtreeComs);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::Vector3 &
+    centerOfMass<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const bool computeSubtreeComs);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::Vector3 &
+    centerOfMass<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const bool computeSubtreeComs);
+  } // namespace impl
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::Vector3 &
+  centerOfMass<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, Data &, KinematicLevel, const bool computeSubtreeComs);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::Vector3 &
+  centerOfMass<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, Data &, const bool computeSubtreeComs);
+  namespace impl
+  {
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::Matrix3x &
+    jacobianCenterOfMass<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const bool computeSubtreeComs);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+    jacobianSubtreeCenterOfMass<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<context::Matrix3x>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const JointIndex &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix3x>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+    jacobianSubtreeCenterOfMass<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<context::Matrix3x>>(
+      const Model &,
+      Data &,
+      const JointIndex &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix3x>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+    getJacobianSubtreeCenterOfMass<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<context::Matrix3x>>(
+      const Model &,
+      const Data &,
+      const JointIndex &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix3x>> &);
+  } // namespace impl
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::Vector3 &
+  getComFromCrba<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, Data &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::Matrix3x &
+  getJacobianComFromCrba<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, Data &);
+
+} // namespace pinocchio
+#endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
 /// @endcond

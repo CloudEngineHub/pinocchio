@@ -23,6 +23,7 @@
 #include "pinocchio/multibody/joint.hpp"
 
 #include "pinocchio/algorithm/check.hpp"
+#include "pinocchio/algorithm/kinematics.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio

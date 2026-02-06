@@ -540,4 +540,51 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+namespace pinocchio
+{
+  namespace impl
+  {
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+    computeCentroidalDynamicsDerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<context::Matrix6xs>,
+      Eigen::Ref<context::Matrix6xs>,
+      Eigen::Ref<context::Matrix6xs>,
+      Eigen::Ref<context::Matrix6xs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix6xs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix6xs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix6xs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix6xs>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+    getCentroidalDynamicsDerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<context::Matrix6xs>,
+      Eigen::Ref<context::Matrix6xs>,
+      Eigen::Ref<context::Matrix6xs>,
+      Eigen::Ref<context::Matrix6xs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix6xs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix6xs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix6xs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::Matrix6xs>> &);
+
+  } // namespace impl
+} // namespace pinocchio
+#endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
 /// @endcond

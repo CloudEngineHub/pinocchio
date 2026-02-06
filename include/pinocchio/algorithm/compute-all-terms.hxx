@@ -240,4 +240,23 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+namespace pinocchio
+{
+  namespace impl
+  {
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeAllTerms<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &);
+  } // namespace impl
+} // namespace pinocchio
+#endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
 /// \endinternal

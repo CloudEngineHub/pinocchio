@@ -25,6 +25,7 @@
 #include "pinocchio/multibody/visitor.hpp"
 
 #include "pinocchio/algorithm/check.hpp"
+#include "pinocchio/algorithm/kinematics-derivatives.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio

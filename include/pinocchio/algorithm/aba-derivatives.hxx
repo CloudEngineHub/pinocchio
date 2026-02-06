@@ -1074,3 +1074,167 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
+
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+namespace pinocchio
+{
+  namespace impl
+  {
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::RowMatrixXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::RowMatrixXs>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Force,
+      std::allocator<Force>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const std::vector<Force> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Force,
+      std::allocator<Force>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::RowMatrixXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const std::vector<Force> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::RowMatrixXs>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Force,
+      std::allocator<Force>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const std::vector<Force> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
+  } // namespace impl
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  computeABADerivatives<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, Data &);
+
+  namespace impl
+  {
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Force,
+      std::allocator<Force>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>,
+      Eigen::Ref<context::MatrixXs>>(
+      const Model &,
+      Data &,
+      const std::vector<Force> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
+  } // namespace impl
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void computeABADerivatives<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    Force,
+    std::allocator<Force>>(const Model &, Data &, const std::vector<Force> &);
+} // namespace pinocchio
+
+#endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

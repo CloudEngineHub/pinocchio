@@ -63,4 +63,8 @@ namespace pinocchio
   bool checkData(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data);
+
+  template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+  Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options>
+  neutral(const ModelTpl<Scalar, Options, JointCollectionTpl> & model);
 } // namespace pinocchio

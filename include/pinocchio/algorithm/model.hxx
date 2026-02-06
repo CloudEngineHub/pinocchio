@@ -1074,3 +1074,104 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
+
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+  #ifndef PINOCCHIO_SKIP_ALGORITHM_MODEL
+
+namespace pinocchio
+{
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  appendModel<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &,
+    const Model &,
+    const FrameIndex,
+    const SE3Tpl<context::Scalar, context::Options> &,
+    Model &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI Model
+  appendModel<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &,
+    const Model &,
+    const FrameIndex,
+    const SE3Tpl<context::Scalar, context::Options> &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  appendModel<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &,
+    const Model &,
+    const GeometryModel &,
+    const GeometryModel &,
+    const FrameIndex,
+    const SE3Tpl<context::Scalar, context::Options> &,
+    Model &,
+    GeometryModel &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void buildReducedModel<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    context::VectorXs>(
+    const Model &,
+    const std::vector<JointIndex>,
+    const Eigen::MatrixBase<context::VectorXs> &,
+    Model &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI Model buildReducedModel<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    context::VectorXs>(
+    const Model &, const std::vector<JointIndex> &, const Eigen::MatrixBase<context::VectorXs> &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void buildReducedModel<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    context::VectorXs>(
+    const Model &,
+    const GeometryModel &,
+    const std::vector<JointIndex> &,
+    const Eigen::MatrixBase<context::VectorXs> &,
+    Model &,
+    GeometryModel &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void buildReducedModel<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    context::VectorXs>(
+    const Model &,
+    const std::vector<GeometryModel> &,
+    const std::vector<JointIndex> &,
+    const Eigen::MatrixBase<context::VectorXs> &,
+    Model &,
+    std::vector<GeometryModel> &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  transformJointIntoMimic<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &,
+    const JointIndex &,
+    const JointIndex &,
+    const context::Scalar &,
+    const context::Scalar &,
+    Model &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  buildMimicModel<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &,
+    const std::vector<JointIndex> &,
+    const std::vector<JointIndex> &,
+    const std::vector<context::Scalar> &,
+    const std::vector<context::Scalar> &,
+    Model &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI JointIndex
+  findCommonAncestor<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, JointIndex, JointIndex, size_t &, size_t &);
+
+} // namespace pinocchio
+
+  #endif // PINOCCHIO_SKIP_ALGORITHM_MODEL
+#endif   // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

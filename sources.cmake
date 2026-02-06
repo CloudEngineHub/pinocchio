@@ -489,69 +489,48 @@ set(${PROJECT_NAME}_CORE_GENERATED_PUBLIC_HEADERS
     ${_binary_headers_root}/warning.hpp)
 
 set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/aba-derivatives.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/frames-derivatives.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/regressor.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/joint-configuration.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/model.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/proximal.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/admm-solver.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/clarabel-solver.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/pgs-solver.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/cholesky.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/rnea.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/jacobian.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/geometry.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/center-of-mass.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/energy.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/aba.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/frames.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/centroidal.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics-derivatives.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/crba.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/centroidal-derivatives.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/rnea-derivatives.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/compute-all-terms.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/kinematics.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/center-of-mass-derivatives.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/kinematics-derivatives.txx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics.txx)
 
 set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/cholesky.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/aba.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/regressor.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/cholesky.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/aba.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/regressor.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/contact-dynamics.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/frames-derivatives.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/frames-derivatives.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/impulse-dynamics.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/model.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/model.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/constrained-dynamics.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/rnea-derivatives.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/compute-all-terms.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/jacobian.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/energy.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/centroidal-derivatives.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/frames.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/rnea-derivatives.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/compute-all-terms.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/jacobian.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/energy.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/centroidal-derivatives.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/frames.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/constrained-dynamics-derivatives.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/center-of-mass.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/geometry.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/kinematics.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/rnea.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/centroidal.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/aba-derivatives.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/crba.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/center-of-mass.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/geometry.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/kinematics.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/rnea.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/centroidal.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/aba-derivatives.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/crba.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/constraint-cholesky.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/joint-configuration.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/center-of-mass-derivatives.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/joint-configuration.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/center-of-mass-derivatives.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/proximal.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/admm-solver.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/clarabel-solver.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/pgs-solver.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/kinematics-derivatives.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/kinematics-derivatives.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/constraints/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/model.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/data.cpp

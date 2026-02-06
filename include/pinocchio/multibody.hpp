@@ -45,7 +45,6 @@
 #include "pinocchio/spatial.hpp"
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/multibody/liegroup.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/fwd.hpp"
 
 #include "pinocchio/serialization/serializable.hpp"
