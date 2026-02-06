@@ -2,23 +2,19 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_extra_base_visualizer_hpp__
-#define __pinocchio_extra_base_visualizer_hpp__
+#pragma once
 
-#include "pinocchio/macros.hpp"
-#include "pinocchio/visualizers/config.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/multibody/geometry.hpp"
-
-#include <boost/optional.hpp>
-#include <utility>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/visualizers/base-visualizer.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
   namespace visualizers
   {
     typedef PINOCCHIO_SCALAR_TYPE_DEFAULT Scalar;
-    PINOCCHIO_COMMON_TYPEDEF(PINOCCHIO_SCALAR_TYPE_DEFAULT, PINOCCHIO_OPTIONS_DEFAULT)
+    PINOCCHIO_VISUALIZER_TYPEDEF_GENERIC(PINOCCHIO_SCALAR_TYPE_DEFAULT, PINOCCHIO_OPTIONS_DEFAULT)
 
     typedef Eigen::Ref<const VectorXs> ConstVectorRef;
     typedef Eigen::Ref<const MatrixXs> ConstMatrixRef;
@@ -31,7 +27,7 @@ namespace pinocchio
     /// should be managed by the application context itself.
     /// @remark C++ port of the %BaseVisualizer abstract class in Pinocchio's Python
     /// bindings.
-    class PINOCCHIO_VISUALIZERS_DLLAPI BaseVisualizer
+    PINOCCHIO_VISUALIZERS_DLLAPI class BaseVisualizer
     {
     public:
       typedef SE3::Matrix4 Matrix4;
@@ -224,5 +220,3 @@ namespace pinocchio
     };
   } // namespace visualizers
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_extra_base_visualizer_hxx__

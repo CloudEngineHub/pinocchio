@@ -300,17 +300,17 @@ if(BUILD_WITH_COLLISION_SUPPORT)
 endif()
 
 # Define the visualizers target
-# set(VISUALIZERS_LIB_NAME "${PROJECT_NAME}_visualizers")
-# pinocchio_target(
-#   ${VISUALIZERS_LIB_NAME}
-#   SCALAR default
-#   SOURCES ${${PROJECT_NAME}_VISUALIZERS_SOURCES} ${${PROJECT_NAME}_VISUALIZERS_PUBLIC_HEADERS})
-# pinocchio_config(visualizers ${VISUALIZERS_LIB_NAME})
-# target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC ${PROJECT_NAME}_default)
-# if(BUILD_WITH_COLLISION_SUPPORT)
-#   target_compile_definitions(${VISUALIZERS_LIB_NAME} PUBLIC PINOCCHIO_WITH_COLLISION)
-#   target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC coal::coal)
-# endif()
+set(VISUALIZERS_LIB_NAME "${PROJECT_NAME}_visualizers")
+pinocchio_target(
+  ${VISUALIZERS_LIB_NAME}
+  SCALAR default
+  SOURCES ${${PROJECT_NAME}_VISUALIZERS_SOURCES} ${${PROJECT_NAME}_VISUALIZERS_PUBLIC_HEADERS})
+pinocchio_config(visualizers ${VISUALIZERS_LIB_NAME})
+target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC ${PROJECT_NAME}_default)
+if(BUILD_WITH_COLLISION_SUPPORT)
+  target_compile_definitions(${VISUALIZERS_LIB_NAME} PUBLIC PINOCCHIO_WITH_COLLISION)
+  target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC coal::coal)
+endif()
 
 # Define the parsers target.
 #
