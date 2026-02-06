@@ -2,18 +2,12 @@
 // Copyright (c) 2016-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_extra_reachable_workspace_hxx__
-#define __pinocchio_extra_reachable_workspace_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/frames.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/extra/reachable-workspace.hpp"
-
-#include <vector>
-#include <cmath>
-
-#include <boost/math/special_functions/factorials.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/extra/reachable-workspace.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -309,5 +303,3 @@ namespace pinocchio
     }
   } // namespace internal
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_extra_reachable_workspace_hxx__
