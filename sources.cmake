@@ -386,10 +386,6 @@ set(${PROJECT_NAME}_COLLISION_TEMPLATE_INSTANTIATION_SOURCES
     ${PROJECT_SOURCE_DIR}/src/collision/collision.cpp
     ${PROJECT_SOURCE_DIR}/src/collision/distance.cpp)
 
-set(${PROJECT_NAME}_COLLISION_TEMPLATE_INSTANTIATION_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/collision.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/distance.txx)
-
 set(${PROJECT_NAME}_COLLISION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/collision.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/collision.hxx

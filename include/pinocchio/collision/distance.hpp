@@ -20,6 +20,7 @@
 #include "pinocchio/macros.hpp"
 
 #include "pinocchio/multibody.hpp"
+#include "pinocchio/algorithm/geometry.hpp"
 
 #include "pinocchio/collision/config.hpp"
 #include "pinocchio/collision/coal-pinocchio-conversions.hpp"

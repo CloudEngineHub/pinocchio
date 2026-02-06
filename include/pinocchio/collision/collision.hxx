@@ -217,3 +217,28 @@ namespace pinocchio
 #undef PINOCCHIO_GEOM_AABB
 
 } // namespace pinocchio
+
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+namespace pinocchio
+{
+
+  extern template PINOCCHIO_COLLISION_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
+  computeCollisions<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    context::VectorXs>(
+    const Model &,
+    Data &,
+    const GeometryModel &,
+    GeometryData &,
+    const Eigen::MatrixBase<context::VectorXs> &,
+    const bool stopAtFirstCollision);
+
+  extern template PINOCCHIO_COLLISION_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  computeBodyRadius<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, const GeometryModel &, GeometryData &);
+
+} // namespace pinocchio
+#endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

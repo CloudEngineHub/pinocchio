@@ -24,12 +24,12 @@
 
 #include "pinocchio/macros.hpp"
 
-#include "pinocchio/multibody.hpp"
-
 #include "pinocchio/spatial.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/algorithm/geometry.hpp"
 
+#include "pinocchio/collision/config.hpp"
 #include "pinocchio/collision/coal-pinocchio-conversions.hpp"
-
 // IWYU pragma: end_keep
 
 namespace pinocchio
