@@ -152,17 +152,17 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/math/triangular-matrix.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/spatial/se3-tpl.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi/utils/static-if.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/algorithm/aba.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/algorithm/aba.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/math/quaternion.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/math/quaternion.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/spatial/log.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/spatial/se3-tpl.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/utils/static-if.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/spatial/se3-tpl.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad/utils/static-if.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/common/data-entity.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/common/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/common/model-entity.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/code-generator-algo.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/code-generator-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg-algo.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/aligned-vector.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/boost-container-limits.hpp
