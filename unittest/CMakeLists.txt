@@ -249,38 +249,38 @@ add_pinocchio_parallel_unit_test(openmp-exception)
 #   PARSERS
 #   COLLISION_OPTIONAL)
 
-# if(BUILD_WITH_URDF_SUPPORT)
-#   add_pinocchio_unit_test(
-#     urdf
-#     PARSERS
-#     COLLISION_OPTIONAL)
+if(BUILD_WITH_URDF_SUPPORT)
+  add_pinocchio_unit_test(
+    urdf
+    PARSERS
+    COLLISION_OPTIONAL)
 
-#   add_pinocchio_unit_test(value PARSERS)
-#   if(BUILD_WITH_COLLISION_SUPPORT)
-#     add_pinocchio_unit_test(geometry-object COLLISION)
-#     add_pinocchio_unit_test(
-#       geometry-model
-#       PARSERS
-#       COLLISION)
-#     add_pinocchio_unit_test(
-#       geometry-algorithms
-#       PARSERS
-#       COLLISION)
-#     add_pinocchio_unit_test(
-#       broadphase
-#       PARSERS
-#       COLLISION)
-#     add_pinocchio_unit_test(
-#       tree-broadphase
-#       PARSERS
-#       COLLISION)
-#     add_pinocchio_parallel_unit_test(parallel-geometry PARSERS COLLISION)
-#     add_pinocchio_unit_test(
-#       srdf
-#       PARSERS
-#       COLLISION)
-#   endif()
-# endif()
+  add_pinocchio_unit_test(value PARSERS)
+  if(BUILD_WITH_COLLISION_SUPPORT)
+    add_pinocchio_unit_test(geometry-object COLLISION)
+    add_pinocchio_unit_test(
+      geometry-model
+      PARSERS
+      COLLISION)
+    add_pinocchio_unit_test(
+      geometry-algorithms
+      PARSERS
+      COLLISION)
+    add_pinocchio_unit_test(
+      broadphase
+      PARSERS
+      COLLISION)
+    add_pinocchio_unit_test(
+      tree-broadphase
+      PARSERS
+      COLLISION)
+    add_pinocchio_parallel_unit_test(parallel-geometry PARSERS COLLISION)
+    add_pinocchio_unit_test(
+      srdf
+      PARSERS
+      COLLISION)
+  endif()
+endif()
 
 # if(BUILD_WITH_SDF_SUPPORT)
 #   add_pinocchio_unit_test(sdf PARSERS)
@@ -296,9 +296,9 @@ add_pinocchio_parallel_unit_test(openmp-exception)
 
 # add_pinocchio_unit_test(visualizer VISUALIZERS)
 
-# if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
-#   add_pinocchio_unit_test(python_parser PYTHON_PARSER)
-# endif()
+if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
+  add_pinocchio_unit_test(python_parser PYTHON_PARSER)
+endif()
 
 # if(BUILD_PYTHON_INTERFACE)
 #   add_subdirectory(python)
@@ -334,8 +334,8 @@ add_pinocchio_unit_test(explog)
 add_pinocchio_unit_test(finite-differences)
 add_pinocchio_unit_test(visitor)
 add_pinocchio_unit_test(algo-check)
-# add_pinocchio_unit_test(model-graph PARSERS)
-# add_pinocchio_unit_test(model-configuration-converter PARSERS)
+add_pinocchio_unit_test(model-graph PARSERS)
+add_pinocchio_unit_test(model-configuration-converter PARSERS)
 
 # Warning ignore with pragma doesn't work for a part of this test, so we ignore two warning globally
 cxx_flags_by_compiler_frontend(
