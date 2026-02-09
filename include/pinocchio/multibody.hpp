@@ -64,3 +64,7 @@
 #include "pinocchio/multibody/geometry.hxx"
 #include "pinocchio/multibody/geometry-object-filter.hxx"
 // IWYU pragma: end_exports
+
+// IWYU pragma: begin_keep
+#include "pinocchio/algorithm/joint-configuration.hpp"
+// IWYU pragma: end_keep
