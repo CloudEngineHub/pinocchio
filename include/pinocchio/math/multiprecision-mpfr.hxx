@@ -6,7 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/math.hpp"
+  #include "pinocchio/math/multiprecision.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

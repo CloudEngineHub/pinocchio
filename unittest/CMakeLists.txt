@@ -378,12 +378,9 @@ add_test_cflags(
 add_subdirectory(algorithm)
 
 # Multiprecision arithmetic
-if(BUILD_ADVANCED_TESTING)
-  add_pinocchio_unit_test(multiprecision)
-
-  if(MPFR_FOUND)
-    add_pinocchio_unit_test(multiprecision-mpfr PACKAGES mpfr gmp)
-  endif()
+if(BUILD_ADVANCED_TESTING AND MPFR_FOUND)
+  add_pinocchio_unit_test(multiprecision PACKAGES mpfr gmp)
+  add_pinocchio_unit_test(multiprecision-mpfr PACKAGES mpfr gmp)
 endif()
 
 if(BUILD_WITH_AUTODIFF_SUPPORT)

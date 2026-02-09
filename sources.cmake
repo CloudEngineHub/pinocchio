@@ -199,7 +199,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-10x10.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-11x11.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-12x12.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigen-helpers.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigen-helpers.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigenvalues.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/gram-schmidt-orthonormalisation.hpp

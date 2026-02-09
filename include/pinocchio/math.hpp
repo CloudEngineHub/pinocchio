@@ -17,7 +17,6 @@
 
 #include <boost/type_traits.hpp>
 #include <boost/math/constants/constants.hpp>
-#include <boost/multiprecision/mpfr.hpp>
 
 #include "pinocchio/context.hpp"
 #include "pinocchio/multibody/fwd.hpp"
@@ -45,8 +44,6 @@
 #include "pinocchio/math/matrix-block.hxx"
 #include "pinocchio/math/tensor.hxx"
 #include "pinocchio/math/eigenvalues.hxx"
-#include "pinocchio/math/multiprecision.hxx"
-#include "pinocchio/math/multiprecision-mpfr.hxx"
 #include "pinocchio/math/gram-schmidt-orthonormalisation.hxx"
 #include "pinocchio/math/sign.hxx"
 #include "pinocchio/math/eigenvalues-tridiagonal-matrix.hxx"
