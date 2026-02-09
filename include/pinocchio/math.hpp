@@ -17,7 +17,7 @@
 
 #include <boost/type_traits.hpp>
 #include <boost/math/constants/constants.hpp>
-#include <boost/multiprecision/number.hpp>
+#include <boost/multiprecision/mpfr.hpp>
 
 #include "pinocchio/context.hpp"
 #include "pinocchio/multibody/fwd.hpp"
@@ -31,6 +31,7 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
+#include "pinocchio/math/eigen-helpers.hxx"
 #include "pinocchio/math/comparison-operators.hxx"
 #include "pinocchio/math/fwd.hxx"
 #include "pinocchio/math/alias.hxx"
@@ -45,6 +46,7 @@
 #include "pinocchio/math/tensor.hxx"
 #include "pinocchio/math/eigenvalues.hxx"
 #include "pinocchio/math/multiprecision.hxx"
+#include "pinocchio/math/multiprecision-mpfr.hxx"
 #include "pinocchio/math/gram-schmidt-orthonormalisation.hxx"
 #include "pinocchio/math/sign.hxx"
 #include "pinocchio/math/eigenvalues-tridiagonal-matrix.hxx"

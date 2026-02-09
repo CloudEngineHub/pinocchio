@@ -2,10 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_math_eigen_helpers_hpp__
-#define __pinocchio_math_eigen_helpers_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -54,5 +56,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_math_eigen_helpers_hpp__

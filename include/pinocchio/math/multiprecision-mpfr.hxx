@@ -2,14 +2,12 @@
 // Copyright (c) 2020 INRIA
 //
 
-#ifndef __pinocchio_math_mutliprecision_mpfr_hpp__
-#define __pinocchio_math_mutliprecision_mpfr_hpp__
+#pragma once
 
-#include "pinocchio/math/multiprecision.hpp"
-#include "pinocchio/math/sincos.hpp"
-
-#include <boost/serialization/nvp.hpp>
-#include <boost/multiprecision/mpfr.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -46,5 +44,3 @@ namespace pinocchio
     }
   };
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_math_mutliprecision_hpp__
