@@ -13,7 +13,7 @@
 #include <boost/fusion/container/generation/make_vector.hpp>
 #include <boost/variant.hpp>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 
 #include "pinocchio/math.hpp"
 

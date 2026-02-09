@@ -851,4 +851,88 @@ namespace pinocchio
   }
 } // namespace pinocchio
 
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+namespace pinocchio
+{
+  namespace impl
+  {
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::VectorXs &
+    rnea<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::VectorXs &
+    rnea<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>,
+      Force>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const std::vector<Force> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::VectorXs &
+    nonLinearEffects<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::VectorXs &
+    computeGeneralizedGravity<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &, Data &, const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::VectorXs &
+    computeStaticTorque<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const std::vector<Force> &);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::MatrixXs &
+    computeCoriolisMatrix<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      Eigen::Ref<const context::VectorXs>,
+      Eigen::Ref<const context::VectorXs>>(
+      const Model &,
+      Data &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
+      const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &);
+  } // namespace impl
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI const context::MatrixXs &
+  getCoriolisMatrix<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const Model &, Data &);
+} // namespace pinocchio
+#endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
 /// @endcond

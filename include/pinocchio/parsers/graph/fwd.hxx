@@ -6,7 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/context.hxx"
+  #include "pinocchio/context.hpp"
   #include "pinocchio/spatial/fwd.hpp"
   #include "pinocchio/multibody/fwd.hpp"
 #endif // PINOCCHIO_LSP

@@ -21,6 +21,7 @@
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/multibody/visitor.hpp"
 
+#include "pinocchio/algorithm/model.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio

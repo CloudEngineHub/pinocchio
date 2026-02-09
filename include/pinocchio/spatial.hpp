@@ -8,7 +8,7 @@
 
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/eigen-common.hpp"
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 
 #include "pinocchio/utils/cast.hpp"
 #include "pinocchio/utils/static-if.hpp"

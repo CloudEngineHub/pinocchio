@@ -6,7 +6,7 @@
 
 #include <Eigen/Core>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

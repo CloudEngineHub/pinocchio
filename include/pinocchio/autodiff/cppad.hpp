@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "pinocchio/math/fwd.hpp"
 #define PINOCCHIO_WITH_CPPAD_SUPPORT
 
 // IWYU pragma: begin_keep
@@ -19,6 +18,7 @@
 
 #include <cppad/cppad.hpp>
 
+#include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
 #include "pinocchio/fwd.hpp"

@@ -2,7 +2,8 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#include "pinocchio/multibody/model.hpp"
+#include "pinocchio/context/template-instantiation.hxx"
+#include "pinocchio/multibody.hpp"
 
 namespace pinocchio
 {

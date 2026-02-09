@@ -93,3 +93,18 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
+
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+namespace pinocchio
+{
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  getCenterOfMassVelocityDerivatives<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    context::Matrix3x>(const Model &, Data &, const Eigen::MatrixBase<context::Matrix3x> &);
+
+}
+#endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

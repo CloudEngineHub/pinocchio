@@ -28,10 +28,11 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/deprecated.hpp"
+#include "pinocchio/config.hpp"
 
 #include "pinocchio/utils/static-if.hpp"
 #include "pinocchio/utils/shared-ptr.hpp"
@@ -44,7 +45,6 @@
 #include "pinocchio/spatial.hpp"
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/multibody/liegroup.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/fwd.hpp"
 
 #include "pinocchio/serialization/serializable.hpp"
@@ -64,3 +64,7 @@
 #include "pinocchio/multibody/geometry.hxx"
 #include "pinocchio/multibody/geometry-object-filter.hxx"
 // IWYU pragma: end_exports
+
+// IWYU pragma: begin_keep
+#include "pinocchio/algorithm/joint-configuration.hpp"
+// IWYU pragma: end_keep

@@ -9,7 +9,7 @@
   #include <Eigen/Cholesky>
   #include <Eigen/SparseCholesky>
 
-  #include "pinocchio/context.hxx"
+  #include "pinocchio/context.hpp"
   #include "pinocchio/multibody/fwd.hpp"
 #endif // PINOCCHIO_LSP
 
@@ -63,4 +63,8 @@ namespace pinocchio
   bool checkData(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data);
+
+  template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+  Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options>
+  neutral(const ModelTpl<Scalar, Options, JointCollectionTpl> & model);
 } // namespace pinocchio

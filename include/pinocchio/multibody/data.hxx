@@ -1037,4 +1037,19 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+namespace pinocchio
+{
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+  DataTpl<context::Scalar, context::Options, JointCollectionDefaultTpl>::DataTpl();
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+  DataTpl<context::Scalar, context::Options, JointCollectionDefaultTpl>::DataTpl(const Model &);
+
+} // namespace pinocchio
+
+#endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
 /// @endcond

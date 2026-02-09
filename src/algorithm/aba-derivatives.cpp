@@ -2,6 +2,7 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
+#include "pinocchio/context/template-instantiation.hxx"
 #include "pinocchio/algorithm/aba-derivatives.hpp"
 
 namespace pinocchio
@@ -19,8 +20,8 @@ namespace pinocchio
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>>(
-      const context::Model &,
-      context::Data &,
+      const Model &,
+      Data &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
@@ -38,8 +39,8 @@ namespace pinocchio
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::RowMatrixXs>>(
-      const context::Model &,
-      context::Data &,
+      const Model &,
+      Data &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
@@ -54,17 +55,17 @@ namespace pinocchio
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
-      context::Force,
-      std::allocator<context::Force>,
+      Force,
+      std::allocator<Force>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>>(
-      const context::Model &,
-      context::Data &,
+      const Model &,
+      Data &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const std::vector<context::Force> &,
+      const std::vector<Force> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
@@ -76,17 +77,17 @@ namespace pinocchio
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
-      context::Force,
-      std::allocator<context::Force>,
+      Force,
+      std::allocator<Force>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::RowMatrixXs>>(
-      const context::Model &,
-      context::Data &,
+      const Model &,
+      Data &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const std::vector<context::Force> &,
+      const std::vector<Force> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::RowMatrixXs>> &);
@@ -98,8 +99,8 @@ namespace pinocchio
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>>(
-      const context::Model &,
-      context::Data &,
+      const Model &,
+      Data &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &);
@@ -111,14 +112,14 @@ namespace pinocchio
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
       Eigen::Ref<const context::VectorXs>,
-      context::Force,
-      std::allocator<context::Force>>(
-      const context::Model &,
-      context::Data &,
+      Force,
+      std::allocator<Force>>(
+      const Model &,
+      Data &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<const context::VectorXs>> &,
-      const std::vector<context::Force> &);
+      const std::vector<Force> &);
 
     template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void computeABADerivatives<
       context::Scalar,
@@ -127,8 +128,8 @@ namespace pinocchio
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>>(
-      const context::Model &,
-      context::Data &,
+      const Model &,
+      Data &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
@@ -136,7 +137,7 @@ namespace pinocchio
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
   computeABADerivatives<context::Scalar, context::Options, JointCollectionDefaultTpl>(
-    const context::Model &, context::Data &);
+    const Model &, Data &);
 
   namespace impl
   {
@@ -144,14 +145,14 @@ namespace pinocchio
       context::Scalar,
       context::Options,
       JointCollectionDefaultTpl,
-      context::Force,
-      std::allocator<context::Force>,
+      Force,
+      std::allocator<Force>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>,
       Eigen::Ref<context::MatrixXs>>(
-      const context::Model &,
-      context::Data &,
-      const std::vector<context::Force> &,
+      const Model &,
+      Data &,
+      const std::vector<Force> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &,
       const Eigen::MatrixBase<Eigen::Ref<context::MatrixXs>> &);
@@ -161,7 +162,6 @@ namespace pinocchio
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,
-    context::Force,
-    std::allocator<context::Force>>(
-    const context::Model &, context::Data &, const std::vector<context::Force> &);
+    Force,
+    std::allocator<Force>>(const Model &, Data &, const std::vector<Force> &);
 } // namespace pinocchio

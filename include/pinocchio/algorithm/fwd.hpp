@@ -8,7 +8,7 @@
 #include <Eigen/Cholesky>
 #include <Eigen/SparseCholesky>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 #include "pinocchio/multibody/fwd.hpp"
 // IWYU pragma: end_keep
 

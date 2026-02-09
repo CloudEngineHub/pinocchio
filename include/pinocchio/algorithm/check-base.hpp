@@ -6,7 +6,7 @@
 // IWYU pragma: begin_keep
 #include <Eigen/Core>
 #include <cstddef>
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 #include "pinocchio/multibody/fwd.hpp"
 // IWYU pragma: end_keep
 

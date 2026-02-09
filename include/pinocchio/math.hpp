@@ -19,7 +19,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/multiprecision/number.hpp>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 #include "pinocchio/multibody/fwd.hpp"
 
 #include "pinocchio/macros.hpp"

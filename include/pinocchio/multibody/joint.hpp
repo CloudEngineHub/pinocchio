@@ -22,7 +22,7 @@
 #include <boost/mpl/contains.hpp>
 #include <boost/variant.hpp>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"

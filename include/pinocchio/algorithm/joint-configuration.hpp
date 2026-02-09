@@ -16,7 +16,7 @@
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
 #include "pinocchio/fwd.hpp"
-#include "pinocchio/context.hxx"
+#include "pinocchio/context.hpp"
 
 #include "pinocchio/utils/check.hpp"
 

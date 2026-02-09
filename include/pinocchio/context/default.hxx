@@ -3,8 +3,18 @@
 //
 #pragma once
 
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <Eigen/Core>
+
+  #define PINOCCHIO_SCALAR_TYPE_DEFAULT double
+  #define PINOCCHIO_OPTIONS_DEFAULT 0
+#endif // PINOCCHIO_LSP
+
 #define PINOCCHIO_SCALAR_TYPE PINOCCHIO_SCALAR_TYPE_DEFAULT
 
-#include "pinocchio/context/generic.hxx" // IWYU pragma: export
+// IWYU pragma: begin_exports
+#include "pinocchio/context/generic.hxx"
+// IWYU pragma: end_exports
 
 #undef PINOCCHIO_SCALAR_TYPE

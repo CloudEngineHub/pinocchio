@@ -525,3 +525,27 @@ namespace pinocchio
   } // namespace buildModels
 
 } // namespace pinocchio
+
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+  #ifndef PINOCCHIO_SKIP_MULTIBODY_SAMPLE_MODELS
+
+namespace pinocchio
+{
+  namespace buildModels
+  {
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+    manipulator<context::Scalar, context::Options, JointCollectionDefaultTpl>(Model &, bool);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+    humanoid<context::Scalar, context::Options, JointCollectionDefaultTpl>(Model &, bool);
+
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+    humanoidRandom<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+      Model &, bool, bool);
+  } // namespace buildModels
+} // namespace pinocchio
+
+  #endif // PINOCCHIO_SKIP_MULTIBODY_SAMPLE_MODELS
+
+#endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
