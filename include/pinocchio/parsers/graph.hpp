@@ -28,6 +28,7 @@
 #include "pinocchio/spatial.hpp"
 #include "pinocchio/math.hpp"
 #include "pinocchio/multibody.hpp"
+#include "pinocchio/geometry.hpp"
 #include "pinocchio/multibody/joint.hpp"
 
 #include "pinocchio/parsers/config.hpp"

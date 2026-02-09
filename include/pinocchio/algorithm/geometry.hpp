@@ -18,8 +18,8 @@
 #include "pinocchio/spatial.hpp"
 
 #include "pinocchio/multibody.hpp"
+#include "pinocchio/geometry.hpp"
 
-//
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
 // IWYU pragma: end_keep
