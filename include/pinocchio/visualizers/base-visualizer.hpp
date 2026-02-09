@@ -8,7 +8,6 @@
 
 #include <boost/optional.hpp>
 #include <boost/none.hpp>
-#include <boost/none_t.hpp>
 
 #include <stdexcept>
 #include <functional>
