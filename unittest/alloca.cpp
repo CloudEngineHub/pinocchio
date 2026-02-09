@@ -2,12 +2,13 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include "pinocchio/fwd.hpp"
+#include <Eigen/Core>
+
+#include "pinocchio/eigen-common.hpp"
+#include "pinocchio/utils/alloca.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
-
-using namespace pinocchio;
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 

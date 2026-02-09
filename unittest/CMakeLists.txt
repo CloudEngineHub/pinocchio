@@ -164,7 +164,7 @@ endmacro()
 find_package(Boost COMPONENTS unit_test_framework)
 
 # Header only
-# add_pinocchio_unit_test(alloca HEADER_ONLY)
+add_pinocchio_unit_test(alloca HEADER_ONLY)
 add_pinocchio_unit_test(double-entry-container HEADER_ONLY)
 add_pinocchio_unit_test(macros HEADER_ONLY)
 add_pinocchio_unit_test(reference HEADER_ONLY)
@@ -286,15 +286,15 @@ endif()
 #   add_pinocchio_unit_test(sdf PARSERS)
 # endif()
 
-# if(BUILD_WITH_EXTRA_SUPPORT)
-#   add_pinocchio_unit_test(
-#     reachable-workspace
-#     PARSERS
-#     EXTRA
-#     COLLISION_OPTIONAL)
-# endif()
+if(BUILD_WITH_EXTRA_SUPPORT)
+  add_pinocchio_unit_test(
+    reachable-workspace
+    PARSERS
+    EXTRA
+    COLLISION_OPTIONAL)
+endif()
 
-# add_pinocchio_unit_test(visualizer VISUALIZERS)
+add_pinocchio_unit_test(visualizer VISUALIZERS)
 
 if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
   add_pinocchio_unit_test(python_parser PYTHON_PARSER)
