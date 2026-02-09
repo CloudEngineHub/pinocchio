@@ -2,18 +2,28 @@
 // Copyright (c) 2016-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_extra_reachable_workspace_hpp__
-#define __pinocchio_extra_reachable_workspace_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/multibody/geometry.hpp"
-#include "pinocchio/algorithm/geometry.hpp"
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
+#include <Eigen/SparseCore>
+
+// #include <vector>
+#include <cmath>
+
+#include <boost/math/special_functions/factorials.hpp>
+
+#include "pinocchio/macros.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/liegroup.hpp"
+
 #include "pinocchio/extra/config.hpp"
 
 #ifdef PINOCCHIO_WITH_COLLISION
   #include "pinocchio/collision/collision.hpp"
 #endif // PINOCCHIO_WITH_COLLISION
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -223,7 +233,6 @@ namespace pinocchio
   } // namespace internal
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
+// IWYU pragma: begin_exports
 #include "pinocchio/extra/reachable-workspace.hxx"
-
-#endif // ifndef __pinocchio_extra_reachable_workspace_hpp__
+// IWYU pragma: end_exports

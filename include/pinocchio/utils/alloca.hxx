@@ -2,14 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_alloca_hpp__
-#define __pinocchio_alloca_hpp__
+#pragma once
 
-#ifdef WIN32
-  #include <malloc.h>
-#else
-  #include <alloca.h>
-#endif
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/utils/alloca.hpp"
+#endif // PINOCCHIO_LSP
 
 #define PINOCCHIO_ALLOCA EIGEN_ALLOCA
 #define PINOCCHIO_ALIGNED_PTR(ptr, align)                                                          \
@@ -20,5 +18,3 @@
   static_cast<S *>(PINOCCHIO_ALIGNED_PTR(                                                          \
     PINOCCHIO_ALLOCA(size_t(rows * cols) * sizeof(S) + (align > 0 ? (align - 1) : 0)), align)),    \
     rows, cols
-
-#endif // ifndef __pinocchio_alloca_hpp__

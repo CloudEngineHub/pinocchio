@@ -24,7 +24,7 @@
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
-#include "pinocchio/alloca.hpp"
+#include "pinocchio/utils/alloca.hpp"
 
 #include "pinocchio/utils/static-if.hpp"
 #include "pinocchio/utils/check.hpp"
