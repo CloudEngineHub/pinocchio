@@ -6,7 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/multibody.hpp"
+  #include "pinocchio/geometry.hpp"
 #endif // PINOCCHIO_LSP
 
 #ifdef PINOCCHIO_WITH_COLLISION

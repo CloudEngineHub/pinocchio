@@ -18,6 +18,8 @@
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/liegroup.hpp"
 
+#include "pinocchio/algorithm/frames.hpp"
+
 #include "pinocchio/extra/config.hpp"
 
 #ifdef PINOCCHIO_WITH_COLLISION

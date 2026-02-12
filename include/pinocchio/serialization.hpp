@@ -45,6 +45,13 @@
 #include <boost/serialization/array_wrapper.hpp>
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/throw_exception.hpp>
+#include <boost/serialization/array.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/set.hpp>
+#include <boost/serialization/variant.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 #include <boost/math/special_functions/nonfinite_num_facets.hpp>
 #include <boost/iostreams/device/array.hpp>
 #include <boost/iostreams/stream.hpp>
@@ -74,6 +81,7 @@
 #include "pinocchio/spatial.hpp"
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/joint.hpp"
+#include "pinocchio/geometry.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

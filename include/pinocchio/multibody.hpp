@@ -4,43 +4,40 @@
 #pragma once
 
 // IWYU pragma: begin_keep
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
-#include <limits>
-#include <algorithm>
-#include <string>
-#include <ostream>
 #include <iterator>
-#include <sstream>
-#include <utility>
-#include <memory>
-#include <vector>
-#include <stdexcept>
+#include <limits>
 #include <map>
+#include <ostream>
 #include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <boost/next_prior.hpp>
+#include <boost/variant.hpp>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/Cholesky>
 
-#include <boost/next_prior.hpp>
-#include <boost/variant/variant.hpp>
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
-
 #include "pinocchio/context.hpp"
-#include "pinocchio/fwd.hpp"
-#include "pinocchio/macros.hpp"
 #include "pinocchio/deprecated.hpp"
+#include "pinocchio/macros.hpp"
 #include "pinocchio/config.hpp"
 
-#include "pinocchio/utils/static-if.hpp"
-#include "pinocchio/utils/shared-ptr.hpp"
+#include "pinocchio/common.hpp"
 
 #include "pinocchio/container/double-entry-container.hpp"
 #include "pinocchio/container/matrix-stack.hpp"
 
-#include "pinocchio/common.hpp"
+#include "pinocchio/fwd.hxx"
+
+#include "pinocchio/utils/static-if.hpp"
+
 #include "pinocchio/math.hpp"
 #include "pinocchio/spatial.hpp"
 #include "pinocchio/multibody/joint.hpp"
@@ -57,12 +54,6 @@
 #include "pinocchio/multibody/frame.hxx"
 #include "pinocchio/multibody/model.hxx"
 #include "pinocchio/multibody/data.hxx"
-
-#include "pinocchio/multibody/coal.hxx"
-#include "pinocchio/multibody/instance-filter.hxx"
-#include "pinocchio/multibody/geometry-object.hxx"
-#include "pinocchio/multibody/geometry.hxx"
-#include "pinocchio/multibody/geometry-object-filter.hxx"
 // IWYU pragma: end_exports
 
 // IWYU pragma: begin_keep

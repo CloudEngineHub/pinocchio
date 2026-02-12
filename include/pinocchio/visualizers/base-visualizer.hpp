@@ -21,6 +21,7 @@
 #include "pinocchio/spatial.hpp"
 
 #include "pinocchio/multibody.hpp"
+#include "pinocchio/geometry.hpp"
 
 #include "pinocchio/visualizers/config.hpp"
 // IWYU pragma: end_keep

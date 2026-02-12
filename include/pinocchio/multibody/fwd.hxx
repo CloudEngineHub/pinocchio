@@ -54,9 +54,6 @@ namespace pinocchio
   typedef ModelTpl<context::Scalar, context::Options> Model;
   typedef DataTpl<context::Scalar, context::Options> Data;
 
-  struct GeometryModel;
-  struct GeometryData;
-
   ///
   /// \brief Various conventions to express the velocity of a moving frame
   ///

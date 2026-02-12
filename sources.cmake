@@ -199,7 +199,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-10x10.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-11x11.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-12x12.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigen-helpers.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigen-helpers.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigenvalues.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/gram-schmidt-orthonormalisation.hpp
@@ -411,8 +411,8 @@ set(${PROJECT_NAME}_COLLISION_PARALLEL_PUBLIC_HEADERS
 
 set(${PROJECT_NAME}_PARSERS_SOURCES
     ${PROJECT_SOURCE_DIR}/src/utils/file-explorer.cpp
-    ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph.cpp
-    ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph-geom.cpp
+    # ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph.cpp
+    # ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph-geom.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph-algo.cpp)
 
@@ -423,7 +423,6 @@ set(${PROJECT_NAME}_PARSERS_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/scalar-model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/meshloader-fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/srdf.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/srdf.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/utils.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/file-explorer.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf.hpp
@@ -452,8 +451,7 @@ set(${PROJECT_NAME}_URDF_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/urdf.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/urdf/model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/urdf/geometry.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/urdf/utils.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/urdf/types.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/urdf/utils.hxx)
 
 set(${PROJECT_NAME}_SDF_SOURCES ${PROJECT_SOURCE_DIR}/src/parsers/sdf/model.cpp
                                 ${PROJECT_SOURCE_DIR}/src/parsers/sdf/geometry.cpp)
