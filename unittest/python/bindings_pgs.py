@@ -87,9 +87,8 @@ class TestPGS(TestCase):
         delassus = pin.DelassusOperatorDense(delassus_matrix)
 
         csize = 0
-        for i, cm in enumerate(constraint_models):
-            cd = constraint_datas[i]
-            csize += cm.residualSize(cd)
+        for cm in constraint_models:
+            csize += cm.residualSize()
         self.assertTrue(
             delassus.matrix().shape[0] == csize,
             "constraint problem is of wrong size.",

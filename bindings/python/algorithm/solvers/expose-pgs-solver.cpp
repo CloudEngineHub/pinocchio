@@ -20,10 +20,11 @@ namespace pinocchio
     namespace bp = boost::python;
 
     typedef context::Scalar Scalar;
+    static constexpr int Options = context::Options;
     typedef context::VectorXs VectorXs;
     typedef context::MatrixXs MatrixXs;
 
-    typedef PGSConstraintSolverTpl<Scalar> PGSSolver;
+    typedef PGSConstraintSolverTpl<Scalar, Options> PGSSolver;
     typedef typename PGSSolver::PGSSolverSettings PGSSolverSettings;
     typedef typename PGSSolver::PGSSolverResult PGSSolverResult;
     typedef typename PGSSolver::PGSSolverStats PGSSolverStats;

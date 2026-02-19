@@ -10,23 +10,21 @@
 namespace pinocchio
 {
 
-  template<typename _Scalar>
-  struct BaumgarteCorrectorParametersTpl;
-
   template<typename Derived>
   struct ConstraintModelCommonParameters
   {
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    typedef ConstraintModelCommonParameters<Derived> Self;
 
+    typedef typename traits<Derived>::Scalar Scalar;
+    typedef typename traits<Derived>::ResidualVectorType ResidualVectorType;
+    typedef typename traits<Derived>::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
+
+    // Friendship ---------------------------------------------------
     template<typename OtherDerived>
     friend struct ConstraintModelCommonParameters;
-
-    typedef ConstraintModelCommonParameters<Derived> Self;
-    typedef typename traits<Derived>::Scalar Scalar;
-    typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
-    typedef typename traits<Derived>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
-    typedef typename traits<Derived>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-
-    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -48,7 +46,10 @@ namespace pinocchio
     void cast(ConstraintModelCommonParameters<OtherDerived> & other) const
     {
       other.m_compliance = m_compliance.template cast<NewScalar>();
-      other.m_baumgarte_parameters = m_baumgarte_parameters.template cast<NewScalar>();
+      if constexpr (!std::is_same_v<BaumgarteCorrectorParameters, boost::blank>)
+      {
+        other.m_baumgarte_parameters = m_baumgarte_parameters.template cast<NewScalar>();
+      }
     }
 
     /// \brief Comparison operator
@@ -64,16 +65,24 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    /// \brief Returns the compliance internally stored in the constraint model.
-    ComplianceVectorTypeConstRef compliance_impl() const
+    /// \brief Set the compliance
+    template<typename VectorLike, ConstraintSelectionType Sel>
+    void
+    setComplianceImpl(const Eigen::MatrixBase<VectorLike> & vector, ConstraintSelectionTag<Sel> sel)
     {
-      return m_compliance;
+      PINOCCHIO_UNUSED_VARIABLE(sel);
+      m_compliance = vector;
     }
 
-    /// \brief Returns the compliance internally stored in the constraint model.
-    ComplianceVectorTypeRef compliance_impl()
+    /// \brief Fill the compliance of size residualSize relted to the courant state of the
+    /// constraint
+    template<typename VectorLike, ConstraintSelectionType Sel>
+    void retrieveComplianceImpl(
+      const Eigen::MatrixBase<VectorLike> & vector_, ConstraintSelectionTag<Sel> sel) const
     {
-      return m_compliance;
+      auto vector = vector_.const_cast_derived();
+      PINOCCHIO_UNUSED_VARIABLE(sel);
+      vector = m_compliance;
     }
 
     /// \brief Returns the Baumgarte parameters internally stored in the constraint model
@@ -93,9 +102,9 @@ namespace pinocchio
     // MEMBERS
     // ------------------------------
 
-    ComplianceVectorType m_compliance;
+    ResidualVectorType m_compliance;
     BaumgarteCorrectorParameters m_baumgarte_parameters;
-  };
+  }; // struct ConstraintModelCommonParameters
 
 } // namespace pinocchio
 

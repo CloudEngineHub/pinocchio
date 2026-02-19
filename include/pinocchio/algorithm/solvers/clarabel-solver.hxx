@@ -115,7 +115,7 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[i]);
         const auto & cdata = helper::get_ref(constraint_datas[i]);
-        const auto csize = cmodel.residualSize(cdata);
+        const auto csize = cmodel.residualSize();
 
         SegmentType1 velocity_segment = velocity.segment(cindex, csize);
         SegmentType2 shift_segment = shift.segment(cindex, csize);
@@ -219,7 +219,7 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[i]);
         const auto & cdata = helper::get_ref(constraint_datas[i]);
-        const auto csize = cmodel.residualSize(cdata);
+        const auto csize = cmodel.residualSize();
 
         SegmentType friction_segment = frictions.segment(cindex, csize);
 
@@ -232,7 +232,7 @@ namespace pinocchio
 
   } // namespace internal
 
-  template<typename Scalar>
+  template<typename Scalar, int Options>
   template<
     typename DelassusDerived,
     typename VectorLike,
@@ -240,7 +240,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  bool ClarabelConstraintSolverTpl<Scalar>::solve(
+  bool ClarabelConstraintSolverTpl<Scalar, Options>::solve(
     DelassusOperatorBase<DelassusDerived> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -424,7 +424,7 @@ namespace pinocchio
 
     // Mark solver and result as valid
     is_valid_ = true;
-    res.makeValid();
+    res.unsafe().makeValid();
 
     return res.converged;
   }

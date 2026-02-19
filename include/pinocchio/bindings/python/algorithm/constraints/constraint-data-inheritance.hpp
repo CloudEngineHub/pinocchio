@@ -21,8 +21,51 @@ namespace pinocchio
   {
     namespace bp = boost::python;
 
+    // -----------------------------------------------------------------
+    // Declaration of all inheritance visitor we want to apply
+    // i.e. level of CRTP where member or methods are declared
+    // -----------------------------------------------------------------
+    template<class T, class = void>
+    struct BinaryKinematicsConstraintDataBasePythonVisitor;
+
+    // -----------------------------------------------------------------
+    // The visitor that apply all the possible inheritance
+    // -----------------------------------------------------------------
     template<class T>
+    struct ConstraintDataInheritancePythonVisitor
+    : public bp::def_visitor<ConstraintDataInheritancePythonVisitor<T>>
+    {
+    public:
+      template<class PyClass>
+      void visit(PyClass & cl) const
+      {
+        cl.def(BinaryKinematicsConstraintDataBasePythonVisitor<T>());
+      }
+    };
+
+    // -----------------------------------------------------------------
+    // Actual implementation of visitors when there is inheritence
+    // -----------------------------------------------------------------
+    template<class T> // Check inheritence
+    inline constexpr bool inherit_binarykinematic_data_v =
+      std::is_base_of_v<PointConstraintDataBase<T>, T>
+      || std::is_base_of_v<FrameConstraintDataBase<T>, T>;
+
+    template<class T, class> // Default: do nothing
     struct BinaryKinematicsConstraintDataBasePythonVisitor
+    : public bp::def_visitor<BinaryKinematicsConstraintDataBasePythonVisitor<T>>
+    {
+    public:
+      template<class PyClass>
+      void visit(PyClass & /*cl*/) const
+      {
+      }
+    };
+
+    template<class T> // SFINAE specialization discard except when inherit
+    struct BinaryKinematicsConstraintDataBasePythonVisitor<
+      T,
+      std::enable_if_t<inherit_binarykinematic_data_v<T>>>
     : public bp::def_visitor<BinaryKinematicsConstraintDataBasePythonVisitor<T>>
     {
     public:
@@ -41,7 +84,15 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY(
             T, constraint_acceleration_error, "Constraint acceleration error.")
           .PINOCCHIO_ADD_PROPERTY(
-            T, constraint_acceleration_biais_term, "Constraint acceleration term.");
+            T, constraint_acceleration_biais_term, "Constraint acceleration term.")
+          .PINOCCHIO_ADD_PROPERTY(T, A1_world, "Transform for joint1 in world frame.")
+          .PINOCCHIO_ADD_PROPERTY(T, A2_world, "Transform for joint2 in world frame.")
+          .PINOCCHIO_ADD_PROPERTY(
+            T, A_world, "Relative Transform between joint1 and joint2 in world frame.")
+          .PINOCCHIO_ADD_PROPERTY(T, A1_local, "Transform for joint1 in local frame.")
+          .PINOCCHIO_ADD_PROPERTY(T, A2_local, "Transform for joint2 in local frame.")
+          .PINOCCHIO_ADD_PROPERTY(
+            T, A_local, "Relative Transform between joint1 and joint2 in local frame.");
       }
     };
   } // namespace python

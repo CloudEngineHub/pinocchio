@@ -14,6 +14,7 @@
 #include "pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
+#include "pinocchio/algorithm/constraints/sets/sets.hpp"
 #include "pinocchio/utils/reference.hpp"
 
 namespace pinocchio
@@ -53,42 +54,57 @@ namespace pinocchio
     typedef RigidConstraintModelTpl<NewScalar, Options> type;
   };
 
+  // --------------------------------------------------------------
+  // Traits
+  // --------------------------------------------------------------
   template<typename _Scalar, int _Options>
   struct traits<RigidConstraintModelTpl<_Scalar, _Options>>
   {
     // --------------------------------------------------------------
-    // Traits characterizing the constraint behaviour in CRTP
+    // Traits referencing the constraint and associated types
+    // --------------------------------------------------------------
+    typedef RigidConstraintModelTpl<_Scalar, _Options> ConstraintModel;
+    typedef RigidConstraintDataTpl<_Scalar, _Options> ConstraintData;
+
+    typedef ConstraintModel Model;
+    typedef ConstraintData Data;
+
+    // --------------------------------------------------------------
+    // Traits characterizing the constraints
     // --------------------------------------------------------------
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
-    static constexpr int Size = Eigen::Dynamic;
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::VELOCITY_LEVEL;
     static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::CONSTANT;
 
-    static constexpr bool has_baumgarte_corrector =
-      true; // Baumgarte make sense and exist directly for the constraint
-    static constexpr bool has_compliance_member =
-      true; // The constraint itself posses a member m_compliance which can be set by the user
-    static constexpr bool has_set = true; // The constraint itself defines the set, otherwise must
-                                          // have a mechanism for set-related visitors
+    static constexpr bool has_baumgarte_corrector = true;
+    static constexpr bool has_set = true;
+    static constexpr bool is_inequality_constraint = false;
 
     // --------------------------------------------------------------
-    // Traits referencing the constraint and associated types
+    // Traits for associated struct and sizes
     // --------------------------------------------------------------
-    typedef RigidConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef RigidConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef boost::blank ConstraintSet;
-    typedef ConstraintModel Model;
-    typedef ConstraintData Data;
+    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
+    typedef ZeroConeJordanOperationTpl<Scalar, Options> JordanOperation;
+    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+
+    static constexpr int Size = Eigen::Dynamic;
+    static constexpr int SymmetricConeSize = JordanOperation::ConeSize;
+    static constexpr int SymmetricConeScalingSize = JordanOperation::ConeScalingSize;
 
     // --------------------------------------------------------------
-    // Traits for the algorithmic methods on current state
+    // Traits that are helper for Eigen types
     // --------------------------------------------------------------
-    // Elementary types
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> ResidualVectorType;
+    typedef Eigen::Matrix<Scalar, Size, Eigen::Dynamic, Options> JacobianMatrixType;
+    typedef Eigen::Matrix<Scalar, SymmetricConeSize, 1, Options> ConeVectorType;
+    typedef Eigen::Matrix<Scalar, SymmetricConeScalingSize, 1, Options> ConeScalingVectorType;
+
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> JacobianMatrixType;
+    typedef Eigen::Matrix<Scalar, 1, Eigen::Dynamic, Eigen::RowMajor> RowVectorXs;
+
     // Template to generate type
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType
@@ -115,14 +131,6 @@ namespace pinocchio
         InputMatrixPlain::Options>
         type;
     };
-
-    // -------------------------------
-    // Traits for holded Data
-    // -------------------------------
-    typedef VectorXs VectorConstraintSize;
-    typedef VectorXs ComplianceVectorType;
-    typedef ComplianceVectorType & ComplianceVectorTypeRef;
-    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
   };
 
   template<typename _Scalar, int _Options>
@@ -131,6 +139,7 @@ namespace pinocchio
   {
   };
 
+  // Helper to initialize the type before Binary kinematic
   template<typename Derived>
   struct RigidConstraintModelTyper
   {
@@ -148,7 +157,7 @@ namespace pinocchio
   };
 
   ///
-  ///  \brief Contact model structure containg all the info describing the rigid contact model
+  ///  \brief Contact model structure containing all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct PINOCCHIO_UNSUPPORTED_MESSAGE("The API will change towards more flexibility")
@@ -156,27 +165,47 @@ namespace pinocchio
   : RigidConstraintModelTyper<RigidConstraintModelTpl<_Scalar, _Options>>
   , BinaryKinematicsConstraintModelBase<RigidConstraintModelTpl<_Scalar, _Options>>
   {
-
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
-
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
     typedef RigidConstraintModelTpl Self;
     typedef RigidConstraintModelTyper<Self> Typer;
     typedef BinaryKinematicsConstraintModelBase<Self> Base;
+    typedef ConstraintModelCommonParameters<Self> BaseCommonParameters;
     typedef ConstraintModelBase<Self> RootBase;
 
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
+    typedef typename traits<Self>::ConstraintData ContactData;
+
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
+
+    static constexpr ConstraintSizeType constraint_size_type = traits<Self>::constraint_size_type;
+
+    static constexpr bool has_baumgarte_corrector = traits<Self>::has_baumgarte_corrector;
+
+    typedef typename traits<Self>::ConstraintSet ConstraintSet;
+    typedef typename traits<Self>::JordanOperation JordanOperation;
+    typedef typename traits<Self>::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
+
+    static constexpr int Size = traits<Self>::Size;
+    static constexpr int SymmetricConeSize = traits<Self>::SymmetricConeSize;
+    static constexpr int SymmetricConeScalingSize = traits<Self>::SymmetricConeScalingSize;
+
+    typedef typename traits<Self>::ResidualVectorType ResidualVectorType;
+    typedef typename traits<Self>::JacobianMatrixType JacobianMatrixType;
+    typedef typename traits<Self>::ConeVectorType ConeVectorType;
+    typedef typename traits<Self>::ConeScalingVectorType ConeScalingVectorType;
+
+    // Friendship ---------------------------------------------------
     template<typename NewScalar, int NewOptions>
     friend struct RigidConstraintModelTpl;
 
-    typedef RigidConstraintModelTpl ContactModel;
-    typedef RigidConstraintDataTpl<Scalar, Options> ContactData;
-    typedef RigidConstraintDataTpl<Scalar, Options> ConstraintData;
-
-    typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
-    typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
-    typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
-
+    // Base usage ---------------------------------------------------
+    // Usefull types ------------------------------------------------
     typedef SE3Tpl<Scalar, Options> SE3;
     typedef MotionTpl<Scalar, Options> Motion;
     typedef ForceTpl<Scalar, Options> Force;
@@ -187,16 +216,20 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
 
+    // Base usage ---------------------------------------------------
     using Base::base;
     using Base::base_common_parameters;
     using Base::getA1;
     using Base::getA2;
-
+    using RootBase::classname;
     using RootBase::derived;
-    using RootBase::maxResidualSize;
     using RootBase::residualSize;
     using typename RootBase::BooleanVector;
     using typename RootBase::EigenIndexVector;
+
+    // -------------------------------
+    // MEMBERS
+    // -------------------------------
 
     /// \brief Reference frame where the constraint is expressed (LOCAL_WORLD_ALIGNED or LOCAL)
     ReferenceFrame reference_frame;
@@ -212,27 +245,30 @@ namespace pinocchio
 
     EigenIndexVector loop_span_indexes;
 
-    using Base::joint1_id;
-    using Base::joint1_placement;
-    using Base::joint2_id;
-    using Base::joint2_placement;
-    using Typer::type;
-    // VectorConstraintSize desired_constraint_offset;
-    // VectorConstraintSize desired_constraint_velocity;
-    // VectorConstraintSize desired_constraint_acceleration;
+    /// Members from base
     using Base::colwise_joint1_sparsity;
     using Base::colwise_joint2_sparsity;
     using Base::colwise_span_indexes;
     using Base::colwise_sparsity;
     using Base::depth_joint1;
     using Base::depth_joint2;
+    using Base::joint1_id;
+    using Base::joint1_placement;
     using Base::joint1_span_indexes;
+    using Base::joint2_id;
+    using Base::joint2_placement;
     using Base::joint2_span_indexes;
     using Base::m_baumgarte_parameters;
     using Base::m_compliance;
     using Base::nv;
+    using Typer::type;
 
-  protected:
+    // -------------------------------
+    // METHODS SPECIFIC TO CLASS
+    // -------------------------------
+
+    // Constructors ------------------
+
     ///
     ///  \brief Default constructor
     ///
@@ -242,9 +278,8 @@ namespace pinocchio
     {
     }
 
-  public:
     ///
-    ///  \brief Contructor with from a given type, joint indexes and placements.
+    ///  \brief Constructor with from a given type, joint indexes and placements.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] model Model associated to the constraint.
@@ -276,7 +311,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type, joint1_id and placement.
+    ///  \brief Constructor with from a given type, joint1_id and placement.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -297,7 +332,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type and the joint ids.
+    ///  \brief Constructor with from a given type and the joint ids.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -316,7 +351,7 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Contructor with from a given type and .
+    ///  \brief Constructor with from a given type and .
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -335,42 +370,23 @@ namespace pinocchio
     {
     }
 
-    ///
-    /// \brief Create data storage associated to the constraint
-    ///
-    ConstraintData createDataImpl() const
-    {
-      return ConstraintData(*this);
-    }
+    // Operators ---------------------
 
-    /// \brief Returns the colwise sparsity associated with a given row
-    template<template<typename, int> class JointCollectionTpl>
-    const BooleanVector & getRowSparsityPatternImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+    /// \returns An expression of *this with the Scalar type casted to NewScalar.
+    template<typename NewScalar>
+    RigidConstraintModelTpl<NewScalar, Options> cast() const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return colwise_sparsity;
-    }
+      typedef RigidConstraintModelTpl<NewScalar, Options> ReturnType;
+      ReturnType res;
+      res.type = type;
+      Base::template cast<NewScalar>(res);
+      res.reference_frame = reference_frame;
+      res.desired_contact_placement = desired_contact_placement.template cast<NewScalar>();
+      res.desired_contact_velocity = desired_contact_velocity.template cast<NewScalar>();
+      res.desired_contact_acceleration = desired_contact_acceleration.template cast<NewScalar>();
+      res.loop_span_indexes = loop_span_indexes;
 
-    /// \brief Returns the vector of the indexes associated with a given row
-    template<template<typename, int> class JointCollectionTpl>
-    const EigenIndexVector & getRowIndexesImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::Index row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return colwise_span_indexes;
+      return res;
     }
 
     ///
@@ -378,7 +394,7 @@ namespace pinocchio
     ///
     /// \param[in] other Other RigidConstraintModelTpl to compare with.
     ///
-    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
+    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributes
     /// must be the same).
     ///
     template<int OtherOptions>
@@ -390,12 +406,12 @@ namespace pinocchio
     }
 
     ///
-    ///  \brief Oposite of the comparison operator.
+    ///  \brief Opposite of the comparison operator.
     ///
     /// \param[in] other Other RigidConstraintModelTpl to compare with.
     ///
     /// \returns false if the two *this is not equal to other (at least type, joint1_id or placement
-    /// attributs is different).
+    /// attributes is different).
     ///
     template<int OtherOptions>
     bool operator!=(const RigidConstraintModelTpl<Scalar, OtherOptions> & other) const
@@ -403,120 +419,7 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    /// \brief Evaluate the constraint values at the current state given by data and store the
-    /// results in cdata.
-    template<template<typename, int> class JointCollectionTpl>
-    void calcImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      RigidConstraintDataTpl<Scalar, Options> & cdata) const
-    {
-      PINOCCHIO_UNUSED_VARIABLE(model);
-
-      if (joint1_id > 0)
-        cdata.oMc1 = data.oMi[joint1_id] * joint1_placement;
-      else
-        cdata.oMc1 = joint1_placement;
-
-      if (joint2_id > 0)
-        cdata.oMc2 = data.oMi[joint2_id] * joint2_placement;
-      else
-        cdata.oMc2 = joint2_placement;
-
-      // Compute relative placement
-      cdata.c1Mc2 = cdata.oMc1.actInv(cdata.oMc2);
-    }
-
-    /// \brief Returns the constraint projector associated with joint 1.
-    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
-    /// the constraint associated with joint 1.
-    template<ReferenceFrame rf>
-    Matrix36
-    getA1Impl(const RigidConstraintDataTpl<Scalar, Options> & cdata, ReferenceFrameTag<rf>) const
-    {
-      Matrix36 res;
-      typedef typename SE3::Vector3 Vector3;
-
-      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
-      {
-#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
-  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
-  res.col(axis_id).noalias() = oM1.rotation().transpose() * v_tmp;
-
-        const SE3 & oM1 = cdata.oMc1;
-        Vector3 v_tmp;
-        res.template leftCols<3>() = oM1.rotation().transpose();
-        INTERNAL_LOOP(0, oM1.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(1, oM1.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(2, oM1.translation(), res.template rightCols<3>());
-
-#undef INTERNAL_LOOP
-      }
-      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
-      {
-#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
-  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
-  res.col(axis_id).noalias() = M1.rotation().transpose() * v_tmp;
-
-        const SE3 & M1 = this->joint1_placement;
-        Vector3 v_tmp;
-        res.template leftCols<3>() = M1.rotation().transpose();
-        INTERNAL_LOOP(0, M1.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(1, M1.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(2, M1.translation(), res.template rightCols<3>());
-
-#undef INTERNAL_LOOP
-      }
-
-      return res;
-    }
-
-    /// \brief Returns the constraint projector associated with joint 2.
-    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
-    /// the constraint associated with joint 2.
-    template<ReferenceFrame rf>
-    Matrix36
-    getA2Impl(const RigidConstraintDataTpl<Scalar, Options> & cdata, ReferenceFrameTag<rf>) const
-    {
-      Matrix36 res;
-      typedef typename SE3::Vector3 Vector3;
-
-      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
-      {
-#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
-  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
-  res.col(axis_id).noalias() = oM1.rotation().transpose() * v_tmp;
-
-        const SE3 & oM1 = cdata.oMc1;
-        const SE3 & oM2 = cdata.oMc2;
-        res.template leftCols<3>() = -oM1.rotation().transpose();
-        Vector3 v_tmp;
-        INTERNAL_LOOP(0, -oM2.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(1, -oM2.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(2, -oM2.translation(), res.template rightCols<3>());
-
-#undef INTERNAL_LOOP
-      }
-      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
-      {
-        const SE3 & j2Mc2 = this->joint2_placement;
-        const SE3 & c1Mc2 = cdata.c1Mc2;
-        const typename SE3::Matrix3 c1Rj2 = c1Mc2.rotation() * j2Mc2.rotation().transpose();
-        res.template leftCols<3>() = -c1Rj2;
-        Vector3 v_tmp;
-#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
-  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
-  res.col(axis_id).noalias() = -c1Rj2 * v_tmp;
-
-        INTERNAL_LOOP(0, j2Mc2.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(1, j2Mc2.translation(), res.template rightCols<3>());
-        INTERNAL_LOOP(2, j2Mc2.translation(), res.template rightCols<3>());
-
-#undef INTERNAL_LOOP
-      }
-
-      return res;
-    }
+    // Specific methods --------------
 
     ///
     /// @brief This function computes the spatial inertia associated with the constraint.
@@ -552,41 +455,6 @@ namespace pinocchio
     }
 
     template<
-      template<typename, int> class JointCollectionTpl,
-      typename Vector3Like,
-      typename Matrix6Like,
-      typename Matrix6LikeAllocator>
-    void appendCouplingConstraintInertiasImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const RigidConstraintDataTpl<Scalar, Options> & cdata,
-      const Eigen::MatrixBase<Vector3Like> & diagonal_constraint_inertia,
-      std::vector<Matrix6Like, Matrix6LikeAllocator> & inertias) const
-    {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(inertias.size(), size_t(model.njoints));
-      assert(
-        ((joint1_id > 0 && joint2_id == 0) || (joint1_id == 0 && joint2_id > 0))
-        && "The behavior is only defined for this context");
-
-      if (this->joint1_id != 0)
-      {
-        const SE3 & placement = this->joint1_placement;
-        inertias[this->joint1_id] +=
-          computeConstraintSpatialInertia(placement, diagonal_constraint_inertia);
-      }
-
-      if (this->joint2_id != 0)
-      {
-        const SE3 & placement = this->joint2_placement;
-        inertias[this->joint2_id] +=
-          computeConstraintSpatialInertia(placement, diagonal_constraint_inertia);
-      }
-    }
-
-    template<
       typename InputMatrix,
       typename OutputMatrix,
       template<typename, int> class JointCollectionTpl>
@@ -603,7 +471,7 @@ namespace pinocchio
 
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), maxResidualSize()); // We know it is constant
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize()); // We know it is constant
       res.setZero();
 
       //      const Eigen::Index constraint_size = size();
@@ -638,13 +506,124 @@ namespace pinocchio
       }
     }
 
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    // General -----------------------
+
+    /// \copydoc RootBase::classname
+    static std::string classnameImpl()
+    {
+      return std::string("DEPRECATED:ConstraintModel");
+    }
+
+    /// \copydoc RootBase::shortname
+    std::string shortnameImpl() const
+    {
+      return classname();
+    }
+
+    ///
+    /// \brief Create data storage associated to the constraint
+    ///
+    ConstraintData createDataImpl() const
+    {
+      return ConstraintData(*this);
+    }
+
+    // Sizes ------------------------------
+
+    /// \copydoc RootBase::residualSize
+    template<ConstraintSelectionType Sel>
+    int residualSizeImpl(ConstraintSelectionTag<Sel> sel) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(sel);
+      switch (type)
+      {
+      case CONTACT_3D:
+        return contact_dim<CONTACT_3D>::value;
+      case CONTACT_6D:
+        return contact_dim<CONTACT_6D>::value;
+      default:
+        return contact_dim<CONTACT_UNDEFINED>::value;
+      }
+      return -1;
+    }
+
+    // Methods for algorithms --------
+
+    /// \copydoc RootBase::set
+    ConstraintSet setImpl(const ConstraintData & cdata) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+      return ConstraintSet();
+    }
+
+    /// \brief Evaluate the constraint values at the current state given by data and store the
+    /// results in cdata.
+    template<template<typename, int> class JointCollectionTpl>
+    void calcImpl(
+      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      RigidConstraintDataTpl<Scalar, Options> & cdata) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(model);
+
+      if (joint1_id > 0)
+        cdata.oMc1 = data.oMi[joint1_id] * joint1_placement;
+      else
+        cdata.oMc1 = joint1_placement;
+
+      if (joint2_id > 0)
+        cdata.oMc2 = data.oMi[joint2_id] * joint2_placement;
+      else
+        cdata.oMc2 = joint2_placement;
+
+      // Compute relative placement
+      cdata.c1Mc2 = cdata.oMc1.actInv(cdata.oMc2);
+    }
+
+    /// \brief Returns the colwise sparsity associated with a given row
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    const BooleanVector & getRowSparsityPatternImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+      return colwise_sparsity;
+    }
+
+    /// \brief Returns the vector of the indexes associated with a given row
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    const EigenIndexVector & getRowIndexesImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+      return colwise_span_indexes;
+    }
+
     ///  \brief Evaluate the Jacobian associated to the constraint at the given state stored in data
     /// and cdata.  The results Jacobian is evaluated in the jacobian input/output matrix.
     /// \remarks This method assumes `calc` has been called on this contraint model.
-    template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename JacobianMatrix>
     void jacobianImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const RigidConstraintDataTpl<Scalar, Options> & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
     {
@@ -760,21 +739,26 @@ namespace pinocchio
       }
     }
 
+    /// NO jacobianMatrixProductImpl
+    /// NO jacobianTransposeMatrixProductImpl
+
     /// \brief Map the constraint forces (aka constraint Lagrange multipliers) to the forces
     /// supported by the joints.
     template<
+      int OtherOptions,
+      int ForceOptions,
       template<typename, int> class JointCollectionTpl,
       typename ForceLike,
       typename ForceAllocator>
     void mapConstraintForceToJointForcesImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const RigidConstraintDataTpl<Scalar, Options> & cdata,
       const Eigen::MatrixBase<ForceLike> & constraint_forces,
-      std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces) const
+      std::vector<ForceTpl<Scalar, ForceOptions>, ForceAllocator> & joint_forces) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), maxResidualSize());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
 
       assert(this->type == CONTACT_3D);
@@ -787,18 +771,20 @@ namespace pinocchio
 
     /// \brief Map the joint accelerations to constraint value
     template<
+      int OtherOptions,
+      int MotionOptions,
       template<typename, int> class JointCollectionTpl,
       typename MotionAllocator,
       typename VectorLike>
     void mapJointMotionsToConstraintMotionImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const RigidConstraintDataTpl<Scalar, Options> & cdata,
-      const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> & joint_accelerations,
+      const std::vector<MotionTpl<Scalar, MotionOptions>, MotionAllocator> & joint_accelerations,
       const Eigen::MatrixBase<VectorLike> & constraint_value) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_accelerations.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_value.rows(), maxResidualSize());
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_value.rows(), residualSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
 
       assert(this->type == CONTACT_3D);
@@ -828,33 +814,129 @@ namespace pinocchio
         constraint_value.const_cast_derived().setZero();
     }
 
-    int maxResidualSizeImpl() const
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename Vector3Like,
+      typename Matrix6Like,
+      typename Matrix6LikeAllocator>
+    void appendCouplingConstraintInertiasImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const RigidConstraintDataTpl<Scalar, Options> & cdata,
+      const Eigen::MatrixBase<Vector3Like> & diagonal_constraint_inertia,
+      std::vector<Matrix6Like, Matrix6LikeAllocator> & inertias) const
     {
-      switch (type)
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(inertias.size(), size_t(model.njoints));
+      assert(
+        ((joint1_id > 0 && joint2_id == 0) || (joint1_id == 0 && joint2_id > 0))
+        && "The behavior is only defined for this context");
+
+      if (this->joint1_id != 0)
       {
-      case CONTACT_3D:
-        return contact_dim<CONTACT_3D>::value;
-      case CONTACT_6D:
-        return contact_dim<CONTACT_6D>::value;
-      default:
-        return contact_dim<CONTACT_UNDEFINED>::value;
+        const SE3 & placement = this->joint1_placement;
+        inertias[this->joint1_id] +=
+          computeConstraintSpatialInertia(placement, diagonal_constraint_inertia);
       }
-      return -1;
+
+      if (this->joint2_id != 0)
+      {
+        const SE3 & placement = this->joint2_placement;
+        inertias[this->joint2_id] +=
+          computeConstraintSpatialInertia(placement, diagonal_constraint_inertia);
+      }
     }
 
-    /// \returns An expression of *this with the Scalar type casted to NewScalar.
-    template<typename NewScalar>
-    RigidConstraintModelTpl<NewScalar, Options> cast() const
+    /// \brief Returns the constraint projector associated with joint 1.
+    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
+    /// the constraint associated with joint 1.
+    template<ReferenceFrame rf>
+    Matrix36
+    getA1Impl(const RigidConstraintDataTpl<Scalar, Options> & cdata, ReferenceFrameTag<rf>) const
     {
-      typedef RigidConstraintModelTpl<NewScalar, Options> ReturnType;
-      ReturnType res;
-      res.type = type;
-      Base::template cast<NewScalar>(res);
-      res.reference_frame = reference_frame;
-      res.desired_contact_placement = desired_contact_placement.template cast<NewScalar>();
-      res.desired_contact_velocity = desired_contact_velocity.template cast<NewScalar>();
-      res.desired_contact_acceleration = desired_contact_acceleration.template cast<NewScalar>();
-      res.loop_span_indexes = loop_span_indexes;
+      Matrix36 res;
+      typedef typename SE3::Vector3 Vector3;
+
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      {
+#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
+  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
+  res.col(axis_id).noalias() = oM1.rotation().transpose() * v_tmp;
+
+        const SE3 & oM1 = cdata.oMc1;
+        Vector3 v_tmp;
+        res.template leftCols<3>() = oM1.rotation().transpose();
+        INTERNAL_LOOP(0, oM1.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(1, oM1.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(2, oM1.translation(), res.template rightCols<3>());
+
+#undef INTERNAL_LOOP
+      }
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      {
+#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
+  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
+  res.col(axis_id).noalias() = M1.rotation().transpose() * v_tmp;
+
+        const SE3 & M1 = this->joint1_placement;
+        Vector3 v_tmp;
+        res.template leftCols<3>() = M1.rotation().transpose();
+        INTERNAL_LOOP(0, M1.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(1, M1.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(2, M1.translation(), res.template rightCols<3>());
+
+#undef INTERNAL_LOOP
+      }
+
+      return res;
+    }
+
+    /// \brief Returns the constraint projector associated with joint 2.
+    /// This matrix transforms a spatial velocity expressed at the origin to the first component of
+    /// the constraint associated with joint 2.
+    template<ReferenceFrame rf>
+    Matrix36
+    getA2Impl(const RigidConstraintDataTpl<Scalar, Options> & cdata, ReferenceFrameTag<rf>) const
+    {
+      Matrix36 res;
+      typedef typename SE3::Vector3 Vector3;
+
+      if constexpr (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value)
+      {
+#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
+  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
+  res.col(axis_id).noalias() = oM1.rotation().transpose() * v_tmp;
+
+        const SE3 & oM1 = cdata.oMc1;
+        const SE3 & oM2 = cdata.oMc2;
+        res.template leftCols<3>() = -oM1.rotation().transpose();
+        Vector3 v_tmp;
+        INTERNAL_LOOP(0, -oM2.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(1, -oM2.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(2, -oM2.translation(), res.template rightCols<3>());
+
+#undef INTERNAL_LOOP
+      }
+      else if constexpr (std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
+      {
+        const SE3 & j2Mc2 = this->joint2_placement;
+        const SE3 & c1Mc2 = cdata.c1Mc2;
+        const typename SE3::Matrix3 c1Rj2 = c1Mc2.rotation() * j2Mc2.rotation().transpose();
+        res.template leftCols<3>() = -c1Rj2;
+        Vector3 v_tmp;
+#define INTERNAL_LOOP(axis_id, v3_in, res)                                                         \
+  CartesianAxis<axis_id>::cross(v3_in, v_tmp);                                                     \
+  res.col(axis_id).noalias() = -c1Rj2 * v_tmp;
+
+        INTERNAL_LOOP(0, j2Mc2.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(1, j2Mc2.translation(), res.template rightCols<3>());
+        INTERNAL_LOOP(2, j2Mc2.translation(), res.template rightCols<3>());
+
+#undef INTERNAL_LOOP
+      }
 
       return res;
     }
@@ -884,42 +966,23 @@ namespace pinocchio
   template<
     class ConstraintModel,
     class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator>
+    ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
   Eigen::Index getTotalConstraintResidualSize(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
+    ConstraintSelectionTag<Sel> sel = CurrentSelection())
   {
     Eigen::Index total_size = 0;
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
       const auto & constraint_model = helper::get_ref(constraint_models[k]);
-      const auto & constraint_data = helper::get_ref(constraint_datas[k]);
-      total_size += constraint_model.residualSize(constraint_data);
+      total_size += constraint_model.residualSize(sel);
     }
 
     return total_size;
   }
 
   ///
-  /// \brief Computes the sum of the sizes of the constraints contained in the input
-  /// `constraint_models` vector.
-  template<class ConstraintModel, class ConstraintModelAllocator>
-  Eigen::Index getTotalConstraintMaxResidualSize(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
-  {
-    Eigen::Index total_size = 0;
-    for (size_t k = 0; k < constraint_models.size(); ++k)
-    {
-      const auto & cmodel = helper::get_ref(constraint_models[k]);
-      total_size += cmodel.maxResidualSize();
-    }
-
-    return total_size;
-  }
-
-  ///
-  ///  \brief Contact model structure containg all the info describing the rigid contact model
+  ///  \brief Contact model structure containing all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct RigidConstraintDataTpl : ConstraintDataBase<RigidConstraintDataTpl<_Scalar, _Options>>
@@ -1053,10 +1116,10 @@ namespace pinocchio
     , da2_dq(Matrix6x::Zero(6, constraint_model.nv))
     , da2_dv(Matrix6x::Zero(6, constraint_model.nv))
     , da2_da(Matrix6x::Zero(6, constraint_model.nv))
-    , dvc_dq(MatrixX::Zero(constraint_model.maxResidualSize(), constraint_model.nv))
-    , dac_dq(MatrixX::Zero(constraint_model.maxResidualSize(), constraint_model.nv))
-    , dac_dv(MatrixX::Zero(constraint_model.maxResidualSize(), constraint_model.nv))
-    , dac_da(MatrixX::Zero(constraint_model.maxResidualSize(), constraint_model.nv))
+    , dvc_dq(MatrixX::Zero(constraint_model.residualSize(), constraint_model.nv))
+    , dac_dq(MatrixX::Zero(constraint_model.residualSize(), constraint_model.nv))
+    , dac_dv(MatrixX::Zero(constraint_model.residualSize(), constraint_model.nv))
+    , dac_da(MatrixX::Zero(constraint_model.residualSize(), constraint_model.nv))
     {
     }
 

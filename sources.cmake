@@ -57,9 +57,13 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/cone-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/full-space-cone.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/jordan-operation-helper.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/orthant-cone-jordan-operation.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/orthant-cone.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/second-order-cone-jordan-operation.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/set-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/sets.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/zero-cone-jordan-operation.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/zero-cone.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/jointwise-constraint-model-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hpp
@@ -350,12 +354,13 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/axis-label.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/cast.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/check.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-fix.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-helpers.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/file-io.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/helpers.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/openmp.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/promote-static-eval.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/reference.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/shared-ptr.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/size-in-bytes.hpp
@@ -489,6 +494,9 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/joint-configuration.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/model.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/proximal.txx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/admm-solver.txx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/clarabel-solver.txx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/pgs-solver.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/cholesky.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/rnea.txx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/jacobian.txx
@@ -540,6 +548,9 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
     ${PROJECT_SOURCE_DIR}/src/algorithm/joint-configuration.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/center-of-mass-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/proximal.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/admm-solver.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/clarabel-solver.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/pgs-solver.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/kinematics-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/constraints/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/model.cpp

@@ -19,6 +19,9 @@ namespace pinocchio
   template<typename Scalar>
   struct ConstraintSolverBaseTpl;
 
+  template<typename _Scalar>
+  struct ConstraintSolverResultBaseTpl;
+
   ///
   /// \brief Base struct for settings to pass to the solve method of a constraint solver.
   template<typename _Scalar>
@@ -90,12 +93,43 @@ namespace pinocchio
     bool stat_record;
   }; // struct ConstraintSolverSettingsBaseTpl
 
+  /// \brief Unsafe version of ConstraintSolverResultBaseTpl
+  template<typename _Scalar>
+  struct Unsafe<ConstraintSolverResultBaseTpl<_Scalar>>
+  {
+    typedef ConstraintSolverResultBaseTpl<_Scalar> SafeSelf;
+
+    explicit Unsafe(SafeSelf & self)
+    : self(self)
+    {
+    }
+
+    /// \brief Make the solution valid.
+    /// This is typically called by solvers when they are done with their computation.
+    /// This allows them to mark the result as valid.
+    void makeValid()
+    {
+      self.m_is_valid = true;
+    }
+
+  protected:
+    SafeSelf & self;
+  };
+
   ///
   /// \brief Base struct for result of a constraint solver.
   template<typename _Scalar>
   struct ConstraintSolverResultBaseTpl
   {
     typedef _Scalar Scalar;
+    typedef ConstraintSolverResultBaseTpl Self;
+
+    /// \brief Cast this class to its unsafe version.
+    Unsafe<Self> unsafe()
+    {
+      return Unsafe<Self>(*this);
+    }
+    friend struct Unsafe<Self>;
 
     /// \brief Default constructor.
     ConstraintSolverResultBaseTpl()
@@ -148,13 +182,6 @@ namespace pinocchio
     /// If it is, it represents the result of a meaningful computation.
     /// Otherwise, it does not.
     bool m_is_valid;
-
-    /// \brief Make the solution valid.
-    /// This function should only be used by the class or friends of the class.
-    void makeValid()
-    {
-      m_is_valid = true;
-    }
 
   }; // struct ConstraintSolverResultBaseTpl
 

@@ -34,7 +34,7 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    data.contact_chol.resize(model, data, constraint_models, constraint_datas);
+    data.contact_chol.rebuild(model, data, constraint_models, constraint_datas);
     data.primal_dual_contact_solution.resize(data.contact_chol.size());
     data.primal_rhs_contact.resize(data.contact_chol.constraintDim());
 
@@ -297,7 +297,7 @@ namespace pinocchio
     {
       const RigidConstraintModel & contact_model = constraint_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
-      const int contact_dim = contact_model.residualSize(contact_data);
+      const int contact_dim = contact_model.residualSize();
 
       const typename RigidConstraintModel::BaumgarteCorrectorParameters & corrector =
         contact_model.m_baumgarte_parameters;
@@ -497,7 +497,7 @@ namespace pinocchio
       const RigidConstraintModel & contact_model = constraint_models[contact_id];
       RigidConstraintData & contact_data = contact_datas[contact_id];
       typename RigidConstraintData::Force & fext = contact_data.contact_force;
-      const int contact_dim = contact_model.residualSize(contact_data);
+      const int contact_dim = contact_model.residualSize();
 
       switch (contact_model.type)
       {

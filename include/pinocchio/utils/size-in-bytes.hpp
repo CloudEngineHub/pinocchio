@@ -108,7 +108,7 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#include "pinocchio/utils/eigen.hpp"
+#include "pinocchio/utils/promote-static-eval.hpp"
 #include "pinocchio/utils/std-array.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 

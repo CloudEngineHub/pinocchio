@@ -197,14 +197,6 @@ namespace pinocchio
     }
 
     template<typename MatrixLike>
-    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(blocks);
-      PINOCCHIO_THROW(
-        std::runtime_error, "updateBarrierHessian not implemented for DelassusOperatorSparseTpl.");
-    }
-
-    template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       PINOCCHIO_THROW_IF(
@@ -234,13 +226,18 @@ namespace pinocchio
 
     template<typename MatrixIn, typename MatrixOut>
     void applyOnTheRight(
-      const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res_) const
+      const Eigen::MatrixBase<MatrixIn> & x,
+      const Eigen::MatrixBase<MatrixOut> & res_,
+      bool with_damping = true) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), size());
       MatrixOut & res = res_.const_cast_derived();
       res.noalias() = m_delassus_matrix * x;
       res.array() += m_compliance.array() * x.array();
-      res.array() += m_damping.array() * x.array();
+      if (with_damping)
+      {
+        res.array() += m_damping.array() * x.array();
+      }
     }
 
     Eigen::Index size() const

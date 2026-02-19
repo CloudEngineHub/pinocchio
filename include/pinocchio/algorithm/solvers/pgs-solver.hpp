@@ -23,22 +23,23 @@ namespace pinocchio
   // see below for definitions
   namespace internal
   {
-    template<typename Scalar>
+    template<typename Scalar, int Options>
     struct PGSSolverWorkspaceTpl;
   }
 
   /// \brief Projected Gauss Siedel solver
-  template<typename _Scalar>
+  template<typename _Scalar, int _Options>
   struct PGSConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
     typedef ConstraintSolverBaseTpl<Scalar> Base;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
 
-    typedef internal::PGSSolverWorkspaceTpl<Scalar> PGSSolverWorkspace;
+    typedef internal::PGSSolverWorkspaceTpl<Scalar, Options> PGSSolverWorkspace;
     typedef PGSSolverSettingsTpl<Scalar> PGSSolverSettings;
-    typedef PGSSolverResultTpl<Scalar> PGSSolverResult;
+    typedef PGSSolverResultTpl<Scalar, Options> PGSSolverResult;
     typedef PGSSolverStatsTpl<Scalar> PGSSolverStats;
 
     /// \brief Default constructor.
@@ -235,18 +236,16 @@ namespace pinocchio
   /// \brief Struct describing the solution of the PGS constraint solver
   /// after calling the `solve` method.
   /// Also contains the warmstart of the solution to the constraint problem.
-  template<typename _Scalar>
+  template<typename _Scalar, int _Options>
   struct PGSSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
     typedef ConstraintSolverResultBaseTpl<Scalar> Base;
 
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
-
-    // make PGS solver a friend so that it can use `makeValid`
-    friend struct PGSConstraintSolverTpl<Scalar>;
 
     using Base::isValid;
 
@@ -402,10 +401,11 @@ namespace pinocchio
   {
     ///
     /// \brief Workspace for the PGS constraint solver.
-    template<typename _Scalar>
+    template<typename _Scalar, int _Options>
     struct PGSSolverWorkspaceTpl
     {
       typedef _Scalar Scalar;
+      static constexpr int Options = _Options;
       typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
       typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
@@ -478,5 +478,9 @@ namespace pinocchio
 } // namespace pinocchio
 
 #include "pinocchio/algorithm/solvers/pgs-solver.hxx"
+
+#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+  #include "pinocchio/algorithm/solvers/pgs-solver.txx"
+#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
 
 #endif // ifndef __pinocchio_algorithm_solvers_pgs_solver_hpp__

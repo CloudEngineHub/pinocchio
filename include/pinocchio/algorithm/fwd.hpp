@@ -18,6 +18,10 @@ namespace pinocchio
   typedef ContactCholeskyDecompositionTpl<context::Scalar, context::Options>
     ContactCholeskyDecomposition;
 
+  template<typename ContactCholeskyDecomposition>
+  struct DelassusCholeskyExpressionTpl;
+  typedef DelassusCholeskyExpressionTpl<ContactCholeskyDecomposition> DelassusCholeskyExpression;
+
   template<typename Scalar, int Options>
   struct RigidConstraintModelTpl;
   template<typename Scalar, int Options>
@@ -39,6 +43,14 @@ namespace pinocchio
     class SparseCholeskyDecomposition = Eigen::SimplicialLLT<Eigen::SparseMatrix<Scalar, Options>>>
   struct DelassusOperatorSparseTpl;
   typedef DelassusOperatorSparseTpl<context::Scalar, context::Options> DelassusOperatorSparse;
+
+  template<
+    typename Scalar,
+    int Options,
+    template<typename, int> class JointCollectionTpl,
+    typename ConstraintModel,
+    template<typename T> class Holder = std::reference_wrapper>
+  struct DelassusOperatorRigidBodySystemsTpl;
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_fwd_hpp__

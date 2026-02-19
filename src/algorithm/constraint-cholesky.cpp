@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2022-2025 INRIA
+// Copyright (c) 2022-2026 INRIA
 //
 
 #include "pinocchio/spatial/fwd.hpp"
@@ -25,7 +25,7 @@ namespace pinocchio
     ContactCholeskyDecompositionTpl<context::Scalar, context::Options>;
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::resize<
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::rebuild<
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,

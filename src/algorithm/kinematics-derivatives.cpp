@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2022 INRIA
+// Copyright (c) 2022-2026 INRIA
 //
 
 #include "pinocchio/algorithm/kinematics-derivatives.hpp"
@@ -160,8 +160,39 @@ namespace pinocchio
     const ReferenceFrame,
     Tensor<context::Scalar, 3, context::Options> &);
 
+  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  getFrameKinematicHessian<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const context::Model &,
+    const context::Data &,
+    const JointIndex,
+    const context::SE3 &,
+    const ReferenceFrame,
+    Tensor<context::Scalar, 3, context::Options> &);
+
+  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
+  getFrameKinematicHessian<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+    const context::Model &,
+    const context::Data &,
+    const FrameIndex,
+    const ReferenceFrame,
+    Tensor<context::Scalar, 3, context::Options> &);
+
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI
     Tensor<context::Scalar, 3, context::Options>
     getJointKinematicHessian<context::Scalar, context::Options, JointCollectionDefaultTpl>(
       const context::Model &, const context::Data &, const JointIndex, const ReferenceFrame);
+
+  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI
+    Tensor<context::Scalar, 3, context::Options>
+    getFrameKinematicHessian<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+      const context::Model &,
+      const context::Data &,
+      const JointIndex,
+      const context::SE3 &,
+      const ReferenceFrame);
+
+  template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI
+    Tensor<context::Scalar, 3, context::Options>
+    getFrameKinematicHessian<context::Scalar, context::Options, JointCollectionDefaultTpl>(
+      const context::Model &, const context::Data &, const FrameIndex, const ReferenceFrame);
 } // namespace pinocchio

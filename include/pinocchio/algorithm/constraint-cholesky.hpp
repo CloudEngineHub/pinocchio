@@ -38,9 +38,6 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & vec);
   } // namespace details
 
-  template<typename _ContactCholeskyDecomposition>
-  struct DelassusCholeskyExpressionTpl;
-
   ///
   ///  \brief Contact Cholesky decomposition structure. This structure allows
   ///        to compute in a efficient and parsimonious way the Cholesky decomposition
@@ -99,7 +96,7 @@ namespace pinocchio
     ///
     /// \brief Default constructor
     ///
-    ContactCholeskyDecompositionTpl();
+    explicit ContactCholeskyDecompositionTpl(const Scalar min_damping_value = Scalar(0));
 
     ///
     /// \brief Constructor from a model.
@@ -110,7 +107,8 @@ namespace pinocchio
     template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
     explicit ContactCholeskyDecompositionTpl(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
-      const DataTpl<S1, O1, JointCollectionTpl> & data);
+      const DataTpl<S1, O1, JointCollectionTpl> & data,
+      const Scalar min_damping_value = Scalar(0));
 
     ///
     /// \brief Constructor from a model and a collection of ConstraintModel objects.
@@ -133,7 +131,8 @@ namespace pinocchio
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       const DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const Scalar min_damping_value = Scalar(0));
 
     ///
     /// \brief Copy constructor
@@ -171,7 +170,7 @@ namespace pinocchio
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas);
 
     ///
-    ///  \brief Internal memory allocation.
+    ///  \brief Rebuild internal memory from a given model and constraints.
     ///
     /// \param[in] model Model of the kinematic tree
     /// \param[in] constraint_models Vector of constraint models
@@ -187,7 +186,7 @@ namespace pinocchio
       class ConstraintModelAllocator,
       class ConstraintData,
       class ConstraintDataAllocator>
-    void resize(
+    void rebuild(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       const DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -223,6 +222,41 @@ namespace pinocchio
     template<typename MatrixType>
     void getJMinv(const Eigen::MatrixBase<MatrixType> & res_) const;
 
+    ///
+    /// \brief Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix
+    ///        related to the system mass matrix and the Jacobians of the contact patches contained
+    ///        in the vector of onstraintModel named constraint_models.
+    ///
+    /// \param[in] model Model of the dynamical system
+    /// \param[in] data Data related to model containing the computed mass matrix and the Jacobian
+    /// of the kinematic tree
+    /// \param[in] constraint_models Vector containing the contact models (which
+    /// frame is in contact and the type of contact: ponctual, 6D rigid, etc.)
+    /// \param[in] constraint_datas Vector containing the contact data related to the
+    /// constraint_models.
+    /// \param[in] apply_on_the_right compute quantities related to applyOnTheRight.
+    /// \param[in] solve_in_place compute quantities related to solveInPlace.
+    ///
+    /// \remarks The mass matrix and the Jacobians of the dynamical system should have been computed
+    /// first. This can be achieved by simply calling pinocchio::crba.
+    /// This method assumes that the constrained datas are up-to-date.
+    ///
+    template<
+      typename S1,
+      int O1,
+      template<typename, int> class JointCollectionTpl,
+      class ConstraintModel,
+      class ConstraintModelAllocator,
+      class ConstraintData,
+      class ConstraintDataAllocator>
+    void compute(
+      const ModelTpl<S1, O1, JointCollectionTpl> & model,
+      DataTpl<S1, O1, JointCollectionTpl> & data,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      bool apply_on_the_right = true,
+      bool solve_in_place = true);
+
     PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
     PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     ///
@@ -257,7 +291,7 @@ namespace pinocchio
       DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const S1 mu = S1(0.));
+      const S1 mu);
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
@@ -505,6 +539,9 @@ namespace pinocchio
 
     /// \brief Check if the decomposition is dirty
     bool decomposition_dirty;
+
+    /// \brief Minimum damping value that uninitialized damping is set at.
+    Scalar min_damping_value;
   };
 
 } // namespace pinocchio

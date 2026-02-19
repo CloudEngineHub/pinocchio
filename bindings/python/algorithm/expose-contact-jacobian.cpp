@@ -22,7 +22,7 @@ namespace pinocchio
       const ConstraintModel & constraint_model,
       const ConstraintData & constraint_data)
     {
-      context::MatrixXs J(constraint_model.residualSize(constraint_data), model.nv);
+      context::MatrixXs J(constraint_model.residualSize(), model.nv);
       J.setZero();
       getConstraintJacobian(model, data, constraint_model, constraint_data, J);
       return J;
@@ -36,7 +36,7 @@ namespace pinocchio
       const ConstraintDataVector & constraint_datas)
     {
       const Eigen::Index constraint_residual_size =
-        getTotalConstraintResidualSize(constraint_models, constraint_datas);
+        getTotalConstraintResidualSize(constraint_models);
       context::MatrixXs J(constraint_residual_size, model.nv);
       J.setZero();
       getConstraintsJacobian(model, data, constraint_models, constraint_datas, J);

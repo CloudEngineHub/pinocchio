@@ -22,18 +22,56 @@ namespace pinocchio
   {
     namespace bp = boost::python;
 
-    // BinaryKinematicsConstraintModelBasePythonVisitor
+    // -----------------------------------------------------------------
+    // Declaration of all inheritance visitor we want to apply
+    // i.e. level of CRTP where member or methods are declared
+    // -----------------------------------------------------------------
+    template<class T, class = void>
+    struct BinaryKinematicsConstraintModelBasePythonVisitor;
+
+    template<class T, class = void>
+    struct PointConstraintModelBasePythonVisitor;
+
+    // -----------------------------------------------------------------
+    // The visitor that apply all the possible inheritance
+    // -----------------------------------------------------------------
     template<class T>
+    struct ConstraintModelInheritancePythonVisitor
+    : public bp::def_visitor<ConstraintModelInheritancePythonVisitor<T>>
+    {
+    public:
+      template<class PyClass>
+      void visit(PyClass & cl) const
+      {
+        // Apply all possible inheritance
+        cl.def(BinaryKinematicsConstraintModelBasePythonVisitor<T>())
+          .def(PointConstraintModelBasePythonVisitor<T>());
+      }
+    };
+
+    // -----------------------------------------------------------------
+    // Actual implementation of visitors when there is inheritence
+    // -----------------------------------------------------------------
+
+    template<class T, class> // Default: do nothing
     struct BinaryKinematicsConstraintModelBasePythonVisitor
     : public bp::def_visitor<BinaryKinematicsConstraintModelBasePythonVisitor<T>>
     {
-      typedef typename T::Scalar Scalar;
-      typedef typename T::ConstraintSet ConstraintSet;
+    public:
+      template<class PyClass>
+      void visit(PyClass & /*cl*/) const
+      {
+      }
+    };
+
+    template<class T> // SFINAE specialization discard except when inherit
+    struct BinaryKinematicsConstraintModelBasePythonVisitor<T, enable_if_binarykinematic_model_t<T>>
+    : public bp::def_visitor<BinaryKinematicsConstraintModelBasePythonVisitor<T>>
+    {
       typedef typename T::ConstraintData ConstraintData;
       typedef typename T::MatrixSize6 MatrixSize6;
       typedef typename T::SE3 SE3;
       typedef context::Model Model;
-      typedef context::Data Data;
 
     public:
       template<class PyClass>
@@ -42,20 +80,22 @@ namespace pinocchio
         cl.def(bp::init<const Model &, JointIndex, const SE3 &, JointIndex, const SE3 &>(
                  (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"),
                   bp::arg("joint1_placement"), bp::arg("joint2_id"), bp::arg("joint2_placement")),
-                 "Contructor from given joint index and placement for the two joints "
+                 "Constructor from given joint index and placement for the two joints "
                  "implied in the constraint."))
           .def(bp::init<const Model &, JointIndex>(
             (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id")),
-            "Contructor from given joint index of the first joint "
+            "Constructor from given joint index of the first joint "
             "implied in the constraint."))
           .def(bp::init<const Model &, JointIndex, const SE3 &>(
             (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint1_placement")),
-            "Contructor from given joint index and placement of the first joint "
+            "Constructor from given joint index and placement of the first joint "
             "implied in the constraint."))
           .def(bp::init<const Model &, JointIndex, JointIndex>(
             (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint2_id")),
-            "Contructor from given joint index for the two joints "
+            "Constructor from given joint index for the two joints "
             "implied in the constraint."))
+          .def(bp::init<const Model &>(
+            (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
           .def(
             "getA1", &getA1, bp::args("self", "constraint_data", "reference_frame"),
             "Returns the constraint projector associated with joint 1. "
@@ -90,7 +130,10 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY(
             T, colwise_sparsity, "Sparsity pattern associated to the constraint.")
           .PINOCCHIO_ADD_PROPERTY(
-            T, colwise_span_indexes, "Indexes of the columns spanned by the constraints.");
+            T, colwise_span_indexes, "Indexes of the columns spanned by the constraints.")
+          .PINOCCHIO_ADD_PROPERTY(T, nv, "Dimension of the model velocity.")
+          .PINOCCHIO_ADD_PROPERTY(T, depth_joint1, "Depth of the kinematic tree for joint1.")
+          .PINOCCHIO_ADD_PROPERTY(T, depth_joint2, "Depth of the kinematic tree for joint2.");
       }
 
       static MatrixSize6
@@ -126,18 +169,21 @@ namespace pinocchio
       }
     }; // BinaryKinematicsConstraintModelBasePythonVisitor
 
-    // PointConstraintModelBasePythonVisitor
-    template<class T>
+    template<class T, class> // Default: do nothing
     struct PointConstraintModelBasePythonVisitor
     : public bp::def_visitor<PointConstraintModelBasePythonVisitor<T>>
     {
-      typedef typename T::Scalar Scalar;
-      typedef typename T::ConstraintSet ConstraintSet;
-      typedef typename T::ConstraintData ConstraintData;
-      typedef typename T::MatrixSize6 MatrixSize6;
-      typedef context::Model Model;
-      typedef context::Data Data;
+    public:
+      template<class PyClass>
+      void visit(PyClass & /*cl*/) const
+      {
+      }
+    };
 
+    template<class T> // SFINAE specialization discard except when inherit
+    struct PointConstraintModelBasePythonVisitor<T, enable_if_point_model_t<T>>
+    : public bp::def_visitor<PointConstraintModelBasePythonVisitor<T>>
+    {
     public:
       template<class PyClass>
       void visit(PyClass & cl) const
@@ -154,7 +200,8 @@ namespace pinocchio
         const context::SE3 & placement,
         const context::Vector3s & diagonal_constraint_inertia)
       {
-        return self.computeConstraintSpatialInertia(placement, diagonal_constraint_inertia);
+        return self.computeConstraintSpatialInertia(
+          placement, diagonal_constraint_inertia.asDiagonal());
       }
     }; // PointConstraintModelBasePythonVisitor
 

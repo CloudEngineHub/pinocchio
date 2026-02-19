@@ -11,6 +11,18 @@
 
 namespace pinocchio
 {
+  // --------------------------------------------------------------
+  // Declaration
+  // --------------------------------------------------------------
+  template<typename Derived>
+  struct PointConstraintDataBase;
+
+  // --------------------------------------------------------------
+  // Helpers
+  // --------------------------------------------------------------
+  template<typename Derived>
+  using enable_if_point_data_t =
+    std::enable_if_t<std::is_base_of_v<PointConstraintDataBase<Derived>, Derived>>;
 
   ///
   /// \brief Data structure associated with PointConstraint
@@ -18,32 +30,32 @@ namespace pinocchio
   template<typename Derived>
   struct PointConstraintDataBase : ConstraintDataBase<Derived>
   {
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
+    typedef PointConstraintDataBase Self;
+    typedef ConstraintDataBase<Derived> Base;
+
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Derived>::ConstraintModel ConstraintModel;
+    typedef typename traits<Derived>::ConstraintData ConstraintData;
 
     typedef typename traits<Derived>::Scalar Scalar;
     static constexpr int Options = traits<Derived>::Options;
 
-    typedef typename traits<Derived>::ConstraintModel ConstraintModel;
-    typedef typename traits<Derived>::ConstraintData ConstraintData;
-    typedef ConstraintDataBase<Derived> Base;
-
+    // Useful types ------------------------------------------------
     typedef SE3Tpl<Scalar, Options> SE3;
     typedef MotionTpl<Scalar, Options> Motion;
     typedef ForceTpl<Scalar, Options> Force;
     typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
+    typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
     typedef Eigen::Matrix<Scalar, 3, 6, Options> Matrix36;
+    typedef Matrix36 MatrixSize6;
     typedef Eigen::Matrix<Scalar, 3, 6, Eigen::RowMajor> RowMatrix36;
-    typedef std::vector<Matrix6> VectorOfMatrix6;
     typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> Matrix6x;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixX;
-
-    //    VectorOfMatrix6 extended_motion_propagators_joint1;
-    //    VectorOfMatrix6 lambdas_joint1;
-    //    VectorOfMatrix6 extended_motion_propagators_joint2;
-
-    //    Matrix6x dv1_dq, da1_dq, da1_dv, da1_da;
-    //    Matrix6x dv2_dq, da2_dq, da2_dv, da2_da;
-    //    MatrixX dvc_dq, dac_dq, dac_dv, dac_da;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -67,20 +79,6 @@ namespace pinocchio
 
     /// \brief Default constructor
     PointConstraintDataBase()
-    {
-    }
-
-    /// \brief Copy constructor
-    PointConstraintDataBase(const PointConstraintDataBase & other)
-    {
-      *this = other;
-    }
-
-    /// \brief Constructor from a given ConstraintModel
-    ///
-    /// \param[in] constraint_model input constraint model
-    ///
-    explicit PointConstraintDataBase(const ConstraintModel & constraint_model)
     : constraint_force(Vector3::Zero())
     , oMc1(SE3::Identity())
     , oMc2(SE3::Identity())
@@ -89,41 +87,39 @@ namespace pinocchio
     , constraint_velocity_error(Vector3::Zero())
     , constraint_acceleration_error(Vector3::Zero())
     , constraint_acceleration_biais_term(Vector3::Zero())
-    //    , extended_motion_propagators_joint1(constraint_model.depth_joint1, Matrix6::Zero())
-    //    , lambdas_joint1(constraint_model.depth_joint1, Matrix6::Zero())
-    //    , extended_motion_propagators_joint2(constraint_model.depth_joint2, Matrix6::Zero())
-    //    , dv1_dq(6, constraint_model.nv)
-    //    , da1_dq(6, constraint_model.nv)
-    //    , da1_dv(6, constraint_model.nv)
-    //    , da1_da(6, constraint_model.nv)
-    //    , dv2_dq(6, constraint_model.nv)
-    //    , da2_dq(6, constraint_model.nv)
-    //    , da2_dv(6, constraint_model.nv)
-    //    , da2_da(6, constraint_model.nv)
-    //    , dvc_dq(constraint_model.size(), constraint_model.nv)
-    //    , dac_dq(constraint_model.size(), constraint_model.nv)
-    //    , dac_dv(constraint_model.size(), constraint_model.nv)
-    //    , dac_da(constraint_model.size(), constraint_model.nv)
+    , A1_world(Matrix36::Zero())
+    , A2_world(Matrix36::Zero())
+    , A_world(Matrix36::Zero())
+    , A1_local(Matrix36::Zero())
+    , A2_local(Matrix36::Zero())
+    , A_local(Matrix36::Zero())
     {
-      PINOCCHIO_UNUSED_VARIABLE(constraint_model);
+    }
+
+    /// \brief Constructor from a given ConstraintModel
+    ///
+    /// \param[in] cmodel input constraint model
+    ///
+    explicit PointConstraintDataBase(const ConstraintModel & cmodel)
+    : constraint_force(Vector3::Zero())
+    , oMc1(SE3::Identity())
+    , oMc2(SE3::Identity())
+    , c1Mc2(SE3::Identity())
+    , constraint_position_error(Vector3::Zero())
+    , constraint_velocity_error(Vector3::Zero())
+    , constraint_acceleration_error(Vector3::Zero())
+    , constraint_acceleration_biais_term(Vector3::Zero())
+    , A1_world(Matrix36::Zero())
+    , A2_world(Matrix36::Zero())
+    , A_world(Matrix36::Zero())
+    , A1_local(Matrix36::Zero())
+    , A2_local(Matrix36::Zero())
+    , A_local(Matrix36::Zero())
+    {
+      PINOCCHIO_UNUSED_VARIABLE(cmodel);
     }
 
     // Operators ---------------------
-
-    /// \brief Assignment operator
-    PointConstraintDataBase & operator=(const PointConstraintDataBase & other)
-    {
-      constraint_force = other.constraint_force;
-      oMc1 = other.oMc1;
-      oMc2 = other.oMc2;
-      c1Mc2 = other.c1Mc2;
-      constraint_position_error = other.constraint_position_error;
-      constraint_velocity_error = other.constraint_velocity_error;
-      constraint_acceleration_error = other.constraint_acceleration_error;
-      constraint_acceleration_biais_term = other.constraint_acceleration_biais_term;
-
-      return *this;
-    }
 
     /// \brief Comparison operator
     bool operator==(const PointConstraintDataBase & other) const
@@ -133,19 +129,9 @@ namespace pinocchio
              && constraint_velocity_error == other.constraint_velocity_error
              && constraint_acceleration_error == other.constraint_acceleration_error
              && constraint_acceleration_biais_term == other.constraint_acceleration_biais_term
-        //      && extended_motion_propagators_joint1 == other.extended_motion_propagators_joint1
-        //      && lambdas_joint1 == other.lambdas_joint1
-        //      && extended_motion_propagators_joint2 == other.extended_motion_propagators_joint2
-        //
-        //      && dv1_dq == other.dv1_dq && da1_dq == other.da1_dq && da1_dv == other.da1_dv
-        //      && da1_da == other.da1_da
-        //        //
-        //      && dv2_dq == other.dv2_dq && da2_dq == other.da2_dq && da2_dv == other.da2_dv
-        //      && da2_da == other.da2_da
-        //        //
-        //      && dvc_dq == other.dvc_dq && dac_dq == other.dac_dq && dac_dv == other.dac_dv
-        //      && dac_da == other.dac_da
-        ;
+             && A1_world == other.A1_world && A2_world == other.A2_world && A_world == other.A_world
+             && A1_local == other.A1_local && A2_local == other.A2_local
+             && A_local == other.A_local;
     }
 
     /// \brief Comparison operator
@@ -190,7 +176,7 @@ namespace pinocchio
     Matrix36 A1_local;
     Matrix36 A2_local;
     Matrix36 A_local; // A1 + A2
-  };
+  }; // struct PointConstraintDataBase
 
 } // namespace pinocchio
 

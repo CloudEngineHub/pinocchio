@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024-2025 INRIA
+// Copyright (c) 2024-2026 INRIA
 //
 
 #ifndef __pinocchio_algorithm_delassus_operator_cholesky_expression_hpp__
@@ -21,7 +21,7 @@ namespace pinocchio
     typedef typename ContactCholeskyDecomposition::Vector Vector;
 
     typedef typename ContactCholeskyDecomposition::EigenStorageVector EigenStorageVector;
-    typedef const typename EigenStorageVector::MapType getDampingReturnType;
+    typedef const typename EigenStorageVector::ConstMapType getDampingReturnType;
   };
 
   // TODO(jcarpent): change const_cast usage.
@@ -48,15 +48,19 @@ namespace pinocchio
     static constexpr int RowsAtCompileTime =
       traits<DelassusCholeskyExpressionTpl>::RowsAtCompileTime;
 
+    /// \brief Default constructor from a cholesky decomposition.
     explicit DelassusCholeskyExpressionTpl(ContactCholeskyDecomposition & self)
     : Base()
     , self(self)
     {
     }
 
+    /// \brief Evaluates the product Delassus * x and stores it in res.
     template<typename MatrixIn, typename MatrixOut>
     void applyOnTheRight(
-      const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res) const
+      const Eigen::MatrixBase<MatrixIn> & x,
+      const Eigen::MatrixBase<MatrixOut> & res,
+      bool with_damping = true) const
     {
 
       PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), self.constraintDim());
@@ -64,7 +68,15 @@ namespace pinocchio
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), x.cols());
 
       res.const_cast_derived().noalias() = self.delassus_block * x;
-      res.const_cast_derived().noalias() += self.sum_compliance_damping.asDiagonal() * x;
+      if (with_damping)
+      {
+        res.const_cast_derived().noalias() += self.sum_compliance_damping.asDiagonal() * x;
+      }
+      else
+      {
+        // take only compliance into account
+        res.const_cast_derived().noalias() += self.compliance.asDiagonal() * x;
+      }
 
       // const auto U1 = self.U.topLeftCorner(self.constraintDim(), self.constraintDim());
       // {
@@ -86,15 +98,6 @@ namespace pinocchio
       // }
     }
 
-    template<typename MatrixLike>
-    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(blocks);
-      PINOCCHIO_THROW(
-        std::runtime_error,
-        "updateBarrierHessian not implemented for DelassusCholeskyExpressionTpl.");
-    }
-
     ///
     /// \brief Update the decomposition after a call to updateDamping or updateCompliance.
     ///
@@ -105,11 +108,15 @@ namespace pinocchio
       self.computeDelassusCholeskyDecomposition();
     }
 
+    /// \brief Returns true if updateDecomposition() needs to be called in order to call
+    /// solveInPlace.
     bool isDirty() const
     {
       return self.isDirty();
     }
 
+    /// \brief solveInPlace operation returning the resultsof the inverse of the Delassus operator
+    /// times the input x.
     template<typename MatrixDerived>
     void solveInPlace(const Eigen::MatrixBase<MatrixDerived> & x) const
     {
@@ -136,6 +143,7 @@ namespace pinocchio
       PINOCCHIO_EIGEN_MALLOC_ALLOWED();
     }
 
+    /// \brief Same as solveInPlace but stores the result in res.
     template<typename MatrixDerivedIn, typename MatrixDerivedOut>
     void solve(
       const Eigen::MatrixBase<MatrixDerivedIn> & x,
@@ -169,17 +177,46 @@ namespace pinocchio
       return self;
     }
 
-    Matrix matrix(bool enforce_symmetry = false) const
+    /// \brief Returns the matrix resulting from the decomposition.
+    Matrix matrix(bool enforce_symmetry = false, bool with_damping = true) const
     {
-      return self.getInverseOperationalSpaceInertiaMatrix(enforce_symmetry);
+      Matrix res = self.getInverseOperationalSpaceInertiaMatrix(enforce_symmetry);
+      if (!with_damping)
+      {
+        res.diagonal() -= getDamping();
+      }
+      return res;
+    }
+
+    /// \brief Fill the input matrix with the matrix resulting from the decomposition.
+    template<typename MatrixType>
+    void matrix(
+      const Eigen::MatrixBase<MatrixType> & mat,
+      bool enforce_symmetry = false,
+      bool with_damping = true) const
+    {
+      self.getInverseOperationalSpaceInertiaMatrix(mat.const_cast_derived(), enforce_symmetry);
+      if (!with_damping)
+      {
+        mat.const_cast_derived().diagonal() -= getDamping();
+      }
+    }
+
+    /// \brief Returns the matrix resulting from the decomposition.
+    /// The numerical damping is NOT taken into account here.
+    Matrix undampedMatrix(bool enforce_symmetry = false) const
+    {
+      Matrix res = matrix(enforce_symmetry, false /*no damping*/);
+      return res;
     }
 
     /// \brief Fill the input matrix with the matrix resulting from the decomposition
+    /// The numerical damping is NOT taken into account here.
     template<typename MatrixType>
-    void matrix(const Eigen::MatrixBase<MatrixType> & mat, bool enforce_symmetry = false) const
+    void
+    undampedMatrix(const Eigen::MatrixBase<MatrixType> & mat, bool enforce_symmetry = false) const
     {
-      return self.getInverseOperationalSpaceInertiaMatrix(
-        mat.const_cast_derived(), enforce_symmetry);
+      matrix(mat, enforce_symmetry, false /*no damping*/);
     }
 
     ///
@@ -259,14 +296,20 @@ namespace pinocchio
       const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mu);
     }
 
+    /// \brief Returns the number of rows/cols of the Delassus.
+    /// The delassus represents a size() x size() linear operator.
     Eigen::Index size() const
     {
       return self.constraintDim();
     }
+
+    /// \brief Returns the number of rows of the Delassus.
     Eigen::Index rows() const
     {
       return size();
     }
+
+    /// \brief Returns the number of cols of the Delassus.
     Eigen::Index cols() const
     {
       return size();

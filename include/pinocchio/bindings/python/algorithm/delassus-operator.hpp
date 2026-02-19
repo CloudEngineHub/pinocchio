@@ -1,9 +1,9 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2024-2026 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_delssus_operator_hpp__
-#define __pinocchio_python_algorithm_delssus_operator_hpp__
+#ifndef __pinocchio_python_algorithm_delassus_operator_hpp__
+#define __pinocchio_python_algorithm_delassus_operator_hpp__
 
 #include <eigenpy/memory.hpp>
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
@@ -22,6 +22,7 @@ namespace pinocchio
       typedef typename DelassusOperator::Scalar Scalar;
       typedef context::MatrixXs Matrix;
       typedef typename DelassusOperator::Vector Vector;
+      typedef typename traits<DelassusOperator>::getDampingReturnType getDampingReturnType;
 
       template<class PyClass>
       void visit(PyClass & cl) const
@@ -77,13 +78,15 @@ namespace pinocchio
 
           .def(
             "getDamping",
-            +[](const DelassusOperator & self) -> context::VectorXs { return self.getDamping(); },
+            +[](const DelassusOperator & self) -> std::remove_reference_t<getDampingReturnType> {
+              return self.getDamping();
+            },
             bp::arg("self"),
             "Returns the value of the damping terms contained in the Delassus operator")
 
           .def(
-            "matrix", (Matrix(DelassusOperator::*)(bool) const)&DelassusOperator::matrix,
-            (bp::arg("self"), bp::arg("enforce_symmetry") = false),
+            "matrix", (Matrix(DelassusOperator::*)(bool, bool) const)&DelassusOperator::matrix,
+            (bp::arg("self"), bp::arg("enforce_symmetry") = false, bp::arg("with_damping") = true),
             "Returns the Delassus expression as a dense matrix.")
           .def(
             "inverse", &DelassusOperator::inverse, bp::arg("self"),
@@ -100,4 +103,4 @@ namespace pinocchio
   } // namespace python
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_python_algorithm_delssus_operator_hpp__
+#endif // ifndef __pinocchio_python_algorithm_delassus_operator_hpp__

@@ -89,7 +89,7 @@ namespace pinocchio
       res.setZero();
     }
 
-  }; // ZeroConeTpl
+  }; // struct ZeroConeTpl
 
 } // namespace pinocchio
 

@@ -85,6 +85,7 @@ namespace pinocchio
     Scalar Kd;
 
   }; // struct BaumgarteCorrectorParametersTpl
+
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_constraints_baumgarte_corrector_parameters_hpp__

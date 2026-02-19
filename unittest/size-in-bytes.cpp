@@ -1,20 +1,14 @@
 //
-// Copyright (c) 2025 INRIA
+// Copyright (c) 2025-2026 INRIA
 //
 
 #include "pinocchio/utils/size-in-bytes.hpp"
 
 #include <cstddef>
 #include <iostream>
+
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
-
-template<typename Matrix>
-Eigen::Map<Matrix> make_map(const Eigen::PlainObjectBase<Matrix> & _mat)
-{
-  auto & mat = _mat.const_cast_derived();
-  return {mat.data(), mat.rows(), mat.cols()};
-}
 
 using namespace pinocchio;
 
@@ -73,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_eigen_matrix)
 BOOST_AUTO_TEST_CASE(test_eigen_map)
 {
   const Eigen::Matrix3d mat;
-  const auto mat_map = make_map(mat);
+  const auto mat_map = make_default_map(mat);
   BOOST_CHECK(sizeInBytes(mat_map) == sizeInBytes(mat));
 }
 

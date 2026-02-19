@@ -43,7 +43,6 @@ class TestContactInverseDynamics(TestCase):
             contact_model = pin.PointContactConstraintModel(
                 model, frame.parentJoint, frame.placement
             )
-            contact_model.compliance[:] = 0
             contact_model.setFriction(0.4)
 
             contact_models_vec.append(contact_model)
@@ -51,7 +50,7 @@ class TestContactInverseDynamics(TestCase):
 
         constraint_size = 0
         for cm, cd in zip(contact_models_vec, contact_datas_vec):
-            constraint_size += cm.residualSize(cd)
+            constraint_size += cm.residualSize()
 
         dt = 1e-3
         constraint_correction = np.zeros(constraint_size)

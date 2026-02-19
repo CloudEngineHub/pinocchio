@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2025 INRIA
+// Copyright (c) 202-2026 INRIA
 //
 
 #include <iostream>
@@ -157,6 +157,118 @@ BOOST_AUTO_TEST_CASE(matrix_stack_default)
   }
 }
 
+BOOST_AUTO_TEST_CASE(matrix_stack_from_matrix_info)
+{
+  // Zero block allocation
+  {
+    const std::vector<MatrixInfo> matrix_infos;
+    const MatrixXsStack matrix_stack(matrix_infos);
+
+    BOOST_CHECK(matrix_stack.empty());
+  }
+
+  // Single block allocation
+  {
+    const Eigen::Index rows = 10, cols = 20;
+    const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
+
+    const MatrixXsStack matrix_stack(matrix_infos);
+
+    BOOST_CHECK(!matrix_stack.empty());
+    BOOST_CHECK(matrix_stack.back().rows() == rows);
+    BOOST_CHECK(matrix_stack.back().cols() == cols);
+    BOOST_CHECK(matrix_stack.size() == 1);
+  }
+
+  // Multiple block allocation
+  {
+    const size_t num_blocks = 10;
+    const Eigen::Index rows = 10, cols = 20;
+    std::vector<MatrixInfo> matrix_infos(num_blocks);
+
+    for (const auto & block_info : matrix_infos)
+    {
+      BOOST_CHECK(!block_info.isValid());
+    }
+
+    for (auto & block_info : matrix_infos)
+      block_info = {rows, cols};
+
+    const MatrixXsStack matrix_stack(matrix_infos);
+
+    BOOST_CHECK(!matrix_stack.empty());
+    BOOST_CHECK(matrix_stack.size() == num_blocks);
+
+    for (const auto & map : matrix_stack)
+    {
+      BOOST_CHECK(map.rows() == rows);
+      BOOST_CHECK(map.cols() == cols);
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(matrix_stack_move_constructor)
+{
+  const Eigen::Index rows = 10, cols = 20;
+  const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
+
+  const MatrixXsStack matrix_stack(matrix_infos);
+  const MatrixXs map_copy = matrix_stack.back();
+
+  const MatrixXsStack matrix_stack_move(std::move(matrix_stack));
+  BOOST_CHECK(matrix_stack_move.back() == map_copy);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_stack_move_assignment_operator)
+{
+  const Eigen::Index rows = 10, cols = 20;
+  const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
+
+  MatrixXsStack matrix_stack(matrix_infos);
+  matrix_stack.back().setIdentity();
+  const MatrixXs map_copy = matrix_stack.back();
+
+  MatrixXsStack matrix_stack_move(matrix_infos);
+  matrix_stack_move.back().setZero();
+
+  BOOST_CHECK(matrix_stack != matrix_stack_move);
+
+  // Call move assignment operator
+  matrix_stack_move = std::move(matrix_stack);
+  BOOST_CHECK(matrix_stack_move.back() == map_copy);
+}
+
+BOOST_AUTO_TEST_CASE(matrix_stack_rebuild)
+{
+  const Eigen::Index rows1 = 10, cols1 = 20;
+  const std::vector<MatrixInfo> matrix_infos1 = {{rows1, cols1}};
+
+  MatrixXsStack matrix_stack1(matrix_infos1);
+  const void * matrix_stack1_data_ptr = matrix_stack1.data();
+  matrix_stack1.back().setIdentity();
+
+  const Eigen::Index rows2 = 20, cols2 = 40;
+  const std::vector<MatrixInfo> matrix_infos2 = {{rows2, cols2}};
+
+  MatrixXsStack matrix_stack2(matrix_infos2);
+  const void * matrix_stack2_data_ptr = matrix_stack2.data();
+  BOOST_CHECK(matrix_stack2 != matrix_stack1);
+  BOOST_CHECK(matrix_stack2.back().rows() == rows2);
+  BOOST_CHECK(matrix_stack2.back().cols() == cols2);
+
+  matrix_stack2.rebuild(matrix_infos1);
+  matrix_stack2.back().setIdentity();
+  BOOST_CHECK(matrix_stack2.data() == matrix_stack2_data_ptr);
+  BOOST_CHECK(matrix_stack2.back().rows() == rows1);
+  BOOST_CHECK(matrix_stack2.back().cols() == cols1);
+  BOOST_CHECK(matrix_stack2.back() == matrix_stack1.back());
+
+  matrix_stack1.rebuild(matrix_infos2);
+  BOOST_CHECK(matrix_stack1.data() != matrix_stack1_data_ptr); // new allocation
+  BOOST_CHECK(matrix_stack1.back().rows() == rows2);
+  BOOST_CHECK(matrix_stack1.back().cols() == cols2);
+}
+
 BOOST_AUTO_TEST_CASE(matrix_stack_clear)
 {
   MatrixXsStack matrix_stack(100);
@@ -208,7 +320,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_apply)
 
 BOOST_AUTO_TEST_CASE(matrix_stack_no_malloc)
 {
-  constexpr auto matrix_size = 16;
+  constexpr auto matrix_size = 36;
   const size_t stack_size = 100;
   MatrixXsStack matrix_stack(stack_size, matrix_size);
 
@@ -321,6 +433,23 @@ BOOST_AUTO_TEST_CASE(matrix_stack_product)
     VectorXd resd = diag.asDiagonal() * xds[i];
     BOOST_CHECK(resd == expected_yds[i]);
   }
+}
+
+BOOST_AUTO_TEST_CASE(matrix_stack_empty_matrix)
+{
+  MatrixXsStack matrix_stack;
+  matrix_stack.push_back(3, 3);
+  matrix_stack.push_back(0, 0); // check matrix stack can hold 0x0 matrices
+  matrix_stack.push_back(4, 3);
+
+  BOOST_CHECK(matrix_stack[0].rows() == 3);
+  BOOST_CHECK(matrix_stack[0].cols() == 3);
+
+  BOOST_CHECK(matrix_stack[1].rows() == 0);
+  BOOST_CHECK(matrix_stack[1].cols() == 0);
+
+  BOOST_CHECK(matrix_stack[2].rows() == 4);
+  BOOST_CHECK(matrix_stack[2].cols() == 3);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

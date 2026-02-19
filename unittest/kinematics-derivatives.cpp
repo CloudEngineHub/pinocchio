@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2017-2018 CNRS
-// Copyright (c) 2018-2025 INRIA
+// Copyright (c) 2018-2026 INRIA
 //
 
 #include <iostream>
@@ -8,6 +8,7 @@
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
+#include "pinocchio/algorithm/frames.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/kinematics-derivatives.hpp"
@@ -1111,7 +1112,103 @@ BOOST_AUTO_TEST_CASE(test_kinematics_hessians)
   }
 }
 
-BOOST_AUTO_TEST_CASE(test_joint_0)
+BOOST_AUTO_TEST_CASE(test_kinematics_hessians_with_placement)
+{
+  using namespace Eigen;
+  using namespace pinocchio;
+
+  Model model;
+  buildModels::humanoidRandom(model, true);
+
+  Data data(model), data_ref(model), data_plus(model);
+
+  model.lowerPositionLimit.head<3>().fill(-1.);
+  model.upperPositionLimit.head<3>().fill(1.);
+  VectorXd q = randomConfiguration(model);
+
+  const Model::JointIndex joint_id = model.existJointName("rarm2_joint")
+                                       ? model.getJointId("rarm2_joint")
+                                       : (Model::Index)(model.njoints - 1);
+
+  computeJointJacobians(model, data, q);
+  computeJointKinematicHessians(model, data);
+
+  const SE3 frame_placement = SE3::Random();
+
+  const double eps = 1e-8;
+  Data::Matrix6x J_ref(6, model.nv), J_plus(6, model.nv);
+  J_ref.setZero();
+  J_plus.setZero();
+
+  computeJointJacobians(model, data_ref, q);
+  VectorXd v_plus(VectorXd::Zero(model.nv));
+
+  const Eigen::Index outer_offset = model.nv * 6;
+
+  // // WORLD
+  getFrameJacobian(model, data_ref, joint_id, frame_placement, WORLD, J_ref);
+  Data::Tensor3x kinematic_hessian_world =
+    getFrameKinematicHessian(model, data, joint_id, frame_placement, WORLD);
+  for (Eigen::Index k = 0; k < model.nv; ++k)
+  {
+    v_plus[k] = eps;
+    const VectorXd q_plus = integrate(model, q, v_plus);
+    computeJointJacobians(model, data_plus, q_plus);
+    J_plus.setZero();
+    getFrameJacobian(model, data_plus, joint_id, frame_placement, WORLD, J_plus);
+
+    Data::Matrix6x dJ_dq_ref = (J_plus - J_ref) / eps;
+    Eigen::Map<Data::Matrix6x> dJ_dq(
+      kinematic_hessian_world.data() + k * outer_offset, 6, model.nv);
+
+    BOOST_CHECK((dJ_dq_ref - dJ_dq).isZero(sqrt(eps)));
+    v_plus[k] = 0.;
+  }
+
+  // LOCAL_WORLD_ALIGNED
+  computeJointJacobians(model, data_ref, q);
+  getFrameJacobian(model, data_ref, joint_id, frame_placement, LOCAL_WORLD_ALIGNED, J_ref);
+  Data::Tensor3x kinematic_hessian_local_world_aligned =
+    getFrameKinematicHessian(model, data, joint_id, frame_placement, LOCAL_WORLD_ALIGNED);
+  for (Eigen::Index k = 0; k < model.nv; ++k)
+  {
+    v_plus[k] = eps;
+    const VectorXd q_plus = integrate(model, q, v_plus);
+    computeJointJacobians(model, data_plus, q_plus);
+    J_plus.setZero();
+    getFrameJacobian(model, data_plus, joint_id, frame_placement, LOCAL_WORLD_ALIGNED, J_plus);
+
+    Data::Matrix6x dJ_dq_ref = (J_plus - J_ref) / eps;
+    Eigen::Map<Data::Matrix6x> dJ_dq(
+      kinematic_hessian_local_world_aligned.data() + k * outer_offset, 6, model.nv);
+
+    BOOST_CHECK((dJ_dq_ref - dJ_dq).isZero(sqrt(eps)));
+    v_plus[k] = 0.;
+  }
+
+  // LOCAL
+  computeJointJacobians(model, data_ref, q);
+  getFrameJacobian(model, data_ref, joint_id, frame_placement, LOCAL, J_ref);
+  Data::Tensor3x kinematic_hessian_local =
+    getFrameKinematicHessian(model, data, joint_id, frame_placement, LOCAL);
+  for (Eigen::Index k = 0; k < model.nv; ++k)
+  {
+    v_plus[k] = eps;
+    const VectorXd q_plus = integrate(model, q, v_plus);
+    computeJointJacobians(model, data_plus, q_plus);
+    J_plus.setZero();
+    getFrameJacobian(model, data_plus, joint_id, frame_placement, LOCAL, J_plus);
+
+    Data::Matrix6x dJ_dq_ref = (J_plus - J_ref) / eps;
+    Eigen::Map<Data::Matrix6x> dJ_dq(
+      kinematic_hessian_local.data() + k * outer_offset, 6, model.nv);
+
+    BOOST_CHECK((dJ_dq_ref - dJ_dq).isZero(sqrt(eps)));
+    v_plus[k] = 0.;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(test_kinematics_hessians_joint_0)
 {
   using namespace Eigen;
   using namespace pinocchio;

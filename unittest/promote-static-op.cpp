@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "pinocchio/utils/eigen.hpp"
+#include "pinocchio/utils/promote-static-eval.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

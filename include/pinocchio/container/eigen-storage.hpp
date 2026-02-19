@@ -122,12 +122,28 @@ namespace pinocchio
     {
     }
 
-    /// \brief Move constructor
-    EigenStorageTpl(EigenStorageTpl && other) = default;
+    /// \brief Move constructor.
+    EigenStorageTpl(EigenStorageTpl && other)
+    : m_storage(std::move(other.m_storage))
+    , m_map(m_storage.data(), other.m_map.rows(), other.m_map.cols())
+    , m_const_map(m_storage.data(), other.m_map.rows(), other.m_map.cols())
+    {
+    }
 
+    /// \brief Copy assignment operator.
     EigenStorageTpl & operator=(const EigenStorageTpl & other)
     {
       m_storage = other.m_storage.head(other.m_map.size());
+      new (&m_map) MapType(m_storage.data(), other.m_map.rows(), other.m_map.cols());
+      new (&m_const_map) MapType(m_storage.data(), other.m_map.rows(), other.m_map.cols());
+
+      return *this;
+    }
+
+    /// \brief Move assignment operator.
+    EigenStorageTpl & operator=(EigenStorageTpl && other)
+    {
+      m_storage = std::move(other.m_storage);
       new (&m_map) MapType(m_storage.data(), other.m_map.rows(), other.m_map.cols());
       new (&m_const_map) MapType(m_storage.data(), other.m_map.rows(), other.m_map.cols());
 

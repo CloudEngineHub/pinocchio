@@ -332,7 +332,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
 
   Eigen::Index constraint_size = 0;
   for (size_t k = 0; k < contact_models.size(); ++k)
-    constraint_size += contact_models[k].maxResidualSize();
+    constraint_size += contact_models[k].residualSize();
   Eigen::MatrixXd J_ref(constraint_size, model.nv);
   J_ref.setZero();
   Data::Matrix6x Jtmp = Data::Matrix6x::Zero(6, model.nv);

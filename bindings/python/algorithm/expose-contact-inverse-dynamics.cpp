@@ -29,8 +29,7 @@ namespace pinocchio
       ProximalSettingsTpl<Scalar> & settings,
       bool solve_ncp)
     {
-      const Eigen::Index problem_size =
-        getTotalConstraintResidualSize(contact_models, contact_datas);
+      const Eigen::Index problem_size = getTotalConstraintResidualSize(contact_models);
       VectorXs lambda_sol = lambda_guess ? lambda_guess.get() : VectorXs::Zero(problem_size);
 
       const bool has_converged = computeInverseDynamicsConstraintForces(
@@ -52,8 +51,7 @@ namespace pinocchio
       const boost::optional<VectorXs> & lambda_guess = boost::none,
       bool solve_ncp = true)
     {
-      const Eigen::Index problem_size =
-        getTotalConstraintResidualSize(contact_models, contact_datas);
+      const Eigen::Index problem_size = getTotalConstraintResidualSize(contact_models);
       VectorXs lambda_sol = lambda_guess ? lambda_guess.get() : VectorXs::Zero(problem_size);
 
       const bool has_converged = contactInverseDynamics(

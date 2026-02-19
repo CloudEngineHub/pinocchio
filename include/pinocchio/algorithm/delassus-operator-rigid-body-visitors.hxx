@@ -5,7 +5,8 @@
 #ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_visitors_hxx__
 #define __pinocchio_algorithm_delassus_operator_linear_complexity_visitors_hxx__
 
-#include "pinocchio/utils/eigen.hpp"
+#include "pinocchio/utils/promote-static-eval.hpp"
+#include "pinocchio/math/matrix.hpp"
 
 #define PROMOTE_STATIC_EVAL(expression) promote_static_eval<0>(expression)
 // #define PROMOTE_STATIC_EVAL(expression) expression
@@ -71,6 +72,7 @@ namespace pinocchio
         // Account for the rotor inertia contribution
         jdata_augmented.StU() += data.joint_apparent_inertia[joint_i];
 
+        enforceSymmetry(jdata_augmented.StU());
         ::pinocchio::matrix_inversion(jdata_augmented.StU(), jdata_augmented.Dinv());
 
         DO_NOT_PROMOTE_STATIC_EVAL(jdata_augmented.UDinv().noalias()) =

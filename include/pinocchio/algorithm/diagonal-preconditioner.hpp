@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2025 INRIA
+// Copyright (c) 2025-2026 INRIA
 //
 
 #ifndef __pinocchio_algorithm_diagonal_preconditioner_hpp__
@@ -25,6 +25,9 @@ namespace pinocchio
   struct DiagonalPreconditionerTpl : PreconditionerBase<DiagonalPreconditionerTpl<VectorLike>>
   {
 
+    typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(VectorLike) Vector;
+    typedef typename Vector::Scalar Scalar;
+
     /// \brief Default constructor takes a vector.
     /// @param diagonal Vector composing the diagonal of the preconditioner
     template<typename InputVector>
@@ -32,7 +35,6 @@ namespace pinocchio
     : m_diagonal(diagonal)
     , m_squared_diagonal(diagonal)
     {
-      typedef typename VectorLike::Scalar Scalar;
       PINOCCHIO_CHECK_INPUT_ARGUMENT((diagonal.array() >= Scalar(0)).all());
       m_squared_diagonal.array() *= diagonal.array();
     }
@@ -40,8 +42,8 @@ namespace pinocchio
     /// @brief Default constructor from a given size.
     /// @param size Size of the preconditioner
     explicit DiagonalPreconditionerTpl(const Eigen::Index size)
-    : m_diagonal(VectorLike::Ones(size))
-    , m_squared_diagonal(VectorLike::Ones(size))
+    : m_diagonal(Vector::Ones(size))
+    , m_squared_diagonal(Vector::Ones(size))
     {
     }
 
@@ -160,8 +162,8 @@ namespace pinocchio
     }
 
   protected:
-    VectorLike m_diagonal;
-    VectorLike m_squared_diagonal;
+    Vector m_diagonal;
+    Vector m_squared_diagonal;
 
   }; // struct DiagonalPreconditionerTpl
 

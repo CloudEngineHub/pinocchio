@@ -38,7 +38,7 @@ struct TestBoxTpl
       constraint_datas.push_back(cm.createData());
     }
 
-    const Eigen::Index constraint_size = getTotalConstraintMaxResidualSize(constraint_models);
+    const Eigen::Index constraint_size = getTotalConstraintResidualSize(constraint_models);
     primal_solution = dual_solution = dual_solution_sparse = Eigen::VectorXd::Zero(constraint_size);
   }
 
@@ -64,7 +64,7 @@ struct TestBoxTpl
     // cholesky of the Delassus matrix
     crba(model, data, q0, Convention::WORLD);
     ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-    chol.resize(model, data, constraint_models, constraint_datas);
+    chol.rebuild(model, data, constraint_models, constraint_datas);
     chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
     const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix();
@@ -560,7 +560,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   data.q_in = q0;
   calc(model, data, constraint_models, constraint_datas);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, data, constraint_models, constraint_datas);
+  chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
@@ -568,8 +568,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   const auto & G = delassus_matrix_plain;
   //    std::cout << "G:\n" << delassus_matrix_plain << std::endl;
 
-  // Here we jnow that dry_friction_free_flyer is of constant size
-  Eigen::MatrixXd constraint_jacobian(dry_friction_free_flyer.maxResidualSize(), model.nv);
+  Eigen::MatrixXd constraint_jacobian(dry_friction_free_flyer.residualSize(), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -667,6 +666,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
   std::vector<ConstraintData> constraint_datas;
 
   ConstraintModel joint_limit_constraint_model(model, ConstraintModel::JointIndexVector(1, 1));
+  joint_limit_constraint_model.makeSelectionFilteredByLimitProximity(q0);
   constraint_models.push_back(joint_limit_constraint_model);
 
   for (const auto & cm : constraint_models)
@@ -684,14 +684,14 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, data, constraint_models, constraint_datas);
+  chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(cdata), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -704,8 +704,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
     Eigen::VectorXd preconditioner_vec(Eigen::VectorXd::Ones(g_tilde_against_lower_bound.size()));
 
     ADMMConstraintSolver admm_solver(std::size_t(delassus_matrix_plain.rows()));
@@ -742,8 +742,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -813,6 +813,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
   ConstraintModel::JointIndexVector active_joints = {joint_id_x, joint_id_y, joint_id_z};
 
   ConstraintModel joint_limit_constraint_model(model, active_joints);
+  joint_limit_constraint_model.makeSelectionFilteredByLimitProximity(q0);
   constraint_models.push_back(joint_limit_constraint_model);
 
   for (const auto & cm : constraint_models)
@@ -830,14 +831,14 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, data, constraint_models, constraint_datas);
+  chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(cdata), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -847,8 +848,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -893,8 +894,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -964,6 +965,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
   ConstraintModel::JointIndexVector active_joints = {joint_id_x, joint_id_y, joint_id_z};
 
   ConstraintModel joint_limit_constraint_model(model, active_joints);
+  joint_limit_constraint_model.makeSelectionFilteredByLimitProximity(q0);
   constraint_models.push_back(joint_limit_constraint_model);
 
   for (const auto & cm : constraint_models)
@@ -981,14 +983,14 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, data, constraint_models, constraint_datas);
+  chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(cdata), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -998,8 +1000,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -1044,8 +1046,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -1106,6 +1108,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
   std::vector<ConstraintData> constraint_datas;
 
   ConstraintModel joint_limit_constraint_model(model, ConstraintModel::JointIndexVector(1, 1));
+  joint_limit_constraint_model.makeSelectionFilteredByLimitProximity(q0);
   constraint_models.push_back(joint_limit_constraint_model);
 
   for (const auto & cm : constraint_models)
@@ -1123,14 +1126,14 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, data, constraint_models, constraint_datas);
+  chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(cdata), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -1140,8 +1143,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -1182,8 +1185,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -1244,6 +1247,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
   std::vector<ConstraintData> constraint_datas;
 
   ConstraintModel joint_limit_constraint_model(model, ConstraintModel::JointIndexVector(1, 1));
+  joint_limit_constraint_model.makeSelectionFilteredByLimitProximity(q0);
   constraint_models.push_back(joint_limit_constraint_model);
 
   for (const auto & cm : constraint_models)
@@ -1261,14 +1265,14 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, data, constraint_models, constraint_datas);
+  chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(cdata), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -1278,8 +1282,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -1319,8 +1323,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -1384,6 +1388,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
   std::vector<ConstraintData> constraint_datas;
 
   ConstraintModel joint_limit_constraint_model(model, ConstraintModel::JointIndexVector(1, 1));
+  joint_limit_constraint_model.makeSelectionFilteredByLimitProximity(q0);
   constraint_models.push_back(joint_limit_constraint_model);
 
   for (const auto & cm : constraint_models)
@@ -1401,14 +1406,14 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
   ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
-  chol.resize(model, data, constraint_models, constraint_datas);
+  chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   auto G_expression = chol.getDelassusCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
-  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(cdata), model.nv);
+  Eigen::MatrixXd constraint_jacobian(cmodel.residualSize(), model.nv);
   constraint_jacobian.setZero();
   getConstraintsJacobian(model, data, constraint_models, constraint_datas, constraint_jacobian);
 
@@ -1418,8 +1423,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -1462,8 +1467,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize(cdata));
+    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);

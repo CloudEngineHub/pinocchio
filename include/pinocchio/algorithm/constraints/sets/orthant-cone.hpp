@@ -95,4 +95,5 @@ namespace pinocchio
   }; // struct NonNegativeOrthantConeTpl
 
 } // namespace pinocchio
+
 #endif // ifndef __pinocchio_algorithm_constraints_sets_orthant_cone_hpp__

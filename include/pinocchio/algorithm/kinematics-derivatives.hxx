@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2017-2020 CNRS
-// Copyright (c) 2018-2025 INRIA
+// Copyright (c) 2018-2026 INRIA
 //
 
 #ifndef __pinocchio_algorithm_kinematics_derivatives_hxx__
@@ -1178,6 +1178,21 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const JointIndex joint_id,
+    const ReferenceFrame reference_frame,
+    Tensor<Scalar, 3, Options> & kinematic_hessian)
+  {
+    typedef SE3Tpl<Scalar, Options> SE3;
+    const SE3 identity_placement = SE3::Identity();
+    getFrameKinematicHessian(
+      model, data, joint_id, identity_placement, reference_frame, kinematic_hessian);
+  }
+
+  template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+  void getFrameKinematicHessian(
+    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const JointIndex joint_id,
+    const SE3Tpl<Scalar, Options> & frame_placement,
     const ReferenceFrame rf,
     Tensor<Scalar, 3, Options> & kinematic_hessian)
   {
@@ -1257,6 +1272,7 @@ namespace pinocchio
     case LOCAL_WORLD_ALIGNED: {
       typedef MotionRef<const typename Data::Matrix6x::ConstColXpr> MotionColRef;
       const SE3 & oMlast = data.oMi[joint_id];
+      const SE3 oMframe = oMlast * frame_placement;
 
       for (size_t i = 0; i < supporting_indexes.size(); ++i)
       {
@@ -1280,7 +1296,7 @@ namespace pinocchio
           MotionOut m_out(vec_out);
 
           m_out.linear() =
-            -(S1.linear() - oMlast.translation().cross(S1.angular())).cross(S2.angular());
+            -(S1.linear() - oMframe.translation().cross(S1.angular())).cross(S2.angular());
         }
 
         // Take into account parent indexes of the current joint motion subspace
@@ -1299,8 +1315,8 @@ namespace pinocchio
 
           vec_out = vec_in;
           m_out.linear() -=
-            (S1.linear() - oMlast.translation().cross(S1.angular())).cross(S2.angular())
-            + oMlast.translation().cross(S1xS2.angular());
+            (S1.linear() - oMframe.translation().cross(S1.angular())).cross(S2.angular())
+            + oMframe.translation().cross(S1xS2.angular());
         }
 
         // case: outer_row_id == inner_row_id
@@ -1310,7 +1326,7 @@ namespace pinocchio
           MotionOut m_out(vec_out);
 
           m_out.linear() =
-            -(S1.linear() - oMlast.translation().cross(S1.angular())).cross(S1.angular());
+            -(S1.linear() - oMframe.translation().cross(S1.angular())).cross(S1.angular());
         }
 
         for (size_t j = i + 1; j < supporting_indexes.size(); ++j)
@@ -1328,14 +1344,15 @@ namespace pinocchio
 
           vec_out = vec_in;
           m_out.linear() -=
-            (S1.linear() - oMlast.translation().cross(S1.angular())).cross(S2.angular())
-            + oMlast.translation().cross(S1xS2.angular());
+            (S1.linear() - oMframe.translation().cross(S1.angular())).cross(S2.angular())
+            + oMframe.translation().cross(S1xS2.angular());
         }
       }
       break;
     }
     case LOCAL: {
       const SE3 & oMlast = data.oMi[joint_id];
+      const SE3 oMframe = oMlast * frame_placement;
 
       for (IndexVector::const_reverse_iterator rit = supporting_indexes.rbegin();
            rit != supporting_indexes.rend(); ++rit)
@@ -1358,7 +1375,7 @@ namespace pinocchio
             kinematic_hessian.data() + outer_row_id * slice_matrix_size + subspace_idx * 6);
           MotionOut m_out(vec_out);
 
-          m_out = oMlast.actInv(m_in);
+          m_out = oMframe.actInv(m_in);
         }
 
         IndexVector::const_reverse_iterator inner_rit = rit;
@@ -1375,7 +1392,7 @@ namespace pinocchio
             kinematic_hessian.data() + outer_row_id * slice_matrix_size + inner_row_id * 6);
           MotionOut m_out(vec_out);
 
-          m_out = oMlast.actInv(m_in);
+          m_out = oMframe.actInv(m_in);
         }
       }
 

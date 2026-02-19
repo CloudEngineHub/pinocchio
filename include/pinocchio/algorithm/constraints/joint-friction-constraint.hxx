@@ -8,10 +8,9 @@
 namespace pinocchio
 {
   template<typename Scalar, int Options>
-  template<template<typename, int> class JointCollectionTpl>
+  template<int OtherOptions, template<typename, int> class JointCollectionTpl>
   void JointFrictionConstraintModelTpl<Scalar, Options>::init(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const JointIndexVector & m_active_joints)
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
   {
     m_active_dofs.reserve(size_t(model.nv));
     for (const JointIndex joint_id : m_active_joints)
@@ -83,7 +82,7 @@ namespace pinocchio
       }
     }
 
-    m_compliance = ComplianceVectorType::Zero(maxResidualSize());
+    m_compliance = ResidualVectorType::Zero(residualSize());
   }
 
   // -------------------------------
@@ -91,18 +90,21 @@ namespace pinocchio
   // -------------------------------
 
   template<typename Scalar, int Options>
-  template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
+  template<
+    int OtherOptions,
+    template<typename, int> class JointCollectionTpl,
+    typename JacobianMatrix>
   void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & /*data*/,
-    const ConstraintData & cdata,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & /*data*/,
+    const ConstraintData & /*cdata*/,
     const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
   {
     JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
 
     const JointFrictionConstraintModelTpl & cmodel = *this;
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      jacobian_matrix.rows(), cmodel.residualSize(cdata),
+      jacobian_matrix.rows(), cmodel.residualSize(),
       "The input/output Jacobian matrix does not have the right number of rows.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       jacobian_matrix.cols(), model.nv,
@@ -118,13 +120,14 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     typename InputMatrix,
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
   void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianMatrixProductImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<InputMatrix> & mat,
     const Eigen::MatrixBase<OutputMatrix> & _res,
@@ -134,7 +137,7 @@ namespace pinocchio
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize());
     PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(cdata);
     PINOCCHIO_UNUSED_VARIABLE(aot);
@@ -155,13 +158,14 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     typename InputMatrix,
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
   void JointFrictionConstraintModelTpl<Scalar, Options>::jacobianTransposeMatrixProductImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<InputMatrix> & mat,
     const Eigen::MatrixBase<OutputMatrix> & _res,
@@ -169,7 +173,7 @@ namespace pinocchio
   {
     OutputMatrix & res = _res.const_cast_derived();
 
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), residualSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), residualSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), mat.cols());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
@@ -192,17 +196,18 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     template<typename, int> class JointCollectionTpl,
     typename ConstraintForcesLike,
     typename JointTorquesLike>
   void JointFrictionConstraintModelTpl<Scalar, Options>::mapConstraintForceToJointTorquesImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<ConstraintForcesLike> & constraint_forces,
     const Eigen::MatrixBase<JointTorquesLike> & joint_torques_) const
   {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_torques_.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -219,17 +224,18 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     template<typename, int> class JointCollectionTpl,
     typename JointMotionsLike,
     typename ConstraintMotionsLike>
   void JointFrictionConstraintModelTpl<Scalar, Options>::mapJointMotionsToConstraintMotionImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
     const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions_) const
   {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions_.rows(), residualSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions_.rows(), residualSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_motions.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -246,12 +252,13 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     template<typename, int> class JointCollectionTpl,
     typename VectorNLike,
     ReferenceFrame rf>
   void JointFrictionConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertiasImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
     const ReferenceFrameTag<rf> reference_frame) const
@@ -260,7 +267,7 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      diagonal_constraint_inertia.size(), residualSize(cdata),
+      diagonal_constraint_inertia.size(), residualSize(),
       "The diagonal_constraint_inertia is of wrong size.");
 
     Eigen::Index row_id = 0;
@@ -274,6 +281,59 @@ namespace pinocchio
 
       row_id += joint_nv;
     }
+  }
+
+  template<typename Scalar, int Options>
+  template<
+    int OtherOptions,
+    template<typename, int> class JointCollectionTpl,
+    typename MatrixOrMap,
+    typename MapEnable,
+    ReferenceFrame rf>
+  void JointFrictionConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertiasImpl(
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+    const ConstraintData & cdata,
+    const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
+    const ReferenceFrameTag<rf> reference_frame,
+    std::size_t & inner_constraint_id) const
+  {
+    const auto & constraint_inertia = constraint_inertias[inner_constraint_id];
+
+    assert(constraint_inertia.size() == residualSize());
+    switch (constraint_inertia.type())
+    {
+    case MatrixBlockType::Zero: {
+      break;
+    }
+    case MatrixBlockType::Identity: {
+      appendCouplingConstraintInertiasImpl(
+        model, data, cdata, VectorXs::Ones(residualSize()), reference_frame);
+      break;
+    }
+    case MatrixBlockType::ScalarIdentity: {
+      const Scalar val = constraint_inertia.container()(0, 0);
+      appendCouplingConstraintInertiasImpl(
+        model, data, cdata, VectorXs::Constant(residualSize(), val), reference_frame);
+      break;
+    }
+    case MatrixBlockType::Diagonal: {
+      appendCouplingConstraintInertiasImpl(
+        model, data, cdata, constraint_inertia.container().col(0), reference_frame);
+      break;
+    }
+    case MatrixBlockType::Plain: {
+      PINOCCHIO_THROW_PRETTY(
+        std::invalid_argument,
+        "JointFrictionConstraintModel does not support Plain inertia blocks.");
+      break;
+    }
+    default:
+      assert(false && "Should never happened");
+    }
+
+    // increment inner constraint id counter
+    ++inner_constraint_id;
   }
 
 } // namespace pinocchio

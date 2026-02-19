@@ -150,7 +150,7 @@ namespace pinocchio
     /// \brief Reference to the upper bound of the box.
     const Vector & ub;
 
-  }; // BoxSetTpl
+  }; // struct BoxSetTpl
 
 } // namespace pinocchio
 

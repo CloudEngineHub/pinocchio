@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2022-2025 INRIA
+// Copyright (c) 2022-2026 INRIA
 //
 
 #ifndef __pinocchio_algorithm_constraint_cholesky_txx__
@@ -25,7 +25,7 @@ namespace pinocchio
     ContactCholeskyDecompositionTpl<context::Scalar, context::Options>;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::resize<
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::rebuild<
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,

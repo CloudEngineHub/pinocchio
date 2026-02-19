@@ -27,7 +27,7 @@ namespace pinocchio
       RigidConstraintDataVector & contact_datas,
       const context::Scalar mu = context::Scalar(0))
     {
-      const Eigen::Index constraint_size = getTotalConstraintMaxResidualSize(contact_models);
+      const Eigen::Index constraint_size = getTotalConstraintResidualSize(contact_models);
       context::MatrixXs delassus(constraint_size, constraint_size);
       computeDelassusMatrix(model, data, q, contact_models, contact_datas, delassus, mu);
       make_symmetric(delassus);
@@ -43,7 +43,7 @@ namespace pinocchio
       const context::Scalar mu,
       const bool scaled = false)
     {
-      const Eigen::Index constraint_size = getTotalConstraintMaxResidualSize(contact_models);
+      const Eigen::Index constraint_size = getTotalConstraintResidualSize(contact_models);
       context::MatrixXs delassus_inverse(constraint_size, constraint_size);
       computeDampedDelassusMatrixInverse(
         model, data, q, contact_models, contact_datas, delassus_inverse, mu, scaled);

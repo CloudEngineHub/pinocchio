@@ -60,17 +60,6 @@ class TestADMM(TestCase):
         # for bpcm in constraint_models_dict['point_anchor_constraint_models']:
         #     constraint_models.append(pin.ConstraintModel(bpcm))
 
-        # adding joint limit constraints
-        active_joints_limits = [i for i in range(1, model.njoints)]
-        jlcm = pin.JointLimitConstraintModel(model, active_joints_limits)
-        constraint_models.append(pin.ConstraintModel(jlcm))
-
-        # adding friction on joints
-        active_joints_friction = [i for i in range(1, model.njoints)]
-        fjcm = pin.JointFrictionConstraintModel(model, active_joints_friction)
-        fjcm.set = pin.BoxSet(model.lowerDryFrictionLimit, model.upperDryFrictionLimit)
-        constraint_models.append(pin.ConstraintModel(fjcm))
-
         q0 = model.referenceConfigurations["home"]
         v0 = np.zeros(model.nv)
         tau0 = np.zeros(model.nv)
@@ -78,6 +67,18 @@ class TestADMM(TestCase):
         self.addFloor(geom_model, visual_model)
         self.addSystemCollisionPairs(model, geom_model, q0)
         dt = 1e-3
+
+        # adding joint limit constraints
+        active_joints_limits = [i for i in range(1, model.njoints)]
+        jlcm = pin.JointLimitConstraintModel(model, active_joints_limits)
+        jlcm.makeSelectionFilteredByLimitProximity(q0)
+        constraint_models.append(pin.ConstraintModel(jlcm))
+
+        # adding friction on joints
+        active_joints_friction = [i for i in range(1, model.njoints)]
+        fjcm = pin.JointFrictionConstraintModel(model, active_joints_friction)
+        fjcm.set = pin.BoxSet(model.lowerDryFrictionLimit, model.upperDryFrictionLimit)
+        constraint_models.append(pin.ConstraintModel(fjcm))
 
         # Adding constraints from points contacts
         contact_constraints = self.computeContacts(model, geom_model, q0)
@@ -90,9 +91,8 @@ class TestADMM(TestCase):
         delassus = pin.DelassusOperatorDense(delassus_matrix)
 
         csize = 0
-        for i, cm in enumerate(constraint_models):
-            cd = constraint_datas[i]
-            csize += cm.residualSize(cd)
+        for cm in constraint_models:
+            csize += cm.residualSize()
         self.assertTrue(
             delassus.matrix().shape[0] == csize,
             "constraint problem is of wrong size.",

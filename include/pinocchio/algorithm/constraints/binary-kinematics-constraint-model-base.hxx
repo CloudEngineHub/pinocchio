@@ -9,15 +9,15 @@ namespace pinocchio
 {
 
   template<typename Derived>
-  template<template<typename, int> class JointCollectionTpl>
+  template<int OtherOptions, template<typename, int> class JointCollectionTpl>
   void BinaryKinematicsConstraintModelBase<Derived>::init(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model)
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
   {
     nv = model.nv;
     depth_joint1 = static_cast<size_t>(model.supports[joint1_id].size());
     depth_joint2 = static_cast<size_t>(model.supports[joint2_id].size());
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
+    typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
     typedef typename Model::JointModel JointModel;
     static const bool default_sparsity_value = false;
     colwise_joint1_sparsity.fill(default_sparsity_value);
@@ -87,7 +87,7 @@ namespace pinocchio
     }
 
     // Set compliance and Baumgarte parameters.
-    m_compliance = ComplianceVectorType::Zero(maxResidualSize());
+    m_compliance = ResidualVectorType::Zero(residualSize());
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
   }
 

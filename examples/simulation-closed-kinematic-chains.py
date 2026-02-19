@@ -100,7 +100,7 @@ constraint_model = pin.RigidConstraintModel(
     constraint1_joint2_placement,
 )
 constraint_data = constraint_model.createData()
-constraint_size = constraint_model.maxResidualSize()
+constraint_size = constraint_model.residualSize()
 
 # First, do an inverse geometry
 rho = 1e-10

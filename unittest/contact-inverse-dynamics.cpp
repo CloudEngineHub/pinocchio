@@ -63,7 +63,7 @@ void makeIsotropic(
   Eigen::Index row_id = 0;
   for (const auto & cmodel : constraint_models)
   {
-    const auto csize = cmodel.maxResidualSize();
+    const auto csize = cmodel.residualSize();
 
     auto vec_seg = vec.segment(row_id, csize);
     vec_seg[1] = vec_seg[0];
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
   for (const auto & cmodel : constraint_models)
   {
     // We know that point contact is of constant size
-    constraint_size += cmodel.maxResidualSize();
+    constraint_size += cmodel.residualSize();
   }
 
   BOOST_CHECK(constraint_size > 0);
@@ -112,8 +112,9 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     Eigen::Index constraint_index = 0;
     for (auto & cmodel : constraint_models)
     {
-      cmodel.compliance() = R.segment(constraint_index, cmodel.maxResidualSize());
-      constraint_index += cmodel.maxResidualSize();
+      int csize = cmodel.residualSize();
+      cmodel.setCompliance(R.segment(constraint_index, csize));
+      constraint_index += csize;
     }
 
     ProximalSettings prox_settings(1e-12, 1e-12, /*mu = */ 0, 100);
@@ -121,7 +122,8 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     const Eigen::VectorXd x_positive = abs(Eigen::VectorXd::Random(constraint_size));
     const Eigen::VectorXd x_in_cone = Eigen::VectorXd::Zero(constraint_size);
 
-    internal::computeConeProjection(constraint_models, constraint_datas, x_positive, x_in_cone);
+    internal::computeConstraintSetProjection(
+      constraint_models, constraint_datas, x_positive, x_in_cone);
 
     const Eigen::VectorXd constraint_velocity_ref = -(R.asDiagonal() * x_in_cone).eval();
     const Eigen::VectorXd sigma_ref = (constraint_velocity_ref + R.asDiagonal() * x_in_cone);
@@ -150,10 +152,9 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
   // test with mu_prox > 0
   for (int n = 0; n < num_tests; ++n)
   {
-    const Eigen::VectorXd R_zero = Eigen::VectorXd::Zero(constraint_size);
     for (auto & cmodel : constraint_models)
     {
-      cmodel.compliance().setZero();
+      cmodel.setCompliance(Eigen::VectorXd::Zero(cmodel.residualSize()));
     }
 
     ProximalSettings prox_settings(1e-12, 1e-12, mu_prox, 200);
@@ -171,7 +172,8 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
     BOOST_CHECK(has_converged);
 
     Eigen::VectorXd x_sol_projected(x_sol);
-    internal::computeConeProjection(constraint_models, constraint_datas, x_sol, x_sol_projected);
+    internal::computeConstraintSetProjection(
+      constraint_models, constraint_datas, x_sol, x_sol_projected);
     BOOST_CHECK((x_sol_projected - x_sol).lpNorm<Eigen::Infinity>() <= 1e-10);
 
     BOOST_CHECK(std::abs(constraint_velocity_projected.dot(x_sol)) <= 1e-10);

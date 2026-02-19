@@ -10,11 +10,14 @@
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/utils/reference.hpp"
 
+#include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
+
 namespace pinocchio
 {
   template<
     typename Scalar,
     int Options,
+    int ForceOptions,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
     class ConstraintModelAllocator,
@@ -29,14 +32,13 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<ForceMatrix> & constraint_forces,
-    std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces,
+    std::vector<ForceTpl<Scalar, ForceOptions>, ForceAllocator> & joint_forces,
     ReferenceFrameTag<rf> reference_frame)
   {
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_models.size(), constraint_datas.size());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
 
-    const Eigen::Index constraint_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const Eigen::Index constraint_size = getTotalConstraintResidualSize(constraint_models);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), constraint_size);
 
     for (auto & force : joint_forces)
@@ -47,7 +49,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-      const auto constraint_size = cmodel.residualSize(cdata);
+      const auto constraint_size = cmodel.residualSize();
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
       cmodel.mapConstraintForceToJointForces(
@@ -60,6 +62,7 @@ namespace pinocchio
   template<
     typename Scalar,
     int Options,
+    int ForceOptions,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
     class ConstraintModelAllocator,
@@ -75,7 +78,7 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<ForceMatrix> & constraint_forces,
-    std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces,
+    std::vector<ForceTpl<Scalar, ForceOptions>, ForceAllocator> & joint_forces,
     const Eigen::MatrixBase<GeneralizedTorqueVector> & joint_torques_,
     ReferenceFrameTag<rf> reference_frame)
   {
@@ -83,8 +86,7 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_torques_.size(), model.nv);
 
-    const Eigen::Index constraint_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const Eigen::Index constraint_size = getTotalConstraintResidualSize(constraint_models);
     assert(constraint_forces.rows() == constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), constraint_size);
 
@@ -100,7 +102,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-      const auto constraint_size = cmodel.residualSize(cdata);
+      const auto constraint_size = cmodel.residualSize();
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
       cmodel.mapConstraintForceToJointSpace(
@@ -113,6 +115,7 @@ namespace pinocchio
   template<
     typename Scalar,
     int Options,
+    int MotionOptions,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
     class ConstraintModelAllocator,
@@ -126,7 +129,7 @@ namespace pinocchio
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> & joint_motions,
+    const std::vector<MotionTpl<Scalar, MotionOptions>, MotionAllocator> & joint_motions,
     const Eigen::MatrixBase<MotionConstraintMatrix> & constraint_motions_,
     ReferenceFrameTag<rf> reference_frame)
   {
@@ -134,8 +137,7 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_motions.size(), size_t(model.njoints));
 
     auto & constraint_motions = constraint_motions_.const_cast_derived();
-    const Eigen::Index constraint_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const Eigen::Index constraint_size = getTotalConstraintResidualSize(constraint_models);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), constraint_size);
 
     Eigen::Index row_id = 0;
@@ -143,7 +145,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-      const auto constraint_size = cmodel.residualSize(cdata);
+      const auto constraint_size = cmodel.residualSize();
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);
       cmodel.mapJointMotionsToConstraintMotion(
@@ -156,6 +158,7 @@ namespace pinocchio
   template<
     typename Scalar,
     int Options,
+    int MotionOptions,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
     class ConstraintModelAllocator,
@@ -170,7 +173,7 @@ namespace pinocchio
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> & joint_motions,
+    const std::vector<MotionTpl<Scalar, MotionOptions>, MotionAllocator> & joint_motions,
     const Eigen::MatrixBase<GeneralizedVelocityVector> & generalized_velocity,
     const Eigen::MatrixBase<MotionConstraintMatrix> & constraint_motions_,
     ReferenceFrameTag<rf> reference_frame)
@@ -180,8 +183,7 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(generalized_velocity.size(), model.nv);
 
     auto & constraint_motions = constraint_motions_.const_cast_derived();
-    const Eigen::Index total_constraint_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const Eigen::Index total_constraint_size = getTotalConstraintResidualSize(constraint_models);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions.rows(), total_constraint_size);
 
     Eigen::Index row_id = 0;
@@ -189,7 +191,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-      const auto constraint_size = cmodel.residualSize(cdata);
+      const auto constraint_size = cmodel.residualSize();
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);
       cmodel.mapJointSpaceToConstraintMotion(
@@ -219,7 +221,7 @@ namespace pinocchio
     const auto & constraint_data = helper::get_ref(constraint_data_.derived());
 
     assert(model.check(data) && "data is not consistent with model.");
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_model.residualSize(constraint_data));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_model.residualSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.cols(), model.nv);
 
     constraint_model.jacobian(model, data, constraint_data, J);
@@ -241,8 +243,7 @@ namespace pinocchio
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Eigen::MatrixBase<DynamicMatrixLike> & J_)
   {
-    const Eigen::Index constraint_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const Eigen::Index constraint_size = getTotalConstraintResidualSize(constraint_models);
     assert(J_.rows() == constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_size);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.cols(), model.nv);
@@ -257,7 +258,7 @@ namespace pinocchio
       const auto & cmodel = helper::get_ref(constraint_models[k]);
       const auto & cdata = helper::get_ref(constraint_datas[k]);
 
-      const auto csize = cmodel.residualSize(cdata);
+      const auto csize = cmodel.residualSize();
       getConstraintJacobian(model, data, cmodel, cdata, J.middleRows(row_id, csize));
 
       row_id += csize;
@@ -281,8 +282,7 @@ namespace pinocchio
     typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
     typedef typename Data::MatrixXs ReturnType;
 
-    const auto constraint_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const auto constraint_size = getTotalConstraintResidualSize(constraint_models);
 
     ReturnType res = ReturnType::Zero(constraint_size, model.nv);
     getConstraintsJacobian(model, data, constraint_models, constraint_datas, res);
@@ -311,8 +311,7 @@ namespace pinocchio
     AssignmentOperatorTag<op> aot)
   {
     PINOCCHIO_UNUSED_VARIABLE(aot);
-    const Eigen::Index constraint_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const Eigen::Index constraint_size = getTotalConstraintResidualSize(constraint_models);
     auto & res = res_.const_cast_derived();
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(rhs.rows(), model.nv);
@@ -331,7 +330,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-      const auto constraint_size = cmodel.residualSize(cdata);
+      const auto constraint_size = cmodel.residualSize();
 
       auto res_block = res.middleRows(row_id, constraint_size);
       cmodel.jacobianMatrixProduct(model, data, cdata, rhs, res_block, aot_internal());
@@ -361,8 +360,7 @@ namespace pinocchio
     AssignmentOperatorTag<op> aot)
   {
     PINOCCHIO_UNUSED_VARIABLE(aot);
-    const Eigen::Index constraint_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const Eigen::Index constraint_size = getTotalConstraintResidualSize(constraint_models);
     ResultMatrixType & res = res_.const_cast_derived();
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(rhs.rows(), constraint_size);
@@ -382,7 +380,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-      const auto constraint_size = cmodel.residualSize(cdata);
+      const auto constraint_size = cmodel.residualSize();
 
       const auto rhs_block = rhs.middleRows(row_id, constraint_size);
       cmodel.jacobianTransposeMatrixProduct(model, data, cdata, rhs_block, res, aot_internal());

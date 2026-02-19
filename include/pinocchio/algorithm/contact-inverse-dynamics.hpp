@@ -47,17 +47,15 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
 
-    const Eigen::Index problem_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const Eigen::Index problem_size = getTotalConstraintResidualSize(constraint_models);
     const std::size_t n_constraints = constraint_models.size();
     VectorXs R(problem_size);
     Eigen::Index constraint_index = 0;
     for (std::size_t i = 0; i < constraint_models.size(); i++)
     {
       const auto & cmodel = helper::get_ref(constraint_models[i]);
-      const auto & cdata = helper::get_ref(constraint_datas[i]);
-      const auto csize = cmodel.residualSize(cdata);
-      cmodel.retrieveCompliance(cdata, R.segment(constraint_index, csize));
+      const auto csize = cmodel.residualSize();
+      cmodel.retrieveCompliance(R.segment(constraint_index, csize));
       constraint_index += csize;
     }
     const VectorXs R_prox = R + VectorXs::Constant(problem_size, settings.mu);
@@ -88,7 +86,7 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const auto constraint_size = cmodel.residualSize(cdata);
+        const auto constraint_size = cmodel.residualSize();
 
         const auto cone = cmodel.set(cdata);
         auto lambda_segment = lambda.segment(row_id, constraint_size);
@@ -211,8 +209,7 @@ namespace pinocchio
 
     auto & lambda_sol = _lambda_sol.const_cast_derived();
 
-    const Eigen::Index problem_size =
-      getTotalConstraintResidualSize(constraint_models, constraint_datas);
+    const Eigen::Index problem_size = getTotalConstraintResidualSize(constraint_models);
     VectorXs v_ref(model.nv), c_ref(problem_size);
     v_ref = v + dt * a;
 

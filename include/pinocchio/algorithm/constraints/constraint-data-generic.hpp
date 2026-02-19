@@ -12,20 +12,21 @@
 
 namespace pinocchio
 {
-
+  // --------------------------------------------------------------
+  // Traits
+  // --------------------------------------------------------------
   template<
     typename _Scalar,
     int _Options,
     template<typename S, int O> class ConstraintCollectionTpl>
   struct traits<ConstraintDataTpl<_Scalar, _Options, ConstraintCollectionTpl>>
+  : traits<ConstraintModelTpl<_Scalar, _Options, ConstraintCollectionTpl>>
   {
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
-    typedef ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> ConstraintModel;
-    typedef ConstraintModel Model;
-    typedef boost::blank ConstraintSet;
   };
 
+  // --------------------------------------------------------------
+  // Struct
+  // --------------------------------------------------------------
   template<
     typename _Scalar,
     int _Options,
@@ -35,13 +36,25 @@ namespace pinocchio
   , ConstraintCollectionTpl<_Scalar, _Options>::ConstraintDataVariant
   , serialization::Serializable<ConstraintDataTpl<_Scalar, _Options, ConstraintCollectionTpl>>
   {
-    typedef ConstraintDataBase<ConstraintDataTpl<_Scalar, _Options, ConstraintCollectionTpl>> Base;
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
+    typedef ConstraintDataTpl Self;
+    typedef ConstraintDataBase<Self> Base;
+    typedef ConstraintDataBase<Self> RootBase;
 
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
+
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
+
+    // Variant related ----------------------------------------------
     typedef ConstraintCollectionTpl<Scalar, Options> ConstraintCollection;
-    typedef typename ConstraintCollection::ConstraintDataVariant ConstraintDataVariant;
     typedef typename ConstraintCollection::ConstraintModelVariant ConstraintModelVariant;
+    typedef typename ConstraintCollection::ConstraintDataVariant ConstraintDataVariant;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS

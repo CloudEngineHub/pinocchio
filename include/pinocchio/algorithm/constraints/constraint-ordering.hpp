@@ -29,7 +29,9 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    class ConstraintModelAllocator>
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator>
   inline void computeJointMinimalOrdering(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,

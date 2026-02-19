@@ -12,52 +12,70 @@
 #include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
 #include "pinocchio/algorithm/constraints/sets/box-set.hpp"
+#include "pinocchio/algorithm/constraints/sets/orthant-cone-jordan-operation.hpp"
 
 namespace pinocchio
 {
 
+  // --------------------------------------------------------------
+  // Cast
+  // --------------------------------------------------------------
   template<typename NewScalar, typename Scalar, int Options>
   struct CastType<NewScalar, JointFrictionConstraintModelTpl<Scalar, Options>>
   {
     typedef JointFrictionConstraintModelTpl<NewScalar, Options> type;
   };
 
+  // --------------------------------------------------------------
+  // Traits
+  // --------------------------------------------------------------
   template<typename _Scalar, int _Options>
   struct traits<JointFrictionConstraintModelTpl<_Scalar, _Options>>
   {
     // --------------------------------------------------------------
-    // Traits characterizing the constraint behaviour in CRTP
+    // Traits referencing the constraint and associated types
+    // --------------------------------------------------------------
+    typedef JointFrictionConstraintModelTpl<_Scalar, _Options> ConstraintModel;
+    typedef JointFrictionConstraintDataTpl<_Scalar, _Options> ConstraintData;
+
+    typedef ConstraintModel Model;
+    typedef ConstraintData Data;
+
+    // --------------------------------------------------------------
+    // Traits characterizing the constraints
     // --------------------------------------------------------------
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
-    static constexpr int Size = Eigen::Dynamic;
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::VELOCITY_LEVEL;
     static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::CONSTANT;
 
-    static constexpr bool has_baumgarte_corrector =
-      false; // Baumgarte make sense and exist directly for the constraint
-    static constexpr bool has_compliance_member =
-      true; // The constraint itself posses a member m_compliance which can be set by the user
-    static constexpr bool has_set = true; // The constraint itself defines the set, otherwise must
-                                          // have a mechanism for set-related visitors
+    static constexpr bool has_baumgarte_corrector = false;
+    static constexpr bool has_set = true;
+    static constexpr bool is_inequality_constraint = true;
 
     // --------------------------------------------------------------
-    // Traits referencing the constraint and associated types
+    // Traits for associated struct and sizes
     // --------------------------------------------------------------
-    typedef JointFrictionConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef JointFrictionConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef BoxSetTpl<Scalar, Options> ConstraintSet;
-    typedef ConstraintModel Model;
-    typedef ConstraintData Data;
+    typedef NonNegativeOrthantJordanOperationTpl<Scalar, Options> JordanOperation;
+    typedef boost::blank BaumgarteCorrectorParameters;
+
+    static constexpr int Size = Eigen::Dynamic;
+    static constexpr int SymmetricConeSize = JordanOperation::ConeSize;
+    static constexpr int SymmetricConeScalingSize = JordanOperation::ConeScalingSize;
 
     // --------------------------------------------------------------
-    // Traits for the algorithmic methods on current state
+    // Traits that are helper for Eigen types
     // --------------------------------------------------------------
-    // Elementary types
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> ResidualVectorType;
     typedef Eigen::Matrix<Scalar, Size, Eigen::Dynamic, Options> JacobianMatrixType;
-    typedef Eigen::Matrix<Scalar, Size, 1, Options> VectorConstraintSize;
+    typedef Eigen::Matrix<Scalar, SymmetricConeSize, 1, Options> ConeVectorType;
+    typedef Eigen::Matrix<Scalar, SymmetricConeScalingSize, 1, Options> ConeScalingVectorType;
+
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+    typedef Eigen::Matrix<Scalar, 1, Eigen::Dynamic, Eigen::RowMajor> RowVectorXs;
 
     // Template to generate type
     template<typename InputMatrix>
@@ -82,17 +100,6 @@ namespace pinocchio
         InputMatrixPlain::Options>
         type;
     };
-
-    // -------------------------------
-    // Traits for holded Data
-    // -------------------------------
-    typedef Eigen::Matrix<Scalar, Size, 1, Options> ComplianceVectorType;
-    typedef ComplianceVectorType & ComplianceVectorTypeRef;
-    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
-
-    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
-
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
   };
 
   template<typename _Scalar, int _Options>
@@ -101,45 +108,64 @@ namespace pinocchio
   {
   };
 
+  // --------------------------------------------------------------
+  // Struct
+  // --------------------------------------------------------------
   template<typename _Scalar, int _Options>
   struct JointFrictionConstraintModelTpl
   : JointWiseConstraintModelBase<JointFrictionConstraintModelTpl<_Scalar, _Options>>
   , ConstraintModelCommonParameters<JointFrictionConstraintModelTpl<_Scalar, _Options>>
   {
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
-
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
     typedef JointFrictionConstraintModelTpl Self;
     typedef JointWiseConstraintModelBase<Self> Base;
     typedef ConstraintModelCommonParameters<Self> BaseCommonParameters;
     typedef ConstraintModelBase<JointFrictionConstraintModelTpl> RootBase;
 
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
+
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
+
+    static constexpr ConstraintSizeType constraint_size_type = traits<Self>::constraint_size_type;
+
+    static constexpr bool has_baumgarte_corrector = traits<Self>::has_baumgarte_corrector;
+
+    typedef typename traits<Self>::ConstraintSet ConstraintSet;
+    typedef typename traits<Self>::JordanOperation JordanOperation;
+    typedef typename traits<Self>::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
+
+    static constexpr int Size = traits<Self>::Size;
+    static constexpr int SymmetricConeSize = traits<Self>::SymmetricConeSize;
+    static constexpr int SymmetricConeScalingSize = traits<Self>::SymmetricConeScalingSize;
+
+    typedef typename traits<Self>::ResidualVectorType ResidualVectorType;
+    typedef typename traits<Self>::JacobianMatrixType JacobianMatrixType;
+    typedef typename traits<Self>::ConeVectorType ConeVectorType;
+    typedef typename traits<Self>::ConeScalingVectorType ConeScalingVectorType;
+
+    // Friendship ---------------------------------------------------
     template<typename NewScalar, int NewOptions>
     friend struct JointFrictionConstraintModelTpl;
 
-    static const ConstraintFormulationLevel constraint_formulation_level =
-      traits<JointFrictionConstraintModelTpl>::constraint_formulation_level;
-    typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
-    typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-    typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
-
-    typedef typename traits<Self>::ConstraintData ConstraintData;
-    typedef typename traits<Self>::ConstraintSet ConstraintSet;
-
-    using typename RootBase::BooleanVector;
-    using typename RootBase::EigenIndexVector;
-
-    typedef std::vector<BooleanVector> VectorOfBooleanVector;
-    typedef std::vector<EigenIndexVector> VectofOfEigenIndexVector;
-    typedef std::vector<JointIndex> JointIndexVector;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef VectorXs VectorConstraintSize;
-
+    // Base usage ---------------------------------------------------
     using RootBase::classname;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
-    using RootBase::maxResidualSize;
     using RootBase::residualSize;
+    using typename RootBase::BooleanVector;
+    using typename RootBase::EigenIndexVector;
+
+    // Useful types ------------------------------------------------
+    typedef std::vector<BooleanVector> VectorOfBooleanVector;
+    typedef std::vector<EigenIndexVector> VectorOfEigenIndexVector;
+    typedef std::vector<JointIndex> JointIndexVector;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -178,43 +204,32 @@ namespace pinocchio
     {
     }
 
-    /// \brief Constructor from model and m_active_joints.
-    template<template<typename, int> class JointCollectionTpl>
+    /// \brief Constructor from model only.
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     JointFrictionConstraintModelTpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const JointIndexVector & m_active_joints)
-    : m_active_joints(m_active_joints)
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
     {
-      init(model, m_active_joints);
+      size_t n_joints = model.joints.size();
+      m_active_joints.reserve(n_joints);
+      for (size_t i = 0; i < n_joints; ++i)
+      {
+        m_active_joints.push_back(static_cast<JointIndex>(i));
+      }
+      init(model);
+    }
+
+    /// \brief Constructor from model and active_joints.
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    JointFrictionConstraintModelTpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndexVector & active_joints)
+    : Base(model)
+    , m_active_joints(active_joints)
+    {
+      init(model);
     }
 
     // Operators ---------------------
-
-    ///
-    /// \brief Comparison operator
-    ///
-    /// \param[in] other Other JointFrictionConstraintModelTpl to compare with.
-    ///
-    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
-    /// must be the same).
-    ///
-    bool operator==(const JointFrictionConstraintModelTpl & other) const
-    {
-      if (this == &other)
-        return true;
-      return base() == other.base() && base_common_parameters() == other.base_common_parameters()
-             && m_active_dofs == other.m_active_dofs
-             && m_row_sparsity_pattern == other.m_row_sparsity_pattern
-             && m_row_active_indexes == other.m_row_active_indexes
-             && m_friction_lower_limit == other.m_friction_lower_limit
-             && m_friction_upper_limit == other.m_friction_upper_limit;
-    }
-
-    /// \brief Comparison operator
-    bool operator!=(const JointFrictionConstraintModelTpl & other) const
-    {
-      return !(*this == other);
-    }
 
     /// \brief Cast operator
     template<typename NewScalar>
@@ -232,6 +247,32 @@ namespace pinocchio
       res.m_friction_lower_limit = m_friction_lower_limit.template cast<NewScalar>();
       res.m_friction_upper_limit = m_friction_upper_limit.template cast<NewScalar>();
       return res;
+    }
+
+    ///
+    /// \brief Comparison operator
+    ///
+    /// \param[in] other Other JointFrictionConstraintModelTpl to compare with.
+    ///
+    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributes
+    /// must be the same).
+    ///
+    bool operator==(const JointFrictionConstraintModelTpl & other) const
+    {
+      if (this == &other)
+        return true;
+      return base() == other.base() && base_common_parameters() == other.base_common_parameters()
+             && m_active_joints == other.m_active_joints && m_active_dofs == other.m_active_dofs
+             && m_row_sparsity_pattern == other.m_row_sparsity_pattern
+             && m_row_active_indexes == other.m_row_active_indexes
+             && m_friction_lower_limit == other.m_friction_lower_limit
+             && m_friction_upper_limit == other.m_friction_upper_limit;
+    }
+
+    /// \brief Comparison operator
+    bool operator!=(const JointFrictionConstraintModelTpl & other) const
+    {
+      return !(*this == other);
     }
 
     // Managing methods --------------
@@ -267,7 +308,7 @@ namespace pinocchio
     void setFrictionLowerLimit(const Eigen::MatrixBase<VectorLike> & lb)
     {
       PINOCCHIO_THROW_IF(
-        lb.size() != maxResidualSize(), std::runtime_error, "lb should be the same as size()");
+        lb.size() != residualSize(), std::runtime_error, "lb should be the same as size()");
       m_friction_lower_limit = lb;
     }
 
@@ -290,7 +331,7 @@ namespace pinocchio
     void setFrictionUpperLimit(const Eigen::MatrixBase<VectorLike> & ub)
     {
       PINOCCHIO_THROW_IF(
-        ub.size() != maxResidualSize(), std::runtime_error, "ub should be the same as size()");
+        ub.size() != residualSize(), std::runtime_error, "ub should be the same as size()");
       m_friction_upper_limit = ub;
     }
 
@@ -318,15 +359,33 @@ namespace pinocchio
       return ConstraintData(*this);
     }
 
-    // Size Management ---------------
+    // Sizes -------------------------
 
     /// \copydoc RootBase::maxResidualSizeImpl
-    int maxResidualSizeImpl() const
+    template<ConstraintSelectionType Sel>
+    int residualSizeImpl(ConstraintSelectionTag<Sel> sel) const
     {
+      PINOCCHIO_UNUSED_VARIABLE(sel);
       return int(m_active_dofs.size());
     }
 
-    // Methods for algorithms --------
+    /// \copydoc RootBase::symmetricConeResidualSize
+    template<ConstraintSelectionType Sel>
+    int symmetricConeResidualSizeImpl(ConstraintSelectionTag<Sel> sel) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(sel);
+      return 2 * residualSize();
+    }
+
+    /// \copydoc RootBase::symmetricConeResidualScalingSize
+    template<ConstraintSelectionType Sel>
+    int symmetricConeResidualScalingSizeImpl(ConstraintSelectionTag<Sel> sel) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(sel);
+      return 2 * residualSize();
+    }
+
+    // Methods for algorithms -------------
 
     /// \copydoc RootBase::set
     ConstraintSet setImpl(const ConstraintData & cdata) const
@@ -335,15 +394,27 @@ namespace pinocchio
       return ConstraintSet(m_friction_lower_limit, m_friction_upper_limit);
     }
 
+    /// \copydoc RootBase::calc
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    void calcImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      ConstraintData & cdata) const
+    {
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+    }
+
     /// \copydoc RootBase::getRowSparsityPattern
-    template<template<typename, int> class JointCollectionTpl>
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     const BooleanVector & getRowSparsityPatternImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::Index row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
       PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -352,14 +423,14 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::getRowIndexes
-    template<template<typename, int> class JointCollectionTpl>
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     const EigenIndexVector & getRowIndexesImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::Index row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
       PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -367,62 +438,60 @@ namespace pinocchio
       return m_row_active_indexes[size_t(row_id)];
     }
 
-    /// \copydoc RootBase::calc
-    template<template<typename, int> class JointCollectionTpl>
-    void calcImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata) const
-    {
-      PINOCCHIO_UNUSED_VARIABLE(model);
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-    }
-
     /// \copydoc RootBase::jacobian
-    template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename JacobianMatrix>
     void jacobianImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const;
 
     /// \copydoc RootBase::jacobianMatrixProduct
-    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
+    template<
+      int OtherOptions,
+      typename InputMatrix,
+      template<typename, int> class JointCollectionTpl>
     typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
     jacobianMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat) const
     {
       typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
         ReturnType;
-      ReturnType res(maxResidualSize(), mat.cols());
+      ReturnType res(residualSize(), mat.cols());
       jacobianMatrixProduct(model, data, cdata, mat.derived(), res);
       return res;
     }
 
     /// \copydoc RootBase::jacobianMatrixProduct
     template<
+      int OtherOptions,
       typename InputMatrix,
       typename OutputMatrix,
       template<typename, int> class JointCollectionTpl,
-      AssignmentOperatorType op = SETTO>
+      AssignmentOperatorType op>
     void jacobianMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat,
       const Eigen::MatrixBase<OutputMatrix> & _res,
-      AssignmentOperatorTag<op> aot = SetTo()) const;
+      AssignmentOperatorTag<op> aot) const;
 
     /// \copydoc RootBase::jacobianTransposeMatrixProduct
-    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
+    template<
+      int OtherOptions,
+      typename InputMatrix,
+      template<typename, int> class JointCollectionTpl>
     typename traits<Self>::template JacobianTransposeMatrixProductReturnType<InputMatrix>::type
     jacobianTransposeMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat) const
     {
@@ -436,53 +505,72 @@ namespace pinocchio
 
     /// \copydoc RootBase::jacobianTransposeMatrixProduct
     template<
+      int OtherOptions,
       typename InputMatrix,
       typename OutputMatrix,
       template<typename, int> class JointCollectionTpl,
-      AssignmentOperatorType op = SETTO>
+      AssignmentOperatorType op>
     void jacobianTransposeMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat,
       const Eigen::MatrixBase<OutputMatrix> & _res,
-      AssignmentOperatorTag<op> aot = SetTo()) const;
+      AssignmentOperatorTag<op> aot) const;
 
     /// \copydoc Base::mapConstraintForcesToJointTorques
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename ConstraintForcesLike,
       typename JointTorquesLike>
     void mapConstraintForceToJointTorquesImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<ConstraintForcesLike> & constraint_forces,
       const Eigen::MatrixBase<JointTorquesLike> & joint_torques) const;
 
     /// \copydoc Base::mapJointMotionsToConstraintMotions
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename JointMotionsLike,
       typename ConstraintMotionsLike>
     void mapJointMotionsToConstraintMotionImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
       const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions) const;
 
     /// \copydoc RootBase::appendCouplingConstraintInertias
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename VectorNLike,
       ReferenceFrame rf>
     void appendCouplingConstraintInertiasImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const;
+
+    /// \copydoc RootBase::appendCouplingConstraintInertias
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename MatrixOrMap,
+      typename MapEnable,
+      ReferenceFrame rf>
+    void appendCouplingConstraintInertiasImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
+      const ReferenceFrameTag<rf> reference_frame,
+      std::size_t & inner_constraint_id) const;
 
   protected:
     // ------------------------------
@@ -490,10 +578,8 @@ namespace pinocchio
     // ------------------------------
 
     /// \brief Initialization of the model.
-    template<template<typename, int> class JointCollectionTpl>
-    void init(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const JointIndexVector & m_active_joints);
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    void init(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model);
 
     // ------------------------------
     // MEMBERS
@@ -502,26 +588,37 @@ namespace pinocchio
     JointIndexVector m_active_joints;
     EigenIndexVector m_active_dofs;
     VectorOfBooleanVector m_row_sparsity_pattern;
-    VectofOfEigenIndexVector m_row_active_indexes;
+    VectorOfEigenIndexVector m_row_active_indexes;
 
     VectorXs m_friction_lower_limit;
     VectorXs m_friction_upper_limit;
 
     using BaseCommonParameters::m_compliance;
-  };
+  }; // struct JointFrictionConstraintModelTpl
 
   template<typename _Scalar, int _Options>
   struct JointFrictionConstraintDataTpl
   : ConstraintDataBase<JointFrictionConstraintDataTpl<_Scalar, _Options>>
   {
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
-    typedef ConstraintDataBase<JointFrictionConstraintDataTpl> Base;
-    typedef std::vector<JointIndex> JointIndexVector;
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
+    typedef JointFrictionConstraintDataTpl Self;
+    typedef ConstraintDataBase<Self> Base;
 
-    typedef JointFrictionConstraintModelTpl<Scalar, Options> ConstraintModel;
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
 
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
+
+    // Base usage ---------------------------------------------------
     using Base::classname;
+
+    // Useful types ------------------------------------------------
+    typedef std::vector<JointIndex> JointIndexVector;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -548,8 +645,8 @@ namespace pinocchio
     {
     }
 
-    /// \brief Constructor from a constraint_model
-    explicit JointFrictionConstraintDataTpl(const ConstraintModel & /*constraint_model*/)
+    /// \brief Constructor from a constraint model
+    explicit JointFrictionConstraintDataTpl(const ConstraintModel & /*cmodel*/)
     {
     }
 
@@ -584,7 +681,7 @@ namespace pinocchio
     {
       return classname();
     }
-  };
+  }; // struct JointFrictionConstraintDataTpl
 
 } // namespace pinocchio
 

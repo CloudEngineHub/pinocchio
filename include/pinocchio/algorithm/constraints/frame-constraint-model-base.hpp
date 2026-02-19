@@ -18,32 +18,28 @@
 
 namespace pinocchio
 {
-
+  // --------------------------------------------------------------
+  // Declaration
+  // --------------------------------------------------------------
   template<typename Derived>
   struct FrameConstraintModelBase;
 
+  // --------------------------------------------------------------
+  // Helpers
+  // --------------------------------------------------------------
+  template<typename Derived>
+  using enable_if_frame_model_t =
+    std::enable_if_t<std::is_base_of_v<FrameConstraintModelBase<Derived>, Derived>>;
+
+  // --------------------------------------------------------------
+  // Traits
+  // --------------------------------------------------------------
   template<typename Derived>
   struct traits<FrameConstraintModelBase<Derived>>
   {
+    static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::STATIC;
     static constexpr int Size = 6;
 
-    // --------------------------------------------------------------
-    // Traits characterizing the constraint behaviour in CRTP
-    // --------------------------------------------------------------
-    static constexpr ConstraintFormulationLevel constraint_formulation_level =
-      ConstraintFormulationLevel::VELOCITY_LEVEL;
-    static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::STATIC;
-
-    static constexpr bool has_baumgarte_corrector =
-      true; // Baumgarte make sense and exist directly for the constraint
-    static constexpr bool has_compliance_member =
-      true; // The constraint itself posses a member m_compliance which can be set by the user
-    static constexpr bool has_set = true; // The constraint itself defines the set, otherwise must
-                                          // have a mechanism for set-related visitors
-
-    // --------------------------------------------------------------
-    // Traits for the algorithmic methods on current state
-    // --------------------------------------------------------------
     // Template to generate type
     template<typename InputMatrix>
     struct JacobianMatrixProductReturnType
@@ -69,40 +65,52 @@ namespace pinocchio
     };
   };
 
-  ///
-  /// \brief Contact model structure containg all the info describing the rigid contact model
-  ///
+  // --------------------------------------------------------------
+  // Struct
+  // --------------------------------------------------------------
   template<typename Derived>
   struct FrameConstraintModelBase : BinaryKinematicsConstraintModelBase<Derived>
   {
-
-    typedef typename traits<Derived>::Scalar Scalar;
-    static constexpr int Options = traits<Derived>::Options;
-
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
     typedef BinaryKinematicsConstraintModelBase<Derived> Base;
     typedef typename Base::BaseCommonParameters BaseCommonParameters;
     typedef ConstraintModelBase<Derived> RootBase;
 
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Derived>::ConstraintModel ConstraintModel;
+    typedef typename traits<Derived>::ConstraintData ConstraintData;
+
+    typedef typename traits<Derived>::Scalar Scalar;
+    static constexpr int Options = traits<Derived>::Options;
+
+    static constexpr int Size = traits<Derived>::Size;
+
+    typedef typename traits<Derived>::ResidualVectorType ResidualVectorType;
+    typedef typename traits<Derived>::JacobianMatrixType JacobianMatrixType;
+
+    // Friendship ---------------------------------------------------
     template<typename OtherDerived>
     friend struct FrameConstraintModelBase;
 
-    static const ConstraintFormulationLevel constraint_formulation_level =
-      traits<FrameConstraintModelBase>::constraint_formulation_level;
-    typedef typename traits<Derived>::ConstraintData ConstraintData;
-    typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
-    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
-
-    typedef SE3Tpl<Scalar, Options> SE3;
-    typedef MotionTpl<Scalar, Options> Motion;
-    typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
-    typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
-    typedef Vector6 VectorConstraintSize;
-
+    // Base usage ---------------------------------------------------
     using Base::getA1;
     using Base::getA2;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
     using RootBase::residualSize;
+
+    // Useful types ------------------------------------------------
+    typedef SE3Tpl<Scalar, Options> SE3;
+    typedef MotionTpl<Scalar, Options> Motion;
+    typedef ForceTpl<Scalar, Options> Force;
+    typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
+    typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
+    typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
+    typedef Eigen::Matrix<Scalar, Size, 6, Options> MatrixSize6;
+    typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix66;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -136,6 +144,7 @@ namespace pinocchio
 
     // Constructors ------------------
 
+  protected:
     ///
     /// \brief Default constructor
     ///
@@ -145,7 +154,18 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint indexes and placements.
+    /// \brief Constructor from model.
+    ///
+    /// \param[in] model Kinematic tree.
+    ///
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    FrameConstraintModelBase(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
+    : Base(model)
+    {
+    }
+
+    ///
+    /// \brief Constructor from joint indexes and placements.
     ///
     /// \param[in] type Type of the contact.
     /// \param[in] model Model associated to the constraint.
@@ -168,7 +188,7 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint1_id.
+    /// \brief Constructor from joint1_id.
     ///
     /// \param[in] model Kinematic tree.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -184,7 +204,7 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint1_id and placement.
+    /// \brief Constructor from joint1_id and placement.
     ///
     /// \param[in] model Kinematic tree.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -201,7 +221,7 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint ids.
+    /// \brief Constructor from joint ids.
     ///
     /// \param[in] model Kinematic tree.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -218,12 +238,20 @@ namespace pinocchio
 
     // Operators ---------------------
 
+  public:
+    /// \returns An expression of *this with the Scalar type casted to NewScalar.
+    template<typename NewScalar, typename OtherDerived>
+    void cast(FrameConstraintModelBase<OtherDerived> & res) const
+    {
+      Base::template cast<NewScalar>(res);
+    }
+
     ///
     /// \brief Comparison operator
     ///
     /// \param[in] other Other FrameConstraintModelBase to compare with.
     ///
-    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
+    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributes
     /// must be the same).
     ///
     bool operator==(const FrameConstraintModelBase & other) const
@@ -232,23 +260,16 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Oposite of the comparison operator.
+    /// \brief Opposite of the comparison operator.
     ///
     /// \param[in] other Other FrameConstraintModelBase to compare with.
     ///
     /// \returns false if the two *this is not equal to other (at least type, joint1_id or placement
-    /// attributs is different).
+    /// attributes is different).
     ///
     bool operator!=(const FrameConstraintModelBase & other) const
     {
       return Base::operator!=(other);
-    }
-
-    /// \returns An expression of *this with the Scalar type casted to NewScalar.
-    template<typename NewScalar, typename OtherDerived>
-    void cast(FrameConstraintModelBase<OtherDerived> & res) const
-    {
-      Base::template cast<NewScalar>(res);
     }
 
     // Methods for rigid body --------
@@ -266,26 +287,27 @@ namespace pinocchio
       const Eigen::MatrixBase<Matrix6LikeOut3> & I22,
       const ReferenceFrameTag<rf> reference_frame) const
     {
+      const auto cinertia = Vector6::Constant(constraint_inertia_value);
       computeConstraintInertias(
-        cdata, Vector6::Constant(constraint_inertia_value), I11.const_cast_derived(),
-        I12.const_cast_derived(), I22.const_cast_derived(), reference_frame);
+        cdata, cinertia.asDiagonal(), I11.const_cast_derived(), I12.const_cast_derived(),
+        I22.const_cast_derived(), reference_frame);
     }
 
     template<
-      typename Vector6Like,
+      typename Matrix6LikeIn,
       typename Matrix6LikeOut1,
       typename Matrix6LikeOut2,
       typename Matrix6LikeOut3,
       ReferenceFrame rf>
     void computeConstraintInertias(
       const ConstraintData & cdata,
-      const Eigen::MatrixBase<Vector6Like> & diagonal_constraint_inertia,
+      const Eigen::EigenBase<Matrix6LikeIn> & constraint_inertia,
       const Eigen::MatrixBase<Matrix6LikeOut1> & I11,
       const Eigen::MatrixBase<Matrix6LikeOut2> & I12,
       const Eigen::MatrixBase<Matrix6LikeOut3> & I22,
       const ReferenceFrameTag<rf> reference_frame) const
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector6Like, Vector6);
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeIn, Matrix6);
       EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeOut1, Matrix6);
       EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeOut2, Matrix6);
       EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeOut3, Matrix6);
@@ -299,19 +321,19 @@ namespace pinocchio
       const auto & A2 =
         std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value ? cdata.A2_world : cdata.A2_local;
 
-      Matrix6 diagonal_constraint_inertia_time_A;
+      Matrix6 constraint_inertia_time_A;
       if (this->joint1_id > 0)
       {
-        diagonal_constraint_inertia_time_A = diagonal_constraint_inertia.asDiagonal() * A1;
-        I11.const_cast_derived().noalias() = A1.transpose() * diagonal_constraint_inertia_time_A;
+        constraint_inertia_time_A = constraint_inertia.derived() * A1;
+        I11.const_cast_derived().noalias() = A1.transpose() * constraint_inertia_time_A;
       }
       else
         I11.const_cast_derived().setZero();
 
       if (this->joint2_id > 0)
       {
-        diagonal_constraint_inertia_time_A = diagonal_constraint_inertia.asDiagonal() * A2;
-        I22.const_cast_derived().noalias() = A2.transpose() * diagonal_constraint_inertia_time_A;
+        constraint_inertia_time_A = constraint_inertia.derived() * A2;
+        I22.const_cast_derived().noalias() = A2.transpose() * constraint_inertia_time_A;
       }
       else
         I22.const_cast_derived().setZero();
@@ -319,7 +341,8 @@ namespace pinocchio
       // Compute the cross coupling term
       if (this->joint1_id > 0 && this->joint2_id > 0)
       {
-        I12.const_cast_derived().noalias() = A1.transpose() * diagonal_constraint_inertia_time_A;
+        // constraint_inertia_time_A has been computed just before
+        I12.const_cast_derived().noalias() = A1.transpose() * constraint_inertia_time_A;
       }
       else
         I12.const_cast_derived().setZero();
@@ -332,10 +355,10 @@ namespace pinocchio
     // Methods for algorithms --------
 
     /// \copydoc RootBase::calc
-    template<template<typename, int> class JointCollectionTpl>
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     void calcImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       ConstraintData & cdata) const
     {
       PINOCCHIO_UNUSED_VARIABLE(model);
@@ -382,14 +405,17 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::jacobian
-    template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename JacobianMatrix>
     void jacobianImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
     {
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
       JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
 
       //      const FrameConstraintModelBase & cmodel = *this;
@@ -420,11 +446,14 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::jacobianMatrixProduct
-    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
+    template<
+      typename InputMatrix,
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl>
     typename traits<Derived>::template JacobianMatrixProductReturnType<InputMatrix>::type
     jacobianMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat) const
     {
@@ -439,23 +468,24 @@ namespace pinocchio
     template<
       typename InputMatrix,
       typename OutputMatrix,
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
-      AssignmentOperatorType op = SETTO>
+      AssignmentOperatorType op>
     void jacobianMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat,
       const Eigen::MatrixBase<OutputMatrix> & _res,
-      AssignmentOperatorTag<op> aot = SetTo()) const
+      AssignmentOperatorTag<op> aot) const
     {
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
       typedef typename Data::Vector6 Vector6;
       OutputMatrix & res = _res.const_cast_derived();
 
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize());
       PINOCCHIO_UNUSED_VARIABLE(aot);
 
       if constexpr (std::is_same<AssignmentOperatorTag<op>, SetTo>::value)
@@ -493,11 +523,14 @@ namespace pinocchio
     }
 
     /// \copydoc RootBase::jacobianTransposeMatrixProduct
-    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
+    template<
+      typename InputMatrix,
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl>
     typename traits<Derived>::template JacobianTransposeMatrixProductReturnType<InputMatrix>::type
     jacobianTransposeMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat) const
     {
@@ -512,21 +545,22 @@ namespace pinocchio
     template<
       typename InputMatrix,
       typename OutputMatrix,
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
-      AssignmentOperatorType op = SETTO>
+      AssignmentOperatorType op>
     void jacobianTransposeMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat,
       const Eigen::MatrixBase<OutputMatrix> & _res,
-      AssignmentOperatorTag<op> aot = SetTo()) const
+      AssignmentOperatorTag<op> aot) const
     {
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
       typedef typename Data::Vector6 Vector6;
       OutputMatrix & res = _res.const_cast_derived();
 
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), residualSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), residualSize());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), mat.cols());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), model.nv);
       PINOCCHIO_UNUSED_VARIABLE(aot);
@@ -561,20 +595,22 @@ namespace pinocchio
 
     /// \copydoc RootBase::mapConstraintForceToJointForces
     template<
+      int OtherOptions,
+      int ForceOptions,
       template<typename, int> class JointCollectionTpl,
       typename ForceLike,
       typename ForceAllocator,
       ReferenceFrame rf>
     void mapConstraintForceToJointForcesImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<ForceLike> & constraint_forces,
-      std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces,
+      std::vector<ForceTpl<Scalar, ForceOptions>, ForceAllocator> & joint_forces,
       ReferenceFrameTag<rf> reference_frame) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_forces.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
@@ -592,20 +628,22 @@ namespace pinocchio
 
     /// \copydoc RootBase::mapJointMotionsToConstraintMotion
     template<
+      int OtherOptions,
+      int MotionOptions,
       template<typename, int> class JointCollectionTpl,
       typename MotionAllocator,
       typename VectorLike,
       ReferenceFrame rf>
     void mapJointMotionsToConstraintMotionImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> & joint_accelerations,
+      const std::vector<MotionTpl<Scalar, MotionOptions>, MotionAllocator> & joint_accelerations,
       const Eigen::MatrixBase<VectorLike> & constraint_motion,
       ReferenceFrameTag<rf> reference_frame) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_accelerations.size(), size_t(model.njoints));
-      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motion.rows(), residualSize(cdata));
+      PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motion.rows(), residualSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
@@ -628,22 +666,22 @@ namespace pinocchio
         constraint_motion.const_cast_derived().setZero();
     }
 
-    /// \copydoc RootBase::appendCouplingConstraintInertias
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
-      typename Vector6Like,
+      typename Matrix6Like,
       ReferenceFrame rf>
-    void appendCouplingConstraintInertiasImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    void appendFrameContactConstraintInertias(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::MatrixBase<Vector6Like> & diagonal_constraint_inertia,
+      const Eigen::EigenBase<Matrix6Like> & constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const
     {
       PINOCCHIO_UNUSED_VARIABLE(model);
-
       Matrix6 I11, I12, I22;
-      computeConstraintInertias(cdata, diagonal_constraint_inertia, I11, I12, I22, reference_frame);
+      computeConstraintInertias(cdata, constraint_inertia, I11, I12, I22, reference_frame);
+
       assert(
         (std::is_same<ReferenceFrameTag<rf>, WorldFrameTag>::value
          || std::is_same<ReferenceFrameTag<rf>, LocalFrameTag>::value)
@@ -677,6 +715,80 @@ namespace pinocchio
           data.joint_cross_coupling.get({this->joint2_id, this->joint1_id}) += I12.transpose();
         }
       }
+    }
+
+    /// \copydoc RootBase::appendCouplingConstraintInertias
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename Vector6Like,
+      ReferenceFrame rf>
+    void appendCouplingConstraintInertiasImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::MatrixBase<Vector6Like> & diagonal_constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
+    {
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector6Like, Vector6);
+      appendFrameContactConstraintInertias(
+        model, data, cdata, diagonal_constraint_inertia.asDiagonal(), reference_frame);
+    }
+
+    /// \copydoc RootBase::appendCouplingConstraintInertias
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename MatrixOrMap,
+      typename MapEnable,
+      ReferenceFrame rf>
+    void appendCouplingConstraintInertiasImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
+      const ReferenceFrameTag<rf> reference_frame,
+      std::size_t & inner_constraint_id) const
+    {
+      const auto & constraint_inertia = constraint_inertias[inner_constraint_id];
+
+      assert(constraint_inertia.size() == 6);
+      switch (constraint_inertia.type())
+      {
+      case MatrixBlockType::Zero: {
+        break;
+      }
+      case MatrixBlockType::Identity: {
+        appendFrameContactConstraintInertias(
+          model, data, cdata, Matrix6::Identity(), reference_frame);
+        break;
+      }
+      case MatrixBlockType::ScalarIdentity: {
+        const Scalar inertia_val = constraint_inertia.container()(0, 0);
+        const auto cinertia = Vector6::Constant(inertia_val);
+        appendFrameContactConstraintInertias(
+          model, data, cdata, cinertia.asDiagonal(), reference_frame);
+        break;
+      }
+      case MatrixBlockType::Diagonal: {
+        Vector6 cinertia;
+        constraint_inertia.diagonal(cinertia);
+        appendFrameContactConstraintInertias(
+          model, data, cdata, cinertia.asDiagonal(), reference_frame);
+        break;
+      }
+      case MatrixBlockType::Plain: {
+        Matrix6 cinertia;
+        constraint_inertia.matrix(cinertia);
+        appendFrameContactConstraintInertias(model, data, cdata, cinertia, reference_frame);
+        break;
+      }
+      default:
+        assert(false && "Should never happened");
+      }
+
+      // increment inner constraint id counter
+      ++inner_constraint_id;
     }
 
     /// \copydoc Base::getA1
@@ -720,84 +832,7 @@ namespace pinocchio
 
       return res;
     }
-
-    //      ///
-    //      /// \brief This function computes the spatial inertia associated with the constraint.
-    //      /// This function is useful to express the constraint inertia associated with the
-    //      constraint for
-    //      /// AL settings.
-    //      ///
-    //    template<typename Vector3Like>
-    //    Matrix6 computeConstraintSpatialInertia(
-    //                                            const SE3Tpl<Scalar, Options> & placement,
-    //                                            const Eigen::MatrixBase<Vector3Like> &
-    //                                            diagonal_constraint_inertia) const
-    //    {
-    //      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
-    //      Matrix6 res;
-    //
-    //      const auto & R = placement.rotation();
-    //      const auto & t = placement.translation();
-    //
-    //      typedef Eigen::Matrix<Scalar, 3, 3, Options> Matrix3;
-    //      const Matrix3 R_Sigma = R * diagonal_constraint_inertia.asDiagonal();
-    //      const Matrix3 t_skew = skew(t);
-    //
-    //      auto block_LL = res.template block<3, 3>(SE3::LINEAR, SE3::LINEAR);
-    //      auto block_LA = res.template block<3, 3>(SE3::LINEAR, SE3::ANGULAR);
-    //      auto block_AL = res.template block<3, 3>(SE3::ANGULAR, SE3::LINEAR);
-    //      auto block_AA = res.template block<3, 3>(SE3::ANGULAR, SE3::ANGULAR);
-    //
-    //      block_LL.noalias() = R_Sigma * R.transpose();
-    //      block_LA.noalias() = -block_LL * t_skew;
-    //      block_AL.noalias() = block_LA.transpose();
-    //      block_AA.noalias() = t_skew * block_LA;
-    //
-    //      return res;
-    //    }
-
-    //    template<
-    //    template<typename, int>
-    //    class JointCollectionTpl,
-    //    typename Vector3Like,
-    //    typename Matrix6Like,
-    //    typename Matrix6LikeAllocator>
-    //    void appendCouplingConstraintInertias(
-    //                                                        const ModelTpl<Scalar, Options,
-    //                                                        JointCollectionTpl> & model, const
-    //                                                        DataTpl<Scalar, Options,
-    //                                                        JointCollectionTpl> & data, const
-    //                                                        BilateralFrameConstraintDataTpl<Scalar,
-    //                                                        Options> & cdata, const
-    //                                                        Eigen::MatrixBase<Vector3Like> &
-    //                                                        diagonal_constraint_inertia,
-    //                                                        std::vector<Matrix6Like,
-    //                                                        Matrix6LikeAllocator> & inertias)
-    //                                                        const
-    //    {
-    //      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
-    //      PINOCCHIO_UNUSED_VARIABLE(data);
-    //      PINOCCHIO_UNUSED_VARIABLE(cdata);
-    //      PINOCCHIO_CHECK_ARGUMENT_SIZE(inertias.size(), size_t(model.njoints));
-    //      assert(
-    //             ((joint1_id > 0 && joint2_id == 0) || (joint1_id == 0 && joint2_id > 0))
-    //             && "The behavior is only defined for this context");
-    //
-    //      if (this->joint1_id != 0)
-    //      {
-    //        const SE3 & placement = this->joint1_placement;
-    //        inertias[this->joint1_id] +=
-    //        computeConstraintSpatialInertia(placement, diagonal_constraint_inertia);
-    //      }
-    //
-    //      if (this->joint2_id != 0)
-    //      {
-    //        const SE3 & placement = this->joint2_placement;
-    //        inertias[this->joint2_id] +=
-    //        computeConstraintSpatialInertia(placement, diagonal_constraint_inertia);
-    //      }
-    //    }
-  }; // FrameConstraintModelBase<Derived>
+  }; // struct FrameConstraintModelBase
 
 } // namespace pinocchio
 

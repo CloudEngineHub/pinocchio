@@ -58,14 +58,14 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
     {
       total_size += model.joints[joint_id].nv();
     }
-    BOOST_CHECK(constraint.maxResidualSize() == total_size);
+    BOOST_CHECK(constraint.residualSize() == total_size);
     BOOST_CHECK(constraint.getActiveDofs().size() == size_t(total_size));
   }
 
   // Check sparsity pattern
   {
     const EigenIndexVector & active_dofs = constraint.getActiveDofs();
-    for (size_t row_id = 0; row_id < size_t(constraint.maxResidualSize()); ++row_id)
+    for (size_t row_id = 0; row_id < size_t(constraint.residualSize()); ++row_id)
     {
       const Eigen::Index dof_id = active_dofs[row_id];
       const BooleanVector & row_sparsity_pattern =
@@ -133,11 +133,11 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
   JointFrictionConstraintModel constraint_model(model, active_joint_ids);
   JointFrictionConstraintData constraint_data(constraint_model);
 
-  Eigen::MatrixXd jacobian_matrix(constraint_model.maxResidualSize(), model.nv);
+  Eigen::MatrixXd jacobian_matrix(constraint_model.residualSize(), model.nv);
   constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
 
   const EigenIndexVector & active_dofs = constraint_model.getActiveDofs();
-  for (Eigen::Index row_id = 0; row_id < constraint_model.maxResidualSize(); ++row_id)
+  for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(); ++row_id)
   {
     const Eigen::Index dof_id = active_dofs[size_t(row_id)];
     BOOST_CHECK(jacobian_matrix.row(row_id).sum() == 1.);
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
 
   constraint_model.calc(model, data, constraint_data);
   const Eigen::VectorXd diagonal_inertia =
-    Eigen::VectorXd::Random(constraint_model.residualSize(constraint_data)).array().square();
+    Eigen::VectorXd::Random(constraint_model.residualSize()).array().square();
   constraint_model.appendCouplingConstraintInertias(
     model, data, constraint_data, diagonal_inertia, WorldFrameTag());
 
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
     //    std::cout << "----" << std::endl;
   }
 
-  Eigen::MatrixXd jacobian_matrix(constraint_model.residualSize(constraint_data), model.nv);
+  Eigen::MatrixXd jacobian_matrix(constraint_model.residualSize(), model.nv);
   constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
 
   const Eigen::MatrixXd joint_space_constraint_inertia =
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE(check_maps)
   // Test mapConstraintForcesToJointTorques
   {
     const Eigen::VectorXd constraint_forces =
-      Eigen::VectorXd::Random(constraint_model.residualSize(constraint_data));
+      Eigen::VectorXd::Random(constraint_model.residualSize());
 
     Eigen::VectorXd joint_torques_ref = Eigen::VectorXd::Zero(model.nv);
     joint_torques_ref = constraint_jacobian_ref.transpose() * constraint_forces;
@@ -266,17 +266,15 @@ BOOST_AUTO_TEST_CASE(check_maps)
   {
     const Eigen::VectorXd joint_motions = Eigen::VectorXd::Random(model.nv);
 
-    Eigen::VectorXd constraint_motions_ref =
-      Eigen::VectorXd::Zero(constraint_model.residualSize(constraint_data));
+    Eigen::VectorXd constraint_motions_ref = Eigen::VectorXd::Zero(constraint_model.residualSize());
     constraint_motions_ref = constraint_jacobian_ref * joint_motions;
 
     Eigen::VectorXd constraint_motions_ref2 =
-      Eigen::VectorXd::Zero(constraint_model.residualSize(constraint_data));
+      Eigen::VectorXd::Zero(constraint_model.residualSize());
     constraint_model.jacobianMatrixProduct(
       model, data_ref, constraint_data_ref, joint_motions, constraint_motions_ref2, SetTo());
 
-    Eigen::VectorXd constraint_motions =
-      -Eigen::VectorXd::Ones(constraint_model.residualSize(constraint_data));
+    Eigen::VectorXd constraint_motions = -Eigen::VectorXd::Ones(constraint_model.residualSize());
     constraint_model.mapJointMotionsToConstraintMotion(
       model, data_ref, constraint_data, joint_motions, constraint_motions);
 

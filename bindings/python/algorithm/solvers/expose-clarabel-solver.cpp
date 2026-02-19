@@ -26,10 +26,11 @@ namespace pinocchio
     namespace bp = boost::python;
 
     typedef context::Scalar Scalar;
+    static constexpr int Options = context::Options;
     typedef context::VectorXs VectorXs;
     typedef context::MatrixXs MatrixXs;
 
-    typedef ClarabelConstraintSolverTpl<Scalar> ClarabelConstraintSolver;
+    typedef ClarabelConstraintSolverTpl<Scalar, Options> ClarabelConstraintSolver;
     typedef typename ClarabelConstraintSolver::ClarabelSolverSettings ClarabelSolverSettings;
     typedef typename ClarabelConstraintSolver::ClarabelSolverResult ClarabelSolverResult;
 
@@ -38,7 +39,7 @@ namespace pinocchio
     typedef ConstraintSolverStatsBaseTpl<Scalar> ConstraintSolverStatsBase;
     typedef ConstraintSolverBaseTpl<Scalar> ConstraintSolverBase;
 
-    typedef ContactCholeskyDecompositionTpl<Scalar, context::Options> ContactCholeskyDecomposition;
+    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
 
     // ============================================================================
     // Expose ClarabelSolverSettings (inheriting from base)
@@ -195,7 +196,7 @@ namespace pinocchio
     #ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
         {
           typedef Eigen::AccelerateLLT<context::SparseMatrix> AccelerateLLT;
-          typedef DelassusOperatorSparseTpl<context::Scalar, context::Options, AccelerateLLT>
+          typedef DelassusOperatorSparseTpl<context::Scalar, Options, AccelerateLLT>
             DelassusOperatorSparseAccelerate;
           class_.def(
             "solve",

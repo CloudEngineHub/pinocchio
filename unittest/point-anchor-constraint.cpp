@@ -65,13 +65,13 @@ BOOST_AUTO_TEST_CASE(basic_constructor)
   PointAnchorConstraintModel cmodel2(model, 0, M);
   BOOST_CHECK(cmodel2.joint1_id == 0);
   BOOST_CHECK(cmodel2.joint1_placement == M);
-  BOOST_CHECK(cmodel2.maxResidualSize() == 3);
+  BOOST_CHECK(cmodel2.residualSize() == 3);
 
   // Check contructor with two arguments
   PointAnchorConstraintModel cmodel2prime(model, 0);
   BOOST_CHECK(cmodel2prime.joint1_id == 0);
   BOOST_CHECK(cmodel2prime.joint1_placement.isIdentity(0.));
-  BOOST_CHECK(cmodel2prime.maxResidualSize() == 3);
+  BOOST_CHECK(cmodel2prime.residualSize() == 3);
 
   // Check default copy constructor
   PointAnchorConstraintModel cmodel3(cmodel2);
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
     const Eigen::Vector3d diagonal_inertia(1, 2, 3);
 
     const pinocchio::SE3::Matrix6 spatial_inertia =
-      cm.computeConstraintSpatialInertia(placement_with_correction, diagonal_inertia);
+      cm.computeConstraintSpatialInertia(placement_with_correction, diagonal_inertia.asDiagonal());
     BOOST_CHECK(spatial_inertia.transpose().isApprox(spatial_inertia)); // check symmetric matrix
 
     const auto A1 = cm.getA1(cd, LocalFrameTag());
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
     const Eigen::Vector3d diagonal_inertia = Eigen::Vector3d::Constant(constant_value);
 
     const pinocchio::SE3::Matrix6 spatial_inertia =
-      cm.computeConstraintSpatialInertia(placement_with_correction, diagonal_inertia);
+      cm.computeConstraintSpatialInertia(placement_with_correction, diagonal_inertia.asDiagonal());
     BOOST_CHECK(spatial_inertia.transpose().isApprox(spatial_inertia)); // check symmetric matrix
 
     const auto A1 = cm.getA1(cd, LocalFrameTag());
@@ -526,7 +526,7 @@ BOOST_AUTO_TEST_CASE(cholesky)
 
   crba(model, data_ref, q, Convention::WORLD);
   make_symmetric(data_ref.M);
-  const auto total_size = getTotalConstraintResidualSize(constraint_models, constraint_datas);
+  const auto total_size = getTotalConstraintResidualSize(constraint_models);
   Eigen::MatrixXd J_constraints(total_size, model.nv);
   J_constraints.setZero();
   getConstraintsJacobian(model, data_ref, constraint_models, constraint_datas, J_constraints);
