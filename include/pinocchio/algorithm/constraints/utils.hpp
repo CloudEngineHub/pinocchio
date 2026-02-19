@@ -8,6 +8,7 @@
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 #include "pinocchio/utils/reference.hpp"
+#include "pinocchio/math/block-diagonal-matrix.hpp"
 
 namespace pinocchio
 {
@@ -493,6 +494,56 @@ namespace pinocchio
     const std::vector<MotionTpl<Scalar, MotionOptions>, MotionAllocator> & joint_motions,
     const Eigen::MatrixBase<MotionMatrix> & constraint_motions,
     ReferenceFrameTag<rf> reference_frame);
+
+  /// \brief Block diagonal dispatcher list.
+  enum struct BlockDiagonalDispatcherType
+  {
+    DIAGONAL_DISPATCH,
+    IPM_DISPATCH,
+  };
+
+  ///  \brief Assignment operator tags
+  template<BlockDiagonalDispatcherType val>
+  struct BlockDiagonalDispatcherTag
+  {
+  };
+
+  using DiagonalDispatcher =
+    BlockDiagonalDispatcherTag<BlockDiagonalDispatcherType::DIAGONAL_DISPATCH>;
+  using IPMBlockDiagonalDispatcher =
+    BlockDiagonalDispatcherTag<BlockDiagonalDispatcherType::IPM_DISPATCH>;
+
+  ///
+  /// \brief Constructs the block diagonal pattern for a given vector of constraint models.
+  ///
+  /// \param[in] constraint_models Vector of constraint models.
+  /// \param[out] block_diagonal_infos Vector of block diagonal pattern.
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename BlockDiagonalElement,
+    BlockDiagonalDispatcherType op = BlockDiagonalDispatcherType::DIAGONAL_DISPATCH>
+  void computeBlockDiagonalPattern(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    std::vector<BlockDiagonalElement> & block_diagonal_infos,
+    BlockDiagonalDispatcherTag<op> dispatcher = DiagonalDispatcher());
+
+  ///
+  /// \brief Construct a positive definite (hence invertible) block diagonal matrix
+  /// given a vector of constraint models.
+  ///
+  /// \param[in] constraint_models Vector of constraint models.
+  /// \param[in/out] block_diagonal_matrix Invertible (PD) block diagonal matrix.
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename Scalar,
+    int Options,
+    std::size_t Alignment>
+  void constructPositiveDefiniteBlockDiagonalMatrix(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & block_diagonal_matrix);
+
 } // namespace pinocchio
 
 #include "pinocchio/algorithm/constraints/utils.hxx"

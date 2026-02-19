@@ -182,6 +182,12 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/macros.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/unsupported.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/arithmetic-operators.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-expression.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-inverse.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-sum.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/comparison-operators.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-1x1.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-2x2.hpp
@@ -202,11 +208,20 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/lanczos-decomposition.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-operation.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-plain.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-operations.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-type.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-info.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-inverse.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-inverse-code-generated.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-product.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/multiprecision.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/multiprecision-mpfr.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/assign-operators.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/quaternion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/rotation.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/rpy.hpp
@@ -293,6 +308,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/archive.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/block-diagonal-matrix.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-model.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-set.hpp
@@ -316,6 +332,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-motion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-motion-subspace.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-transform.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/matrix-block-element.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/model.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/motion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/se3.hpp

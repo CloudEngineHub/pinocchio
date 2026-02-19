@@ -175,6 +175,8 @@ add_pinocchio_unit_test(size-in-bytes HEADER_ONLY)
 # Math components
 add_pinocchio_unit_test(eigen-basic-op HEADER_ONLY)
 add_pinocchio_unit_test(matrix HEADER_ONLY)
+add_pinocchio_unit_test(block-diagonal-matrix HEADER_ONLY)
+add_pinocchio_unit_test(matrix-block-element HEADER_ONLY)
 add_pinocchio_unit_test(eigen-tensor HEADER_ONLY)
 add_pinocchio_unit_test(sincos HEADER_ONLY)
 add_pinocchio_unit_test(quaternion HEADER_ONLY)

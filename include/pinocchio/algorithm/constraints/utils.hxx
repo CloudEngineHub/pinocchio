@@ -10,6 +10,7 @@
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/utils/reference.hpp"
 
+#include "pinocchio/math/matrix-block-type.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 
 namespace pinocchio
@@ -386,6 +387,251 @@ namespace pinocchio
       cmodel.jacobianTransposeMatrixProduct(model, data, cdata, rhs_block, res, aot_internal());
 
       row_id += constraint_size;
+    }
+  }
+
+  namespace internal
+  {
+    /**
+     * @brief ComputeBlockDiagonalPatternImpl functor
+     * Computes the block pattern for a specific constraint.
+     */
+
+    // Default implementation of computing the block diagonal matrix block_infos
+    // for this constraint.
+    template<typename ConstraintModel, class = void>
+    struct ComputeBlockDiagonalPatternImpl
+    {
+      template<typename BlockInfoVector, BlockDiagonalDispatcherType op>
+      static void run(
+        const ConstraintModel & cmodel,
+        BlockInfoVector & block_infos,
+        BlockDiagonalDispatcherTag<op> dispatcher)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(cmodel);
+        PINOCCHIO_UNUSED_VARIABLE(block_infos);
+        PINOCCHIO_UNUSED_VARIABLE(dispatcher);
+
+        static_assert(
+          false, "ComputeBlockDiagonalPatternImpl not implemented for this constraint.");
+      }
+    };
+
+    // Specialization of compute block_infos for FrameAnchor.
+    template<typename Scalar, int Options>
+    struct ComputeBlockDiagonalPatternImpl<FrameAnchorConstraintModelTpl<Scalar, Options>>
+    {
+      typedef FrameAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
+
+      template<typename BlockInfoVector, BlockDiagonalDispatcherType op>
+      static void run(
+        const ConstraintModel & cmodel,
+        BlockInfoVector & block_infos,
+        BlockDiagonalDispatcherTag<op> dispatcher)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(cmodel);
+        PINOCCHIO_UNUSED_VARIABLE(dispatcher);
+        assert(ConstraintModel::SymmetricConeSize != Eigen::Dynamic);
+
+        // equality constraint -> prox term -> Scalar Identity
+        block_infos.emplace_back(MatrixBlockType::ScalarIdentity, ConstraintModel::Size);
+      }
+    };
+
+    // Specialization of compute block_infos for PointAnchor.
+    template<typename Scalar, int Options>
+    struct ComputeBlockDiagonalPatternImpl<PointAnchorConstraintModelTpl<Scalar, Options>>
+    {
+      typedef PointAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
+
+      template<typename BlockInfoVector, BlockDiagonalDispatcherType op>
+      static void run(
+        const ConstraintModel & cmodel,
+        BlockInfoVector & block_infos,
+        BlockDiagonalDispatcherTag<op> dispatcher)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(cmodel);
+        PINOCCHIO_UNUSED_VARIABLE(dispatcher);
+        assert(ConstraintModel::SymmetricConeSize != Eigen::Dynamic);
+
+        // equality constraint -> prox term -> Scalar Identity
+        block_infos.emplace_back(MatrixBlockType::ScalarIdentity, ConstraintModel::Size);
+      }
+    };
+
+    // Specialization of compute block_infos for PointContact.
+    template<typename Scalar, int Options>
+    struct ComputeBlockDiagonalPatternImpl<PointContactConstraintModelTpl<Scalar, Options>>
+    {
+      typedef PointContactConstraintModelTpl<Scalar, Options> ConstraintModel;
+
+      template<typename BlockInfoVector, BlockDiagonalDispatcherType op>
+      static void run(
+        const ConstraintModel & cmodel,
+        BlockInfoVector & block_infos,
+        BlockDiagonalDispatcherTag<op> dispatcher)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(cmodel);
+        PINOCCHIO_UNUSED_VARIABLE(dispatcher);
+        assert(ConstraintModel::SymmetricConeSize != Eigen::Dynamic);
+
+        if constexpr (std::is_same<BlockDiagonalDispatcherTag<op>, DiagonalDispatcher>::value)
+        {
+          block_infos.emplace_back(MatrixBlockType::ScalarIdentity, ConstraintModel::Size);
+        }
+
+        if constexpr (std::is_same<
+                        BlockDiagonalDispatcherTag<op>, IPMBlockDiagonalDispatcher>::value)
+        {
+          // for ipm, point contact -> 3x3 block
+          block_infos.emplace_back(MatrixBlockType::Plain, ConstraintModel::Size);
+        }
+      }
+    };
+
+    // Specialization of compute block_infos for JointLimit.
+    template<typename Scalar, int Options>
+    struct ComputeBlockDiagonalPatternImpl<JointLimitConstraintModelTpl<Scalar, Options>>
+    {
+      typedef JointLimitConstraintModelTpl<Scalar, Options> ConstraintModel;
+
+      template<typename BlockInfoVector, BlockDiagonalDispatcherType op>
+      static void run(
+        const ConstraintModel & cmodel,
+        BlockInfoVector & block_infos,
+        BlockDiagonalDispatcherTag<op> dispatcher)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(dispatcher);
+
+        if constexpr (std::is_same<BlockDiagonalDispatcherTag<op>, DiagonalDispatcher>::value)
+        {
+          block_infos.emplace_back(MatrixBlockType::ScalarIdentity, cmodel.residualSize());
+        }
+
+        if constexpr (std::is_same<
+                        BlockDiagonalDispatcherTag<op>, IPMBlockDiagonalDispatcher>::value)
+        {
+          block_infos.emplace_back(MatrixBlockType::Diagonal, cmodel.residualSize());
+        }
+      }
+    };
+
+    // Specialization of compute block_infos for JointFriction.
+    template<typename Scalar, int Options>
+    struct ComputeBlockDiagonalPatternImpl<JointFrictionConstraintModelTpl<Scalar, Options>>
+    {
+      typedef JointFrictionConstraintModelTpl<Scalar, Options> ConstraintModel;
+
+      template<typename BlockInfoVector, BlockDiagonalDispatcherType op>
+      static void run(
+        const ConstraintModel & cmodel,
+        BlockInfoVector & block_infos,
+        BlockDiagonalDispatcherTag<op> dispatcher)
+      {
+        PINOCCHIO_UNUSED_VARIABLE(dispatcher);
+
+        if constexpr (std::is_same<BlockDiagonalDispatcherTag<op>, DiagonalDispatcher>::value)
+        {
+          block_infos.emplace_back(MatrixBlockType::ScalarIdentity, cmodel.residualSize());
+        }
+
+        if constexpr (std::is_same<
+                        BlockDiagonalDispatcherTag<op>, IPMBlockDiagonalDispatcher>::value)
+        {
+          block_infos.emplace_back(MatrixBlockType::Diagonal, cmodel.residualSize());
+        }
+      }
+    };
+
+    /**
+     * @brief ComputeBlockDiagonalPatternVisitor visitor
+     */
+    template<typename BlockInfoVector, BlockDiagonalDispatcherType op>
+    struct ComputeBlockDiagonalPatternVisitor
+    : visitors::ConstraintUnaryVisitorBase<ComputeBlockDiagonalPatternVisitor<BlockInfoVector, op>>
+    {
+      typedef boost::fusion::vector<BlockInfoVector &, BlockDiagonalDispatcherTag<op>> ArgsType;
+
+      typedef visitors::ConstraintUnaryVisitorBase<
+        ComputeBlockDiagonalPatternVisitor<BlockInfoVector, op>>
+        Base;
+      using Base::run;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const ConstraintModelBase<ConstraintModel> & cmodel,
+        BlockInfoVector & block_infos,
+        BlockDiagonalDispatcherTag<op> dispatcher)
+      {
+        typedef ComputeBlockDiagonalPatternImpl<ConstraintModel> Impl;
+        Impl::run(cmodel.derived(), block_infos, dispatcher);
+      }
+
+      template<typename ConstraintModel>
+      static void run(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        BlockInfoVector & block_infos,
+        BlockDiagonalDispatcherTag<op> dispatcher)
+      {
+        algo(cmodel.derived(), block_infos, dispatcher);
+      }
+
+      template<
+        typename Scalar,
+        int Options,
+        template<typename S, int O> class ConstraintCollectionTpl>
+      static void run(
+        const pinocchio::ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+        BlockInfoVector & block_infos,
+        BlockDiagonalDispatcherTag<op> dispatcher)
+      {
+        ArgsType args(block_infos, dispatcher);
+        run(cmodel.derived(), args);
+      }
+    }; // struct ComputeBlockDiagonalPatternVisitor
+  } // namespace internal
+
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename BlockDiagonalElement,
+    BlockDiagonalDispatcherType op>
+  void computeBlockDiagonalPattern(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    std::vector<BlockDiagonalElement> & block_diagonal_infos,
+    BlockDiagonalDispatcherTag<op> dispatcher)
+  {
+    block_diagonal_infos.clear();
+    block_diagonal_infos.reserve(constraint_models.size());
+
+    for (std::size_t i = 0; i < constraint_models.size(); ++i)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+
+      typedef internal::ComputeBlockDiagonalPatternVisitor<decltype(block_diagonal_infos), op> Algo;
+      Algo::run(cmodel, block_diagonal_infos, dispatcher);
+    }
+  }
+
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename Scalar,
+    int Options,
+    std::size_t Alignment>
+  void constructPositiveDefiniteBlockDiagonalMatrix(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & block_diagonal_matrix)
+  {
+    typedef BlockDiagonalMatrixTpl<Scalar, Options, Alignment> BlockDiagonalMatrix;
+    typedef typename BlockDiagonalMatrix::MatrixBlockElement MatrixBlockElement;
+    std::vector<MatrixBlockElement> block_diagonal_infos;
+    computeBlockDiagonalPattern(
+      constraint_models, block_diagonal_infos, IPMBlockDiagonalDispatcher());
+    block_diagonal_matrix.rebuild(block_diagonal_infos);
+    for (auto & block : block_diagonal_matrix.blocks())
+    {
+      block.setRandomPD();
     }
   }
 

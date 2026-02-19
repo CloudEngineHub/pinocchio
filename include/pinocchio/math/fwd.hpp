@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2016-2018 CNRS
-// Copyright (c) 2018-2025 INRIA
+// Copyright (c) 2018-2026 INRIA
 //
 
 #ifndef __pinocchio_math_fwd_hpp__
@@ -19,6 +19,27 @@ namespace pinocchio
 
   template<typename T>
   struct EigenMatrixExpression;
+
+  template<typename Op, typename Type>
+  struct UnaryOperator;
+
+  template<typename Op, typename LhsType, typename RhsType>
+  struct BinaryOperator;
+
+  template<typename T>
+  struct Inverse;
+
+  template<typename Lhs, typename Rhs>
+  struct Sum;
+
+  template<typename Scalar, int Options, std::size_t Alignment = alignof(std::max_align_t)>
+  struct BlockDiagonalMatrixTpl;
+
+  template<typename MatrixOrMap, typename Enable = void>
+  struct MatrixBlockElementTpl;
+
+  template<typename Derived>
+  struct MatrixBlockElementPlain;
 
   template<typename T>
   struct is_floating_point : ::std::is_floating_point<T>
@@ -105,5 +126,7 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
+
+#include "pinocchio/math/assign-operators.hpp"
 
 #endif // #ifndef __pinocchio_math_fwd_hpp__

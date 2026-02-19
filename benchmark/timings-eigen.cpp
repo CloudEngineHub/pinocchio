@@ -8,7 +8,7 @@
 #include <iostream>
 #include <benchmark/benchmark.h>
 
-#include "pinocchio/utils/eigen.hpp"
+#include "pinocchio/utils/promote-static-eval.hpp"
 #include "pinocchio/math/matrix-product.hpp"
 
 using namespace Eigen;

@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2018-2021 CNRS
-// Copyright (c) 2018-2025 INRIA
+// Copyright (c) 2018-2026 INRIA
 //
 #include "pinocchio/bindings/python/algorithm/algorithms.hpp"
 #include "pinocchio/algorithm/kinematics-derivatives.hpp"
@@ -243,6 +243,35 @@ namespace pinocchio
           const ReferenceFrame))&getJointKinematicHessian<Scalar, Options, JointCollectionDefaultTpl>,
         bp::args("model", "data", "joint_id", "reference_frame"),
         "Retrieves the kinematic Hessian of a given joint according to the values aleardy computed "
+        "by computeJointKinematicHessians and stored in data.\n"
+        "While the kinematic Jacobian of a given joint frame corresponds to the first order "
+        "derivative of the placement variation with respect to \f$ q \f$, the kinematic Hessian "
+        "corresponds to the second order derivation of placement variation, which in turns also "
+        "corresponds to the first order derivative of the kinematic Jacobian.",
+        mimic_not_supported_function<>(0));
+
+      bp::def(
+        "getFrameKinematicHessian",
+        (Tensor3(*)(
+          const context::Model &, const context::Data &, const FrameIndex,
+          const ReferenceFrame))&getFrameKinematicHessian<Scalar, Options, JointCollectionDefaultTpl>,
+        bp::args("model", "data", "frame_id", "reference_frame"),
+        "Retrieves the kinematic Hessian of a given frame according to the values aleardy computed "
+        "by computeJointKinematicHessians and stored in data.\n"
+        "While the kinematic Jacobian of a given joint frame corresponds to the first order "
+        "derivative of the placement variation with respect to \f$ q \f$, the kinematic Hessian "
+        "corresponds to the second order derivation of placement variation, which in turns also "
+        "corresponds to the first order derivative of the kinematic Jacobian.",
+        mimic_not_supported_function<>(0));
+
+      bp::def(
+        "getFrameKinematicHessian",
+        (Tensor3(*)(
+          const context::Model &, const context::Data &, const JointIndex, const context::SE3 &,
+          const ReferenceFrame))&getFrameKinematicHessian<Scalar, Options, JointCollectionDefaultTpl>,
+        bp::args("model", "data", "joint_id", "frame_placement", "reference_frame"),
+        "Retrieves the kinematic Hessian of a given frame, given by the related joint_id and "
+        "frame_placement, leveraging to the values aleardy computed "
         "by computeJointKinematicHessians and stored in data.\n"
         "While the kinematic Jacobian of a given joint frame corresponds to the first order "
         "derivative of the placement variation with respect to \f$ q \f$, the kinematic Hessian "
