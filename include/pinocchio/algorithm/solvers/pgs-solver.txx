@@ -5,6 +5,8 @@
 #ifndef __pinocchio_algorithm_solvers_pgs_solver_txx__
 #define __pinocchio_algorithm_solvers_pgs_solver_txx__
 
+#ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
+
 namespace pinocchio
 {
 
@@ -58,5 +60,7 @@ namespace pinocchio
     PGSSolverResultTpl<context::Scalar, context::Options> &);
 
 } // namespace pinocchio
+
+#endif // ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
 
 #endif // ifndef __pinocchio_algorithm_solvers_pgs_solver_txx__

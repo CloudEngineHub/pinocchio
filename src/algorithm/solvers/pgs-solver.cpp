@@ -2,10 +2,13 @@
 // Copyright (c) 2026 INRIA
 //
 
-#include "pinocchio/algorithm/solvers/pgs-solver.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
-#include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
-#include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
+#include "pinocchio/context.hpp"
+#ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
+
+  #include "pinocchio/algorithm/solvers/pgs-solver.hpp"
+  #include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
+  #include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
+  #include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
 
 namespace pinocchio
 {
@@ -60,3 +63,5 @@ namespace pinocchio
     PGSSolverResultTpl<context::Scalar, context::Options> &);
 
 } // namespace pinocchio
+
+#endif // ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
