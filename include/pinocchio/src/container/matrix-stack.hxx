@@ -285,21 +285,24 @@ namespace pinocchio
 
       m_memory_capacity = other.raw_size();
 
-      if (m_memory_capacity == 0)
+      if (m_memory_capacity > 0)
+      {
+        m_data_ptr = MatrixStackTpl::malloc(m_memory_capacity);
+        if (m_data_ptr == nullptr)
+        {
+          m_memory_capacity = 0;
+          m_matrix_maps.clear();
+          m_offsets.clear();
+          return *this;
+        }
+
+        // Copy raw data
+        std::memcpy(m_data_ptr, other.m_data_ptr, m_memory_capacity);
+      }
+      else
       {
         m_data_ptr = nullptr;
-        return *this;
       }
-
-      m_data_ptr = MatrixStackTpl::malloc(m_memory_capacity);
-      if (m_data_ptr == nullptr)
-      {
-        m_memory_capacity = 0;
-        return *this;
-      }
-
-      // Copy raw data
-      std::memcpy(m_data_ptr, other.m_data_ptr, m_memory_capacity);
 
       // Add aligned map
       m_matrix_maps.clear();
@@ -310,10 +313,16 @@ namespace pinocchio
         const auto offset_value = m_offsets[i];
         const auto & other_matrix_map = other.m_matrix_maps[i];
 
-        void * aligned_data = incr_ptr(m_data_ptr, offset_value);
-        assert(
-          reinterpret_cast<std::size_t>(aligned_data) % Alignment == 0
-          && "aligned_data is not properly aligned.");
+        // Note: the matrix stack can contain empty maps even if there is no data
+        // in the stack.
+        // For example, if the matrix stack has a 0 x 0 matrix or 0 x 1 vector.
+        void * aligned_data = m_data_ptr ? incr_ptr(m_data_ptr, offset_value) : nullptr;
+        if (aligned_data != nullptr)
+        {
+          assert(
+            reinterpret_cast<std::size_t>(aligned_data) % Alignment == 0
+            && "aligned_data is not properly aligned.");
+        }
 
         MapType aligned_map = MapType(
           reinterpret_cast<Scalar *>(aligned_data), other_matrix_map.rows(),

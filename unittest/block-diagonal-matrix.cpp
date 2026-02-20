@@ -572,4 +572,14 @@ BOOST_AUTO_TEST_CASE(test_rebuild)
     block_diagonal_matrix2.getMatrixStack().data() != block_diagonal_matrix2_data_ptr); // realloc
 }
 
+BOOST_AUTO_TEST_CASE(test_operator_equal)
+{
+  BlockDiagonalMatrix bdm;
+  bdm = Eigen::VectorXd::Constant(0, 3.14).asDiagonal();
+
+  BlockDiagonalMatrix bdm2 = bdm;
+
+  BOOST_CHECK(bdm2 == bdm);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
