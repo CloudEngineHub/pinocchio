@@ -9,49 +9,71 @@
 #include "pinocchio/algorithm/constraints/point-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/point-constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/sets/full-space-cone.hpp"
+#include "pinocchio/algorithm/constraints/sets/zero-cone-jordan-operation.hpp"
 
 namespace pinocchio
 {
 
+  // --------------------------------------------------------------
+  // Cast
+  // --------------------------------------------------------------
   template<typename NewScalar, typename Scalar, int Options>
   struct CastType<NewScalar, PointAnchorConstraintModelTpl<Scalar, Options>>
   {
     typedef PointAnchorConstraintModelTpl<NewScalar, Options> type;
   };
 
+  // --------------------------------------------------------------
+  // Traits
+  // --------------------------------------------------------------
   template<typename _Scalar, int _Options>
   struct traits<PointAnchorConstraintModelTpl<_Scalar, _Options>>
   : traits<PointConstraintModelBase<PointAnchorConstraintModelTpl<_Scalar, _Options>>>
   {
-    typedef _Scalar Scalar;
-
-    static constexpr int Options = _Options;
-    static constexpr int Size = 3;
-
     // --------------------------------------------------------------
     // Traits referencing the constraint and associated types
     // --------------------------------------------------------------
-    typedef PointAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef PointAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
+    typedef PointAnchorConstraintModelTpl<_Scalar, _Options> ConstraintModel;
+    typedef PointAnchorConstraintDataTpl<_Scalar, _Options> ConstraintData;
+
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
 
     // --------------------------------------------------------------
-    // Traits for the algorithmic methods on current state
+    // Traits characterizing the constraints
     // --------------------------------------------------------------
-    // Elementary types
+    typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
+
+    static constexpr ConstraintFormulationLevel constraint_formulation_level =
+      ConstraintFormulationLevel::POSITION_LEVEL;
+    // constraint_size_type = ConstraintSizeType::STATIC;
+
+    static constexpr bool has_baumgarte_corrector = true;
+    static constexpr bool has_set = true;
+    static constexpr bool is_inequality_constraint = false;
+
+    // --------------------------------------------------------------
+    // Traits for associated struct and sizes
+    // --------------------------------------------------------------
+    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
+    typedef ZeroConeJordanOperationTpl<Scalar, Options> JordanOperation;
+    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+
+    static constexpr int Size = 3;
+    static constexpr int SymmetricConeSize = JordanOperation::ConeSize;
+    static constexpr int SymmetricConeScalingSize = JordanOperation::ConeScalingSize;
+
+    // --------------------------------------------------------------
+    // Traits that are helper for Eigen types
+    // --------------------------------------------------------------
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> ResidualVectorType;
     typedef Eigen::Matrix<Scalar, Size, Eigen::Dynamic, Options> JacobianMatrixType;
-    typedef Eigen::Matrix<Scalar, Size, 1, Options> VectorConstraintSize;
+    typedef Eigen::Matrix<Scalar, SymmetricConeSize, 1, Options> ConeVectorType;
+    typedef Eigen::Matrix<Scalar, SymmetricConeScalingSize, 1, Options> ConeScalingVectorType;
 
-    typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
-
-    // -------------------------------
-    // Traits for holded Data
-    // -------------------------------
-    typedef Eigen::Matrix<Scalar, Size, 1, Options> ComplianceVectorType;
-    typedef ComplianceVectorType & ComplianceVectorTypeRef;
-    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+    typedef Eigen::Matrix<Scalar, 1, Eigen::Dynamic, Eigen::RowMajor> RowVectorXs;
   };
 
   template<typename _Scalar, int _Options>
@@ -61,28 +83,52 @@ namespace pinocchio
   };
 
   ///
-  /// \brief Contact model structure containg all the info describing the rigid contact model
+  /// \brief Contact model structure containing all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct PointAnchorConstraintModelTpl
   : PointConstraintModelBase<PointAnchorConstraintModelTpl<_Scalar, _Options>>
   {
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
+    typedef PointAnchorConstraintModelTpl Self;
+    typedef PointConstraintModelBase<Self> Base;
+    typedef ConstraintModelCommonParameters<Self> BaseCommonParameters;
+    typedef ConstraintModelBase<Self> RootBase;
 
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
 
-    typedef PointConstraintModelBase<PointAnchorConstraintModelTpl> Base;
-    typedef ConstraintModelBase<PointAnchorConstraintModelTpl> RootBase;
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
 
+    static constexpr ConstraintSizeType constraint_size_type = traits<Self>::constraint_size_type;
+
+    static constexpr bool has_baumgarte_corrector = traits<Self>::has_baumgarte_corrector;
+
+    typedef typename traits<Self>::ConstraintSet ConstraintSet;
+    typedef typename traits<Self>::JordanOperation JordanOperation;
+    typedef typename traits<Self>::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
+
+    static constexpr int Size = traits<Self>::Size;
+    static constexpr int SymmetricConeSize = traits<Self>::SymmetricConeSize;
+    static constexpr int SymmetricConeScalingSize = traits<Self>::SymmetricConeScalingSize;
+
+    typedef typename traits<Self>::ResidualVectorType ResidualVectorType;
+    typedef typename traits<Self>::JacobianMatrixType JacobianMatrixType;
+    typedef typename traits<Self>::ConeVectorType ConeVectorType;
+    typedef typename traits<Self>::ConeScalingVectorType ConeScalingVectorType;
+
+    // Friendship ---------------------------------------------------
     template<typename NewScalar, int NewOptions>
     friend struct PointAnchorConstraintModelTpl;
 
-    typedef PointAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
-
+    // Base usage ---------------------------------------------------
+    using RootBase::classname;
     using typename Base::SE3;
-
-    using Base::classname;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -113,9 +159,22 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint indexes and placements.
+    /// \brief Constructor from joint1_id.
     ///
-    /// \param[in] type Type of the contact.
+    /// \param[in] model Kinematic tree.
+    ///
+    /// \remarks The second joint id (joint2_id) is set to be 0 (corresponding to the index of the
+    /// universe).
+    ///
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    PointAnchorConstraintModelTpl(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
+    : Base(model)
+    {
+    }
+
+    ///
+    /// \brief Constructor from joint indexes and placements.
+    ///
     /// \param[in] model Model associated to the constraint.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     /// \param[in] joint2_id Index of the joint 2 in the model tree.
@@ -135,9 +194,9 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint1_id and placement.
+    /// \brief Constructor from joint1_id and placement.
     ///
-    /// \param[in] type Type of the contact.
+    /// \param[in] model Kinematic tree.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     /// \param[in] joint1_placement Placement of the constraint w.r.t the frame of joint1.
     /// expressed.
@@ -152,9 +211,9 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint ids.
+    /// \brief Constructor from joint ids.
     ///
-    /// \param[in] type Type of the contact.
+    /// \param[in] model Kinematic tree.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     /// \param[in] joint2_id Index of the joint 2 in the model tree.
     ///
@@ -168,9 +227,9 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint1_id.
+    /// \brief Constructor from joint1_id.
     ///
-    /// \param[in] type Type of the contact.
+    /// \param[in] model Kinematic tree.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
     ///
     /// \remarks The second joint id (joint2_id) is set to be 0 (corresponding to the index of the
@@ -183,6 +242,8 @@ namespace pinocchio
     {
     }
 
+    // Operators ---------------------
+
     /// \brief Cast operator
     template<typename NewScalar>
     typename CastType<NewScalar, PointAnchorConstraintModelTpl>::type cast() const
@@ -193,14 +254,12 @@ namespace pinocchio
       return res;
     }
 
-    // Operators ---------------------
-
     ///
     /// \brief Comparison operator
     ///
     /// \param[in] other Other PointAnchorConstraintModelTpl to compare with.
     ///
-    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
+    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributes
     /// must be the same).
     ///
     bool operator==(const PointAnchorConstraintModelTpl & other) const
@@ -214,7 +273,7 @@ namespace pinocchio
     /// \param[in] other Other PointAnchorConstraintModelTpl to compare with.
     ///
     /// \returns false if the two *this is not equal to other (at least type, joint1_id or placement
-    /// attributs is different).
+    /// attributes is different).
     ///
     bool operator!=(const PointAnchorConstraintModelTpl & other) const
     {
@@ -254,27 +313,33 @@ namespace pinocchio
       return ConstraintSet();
     }
 
-  }; // struct PointAnchorConstraintModelTpl<_Scalar,_Options>
+  }; // struct PointAnchorConstraintModelTpl
 
   ///
-  /// \brief Contact model structure containg all the info describing the rigid contact model
+  /// \brief Contact model structure containing all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct PointAnchorConstraintDataTpl
   : PointConstraintDataBase<PointAnchorConstraintDataTpl<_Scalar, _Options>>
   {
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
+    typedef PointAnchorConstraintDataTpl Self;
+    typedef PointConstraintDataBase<Self> Base;
+    typedef ConstraintDataBase<Self> RootBase;
 
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
 
-    typedef PointAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef PointAnchorConstraintDataTpl ConstraintData;
-    typedef PointConstraintDataBase<PointAnchorConstraintDataTpl> Base;
-    typedef ConstraintDataBase<PointAnchorConstraintDataTpl> RootBase;
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
 
+    // Base usage ---------------------------------------------------
+    using Base::classname;
     using typename Base::SE3;
-
-    using RootBase::classname;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -298,12 +363,13 @@ namespace pinocchio
 
     /// \brief Default constructor
     PointAnchorConstraintDataTpl()
+    : Base()
     {
     }
 
-    /// \brief Constructor from a constraint_model
-    explicit PointAnchorConstraintDataTpl(const ConstraintModel & constraint_model)
-    : Base(constraint_model)
+    /// \brief Constructor from a constraint model
+    explicit PointAnchorConstraintDataTpl(const ConstraintModel & cmodel)
+    : Base(cmodel)
     {
     }
 
@@ -337,7 +403,7 @@ namespace pinocchio
       return classname();
     }
 
-  }; // struct PointAnchorConstraintDataTpl<_Scalar,_Options>
+  }; // struct PointAnchorConstraintDataTpl
 
 } // namespace pinocchio
 

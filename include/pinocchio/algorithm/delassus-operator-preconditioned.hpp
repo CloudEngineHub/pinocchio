@@ -90,15 +90,6 @@ namespace pinocchio
     }
 
     template<typename MatrixLike>
-    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
-    {
-      PINOCCHIO_UNUSED_VARIABLE(blocks);
-      PINOCCHIO_THROW(
-        std::runtime_error,
-        "updateBarrierHessian not implemented for DelassusOperatorPreconditionedTpl.");
-    }
-
-    template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       auto & mat_ = mat.const_cast_derived();
@@ -127,11 +118,13 @@ namespace pinocchio
 
     template<typename MatrixIn, typename MatrixOut>
     void applyOnTheRight(
-      const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res) const
+      const Eigen::MatrixBase<MatrixIn> & x,
+      const Eigen::MatrixBase<MatrixOut> & res,
+      bool with_damping = true) const
     {
       auto & res_ = res.const_cast_derived();
       m_preconditioner.unscale(x, res_);
-      ref().applyOnTheRight(res_, m_tmp_vec);
+      ref().applyOnTheRight(res_, m_tmp_vec, with_damping);
       m_preconditioner.unscale(m_tmp_vec, res_);
     }
 

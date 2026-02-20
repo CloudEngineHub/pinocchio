@@ -53,8 +53,9 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
 
   // Test size
   {
-    BOOST_CHECK(constraint_model.maxResidualSize() == rcm.maxResidualSize());
-    BOOST_CHECK(constraint_model.residualSize(constraint_data) == rcm.residualSize(rcd));
+    BOOST_CHECK(
+      constraint_model.residualSize(MaximalSelection()) == rcm.residualSize(MaximalSelection()));
+    BOOST_CHECK(constraint_model.residualSize() == rcm.residualSize());
   }
 
   // Test create data visitor
@@ -79,12 +80,9 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
   // Test jacobian visitor
   {
     ConstraintData constraint_data(rcm.createData());
-    Data::MatrixXs jacobian_matrix1 =
-                     Data::MatrixXs::Zero(rcm.residualSize(constraint_data), model.nv),
-                   jacobian_matrix2 =
-                     Data::MatrixXs::Zero(rcm.residualSize(constraint_data), model.nv),
-                   jacobian_matrix_ref =
-                     Data::MatrixXs::Zero(rcm.residualSize(constraint_data), model.nv);
+    Data::MatrixXs jacobian_matrix1 = Data::MatrixXs::Zero(rcm.residualSize(), model.nv),
+                   jacobian_matrix2 = Data::MatrixXs::Zero(rcm.residualSize(), model.nv),
+                   jacobian_matrix_ref = Data::MatrixXs::Zero(rcm.residualSize(), model.nv);
     rcm.jacobian(model, data, rcd, jacobian_matrix_ref);
     visitors::jacobian(constraint_model, model, data, constraint_data, jacobian_matrix1);
     BOOST_CHECK(jacobian_matrix1 == jacobian_matrix_ref);
@@ -96,7 +94,7 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
   {
     ConstraintData constraint_data(rcm.createData());
     rcm.calc(model, data, rcd);
-    for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
+    for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(); ++row_id)
     {
       BOOST_CHECK(
         constraint_model.getRowIndexes(model, data, constraint_data, row_id)
@@ -107,7 +105,7 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
   // Test getRowSparsityPattern
   {
     ConstraintData constraint_data(rcm.createData());
-    for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(rcd); ++row_id)
+    for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(); ++row_id)
     {
       BOOST_CHECK(
         constraint_model.getRowSparsityPattern(model, data, constraint_data, row_id)
@@ -120,9 +118,8 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
     const Eigen::Index num_cols = 20;
     ConstraintData constraint_data(rcm.createData());
     const Data::MatrixXs input_matrix = Data::MatrixXs::Random(model.nv, num_cols);
-    Data::MatrixXs output_matrix1(rcm.residualSize(constraint_data), num_cols),
-      output_matrix2(rcm.residualSize(constraint_data), num_cols),
-      output_matrix_ref(rcm.residualSize(constraint_data), num_cols);
+    Data::MatrixXs output_matrix1(rcm.residualSize(), num_cols),
+      output_matrix2(rcm.residualSize(), num_cols), output_matrix_ref(rcm.residualSize(), num_cols);
     rcm.jacobianMatrixProduct(model, data, rcd, input_matrix, output_matrix_ref);
     visitors::jacobianMatrixProduct(
       constraint_model, model, data, constraint_data, input_matrix, output_matrix1);
@@ -136,8 +133,7 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
   {
     const Eigen::Index num_cols = 20;
     ConstraintData constraint_data(rcm.createData());
-    const Data::MatrixXs input_matrix =
-      Data::MatrixXs::Random(rcm.residualSize(constraint_data), num_cols);
+    const Data::MatrixXs input_matrix = Data::MatrixXs::Random(rcm.residualSize(), num_cols);
     Data::MatrixXs output_matrix1(model.nv, num_cols), output_matrix2(model.nv, num_cols),
       output_matrix_ref(model.nv, num_cols);
     rcm.jacobianTransposeMatrixProduct(model, data, rcd, input_matrix, output_matrix_ref);

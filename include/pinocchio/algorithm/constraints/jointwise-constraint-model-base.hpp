@@ -14,13 +14,20 @@ namespace pinocchio
   template<typename Derived>
   struct JointWiseConstraintModelBase : ConstraintModelBase<Derived>
   {
-    typedef typename traits<Derived>::Scalar Scalar;
-    static constexpr int Options = traits<Derived>::Options;
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
     typedef ConstraintModelBase<Derived> Base;
 
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Derived>::ConstraintModel ConstraintModel;
     typedef typename traits<Derived>::ConstraintData ConstraintData;
-    typedef typename traits<Derived>::ConstraintSet ConstraintSet;
 
+    typedef typename traits<Derived>::Scalar Scalar;
+    static constexpr int Options = traits<Derived>::Options;
+
+    // Base usage ---------------------------------------------------
     using Base::derived;
 
     // -------------------------------
@@ -42,6 +49,7 @@ namespace pinocchio
     }
 
     // Constructors ------------------
+
   protected:
     /// \brief Default constructor
     /// Protected so can't be used
@@ -49,16 +57,16 @@ namespace pinocchio
     {
     }
 
-  public:
     /// \brief Default constructor from model
-    template<int Options, template<typename, int> class JointCollectionTpl>
-    JointWiseConstraintModelBase(const ModelTpl<Scalar, Options, JointCollectionTpl> & model)
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    JointWiseConstraintModelBase(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
     : Base(model)
     {
     }
 
     // Operators ---------------------
 
+  public:
     /// \brief Comparison operator
     template<typename OtherDerived>
     bool operator==(const JointWiseConstraintModelBase<OtherDerived> & other) const
@@ -88,12 +96,13 @@ namespace pinocchio
     ///
     /// \note The results will be added to the joint_torques ouput argument.
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename ConstraintForcesLike,
       typename JointTorquesLike>
     void mapConstraintForceToJointTorques(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<ConstraintForcesLike> & constraint_forces,
       const Eigen::MatrixBase<JointTorquesLike> & joint_torques) const
@@ -112,12 +121,13 @@ namespace pinocchio
     /// \param[out] constraint_motions Output constraint motions.
     ///
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename JointMotionsLike,
       typename ConstraintMotionsLike>
     void mapJointMotionsToConstraintMotion(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<JointMotionsLike> & joint_generalized_velocity,
       const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions) const
@@ -134,17 +144,19 @@ namespace pinocchio
 
     /// \copydoc Base::mapConstraintForceToJointSpace
     template<
+      int OtherOptions,
+      int ForceOptions,
       template<typename, int> class JointCollectionTpl,
       typename ConstraintForceLike,
       typename ForceAllocator,
       typename JointTorquesLike,
       ReferenceFrame rf>
     void mapConstraintForceToJointSpaceImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<ConstraintForceLike> & constraint_forces,
-      std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces,
+      std::vector<ForceTpl<Scalar, ForceOptions>, ForceAllocator> & joint_forces,
       const Eigen::MatrixBase<JointTorquesLike> & joint_torques,
       ReferenceFrameTag<rf> reference_frame) const
     {
@@ -155,16 +167,18 @@ namespace pinocchio
 
     /// \copydoc Base::mapJointSpaceToConstraintMotion
     template<
+      int OtherOptions,
+      int MotionOptions,
       template<typename, int> class JointCollectionTpl,
       typename MotionAllocator,
       typename JointMotionsLike,
       typename VectorLike,
       ReferenceFrame rf>
     void mapJointSpaceToConstraintMotionImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> & joint_motions,
+      const std::vector<MotionTpl<Scalar, MotionOptions>, MotionAllocator> & joint_motions,
       const Eigen::MatrixBase<JointMotionsLike> & joint_generalized_velocity,
       const Eigen::MatrixBase<VectorLike> & constraint_motions,
       ReferenceFrameTag<rf> reference_frame) const

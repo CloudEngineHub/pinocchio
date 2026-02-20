@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024-2025 INRIA
+// Copyright (c) 2024-2026 INRIA
 //
 
 #include <iostream>
@@ -30,6 +30,22 @@
 
 using namespace pinocchio;
 using namespace Eigen;
+
+template<typename Delassus>
+struct DelassusAccessor : Delassus
+{
+  typedef Delassus Base;
+  using Base::m_compliance;
+  using Base::m_damping;
+  using Base::m_sum_compliance_damping;
+  using Base::m_sum_compliance_damping_inverse;
+};
+
+template<typename Delassus>
+const DelassusAccessor<Delassus> & access(const Delassus & delassus)
+{
+  return static_cast<const DelassusAccessor<Delassus> &>(delassus);
+}
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
@@ -94,8 +110,7 @@ BOOST_AUTO_TEST_CASE(default_constructor_reference_wrapper)
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref);
 
-  const auto csize =
-    residualSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref));
+  const auto csize = residualSize(helper::get_ref(constraint_models_ref));
   BOOST_CHECK(delassus_operator.size() == csize);
 
   BOOST_CHECK(delassus_operator.size() == 0);
@@ -152,8 +167,7 @@ BOOST_AUTO_TEST_CASE(default_constructor_const_reference_wrapper)
     helper::make_ref(constraint_models), //
     helper::make_ref(constraint_datas));
 
-  const auto csize =
-    residualSize(helper::get_ref(constraint_models), helper::get_ref(constraint_datas));
+  const auto csize = residualSize(helper::get_ref(constraint_models));
 
   BOOST_CHECK(delassus_operator.size() == csize);
   BOOST_CHECK(&delassus_operator.model() == &model);
@@ -241,14 +255,19 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
 
   ConstraintModelVector constraint_models;
   ConstraintDataVector constraint_datas;
-  const ConstraintModel cm_RF_LF_LOCAL(
-    model, model.getJointId(RF), SE3::Random(), model.getJointId(LF), SE3::Random());
 
-  constraint_models.push_back(cm_RF_LF_LOCAL);
-  constraint_datas.push_back(cm_RF_LF_LOCAL.createData());
-  const ConstraintModel cm_LF_LOCAL(model, model.getJointId(LF), SE3::Random());
-  constraint_models.push_back(cm_LF_LOCAL);
-  constraint_datas.push_back(cm_LF_LOCAL.createData());
+  {
+    const ConstraintModel cm_RF_LF_LOCAL(
+      model, model.getJointId(RF), SE3::Random(), model.getJointId(LF), SE3::Random());
+    constraint_models.push_back(cm_RF_LF_LOCAL);
+    constraint_datas.push_back(cm_RF_LF_LOCAL.createData());
+  }
+
+  {
+    const ConstraintModel cm_LF_LOCAL(model, model.getJointId(LF), SE3::Random());
+    constraint_models.push_back(cm_LF_LOCAL);
+    constraint_datas.push_back(cm_LF_LOCAL.createData());
+  }
 
   computeJointJacobians(model, data, q_neutral);
   data.q_in = q_neutral;
@@ -270,9 +289,27 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
       model_ref, data_ref, constraint_models_ref, constraint_datas_ref, damping_value);
     delassus_operator.updateDamping(mu_inv);
     delassus_operator.updateCompliance(0);
+
+    {
+      BOOST_CHECK(access(delassus_operator).m_damping.matrix().diagonal().isConstant(mu_inv, 0));
+      BOOST_CHECK(access(delassus_operator).m_compliance.isConstant(0., 0));
+      BOOST_CHECK(access(delassus_operator)
+                    .m_sum_compliance_damping.matrix()
+                    .diagonal()
+                    .isConstant(mu_inv, 0));
+    }
+
     BOOST_CHECK(delassus_operator.isDirty());
     delassus_operator.compute();
+    // we could also simply call:
+    // delassus_operator.updateDecomposition();
     BOOST_CHECK(!delassus_operator.isDirty());
+    {
+      BOOST_CHECK(access(delassus_operator)
+                    .m_sum_compliance_damping_inverse.matrix()
+                    .diagonal()
+                    .isConstant(mu, 0));
+    }
 
     const Eigen::VectorXd rhs = Eigen::VectorXd::Random(delassus_operator.size());
     Eigen::VectorXd res(delassus_operator.size());
@@ -300,7 +337,7 @@ BOOST_AUTO_TEST_CASE(general_test_frame_anchor_constraint_model)
     const Eigen::MatrixXd delassus_dense_gt_undamped =
       constraints_jacobian_gt * Minv_gt * constraints_jacobian_gt.transpose();
     const Eigen::MatrixXd delassus_dense_gt =
-      delassus_dense_gt_undamped + Eigen::MatrixXd(delassus_operator.getDamping().asDiagonal());
+      delassus_dense_gt_undamped + delassus_operator.getDamping().matrix();
 
     Eigen::VectorXd tau_constraints = Eigen::VectorXd::Zero(model.nv);
     evalConstraintJacobianTransposeMatrixProduct(
@@ -746,7 +783,7 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
   const Eigen::MatrixXd delassus_dense_gt_undamped =
     constraints_jacobian_gt * Minv_gt * constraints_jacobian_gt.transpose();
   const Eigen::MatrixXd delassus_dense_gt =
-    delassus_dense_gt_undamped + Eigen::MatrixXd(delassus_operator.getDamping().asDiagonal());
+    delassus_dense_gt_undamped + delassus_operator.getDamping().matrix();
 
   // Test Jacobian transpose operator
   {
@@ -856,7 +893,9 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
     const Eigen::VectorXd rhs = Eigen::VectorXd::Random(delassus_operator.size());
     const double mu = 1;
     delassus_operator.updateDamping(mu);
-    BOOST_CHECK(delassus_operator.getDamping().isApproxToConstant(mu));
+    Eigen::MatrixXd damping_mat =
+      mu * Eigen::MatrixXd::Identity(delassus_operator.size(), delassus_operator.size());
+    BOOST_CHECK(delassus_operator.getDamping().matrix().isApprox(damping_mat));
 
     BOOST_CHECK(delassus_operator.isDirty());
 
@@ -877,7 +916,7 @@ BOOST_AUTO_TEST_CASE(general_test_point_contact_constraint_model)
     const double mu = 1;
     delassus_operator.updateDamping(mu);
     delassus_operator.updateCompliance(compliance);
-    // BOOST_CHECK(delassus_operator.getCompliance().isApproxToConstant(compliance));
+    BOOST_CHECK(delassus_operator.getCompliance().isApproxToConstant(compliance));
 
     BOOST_CHECK(delassus_operator.isDirty());
 
@@ -1049,9 +1088,8 @@ void test_apply_on_the_right(
   for (size_t k = 0; k < constraint_models.size(); ++k)
   {
     const auto & constraint_model = constraint_models[k];
-    const auto & constraint_data = constraint_datas[k];
-    max_csize += constraint_model.maxResidualSize();
-    csize += constraint_model.residualSize(constraint_data);
+    max_csize += constraint_model.residualSize(MaximalSelection());
+    csize += constraint_model.residualSize();
   }
   BOOST_CHECK(csize <= max_csize);
 
@@ -1088,8 +1126,7 @@ void test_apply_on_the_right(
   for (std::size_t i = 0; i < constraint_models.size(); ++i)
   {
     const auto & cmodel = constraint_models[i];
-    const auto & cdata = constraint_datas_gt[i];
-    csize_gt += cmodel.residualSize(cdata);
+    csize_gt += cmodel.residualSize();
   }
   BOOST_CHECK(csize_gt == csize);
 
@@ -1101,7 +1138,7 @@ void test_apply_on_the_right(
   const Eigen::MatrixXd delassus_dense_gt_undamped =
     constraints_jacobian_gt * Minv_gt * constraints_jacobian_gt.transpose();
   const Eigen::MatrixXd delassus_dense_gt =
-    delassus_dense_gt_undamped + Eigen::MatrixXd(delassus_operator.getDamping().asDiagonal());
+    delassus_dense_gt_undamped + delassus_operator.getDamping().matrix();
 
   Eigen::VectorXd tau_constraints = Eigen::VectorXd::Zero(model.nv);
   evalConstraintJacobianTransposeMatrixProduct(
@@ -1333,21 +1370,25 @@ BOOST_AUTO_TEST_CASE(general_test_joint_limit_constraint)
     }
   }
 
+  const Eigen::VectorXd q = model.lowerPositionLimit;
+  data.q_in = q;
   {
     ConstraintModel constraint_model(model, activable_joint_ids);
-    BOOST_CHECK(constraint_model.maxResidualSize() == 2 * (model.nv - 6));
+    BOOST_CHECK(constraint_model.residualSize(MaximalSelection()) == 2 * (model.nv - 6));
+    // when creating a joint limit constraint, all joint limits should be activated by default:
+    BOOST_CHECK(constraint_model.residualSize() == 2 * (model.nv - 6));
+
+    constraint_model.makeSelectionFilteredByLimitProximity(q);
+    BOOST_CHECK(constraint_model.residualSize() == (model.nv - 6));
 
     constraint_models.push_back(constraint_model);
     constraint_datas.push_back(constraint_model.createData());
   }
   auto & constraint_model = constraint_models.back();
-  auto & constraint_data = constraint_datas.back();
 
   // simple size check
-  const Eigen::VectorXd q = model.lowerPositionLimit;
-  data.q_in = q;
   calc(model, data, constraint_models, constraint_datas);
-  BOOST_CHECK(constraint_model.residualSize(constraint_data) == model.nv - 6);
+  BOOST_CHECK(constraint_model.residualSize() == model.nv - 6);
 
   std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
   std::reference_wrapper<ConstraintDataVector> constraint_datas_ref = constraint_datas;

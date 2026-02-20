@@ -5,6 +5,7 @@
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/multibody/fwd.hpp"
+#include "pinocchio/algorithm/constraints/fwd.hpp"
 #include "pinocchio/utils/version.hpp"
 #include "pinocchio/bindings/python/utils/version.hpp"
 #include "pinocchio/bindings/python/utils/dependencies.hpp"
@@ -91,6 +92,13 @@ BOOST_PYTHON_MODULE(PINOCCHIO_PYTHON_MODULE_NAME)
       .value("ARG3", ::pinocchio::ARG3)
       .value("ARG4", ::pinocchio::ARG4)
       .export_values();
+  }
+
+  if (!register_symbolic_link_to_registered_type<::pinocchio::ConstraintSelectionType>())
+  {
+    bp::enum_<::pinocchio::ConstraintSelectionType>("ConstraintSelectionType")
+      .value("CURRENT", ::pinocchio::ConstraintSelectionType::CURRENT)
+      .value("MAXIMAL", ::pinocchio::ConstraintSelectionType::MAXIMAL);
   }
 
   exposeSE3();

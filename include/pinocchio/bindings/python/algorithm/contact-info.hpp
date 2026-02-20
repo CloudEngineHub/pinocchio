@@ -30,6 +30,8 @@ namespace pinocchio
       typedef typename RigidConstraintModel::SE3 SE3;
       typedef RigidConstraintModel Self;
       typedef typename RigidConstraintModel::ContactData ContactData;
+      typedef
+        typename RigidConstraintModel::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
 
       typedef ModelTpl<Scalar, RigidConstraintModel::Options, JointCollectionDefaultTpl> Model;
       typedef DataTpl<Scalar, RigidConstraintModel::Options, JointCollectionDefaultTpl> Data;
@@ -47,18 +49,18 @@ namespace pinocchio
             (bp::arg("self"), bp::arg("contact_type"), bp::arg("model"), bp::arg("joint1_id"),
              bp::arg("joint1_placement"), bp::arg("joint2_id"), bp::arg("joint2_placement"),
              bp::arg("reference_frame")),
-            "Contructor from a given ContactType, joint index and placement for the two joints "
+            "Constructor from a given ContactType, joint index and placement for the two joints "
             "implied in the constraint."))
           .def(bp::init<
                ContactType, const Model &, JointIndex, const SE3 &, bp::optional<ReferenceFrame>>(
             (bp::arg("self"), bp::arg("contact_type"), bp::arg("model"), bp::arg("joint1_id"),
              bp::arg("joint1_placement"), bp::arg("reference_frame")),
-            "Contructor from a given ContactType, joint index and placement only for the first "
+            "Constructor from a given ContactType, joint index and placement only for the first "
             "joint implied in the constraint."))
           .def(bp::init<ContactType, const Model &, JointIndex, bp::optional<ReferenceFrame>>(
             (bp::arg("self"), bp::arg("contact_type"), bp::arg("model"), bp::arg("joint1_id"),
              bp::arg("reference_frame")),
-            "Contructor from a given ContactType and joint index. The base joint is taken as 0 in "
+            "Constructor from a given ContactType and joint index. The base joint is taken as 0 in "
             "the constraint."))
           .PINOCCHIO_ADD_PROPERTY(Self, name, "Name of the contact.")
           .PINOCCHIO_ADD_PROPERTY(Self, type, "Type of the contact.")
@@ -87,9 +89,6 @@ namespace pinocchio
             Self, colwise_span_indexes, "Indexes of the columns spanned by the constraints.")
           .PINOCCHIO_ADD_PROPERTY(
             Self, colwise_sparsity, "Sparsity pattern associated to the constraint.")
-
-          .def("maxResidualSize", &RigidConstraintModel::maxResidualSize, "Size of the constraint")
-
           .def(
             "createData", &RigidConstraintModelPythonVisitor::createData,
             "Create a Data object for the given model.")
@@ -97,9 +96,23 @@ namespace pinocchio
           .def(
             "calc", (void(Self::*)(const Model &, const Data &, ContactData &) const) & Self::calc,
             bp::args("self", "model", "data", "constraint_data"))
-          .def("jacobian", &jacobian, bp::args("self", "model", "data", "constraint_data"));
-        typedef
-          typename RigidConstraintModel::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
+          .def("jacobian", &jacobian, bp::args("self", "model", "data", "constraint_data"))
+          .def(
+            "residualSize", &residualSize,
+            (bp::arg("self"), bp::arg("sel") = ConstraintSelectionType::CURRENT),
+            "Constraint size for the selection.")
+          .def(
+            "setCompliance", &setCompliance,
+            (bp::arg("self"), bp::arg("vec"), bp::arg("sel") = ConstraintSelectionType::CURRENT),
+            "Set the compliance value for the selected constraint.")
+          .def(
+            "retrieveCompliance", &retrieveCompliance,
+            (bp::arg("self"), bp::arg("sel") = ConstraintSelectionType::CURRENT),
+            "Retrieve the compliance value for the selected constraint.")
+          .def(
+            "setBaumgarteCorrectorParameters", &setBaumgarteCorrectorParameters,
+            (bp::arg("self"), bp::arg("bp"), bp::arg("sel") = ConstraintSelectionType::CURRENT),
+            "Set the Baumgarte parameters.");
         cl.add_property(
           "m_baumgarte_parameters",
           bp::make_function( //
@@ -134,9 +147,61 @@ namespace pinocchio
       static context::MatrixXs jacobian(
         const Self & self, const Model & model, const Data & data, ContactData & constraint_data)
       {
-        context::MatrixXs res(self.residualSize(constraint_data), model.nv);
+        context::MatrixXs res(self.residualSize(), model.nv);
         self.jacobian(model, data, constraint_data, res);
         return res;
+      }
+
+      static int residualSize(const Self & self, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT:
+          return self.residualSize(CurrentSelection());
+        case ConstraintSelectionType::MAXIMAL:
+          return self.residualSize(MaximalSelection());
+        }
+      }
+
+      static void
+      setCompliance(Self & self, context::VectorXs & vector, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT:
+          return self.setCompliance(vector, CurrentSelection());
+        case ConstraintSelectionType::MAXIMAL:
+          return self.setCompliance(vector, MaximalSelection());
+        }
+      }
+
+      static context::VectorXs retrieveCompliance(const Self & self, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT: {
+          context::VectorXs res(self.residualSize(CurrentSelection()));
+          self.retrieveCompliance(res, CurrentSelection());
+          return res;
+        }
+        case ConstraintSelectionType::MAXIMAL: {
+          context::VectorXs res(self.residualSize(MaximalSelection()));
+          self.retrieveCompliance(res, MaximalSelection());
+          return res;
+        }
+        }
+      }
+
+      static void setBaumgarteCorrectorParameters(
+        Self & self, const BaumgarteCorrectorParameters & bp, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT:
+          return self.setBaumgarteCorrectorParameters(bp, CurrentSelection());
+        case ConstraintSelectionType::MAXIMAL:
+          return self.setBaumgarteCorrectorParameters(bp, MaximalSelection());
+        }
       }
     };
 

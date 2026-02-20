@@ -10,6 +10,17 @@
 namespace pinocchio
 {
 
+  template<int Size1, int Size2>
+  constexpr int productOfSize()
+  {
+    if constexpr (Size1 == 0 || Size2 == 0)
+      return 0;
+    else if constexpr (Size1 == Eigen::Dynamic || Size2 == Eigen::Dynamic)
+      return Eigen::Dynamic;
+    else
+      return Size1 * Size2;
+  }
+
   template<int trows, int tcols = 1>
   struct SizeDepType;
 

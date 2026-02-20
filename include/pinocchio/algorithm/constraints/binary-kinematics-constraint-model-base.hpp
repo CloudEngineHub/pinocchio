@@ -16,42 +16,68 @@
 
 namespace pinocchio
 {
+  // --------------------------------------------------------------
+  // Declaration
+  // --------------------------------------------------------------
+  template<typename Derived>
+  struct BinaryKinematicsConstraintModelBase;
 
+  // --------------------------------------------------------------
+  // Helpers
+  // --------------------------------------------------------------
+  template<typename Derived>
+  using enable_if_binarykinematic_model_t =
+    std::enable_if_t<std::is_base_of_v<BinaryKinematicsConstraintModelBase<Derived>, Derived>>;
+
+  // --------------------------------------------------------------
+  // Struct
+  // --------------------------------------------------------------
   template<typename Derived>
   struct BinaryKinematicsConstraintModelBase
   : KinematicsConstraintModelBase<Derived>
   , ConstraintModelCommonParameters<Derived>
   {
-
-    typedef typename traits<Derived>::Scalar Scalar;
-    static constexpr int Options = traits<Derived>::Options;
-    static constexpr int Size = traits<Derived>::Size;
-
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
     typedef KinematicsConstraintModelBase<Derived> Base;
     typedef ConstraintModelCommonParameters<Derived> BaseCommonParameters;
     typedef ConstraintModelBase<Derived> RootBase;
 
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Derived>::ConstraintModel ConstraintModel;
+    typedef typename traits<Derived>::ConstraintData ConstraintData;
+
+    typedef typename traits<Derived>::Scalar Scalar;
+    static constexpr int Options = traits<Derived>::Options;
+
+    static constexpr int Size = traits<Derived>::Size;
+
+    typedef typename traits<Derived>::ResidualVectorType ResidualVectorType;
+    typedef typename traits<Derived>::JacobianMatrixType JacobianMatrixType;
+    typedef typename traits<Derived>::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
+
+    // Friendship ---------------------------------------------------
     template<typename OtherDerived>
     friend struct BinaryKinematicsConstraintModelBase;
 
+    // Base usage --------------------------------------------------
+    using RootBase::derived;
+    using RootBase::residualSize;
     using typename RootBase::BooleanVector;
     using typename RootBase::EigenIndexVector;
 
-    typedef typename traits<Derived>::ConstraintData ConstraintData;
-    typedef typename traits<Derived>::ComplianceVectorType ComplianceVectorType;
-
+    // Useful types ------------------------------------------------
     typedef SE3Tpl<Scalar, Options> SE3;
     typedef MotionTpl<Scalar, Options> Motion;
     typedef ForceTpl<Scalar, Options> Force;
+    typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
+    typedef Eigen::Matrix<Scalar, 3, 3, Options> Matrix3;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
+    typedef Eigen::Matrix<Scalar, 3, 6, Options> Matrix36;
     typedef Eigen::Matrix<Scalar, Size, 6, Options> MatrixSize6;
-
-    typedef typename traits<Derived>::VectorConstraintSize VectorConstraintSize;
-    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
-
-    using RootBase::derived;
-    using RootBase::maxResidualSize;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -85,18 +111,28 @@ namespace pinocchio
 
     // Constructors ------------------
 
+  protected:
     /// \brief Default constructor
     BinaryKinematicsConstraintModelBase()
     : joint1_id(0)
     , joint2_id(0)
     , joint1_placement(SE3::Identity())
     , joint2_placement(SE3::Identity())
-    , desired_constraint_offset(VectorConstraintSize::Zero(maxResidualSize()))
-    , desired_constraint_velocity(VectorConstraintSize::Zero(maxResidualSize()))
-    , desired_constraint_acceleration(VectorConstraintSize::Zero(maxResidualSize()))
+    , desired_constraint_offset(ResidualVectorType::Zero(residualSize()))
+    , desired_constraint_velocity(ResidualVectorType::Zero(residualSize()))
+    , desired_constraint_acceleration(ResidualVectorType::Zero(residualSize()))
     , nv(-1)
     , depth_joint1(0)
     , depth_joint2(0)
+    {
+    }
+
+    /// \brief Constructor with only model.
+    /// Relative placements are identity and joints are 0.
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    BinaryKinematicsConstraintModelBase(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
+    : BinaryKinematicsConstraintModelBase(model, 0, SE3::Identity(), 0, SE3::Identity())
     {
     }
 
@@ -113,9 +149,9 @@ namespace pinocchio
     , joint2_id(joint2_id)
     , joint1_placement(joint1_placement)
     , joint2_placement(joint2_placement)
-    , desired_constraint_offset(VectorConstraintSize::Zero(maxResidualSize()))
-    , desired_constraint_velocity(VectorConstraintSize::Zero(maxResidualSize()))
-    , desired_constraint_acceleration(VectorConstraintSize::Zero(maxResidualSize()))
+    , desired_constraint_offset(ResidualVectorType::Zero(residualSize()))
+    , desired_constraint_velocity(ResidualVectorType::Zero(residualSize()))
+    , desired_constraint_acceleration(ResidualVectorType::Zero(residualSize()))
     , colwise_joint1_sparsity(model.nv)
     , colwise_joint2_sparsity(model.nv)
     , nv(-1)
@@ -159,36 +195,7 @@ namespace pinocchio
 
     // Operators ---------------------
 
-    /// \brief Comparison operator.
-    template<typename OtherDerived>
-    bool operator==(const BinaryKinematicsConstraintModelBase<OtherDerived> & other) const
-    {
-      if (this == &other)
-        return true;
-
-      return base() == other.base() && base_common_parameters() == other.base_common_parameters()
-             && joint1_id == other.joint1_id && joint2_id == other.joint2_id
-             && joint1_placement == other.joint1_placement
-             && joint2_placement == other.joint2_placement && nv == other.nv
-             && desired_constraint_offset == other.desired_constraint_offset
-             && desired_constraint_velocity == other.desired_constraint_velocity
-             && desired_constraint_acceleration == other.desired_constraint_acceleration
-             && colwise_joint1_sparsity == other.colwise_joint1_sparsity
-             && colwise_joint2_sparsity == other.colwise_joint2_sparsity
-             && joint1_span_indexes == other.joint1_span_indexes
-             && joint2_span_indexes == other.joint2_span_indexes
-             && depth_joint1 == other.depth_joint1 && depth_joint2 == other.depth_joint2
-             && colwise_sparsity == other.colwise_sparsity
-             && colwise_span_indexes == other.colwise_span_indexes;
-    }
-
-    /// \brief Comparison operator.
-    template<typename OtherDerived>
-    bool operator!=(const BinaryKinematicsConstraintModelBase<OtherDerived> & other) const
-    {
-      return !(*this == other);
-    }
-
+  public:
     /// \brief Cast to NewScalar.
     template<typename NewScalar, typename OtherDerived>
     void cast(BinaryKinematicsConstraintModelBase<OtherDerived> & res) const
@@ -213,6 +220,36 @@ namespace pinocchio
       res.nv = nv;
       res.depth_joint1 = depth_joint1;
       res.depth_joint2 = depth_joint2;
+    }
+
+    /// \brief Comparison operator.
+    template<typename OtherDerived>
+    bool operator==(const BinaryKinematicsConstraintModelBase<OtherDerived> & other) const
+    {
+      if (this == &other)
+        return true;
+
+      return base() == other.base() && base_common_parameters() == other.base_common_parameters()
+             && joint1_id == other.joint1_id && joint2_id == other.joint2_id
+             && joint1_placement == other.joint1_placement
+             && joint2_placement == other.joint2_placement
+             && desired_constraint_offset == other.desired_constraint_offset
+             && desired_constraint_velocity == other.desired_constraint_velocity
+             && desired_constraint_acceleration == other.desired_constraint_acceleration
+             && colwise_joint1_sparsity == other.colwise_joint1_sparsity
+             && colwise_joint2_sparsity == other.colwise_joint2_sparsity
+             && joint1_span_indexes == other.joint1_span_indexes
+             && joint2_span_indexes == other.joint2_span_indexes
+             && colwise_sparsity == other.colwise_sparsity
+             && colwise_span_indexes == other.colwise_span_indexes && nv == other.nv
+             && depth_joint1 == other.depth_joint1 && depth_joint2 == other.depth_joint2;
+    }
+
+    /// \brief Comparison operator.
+    template<typename OtherDerived>
+    bool operator!=(const BinaryKinematicsConstraintModelBase<OtherDerived> & other) const
+    {
+      return !(*this == other);
     }
 
     // Binary related ----------------
@@ -240,14 +277,14 @@ namespace pinocchio
     // -------------------------------
 
     /// \copydoc Base::getRowSparsityPattern
-    template<template<typename, int> class JointCollectionTpl>
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     const BooleanVector & getRowSparsityPatternImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::Index row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
       PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -255,14 +292,14 @@ namespace pinocchio
     }
 
     /// \copydoc Base::getRowIndexes
-    template<template<typename, int> class JointCollectionTpl>
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     const EigenIndexVector & getRowIndexesImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::Index row_id) const
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < maxResidualSize());
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
       PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
@@ -275,8 +312,8 @@ namespace pinocchio
     // ------------------------------
 
     /// \brief Initialize the constraint model based on the kinematics loop of model.
-    template<template<typename, int> class JointCollectionTpl>
-    void init(const ModelTpl<Scalar, Options, JointCollectionTpl> & model);
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    void init(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model);
 
   public:
     // ------------------------------
@@ -296,13 +333,13 @@ namespace pinocchio
     SE3 joint2_placement;
 
     /// \brief Desired constraint shift at position level.
-    VectorConstraintSize desired_constraint_offset;
+    ResidualVectorType desired_constraint_offset;
 
     /// \brief Desired constraint velocity at velocity level.
-    VectorConstraintSize desired_constraint_velocity;
+    ResidualVectorType desired_constraint_velocity;
 
     /// \brief Desired constraint acceleration at acceleration level.
-    VectorConstraintSize desired_constraint_acceleration;
+    ResidualVectorType desired_constraint_acceleration;
 
     /// \brief Column-wise sparsity pattern associated with joint 1.
     BooleanVector colwise_joint1_sparsity;
@@ -331,7 +368,7 @@ namespace pinocchio
   protected:
     using BaseCommonParameters::m_baumgarte_parameters;
     using BaseCommonParameters::m_compliance;
-  }; // struct BinaryKinematicsConstraintModelBase<Derived>
+  }; // struct BinaryKinematicsConstraintModelBase
 
 } // namespace pinocchio
 

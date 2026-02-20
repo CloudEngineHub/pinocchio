@@ -29,7 +29,7 @@ namespace pinocchio
   // see below for implementation
   namespace internal
   {
-    template<typename Scalar>
+    template<typename Scalar, int Options>
     struct ClarabelSolverWorkspaceTpl;
   }
 
@@ -39,23 +39,24 @@ namespace pinocchio
   /// This class provides a Pinocchio-compatible interface to the Clarabel
   /// interior point solver for solving contact problems with second-order cone
   /// constraints (friction cones).
-  template<typename _Scalar>
+  template<typename _Scalar, int _Options>
   struct ClarabelConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
   {
 
     using Scalar = _Scalar;
+    static constexpr int Options = _Options;
     using Base = ConstraintSolverBaseTpl<_Scalar>;
-    using VectorXs = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
+    using VectorXs = Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options>;
     using RefVectorXs = Eigen::Ref<VectorXs>;
     using RefConstVectorXs = Eigen::Ref<const VectorXs>;
     using ConstRefVectorXs = const Eigen::Ref<const VectorXs>;
-    using MatrixXs = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;
+    using MatrixXs = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options>;
     using SparseMatrix = Eigen::SparseMatrix<Scalar, Eigen::ColMajor>;
-    using Vector3s = Eigen::Matrix<Scalar, 3, 1>;
+    using Vector3s = Eigen::Matrix<Scalar, 3, 1, Options>;
 
-    using ClarabelSolverResult = ClarabelSolverResultTpl<Scalar>;
+    using ClarabelSolverResult = ClarabelSolverResultTpl<Scalar, Options>;
     using ClarabelSolverSettings = ClarabelSolverSettingsTpl<Scalar>;
-    using ClarabelSolverWorkspace = internal::ClarabelSolverWorkspaceTpl<Scalar>;
+    using ClarabelSolverWorkspace = internal::ClarabelSolverWorkspaceTpl<Scalar, Options>;
 
     /// \brief Default constructor
     explicit ClarabelConstraintSolverTpl(std::size_t problem_size = 0)
@@ -221,16 +222,14 @@ namespace pinocchio
 
   ///
   /// \brief Result container for Clarabel constraint solver.
-  template<typename _Scalar>
+  template<typename _Scalar, int _Options>
   struct ClarabelSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar>
   {
     using Scalar = _Scalar;
+    static constexpr int Options = _Options;
     using Base = ConstraintSolverResultBaseTpl<_Scalar>;
-    using VectorXs = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
+    using VectorXs = Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options>;
     using VectorXsStorage = EigenStorageTpl<VectorXs>;
-
-    // Make the solver a friend so it can access makeValid()
-    friend struct ClarabelConstraintSolverTpl<_Scalar>;
 
     using Base::isValid;
 
@@ -360,11 +359,12 @@ namespace pinocchio
   {
     ///
     /// \brief Workspace for the Clarabel constraint solver.
-    template<typename _Scalar>
+    template<typename _Scalar, int _Options>
     struct ClarabelSolverWorkspaceTpl
     {
       using Scalar = _Scalar;
-      using VectorXs = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
+      static constexpr int Options = _Options;
+      using VectorXs = Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options>;
       using VectorXsStorage = EigenStorageTpl<VectorXs>;
 
       /// \brief Constructor given problem_size.
@@ -435,5 +435,9 @@ namespace pinocchio
 
 // Include implementation
 #include "pinocchio/algorithm/solvers/clarabel-solver.hxx"
+
+#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+  #include "pinocchio/algorithm/solvers/clarabel-solver.txx"
+#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
 
 #endif // __pinocchio_algorithm_solvers_clarabel_solver_hpp__

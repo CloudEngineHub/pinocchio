@@ -87,7 +87,7 @@ namespace pinocchio
       res_.const_cast_derived() = x;
     }
 
-  }; // FullSpaceConeTpl
+  }; // struct FullSpaceConeTpl
 
 } // namespace pinocchio
 

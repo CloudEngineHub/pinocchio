@@ -17,43 +17,22 @@ namespace pinocchio
   {
     namespace bp = boost::python;
 
-    // generic expose_constraint_model : do nothing special
+    // ---------------------
+    // Generic expose_constraint_model : do nothing special
     template<class T>
     bp::class_<T> & expose_constraint_model(bp::class_<T> & cl)
     {
       return cl;
     }
 
-    // specialization for ConstraintModels
-    template<>
-    bp::class_<context::PointAnchorConstraintModel> &
-    expose_constraint_model(bp::class_<context::PointAnchorConstraintModel> & cl)
-    {
-      return cl
-        .def(
-          BinaryKinematicsConstraintModelBasePythonVisitor<context::PointAnchorConstraintModel>())
-        .def(PointConstraintModelBasePythonVisitor<context::PointAnchorConstraintModel>());
-    }
-
+    // specialization for terminal ConstraintModels
     template<>
     bp::class_<context::PointContactConstraintModel> &
     expose_constraint_model(bp::class_<context::PointContactConstraintModel> & cl)
     {
       typedef context::PointContactConstraintModel Self;
-      return cl
-        .def(
-          BinaryKinematicsConstraintModelBasePythonVisitor<context::PointContactConstraintModel>())
-        .def(PointConstraintModelBasePythonVisitor<context::PointContactConstraintModel>())
-        .def("getFriction", &Self::getFriction, "Get coulomb friction coefficient.")
+      return cl.def("getFriction", &Self::getFriction, "Get coulomb friction coefficient.")
         .def("setFriction", &Self::setFriction, "Set coulomb friction coefficient.");
-    }
-
-    template<>
-    bp::class_<context::FrameAnchorConstraintModel> &
-    expose_constraint_model(bp::class_<context::FrameAnchorConstraintModel> & cl)
-    {
-      return cl.def(
-        BinaryKinematicsConstraintModelBasePythonVisitor<context::FrameAnchorConstraintModel>());
     }
 
     template<>
@@ -65,8 +44,10 @@ namespace pinocchio
       typedef context::VectorXs VectorXs;
       cl.def(bp::init<const context::Model &, const JointIndexVector &>(
                (bp::arg("self"), bp::arg("model"), bp::arg("m_active_joints")),
-               "Contructor from given joint index vector "
+               "Constructor from given joint index vector "
                "implied in the constraint."))
+        .def(bp::init<const context::Model &>(
+          (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
         .def(
           "getActiveJoints", &Self::getActiveJoints,
           bp::return_value_policy<bp::copy_const_reference>())
@@ -98,25 +79,26 @@ namespace pinocchio
     {
       typedef typename context::JointLimitConstraintModel::JointIndexVector JointIndexVector;
       typedef typename context::JointLimitConstraintModel Self;
-      typedef typename context::JointLimitConstraintData ConstraintData;
       cl.def(bp::init<const context::Model &, const JointIndexVector &>(
                (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints")),
-               "Contructor from given joint index vector "
+               "Constructor from given joint index vector "
                "implied in the constraint."))
         .def(bp::init<
              const context::Model &, const JointIndexVector &, const context::VectorXs &,
              const context::VectorXs &>(
           (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints"), bp::arg("lb"),
            bp::arg("ub")),
-          "Contructor from given joint index vector "
+          "Constructor from given joint index vector "
           "implied in the constraint."))
         .def(bp::init<
              const context::Model &, const JointIndexVector &, const context::VectorXs &,
              const context::VectorXs &, const context::VectorXs &>(
           (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints"), bp::arg("lb"),
            bp::arg("ub"), bp::arg("margin")),
-          "Contructor from given joint index vector "
+          "Constructor from given joint index vector "
           "implied in the constraint."))
+        .def(bp::init<const context::Model &>(
+          (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
         .def(
           "getSelectedJoints", &Self::getSelectedJoints,
           bp::return_value_policy<bp::copy_const_reference>(),
@@ -128,37 +110,56 @@ namespace pinocchio
           bp::return_value_policy<bp::copy_const_reference>(),
           "Position limit of the dof of the constraints.")
         .def(
-          "getActivablePositionMargin", &Self::getActivablePositionMargin,
-          bp::return_value_policy<bp::copy_const_reference>(),
-          "Position margin of the dof of the constraints.")
-        .def(
-          "lowerMaxResidualSize", &Self::lowerMaxResidualSize,
-          "Part of maxResidualSize() that are lower bound limits.")
-        .def(
-          "upperMaxResidualSize", &Self::upperMaxResidualSize,
-          "Part of maxResidualSize() that are upper bound limits.")
-        .def(
           "lowerResidualSize",
-          bp::make_function(+[](const Self & self, const ConstraintData & cdata) -> int {
-            return self.lowerResidualSize(cdata);
-          }),
-          "Give the size of constraint that are lower bound in a given state.")
+          +[](const Self & self, ConstraintSelectionType sel) -> int {
+            switch (sel)
+            {
+            case ConstraintSelectionType::CURRENT:
+              return self.lowerResidualSize(CurrentSelection());
+            case ConstraintSelectionType::MAXIMAL:
+              return self.lowerResidualSize(MaximalSelection());
+            }
+          },
+          (bp::arg("self"), bp::arg("sel") = ConstraintSelectionType::CURRENT))
         .def(
           "upperResidualSize",
-          bp::make_function(+[](const Self & self, const ConstraintData & cdata) -> int {
-            return self.upperResidualSize(cdata);
-          }),
-          "Give the size of constraint that are upper bound in a given state.")
+          +[](const Self & self, ConstraintSelectionType sel) -> int {
+            switch (sel)
+            {
+            case ConstraintSelectionType::CURRENT:
+              return self.upperResidualSize(CurrentSelection());
+            case ConstraintSelectionType::MAXIMAL:
+              return self.upperResidualSize(MaximalSelection());
+            }
+          },
+          (bp::arg("self"), bp::arg("sel") = ConstraintSelectionType::CURRENT))
         .def(
           "setPositionLimitAndMargin",
-          bp::make_function(
-            +[](
-               Self & self, const context::VectorXs & lb, const context::VectorXs & ub,
-               const context::VectorXs & margin) -> void {
-              self.setPositionLimitAndMargin(lb, ub, margin);
-            }),
+          +[](
+             Self & self, const context::VectorXs & lb, const context::VectorXs & ub,
+             const context::VectorXs & margin) -> void {
+            self.setPositionLimitAndMargin(lb, ub, margin);
+          },
+          (bp::arg("self"), bp::arg("lb"), bp::arg("ub"), bp::arg("margin")),
           "Set position limit and margin for activable constraints from lower_bound, upper_bound "
-          "and margin of size model.nq.");
+          "and margin of size model.nq.")
+        .def(
+          "makeSelectionMaximal", &Self::makeSelectionMaximal, bp::arg("self"),
+          "Make the selection maximal (all activable constraints become active).")
+        .def(
+          "makeSelectionFilteredByLimitProximity",
+          +[](Self & self, const context::VectorXs & q) {
+            self.makeSelectionFilteredByLimitProximity(q);
+          },
+          bp::args("self", "q"),
+          "Set the selection to constraints that are near their limits given configuration q.")
+        .def(
+          "active_idx_in_activable",
+          +[](const Self & self) -> const typename Self::VectorOfSize & {
+            return self.active_idx_in_activable();
+          },
+          bp::return_internal_reference<>(),
+          "Vector of active indices in the activable constraints.");
       return cl;
     }
   } // namespace python

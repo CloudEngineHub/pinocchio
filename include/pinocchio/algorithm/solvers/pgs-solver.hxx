@@ -13,6 +13,46 @@
 namespace pinocchio
 {
 
+  // -----------------------------------
+  // Visitor structure
+  // -----------------------------------
+
+  // Implementation of step given a set: Default to Non
+  template<typename ConstraintSet>
+  struct PGSConstraintProjectionStepOnSet
+  {
+  };
+
+  // Implementation of step given a constraint, default to using the set of the constraint
+  template<typename ConstraintModel, class = void>
+  struct PGSConstraintProjectionStepImpl
+  {
+    template<typename Scalar, typename BlockType, typename ImpulseType, typename VelocityType>
+    static void run(
+      const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+      const typename ConstraintModel::ConstraintData & cdata,
+      const Scalar over_relax_value,
+      const Eigen::EigenBase<BlockType> & G_block,
+      ImpulseType & impulse,
+      VelocityType & velocity,
+      Scalar & complementarity,
+      Scalar & primal_feasibility,
+      Scalar & dual_feasibility)
+    {
+      typedef typename ConstraintModel::ConstraintSet ConstraintSet;
+
+      auto set = cmodel.set(cdata);
+      PGSConstraintProjectionStepOnSet<ConstraintSet> step(over_relax_value, set);
+      step.project(G_block.derived(), impulse.const_cast_derived(), velocity.const_cast_derived());
+      step.computeFeasibility(impulse, velocity);
+
+      complementarity = step.complementarity;
+      dual_feasibility = step.dual_feasibility;
+      primal_feasibility = step.primal_feasibility;
+    }
+  }; // PGSConstraintProjectionStepImpl
+
+  // Storage Base class for PGSConstraintProjectionStepVisitor
   template<typename _Scalar>
   struct PGSConstraintProjectionStepBase
   {
@@ -29,11 +69,7 @@ namespace pinocchio
     Scalar primal_feasibility;
   }; // PGSConstraintProjectionBase
 
-  template<typename ConstraintSet>
-  struct PGSConstraintProjectionStep
-  {
-  };
-
+  // The visitor
   template<typename Scalar, typename BlockType, typename ImpulseType, typename VelocityType>
   struct PGSConstraintProjectionStepVisitor
   : visitors::ConstraintUnaryVisitorBase<
@@ -49,6 +85,7 @@ namespace pinocchio
       Scalar &,
       Scalar &>
       ArgsType;
+
     typedef PGSConstraintProjectionStepBase<Scalar> Base;
     typedef visitors::ConstraintUnaryVisitorBase<
       PGSConstraintProjectionStepVisitor<Scalar, BlockType, ImpulseType, VelocityType>>
@@ -71,17 +108,10 @@ namespace pinocchio
       Scalar & primal_feasibility,
       Scalar & dual_feasibility)
     {
-      typedef typename ConstraintModel::ConstraintSet ConstraintSet;
-
-      // TODO(jcarpent): change cmodel.derived().set() -> cmodel.set()
-      auto set = cmodel.set(cdata);
-      PGSConstraintProjectionStep<ConstraintSet> step(over_relax_value, set);
-      step.project(G_block.derived(), impulse.const_cast_derived(), velocity.const_cast_derived());
-      step.computeFeasibility(impulse, velocity);
-
-      complementarity = step.complementarity;
-      dual_feasibility = step.dual_feasibility;
-      primal_feasibility = step.primal_feasibility;
+      typedef PGSConstraintProjectionStepImpl<ConstraintModel> Impl;
+      Impl::run(
+        cmodel.derived(), cdata.derived(), over_relax_value, G_block.derived(), impulse, velocity,
+        complementarity, primal_feasibility, dual_feasibility);
     }
 
     using VisitorBase::run;
@@ -111,10 +141,14 @@ namespace pinocchio
         this->primal_feasibility, this->dual_feasibility);
       this->run(cmodel.derived(), cdata.derived(), args);
     }
-  }; // struct PGSConstraintProjectionStepVisitor
+  }; // PGSConstraintProjectionStepVisitor
 
+
+  // -----------------------------------
+  // Spcialization of the Impl for sets
+  // -----------------------------------
   template<typename _Scalar>
-  struct PGSConstraintProjectionStep<CoulombFrictionConeTpl<_Scalar>>
+  struct PGSConstraintProjectionStepOnSet<CoulombFrictionConeTpl<_Scalar>>
   : PGSConstraintProjectionStepBase<_Scalar>
   {
     typedef _Scalar Scalar;
@@ -122,7 +156,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
     typedef PGSConstraintProjectionStepBase<Scalar> Base;
 
-    PGSConstraintProjectionStep(const Scalar over_relax_value, const ConstraintSet & set)
+    PGSConstraintProjectionStepOnSet(const Scalar over_relax_value, const ConstraintSet & set)
     : Base(over_relax_value)
     , set(set)
     {
@@ -203,10 +237,10 @@ namespace pinocchio
 
     const ConstraintSet & set;
 
-  }; // PGSConstraintProjectionStep<CoulombFrictionConeTpl<_Scalar>>
+  }; // PGSConstraintProjectionStepOnSet<CoulombFrictionConeTpl<_Scalar>>
 
   template<typename _Scalar, int _Options>
-  struct PGSConstraintProjectionStep<FullSpaceConeTpl<_Scalar, _Options>>
+  struct PGSConstraintProjectionStepOnSet<FullSpaceConeTpl<_Scalar, _Options>>
   : PGSConstraintProjectionStepBase<_Scalar>
   {
     typedef _Scalar Scalar;
@@ -214,7 +248,7 @@ namespace pinocchio
     typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
     typedef PGSConstraintProjectionStepBase<Scalar> Base;
 
-    PGSConstraintProjectionStep(const Scalar over_relax_value, const ConstraintSet & set)
+    PGSConstraintProjectionStepOnSet(const Scalar over_relax_value, const ConstraintSet & set)
     : Base(over_relax_value)
     , set(set)
     {
@@ -297,17 +331,18 @@ namespace pinocchio
 
     const ConstraintSet & set;
 
-  }; // PGSConstraintProjectionStep<FullSpaceConeTpl<_Scalar,_Options>>
+  }; // PGSConstraintProjectionStepOnSet<FullSpaceConeTpl<_Scalar,_Options>>
 
   template<typename _Scalar>
-  struct PGSConstraintProjectionStep<BoxSetTpl<_Scalar>> : PGSConstraintProjectionStepBase<_Scalar>
+  struct PGSConstraintProjectionStepOnSet<BoxSetTpl<_Scalar>>
+  : PGSConstraintProjectionStepBase<_Scalar>
   {
     typedef _Scalar Scalar;
     typedef BoxSetTpl<Scalar> ConstraintSet;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> Vector;
     typedef PGSConstraintProjectionStepBase<Scalar> Base;
 
-    PGSConstraintProjectionStep(const Scalar over_relax_value, const ConstraintSet & set)
+    PGSConstraintProjectionStepOnSet(const Scalar over_relax_value, const ConstraintSet & set)
     : Base(over_relax_value)
     , set(set)
     {
@@ -452,10 +487,10 @@ namespace pinocchio
 
     const ConstraintSet & set;
 
-  }; // PGSConstraintProjectionStep<BoxSetTpl<_Scalar>>
+  }; // PGSConstraintProjectionStepOnSet<BoxSetTpl<_Scalar>>
 
   template<typename _Scalar>
-  struct PGSConstraintProjectionStep<NonNegativeOrthantConeTpl<_Scalar>>
+  struct PGSConstraintProjectionStepOnSet<NonNegativeOrthantConeTpl<_Scalar>>
   : PGSConstraintProjectionStepBase<_Scalar>
   {
     typedef _Scalar Scalar;
@@ -464,7 +499,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> Vector;
     typedef PGSConstraintProjectionStepBase<Scalar> Base;
 
-    PGSConstraintProjectionStep(const Scalar over_relax_value, const ConstraintSet & set)
+    PGSConstraintProjectionStepOnSet(const Scalar over_relax_value, const ConstraintSet & set)
     : Base(over_relax_value)
     , set(set)
     {
@@ -483,7 +518,7 @@ namespace pinocchio
       const Eigen::MatrixBase<PrimalVectorType> & primal_vector_,
       const Eigen::MatrixBase<DualVectorType> & dual_vector_) const
     {
-      PGSConstraintProjectionStep<BoxSet>::project_impl(
+      PGSConstraintProjectionStepOnSet<BoxSet>::project_impl(
         this->set, this->over_relax_value, G_block_.derived(), primal_vector_.const_cast_derived(),
         dual_vector_.const_cast_derived());
     }
@@ -501,7 +536,7 @@ namespace pinocchio
       const Eigen::MatrixBase<PrimalVectorType> & primal_vector_,
       const Eigen::MatrixBase<DualVectorType> & dual_vector_) const
     {
-      PGSConstraintProjectionStep<BoxSet>::project_impl(
+      PGSConstraintProjectionStepOnSet<BoxSet>::project_impl(
         this->set, this->over_relax_value, G_block_.derived(), primal_vector_.const_cast_derived(),
         dual_vector_.const_cast_derived());
     }
@@ -536,9 +571,13 @@ namespace pinocchio
 
     const ConstraintSet & set;
 
-  }; // PGSConstraintProjectionStep<NonNegativeOrthantConeTpl<_Scalar>>
+  }; // PGSConstraintProjectionStepOnSet<NonNegativeOrthantConeTpl<_Scalar>>
 
-  template<typename _Scalar>
+  // -----------------------------------
+  // Algorithms implementation
+  // -----------------------------------
+
+  template<typename _Scalar, int _Options>
   template<
     typename MatrixType,
     typename VectorLike,
@@ -546,7 +585,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  bool PGSConstraintSolverTpl<_Scalar>::solve(
+  bool PGSConstraintSolverTpl<_Scalar, _Options>::solve(
     const Eigen::MatrixBase<MatrixType> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -566,7 +605,7 @@ namespace pinocchio
     const std::size_t problem_size = static_cast<std::size_t>(np);
     assert(G.cols() == np);
     assert(g.size() == np);
-    assert(residualSize(constraint_models, constraint_datas) == np);
+    assert(residualSize(constraint_models) == np);
 
     // -- check if settings are valid
     settings.checkValidity();
@@ -640,7 +679,7 @@ namespace pinocchio
       {
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const Eigen::Index constraint_size = cmodel.residualSize(cdata);
+        const Eigen::Index constraint_size = cmodel.residualSize();
 
         auto G_block = G.block(row_id, row_id, constraint_size, constraint_size);
         auto impulse = ws.x.segment(row_id, constraint_size);
@@ -731,7 +770,7 @@ namespace pinocchio
     res.x = ws.x;
     res.y = ws.y;
     res.converged = abs_prec_reached || rel_prec_reached;
-    res.makeValid();
+    res.unsafe().makeValid();
 
     // the solver has run, we mark it as valid
     m_is_valid = true;

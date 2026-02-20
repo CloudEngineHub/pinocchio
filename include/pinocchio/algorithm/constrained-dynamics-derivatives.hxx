@@ -832,7 +832,7 @@ namespace pinocchio
         }
       }
 
-      current_row_sol_id += cmodel.maxResidualSize();
+      current_row_sol_id += cmodel.residualSize();
     }
 
     data.contact_chol.getOperationalSpaceInertiaMatrix(data.osim);
@@ -983,7 +983,7 @@ namespace pinocchio
         assert(false && "must never happen");
         break;
       }
-      current_row_sol_id += cmodel.maxResidualSize();
+      current_row_sol_id += cmodel.residualSize();
     }
 
     PINOCCHIO_EIGEN_CONST_CAST(MatrixType1, ddq_partial_dq).noalias() =
@@ -1044,7 +1044,7 @@ namespace pinocchio
         assert(false && "must never happen");
         break;
       }
-      current_row_sol_id += cmodel.maxResidualSize();
+      current_row_sol_id += cmodel.residualSize();
     }
   }
 

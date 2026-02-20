@@ -526,69 +526,156 @@ namespace pinocchio
     }
 
     /**
-     * @brief      ConstraintModelMaxResidualSizeVisitor visitor
-     */
-    struct ConstraintModelMaxResidualSizeVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelMaxResidualSizeVisitor, int>
-    {
-      typedef NoArg ArgsType;
-
-      template<typename ConstraintModel>
-      static int algo(const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel)
-      {
-        return cmodel.maxResidualSize();
-      }
-    };
-
-    template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
-    int maxResidualSize(const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
-    {
-      typedef ConstraintModelMaxResidualSizeVisitor Algo;
-      return Algo::run(cmodel);
-    }
-
-    /**
      * @brief      ConstraintModelResidualSizeVisitor visitor
      */
+    template<ConstraintSelectionType Sel>
     struct ConstraintModelResidualSizeVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelResidualSizeVisitor, int>
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelResidualSizeVisitor<Sel>, int>
     {
-      typedef NoArg ArgsType;
+      typedef boost::fusion::vector<ConstraintSelectionTag<Sel>> ArgsType;
 
       template<typename ConstraintModel>
       static int algo(
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata)
+        ConstraintSelectionTag<Sel> sel)
       {
-        return cmodel.residualSize(cdata);
+        return cmodel.residualSize(sel);
       }
     };
 
-    template<typename Scalar, int Options, template<typename, int> class ConstraintCollectionTpl>
+    template<
+      typename Scalar,
+      int Options,
+      template<typename, int> class ConstraintCollectionTpl,
+      ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
     int residualSize(
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
+      ConstraintSelectionTag<Sel> sel = CurrentSelection())
     {
-      typedef ConstraintModelResidualSizeVisitor Algo;
-      return Algo::run(cmodel, cdata);
+      typedef ConstraintModelResidualSizeVisitor<Sel> Algo;
+      typename Algo::ArgsType args(sel);
+
+      return Algo::run(cmodel, args);
+    }
+
+    /**
+     * @brief      ConstraintModelSymmetricConeResidualSize visitor
+     */
+    template<ConstraintSelectionType Sel>
+    struct ConstraintModelSymmetricConeResidualSizeVisitor
+    : visitors::
+        ConstraintUnaryVisitorBase<ConstraintModelSymmetricConeResidualSizeVisitor<Sel>, int>
+    {
+      typedef boost::fusion::vector<ConstraintSelectionTag<Sel>> ArgsType;
+
+      template<typename ConstraintModel>
+      static int algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        ConstraintSelectionTag<Sel> sel)
+      {
+        return cmodel.symmetricConeResidualSize(sel);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      template<typename, int> class ConstraintCollectionTpl,
+      ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+    int symmetricConeResidualSize(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      ConstraintSelectionTag<Sel> sel = CurrentSelection())
+    {
+      typedef ConstraintModelSymmetricConeResidualSizeVisitor<Sel> Algo;
+      typename Algo::ArgsType args(sel);
+
+      return Algo::run(cmodel, args);
+    }
+
+    /**
+     * @brief      ConstraintModelSymmetricConeScalingSizeVisitor visitor
+     */
+    template<ConstraintSelectionType Sel>
+    struct ConstraintModelSymmetricConeScalingSizeVisitor
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelSymmetricConeScalingSizeVisitor<Sel>, int>
+    {
+      typedef boost::fusion::vector<ConstraintSelectionTag<Sel>> ArgsType;
+
+      template<typename ConstraintModel>
+      static int algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        ConstraintSelectionTag<Sel> sel)
+      {
+        return cmodel.symmetricConeResidualScalingSize(sel);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      template<typename, int> class ConstraintCollectionTpl,
+      ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+    int symmetricConeResidualScalingSize(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      ConstraintSelectionTag<Sel> sel = CurrentSelection())
+    {
+      typedef ConstraintModelSymmetricConeScalingSizeVisitor<Sel> Algo;
+      typename Algo::ArgsType args(sel);
+
+      return Algo::run(cmodel, args);
+    }
+
+    /**
+     * @brief      ConstraintModelSetComplianceVisitor visitor
+     */
+    template<typename VectorLike, ConstraintSelectionType Sel>
+    struct ConstraintModelSetComplianceVisitor
+    : ConstraintUnaryVisitorBase<ConstraintModelSetComplianceVisitor<VectorLike, Sel>>
+    {
+      typedef boost::fusion::vector<const VectorLike &, ConstraintSelectionTag<Sel>> ArgsType;
+
+      template<typename ConstraintModel>
+      static void algo(
+        ::pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const Eigen::MatrixBase<VectorLike> & res,
+        ConstraintSelectionTag<Sel> sel)
+      {
+        return cmodel.setCompliance(res.derived(), sel);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      template<typename S, int O> class ConstraintCollectionTpl,
+      typename VectorLike,
+      ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+    void setCompliance(
+      ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const Eigen::MatrixBase<VectorLike> & res,
+      ConstraintSelectionTag<Sel> sel = CurrentSelection())
+    {
+      typedef ConstraintModelSetComplianceVisitor<VectorLike, Sel> Algo;
+      typename Algo::ArgsType args(res.derived(), sel);
+      return Algo::run(cmodel, args);
     }
 
     /**
      * @brief      ConstraintModelRetriveComplianceVisitor visitor
      */
-    template<typename VectorLike>
+    template<typename VectorLike, ConstraintSelectionType Sel>
     struct ConstraintModelRetriveComplianceVisitor
-    : ConstraintUnaryVisitorBase<ConstraintModelRetriveComplianceVisitor<VectorLike>>
+    : ConstraintUnaryVisitorBase<ConstraintModelRetriveComplianceVisitor<VectorLike, Sel>>
     {
-      typedef boost::fusion::vector<VectorLike &> ArgsType;
+      typedef boost::fusion::vector<VectorLike &, ConstraintSelectionTag<Sel>> ArgsType;
 
       template<typename ConstraintModel>
       static void algo(
         const ::pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Eigen::MatrixBase<VectorLike> & res)
+        const Eigen::MatrixBase<VectorLike> & res,
+        ConstraintSelectionTag<Sel> sel)
       {
-        return cmodel.retrieveCompliance(cdata.derived(), res.const_cast_derived());
+        return cmodel.retrieveCompliance(res.const_cast_derived(), sel);
       }
     };
 
@@ -596,641 +683,16 @@ namespace pinocchio
       typename Scalar,
       int Options,
       template<typename S, int O> class ConstraintCollectionTpl,
-      typename VectorLike>
+      typename VectorLike,
+      ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
     void retrieveCompliance(
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const Eigen::MatrixBase<VectorLike> & res)
+      const Eigen::MatrixBase<VectorLike> & res,
+      ConstraintSelectionTag<Sel> sel = CurrentSelection())
     {
-      typedef ConstraintModelRetriveComplianceVisitor<VectorLike> Algo;
-      typename Algo::ArgsType args(res.const_cast_derived());
-      return Algo::run(cmodel, cdata, args);
-    }
-
-    /**
-     * @brief      ConstraintModelgetRowSparsityPatternVisitor visitor
-     */
-    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    struct ConstraintModelgetRowSparsityPatternVisitor
-    : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelgetRowSparsityPatternVisitor<Scalar, Options, JointCollectionTpl>,
-        const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> &>
-    {
-      typedef const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & ReturnType;
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef boost::fusion::vector<const Model &, const Data &, const Eigen::Index> ArgsType;
-
-      template<typename ConstraintModel>
-      static ReturnType algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        const Data & data,
-        const Eigen::Index row_id)
-      {
-        return cmodel.getRowSparsityPattern(model, data, cdata.derived(), row_id);
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl>
-    const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & getRowSparsityPattern(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const Eigen::Index row_id)
-    {
-      typedef ConstraintModelgetRowSparsityPatternVisitor<Scalar, Options, JointCollectionTpl> Algo;
-      return Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data, row_id));
-    }
-
-    /**
-     * @brief      ConstraintModelgetRowIndexesVisitor visitor
-     */
-    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    struct ConstraintModelgetRowIndexesVisitor
-    : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelgetRowIndexesVisitor<Scalar, Options, JointCollectionTpl>,
-        const std::vector<Eigen::Index> &>
-    {
-      typedef const std::vector<Eigen::Index> & ReturnType;
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef boost::fusion::vector<const Model &, const Data &, const Eigen::Index> ArgsType;
-
-      template<typename ConstraintModel>
-      static ReturnType algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        const Data & data,
-        const Eigen::Index row_id)
-      {
-        return cmodel.getRowIndexes(model, data, cdata.derived(), row_id);
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl>
-    const std::vector<Eigen::Index> & getRowIndexes(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const Eigen::Index row_id)
-    {
-      typedef ConstraintModelgetRowIndexesVisitor<Scalar, Options, JointCollectionTpl> Algo;
-      return Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data, row_id));
-    }
-
-    /**
-     * @brief      ConstraintModelCalcVisitor fusion visitor
-     */
-    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    struct ConstraintModelCalcVisitor
-    : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelCalcVisitor<Scalar, Options, JointCollectionTpl>>
-    {
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef boost::fusion::vector<const Model &, const Data &> ArgsType;
-
-      template<typename ConstraintModel>
-      static void algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        const Data & data)
-      {
-        cmodel.calc(model, data, cdata.derived());
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl>
-    void calc(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
-    {
-      typedef ConstraintModelCalcVisitor<Scalar, Options, JointCollectionTpl> Algo;
-      Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data));
-    }
-
-    /**
-     * @brief      ConstraintModelJacobianVisitor fusion visitor
-     */
-    template<
-      typename Scalar,
-      int Options,
-      template<typename, int> class JointCollectionTpl,
-      typename JacobianMatrix>
-    struct ConstraintModelJacobianVisitor
-    : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelJacobianVisitor<Scalar, Options, JointCollectionTpl, JacobianMatrix>>
-    {
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef boost::fusion::vector<const Model &, const Data &, JacobianMatrix &> ArgsType;
-
-      template<typename ConstraintModel>
-      static void algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        const Data & data,
-        const Eigen::MatrixBase<JacobianMatrix> & jacobian_matrix)
-      {
-        cmodel.jacobian(model, data, cdata.derived(), jacobian_matrix.const_cast_derived());
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl,
-      typename JacobianMatrix>
-    void jacobian(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const Eigen::MatrixBase<JacobianMatrix> & jacobian_matrix)
-    {
-      typedef ConstraintModelJacobianVisitor<Scalar, Options, JointCollectionTpl, JacobianMatrix>
-        Algo;
-      Algo::run(
-        cmodel, cdata, typename Algo::ArgsType(model, data, jacobian_matrix.const_cast_derived()));
-    }
-
-    /**
-     * @brief      ConstraintModelJacobianMatrixProductVisitor visitor
-     */
-    template<
-      typename Scalar,
-      int Options,
-      template<typename, int> class JointCollectionTpl,
-      typename InputMatrix,
-      typename OutputMatrix,
-      AssignmentOperatorType op>
-    struct ConstraintModelJacobianMatrixProductVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelJacobianMatrixProductVisitor<
-        Scalar,
-        Options,
-        JointCollectionTpl,
-        InputMatrix,
-        OutputMatrix,
-        op>>
-    {
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef boost::fusion::vector<
-        const Model &,
-        const Data &,
-        const InputMatrix &,
-        OutputMatrix &,
-        AssignmentOperatorTag<op>>
-        ArgsType;
-
-      template<typename ConstraintModel>
-      static void algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        const Data & data,
-        const Eigen::MatrixBase<InputMatrix> & input_matrix,
-        const Eigen::MatrixBase<OutputMatrix> & result_matrix,
-        AssignmentOperatorTag<op> aot)
-      {
-        cmodel.jacobianMatrixProduct(
-          model, data, cdata.derived(), input_matrix.derived(), result_matrix.const_cast_derived(),
-          aot);
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl,
-      typename InputMatrix,
-      typename OutputMatrix,
-      AssignmentOperatorType op = SETTO>
-    void jacobianMatrixProduct(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const Eigen::MatrixBase<InputMatrix> & input_matrix,
-      const Eigen::MatrixBase<OutputMatrix> & result_matrix,
-      AssignmentOperatorTag<op> aot = SetTo())
-    {
-      typedef ConstraintModelJacobianMatrixProductVisitor<
-        Scalar, Options, JointCollectionTpl, InputMatrix, OutputMatrix, op>
-        Algo;
-
-      typename Algo::ArgsType args(
-        model, data, input_matrix.derived(), result_matrix.const_cast_derived(), aot);
-      Algo::run(cmodel, cdata, args);
-    }
-
-    /**
-     * @brief      ConstraintModelJacobianTransposeMatrixProductVisitor visitor
-     */
-    template<
-      typename Scalar,
-      int Options,
-      template<typename, int> class JointCollectionTpl,
-      typename InputMatrix,
-      typename OutputMatrix,
-      AssignmentOperatorType op>
-    struct ConstraintModelJacobianTransposeMatrixProductVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelJacobianTransposeMatrixProductVisitor<
-        Scalar,
-        Options,
-        JointCollectionTpl,
-        InputMatrix,
-        OutputMatrix,
-        op>>
-    {
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef boost::fusion::vector<
-        const Model &,
-        const Data &,
-        const InputMatrix &,
-        OutputMatrix &,
-        AssignmentOperatorTag<op>>
-        ArgsType;
-
-      template<typename ConstraintModel>
-      static void algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        const Data & data,
-        const Eigen::MatrixBase<InputMatrix> & input_matrix,
-        const Eigen::MatrixBase<OutputMatrix> & result_matrix,
-        AssignmentOperatorTag<op> aot)
-      {
-        cmodel.jacobianTransposeMatrixProduct(
-          model, data, cdata.derived(), input_matrix.derived(), result_matrix.const_cast_derived(),
-          aot);
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl,
-      typename InputMatrix,
-      typename OutputMatrix,
-      AssignmentOperatorType op = SETTO>
-    void jacobianTransposeMatrixProduct(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const Eigen::MatrixBase<InputMatrix> & input_matrix,
-      const Eigen::MatrixBase<OutputMatrix> & result_matrix,
-      AssignmentOperatorTag<op> aot = SetTo())
-    {
-      typedef ConstraintModelJacobianTransposeMatrixProductVisitor<
-        Scalar, Options, JointCollectionTpl, InputMatrix, OutputMatrix, op>
-        Algo;
-
-      typename Algo::ArgsType args(
-        model, data, input_matrix.derived(), result_matrix.const_cast_derived(), aot);
-      Algo::run(cmodel, cdata, args);
-    }
-
-    /**
-     * @brief      ConstraintModelMapConstraintForceToJointSpace visitor
-     */
-    template<
-      typename Scalar,
-      int Options,
-      template<typename, int> class JointCollectionTpl,
-      typename ConstraintForceLike,
-      class ForceAllocator,
-      typename JointTorquesLike,
-      ReferenceFrame rf>
-    struct ConstraintModelMapConstraintForceToJointSpaceVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelMapConstraintForceToJointSpaceVisitor<
-        Scalar,
-        Options,
-        JointCollectionTpl,
-        ConstraintForceLike,
-        ForceAllocator,
-        JointTorquesLike,
-        rf>>
-    {
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef std::vector<ForceTpl<Scalar, Options>, ForceAllocator> ForceVector;
-      typedef boost::fusion::vector<
-        const Model &,
-        const Data &,
-        const ConstraintForceLike &,
-        ForceVector &,
-        JointTorquesLike &,
-        const ReferenceFrameTag<rf>>
-        ArgsType;
-
-      template<typename ConstraintModel>
-      static void algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        const Data & data,
-        const Eigen::MatrixBase<ConstraintForceLike> & constraint_forces,
-        std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces,
-        const Eigen::MatrixBase<JointTorquesLike> & joint_torques,
-        const ReferenceFrameTag<rf> reference_frame)
-      {
-        cmodel.mapConstraintForceToJointSpace(
-          model, data, cdata, constraint_forces, joint_forces, joint_torques.const_cast_derived(),
-          reference_frame);
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename, int> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl,
-      typename ConstraintForceLike,
-      class ForceAllocator,
-      typename JointTorquesLike,
-      ReferenceFrame rf>
-    void mapConstraintForceToJointSpace(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::MatrixBase<ConstraintForceLike> & constraint_forces,
-      std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces,
-      const Eigen::MatrixBase<JointTorquesLike> & joint_torques,
-      const ReferenceFrameTag<rf> reference_frame)
-    {
-      typedef ConstraintModelMapConstraintForceToJointSpaceVisitor<
-        Scalar, Options, JointCollectionTpl, ConstraintForceLike, ForceAllocator, JointTorquesLike,
-        rf>
-        Algo;
-
-      typename Algo::ArgsType args(
-        model, data, constraint_forces.derived(), joint_forces, joint_torques.const_cast_derived(),
-        reference_frame);
-      Algo::run(cmodel, cdata, args);
-    }
-
-    /**
-     * @brief      ConstraintModelMapJointSpaceToConstraintMotionVisitor visitor
-     */
-    template<
-      typename Scalar,
-      int Options,
-      template<typename, int> class JointCollectionTpl,
-      class MotionAllocator,
-      typename GeneralizedVelocityLike,
-      typename ConstraintMotionLike,
-      ReferenceFrame rf>
-    struct ConstraintModelMapJointSpaceToConstraintMotionVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelMapJointSpaceToConstraintMotionVisitor<
-        Scalar,
-        Options,
-        JointCollectionTpl,
-        MotionAllocator,
-        GeneralizedVelocityLike,
-        ConstraintMotionLike,
-        rf>>
-    {
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef std::vector<MotionTpl<Scalar, Options>, MotionAllocator> MotionVector;
-      typedef boost::fusion::vector<
-        const Model &,
-        const Data &,
-        const MotionVector &,
-        const GeneralizedVelocityLike &,
-        ConstraintMotionLike &,
-        const ReferenceFrameTag<rf>>
-        ArgsType;
-
-      template<typename ConstraintModel>
-      static void algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        const Data & data,
-        const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> & joint_motions,
-        const Eigen::MatrixBase<GeneralizedVelocityLike> & generalized_velocity,
-        const Eigen::MatrixBase<ConstraintMotionLike> & constraint_motions,
-        const ReferenceFrameTag<rf> reference_frame)
-      {
-        cmodel.mapJointSpaceToConstraintMotion(
-          model, data, cdata, joint_motions, generalized_velocity.derived(),
-          constraint_motions.const_cast_derived(), reference_frame);
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename, int> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl,
-      class MotionAllocator,
-      typename GeneralizedVelocityLike,
-      typename ConstraintMotionLike,
-      ReferenceFrame rf>
-    void mapJointSpaceToConstraintMotion(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> & joint_motions,
-      const Eigen::MatrixBase<GeneralizedVelocityLike> & generalized_velocity,
-      const Eigen::MatrixBase<ConstraintMotionLike> & constraint_motions,
-      const ReferenceFrameTag<rf> reference_frame)
-    {
-      typedef ConstraintModelMapJointSpaceToConstraintMotionVisitor<
-        Scalar, Options, JointCollectionTpl, MotionAllocator, GeneralizedVelocityLike,
-        ConstraintMotionLike, rf>
-        Algo;
-
-      typename Algo::ArgsType args(
-        model, data, joint_motions, generalized_velocity.derived(),
-        constraint_motions.const_cast_derived(), reference_frame);
-      Algo::run(cmodel, cdata, args);
-    }
-
-    /**
-     * @brief      ConstraintModelAppendCouplingConstraintInertiasVisitor visitor
-     */
-    template<
-      typename Scalar,
-      int Options,
-      template<typename, int> class JointCollectionTpl,
-      typename VectorNLike,
-      ReferenceFrame rf>
-    struct ConstraintModelAppendCouplingConstraintInertiasVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelAppendCouplingConstraintInertiasVisitor<
-        Scalar,
-        Options,
-        JointCollectionTpl,
-        VectorNLike,
-        rf>>
-    {
-      typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-      typedef DataTpl<Scalar, Options, JointCollectionTpl> Data;
-      typedef boost::fusion::
-        vector<const Model &, Data &, const VectorNLike &, ReferenceFrameTag<rf>>
-          ArgsType;
-
-      template<typename ConstraintModel>
-      static void algo(
-        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const typename ConstraintModel::ConstraintData & cdata,
-        const Model & model,
-        Data & data,
-        const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
-        const ReferenceFrameTag<rf> reference_frame)
-      {
-        cmodel.appendCouplingConstraintInertias(
-          model, data, cdata.derived(), diagonal_constraint_inertia.derived(), reference_frame);
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class JointCollectionTpl,
-      template<typename S, int O> class ConstraintCollectionTpl,
-      typename VectorNLike,
-      ReferenceFrame rf>
-    void appendCouplingConstraintInertias(
-      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
-      const ReferenceFrameTag<rf> reference_frame)
-    {
-      typedef ConstraintModelAppendCouplingConstraintInertiasVisitor<
-        Scalar, Options, JointCollectionTpl, VectorNLike, rf>
-        Algo;
-
-      typename Algo::ArgsType args(
-        model, data, diagonal_constraint_inertia.derived(), reference_frame);
-      Algo::run(cmodel, cdata, args);
-    }
-
-    /**
-     * @brief      ConstraintModelComplianceMemberVisitor visitor
-     */
-    /// \brief ComplianceMemberGetter - default behavior for false for
-    /// HasComplianceMember
-    template<bool HasComplianceMember, typename ReturnType>
-    struct ComplianceMemberGetter
-    {
-      template<typename ConstraintModelDerived>
-      static ReturnType run(const ConstraintModelBase<ConstraintModelDerived> & cmodel)
-      {
-        std::stringstream ss;
-        ss << cmodel.shortname() << " does not have the compliance member.\n";
-        PINOCCHIO_THROW(std::invalid_argument, ss.str());
-        return internal::NoRun<ReturnType>::run();
-      }
-      template<typename ConstraintModelDerived>
-      static ReturnType run(ConstraintModelBase<ConstraintModelDerived> & cmodel)
-      {
-        std::stringstream ss;
-        ss << cmodel.shortname() << " does not have the compliance member.\n";
-        PINOCCHIO_THROW(std::invalid_argument, ss.str());
-        return internal::NoRun<ReturnType>::run();
-      }
-    };
-
-    /// \brief ComplianceMemberGetter - partial specialization for true for
-    /// HasComplianceMember
-    template<typename ReturnType>
-    struct ComplianceMemberGetter<true, ReturnType>
-    {
-      template<typename ConstraintModelDerived>
-      static ReturnType run(const ConstraintModelBase<ConstraintModelDerived> & cmodel)
-      {
-        return cmodel.compliance();
-      }
-      template<typename ConstraintModelDerived>
-      static ReturnType run(ConstraintModelBase<ConstraintModelDerived> & cmodel)
-      {
-        return cmodel.compliance();
-      }
-    };
-
-    template<typename ReturnType>
-    struct ConstraintModelComplianceMemberVisitor
-    : ConstraintUnaryVisitorBase<ConstraintModelComplianceMemberVisitor<ReturnType>, ReturnType>
-    {
-      typedef NoArg ArgsType;
-
-      template<typename ConstraintModelDerived>
-      static ReturnType algo(const ConstraintModelBase<ConstraintModelDerived> & cmodel)
-      {
-        static constexpr bool has_compliance_member =
-          traits<ConstraintModelDerived>::has_compliance_member;
-        return ComplianceMemberGetter<has_compliance_member, ReturnType>::run(cmodel);
-      }
-
-      template<typename ConstraintModelDerived>
-      static ReturnType algo(ConstraintModelBase<ConstraintModelDerived> & cmodel)
-      {
-        static constexpr bool has_compliance_member =
-          traits<ConstraintModelDerived>::has_compliance_member;
-        return ComplianceMemberGetter<has_compliance_member, ReturnType>::run(cmodel);
-      }
-    };
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class ConstraintCollectionTpl>
-    typename traits<
-      ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::ComplianceVectorTypeConstRef
-    getCompliance(const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
-    {
-      typedef typename traits<ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::
-        ComplianceVectorTypeConstRef ReturnType;
-      typedef ConstraintModelComplianceMemberVisitor<ReturnType> Algo;
-      return Algo::run(cmodel);
-    }
-
-    template<
-      typename Scalar,
-      int Options,
-      template<typename S, int O> class ConstraintCollectionTpl>
-    typename traits<
-      ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::ComplianceVectorTypeRef
-    getCompliance(ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel)
-    {
-      typedef typename traits<ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl>>::
-        ComplianceVectorTypeRef ReturnType;
-      typedef ConstraintModelComplianceMemberVisitor<ReturnType> Algo;
-      return Algo::run(cmodel);
+      typedef ConstraintModelRetriveComplianceVisitor<VectorLike, Sel> Algo;
+      typename Algo::ArgsType args(res.const_cast_derived(), sel);
+      return Algo::run(cmodel, args);
     }
 
     /**
@@ -1330,20 +792,24 @@ namespace pinocchio
     }
 
     /**
-     * @brief      ConstraintModelSetComplianceVisitor visitor
+     * @brief      ConstraintModelSetBaumgarteCorrectorParameters visitor
      */
-    template<typename InputVector>
-    struct ConstraintModelSetComplianceVisitor
-    : visitors::ConstraintUnaryVisitorBase<ConstraintModelSetComplianceVisitor<InputVector>>
+    template<typename _BaumgarteCorrectorParameters, ConstraintSelectionType Sel>
+    struct ConstraintModelSetBaumgarteCorrectorParameters
+    : visitors::ConstraintUnaryVisitorBase<
+        ConstraintModelSetBaumgarteCorrectorParameters<_BaumgarteCorrectorParameters, Sel>>
     {
-      typedef boost::fusion::vector<const InputVector &> ArgsType;
+      typedef boost::fusion::
+        vector<const _BaumgarteCorrectorParameters &, ConstraintSelectionTag<Sel>>
+          ArgsType;
 
       template<typename ConstraintModel>
       static void algo(
         pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const Eigen::MatrixBase<InputVector> & input_vector)
+        const _BaumgarteCorrectorParameters & baumgarte_corrector_parameters_in,
+        ConstraintSelectionTag<Sel> sel)
       {
-        cmodel.setCompliance(input_vector.derived());
+        cmodel.setBaumgarteCorrectorParameters(baumgarte_corrector_parameters_in, sel);
       }
     };
 
@@ -1351,49 +817,648 @@ namespace pinocchio
       typename Scalar,
       int Options,
       template<typename S, int O> class ConstraintCollectionTpl,
-      typename InputVector>
-    void setCompliance(
+      ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+    void setBaumgarteCorrectorParameters(
       ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const Eigen::MatrixBase<InputVector> & input_vector)
+      const BaumgarteCorrectorParametersTpl<Scalar> & baumgarte_corrector_parameters_in,
+      ConstraintSelectionTag<Sel> sel = CurrentSelection())
     {
-      typedef ConstraintModelSetComplianceVisitor<InputVector> Algo;
+      typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+      typedef ConstraintModelSetBaumgarteCorrectorParameters<BaumgarteCorrectorParameters, Sel>
+        Algo;
 
-      typename Algo::ArgsType args(input_vector.derived());
+      typename Algo::ArgsType args(baumgarte_corrector_parameters_in, sel);
       Algo::run(cmodel, args);
     }
 
     /**
-     * @brief      ConstraintModelSetBaumgarteCorrectorParameters visitor
+     * @brief      ConstraintModelCalcVisitor fusion visitor
      */
-    template<typename _BaumgarteCorrectorParameters>
-    struct ConstraintModelSetBaumgarteCorrectorParameters
+    template<typename Scalar, int OtherOptions, template<typename, int> class JointCollectionTpl>
+    struct ConstraintModelCalcVisitor
     : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelSetBaumgarteCorrectorParameters<_BaumgarteCorrectorParameters>>
+        ConstraintModelCalcVisitor<Scalar, OtherOptions, JointCollectionTpl>>
     {
-      typedef boost::fusion::vector<const _BaumgarteCorrectorParameters &> ArgsType;
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef boost::fusion::vector<const Model &, const Data &> ArgsType;
 
       template<typename ConstraintModel>
       static void algo(
-        pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
-        const _BaumgarteCorrectorParameters & baumgarte_corrector_parameters_in)
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        const Data & data)
       {
-        cmodel.setBaumgarteCorrectorParameters(baumgarte_corrector_parameters_in);
+        cmodel.calc(model, data, cdata.derived());
       }
     };
 
     template<
       typename Scalar,
       int Options,
+      int OtherOptions,
+      template<typename S, int O> class JointCollectionTpl,
       template<typename S, int O> class ConstraintCollectionTpl>
-    void setBaumgarteCorrectorParameters(
-      ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
-      const BaumgarteCorrectorParametersTpl<Scalar> & baumgarte_corrector_parameters_in)
+    void calc(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata)
     {
-      typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
-      typedef ConstraintModelSetBaumgarteCorrectorParameters<BaumgarteCorrectorParameters> Algo;
+      typedef ConstraintModelCalcVisitor<Scalar, OtherOptions, JointCollectionTpl> Algo;
+      Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data));
+    }
 
-      typename Algo::ArgsType args(baumgarte_corrector_parameters_in);
-      Algo::run(cmodel, args);
+    /**
+     * @brief      ConstraintModelgetRowSparsityPatternVisitor visitor
+     */
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl>
+    struct ConstraintModelgetRowSparsityPatternVisitor
+    : visitors::ConstraintUnaryVisitorBase<
+        ConstraintModelgetRowSparsityPatternVisitor<
+          Scalar,
+          Options,
+          OtherOptions,
+          JointCollectionTpl>,
+        const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> &>
+    {
+      typedef const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & ReturnType;
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef boost::fusion::vector<const Model &, const Data &, const Eigen::Index> ArgsType;
+
+      template<typename ConstraintModel>
+      static ReturnType algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        const Data & data,
+        const Eigen::Index row_id)
+      {
+        return cmodel.getRowSparsityPattern(model, data, cdata.derived(), row_id);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      template<typename S, int O> class JointCollectionTpl,
+      template<typename S, int O> class ConstraintCollectionTpl>
+    const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & getRowSparsityPattern(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
+      const Eigen::Index row_id)
+    {
+      typedef ConstraintModelgetRowSparsityPatternVisitor<
+        Scalar, Options, OtherOptions, JointCollectionTpl>
+        Algo;
+      return Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data, row_id));
+    }
+
+    /**
+     * @brief      ConstraintModelgetRowIndexesVisitor visitor
+     */
+    template<typename Scalar, int OtherOptions, template<typename, int> class JointCollectionTpl>
+    struct ConstraintModelgetRowIndexesVisitor
+    : visitors::ConstraintUnaryVisitorBase<
+        ConstraintModelgetRowIndexesVisitor<Scalar, OtherOptions, JointCollectionTpl>,
+        const std::vector<Eigen::Index> &>
+    {
+      typedef const std::vector<Eigen::Index> & ReturnType;
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef boost::fusion::vector<const Model &, const Data &, const Eigen::Index> ArgsType;
+
+      template<typename ConstraintModel>
+      static ReturnType algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        const Data & data,
+        const Eigen::Index row_id)
+      {
+        return cmodel.getRowIndexes(model, data, cdata.derived(), row_id);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      template<typename S, int O> class JointCollectionTpl,
+      template<typename S, int O> class ConstraintCollectionTpl>
+    const std::vector<Eigen::Index> & getRowIndexes(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
+      const Eigen::Index row_id)
+    {
+      typedef ConstraintModelgetRowIndexesVisitor<Scalar, OtherOptions, JointCollectionTpl> Algo;
+      return Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data, row_id));
+    }
+
+    /**
+     * @brief      ConstraintModelJacobianVisitor fusion visitor
+     */
+    template<
+      typename Scalar,
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename JacobianMatrix>
+    struct ConstraintModelJacobianVisitor
+    : visitors::ConstraintUnaryVisitorBase<
+        ConstraintModelJacobianVisitor<Scalar, OtherOptions, JointCollectionTpl, JacobianMatrix>>
+    {
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef boost::fusion::vector<const Model &, const Data &, JacobianMatrix &> ArgsType;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        const Data & data,
+        const Eigen::MatrixBase<JacobianMatrix> & jacobian_matrix)
+      {
+        cmodel.jacobian(model, data, cdata.derived(), jacobian_matrix.const_cast_derived());
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      template<typename S, int O> class JointCollectionTpl,
+      template<typename S, int O> class ConstraintCollectionTpl,
+      typename JacobianMatrix>
+    void jacobian(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
+      const Eigen::MatrixBase<JacobianMatrix> & jacobian_matrix)
+    {
+      typedef ConstraintModelJacobianVisitor<
+        Scalar, OtherOptions, JointCollectionTpl, JacobianMatrix>
+        Algo;
+      Algo::run(
+        cmodel, cdata, typename Algo::ArgsType(model, data, jacobian_matrix.const_cast_derived()));
+    }
+
+    /**
+     * @brief      ConstraintModelJacobianMatrixProductVisitor visitor
+     */
+    template<
+      typename Scalar,
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename InputMatrix,
+      typename OutputMatrix,
+      AssignmentOperatorType op>
+    struct ConstraintModelJacobianMatrixProductVisitor
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelJacobianMatrixProductVisitor<
+        Scalar,
+        OtherOptions,
+        JointCollectionTpl,
+        InputMatrix,
+        OutputMatrix,
+        op>>
+    {
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef boost::fusion::vector<
+        const Model &,
+        const Data &,
+        const InputMatrix &,
+        OutputMatrix &,
+        AssignmentOperatorTag<op>>
+        ArgsType;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        const Data & data,
+        const Eigen::MatrixBase<InputMatrix> & input_matrix,
+        const Eigen::MatrixBase<OutputMatrix> & result_matrix,
+        AssignmentOperatorTag<op> aot)
+      {
+        cmodel.jacobianMatrixProduct(
+          model, data, cdata.derived(), input_matrix.derived(), result_matrix.const_cast_derived(),
+          aot);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      template<typename S, int O> class JointCollectionTpl,
+      template<typename S, int O> class ConstraintCollectionTpl,
+      typename InputMatrix,
+      typename OutputMatrix,
+      AssignmentOperatorType op = SETTO>
+    void jacobianMatrixProduct(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
+      const Eigen::MatrixBase<InputMatrix> & input_matrix,
+      const Eigen::MatrixBase<OutputMatrix> & result_matrix,
+      AssignmentOperatorTag<op> aot = SetTo())
+    {
+      typedef ConstraintModelJacobianMatrixProductVisitor<
+        Scalar, OtherOptions, JointCollectionTpl, InputMatrix, OutputMatrix, op>
+        Algo;
+
+      typename Algo::ArgsType args(
+        model, data, input_matrix.derived(), result_matrix.const_cast_derived(), aot);
+      Algo::run(cmodel, cdata, args);
+    }
+
+    /**
+     * @brief      ConstraintModelJacobianTransposeMatrixProductVisitor visitor
+     */
+    template<
+      typename Scalar,
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename InputMatrix,
+      typename OutputMatrix,
+      AssignmentOperatorType op>
+    struct ConstraintModelJacobianTransposeMatrixProductVisitor
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelJacobianTransposeMatrixProductVisitor<
+        Scalar,
+        OtherOptions,
+        JointCollectionTpl,
+        InputMatrix,
+        OutputMatrix,
+        op>>
+    {
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef boost::fusion::vector<
+        const Model &,
+        const Data &,
+        const InputMatrix &,
+        OutputMatrix &,
+        AssignmentOperatorTag<op>>
+        ArgsType;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        const Data & data,
+        const Eigen::MatrixBase<InputMatrix> & input_matrix,
+        const Eigen::MatrixBase<OutputMatrix> & result_matrix,
+        AssignmentOperatorTag<op> aot)
+      {
+        cmodel.jacobianTransposeMatrixProduct(
+          model, data, cdata.derived(), input_matrix.derived(), result_matrix.const_cast_derived(),
+          aot);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      template<typename S, int O> class JointCollectionTpl,
+      template<typename S, int O> class ConstraintCollectionTpl,
+      typename InputMatrix,
+      typename OutputMatrix,
+      AssignmentOperatorType op = SETTO>
+    void jacobianTransposeMatrixProduct(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
+      const Eigen::MatrixBase<InputMatrix> & input_matrix,
+      const Eigen::MatrixBase<OutputMatrix> & result_matrix,
+      AssignmentOperatorTag<op> aot = SetTo())
+    {
+      typedef ConstraintModelJacobianTransposeMatrixProductVisitor<
+        Scalar, Options, JointCollectionTpl, InputMatrix, OutputMatrix, op>
+        Algo;
+
+      typename Algo::ArgsType args(
+        model, data, input_matrix.derived(), result_matrix.const_cast_derived(), aot);
+      Algo::run(cmodel, cdata, args);
+    }
+
+    /**
+     * @brief      ConstraintModelMapConstraintForceToJointSpace visitor
+     */
+    template<
+      typename Scalar,
+      int OtherOptions,
+      int ForceOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename ConstraintForceLike,
+      class ForceAllocator,
+      typename JointTorquesLike,
+      ReferenceFrame rf>
+    struct ConstraintModelMapConstraintForceToJointSpaceVisitor
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelMapConstraintForceToJointSpaceVisitor<
+        Scalar,
+        OtherOptions,
+        ForceOptions,
+        JointCollectionTpl,
+        ConstraintForceLike,
+        ForceAllocator,
+        JointTorquesLike,
+        rf>>
+    {
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef std::vector<ForceTpl<Scalar, ForceOptions>, ForceAllocator> ForceVector;
+      typedef boost::fusion::vector<
+        const Model &,
+        const Data &,
+        const ConstraintForceLike &,
+        ForceVector &,
+        JointTorquesLike &,
+        const ReferenceFrameTag<rf>>
+        ArgsType;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        const Data & data,
+        const Eigen::MatrixBase<ConstraintForceLike> & constraint_forces,
+        ForceVector & joint_forces,
+        const Eigen::MatrixBase<JointTorquesLike> & joint_torques,
+        const ReferenceFrameTag<rf> reference_frame)
+      {
+        cmodel.mapConstraintForceToJointSpace(
+          model, data, cdata, constraint_forces, joint_forces, joint_torques.const_cast_derived(),
+          reference_frame);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      int ForceOptions,
+      template<typename, int> class JointCollectionTpl,
+      template<typename S, int O> class ConstraintCollectionTpl,
+      typename ConstraintForceLike,
+      class ForceAllocator,
+      typename JointTorquesLike,
+      ReferenceFrame rf>
+    void mapConstraintForceToJointSpace(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionDefaultTpl> & cdata,
+      const Eigen::MatrixBase<ConstraintForceLike> & constraint_forces,
+      std::vector<ForceTpl<Scalar, ForceOptions>, ForceAllocator> & joint_forces,
+      const Eigen::MatrixBase<JointTorquesLike> & joint_torques,
+      const ReferenceFrameTag<rf> reference_frame)
+    {
+      typedef ConstraintModelMapConstraintForceToJointSpaceVisitor<
+        Scalar, OtherOptions, ForceOptions, JointCollectionTpl, ConstraintForceLike, ForceAllocator,
+        JointTorquesLike, rf>
+        Algo;
+
+      typename Algo::ArgsType args(
+        model, data, constraint_forces.derived(), joint_forces, joint_torques.const_cast_derived(),
+        reference_frame);
+      Algo::run(cmodel, cdata, args);
+    }
+
+    /**
+     * @brief      ConstraintModelMapJointSpaceToConstraintMotionVisitor visitor
+     */
+    template<
+      typename Scalar,
+      int OtherOptions,
+      int MotionOptions,
+      template<typename, int> class JointCollectionTpl,
+      class MotionAllocator,
+      typename GeneralizedVelocityLike,
+      typename ConstraintMotionLike,
+      ReferenceFrame rf>
+    struct ConstraintModelMapJointSpaceToConstraintMotionVisitor
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelMapJointSpaceToConstraintMotionVisitor<
+        Scalar,
+        OtherOptions,
+        MotionOptions,
+        JointCollectionTpl,
+        MotionAllocator,
+        GeneralizedVelocityLike,
+        ConstraintMotionLike,
+        rf>>
+    {
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef std::vector<MotionTpl<Scalar, MotionOptions>, MotionAllocator> MotionVector;
+      typedef boost::fusion::vector<
+        const Model &,
+        const Data &,
+        const MotionVector &,
+        const GeneralizedVelocityLike &,
+        ConstraintMotionLike &,
+        const ReferenceFrameTag<rf>>
+        ArgsType;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        const Data & data,
+        const MotionVector & joint_motions,
+        const Eigen::MatrixBase<GeneralizedVelocityLike> & generalized_velocity,
+        const Eigen::MatrixBase<ConstraintMotionLike> & constraint_motions,
+        const ReferenceFrameTag<rf> reference_frame)
+      {
+        cmodel.mapJointSpaceToConstraintMotion(
+          model, data, cdata, joint_motions, generalized_velocity.derived(),
+          constraint_motions.const_cast_derived(), reference_frame);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      int MotionOptions,
+      template<typename, int> class JointCollectionTpl,
+      template<typename S, int O> class ConstraintCollectionTpl,
+      class MotionAllocator,
+      typename GeneralizedVelocityLike,
+      typename ConstraintMotionLike,
+      ReferenceFrame rf>
+    void mapJointSpaceToConstraintMotion(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionDefaultTpl> & cdata,
+      const std::vector<MotionTpl<Scalar, MotionOptions>, MotionAllocator> & joint_motions,
+      const Eigen::MatrixBase<GeneralizedVelocityLike> & generalized_velocity,
+      const Eigen::MatrixBase<ConstraintMotionLike> & constraint_motions,
+      const ReferenceFrameTag<rf> reference_frame)
+    {
+      typedef ConstraintModelMapJointSpaceToConstraintMotionVisitor<
+        Scalar, OtherOptions, MotionOptions, JointCollectionTpl, MotionAllocator,
+        GeneralizedVelocityLike, ConstraintMotionLike, rf>
+        Algo;
+
+      typename Algo::ArgsType args(
+        model, data, joint_motions, generalized_velocity.derived(),
+        constraint_motions.const_cast_derived(), reference_frame);
+      Algo::run(cmodel, cdata, args);
+    }
+
+    /**
+     * @brief      ConstraintModelAppendCouplingConstraintInertiasVisitor visitor
+     */
+    template<
+      typename Scalar,
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename VectorNLike,
+      ReferenceFrame rf>
+    struct ConstraintModelAppendCouplingConstraintInertiasVisitor
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelAppendCouplingConstraintInertiasVisitor<
+        Scalar,
+        OtherOptions,
+        JointCollectionTpl,
+        VectorNLike,
+        rf>>
+    {
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef boost::fusion::
+        vector<const Model &, Data &, const VectorNLike &, ReferenceFrameTag<rf>>
+          ArgsType;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        Data & data,
+        const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
+        const ReferenceFrameTag<rf> reference_frame)
+      {
+        cmodel.appendCouplingConstraintInertias(
+          model, data, cdata.derived(), diagonal_constraint_inertia.derived(), reference_frame);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      template<typename S, int O> class JointCollectionTpl,
+      template<typename S, int O> class ConstraintCollectionTpl,
+      typename VectorNLike,
+      ReferenceFrame rf>
+    void appendCouplingConstraintInertias(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
+      const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame)
+    {
+      typedef ConstraintModelAppendCouplingConstraintInertiasVisitor<
+        Scalar, OtherOptions, JointCollectionTpl, VectorNLike, rf>
+        Algo;
+
+      typename Algo::ArgsType args(
+        model, data, diagonal_constraint_inertia.derived(), reference_frame);
+      Algo::run(cmodel, cdata, args);
+    }
+
+    /**
+     * @brief ConstraintModelAppendCouplingConstraintBlockInertiasVisitor visitor
+     */
+    template<
+      typename Scalar,
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename MatrixOrMap,
+      typename MapEnable,
+      ReferenceFrame rf>
+    struct ConstraintModelAppendCouplingConstraintBlockInertiasVisitor
+    : visitors::ConstraintUnaryVisitorBase<
+        ConstraintModelAppendCouplingConstraintBlockInertiasVisitor<
+          Scalar,
+          OtherOptions,
+          JointCollectionTpl,
+          MatrixOrMap,
+          MapEnable,
+          rf>>
+    {
+      typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
+      typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
+      typedef boost::fusion::vector<
+        const Model &,
+        Data &,
+        const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> &,
+        ReferenceFrameTag<rf>,
+        std::size_t &>
+        ArgsType;
+
+      template<typename ConstraintModel>
+      static void algo(
+        const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
+        const typename ConstraintModel::ConstraintData & cdata,
+        const Model & model,
+        Data & data,
+        const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
+        const ReferenceFrameTag<rf> reference_frame,
+        std::size_t & inner_constraint_id)
+      {
+        cmodel.appendCouplingConstraintInertias(
+          model, data, cdata.derived(), constraint_inertias, reference_frame, inner_constraint_id);
+      }
+    };
+
+    template<
+      typename Scalar,
+      int Options,
+      int OtherOptions,
+      template<typename S, int O> class JointCollectionTpl,
+      template<typename S, int O> class ConstraintCollectionTpl,
+      typename MatrixOrMap,
+      typename MapEnable,
+      ReferenceFrame rf>
+    void appendCouplingConstraintInertias(
+      const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
+      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
+      const ReferenceFrameTag<rf> reference_frame,
+      std::size_t & inner_constraint_id)
+    {
+      typedef ConstraintModelAppendCouplingConstraintBlockInertiasVisitor<
+        Scalar, OtherOptions, JointCollectionTpl, MatrixOrMap, MapEnable, rf>
+        Algo;
+
+      typename Algo::ArgsType args(
+        model, data, constraint_inertias, reference_frame, inner_constraint_id);
+      Algo::run(cmodel, cdata, args);
     }
 
   } // namespace visitors

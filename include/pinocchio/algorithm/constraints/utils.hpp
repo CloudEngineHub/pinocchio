@@ -8,6 +8,7 @@
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 #include "pinocchio/utils/reference.hpp"
+#include "pinocchio/math/block-diagonal-matrix.hpp"
 
 namespace pinocchio
 {
@@ -51,6 +52,171 @@ namespace pinocchio
       constraint_datas.push_back(cm.createData());
 
     return constraint_datas;
+  }
+
+  /**
+   * @brief Compute the total size of a set of constraint models for the selection (Current and
+   * Maximal).
+   *
+   * This function iterates through a list of constraint models and accumulates the number
+   * of selected constraint sizes. For each constraint model it calls
+   * `ConstraintModel::residualSize(sel)` to determine the number of selected constraints, then sums
+   * these values over all constraints in the input vectors.
+   *
+   * @tparam ConstraintModel Type of each constraint model contained in the vector.
+   * @tparam ConstraintModelAllocator Allocator type used for the vector of constraint models.
+   *
+   * @param[in] constraint_models Vector of constraint model objects.
+   * @param[in] sel Either CURRENT or MAXIMAL.
+   *
+   * @return The total active size (dimension) obtained by summing the active sizes
+   *         of all individual constraint models.
+   *
+   * @sa ConstraintModelTpl::residualSize
+   */
+  template<
+    typename ConstraintModel,
+    class ConstraintModelAllocator,
+    ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+  Eigen::Index residualSize(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    ConstraintSelectionTag<Sel> sel = CurrentSelection())
+  {
+    Eigen::Index active_size = 0;
+    for (std::size_t i = 0; i < constraint_models.size(); ++i)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      active_size += cmodel.residualSize(sel);
+    }
+
+    return active_size;
+  }
+
+  /**
+   * @brief Compute the total size of a set of constraint models for the selection (Current and
+   * Maximal).
+   *
+   * This function iterates through a list of constraint models and accumulates the number
+   * of selected constraint sizes. For each constraint model it calls
+   * `ConstraintModel::symmetricConeResidualSize(sel)` to determine the number of selected
+   * constraints, then sums these values over all constraints in the input vectors.
+   *
+   * @tparam ConstraintModel Type of each constraint model contained in the vector.
+   * @tparam ConstraintModelAllocator Allocator type used for the vector of constraint models.
+   *
+   * @param[in] constraint_models Vector of constraint model objects.
+   * @param[in] sel Either CURRENT or MAXIMAL.
+   *
+   * @return The total active size (dimension) obtained by summing the active sizes
+   *         of all individual constraint models.
+   *
+   * @sa ConstraintModelTpl::symmetricConeResidualSize
+   */
+  template<
+    typename ConstraintModel,
+    class ConstraintModelAllocator,
+    ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+  Eigen::Index symmetricConeResidualSize(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    ConstraintSelectionTag<Sel> sel = CurrentSelection())
+  {
+    Eigen::Index active_size = 0;
+    for (std::size_t i = 0; i < constraint_models.size(); ++i)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      active_size += cmodel.symmetricConeResidualSize(sel);
+    }
+
+    return active_size;
+  }
+
+  /**
+   * @brief Compute the total size of a set of constraint models for the selection (Current and
+   * Maximal).
+   *
+   * This function iterates through a list of constraint models and accumulates the number
+   * of selected constraint sizes. For each constraint model it calls
+   * `ConstraintModel::symmetricConeResidualScalingSize(sel)` to determine the number of selected
+   * constraints, then sums these values over all constraints in the input vectors.
+   *
+   * @tparam ConstraintModel Type of each constraint model contained in the vector.
+   * @tparam ConstraintModelAllocator Allocator type used for the vector of constraint models.
+   *
+   * @param[in] constraint_models Vector of constraint model objects.
+   * @param[in] sel Either CURRENT or MAXIMAL.
+   *
+   * @return The total active size (dimension) obtained by summing the active sizes
+   *         of all individual constraint models.
+   *
+   * @sa ConstraintModelTpl::symmetricConeResidualScalingSize
+   */
+  template<
+    typename ConstraintModel,
+    class ConstraintModelAllocator,
+    ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+  Eigen::Index symmetricConeResidualScalingSize(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    ConstraintSelectionTag<Sel> sel = CurrentSelection())
+  {
+    Eigen::Index active_size = 0;
+    for (std::size_t i = 0; i < constraint_models.size(); ++i)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      active_size += cmodel.symmetricConeResidualScalingSize(sel);
+    }
+
+    return active_size;
+  }
+
+  template<
+    typename ConstraintModel,
+    class ConstraintModelAllocator,
+    typename ComplianceVector,
+    ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+  void setConstraintCompliance(
+    std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const Eigen::MatrixBase<ComplianceVector> & compliance,
+    ConstraintSelectionTag<Sel> sel = CurrentSelection())
+  {
+    EIGEN_STATIC_ASSERT_VECTOR_ONLY(ComplianceVector);
+
+    Eigen::Index constraint_index = 0;
+
+    assert(compliance.size() == residualSize(constraint_models, sel));
+
+    for (std::size_t i = 0; i < constraint_models.size(); i++)
+    {
+      auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto csize = cmodel.residualSize(sel);
+      cmodel.setCompliance(compliance.segment(constraint_index, csize), sel);
+      constraint_index += csize;
+    }
+  }
+
+  template<
+    typename ConstraintModel,
+    class ConstraintModelAllocator,
+    typename ComplianceVector,
+    ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+  void retrieveConstraintCompliance(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const Eigen::MatrixBase<ComplianceVector> & compliance_,
+    ConstraintSelectionTag<Sel> sel = CurrentSelection())
+  {
+    EIGEN_STATIC_ASSERT_VECTOR_ONLY(ComplianceVector);
+
+    Eigen::Index constraint_index = 0;
+    auto & compliance = compliance_.const_cast_derived();
+
+    assert(compliance.size() == residualSize(constraint_models, sel));
+
+    for (std::size_t i = 0; i < constraint_models.size(); i++)
+    {
+      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto csize = cmodel.residualSize(sel);
+      cmodel.retrieveCompliance(compliance.segment(constraint_index, csize), sel);
+      constraint_index += csize;
+    }
   }
 
   /**
@@ -107,183 +273,6 @@ namespace pinocchio
       cmodel.calc(model, data, cdata);
     }
   }
-
-  /**
-   * @brief Compute the total size of a set of constraint models.
-   *
-   * This function iterates through a vector of constraint models and
-   * accumulates their individual sizes (as returned by each constraint
-   * model’s `size()` method). The result corresponds to the total
-   * dimension of the constraint space represented by all the constraint
-   * models in the container.
-   *
-   * @tparam ConstraintModel Type of each constraint model contained in the vector.
-   * @tparam ConstraintModelAllocator Allocator type used for the vector of constraint models.
-   *
-   * @param[in] constraint_models Vector of constraint model objects whose total dimension is to be
-   * computed.
-   *
-   * @return The total size (dimension) obtained by summing the sizes of each constraint model.
-   *
-   * @note Each element of @p constraint_models must implement a `size()` method returning its own
-   * dimension.
-   * @sa ConstraintModelTpl::size
-   */
-  template<typename ConstraintModel, class ConstraintModelAllocator>
-  Eigen::Index
-  maxResidualSize(const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models)
-  {
-    Eigen::Index max_size = 0;
-    for (const ConstraintModel & cm : constraint_models)
-    {
-      const auto & cmodel = helper::get_ref(cm);
-      max_size += cmodel.maxResidualSize();
-    }
-
-    return max_size;
-  }
-
-  /**
-   * @brief Compute the total active size of a set of constraint models.
-   *
-   * This function iterates through a list of constraint models together
-   * with their corresponding constraint data and accumulates the number
-   * of active constraint sizes. For each pair of constraint model and
-   * data, it calls `ConstraintModel::residualSize(const ConstraintData &)`
-   * to determine the number of currently active constraints, then sums
-   * these values over all constraints in the input vectors.
-   *
-   * @tparam ConstraintModel Type of each constraint model contained in the vector.
-   * @tparam ConstraintModelAllocator Allocator type used for the vector of constraint models.
-   * @tparam ConstraintData Type of each constraint data object contained in the vector.
-   * @tparam ConstraintDataAllocator Allocator type used for the vector of constraint data.
-   *
-   * @param[in] constraint_models Vector of constraint model objects.
-   * @param[in] constraint_datas Vector of constraint data objects corresponding
-   *            to each element of @p constraint_models.
-   *
-   * @return The total active size (dimension) obtained by summing the active sizes
-   *         of all individual constraint models.
-   *
-   * @note The size of @p constraint_models and @p constraint_datas must be identical.
-   * @warning This function assumes that each constraint model and its associated data
-   *          object correspond to the same type of constraint.
-   *
-   * @sa ConstraintModelTpl::residualSize
-   */
-  template<
-    typename ConstraintModel,
-    class ConstraintModelAllocator,
-    typename ConstraintData,
-    class ConstraintDataAllocator>
-  Eigen::Index residualSize(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-  {
-    Eigen::Index active_size = 0;
-    for (std::size_t i = 0; i < constraint_models.size(); ++i)
-    {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
-      const auto & cdata = helper::get_ref(constraint_datas[i]);
-      active_size += cmodel.residualSize(cdata);
-    }
-
-    return active_size;
-  }
-
-  template<
-    typename ConstraintModel,
-    class ConstraintModelAllocator,
-    typename ConstraintData,
-    class ConstraintDataAllocator,
-    typename ComplianceVector>
-  void retrieveCompliance(
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Eigen::MatrixBase<ComplianceVector> & compliance_)
-  {
-    EIGEN_STATIC_ASSERT_VECTOR_ONLY(ComplianceVector);
-
-    Eigen::Index constraint_index = 0;
-    auto & compliance = compliance_.const_cast_derived();
-
-    assert(compliance.size() == residualSize(constraint_models, constraint_datas));
-
-    for (std::size_t i = 0; i < constraint_models.size(); i++)
-    {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
-      const auto & cdata = helper::get_ref(constraint_datas[i]);
-      const auto csize = cmodel.residualSize(cdata);
-      cmodel.retrieveCompliance(cdata, compliance.segment(constraint_index, csize));
-      constraint_index += csize;
-    }
-  }
-
-  ///
-  /// \brief Maps the constraint forces expressed in the constraint space to joint forces expressed
-  /// in the local frame.
-  ///
-  /// \remarks This function assumes that the constrained datas are up-to-date.
-  ///
-  /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] data The data structure of the rigid body system.
-  /// \param[in] constraint_models Vector of constraint models.
-  /// \param[in] constraint_datas Vector of constraint datas.
-  /// \param[in] constraint_forces Matrix or vector containing the constraint forces.
-  /// \param[out] joint_forces Vector of  joint forces (dimension model.njoints).
-  ///
-  template<
-    typename Scalar,
-    int Options,
-    template<typename, int> class JointCollectionTpl,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator,
-    typename ForceMatrix,
-    class ForceAllocator,
-    ReferenceFrame rf>
-  void mapConstraintForcesToJointForces(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Eigen::MatrixBase<ForceMatrix> & constraint_forces,
-    std::vector<ForceTpl<Scalar, Options>, ForceAllocator> & joint_forces,
-    ReferenceFrameTag<rf> reference_frame);
-
-  ///
-  /// \brief Maps the joint motions expressed in the joint space local frame to the constraint
-  /// motions.
-  ///
-  /// \remarks This function assumes that the constrained datas are up-to-date.
-  ///
-  /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] data The data structure of the rigid body system.
-  /// \param[in] constraint_models Vector of constraint models.
-  /// \param[in] constraint_datas Vector of constraint datas.
-  /// \param[in] joint_motions Vector of  joint motions (dimension model.njoints).
-  /// \param[out] constraint_motions Resulting matrix or vector containing the constraint motions.
-  ///
-  template<
-    typename Scalar,
-    int Options,
-    template<typename, int> class JointCollectionTpl,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator,
-    class MotionAllocator,
-    typename MotionMatrix,
-    ReferenceFrame rf>
-  void mapJointMotionsToConstraintMotions(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const std::vector<MotionTpl<Scalar, Options>, MotionAllocator> & joint_motions,
-    const Eigen::MatrixBase<MotionMatrix> & constraint_motions,
-    ReferenceFrameTag<rf> reference_frame);
 
   ///
   /// \brief Computes the kinematic Jacobian associatied to a given constraint model.
@@ -437,6 +426,123 @@ namespace pinocchio
     const Eigen::MatrixBase<RhsMatrixType> & rhs,
     const Eigen::MatrixBase<ResultMatrixType> & res,
     AssignmentOperatorTag<op> aot = SetTo());
+
+  ///
+  /// \brief Maps the constraint forces expressed in the constraint space to joint forces expressed
+  /// in the local frame.
+  ///
+  /// \remarks This function assumes that the constrained datas are up-to-date.
+  ///
+  /// \param[in] model The model structure of the rigid body system.
+  /// \param[in] data The data structure of the rigid body system.
+  /// \param[in] constraint_models Vector of constraint models.
+  /// \param[in] constraint_datas Vector of constraint datas.
+  /// \param[in] constraint_forces Matrix or vector containing the constraint forces.
+  /// \param[out] joint_forces Vector of  joint forces (dimension model.njoints).
+  ///
+  template<
+    typename Scalar,
+    int Options,
+    int ForceOptions,
+    template<typename, int> class JointCollectionTpl,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator,
+    typename ForceMatrix,
+    class ForceAllocator,
+    ReferenceFrame rf>
+  void mapConstraintForcesToJointForces(
+    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const Eigen::MatrixBase<ForceMatrix> & constraint_forces,
+    std::vector<ForceTpl<Scalar, ForceOptions>, ForceAllocator> & joint_forces,
+    ReferenceFrameTag<rf> reference_frame);
+
+  ///
+  /// \brief Maps the joint motions expressed in the joint space local frame to the constraint
+  /// motions.
+  ///
+  /// \remarks This function assumes that the constrained datas are up-to-date.
+  ///
+  /// \param[in] model The model structure of the rigid body system.
+  /// \param[in] data The data structure of the rigid body system.
+  /// \param[in] constraint_models Vector of constraint models.
+  /// \param[in] constraint_datas Vector of constraint datas.
+  /// \param[in] joint_motions Vector of  joint motions (dimension model.njoints).
+  /// \param[out] constraint_motions Resulting matrix or vector containing the constraint motions.
+  ///
+  template<
+    typename Scalar,
+    int Options,
+    int MotionOptions,
+    template<typename, int> class JointCollectionTpl,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator,
+    class MotionAllocator,
+    typename MotionMatrix,
+    ReferenceFrame rf>
+  void mapJointMotionsToConstraintMotions(
+    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const std::vector<MotionTpl<Scalar, MotionOptions>, MotionAllocator> & joint_motions,
+    const Eigen::MatrixBase<MotionMatrix> & constraint_motions,
+    ReferenceFrameTag<rf> reference_frame);
+
+  /// \brief Block diagonal dispatcher list.
+  enum struct BlockDiagonalDispatcherType
+  {
+    DIAGONAL_DISPATCH,
+    IPM_DISPATCH,
+  };
+
+  ///  \brief Assignment operator tags
+  template<BlockDiagonalDispatcherType val>
+  struct BlockDiagonalDispatcherTag
+  {
+  };
+
+  using DiagonalDispatcher =
+    BlockDiagonalDispatcherTag<BlockDiagonalDispatcherType::DIAGONAL_DISPATCH>;
+  using IPMBlockDiagonalDispatcher =
+    BlockDiagonalDispatcherTag<BlockDiagonalDispatcherType::IPM_DISPATCH>;
+
+  ///
+  /// \brief Constructs the block diagonal pattern for a given vector of constraint models.
+  ///
+  /// \param[in] constraint_models Vector of constraint models.
+  /// \param[out] block_diagonal_infos Vector of block diagonal pattern.
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename BlockDiagonalElement,
+    BlockDiagonalDispatcherType op = BlockDiagonalDispatcherType::DIAGONAL_DISPATCH>
+  void computeBlockDiagonalPattern(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    std::vector<BlockDiagonalElement> & block_diagonal_infos,
+    BlockDiagonalDispatcherTag<op> dispatcher = DiagonalDispatcher());
+
+  ///
+  /// \brief Construct a positive definite (hence invertible) block diagonal matrix
+  /// given a vector of constraint models.
+  ///
+  /// \param[in] constraint_models Vector of constraint models.
+  /// \param[in/out] block_diagonal_matrix Invertible (PD) block diagonal matrix.
+  template<
+    typename ConstraintModel,
+    typename ConstraintModelAllocator,
+    typename Scalar,
+    int Options,
+    std::size_t Alignment>
+  void constructPositiveDefiniteBlockDiagonalMatrix(
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & block_diagonal_matrix);
 
 } // namespace pinocchio
 

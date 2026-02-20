@@ -1,11 +1,12 @@
 //
-// Copyright (c) 2025 INRIA
+// Copyright (c) 2025-2026 INRIA
 //
 
 #ifndef __pinocchio_serialization_delassus_hpp__
 #define __pinocchio_serialization_delassus_hpp__
 
 #include "pinocchio/serialization/eigen.hpp"
+#include "pinocchio/serialization/block-diagonal-matrix.hpp"
 #include "pinocchio/algorithm/delassus-operator.hpp"
 
 namespace boost
@@ -33,11 +34,14 @@ namespace boost
       : public ::pinocchio::DelassusOperatorDenseTpl<Scalar, Options>
       {
         typedef ::pinocchio::DelassusOperatorDenseTpl<Scalar, Options> Base;
-        using Base::compliance;
-        using Base::damping;
-        using Base::delassus_matrix;
-        using Base::m_cholesky_decomposition;
-        using Base::mat_tmp;
+        using Base::m_cholesky_decomposition_data;
+        using Base::m_cholesky_decomposition_data_storage;
+        using Base::m_cholesky_decomposition_dirty;
+        using Base::m_compliance;
+        using Base::m_compliance_storage;
+        using Base::m_damping;
+        using Base::m_delassus_matrix;
+        using Base::m_delassus_matrix_storage;
       };
 
     } // namespace internal
@@ -50,24 +54,17 @@ namespace boost
     {
       typedef ::pinocchio::DelassusOperatorDenseTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
-      typedef typename Self::CholeskyDecomposition CholeskyDecomposition;
-      typedef ::pinocchio::DelassusOperatorDenseTpl<Scalar, Options> Self;
 
       ar & make_nvp("base", boost::serialization::base_object<Base>(delassus));
 
       typedef internal::DelassusOperatorDenseAccessor<Scalar, Options> Accessor;
       auto & delassus_ = reinterpret_cast<Accessor &>(delassus);
-      ar & make_nvp("delassus_matrix", delassus_.delassus_matrix);
-      ar & make_nvp("compliance", delassus_.compliance);
-      ar & make_nvp("damping", delassus_.damping);
-      ar & make_nvp("compliance", delassus_.compliance);
-
-      if (Archive::is_loading::value)
-      {
-        delassus_.m_cholesky_decomposition = CholeskyDecomposition(delassus_.delassus_matrix);
-        delassus_.mat_tmp.resize(
-          delassus_.delassus_matrix.rows(), delassus_.delassus_matrix.cols());
-      }
+      ar & make_nvp("delassus_matrix_storage", delassus_.m_delassus_matrix_storage);
+      ar & make_nvp(
+        "cholesky_decomposition_data_storage", delassus_.m_cholesky_decomposition_data_storage);
+      ar & make_nvp("cholesky_decomposition_dirty", delassus_.m_cholesky_decomposition_dirty);
+      ar & make_nvp("damping", delassus_.m_damping);
+      ar & make_nvp("compliance_storage", delassus_.m_compliance_storage);
     }
 
   } // namespace serialization

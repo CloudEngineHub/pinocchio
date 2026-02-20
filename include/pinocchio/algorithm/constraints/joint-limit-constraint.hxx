@@ -10,12 +10,13 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     template<typename, int> class JointCollectionTpl,
     typename VectorLowerConfiguration,
     typename VectorUpperConfiguration,
     typename VectorMarginConfiguration>
   void JointLimitConstraintModelTpl<Scalar, Options>::init(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
     const JointIndexVector & activable_joints,
     const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
     const Eigen::MatrixBase<VectorUpperConfiguration> & ub,
@@ -37,7 +38,7 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(joint_id > 0, "joint_id should not be equal to zero.");
     }
 
-    // Loop on all q components of activable jointds to identify activable lower and upper
+    // Loop on all q components of activable joints to identify activable lower and upper
     // constraints, and for each track row_id of related activable joint, idx_q in the configuration
     // and idx_q_reduce in the subpart of q due to activable joints
     VectorOfSize & activable_idx_in_selected_lower = m_activable_idx_in_selected;
@@ -150,12 +151,14 @@ namespace pinocchio
     }
 
     // Recover max sizes of constraint
-    m_lower_max_residual_size = static_cast<int>(activable_idx_in_selected_lower.size());
+    m_lower_activable_residual_size = static_cast<int>(activable_idx_in_selected_lower.size());
 
-    const int upper_max_residual_size = static_cast<int>(activable_idx_in_selected_upper.size());
-    PINOCCHIO_ONLY_USED_FOR_DEBUG(upper_max_residual_size);
-    const int max_residual_size = m_lower_max_residual_size + upper_max_residual_size;
-    PINOCCHIO_ONLY_USED_FOR_DEBUG(max_residual_size);
+    const int upper_activable_residual_size =
+      static_cast<int>(activable_idx_in_selected_upper.size());
+    PINOCCHIO_ONLY_USED_FOR_DEBUG(upper_activable_residual_size);
+    const int activable_residual_size =
+      m_lower_activable_residual_size + upper_activable_residual_size;
+    PINOCCHIO_ONLY_USED_FOR_DEBUG(activable_residual_size);
 
     // Recompose one vectors for all constraint with the convention lower | upper
     m_activable_idx_in_selected.insert(
@@ -167,86 +170,139 @@ namespace pinocchio
     m_activable_idx_qs.insert(
       m_activable_idx_qs.end(), activable_idx_qs_upper.begin(), activable_idx_qs_upper.end());
 
-    assert(maxResidualSize() == max_residual_size);
+    assert(residualSize(MaximalSelection()) == activable_residual_size);
+
+    // Allocate vectors for position limit and margin
+    m_activable_position_limit.resize(residualSize(MaximalSelection()));
+    m_activable_position_margin.resize(residualSize(MaximalSelection()));
 
     // Set activable_[position_limit|margin] of size maxResidualSize from lb, ub, margin of size
     // model.nq
-    setPositionLimitAndMargin(lb, ub, margin);
+    setPositionLimitAndMargin(lb, ub, margin, MaximalSelection());
 
     // Data member
-    m_compliance = ComplianceVectorType::Zero(maxResidualSize());
+    m_compliance = ResidualVectorType::Zero(residualSize(MaximalSelection()));
     m_baumgarte_parameters = BaumgarteCorrectorParameters();
+
+    // Default selection is all active
+    makeSelectionMaximal();
   }
 
   template<typename Scalar, int Options>
-  template<template<typename, int> class JointCollectionTpl>
-  void JointLimitConstraintModelTpl<Scalar, Options>::computeResidualAndActiveConstraints(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & /* model */,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-    ConstraintData & cdata) const
+  template<
+    typename VectorLike1,
+    typename VectorLike2,
+    typename VectorLike3,
+    ConstraintSelectionType Sel>
+  void JointLimitConstraintModelTpl<Scalar, Options>::setPositionLimitAndMargin(
+    const Eigen::MatrixBase<VectorLike1> & lb,
+    const Eigen::MatrixBase<VectorLike2> & ub,
+    const Eigen::MatrixBase<VectorLike3> & margin,
+    ConstraintSelectionTag<Sel> sel)
   {
-    // Compute notably the constraint constraint_residual
-    // This allows to compute which limits are active in the current configuration (data.q_in) which
-    // corresponds to the constraints to consider.
+    Eigen::Index idx_q;
+    Eigen::Index idx_in_activable;
 
-    auto & active_idx_in_activable = cdata.active_idx_in_activable;
-    auto & active_idx_in_selected = cdata.active_idx_in_selected;
-    auto & active_idx_qs_reduce = cdata.active_idx_qs_reduce;
-    auto & lower_residual_size = cdata.lower_residual_size;
-
-    // Reset values
-    active_idx_in_activable.clear();
-    active_idx_in_selected.clear();
-    active_idx_qs_reduce.clear();
-    lower_residual_size = 0;
-
-    // Fill the constraint residual for all activable constraints and detect the active ones.
-    // The convention is lower | upper, and negative | positive constraint so:
-    // q_l <= q + TMv <= q_up
-    // TMv + (q - q_l) >= 0 --> J = TM, res = q-q_l
-    // -TMv + (q_u - q) >= 0 --> J = -TM, res = q_u-q
-
-    // We track the active constraints among the activable using active_idx_in_activable.
-    // We also compute the proxy active_[idx_in_selected|idx_qs_reduce] which are:
-    // active_X[i] = activable_X[active_idx_in_activable[i]]
-    // to avoid double referencing.
-
-    auto & activable_constraint_residual = cdata.activable_constraint_residual;
-    std::size_t i = 0;
-    // Lower bounds
-    for (; i < static_cast<std::size_t>(lowerMaxResidualSize()); i++)
+    Eigen::Index idx = 0;
+    for (; idx < lowerResidualSize(sel); ++idx)
     {
-      const Eigen::Index i_ = static_cast<Eigen::Index>(i);
-      const Eigen::Index idx_q = m_activable_idx_qs[i];
-      activable_constraint_residual[i_] = data.q_in[idx_q] - m_activable_position_limit[i_];
-      if (check_expression_if_real<Scalar>(
-            activable_constraint_residual[i_] <= m_activable_position_margin[i_]))
+      if constexpr (std::is_same_v<ConstraintSelectionTag<Sel>, MaximalSelection>)
       {
-        active_idx_in_activable.push_back(i);
-        // Update proxis as well
-        active_idx_in_selected.push_back(m_activable_idx_in_selected[i]);
-        active_idx_qs_reduce.push_back(m_activable_idx_qs_reduce[i]);
-        lower_residual_size += 1;
+        idx_q = m_activable_idx_qs[static_cast<size_t>(idx)];
+        idx_in_activable = idx;
+      }
+      else // Current selection
+      {
+        idx_q = m_cursel_active_idx_qs[static_cast<size_t>(idx)];
+        idx_in_activable = m_cursel_active_idx_in_activable[idx];
+      }
+      assert(check_expression_if_real<Scalar>(margin[idx_q] >= 0));
+      m_activable_position_limit[idx_in_activable] = lb[idx_q];
+      m_activable_position_margin[idx_in_activable] = margin[idx_q];
+    }
+    for (; idx < residualSize(sel); ++idx)
+    {
+      if constexpr (std::is_same_v<ConstraintSelectionTag<Sel>, MaximalSelection>)
+      {
+        idx_q = m_activable_idx_qs[static_cast<size_t>(idx)];
+        idx_in_activable = idx;
+      }
+      else // Current selection
+      {
+        idx_q = m_cursel_active_idx_qs[static_cast<size_t>(idx)];
+        idx_in_activable = m_cursel_active_idx_in_activable[idx];
+      }
+      assert(check_expression_if_real<Scalar>(margin[idx_q] >= 0));
+      m_activable_position_limit[idx_in_activable] = ub[idx_q];
+      m_activable_position_margin[idx_in_activable] = margin[idx_q];
+    }
+  }
+
+  template<typename Scalar, int Options>
+  void JointLimitConstraintModelTpl<Scalar, Options>::makeSelectionMaximal()
+  {
+    // Selection definer
+    m_cursel_active_idx_in_activable.clear();
+    size_t mcsize = static_cast<size_t>(residualSize(MaximalSelection()));
+    m_cursel_active_idx_in_activable.reserve(mcsize);
+    for (size_t idx = 0; idx < mcsize; ++idx)
+    {
+      m_cursel_active_idx_in_activable.push_back(idx);
+    }
+    m_cursel_lower_active_residual_size = m_lower_activable_residual_size;
+    // Proxies
+    m_cursel_active_idx_in_selected = m_activable_idx_in_selected;
+    m_cursel_active_idx_qs = m_activable_idx_qs;
+    m_cursel_active_idx_qs_reduce = m_activable_idx_qs_reduce;
+  }
+
+  template<typename Scalar, int Options>
+  template<typename VectorLike>
+  void JointLimitConstraintModelTpl<Scalar, Options>::makeSelectionFilteredByLimitProximity(
+    const Eigen::MatrixBase<VectorLike> & q)
+  {
+    // Selection definer
+    m_cursel_active_idx_in_activable.clear();
+    m_cursel_lower_active_residual_size = 0;
+    // Proxies
+    m_cursel_active_idx_in_selected.clear();
+    m_cursel_active_idx_qs.clear();
+    m_cursel_active_idx_qs_reduce.clear();
+
+    std::size_t idx = 0;
+    // Lower bounds
+    for (; idx < static_cast<std::size_t>(lowerResidualSize(MaximalSelection())); idx++)
+    {
+      const Eigen::Index idx_ = static_cast<Eigen::Index>(idx);
+      const Eigen::Index idx_q = m_activable_idx_qs[idx];
+      if (check_expression_if_real<Scalar>(
+            q[idx_q] - m_activable_position_limit[idx_] <= m_activable_position_margin[idx_]))
+      {
+        // Selection definer
+        m_cursel_active_idx_in_activable.push_back(idx);
+        m_cursel_lower_active_residual_size += 1;
+        // Proxies
+        m_cursel_active_idx_in_selected.push_back(m_activable_idx_in_selected[idx]);
+        m_cursel_active_idx_qs.push_back(m_activable_idx_qs[idx]);
+        m_cursel_active_idx_qs_reduce.push_back(m_activable_idx_qs_reduce[idx]);
       }
     }
     // Upper bounds
-    for (; i < static_cast<std::size_t>(maxResidualSize()); i++)
+    for (; idx < static_cast<std::size_t>(residualSize(MaximalSelection())); idx++)
     {
-      const Eigen::Index i_ = static_cast<Eigen::Index>(i);
-      const Eigen::Index idx_q = m_activable_idx_qs[i];
-      activable_constraint_residual[i_] = m_activable_position_limit[i_] - data.q_in[idx_q];
+      const Eigen::Index idx_ = static_cast<Eigen::Index>(idx);
+      const Eigen::Index idx_q = m_activable_idx_qs[idx];
       if (check_expression_if_real<Scalar>(
-            activable_constraint_residual[i_] <= m_activable_position_margin[i_]))
+            m_activable_position_limit[idx_] - q[idx_q] <= m_activable_position_margin[idx_]))
       {
-        active_idx_in_activable.push_back(i);
-        // Update proxis as well
-        active_idx_in_selected.push_back(m_activable_idx_in_selected[i]);
-        active_idx_qs_reduce.push_back(m_activable_idx_qs_reduce[i]);
+        // Selection definer
+        m_cursel_active_idx_in_activable.push_back(idx);
+        // Proxies
+        m_cursel_active_idx_in_selected.push_back(m_activable_idx_in_selected[idx]);
+        m_cursel_active_idx_qs.push_back(m_activable_idx_qs[idx]);
+        m_cursel_active_idx_qs_reduce.push_back(m_activable_idx_qs_reduce[idx]);
       }
     }
-
-    // Resize the constraint residual/compliance storage to the constraint size.
-    cdata.constraint_residual_storage.resize(residualSize(cdata));
   }
 
   // -------------------------------
@@ -254,58 +310,80 @@ namespace pinocchio
   // -------------------------------
 
   template<typename Scalar, int Options>
-  template<template<typename, int> class JointCollectionTpl>
+  template<int OtherOptions, template<typename, int> class JointCollectionTpl>
   void JointLimitConstraintModelTpl<Scalar, Options>::calcImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     ConstraintData & cdata) const
   {
-    // Compute the residual for all activable constraints and identify the active constraints
-    computeResidualAndActiveConstraints(model, data, cdata);
-    auto & activable_constraint_residual = cdata.activable_constraint_residual;
+    // Resize cdata according to current selection
+    cdata.constraint_residual_storage.resize(residualSize());
 
-    // Fill the compact tangent map for the system in configuration q_in
+    // Fill the compact tangent map for the system in configuration q_in and all selected joint
     auto & compact_tangent_map = cdata.compact_tangent_map;
     pinocchio::compactTangentMap(model, m_selected_joints, data.q_in, compact_tangent_map);
 
-    // For each constraint, recover the residual and store the rowise tangent map
-    const std::size_t csize = static_cast<std::size_t>(residualSize(cdata));
+    // Recover objects to update
     auto & constraint_residual = cdata.constraint_residual;
     auto & rowise_tangent_map = cdata.rowise_tangent_map;
-    assert(
-      constraint_residual.size() == int(csize)
-      && "The active constraint_residual size in constraint data is different from the constraint "
-         "model active size.");
-    for (std::size_t constraint_id = 0; constraint_id < csize; constraint_id++)
-    {
-      const Eigen::Index idx_q_reduce = cdata.active_idx_qs_reduce[constraint_id];
-      const Eigen::Index idx_in_activable =
-        Eigen::Index(cdata.active_idx_in_activable[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
-      const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
 
-      // Recover the constraint residual
+    // For each selected constraint, calculate the residual and store the rowise tangent map
+    std::size_t constraint_id = 0;
+    // Lower bounds
+    for (; constraint_id < static_cast<size_t>(lowerResidualSize()); constraint_id++)
+    {
+      const Eigen::Index idx_q = m_cursel_active_idx_qs[constraint_id];
+      const Eigen::Index idx_q_reduce = m_cursel_active_idx_qs_reduce[constraint_id];
+      const Eigen::Index idx_in_activable =
+        static_cast<Eigen::Index>(m_cursel_active_idx_in_activable[constraint_id]);
+
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
+      const Eigen::Index nv = m_selected_joint_nvs[idx_in_selected];
+
+      // Calculate the residual
       constraint_residual[Eigen::Index(constraint_id)] =
-        activable_constraint_residual[idx_in_activable];
+        data.q_in[idx_q] - m_activable_position_limit[idx_in_activable];
 
       // Store the rowise_tangent_map
       rowise_tangent_map[static_cast<std::size_t>(idx_q_reduce)] =
-        compact_tangent_map.row(idx_q_reduce).head(constraint_size);
+        compact_tangent_map.row(idx_q_reduce).head(nv);
+    }
+    // Upper bounds
+    for (; constraint_id < static_cast<size_t>(residualSize()); constraint_id++)
+    {
+      const Eigen::Index idx_q = m_cursel_active_idx_qs[constraint_id];
+      const Eigen::Index idx_q_reduce = m_cursel_active_idx_qs_reduce[constraint_id];
+      const Eigen::Index idx_in_activable =
+        static_cast<Eigen::Index>(m_cursel_active_idx_in_activable[constraint_id]);
+
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
+      const Eigen::Index nv = m_selected_joint_nvs[idx_in_selected];
+
+      // Calculate the residual
+      constraint_residual[Eigen::Index(constraint_id)] =
+        m_activable_position_limit[idx_in_activable] - data.q_in[idx_q];
+
+      // Store the rowise_tangent_map
+      rowise_tangent_map[static_cast<std::size_t>(idx_q_reduce)] =
+        compact_tangent_map.row(idx_q_reduce).head(nv);
     }
   }
 
   template<typename Scalar, int Options>
-  template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
+  template<
+    int OtherOptions,
+    template<typename, int> class JointCollectionTpl,
+    typename JacobianMatrix>
   void JointLimitConstraintModelTpl<Scalar, Options>::jacobianImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & /*data*/,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & /*data*/,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const
   {
     JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      jacobian_matrix.rows(), this->residualSize(cdata),
+      jacobian_matrix.rows(), residualSize(),
       "The input/output Jacobian matrix does not have the right number of rows.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       jacobian_matrix.cols(), model.nv,
@@ -317,10 +395,10 @@ namespace pinocchio
 
     std::size_t constraint_id = 0;
     // Lower bounds
-    for (; constraint_id < static_cast<size_t>(lowerResidualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<size_t>(lowerResidualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -328,10 +406,10 @@ namespace pinocchio
         rowise_tangent_map[idx_q_reduce];
     }
     // Upper bounds
-    for (; constraint_id < static_cast<size_t>(residualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<size_t>(residualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -342,13 +420,14 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     typename InputMatrix,
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
   void JointLimitConstraintModelTpl<Scalar, Options>::jacobianMatrixProductImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<InputMatrix> & mat,
     const Eigen::MatrixBase<OutputMatrix> & _res,
@@ -358,7 +437,7 @@ namespace pinocchio
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize());
     PINOCCHIO_UNUSED_VARIABLE(data);
     PINOCCHIO_UNUSED_VARIABLE(aot);
 
@@ -369,10 +448,10 @@ namespace pinocchio
 
     std::size_t constraint_id = 0;
     // Lower bounds
-    for (; constraint_id < static_cast<size_t>(lowerResidualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<size_t>(lowerResidualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -384,10 +463,10 @@ namespace pinocchio
         res.row(Eigen::Index(constraint_id)).noalias() += lazy_product_expression;
     }
     // Upper bounds
-    for (; constraint_id < static_cast<size_t>(residualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<size_t>(residualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -402,13 +481,14 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     typename InputMatrix,
     typename OutputMatrix,
     template<typename, int> class JointCollectionTpl,
     AssignmentOperatorType op>
   void JointLimitConstraintModelTpl<Scalar, Options>::jacobianTransposeMatrixProductImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<InputMatrix> & mat,
     const Eigen::MatrixBase<OutputMatrix> & _res,
@@ -416,7 +496,7 @@ namespace pinocchio
   {
     OutputMatrix & res = _res.const_cast_derived();
 
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), residualSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), residualSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res.cols(), mat.cols());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
@@ -429,10 +509,10 @@ namespace pinocchio
 
     std::size_t constraint_id = 0;
     // Lower bounds
-    for (; constraint_id < static_cast<size_t>(lowerResidualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<size_t>(lowerResidualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -444,10 +524,10 @@ namespace pinocchio
         res.middleRows(idx_v, constraint_size).noalias() += lazy_product_expression;
     }
     // Upper bounds
-    for (; constraint_id < static_cast<size_t>(residualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<size_t>(residualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -462,12 +542,13 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     template<typename, int> class JointCollectionTpl,
     typename VectorNLike,
     ReferenceFrame rf>
   void JointLimitConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertiasImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
     const ReferenceFrameTag<rf> reference_frame) const
@@ -476,17 +557,17 @@ namespace pinocchio
     PINOCCHIO_UNUSED_VARIABLE(reference_frame);
 
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
-      diagonal_constraint_inertia.size(), residualSize(cdata),
+      diagonal_constraint_inertia.size(), residualSize(),
       "The diagonal_constraint_inertia is of wrong size.");
 
     const auto & rowise_tangent_map = cdata.rowise_tangent_map;
 
     // Lower bounds and upper bounds together as (-R)^T(-R) = R^TR
-    for (std::size_t constraint_id = 0; constraint_id < static_cast<size_t>(residualSize(cdata));
+    for (std::size_t constraint_id = 0; constraint_id < static_cast<size_t>(residualSize());
          constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const JointIndex joint_id = m_selected_joints[idx_in_selected];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
 
@@ -497,7 +578,7 @@ namespace pinocchio
       assert(
         joint_id > 0 && joint_id < JointIndex(model.njoints) && "joint_id value is incorrect.");
 
-      auto & support_joint_apparent_inertia = data.joint_apparent_inertia[joint_id];
+      auto support_joint_apparent_inertia = data.joint_apparent_inertia[joint_id];
       PINOCCHIO_ONLY_USED_FOR_DEBUG(constraint_size);
       assert(support_joint_apparent_inertia.rows() == constraint_size);
       assert(support_joint_apparent_inertia.cols() == constraint_size);
@@ -509,17 +590,70 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
+    template<typename, int> class JointCollectionTpl,
+    typename MatrixOrMap,
+    typename MapEnable,
+    ReferenceFrame rf>
+  void JointLimitConstraintModelTpl<Scalar, Options>::appendCouplingConstraintInertiasImpl(
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+    const ConstraintData & cdata,
+    const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
+    const ReferenceFrameTag<rf> reference_frame,
+    std::size_t & inner_constraint_id) const
+  {
+    const auto & constraint_inertia = constraint_inertias[inner_constraint_id];
+
+    assert(constraint_inertia.size() == residualSize());
+    switch (constraint_inertia.type())
+    {
+    case MatrixBlockType::Zero: {
+      break;
+    }
+    case MatrixBlockType::Identity: {
+      appendCouplingConstraintInertiasImpl(
+        model, data, cdata, VectorXs::Ones(residualSize()), reference_frame);
+      break;
+    }
+    case MatrixBlockType::ScalarIdentity: {
+      const Scalar val = constraint_inertia.container()(0, 0);
+      appendCouplingConstraintInertiasImpl(
+        model, data, cdata, VectorXs::Constant(residualSize(), val), reference_frame);
+      break;
+    }
+    case MatrixBlockType::Diagonal: {
+      appendCouplingConstraintInertiasImpl(
+        model, data, cdata, constraint_inertia.container().col(0), reference_frame);
+      break;
+    }
+    case MatrixBlockType::Plain: {
+      PINOCCHIO_THROW_PRETTY(
+        std::invalid_argument, "JointLimitConstraintModel does not support Plain inertia blocks.");
+      break;
+    }
+    default:
+      assert(false && "Should never happened");
+    }
+
+    // increment inner constraint id counter
+    ++inner_constraint_id;
+  }
+
+  template<typename Scalar, int Options>
+  template<
+    int OtherOptions,
     template<typename, int> class JointCollectionTpl,
     typename ConstraintForcesLike,
     typename JointTorquesLike>
   void JointLimitConstraintModelTpl<Scalar, Options>::mapConstraintForceToJointTorquesImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<ConstraintForcesLike> & constraint_forces,
     const Eigen::MatrixBase<JointTorquesLike> & joint_torques_) const
   {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_forces.rows(), residualSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_torques_.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
 
@@ -529,10 +663,10 @@ namespace pinocchio
 
     std::size_t constraint_id = 0;
     // Lower bounds
-    for (; constraint_id < static_cast<std::size_t>(lowerResidualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<std::size_t>(lowerResidualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -542,10 +676,10 @@ namespace pinocchio
         constraint_jacobian.transpose() * constraint_forces.row(Eigen::Index(constraint_id));
     }
     // Upper bounds
-    for (; constraint_id < static_cast<std::size_t>(residualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<std::size_t>(residualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -558,17 +692,18 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<
+    int OtherOptions,
     template<typename, int> class JointCollectionTpl,
     typename JointMotionsLike,
     typename ConstraintMotionsLike>
   void JointLimitConstraintModelTpl<Scalar, Options>::mapJointMotionsToConstraintMotionImpl(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
     const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
     const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions_) const
   {
-    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions_.rows(), residualSize(cdata));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(constraint_motions_.rows(), residualSize());
     PINOCCHIO_CHECK_ARGUMENT_SIZE(joint_motions.rows(), model.nv);
     PINOCCHIO_UNUSED_VARIABLE(data);
 
@@ -579,10 +714,10 @@ namespace pinocchio
 
     std::size_t constraint_id = 0;
     // Lower bounds
-    for (; constraint_id < static_cast<std::size_t>(lowerResidualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<std::size_t>(lowerResidualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -592,10 +727,10 @@ namespace pinocchio
         constraint_jacobian * joint_motions.middleRows(idx_v, constraint_size);
     }
     // Upper bounds
-    for (; constraint_id < static_cast<std::size_t>(residualSize(cdata)); constraint_id++)
+    for (; constraint_id < static_cast<std::size_t>(residualSize()); constraint_id++)
     {
-      const size_t idx_q_reduce = static_cast<size_t>(cdata.active_idx_qs_reduce[constraint_id]);
-      const size_t idx_in_selected = cdata.active_idx_in_selected[constraint_id];
+      const size_t idx_q_reduce = static_cast<size_t>(m_cursel_active_idx_qs_reduce[constraint_id]);
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[constraint_id];
       const Eigen::Index constraint_size = m_selected_joint_nvs[idx_in_selected];
       const Eigen::Index idx_v = m_selected_joint_idx_vs[idx_in_selected];
 
@@ -605,6 +740,7 @@ namespace pinocchio
         constraint_jacobian * joint_motions.middleRows(idx_v, constraint_size);
     }
   }
+
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_constraints_joint_limit_constraint_hxx__

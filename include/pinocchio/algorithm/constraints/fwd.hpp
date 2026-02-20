@@ -10,6 +10,28 @@
 
 namespace pinocchio
 {
+  /// \brief Non-constant constraints possess a current selection.
+  /// For example, joints too far from their limits can be removed from the current
+  /// selection, leaving only joints about to hit their limits to be considered by
+  /// constraint algorithms.
+  /// This selection is expected to be done manually and externally by the user.
+  /// Algorithms only work with the current selection of a constraint.
+  /// The user can still access the "maximal" selection, for example to manage physical
+  /// parameters of the overall constraint.
+  enum struct ConstraintSelectionType
+  {
+    CURRENT,
+    MAXIMAL
+  };
+
+  template<ConstraintSelectionType val>
+  struct ConstraintSelectionTag
+  {
+  };
+
+  using CurrentSelection = ConstraintSelectionTag<ConstraintSelectionType::CURRENT>;
+  using MaximalSelection = ConstraintSelectionTag<ConstraintSelectionType::MAXIMAL>;
+
   // Blank constraint model and data
   struct BlankConstraintModel : boost::blank
   {
@@ -108,6 +130,7 @@ namespace pinocchio
   template<typename Scalar>
   struct NonNegativeOrthantConeTpl;
   typedef NonNegativeOrthantConeTpl<context::Scalar> NonNegativeOrthantCone;
+
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_constraints_fwd_hpp__

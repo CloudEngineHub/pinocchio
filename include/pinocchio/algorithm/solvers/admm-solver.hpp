@@ -32,7 +32,7 @@ namespace pinocchio
   // see bottom of file for definitions
   namespace internal
   {
-    template<typename Scalar>
+    template<typename Scalar, int Options>
     struct ADMMSolverWorkspaceTpl;
 
     template<typename Scalar>
@@ -97,19 +97,20 @@ namespace pinocchio
   /// where `G` is the delassus matrix, `g` is the constraint velocities without any constraint
   /// forces acting on the system and `C` are the constraint sets. If the `g` term is augmented with
   /// the DeSaxce term, the problem becomes an NCP.
-  template<typename _Scalar>
+  template<typename _Scalar, int _Options>
   struct ADMMConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
     typedef ConstraintSolverBaseTpl<_Scalar> Base;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Ref<VectorXs> RefVectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef const Eigen::Ref<const VectorXs> ConstRefVectorXs;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
 
-    typedef ADMMSolverResultTpl<Scalar> ADMMSolverResult;
-    typedef internal::ADMMSolverWorkspaceTpl<Scalar> ADMMSolverWorkspace;
+    typedef ADMMSolverResultTpl<Scalar, Options> ADMMSolverResult;
+    typedef internal::ADMMSolverWorkspaceTpl<Scalar, Options> ADMMSolverWorkspace;
     typedef ADMMSolverSettingsTpl<Scalar> ADMMSolverSettings;
     typedef ADMMSolverStatsTpl<Scalar> ADMMSolverStats;
 
@@ -235,7 +236,6 @@ namespace pinocchio
   {
     typedef _Scalar Scalar;
     typedef ConstraintSolverSettingsBaseTpl<Scalar> Base;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
 
     /// \brief Default constructor
     ADMMSolverSettingsTpl(
@@ -438,18 +438,16 @@ namespace pinocchio
   /// \brief Struct describing the solution of the ADMM constraint solver
   /// after calling the `solve` method.
   /// Also contains the warmstart of the solution to the constraint problem.
-  template<typename _Scalar>
+  template<typename _Scalar, int _Options>
   struct ADMMSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar>
   {
     typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
     typedef ConstraintSolverResultBaseTpl<Scalar> Base;
 
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
-
-    // make ADMM solver a friend so that it can use `makeValid`
-    friend struct ADMMConstraintSolverTpl<Scalar>;
 
     using Base::isValid;
 
@@ -710,12 +708,13 @@ namespace pinocchio
   {
     ///
     /// \brief Workspace for the ADMM constraint solver.
-    template<typename _Scalar>
+    template<typename _Scalar, int _Options>
     struct ADMMSolverWorkspaceTpl
     {
       typedef _Scalar Scalar;
-      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
-      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXs;
+      static constexpr int Options = _Options;
+      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
       typedef EigenStorageTpl<VectorXs> VectorXsStorage;
       typedef LanczosDecompositionTpl<MatrixXs> LanczosDecomposition;
       typedef AndersonAccelerationTpl<Scalar> AndersonAcceleration;
@@ -932,8 +931,6 @@ namespace pinocchio
       typename VectorXsStorage::RefMapType dual_feasibility_vector;
     }; // struct ADMMSolverWorkspaceTpl
 
-    typedef ADMMSolverWorkspaceTpl<context::Scalar> ADMMSolverWorkspace;
-
     ///
     /// \brief Implementation of SPECTRAL ADMM update rule.
     template<typename _Scalar>
@@ -1091,5 +1088,9 @@ namespace pinocchio
 } // namespace pinocchio
 
 #include "pinocchio/algorithm/solvers/admm-solver.hxx"
+
+#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+  #include "pinocchio/algorithm/solvers/admm-solver.txx"
+#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
 
 #endif // ifndef __pinocchio_algorithm_solvers_admm_solver_hpp__

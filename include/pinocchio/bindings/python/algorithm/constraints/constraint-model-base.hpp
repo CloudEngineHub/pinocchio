@@ -31,17 +31,31 @@ namespace pinocchio
     : public bp::def_visitor<ConstraintModelBasePythonVisitor<ConstraintModelDerived>>
     {
       typedef ConstraintModelDerived Self;
-      typedef typename Self::Scalar Scalar;
-      typedef typename Self::ConstraintSet ConstraintSet;
-      typedef typename Self::ConstraintData ConstraintData;
+      typedef typename ::pinocchio::traits<Self>::ConstraintModel ConstraintModel;
+      typedef typename ::pinocchio::traits<Self>::ConstraintData ConstraintData;
+      typedef typename ::pinocchio::traits<Self>::Scalar Scalar;
+
+      typedef typename ::pinocchio::traits<Self>::ConstraintSet ConstraintSet;
+      typedef typename ::pinocchio::traits<Self>::JordanOperation JordanOperation;
+
+      typedef typename ::pinocchio::traits<Self>::ResidualVectorType ResidualVectorType;
+      typedef typename ::pinocchio::traits<Self>::JacobianMatrixType JacobianMatrixType;
+      typedef typename ::pinocchio::traits<Self>::ConeVectorType ConeVectorType;
+      typedef typename ::pinocchio::traits<Self>::ConeScalingVectorType ConeScalingVectorType;
+
+      static constexpr bool has_baumgarte_corrector =
+        ::pinocchio::traits<Self>::has_baumgarte_corrector;
+      static constexpr bool has_set = ::pinocchio::traits<Self>::has_set;
+
       typedef context::Model Model;
       typedef context::Data Data;
-      typedef typename traits<Self>::ComplianceVectorTypeRef ComplianceVectorTypeRef;
-      typedef typename traits<Self>::ComplianceVectorTypeConstRef ComplianceVectorTypeConstRef;
-      typedef typename traits<Self>::JacobianMatrixType JacobianMatrixType;
-      typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+      typedef std::vector<context::Force> ForceVector;
+      typedef std::vector<context::Motion> MotionVector;
+
       typedef typename Self::BooleanVector BooleanVector;
       typedef typename Self::EigenIndexVector EigenIndexVector;
+
+      typedef BaumgarteCorrectorParametersTpl<context::Scalar> BaumgarteCorrectorParameters;
 
     public:
       template<class PyClass>
@@ -58,29 +72,54 @@ namespace pinocchio
           .def(
             "createData", &Self::createData, "Create a Data object for the given constraint model.")
           .def(
-            "maxResidualSize", +[](const Self & self) -> int { return self.maxResidualSize(); },
-            bp::arg("self"), "Constraint max size.")
+            "residualSize", &residualSize,
+            (bp::arg("self"), bp::arg("sel") = ConstraintSelectionType::CURRENT),
+            "Constraint size for the selection.")
           .def(
-            "residualSize",
-            +[](const Self & self, const ConstraintData & cdata) -> int {
-              return self.residualSize(cdata);
-            },
-            bp::args("self", "constraint_data"), "Constraint state size.")
+            "symmetricConeResidualSize", &symmetricConeResidualSize,
+            (bp::arg("self"), bp::arg("sel") = ConstraintSelectionType::CURRENT),
+            "Symmetric cone residual size for the selection.")
           .def(
+            "setCompliance", &setCompliance,
+            (bp::arg("self"), bp::arg("vec"), bp::arg("sel") = ConstraintSelectionType::CURRENT),
+            "Set the compliance value for the selected constraint.")
+          .def(
+            "retrieveCompliance", &retrieveCompliance,
+            (bp::arg("self"), bp::arg("sel") = ConstraintSelectionType::CURRENT),
+            "Retrieve the compliance value for the selected constraint.")
+          .def(
+            "setBaumgarteCorrectorParameters", &setBaumgarteCorrectorParameters,
+            (bp::arg("self"), bp::arg("bp"), bp::arg("sel") = ConstraintSelectionType::CURRENT),
+            "Set the Baumgarte parameters.");
+        if constexpr (has_baumgarte_corrector)
+        {
+          cl.add_property(
+            "baumgarte_corrector_parameters",
+            bp::make_function( //
+              +[](const Self & self) -> const BaumgarteCorrectorParameters & {
+                return self.baumgarte_corrector_parameters();
+              },
+              bp::return_internal_reference<>()),
+            bp::make_function( //
+              +[](Self & self, const BaumgarteCorrectorParameters & copy) {
+                self.baumgarte_corrector_parameters() = copy;
+              },
+              bp::return_internal_reference<>()),
+            "Baumgarte parameters associated with the constraint.");
+        }
+        if constexpr (has_set)
+        {
+          cl.def(
             "set",
             +[](const Self & self, const ConstraintData & cdata) -> ConstraintSet {
               return self.set(cdata);
             },
-            bp::args("self", "constraint_data"), "Constraint set.")
-          .def(
-            "retrieveCompliance",
-            bp::make_function(
-              +[](const Self & self, const ConstraintData & cdata) -> context::VectorXs {
-                context::VectorXs res(self.residualSize(cdata));
-                self.retrieveCompliance(cdata, res);
-                return res;
-              }),
-            "Vector of the compliance for the constraint in a given state.")
+            bp::args("self", "constraint_data"), "Constraint set.");
+        }
+        cl.def(
+            "calc", &calc, bp::args("self", "model", "data", "constraint_data"),
+            "Evaluate the constraint values at the current state given by data and store the "
+            "results.")
           .def(
             "getRowSparsityPattern",
             bp::make_function(
@@ -103,10 +142,6 @@ namespace pinocchio
               }),
             "Vector of the active indexes associated with a given row.")
           .def(
-            "calc", &calc, bp::args("self", "model", "data", "constraint_data"),
-            "Evaluate the constraint values at the current state given by data and store the "
-            "results.")
-          .def(
             "jacobian",
             (JacobianMatrixType(Self::*)(const Model &, const Data &, ConstraintData &)
                const)&Self::jacobian,
@@ -119,54 +154,98 @@ namespace pinocchio
           .def(
             "jacobianTransposeMatrixProduct", &jacobianTransposeMatrixProduct,
             bp::args("self", "model", "data", "constraint_data", "matrix"),
-            "Backward chain rule: return product between the jacobian transpose and a matrix.");
-        // Methods: mapConstraintForceToJointSpace / mapJointSpaceToConstraintMotion
-        // are not exposed as they relies on allocators
-        cl.def(
-          "appendCouplingConstraintInertias", &appendCouplingConstraintInertias,
-          bp::args(
-            "self", "model", "data", "constraint_data", "diagonal_constraint_inertia",
-            "reference_frame"),
-          "Append to data the apparent inertia due to the constraint.");
-        if (::pinocchio::traits<ConstraintModelDerived>::has_baumgarte_corrector)
-        {
-          cl.add_property(
-            "compliance",
-            bp::make_function( //
-              +[](const Self & self) -> context::VectorXs { return self.compliance(); }),
-            bp::make_function( //
-              +[](Self & self, const context::VectorXs & new_vector) {
-                self.compliance() = new_vector;
-              }),
-            "Compliance of the constraint.");
-        }
-        if (::pinocchio::traits<ConstraintModelDerived>::has_baumgarte_corrector)
-        {
-          cl.add_property(
-            "baumgarte_corrector_parameters",
-            bp::make_function( //
-              +[](const Self & self) -> const BaumgarteCorrectorParameters & {
-                return self.baumgarte_corrector_parameters();
-              },
-              bp::return_internal_reference<>()),
-            bp::make_function( //
-              +[](Self & self, const BaumgarteCorrectorParameters & copy) {
-                self.baumgarte_corrector_parameters() = copy;
-              },
-              bp::return_internal_reference<>()),
-            "Baumgarte parameters associated with the constraint.");
-        }
-        cl.def(
-            "setCompliance", bp::make_function(+[](Self & self, const context::VectorXs & vector) {
-              self.setCompliance(vector);
-            }),
-            "Set the compliance.")
+            "Backward chain rule: return product between the jacobian transpose and a matrix.")
           .def(
-            "setBaumgarteCorrectorParameters",
-            bp::make_function(+[](Self & self, const BaumgarteCorrectorParameters & copy) {
-              self.setBaumgarteCorrectorParameters(copy);
-            }),
-            "Set the Baumgarte parameters.");
+            "mapConstraintForceToJointSpace", &mapConstraintForceToJointSpace,
+            (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_data"),
+             bp::arg("constraint_forces"), bp::arg("joint_forces"),
+             bp::arg("reference_frame") = LOCAL),
+            "Map constraint forces to joint space.")
+          .def(
+            "mapJointSpaceToConstraintMotion", &mapJointSpaceToConstraintMotion,
+            (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_data"),
+             bp::arg("joint_motions"), bp::arg("joint_generalized_velocity"),
+             bp::arg("reference_frame") = LOCAL),
+            "Map joint space quantities to constraint motion.")
+          .def(
+            "appendCouplingConstraintInertias", &appendCouplingConstraintInertias,
+            (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_data"),
+             bp::arg("diagonal_constraint_inertia"), bp::arg("reference_frame") = LOCAL),
+            "Append to data the apparent inertia due to the constraint.");
+      }
+
+      static int residualSize(const Self & self, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT:
+          return self.residualSize(CurrentSelection());
+        case ConstraintSelectionType::MAXIMAL:
+          return self.residualSize(MaximalSelection());
+        }
+      }
+
+      static int symmetricConeResidualSize(const Self & self, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT:
+          return self.symmetricConeResidualSize(CurrentSelection());
+        case ConstraintSelectionType::MAXIMAL:
+          return self.symmetricConeResidualSize(MaximalSelection());
+        }
+      }
+
+      static int symmetricConeResidualScalingSize(const Self & self, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT:
+          return self.symmetricConeResidualScalingSize(CurrentSelection());
+        case ConstraintSelectionType::MAXIMAL:
+          return self.symmetricConeResidualScalingSize(MaximalSelection());
+        }
+      }
+
+      static void
+      setCompliance(Self & self, ResidualVectorType & vector, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT:
+          return self.setCompliance(vector, CurrentSelection());
+        case ConstraintSelectionType::MAXIMAL:
+          return self.setCompliance(vector, MaximalSelection());
+        }
+      }
+
+      static ResidualVectorType retrieveCompliance(const Self & self, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT: {
+          ResidualVectorType rescs(self.residualSize(CurrentSelection()));
+          self.retrieveCompliance(rescs, CurrentSelection());
+          return rescs;
+        }
+        case ConstraintSelectionType::MAXIMAL: {
+          ResidualVectorType resms(self.residualSize(MaximalSelection()));
+          self.retrieveCompliance(resms, MaximalSelection());
+          return resms;
+        }
+        }
+      }
+
+      static void setBaumgarteCorrectorParameters(
+        Self & self, const BaumgarteCorrectorParameters & copy, ConstraintSelectionType sel)
+      {
+        switch (sel)
+        {
+        case ConstraintSelectionType::CURRENT:
+          return self.setBaumgarteCorrectorParameters(copy, CurrentSelection());
+        case ConstraintSelectionType::MAXIMAL:
+          return self.setBaumgarteCorrectorParameters(copy, MaximalSelection());
+        }
       }
 
       static void calc(
@@ -182,8 +261,7 @@ namespace pinocchio
         const ConstraintData & constraint_data,
         const context::RefConstMatrixXs & matrix)
       {
-        context::MatrixXs res =
-          context::MatrixXs::Zero(self.residualSize(constraint_data), matrix.cols());
+        context::MatrixXs res = context::MatrixXs::Zero(self.residualSize(), matrix.cols());
         self.jacobianMatrixProduct(model, data, constraint_data, matrix, res);
         return res;
       }
@@ -198,6 +276,66 @@ namespace pinocchio
         context::MatrixXs res = context::MatrixXs::Zero(model.nv, matrix.cols());
         self.jacobianTransposeMatrixProduct(model, data, constraint_data, matrix, res);
         return res;
+      }
+
+      static context::VectorXs mapConstraintForceToJointSpace(
+        const Self & self,
+        const Model & model,
+        const Data & data,
+        const ConstraintData & cdata,
+        const context::VectorXs & constraint_forces,
+        ForceVector & joint_forces,
+        ReferenceFrame rf)
+      {
+        context::VectorXs joint_torques = context::VectorXs::Zero(model.nv);
+        switch (rf)
+        {
+        case WORLD:
+          self.mapConstraintForceToJointSpace(
+            model, data, cdata, constraint_forces, joint_forces, joint_torques, WorldFrameTag());
+          break;
+        case LOCAL:
+          self.mapConstraintForceToJointSpace(
+            model, data, cdata, constraint_forces, joint_forces, joint_torques, LocalFrameTag());
+          break;
+        case LOCAL_WORLD_ALIGNED:
+          self.mapConstraintForceToJointSpace(
+            model, data, cdata, constraint_forces, joint_forces, joint_torques,
+            LocalWorldAlignedFrameTag());
+          break;
+        }
+        return joint_torques;
+      }
+
+      static context::VectorXs mapJointSpaceToConstraintMotion(
+        const Self & self,
+        const Model & model,
+        const Data & data,
+        const ConstraintData & cdata,
+        const MotionVector & joint_motions,
+        const context::VectorXs & joint_generalized_velocity,
+        ReferenceFrame rf)
+      {
+        context::VectorXs constraint_motions = context::VectorXs::Zero(self.residualSize());
+        switch (rf)
+        {
+        case WORLD:
+          self.mapJointSpaceToConstraintMotion(
+            model, data, cdata, joint_motions, joint_generalized_velocity, constraint_motions,
+            WorldFrameTag());
+          break;
+        case LOCAL:
+          self.mapJointSpaceToConstraintMotion(
+            model, data, cdata, joint_motions, joint_generalized_velocity, constraint_motions,
+            LocalFrameTag());
+          break;
+        case LOCAL_WORLD_ALIGNED:
+          self.mapJointSpaceToConstraintMotion(
+            model, data, cdata, joint_motions, joint_generalized_velocity, constraint_motions,
+            LocalWorldAlignedFrameTag());
+          break;
+        }
+        return constraint_motions;
       }
 
       static void appendCouplingConstraintInertias(

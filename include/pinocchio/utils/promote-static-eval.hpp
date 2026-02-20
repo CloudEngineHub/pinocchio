@@ -1,11 +1,12 @@
 //
-// Copyright (c) 2025 INRIA
+// Copyright (c) 2025-2026 INRIA
 //
 
-#ifndef __pinocchio_utils_eigen_hpp__
-#define __pinocchio_utils_eigen_hpp__
+#ifndef __pinocchio_utils_promote_static_eval_hpp__
+#define __pinocchio_utils_promote_static_eval_hpp__
 
 #include "pinocchio/utils/fwd.hpp"
+#include "pinocchio/utils/eigen-helpers.hpp"
 #include "pinocchio/math/matrix-product.hpp"
 
 #include <ratio>
@@ -13,89 +14,6 @@
 
 namespace pinocchio
 {
-
-  namespace helper
-  {
-    template<class T>
-    struct is_eigen_noalias : std::false_type
-    {
-    };
-
-    template<typename ExpressionType, template<typename> class StorageBase>
-    struct is_eigen_noalias<Eigen::NoAlias<ExpressionType, StorageBase>> : std::true_type
-    {
-    };
-
-    template<class T>
-    inline constexpr bool is_eigen_noalias_v =
-      is_eigen_noalias<std::remove_cv_t<std::remove_reference_t<T>>>::value;
-
-    template<class T>
-    struct is_eigen_product : std::false_type
-    {
-    };
-
-    template<typename Lhs, typename Rhs, int Option>
-    struct is_eigen_product<Eigen::Product<Lhs, Rhs, Option>> : std::true_type
-    {
-    };
-
-    template<class T>
-    inline constexpr bool is_eigen_product_v =
-      is_eigen_product<std::remove_cv_t<std::remove_reference_t<T>>>::value;
-
-    template<typename T>
-    struct remove_eigen_noalias
-    {
-      typedef T type;
-      static T & get(T & t)
-      {
-        return t;
-      }
-      static const T & get(const T & t)
-      {
-        return t;
-      }
-    };
-
-    template<typename ExpressionType, template<typename> class StorageBase>
-    struct remove_eigen_noalias<Eigen::NoAlias<ExpressionType, StorageBase>>
-    {
-      typedef ExpressionType type;
-      static ExpressionType & get(Eigen::NoAlias<ExpressionType, StorageBase> & t)
-      {
-        return t.expression();
-      }
-      static const ExpressionType & get(const Eigen::NoAlias<ExpressionType, StorageBase> & t)
-      {
-        return t.expression();
-      }
-    };
-
-    template<typename T, typename = void>
-    inline constexpr bool has_fixed_rows_v = false;
-
-    template<typename T>
-    inline constexpr bool has_fixed_rows_v<T, std::void_t<decltype(T::RowsAtCompileTime)>> =
-      (T::RowsAtCompileTime != Eigen::Dynamic);
-
-    template<typename T, typename = void>
-    inline constexpr bool has_fixed_cols_v = false;
-
-    template<typename T>
-    inline constexpr bool has_fixed_cols_v<T, std::void_t<decltype(T::ColsAtCompileTime)>> =
-      (T::ColsAtCompileTime != Eigen::Dynamic);
-
-    template<typename T, typename = void>
-    inline constexpr bool has_fixed_size_v = false;
-
-    template<typename T>
-    inline constexpr bool has_fixed_size_v<
-      T,
-      std::void_t<decltype(T::RowsAtCompileTime), decltype(T::ColsAtCompileTime)>> =
-      has_fixed_rows_v<T> && has_fixed_cols_v<T>;
-
-  } // namespace helper
 
   namespace internal
   {
@@ -590,4 +508,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_utils_eigen_hpp__
+#endif // ifndef __pinocchio_utils_promote_static_eval_hpp__

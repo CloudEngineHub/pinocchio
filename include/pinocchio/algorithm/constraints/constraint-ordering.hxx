@@ -49,7 +49,7 @@ namespace pinocchio
       auto & neighbours = data.joint_neighbours;
 
       // Here we suppose all BinartyKinematicsConstraintModelBase<ConstraintModel> are constant size
-      const auto constraint_size = cmodel.maxResidualSize();
+      const auto constraint_size = cmodel.residualSize();
       data.constraints_supported_dim[joint1_id] += constraint_size;
       data.constraints_supported_dim[joint2_id] += constraint_size;
 
@@ -294,6 +294,7 @@ namespace pinocchio
     }
 #undef INSERT_JOINT_INERTIA_COUPLING_TERM
   }
+
 } // namespace pinocchio
 
 /// @endcond

@@ -17,6 +17,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
+// TODO: refacto
 using namespace pinocchio;
 typedef JointLimitConstraintModel::EigenIndexVector EigenIndexVector;
 typedef JointLimitConstraintModel::BooleanVector BooleanVector;
@@ -33,6 +34,19 @@ BOOST_AUTO_TEST_CASE(constraint_empty_constructor)
   const Model::IndexVector empty_activable_joint_ids;
 
   JointLimitConstraintModel constraint(model, empty_activable_joint_ids);
+
+  BOOST_CHECK(constraint.residualSize(MaximalSelection()) == 0);
+  BOOST_CHECK(constraint.residualSize(CurrentSelection()) == 0);
+}
+
+BOOST_AUTO_TEST_CASE(constraint_model_constructor)
+{
+  Model model;
+  buildModelWithAllJoints(model);
+
+  const Data data(model);
+
+  JointLimitConstraintModel constraint(model);
 }
 
 BOOST_AUTO_TEST_CASE(constraint_constructor_with_infinite_bounds)
@@ -51,7 +65,8 @@ BOOST_AUTO_TEST_CASE(constraint_constructor_with_infinite_bounds)
   const Model::IndexVector activable_joint_ids(ee_support.begin() + 1, ee_support.end());
   JointLimitConstraintModel constraint(model, activable_joint_ids);
 
-  BOOST_CHECK(constraint.maxResidualSize() == 0);
+  BOOST_CHECK(constraint.residualSize(MaximalSelection()) == 0);
+  BOOST_CHECK(constraint.residualSize(CurrentSelection()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE(constraint_constructor)
@@ -94,26 +109,32 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
         }
       }
     }
-    BOOST_CHECK(constraint.maxResidualSize() == total_size);
+    BOOST_CHECK(constraint.residualSize(MaximalSelection()) == total_size);
+    BOOST_CHECK(constraint.residualSize(CurrentSelection()) == total_size);
+    const Eigen::VectorXd q0 = randomConfiguration(model);
+    constraint.makeSelectionFilteredByLimitProximity(q0);
+    BOOST_CHECK(
+      constraint.residualSize(CurrentSelection()) <= constraint.residualSize(MaximalSelection()));
   }
 
   // we set the margin to infinity so all limits are taken into account in what follows.
-  model.positionLimitMargin =
-    Eigen::VectorXd::Constant(model.nq, std::numeric_limits<double>::max());
-  constraint = JointLimitConstraintModel(model, activable_joint_ids);
-  JointLimitConstraintData constraint_data(constraint);
-  const Eigen::VectorXd q0 = randomConfiguration(model);
-  data.q_in = q0;
-  constraint.calc(model, data, constraint_data);
+  {
+    model.positionLimitMargin =
+      Eigen::VectorXd::Constant(model.nq, std::numeric_limits<double>::max());
+    constraint = JointLimitConstraintModel(model, activable_joint_ids);
+    const Eigen::VectorXd q0 = randomConfiguration(model);
+    constraint.makeSelectionFilteredByLimitProximity(q0);
+    BOOST_CHECK(
+      constraint.residualSize(CurrentSelection()) == constraint.residualSize(MaximalSelection()));
+  }
 
   // Check projection on force sets
   {
-    const Eigen::Index nb_lower_active_dofs =
-      Eigen::Index(constraint.lowerResidualSize(constraint_data));
-    const Eigen::Index nb_upper_active_dofs =
-      Eigen::Index(constraint.upperResidualSize(constraint_data));
+    constraint = JointLimitConstraintModel(model, activable_joint_ids);
 
-    const Eigen::Index total_active_dofs = nb_lower_active_dofs + nb_upper_active_dofs;
+    auto constraint_data = constraint.createData();
+
+    const Eigen::Index total_active_dofs = Eigen::Index(constraint.residualSize());
 
     const int num_projections = int(1e6);
     for (int k = 0; k < num_projections; ++k)
@@ -122,7 +143,6 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
       const Eigen::VectorXd f_proj = constraint.set(constraint_data).project(f);
 
       BOOST_CHECK((f_proj.array() >= 0).all());
-      // BOOST_CHECK((f_proj.tail(nb_lower_active_dofs).array() >= 0).all());
     }
   }
 }
@@ -174,11 +194,11 @@ BOOST_AUTO_TEST_CASE(constraint_jacobian)
     data.q_in = q0;
     constraint_model.calc(model, data, constraint_data);
 
-    Eigen::MatrixXd jacobian_matrix(constraint_model.residualSize(constraint_data), model.nv);
+    Eigen::MatrixXd jacobian_matrix(constraint_model.residualSize(), model.nv);
     constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
     Data data_fd(model);
     JointLimitConstraintData constraint_data_fd(constraint_model);
-    Eigen::MatrixXd jacobian_matrix_fd(constraint_model.residualSize(constraint_data), model.nv);
+    Eigen::MatrixXd jacobian_matrix_fd(constraint_model.residualSize(), model.nv);
 
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
@@ -230,17 +250,23 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
   }
 
   JointLimitConstraintModel constraint_model(model, activable_joint_ids);
-  BOOST_CHECK(constraint_model.maxResidualSize() == total_size);
+  BOOST_CHECK(constraint_model.residualSize(MaximalSelection()) == total_size);
+
   JointLimitConstraintData constraint_data(constraint_model);
 
   for (int i = 0; i < 1e4; ++i)
   {
     const Eigen::VectorXd q0 = randomConfiguration(model, qmin, qmax);
-    std::size_t csize = 0;
-    std::vector<std::size_t> active_indexes;
-    Eigen::VectorXd activable_residual(constraint_model.maxResidualSize());
+    constraint_model.makeSelectionFilteredByLimitProximity(q0);
+    data.q_in = q0;
+    constraint_model.calc(model, data, constraint_data);
 
+    int csize = 0;
     int set_idx = 0;
+
+    std::vector<std::size_t> active_indexes;
+    Eigen::VectorXd activable_residual(constraint_model.residualSize(MaximalSelection()));
+
     for (Model::JointIndex i = 1; i < (Model::JointIndex)model.njoints; ++i)
     {
       const auto & jmodel = model.joints[i];
@@ -262,21 +288,18 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_residual)
         set_idx++;
       }
     }
-    BOOST_CHECK(constraint_model.maxResidualSize() == set_idx);
 
     Eigen::VectorXd residual(csize);
-    for (std::size_t j = 0; j < csize; j++)
+    for (Eigen::Index j = 0; j < csize; j++)
     {
-      residual((Eigen::Index)j) = activable_residual((Eigen::Index)active_indexes[j]);
+      residual(j) = activable_residual((Eigen::Index)active_indexes[static_cast<size_t>(j)]);
     }
 
-    data.q_in = q0;
-    constraint_model.calc(model, data, constraint_data);
-    BOOST_CHECK((int)csize == constraint_model.residualSize(constraint_data));
-    BOOST_CHECK((int)csize == constraint_data.constraint_residual.size());
+    BOOST_CHECK(constraint_model.residualSize(MaximalSelection()) == set_idx);
+    BOOST_CHECK(constraint_model.residualSize(CurrentSelection()) == csize);
+    BOOST_CHECK(csize == constraint_data.constraint_residual.size());
     BOOST_CHECK(constraint_data.constraint_residual.isApprox(residual));
-    BOOST_CHECK(constraint_data.activable_constraint_residual.isApprox(activable_residual));
-    BOOST_CHECK(active_indexes == constraint_model.getActiveIdxInActivable(constraint_data));
+    BOOST_CHECK(active_indexes == constraint_model.active_idx_in_activable());
   }
 }
 
@@ -311,7 +334,6 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
   }
 
   JointLimitConstraintModel constraint_model(model, activable_joint_ids);
-  BOOST_CHECK(constraint_model.maxResidualSize() == total_size);
   JointLimitConstraintData constraint_data(constraint_model);
 
   const double eps_fd = 1e-8;
@@ -319,11 +341,19 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
   for (int i = 0; i < num_tests; ++i)
   {
     const Eigen::VectorXd q0 = randomConfiguration(model, qmin, qmax);
-    int csize = 0;
-    std::vector<std::size_t> active_indexes;
-    Eigen::VectorXd activable_residual(constraint_model.maxResidualSize());
+    constraint_model.makeSelectionFilteredByLimitProximity(q0);
 
+    BOOST_CHECK(constraint_model.residualSize(MaximalSelection()) == total_size);
+
+    data.q_in = q0;
+    constraint_model.calc(model, data, constraint_data);
+
+    int csize = 0;
     int set_idx = 0;
+
+    std::vector<std::size_t> active_indexes;
+    Eigen::VectorXd activable_residual(constraint_model.residualSize(MaximalSelection()));
+
     for (Model::JointIndex i = 1; i < (Model::JointIndex)model.njoints; ++i)
     {
       const auto & jmodel = model.joints[i];
@@ -345,24 +375,19 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
         set_idx++;
       }
     }
-    BOOST_CHECK(constraint_model.maxResidualSize() == set_idx);
 
-    data.q_in = q0;
-    constraint_model.calc(model, data, constraint_data);
-
-    std::vector<std::size_t> active_set_indexes =
-      constraint_model.getActiveIdxInActivable(constraint_data);
-    BOOST_CHECK(csize == constraint_model.residualSize(constraint_data));
+    BOOST_CHECK(constraint_model.residualSize(MaximalSelection()) == set_idx);
+    BOOST_CHECK(constraint_model.residualSize(CurrentSelection()) == csize);
     BOOST_CHECK(csize == constraint_data.constraint_residual.size());
+    BOOST_CHECK(active_indexes == constraint_model.active_idx_in_activable());
 
-    Eigen::MatrixXd jacobian_matrix(constraint_model.residualSize(constraint_data), model.nv);
+    Eigen::MatrixXd jacobian_matrix(constraint_model.residualSize(), model.nv);
     constraint_model.jacobian(model, data, constraint_data, jacobian_matrix);
 
     Data data_fd(model);
     JointLimitConstraintData constraint_data_fd(constraint_model);
-    Eigen::MatrixXd jacobian_matrix_fd(constraint_model.residualSize(constraint_data), model.nv);
+    Eigen::MatrixXd jacobian_matrix_fd(constraint_model.residualSize(), model.nv);
 
-    bool ok_to_check = true;
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       Eigen::VectorXd v_eps = Eigen::VectorXd::Zero(model.nv);
@@ -370,21 +395,13 @@ BOOST_AUTO_TEST_CASE(dynamic_constraint_jacobian)
       const Eigen::VectorXd q_plus = integrate(model, q0, v_eps);
       data_fd.q_in = q_plus;
       constraint_model.calc(model, data_fd, constraint_data_fd);
-      bool same_active_set =
-        active_set_indexes == constraint_model.getActiveIdxInActivable(constraint_data_fd);
-      // if the active set is identical we can check the jacobian
-      if (!same_active_set)
-      {
-        ok_to_check = false;
-        continue;
-      }
+
       jacobian_matrix_fd.col(k) =
         (constraint_data_fd.constraint_residual - constraint_data.constraint_residual) / eps_fd;
       BOOST_CHECK((jacobian_matrix.col(k) - jacobian_matrix_fd.col(k)).isZero(math::sqrt(eps_fd)));
     }
 
-    if (ok_to_check)
-      BOOST_CHECK(jacobian_matrix.isApprox(jacobian_matrix_fd, math::sqrt(eps_fd)));
+    BOOST_CHECK(jacobian_matrix.isApprox(jacobian_matrix_fd, math::sqrt(eps_fd)));
   }
 }
 
@@ -413,15 +430,12 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
   }
 
   JointLimitConstraintModel constraint_model(model, activable_joint_ids);
-  BOOST_CHECK(constraint_model.maxResidualSize() == 2 * model.nv);
-
-  for (const JointIndex joint_id : activable_joint_ids)
-  {
-    const auto & jmodel = model.joints[joint_id];
-    std::cout << "joint type: " << jmodel.shortname() << std::endl;
-  }
-
   const Eigen::VectorXd q = model.lowerPositionLimit;
+  constraint_model.makeSelectionFilteredByLimitProximity(q);
+
+  BOOST_CHECK(constraint_model.residualSize(MaximalSelection()) == 2 * model.nv);
+  BOOST_CHECK(constraint_model.residualSize(CurrentSelection()) == model.nv);
+  BOOST_CHECK(constraint_model.residualSize() == model.nv);
 
   Data data(model);
   JointLimitConstraintData constraint_data(constraint_model);
@@ -429,15 +443,14 @@ BOOST_AUTO_TEST_CASE(constraint_coupling_inertia)
 
   data.q_in = q;
   constraint_model.calc(model, data, constraint_data);
-  BOOST_CHECK(constraint_model.residualSize(constraint_data) == model.nv);
 
   const Eigen::VectorXd diagonal_inertia =
-    Eigen::VectorXd::Random(constraint_model.residualSize(constraint_data)).array().square();
+    Eigen::VectorXd::Random(constraint_model.residualSize()).array().square();
   constraint_model.appendCouplingConstraintInertias(
     model, data, constraint_data, diagonal_inertia, WorldFrameTag());
 
   Eigen::MatrixXd constraint_jacobian =
-    Eigen::MatrixXd::Zero(constraint_model.residualSize(constraint_data), model.nv);
+    Eigen::MatrixXd::Zero(constraint_model.residualSize(), model.nv);
   constraint_model.jacobian(model, data, constraint_data, constraint_jacobian);
 
   std::cout << "diagonal_inertia: " << diagonal_inertia.transpose() << std::endl;
@@ -483,15 +496,12 @@ BOOST_AUTO_TEST_CASE(check_maps)
   }
 
   JointLimitConstraintModel constraint_model(model, activable_joint_ids);
-  BOOST_CHECK(constraint_model.maxResidualSize() == 2 * model.nv);
-
-  for (const JointIndex joint_id : activable_joint_ids)
-  {
-    const auto & jmodel = model.joints[joint_id];
-    std::cout << "joint type: " << jmodel.shortname() << std::endl;
-  }
-
   const Eigen::VectorXd q = model.lowerPositionLimit;
+  constraint_model.makeSelectionFilteredByLimitProximity(q);
+
+  BOOST_CHECK(constraint_model.residualSize(MaximalSelection()) == 2 * model.nv);
+  BOOST_CHECK(constraint_model.residualSize(CurrentSelection()) == model.nv);
+  BOOST_CHECK(constraint_model.residualSize() == model.nv);
 
   Data data(model);
   JointLimitConstraintData constraint_data(constraint_model);
@@ -499,18 +509,21 @@ BOOST_AUTO_TEST_CASE(check_maps)
   data.q_in = q;
   computeJointJacobians(model, data, q);
   constraint_model.calc(model, data, constraint_data);
-  BOOST_CHECK(constraint_model.residualSize(constraint_data) == model.nv);
 
   // Use a second constraint model and associated data to compute the Jacobian
-  Data data_ref(model);
   JointLimitConstraintModel constraint_model_ref(model, activable_joint_ids);
-  BOOST_CHECK(constraint_model_ref.maxResidualSize() == 2 * model.nv);
+  constraint_model_ref.makeSelectionFilteredByLimitProximity(q);
+
+  BOOST_CHECK(constraint_model_ref.residualSize(MaximalSelection()) == 2 * model.nv);
+  BOOST_CHECK(constraint_model_ref.residualSize(CurrentSelection()) == model.nv);
+  BOOST_CHECK(constraint_model_ref.residualSize() == model.nv);
+
+  Data data_ref(model);
   JointLimitConstraintData constraint_data_ref(constraint_model_ref);
 
   data_ref.q_in = q;
   computeJointJacobians(model, data_ref, q);
   constraint_model_ref.calc(model, data_ref, constraint_data_ref);
-  BOOST_CHECK(constraint_model_ref.residualSize(constraint_data_ref) == model.nv);
 
   const auto constraint_jacobian_ref =
     constraint_model.jacobian(model, data_ref, constraint_data_ref);
@@ -518,7 +531,7 @@ BOOST_AUTO_TEST_CASE(check_maps)
   // Test mapConstraintForcesToJointTorques
   {
     const Eigen::VectorXd constraint_forces =
-      Eigen::VectorXd::Random(constraint_model.residualSize(constraint_data));
+      Eigen::VectorXd::Random(constraint_model.residualSize());
 
     Eigen::VectorXd joint_torques_ref = Eigen::VectorXd::Zero(model.nv);
     joint_torques_ref = constraint_jacobian_ref.transpose() * constraint_forces;
@@ -542,17 +555,15 @@ BOOST_AUTO_TEST_CASE(check_maps)
   {
     const Eigen::VectorXd joint_motions = Eigen::VectorXd::Random(model.nv);
 
-    Eigen::VectorXd constraint_motions_ref =
-      Eigen::VectorXd::Zero(constraint_model.residualSize(constraint_data));
+    Eigen::VectorXd constraint_motions_ref = Eigen::VectorXd::Zero(constraint_model.residualSize());
     constraint_motions_ref = constraint_jacobian_ref * joint_motions;
 
     Eigen::VectorXd constraint_motions_ref2 =
-      Eigen::VectorXd::Zero(constraint_model.residualSize(constraint_data));
+      Eigen::VectorXd::Zero(constraint_model.residualSize());
     constraint_model.jacobianMatrixProduct(
       model, data_ref, constraint_data_ref, joint_motions, constraint_motions_ref2, SetTo());
 
-    Eigen::VectorXd constraint_motions =
-      -Eigen::VectorXd::Ones(constraint_model.residualSize(constraint_data));
+    Eigen::VectorXd constraint_motions = -Eigen::VectorXd::Ones(constraint_model.residualSize());
     constraint_model.mapJointMotionsToConstraintMotion(
       model, data_ref, constraint_data, joint_motions, constraint_motions);
 

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024-2025 INRIA
+// Copyright (c) 2024-2026 INRIA
 //
 
 #include <pinocchio/math/matrix.hpp>
@@ -69,6 +69,18 @@ BOOST_AUTO_TEST_CASE(test_enforceSymmetry)
   }
 }
 
+BOOST_AUTO_TEST_CASE(test_nullptr_in_map)
+{
+  typedef Eigen::MatrixXd Matrix;
+  Eigen::Index rows = 10, cols = 20;
+
+  Eigen::Map<Matrix> map = {nullptr, rows, cols};
+  BOOST_CHECK(map.data() == nullptr);
+
+  // will crash with error "unknown location:0: fatal error: in "Test/test_nullptr_in_map": memory
+  // access violation at address: 0x0: invalid permissions" Matrix copy = map;
+}
+
 BOOST_AUTO_TEST_CASE(test_remap)
 {
   srand(0);
@@ -84,9 +96,9 @@ BOOST_AUTO_TEST_CASE(test_remap)
   for (int i = 0; i < max_test; ++i)
   {
     Matrix random_matrix = Matrix3::Random();
-    auto input_map = make_map(random_matrix);
+    auto input_map = make_default_map<Matrix>(random_matrix);
     BOOST_CHECK(input_map == random_matrix);
-    auto re_mapped = remap<Matrix3>(input_map);
+    auto re_mapped = remap<Eigen::Map<Matrix3>>(input_map);
     BOOST_CHECK(re_mapped == random_matrix);
     BOOST_CHECK(re_mapped == input_map);
   }

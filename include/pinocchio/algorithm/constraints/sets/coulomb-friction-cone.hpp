@@ -258,7 +258,7 @@ namespace pinocchio
     /// This makes `CoulombFrictionConeTpl` an operator, not a data-holding class.
     const Scalar & mu;
 
-  }; // CoulombFrictionConeTpl
+  }; // struct CoulombFrictionConeTpl
 
   /// \brief Dual of the 3d Coulomb friction cone.
   /// This is an operator and does not own any data.
@@ -394,7 +394,7 @@ namespace pinocchio
     /// \var Reference to a friction coefficient
     const Scalar & mu;
 
-  }; // DualCoulombFrictionConeTpl
+  }; // struct DualCoulombFrictionConeTpl
 
 } // namespace pinocchio
 

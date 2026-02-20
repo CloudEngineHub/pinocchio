@@ -367,7 +367,7 @@ int main(int argc, const char ** argv)
   }
   else
   {
-    computeJointMinimalOrdering(model, data_caba, contact_model_CL);
+    computeJointMinimalOrdering(model, data_caba, contact_model_CL, contact_data_CL);
     timer.tic();
     SMOOTH(NBT)
     {

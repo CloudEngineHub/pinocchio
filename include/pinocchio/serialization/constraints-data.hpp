@@ -41,13 +41,8 @@ namespace boost
       {
         typedef ::pinocchio::JointLimitConstraintDataTpl<Scalar, Options> Base;
 
-        using Base::activable_constraint_residual;
-        using Base::active_idx_in_activable;
-        using Base::active_idx_in_selected;
-        using Base::active_idx_qs_reduce;
         using Base::compact_tangent_map;
         using Base::constraint_residual_storage;
-        using Base::lower_active_size;
         using Base::rowise_tangent_map;
       };
     } // namespace internal
@@ -62,19 +57,11 @@ namespace boost
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
 
-      ar & make_nvp("active_idx_in_activable", cdata.active_idx_in_activable);
-      ar & make_nvp("active_idx_in_selected", cdata.active_idx_in_selected);
-      ar & make_nvp("active_idx_qs_reduce", cdata.active_idx_qs_reduce);
-
-      ar & make_nvp("lower_residual_size", cdata.lower_residual_size);
-
-      ar & make_nvp("activable_constraint_residual", cdata.activable_constraint_residual);
       ar & make_nvp("constraint_residual_storage", cdata.constraint_residual_storage);
       if (Archive::is_loading::value)
       {
         cdata.constraint_residual = cdata.constraint_residual_storage.map();
       }
-
       ar & make_nvp("compact_tangent_map", cdata.compact_tangent_map);
       ar & make_nvp("rowise_tangent_map", cdata.rowise_tangent_map);
     }
@@ -108,7 +95,6 @@ namespace boost
       ar & make_nvp("constraint_velocity_error", cdata.constraint_velocity_error);
       ar & make_nvp("constraint_acceleration_error", cdata.constraint_acceleration_error);
       ar & make_nvp("constraint_acceleration_biais_term", cdata.constraint_acceleration_biais_term);
-
       ar & make_nvp("A1_world", cdata.A1_world);
       ar & make_nvp("A2_world", cdata.A2_world);
       ar & make_nvp("A_world", cdata.A_world);
@@ -157,7 +143,6 @@ namespace boost
       ar & make_nvp("constraint_velocity_error", cdata.constraint_velocity_error);
       ar & make_nvp("constraint_acceleration_error", cdata.constraint_acceleration_error);
       ar & make_nvp("constraint_acceleration_biais_term", cdata.constraint_acceleration_biais_term);
-
       ar & make_nvp("A1_world", cdata.A1_world);
       ar & make_nvp("A2_world", cdata.A2_world);
       ar & make_nvp("A_world", cdata.A_world);

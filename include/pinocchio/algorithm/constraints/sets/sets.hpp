@@ -16,4 +16,9 @@
 #include "pinocchio/algorithm/constraints/sets/full-space-cone.hpp"
 #include "pinocchio/algorithm/constraints/sets/zero-cone.hpp"
 
+// Symmetric cones jordan operations
+#include "pinocchio/algorithm/constraints/sets/second-order-cone-jordan-operation.hpp"
+#include "pinocchio/algorithm/constraints/sets/orthant-cone-jordan-operation.hpp"
+#include "pinocchio/algorithm/constraints/sets/zero-cone-jordan-operation.hpp"
+
 #endif // ifndef __pinocchio_algorithm_constraints_sets_hpp__

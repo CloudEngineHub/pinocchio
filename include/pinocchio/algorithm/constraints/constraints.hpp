@@ -6,8 +6,8 @@
 #define __pinocchio_algorithm_constraints_constraints_hpp__
 
 #include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
 
+#include "pinocchio/algorithm/contact-info.hpp"
 #include "pinocchio/algorithm/constraints/utils.hpp"
 
 #include "pinocchio/algorithm/constraints/joint-limit-constraint.hpp"

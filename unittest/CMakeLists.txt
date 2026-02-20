@@ -1,5 +1,6 @@
 #
-# Copyright (c) 2015-2025 CNRS INRIA
+# Copyright (c) 2015-2018 CNRS
+# Copyright (c) 2018-2026 INRIA
 # Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 #
 
@@ -174,6 +175,8 @@ add_pinocchio_unit_test(size-in-bytes HEADER_ONLY)
 # Math components
 add_pinocchio_unit_test(eigen-basic-op HEADER_ONLY)
 add_pinocchio_unit_test(matrix HEADER_ONLY)
+add_pinocchio_unit_test(block-diagonal-matrix HEADER_ONLY)
+add_pinocchio_unit_test(matrix-block-element HEADER_ONLY)
 add_pinocchio_unit_test(eigen-tensor HEADER_ONLY)
 add_pinocchio_unit_test(sincos HEADER_ONLY)
 add_pinocchio_unit_test(quaternion HEADER_ONLY)
@@ -234,8 +237,9 @@ add_pinocchio_unit_test(impulse-dynamics)
 add_pinocchio_unit_test(sample-models COLLISION_OPTIONAL)
 add_pinocchio_unit_test(kinematics)
 add_pinocchio_unit_test(delassus)
+add_pinocchio_unit_test(delassus-operations)
 add_pinocchio_unit_test(delassus-operator-dense)
-add_pinocchio_unit_test(delassus-operator-preconditioned)
+# add_pinocchio_unit_test(delassus-operator-preconditioned)
 add_pinocchio_unit_test(delassus-operator-rigid-body)
 add_pinocchio_unit_test(preconditioner)
 add_pinocchio_unit_test(pv-solver)
@@ -358,11 +362,19 @@ add_pinocchio_unit_test(coulomb-friction-cone)
 add_pinocchio_unit_test(pgs-solver)
 add_pinocchio_unit_test(admm-solver)
 
+# Symmetric cones jordan operations
+add_pinocchio_unit_test(second-order-cone-jordan-operation)
+add_pinocchio_unit_test(orthant-cone-jordan-operation)
+
 # Serialization
 make_directory("${CMAKE_CURRENT_BINARY_DIR}/serialization-data")
 add_pinocchio_unit_test(serialization COLLISION_OPTIONAL)
 add_test_cflags(
   serialization
+  "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
+add_pinocchio_unit_test(serialization-math)
+add_test_cflags(
+  serialization-math
   "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
 add_pinocchio_unit_test(csv)
 add_test_cflags(

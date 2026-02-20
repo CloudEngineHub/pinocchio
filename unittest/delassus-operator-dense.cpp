@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024 INRIA
+// Copyright (c) 2024-2026 INRIA
 //
 
 #define PINOCCHIO_EIGEN_CHECK_MALLOC
@@ -13,15 +13,15 @@
 
 #include <pinocchio/algorithm/delassus-operator-dense.hpp>
 #include <pinocchio/algorithm/delassus-operator-cholesky-expression.hpp>
-#include <pinocchio/algorithm/aba.hpp>
-#include <pinocchio/algorithm/crba.hpp>
-#include <pinocchio/math/matrix.hpp>
-#include <pinocchio/multibody/sample-models.hpp>
-#include "pinocchio/algorithm/constraints/utils.hpp"
+#include <pinocchio/algorithm/delassus-operator-rigid-body.hpp>
+#include <pinocchio/algorithm/constraints/utils.hpp>
+
+#include "utils.hpp"
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 using namespace pinocchio;
+using namespace pinocchio::unittest;
 
 BOOST_AUTO_TEST_CASE(test_memory_allocation)
 {
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_cholesky_expression_to_dense)
   BOOST_CHECK(delassus_operator_dense2 == true_delassus_operator_dense);
 }
 
-BOOST_AUTO_TEST_CASE(delassus_dense_compliant)
+BOOST_AUTO_TEST_CASE(delassus_from_dense_matrix_compliant)
 {
   const Eigen::Index mat_size = 50;
   const Eigen::MatrixXd mat = Eigen::MatrixXd::Random(mat_size, mat_size);
@@ -146,7 +146,8 @@ BOOST_AUTO_TEST_CASE(delassus_dense_compliant)
   Eigen::VectorXd damping_vec = 5e-3 * Eigen::VectorXd::Ones(mat_size);
   Eigen::MatrixXd damping = damping_vec.asDiagonal();
   delassus.updateDamping(damping_vec);
-  BOOST_CHECK(delassus.getDamping().isApprox(damping_vec));
+  BOOST_CHECK(delassus.getDamping().blocks()[0].map.isApprox(damping_vec));
+
   delassus.updateDecomposition();
   delassus.solve(rhs, res);
   const Eigen::MatrixXd compliant_matrix_inv = (compliant_matrix + damping).inverse();
@@ -165,7 +166,7 @@ BOOST_AUTO_TEST_CASE(delassus_dense_compliant)
   const Eigen::MatrixXd damped_compliant_matrix =
     compliant_matrix + new_damping * Eigen::MatrixXd::Identity(mat_size, mat_size);
   delassus.updateDamping(new_damping);
-  BOOST_CHECK(delassus.getDamping().isApprox(Eigen::VectorXd::Constant(mat_size, new_damping)));
+  BOOST_CHECK(delassus.getDamping().blocks()[0].map(0, 0) == new_damping);
   delassus.applyOnTheRight(rhs, res);
   Eigen::VectorXd res_apply = damped_compliant_matrix * rhs;
   BOOST_CHECK(res.isApprox(res_apply));
@@ -181,11 +182,24 @@ BOOST_AUTO_TEST_CASE(delassus_dense_compliant)
   const Eigen::MatrixXd new_damped_compliant_matrix =
     new_compliant_matrix + new_damping * Eigen::MatrixXd::Identity(mat_size, mat_size);
   delassus.updateDamping(new_damping);
-  BOOST_CHECK(delassus.getDamping().isApprox(Eigen::VectorXd::Constant(mat_size, new_damping)));
+  BOOST_CHECK(delassus.getDamping().blocks()[0].map(0, 0) == new_damping);
   delassus.applyOnTheRight(rhs, res);
   Eigen::VectorXd new_res_apply = new_damped_compliant_matrix * rhs;
   BOOST_CHECK(new_damped_compliant_matrix.isApprox(delassus.matrix()));
   BOOST_CHECK(res.isApprox(new_res_apply));
+}
+
+BOOST_AUTO_TEST_CASE(delassus_unsafe)
+{
+  const Eigen::Index mat_size = 50;
+  const Eigen::MatrixXd mat = Eigen::MatrixXd::Random(mat_size, mat_size);
+  const Eigen::MatrixXd symmetric_mat = mat.transpose() * mat;
+  const Eigen::VectorXd damping = Eigen::VectorXd::Random(mat_size);
+
+  DelassusOperatorDense delassus(symmetric_mat);
+  delassus.unsafe().damping() = damping.asDiagonal();
+
+  BOOST_CHECK(delassus.getDamping().diagonal() == damping);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

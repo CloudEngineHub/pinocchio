@@ -65,13 +65,13 @@ BOOST_AUTO_TEST_CASE(basic_constructor)
   PointAnchorConstraintModel cmodel2(model, 0, M);
   BOOST_CHECK(cmodel2.joint1_id == 0);
   BOOST_CHECK(cmodel2.joint1_placement == M);
-  BOOST_CHECK(cmodel2.maxResidualSize() == 3);
+  BOOST_CHECK(cmodel2.residualSize() == 3);
 
   // Check contructor with two arguments
   PointAnchorConstraintModel cmodel2prime(model, 0);
   BOOST_CHECK(cmodel2prime.joint1_id == 0);
   BOOST_CHECK(cmodel2prime.joint1_placement.isIdentity(0.));
-  BOOST_CHECK(cmodel2prime.maxResidualSize() == 3);
+  BOOST_CHECK(cmodel2prime.residualSize() == 3);
 
   // Check default copy constructor
   PointAnchorConstraintModel cmodel3(cmodel2);
@@ -134,7 +134,7 @@ void check_A1_and_A2(
   const Eigen::Index m = 40;
   const Data::MatrixXs mat = Data::MatrixXs::Random(model.nv, m);
 
-  Data::MatrixXs res(cmodel.residualSize(cdata), m);
+  Data::MatrixXs res(cmodel.residualSize(), m);
   res.setZero();
   cmodel.jacobianMatrixProduct(model, data, cdata, mat, res);
 
@@ -172,8 +172,8 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
 
     const Eigen::Vector3d diagonal_inertia(1, 2, 3);
 
-    const pinocchio::SE3::Matrix6 spatial_inertia_join1 =
-      cm.computeConstraintSpatialInertia(placement_local_with_correction, diagonal_inertia);
+    const pinocchio::SE3::Matrix6 spatial_inertia_join1 = cm.computeConstraintSpatialInertia(
+      placement_local_with_correction, diagonal_inertia.asDiagonal());
     BOOST_CHECK(
       spatial_inertia_join1.transpose().isApprox(spatial_inertia_join1)); // check symmetric matrix
 
@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
     Inertia::Matrix6 I11 = -Inertia::Matrix6::Ones(), I12 = -Inertia::Matrix6::Ones(),
                      I22 = -Inertia::Matrix6::Ones();
 
-    cm.computeConstraintInertias(cd, diagonal_inertia, I11, I12, I22, LocalFrameTag());
+    cm.computeConstraintInertias(cd, diagonal_inertia.asDiagonal(), I11, I12, I22, LocalFrameTag());
     BOOST_CHECK(I11.isApprox(I11_ref));
     BOOST_CHECK(I12.isApprox(I12_ref));
     BOOST_CHECK(I22.isApprox(I22_ref));
@@ -204,7 +204,8 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
     Inertia::Matrix6 I11_scalar = -Inertia::Matrix6::Ones(), I12_scalar = -Inertia::Matrix6::Ones(),
                      I22_scalar = -Inertia::Matrix6::Ones();
 
-    cm.computeConstraintInertias(cd, diagonal_inertia_scalar, I11, I12, I22, LocalFrameTag());
+    cm.computeConstraintInertias(
+      cd, diagonal_inertia_scalar.asDiagonal(), I11, I12, I22, LocalFrameTag());
     cm.computeConstraintInertias(
       cd, constant_inertia_value, I11_scalar, I12_scalar, I22_scalar, LocalFrameTag());
     BOOST_CHECK(I11 == I11_scalar);
@@ -221,8 +222,8 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
     placement_world_with_correction.translation() +=
       placement_world.rotation() * cd.constraint_position_error;
 
-    const pinocchio::SE3::Matrix6 spatial_inertia_join1 =
-      cm.computeConstraintSpatialInertia(placement_world_with_correction, diagonal_inertia);
+    const pinocchio::SE3::Matrix6 spatial_inertia_join1 = cm.computeConstraintSpatialInertia(
+      placement_world_with_correction, diagonal_inertia.asDiagonal());
     BOOST_CHECK(
       spatial_inertia_join1.transpose().isApprox(spatial_inertia_join1)); // check symmetric matrix
 
@@ -239,7 +240,7 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
     Inertia::Matrix6 I11 = -Inertia::Matrix6::Ones(), I12 = -Inertia::Matrix6::Ones(),
                      I22 = -Inertia::Matrix6::Ones();
 
-    cm.computeConstraintInertias(cd, diagonal_inertia, I11, I12, I22, WorldFrameTag());
+    cm.computeConstraintInertias(cd, diagonal_inertia.asDiagonal(), I11, I12, I22, WorldFrameTag());
     BOOST_CHECK(I11.isApprox(I11_ref));
     BOOST_CHECK(I12.isApprox(I12_ref));
     BOOST_CHECK(I22.isApprox(I22_ref));
@@ -251,7 +252,8 @@ BOOST_AUTO_TEST_CASE(constraint3D_basic_operations)
     Inertia::Matrix6 I11_scalar = -Inertia::Matrix6::Ones(), I12_scalar = -Inertia::Matrix6::Ones(),
                      I22_scalar = -Inertia::Matrix6::Ones();
 
-    cm.computeConstraintInertias(cd, diagonal_inertia_scalar, I11, I12, I22, WorldFrameTag());
+    cm.computeConstraintInertias(
+      cd, diagonal_inertia_scalar.asDiagonal(), I11, I12, I22, WorldFrameTag());
     cm.computeConstraintInertias(
       cd, constant_inertia_value, I11_scalar, I12_scalar, I22_scalar, WorldFrameTag());
     BOOST_CHECK(I11 == I11_scalar);
@@ -653,7 +655,7 @@ BOOST_AUTO_TEST_CASE(cholesky)
 
   crba(model, data_ref, q, Convention::WORLD);
   make_symmetric(data_ref.M);
-  const auto total_size = getTotalConstraintResidualSize(constraint_models, constraint_datas);
+  const auto total_size = getTotalConstraintResidualSize(constraint_models);
   Eigen::MatrixXd J_constraints(total_size, model.nv);
   J_constraints.setZero();
   getConstraintsJacobian(model, data_ref, constraint_models, constraint_datas, J_constraints);

@@ -16,10 +16,18 @@ namespace pinocchio
   : NumericalBase<Derived>
   , DataEntity<Derived>
   {
-    typedef typename traits<Derived>::Scalar Scalar;
-    typedef typename traits<Derived>::ConstraintModel ConstraintModel;
-
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
     typedef DataEntity<Derived> Base;
+
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Derived>::ConstraintModel ConstraintModel;
+    typedef typename traits<Derived>::ConstraintData ConstraintData;
+
+    typedef typename traits<Derived>::Scalar Scalar;
+    static constexpr int Options = traits<Derived>::Options;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -76,6 +84,12 @@ namespace pinocchio
       return !(*this == other);
     }
 
+    // -------------------------------
+    // BASE METHODS
+    // -------------------------------
+
+    // General -----------------------
+
     /// \brief Returns the name of the class.
     static std::string classname()
     {
@@ -102,7 +116,8 @@ namespace pinocchio
       constraint.disp(os);
       return os;
     }
-  };
+  }; // struct ConstraintDataBase
+
 } // namespace pinocchio
 
 #endif // ifndef __pinocchio_algorithm_constraint_data_base_hpp__

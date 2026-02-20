@@ -19,7 +19,7 @@
 
 namespace pinocchio
 {
-  template<typename _Scalar>
+  template<typename _Scalar, int _Options>
   template<
     typename DelassusDerived,
     typename VectorLike,
@@ -27,7 +27,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  bool ADMMConstraintSolverTpl<_Scalar>::solve(
+  bool ADMMConstraintSolverTpl<_Scalar, _Options>::solve(
     DelassusOperatorBase<DelassusDerived> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -47,7 +47,7 @@ namespace pinocchio
     const std::size_t problem_size = static_cast<std::size_t>(np);
     assert(G.cols() == np);
     assert(g.size() == np);
-    assert(residualSize(constraint_models, constraint_datas) == np);
+    assert(residualSize(constraint_models) == np);
 
     // -- check if settings are valid
     settings.checkValidity();
@@ -97,8 +97,8 @@ namespace pinocchio
     res.primal_feasibility = Scalar(0);
 
     // -- dual feasibility
-    G.applyOnTheRight(ws.y, ws.rhs);
-    ws.rhs += g - ws.y.cwiseProduct(G.getDamping());
+    G.applyOnTheRight(ws.y, ws.rhs, false /* without damping */);
+    ws.rhs += g;
     if (settings.solve_ncp)
     {
       internal::computeDeSaxeCorrection(constraint_models, constraint_datas, ws.rhs, ws.desaxce);
@@ -164,8 +164,7 @@ namespace pinocchio
 
       // Update the decomposition of the Delassus
       Scalar prox_value = settings.tau_prox * ws.mu_prox + settings.tau * ws.rho;
-      ws.rhs.setConstant(prox_value);
-      G.updateDamping(ws.rhs);
+      G.updateDamping(prox_value);
       G.updateDecomposition();
       Scalar old_prox_value = prox_value;
       ws.delassus_decomposition_update_count++;
@@ -227,9 +226,10 @@ namespace pinocchio
         // ADMM iterates are used to compute the y-update.
         {
           PINOCCHIO_TRACY_ZONE_SCOPED_N(
-            "ADMMConstraintSolverTpl::solve - loop computeConeProjection");
+            "ADMMConstraintSolverTpl::solve - loop computeConstraintSetProjection");
           ws.tmp = ws.x_anderson - ws.z_anderson / (settings.tau * ws.rho);
-          internal::computeConeProjection(constraint_models, constraint_datas, ws.tmp, ws.y);
+          internal::computeConstraintSetProjection(
+            constraint_models, constraint_datas, ws.tmp, ws.y);
 
           ws.anderson_primal_feasibility_vector = ws.x_anderson - ws.y;
           anderson_primal_feasibility =
@@ -246,7 +246,8 @@ namespace pinocchio
               ws.x_previous = ws.x;
               ws.z_previous = ws.z;
               ws.tmp = ws.x_previous - ws.z_previous / (settings.tau * ws.rho);
-              internal::computeConeProjection(constraint_models, constraint_datas, ws.tmp, ws.y);
+              internal::computeConstraintSetProjection(
+                constraint_models, constraint_datas, ws.tmp, ws.y);
 
               ws.anderson_history.clear();
 
@@ -460,8 +461,7 @@ namespace pinocchio
             if (old_prox_value != prox_value)
             {
               PINOCCHIO_TRACY_ZONE_SCOPED_N("ADMMConstraintSolverTpl::solve - loop updateDamping");
-              ws.rhs.setConstant(prox_value);
-              G.updateDamping(ws.rhs);
+              G.updateDamping(prox_value);
               G.updateDecomposition();
               ws.delassus_decomposition_update_count++;
               old_prox_value = prox_value;
@@ -509,7 +509,7 @@ namespace pinocchio
     res.mu_prox = ws.mu_prox;
     res.delassus_decomposition_update_count = ws.delassus_decomposition_update_count;
     res.converged = abs_prec_reached || rel_prec_reached;
-    res.makeValid();
+    res.unsafe().makeValid();
 
     // the solver has run, we mark it as valid
     m_is_valid = true;
@@ -517,9 +517,9 @@ namespace pinocchio
     return res.converged;
   }
 
-  template<typename Scalar>
+  template<typename Scalar, int Options>
   template<typename DelassusDerived>
-  Scalar ADMMConstraintSolverTpl<Scalar>::computeDelassusLargestEigenvalue(
+  Scalar ADMMConstraintSolverTpl<Scalar, Options>::computeDelassusLargestEigenvalue(
     const DelassusOperatorBase<DelassusDerived> & delassus, ADMMSolverWorkspace & workspace)
   {
     const DelassusDerived & G = delassus.derived();
@@ -550,7 +550,8 @@ namespace pinocchio
     else
     {
       typedef Eigen::Matrix<Scalar, 1, 1> Vector1;
-      const Vector1 Gvec = G * Vector1::Constant(1);
+      Vector1 Gvec;
+      G.applyOnTheRight(Vector1(1), Gvec, false /*no damping*/);
       L = Gvec.coeff(0);
     }
 
@@ -558,7 +559,7 @@ namespace pinocchio
     return L;
   }
 
-  template<typename _Scalar>
+  template<typename _Scalar, int _Options>
   template<
     typename DelassusDerived,
     typename VectorLike,
@@ -566,7 +567,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  void ADMMConstraintSolverTpl<_Scalar>::retrievePrimalDualGuess(
+  void ADMMConstraintSolverTpl<_Scalar, _Options>::retrievePrimalDualGuess(
     DelassusOperatorBase<DelassusDerived> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -593,8 +594,7 @@ namespace pinocchio
     // eigenvalue of the problem.
     ws.mu_prox = settings.mu_prox;
     ws.delassus_smallest_eigenvalue = min_compliance + ws.mu_prox;
-    ws.rhs.setConstant(ws.mu_prox);
-    G.updateDamping(ws.rhs);
+    G.updateDamping(ws.mu_prox);
     G.updateDecomposition();
     ws.delassus_decomposition_update_count++;
 
@@ -634,15 +634,15 @@ namespace pinocchio
           ws.z += ws.desaxce;
         }
         ws.x = res.primal_guess.value();
-        internal::computeConeProjection(constraint_models, constraint_datas, ws.x, ws.y);
+        internal::computeConstraintSetProjection(constraint_models, constraint_datas, ws.x, ws.y);
       }
       else
       {
         // Warm-start dual variable using primal guess
         ws.x = res.primal_guess.value();
-        internal::computeConeProjection(constraint_models, constraint_datas, ws.x, ws.y);
-        G.applyOnTheRight(ws.y, ws.z);
-        ws.z.noalias() += g - ws.y.cwiseProduct(G.getDamping());
+        internal::computeConstraintSetProjection(constraint_models, constraint_datas, ws.x, ws.y);
+        G.applyOnTheRight(ws.y, ws.z, false /*no damping*/);
+        ws.z.noalias() += g;
         if (settings.solve_ncp)
         {
           // Add De Saxé shift
@@ -664,7 +664,7 @@ namespace pinocchio
         }
         ws.x = ws.z - g - ws.desaxce;
         G.solveInPlace(ws.x);
-        internal::computeConeProjection(constraint_models, constraint_datas, ws.x, ws.y);
+        internal::computeConstraintSetProjection(constraint_models, constraint_datas, ws.x, ws.y);
         // ws.y.setZero();
       }
       else
@@ -688,9 +688,9 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(ws.desaxce.size(), np);
   }
 
-  template<typename _Scalar>
+  template<typename _Scalar, int _Options>
   template<typename DelassusDerived>
-  void ADMMConstraintSolverTpl<_Scalar>::retrieveRhoGuess(
+  void ADMMConstraintSolverTpl<_Scalar, _Options>::retrieveRhoGuess(
     const DelassusOperatorBase<DelassusDerived> & delassus,
     const ADMMSolverSettings & settings,
     const ADMMSolverResult & result,

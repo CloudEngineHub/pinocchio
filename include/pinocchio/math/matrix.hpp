@@ -706,68 +706,132 @@ namespace pinocchio
    * templating, or interfacing generic matrix types while preserving shared memory.
    */
 
-  /// @brief Creates an Eigen::Map that references the data of an existing Eigen dense object.
-  ///
-  /// @tparam Matrix      The Eigen matrix type to map, e.g. Eigen::MatrixXd.
-  /// @tparam MapOptions  Alignment and storage order options (default = 0).
-  /// @tparam StrideType  Optional stride specification (default = Eigen::Stride<0,0>).
-  ///
-  /// @param plain_matrix A plain (owning) Eigen matrix whose data will be viewed.
-  /// @return An Eigen::Map object referencing the same underlying data.
-  ///
-  /// Example:
-  /// @code
-  /// Eigen::MatrixXd M = Eigen::MatrixXd::Random(3,3);
-  /// auto mapped = make_map(M);
-  /// mapped(0,0) = 0.0; // also modifies M(0,0)
-  /// @endcode
-  ///
-  template<typename Matrix, int MapOptions = 0, typename StrideType = Eigen::Stride<0, 0>>
-  Eigen::Map<Matrix, MapOptions, StrideType> make_map(Eigen::PlainObjectBase<Matrix> & plain_matrix)
+  /**
+   * @brief Creates a non-owning Eigen::Map that views the data of an owning Eigen object.
+   *
+   * @details This overload infers the `Eigen::Map` type directly from the input matrix type.
+   *          The returned map provides a mutable view, and modifications to it will change
+   *          the original `plain_matrix`.
+   *
+   * @tparam MatrixPlain The Eigen type of the input matrix (deduced).
+   * @tparam MapOptions  Alignment and storage order options for the map.
+   * @tparam StrideType  Optional stride type for advanced mapping.
+   *
+   * @param[in,out] plain_matrix A plain (owning) Eigen matrix whose data will be viewed.
+   * @return An `Eigen::Map<MatrixPlain, ...>` that provides a mutable view of the data.
+   *
+   * @warning The returned map is only valid as long as `plain_matrix` is alive. Using the
+   *          map after the original matrix is destroyed results in a dangling pointer.
+   */
+  template<typename MatrixPlain, int MapOptions = 0, typename StrideType = Eigen::Stride<0, 0>>
+  Eigen::Map<MatrixPlain, MapOptions, StrideType>
+  make_default_map(Eigen::PlainObjectBase<MatrixPlain> & plain_matrix)
   {
     return {plain_matrix.data(), plain_matrix.rows(), plain_matrix.cols()};
   }
 
-  /// @brief Reinterpret an existing Eigen::Map as a map of a different matrix type.
-  ///
-  /// @tparam OutputMatrix The output Eigen matrix type for the new map.
-  /// @tparam InputMatrix  The input Eigen matrix type the existing map references.
-  /// @tparam MapOptions   Alignment and storage order flags.
-  /// @tparam StrideType   Stride type used in the mapping.
-  ///
-  /// @param input_map     Existing Eigen::Map to reinterpret.
-  /// @return A new Eigen::Map referencing the same data with possibly different type.
-  ///
-  /// Example:
-  /// @code
-  /// Eigen::Matrix<float,6,1> v;
-  /// Eigen::Map<Eigen::Matrix<float,3,2>> mat_map(v.data());
-  /// auto re = remap<Eigen::Matrix<float,2,3>>(mat_map);
-  /// @endcode
-  ///
-  template<typename OutputMatrix, typename InputMatrix, int MapOptions, typename StrideType>
-  Eigen::Map<OutputMatrix, MapOptions, StrideType>
-  remap(Eigen::Map<InputMatrix, MapOptions, StrideType> input_map)
+  /**
+   * @brief Creates a non-owning Eigen::Map with an explicitly specified map type.
+   *
+   * @details This overload is used when the desired map type cannot be directly inferred
+   *          or needs to be different from the input matrix type (e.g., mapping a
+   *          `Matrix3d` with a `Map<MatrixXd>`).
+   *
+   * @tparam MapType      The explicit `Eigen::Map` type to be returned.
+   * @tparam MatrixPlain  The Eigen type of the input matrix (deduced).
+   *
+   * @param[in,out] plain_matrix A plain (owning) Eigen matrix whose data will be viewed.
+   * @return An object of type `MapType` that provides a mutable view of the data.
+   *
+   * @warning The returned map's lifetime is tied to the lifetime of `plain_matrix`.
+   */
+  template<typename MapType, typename MatrixPlain>
+  MapType make_map(Eigen::PlainObjectBase<MatrixPlain> & plain_matrix)
+  {
+    return {plain_matrix.data(), plain_matrix.rows(), plain_matrix.cols()};
+  }
+
+  /// @copydoc make_map(Eigen::PlainObjectBase<MatrixPlain>&)
+  /// @return A `const Eigen::Map<const MatrixPlain, ...>` providing a read-only view.
+  template<typename MatrixPlain, int MapOptions = 0, typename StrideType = Eigen::Stride<0, 0>>
+  Eigen::Map<const MatrixPlain, MapOptions, StrideType>
+  make_default_map(const Eigen::PlainObjectBase<MatrixPlain> & plain_matrix)
+  {
+    return {plain_matrix.data(), plain_matrix.rows(), plain_matrix.cols()};
+  }
+
+  /// @copydoc make_map(Eigen::PlainObjectBase<MatrixPlain>&)
+  /// @tparam ConstMapType The explicit `const Eigen::Map` type to be returned.
+  /// @return An object of type `ConstMapType` providing a read-only view.
+  template<typename ConstMapType, typename MatrixPlain>
+  ConstMapType make_map(const Eigen::PlainObjectBase<MatrixPlain> & plain_matrix)
+  {
+    return {plain_matrix.data(), plain_matrix.rows(), plain_matrix.cols()};
+  }
+
+  /**
+   * @brief Reinterprets an existing Eigen::Map as a map of a different matrix type.
+   *
+   * @details This utility is for casting an `Eigen::Map`. It creates a new map of type
+   *          `OutputMatrixMap` that points to the same memory buffer as the `input_map`.
+   *          This is useful for changing the perceived dimensions or type (e.g., fixed vs. dynamic)
+   *          of a mapped memory block.
+   *
+   * @tparam OutputMatrixMap The target `Eigen::Map` type for the new map.
+   * @tparam InputMatrix     The matrix type of the input map (deduced).
+   * @tparam MapOptions      Alignment and storage options (deduced).
+   * @tparam StrideType      Stride type of the map (deduced).
+   *
+   * @param[in] input_map The existing `Eigen::Map` to reinterpret.
+   * @return A new `Eigen::Map` of type `OutputMatrixMap` viewing the same data.
+   *
+   * @warning The validity of the returned map depends on the lifetime of the original
+   *          data buffer, not the `input_map` object.
+   */
+  template<typename OutputMatrixMap, typename InputMatrix, int MapOptions, typename StrideType>
+  OutputMatrixMap remap(Eigen::Map<InputMatrix, MapOptions, StrideType> input_map)
   {
     return {input_map.data(), input_map.rows(), input_map.cols()};
   }
 
-  /// @brief Const overload of remap for read-only Eigen::Map objects.
-  ///
-  /// @tparam OutputMatrix The desired Eigen matrix type for the reinterpreted map.
-  /// @tparam InputMatrix  The original mapped Eigen matrix type.
-  /// @tparam MapOptions   Alignment and storage order flags.
-  /// @tparam StrideType   Stride type used in the mapping.
-  ///
-  /// @param input_map     Const Eigen::Map to reinterpret.
-  /// @return A read-only Eigen::Map referencing the same memory.
-  ///
-  template<typename OutputMatrix, typename InputMatrix, int MapOptions, typename StrideType>
-  const Eigen::Map<const OutputMatrix, MapOptions, StrideType>
-  remap(const Eigen::Map<const InputMatrix, MapOptions, StrideType> input_map)
+  /// @copydoc remap(Eigen::Map<InputMatrix, MapOptions, StrideType>)
+  template<typename OutputMatrixMap, typename InputMatrix, int MapOptions, typename StrideType>
+  OutputMatrixMap remap(const Eigen::Map<const InputMatrix, MapOptions, StrideType> input_map)
   {
     return {input_map.data(), input_map.rows(), input_map.cols()};
   }
+
+  /**
+   * @brief Creates a new `Eigen::Map` from an existing one, for casting or generic code.
+   *
+   * @details This overload allows `make_map` to be used generically on inputs that might
+   *          already be an `Eigen::Map`. It acts as a type-casting wrapper around `remap`,
+   *          allowing you to change the map's matrix type.
+   *
+   * @tparam OutputMatrixMap The target `Eigen::Map` type.
+   * @tparam InputMapMatrix  The matrix type of the input map (deduced).
+   * @tparam MapOptions      Alignment and storage options (deduced).
+   * @tparam StrideType      Stride type of the map (deduced).
+   *
+   * @param[in,out] input_map An existing `Eigen::Map` object.
+   * @return A new `Eigen::Map` of type `OutputMatrixMap` viewing the same data.
+   *
+   * @warning The returned map's validity is tied to the lifetime of the original data buffer.
+   */
+  template<typename OutputMatrixMap, typename InputMapMatrix, int MapOptions, typename StrideType>
+  OutputMatrixMap make_map(Eigen::Map<InputMapMatrix, MapOptions, StrideType> & input_map)
+  {
+    return remap<OutputMatrixMap>(input_map);
+  }
+
+  /// @copydoc make_map(Eigen::Map<InputMapMatrix, MapOptions, StrideType>&)
+  template<typename OutputMatrixMap, typename InputMapMatrix, int MapOptions, typename StrideType>
+  OutputMatrixMap
+  make_map(const Eigen::Map<const InputMapMatrix, MapOptions, StrideType> & input_map)
+  {
+    return remap<OutputMatrixMap>(input_map);
+  }
+
 } // namespace pinocchio
 
 #endif // #ifndef __pinocchio_math_matrix_hpp__

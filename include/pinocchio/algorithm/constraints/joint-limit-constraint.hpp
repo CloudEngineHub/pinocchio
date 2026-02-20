@@ -13,6 +13,7 @@
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/algorithm/constraints/sets/orthant-cone.hpp"
+#include "pinocchio/algorithm/constraints/sets/orthant-cone-jordan-operation.hpp"
 
 #include "pinocchio/container/eigen-storage.hpp"
 #include "pinocchio/container/matrix-stack.hpp"
@@ -20,46 +21,62 @@
 namespace pinocchio
 {
 
+  // --------------------------------------------------------------
+  // Cast
+  // --------------------------------------------------------------
   template<typename NewScalar, typename Scalar, int Options>
   struct CastType<NewScalar, JointLimitConstraintModelTpl<Scalar, Options>>
   {
     typedef JointLimitConstraintModelTpl<NewScalar, Options> type;
   };
 
+  // --------------------------------------------------------------
+  // Traits
+  // --------------------------------------------------------------
   template<typename _Scalar, int _Options>
   struct traits<JointLimitConstraintModelTpl<_Scalar, _Options>>
   {
     // --------------------------------------------------------------
-    // Traits characterizing the constraint behaviour in CRTP
+    // Traits referencing the constraint and associated types
+    // --------------------------------------------------------------
+    typedef JointLimitConstraintModelTpl<_Scalar, _Options> ConstraintModel;
+    typedef JointLimitConstraintDataTpl<_Scalar, _Options> ConstraintData;
+
+    typedef ConstraintModel Model;
+    typedef ConstraintData Data;
+
+    // --------------------------------------------------------------
+    // Traits characterizing the constraints
     // --------------------------------------------------------------
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
-    static constexpr int Size = Eigen::Dynamic;
 
     static constexpr ConstraintFormulationLevel constraint_formulation_level =
       ConstraintFormulationLevel::POSITION_LEVEL;
     static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::BOUNDED;
 
     static constexpr bool has_baumgarte_corrector = true;
-    static constexpr bool has_compliance_member = true;
     static constexpr bool has_set = true;
+    static constexpr bool is_inequality_constraint = true;
 
     // --------------------------------------------------------------
-    // Traits referencing the constraint and associated types
+    // Traits for associated struct and sizes
     // --------------------------------------------------------------
-    typedef JointLimitConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef JointLimitConstraintDataTpl<Scalar, Options> ConstraintData;
     typedef NonNegativeOrthantConeTpl<Scalar> ConstraintSet;
+    typedef NonNegativeOrthantJordanOperationTpl<Scalar, Options> JordanOperation;
+    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
 
-    typedef ConstraintModel Model;
-    typedef ConstraintData Data;
+    static constexpr int Size = Eigen::Dynamic;
+    static constexpr int SymmetricConeSize = JordanOperation::ConeSize;
+    static constexpr int SymmetricConeScalingSize = JordanOperation::ConeScalingSize;
 
     // --------------------------------------------------------------
-    // Traits for the algorithmic methods on current state
+    // Traits that are helper for Eigen types
     // --------------------------------------------------------------
-    // Elementary types
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> ResidualVectorType;
     typedef Eigen::Matrix<Scalar, Size, Eigen::Dynamic, Options> JacobianMatrixType;
-    typedef Eigen::Matrix<Scalar, Size, 1, Options> VectorConstraintSize;
+    typedef Eigen::Matrix<Scalar, SymmetricConeSize, 1, Options> ConeVectorType;
+    typedef Eigen::Matrix<Scalar, SymmetricConeScalingSize, 1, Options> ConeScalingVectorType;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Matrix<Scalar, 1, Eigen::Dynamic, Eigen::RowMajor> RowVectorXs;
@@ -87,15 +104,6 @@ namespace pinocchio
         InputMatrixPlain::Options>
         type;
     };
-
-    // -------------------------------
-    // Traits for holded Data
-    // -------------------------------
-    typedef Eigen::Matrix<Scalar, Size, 1, Options> ComplianceVectorType;
-    typedef ComplianceVectorType & ComplianceVectorTypeRef;
-    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
-
-    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
   };
 
   template<typename _Scalar, int _Options>
@@ -104,54 +112,99 @@ namespace pinocchio
   {
   };
 
+  // --------------------------------------------------------------
+  // Unsafe wrapper
+  // --------------------------------------------------------------
+  template<typename _Scalar, int _Options>
+  struct Unsafe<JointLimitConstraintModelTpl<_Scalar, _Options>>
+  {
+    typedef JointLimitConstraintModelTpl<_Scalar, _Options> SafeSelf;
+    typedef typename SafeSelf::VectorOfSize VectorOfSize;
+
+    explicit Unsafe(SafeSelf & self)
+    : self(self)
+    {
+    }
+
+    // Non-const getter of active_idx_in_activable for custom selection
+    VectorOfSize & active_idx_in_activable()
+    {
+      return self.m_cursel_active_idx_in_activable;
+    }
+
+  protected:
+    SafeSelf & self;
+  };
+
+  // --------------------------------------------------------------
+  // Struct
+  // --------------------------------------------------------------
   template<typename _Scalar, int _Options>
   struct JointLimitConstraintModelTpl
   : JointWiseConstraintModelBase<JointLimitConstraintModelTpl<_Scalar, _Options>>
   , ConstraintModelCommonParameters<JointLimitConstraintModelTpl<_Scalar, _Options>>
   {
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
-
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
     typedef JointLimitConstraintModelTpl Self;
     typedef JointWiseConstraintModelBase<Self> Base;
+    typedef ConstraintModelCommonParameters<Self> BaseCommonParameters;
     typedef ConstraintModelBase<Self> RootBase;
 
-    typedef ConstraintModelCommonParameters<JointLimitConstraintModelTpl> BaseCommonParameters;
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
+
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
+
+    static constexpr ConstraintSizeType constraint_size_type = traits<Self>::constraint_size_type;
+
+    static constexpr bool has_baumgarte_corrector = traits<Self>::has_baumgarte_corrector;
+
+    typedef typename traits<Self>::ConstraintSet ConstraintSet;
+    typedef typename traits<Self>::JordanOperation JordanOperation;
+    typedef typename traits<Self>::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
+
+    static constexpr int Size = traits<Self>::Size;
+    static constexpr int SymmetricConeSize = traits<Self>::SymmetricConeSize;
+    static constexpr int SymmetricConeScalingSize = traits<Self>::SymmetricConeScalingSize;
+
+    typedef typename traits<Self>::ResidualVectorType ResidualVectorType;
+    typedef typename traits<Self>::JacobianMatrixType JacobianMatrixType;
+    typedef typename traits<Self>::ConeVectorType ConeVectorType;
+    typedef typename traits<Self>::ConeScalingVectorType ConeScalingVectorType;
+
+    typedef typename traits<Self>::RowVectorXs RowVectorXs;
+
+    // Friendship ---------------------------------------------------
+    template<typename NewScalar, int NewOptions>
+    friend struct JointLimitConstraintModelTpl;
 
     template<typename NewScalar, int NewOptions>
     friend struct JointLimitConstraintDataTpl;
 
-    template<typename NewScalar, int NewOptions>
-    friend struct JointLimitConstraintModelTpl;
+    friend struct Unsafe<Self>;
 
-    static const ConstraintFormulationLevel constraint_formulation_level =
-      traits<JointLimitConstraintModelTpl>::constraint_formulation_level;
-    typedef typename traits<Self>::ComplianceVectorType ComplianceVectorType;
-    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
-
-    typedef typename traits<Self>::ConstraintData ConstraintData;
-    typedef typename traits<Self>::ConstraintSet ConstraintSet;
-
-    using typename RootBase::BooleanVector;
-    using typename RootBase::EigenIndexVector;
-
-    typedef typename traits<Self>::VectorXs VectorXs;
-    typedef typename traits<Self>::RowVectorXs RowVectorXs;
-
-    typedef EigenStorageTpl<VectorXs> EigenStorageVector;
-    typedef std::vector<BooleanVector> VectorOfBooleanVector;
-    typedef std::vector<EigenIndexVector> VectofOfEigenIndexVector;
-    typedef std::vector<size_t> VectorOfSize;
-    typedef std::vector<JointIndex> JointIndexVector;
-    typedef VectorXs VectorConstraintSize;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
-      CompactTangentMap;
-
+    // Base usage ---------------------------------------------------
     using RootBase::classname;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
-    using RootBase::maxResidualSize;
     using RootBase::residualSize;
+    using typename RootBase::BooleanVector;
+    using typename RootBase::EigenIndexVector;
+
+    // Useful types ------------------------------------------------
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+    typedef EigenStorageTpl<VectorXs> EigenStorageVector;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
+      CompactTangentMap;
+    typedef std::vector<BooleanVector> VectorOfBooleanVector;
+    typedef std::vector<EigenIndexVector> VectorOfEigenIndexVector;
+    typedef std::vector<size_t> VectorOfSize;
+    typedef std::vector<JointIndex> JointIndexVector;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -183,6 +236,12 @@ namespace pinocchio
       return static_cast<const BaseCommonParameters &>(*this);
     }
 
+    // Unsafe API --------------------
+    Unsafe<Self> unsafe()
+    {
+      return Unsafe<Self>(*this);
+    }
+
     // Constructors ------------------
 
     /// \brief Default constructor
@@ -190,55 +249,71 @@ namespace pinocchio
     {
     }
 
-    /// \brief Copy constructor
-    JointLimitConstraintModelTpl(const JointLimitConstraintModelTpl & other)
+    /// \brief Constructor from model only.
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    JointLimitConstraintModelTpl(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
     {
-      *this = other;
-    }
-
-    /// \brief Constructor from model and activable joints.
-    /// Activable joints are joints that can become active/non-active
-    /// depending on their position w.r.t the joint limit margin.
-    template<template<typename, int> class JointCollectionTpl>
-    JointLimitConstraintModelTpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const JointIndexVector & activable_joints)
-    {
+      size_t n_joints = model.joints.size();
+      JointIndexVector activable_joints;
+      activable_joints.reserve(n_joints);
+      for (size_t i = 1; i < n_joints; ++i)
+      {
+        activable_joints.push_back(static_cast<JointIndex>(i));
+      }
       init(
         model, activable_joints, model.lowerPositionLimit, model.upperPositionLimit,
         model.positionLimitMargin);
     }
 
-    /// \brief Constructor from model, activable joints, lower and upper joint limits.
-    /// \note lb and ub must be of size nq. They are the bounds of the entire model.
-    template<
-      template<typename, int> class JointCollectionTpl,
-      typename VectorLowerConfiguration,
-      typename VectorUpperConfiguration>
-    JointLimitConstraintModelTpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const JointIndexVector & activable_joints,
-      const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
-      const Eigen::MatrixBase<VectorUpperConfiguration> & ub)
-    {
-      init(model, activable_joints, lb, ub, model.positionLimitMargin);
-    }
-
     /// \brief Constructor from model, activable joints, lower, upper and margin joint limits.
     /// \note lb, ub and margin must be of size nq. They are the bounds of the entire model.
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename VectorLowerConfiguration,
       typename VectorUpperConfiguration,
       typename VectorMarginConfiguration>
     JointLimitConstraintModelTpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndexVector & activable_joints,
       const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
       const Eigen::MatrixBase<VectorUpperConfiguration> & ub,
       const Eigen::MatrixBase<VectorMarginConfiguration> & margin)
+    : Base(model)
     {
       init(model, activable_joints, lb, ub, margin);
+    }
+
+    /// \brief Constructor from model, activable joints, lower and upper joint limits.
+    /// \note lb and ub must be of size nq. They are the bounds of the entire model.
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename VectorLowerConfiguration,
+      typename VectorUpperConfiguration>
+    JointLimitConstraintModelTpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndexVector & activable_joints,
+      const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
+      const Eigen::MatrixBase<VectorUpperConfiguration> & ub)
+    : JointLimitConstraintModelTpl(model, activable_joints, lb, ub, model.positionLimitMargin)
+    {
+    }
+
+    /// \brief Constructor from model and activable joints.
+    /// Activable joints are joints that can become active/non-active
+    /// depending on their position w.r.t the joint limit margin.
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    JointLimitConstraintModelTpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndexVector & activable_joints)
+    : JointLimitConstraintModelTpl(
+        model,
+        activable_joints,
+        model.lowerPositionLimit,
+        model.upperPositionLimit,
+        model.positionLimitMargin)
+    {
     }
 
     // Operators ---------------------
@@ -251,7 +326,7 @@ namespace pinocchio
       ReturnType res;
       Base::cast(res);
       BaseCommonParameters::template cast<NewScalar>(res);
-
+      // Constraint definition related
       res.m_selected_joints = m_selected_joints;
       res.m_selected_row_sparsity_pattern = m_selected_row_sparsity_pattern;
       res.m_selected_row_indexes = m_selected_row_indexes;
@@ -260,12 +335,18 @@ namespace pinocchio
       res.m_selected_joint_idx_vs = m_selected_joint_idx_vs;
       res.m_nq_reduce = m_nq_reduce;
       res.m_max_of_nvs = m_max_of_nvs;
+      res.m_lower_activable_residual_size = m_lower_activable_residual_size;
       res.m_activable_idx_in_selected = m_activable_idx_in_selected;
       res.m_activable_idx_qs = m_activable_idx_qs;
       res.m_activable_idx_qs_reduce = m_activable_idx_qs_reduce;
       res.m_activable_position_limit = m_activable_position_limit.template cast<NewScalar>();
       res.m_activable_position_margin = m_activable_position_margin.template cast<NewScalar>();
-      res.m_lower_max_residual_size = m_lower_max_residual_size;
+      // Selection related
+      res.m_cursel_active_idx_in_activable = m_cursel_active_idx_in_activable;
+      res.m_cursel_lower_active_residual_size = m_cursel_lower_active_residual_size;
+      res.m_cursel_active_idx_in_selected = m_cursel_active_idx_in_selected;
+      res.m_cursel_active_idx_qs = m_cursel_active_idx_qs;
+      res.m_cursel_active_idx_qs_reduce = m_cursel_active_idx_qs_reduce;
 
       return res;
     }
@@ -275,7 +356,7 @@ namespace pinocchio
     ///
     /// \param[in] other Other JointLimitConstraintModelTpl to compare with.
     ///
-    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
+    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributes
     /// must be the same).
     ///
     bool operator==(const JointLimitConstraintModelTpl & other) const
@@ -288,12 +369,17 @@ namespace pinocchio
              && m_selected_joint_nvs == other.m_selected_joint_nvs
              && m_selected_joint_idx_vs == other.m_selected_joint_idx_vs
              && m_nq_reduce == other.m_nq_reduce && m_max_of_nvs == other.m_max_of_nvs
+             && m_lower_activable_residual_size == other.m_lower_activable_residual_size
              && m_activable_idx_in_selected == other.m_activable_idx_in_selected
              && m_activable_idx_qs == other.m_activable_idx_qs
              && m_activable_idx_qs_reduce == other.m_activable_idx_qs_reduce
              && m_activable_position_limit == other.m_activable_position_limit
              && m_activable_position_margin == other.m_activable_position_margin
-             && m_lower_max_residual_size == other.m_lower_max_residual_size;
+             && m_cursel_active_idx_in_activable == other.m_cursel_active_idx_in_activable
+             && m_cursel_lower_active_residual_size == other.m_cursel_lower_active_residual_size
+             && m_cursel_active_idx_in_selected == other.m_cursel_active_idx_in_selected
+             && m_cursel_active_idx_qs == other.m_cursel_active_idx_qs
+             && m_cursel_active_idx_qs_reduce == other.m_cursel_active_idx_qs_reduce;
     }
 
     /// \brief Comparison operator
@@ -302,31 +388,7 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    /// \brief Copy operator
-    JointLimitConstraintModelTpl & operator=(const JointLimitConstraintModelTpl & other)
-    {
-      if (this != &other)
-      {
-        base_common_parameters() = other.base_common_parameters();
-        m_selected_joints = other.m_selected_joints;
-        m_selected_row_sparsity_pattern = other.m_selected_row_sparsity_pattern;
-        m_selected_row_indexes = other.m_selected_row_indexes;
-        m_selected_joint_nqs = other.m_selected_joint_nqs;
-        m_selected_joint_nvs = other.m_selected_joint_nvs;
-        m_selected_joint_idx_vs = other.m_selected_joint_idx_vs;
-        m_nq_reduce = other.m_nq_reduce;
-        m_max_of_nvs = other.m_max_of_nvs;
-        m_activable_idx_in_selected = other.m_activable_idx_in_selected;
-        m_activable_idx_qs = other.m_activable_idx_qs;
-        m_activable_idx_qs_reduce = other.m_activable_idx_qs_reduce;
-        m_activable_position_limit = other.m_activable_position_limit;
-        m_activable_position_margin = other.m_activable_position_margin;
-        m_lower_max_residual_size = other.m_lower_max_residual_size;
-      }
-      return *this;
-    }
-
-    /// Specialized accessors --------
+    /// Specialized accessors for constraints definition --------
 
     /// \copydoc m_selected_joints
     const JointIndexVector & getSelectedJoints() const
@@ -353,67 +415,88 @@ namespace pinocchio
     {
       return m_activable_position_margin;
     }
+
+    // m_selected_row_sparsity_pattern, m_selected_row_indexes,
+    // m_selected_joint_nqs, m_selected_joint_nvs, m_selected_joint_idx_vs,
+    // m_activable_idx_in_selected, m_activable_idx_qs, m_activable_idx_qs_reduce
+    // m_cursel_active_idx_in_selected, m_cursel_active_idx_qs, m_cursel_active_idx_qs_reduce
+    // not exposed as they are only used privately.
+
+    /// Specialized methods for lower and upper sizes
+
     /// \brief Return the maximum residual size of constraints that are lower limits
-    int lowerMaxResidualSize() const
+    template<ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+    int lowerResidualSize(ConstraintSelectionTag<Sel> sel = CurrentSelection()) const
     {
-      return m_lower_max_residual_size;
+      PINOCCHIO_UNUSED_VARIABLE(sel);
+      if constexpr (std::is_same_v<ConstraintSelectionTag<Sel>, MaximalSelection>)
+      {
+        return m_lower_activable_residual_size;
+      }
+      else // Current selection
+      {
+        return m_cursel_lower_active_residual_size;
+      }
     }
+
     /// \brief Return the maximum residual size of constraints that are upper limits
-    int upperMaxResidualSize() const
+    template<ConstraintSelectionType Sel = ConstraintSelectionType::CURRENT>
+    int upperResidualSize(ConstraintSelectionTag<Sel> sel = CurrentSelection()) const
     {
-      return maxResidualSize() - lowerMaxResidualSize();
-    }
-    /// \brief Return the residual size of constraints that are lower limits given the state of the
-    /// constraint given by cdata
-    int lowerResidualSize(const ConstraintData & cdata) const
-    {
-      return cdata.lower_residual_size;
-    }
-    /// \brief Return the residual size of constraints that are upper limits given the state of the
-    /// constraint given by cdata
-    int upperResidualSize(const ConstraintData & cdata) const
-    {
-      return residualSize(cdata) - lowerResidualSize(cdata);
+      return residualSize(sel) - lowerResidualSize(sel);
     }
 
-    VectorOfSize getActiveIdxInActivable(const ConstraintData & cdata) const
-    {
-      return cdata.active_idx_in_activable;
-    }
+    /// Specialized methods for constraints definition --------
 
-    /// \brief Set activable_[position_limit|margin] of size maxResidualSize from lb, ub, margin of
-    /// size model.nq
+    /// \brief Set activable_[position_limit|margin] of size residualSize(MaximalSelection) from lb,
+    /// ub, margin of size model.nq
     /// \note Expect a limit or margin vector of size model.nq
-    template<typename VectorLike1, typename VectorLike2, typename VectorLike3>
+    template<
+      typename VectorLike1,
+      typename VectorLike2,
+      typename VectorLike3,
+      ConstraintSelectionType Sel = ConstraintSelectionType::MAXIMAL>
     void setPositionLimitAndMargin(
       const Eigen::MatrixBase<VectorLike1> & lb,
       const Eigen::MatrixBase<VectorLike2> & ub,
-      const Eigen::MatrixBase<VectorLike3> & margin)
-    {
-      // Fill bound limit and margin for lower and upper for activable constraints
-      m_activable_position_limit = VectorXs::Zero(Eigen::Index(maxResidualSize()));
-      m_activable_position_margin = VectorXs::Zero(Eigen::Index(maxResidualSize()));
-      Eigen::Index constraint_id = 0;
-      for (; constraint_id < lowerMaxResidualSize(); ++constraint_id)
-      {
-        const Eigen::Index idx_q = m_activable_idx_qs[static_cast<size_t>(constraint_id)];
-        m_activable_position_limit[constraint_id] = lb[idx_q];
-        m_activable_position_margin[constraint_id] = margin[idx_q];
-        assert(check_expression_if_real<Scalar>(margin[idx_q] >= 0));
-      }
-      for (; constraint_id < maxResidualSize(); ++constraint_id)
-      {
-        const Eigen::Index idx_q = m_activable_idx_qs[static_cast<size_t>(constraint_id)];
-        m_activable_position_limit[constraint_id] = ub[idx_q];
-        m_activable_position_margin[constraint_id] = margin[idx_q];
-        assert(check_expression_if_real<Scalar>(margin[idx_q] >= 0));
-      }
-    }
+      const Eigen::MatrixBase<VectorLike3> & margin,
+      ConstraintSelectionTag<Sel> sel = MaximalSelection());
 
-    // m_selected_row_sparsity_pattern, m_selected_row_indexes,
-    // m_activable_idx_in_selected, m_activable_idx_qs_reduce
-    // not exposed as they only privately allow getRowActiv[e/able]SparsityPattern and
-    // getRowActiv[e/able]Indexes
+    /// \brief Reset the current selection to the maximal selection.
+    ///
+    /// This method sets the active constraint selection to include all activable constraints,
+    /// effectively making the current selection equal to the maximal selection. After calling
+    /// this method, residualSize(CurrentSelection()) == residualSize(MaximalSelection()).
+    ///
+    /// \note This is useful when you want to consider all possible joint limit constraints
+    /// without any filtering based on the current configuration.
+    void makeSelectionMaximal();
+
+    ///
+    /// \brief Update the current selection to include only constraints that are near their limits.
+    ///
+    /// This method selects constraints where the joint configuration is within the margin distance
+    /// from either the lower or upper position limit. Constraints outside this margin are excluded
+    /// from the current selection.
+    ///
+    /// For lower bounds: activates if q[idx] - lower_limit <= margin
+    /// For upper bounds: activates if upper_limit - q[idx] <= margin
+    ///
+    /// \param[in] q The joint configuration vector of size model.nq used to evaluate proximity
+    ///              to joint limits.
+    ///
+    /// \note This method updates the current selection state (m_cursel_* members) and affects
+    ///       the result of residualSize(CurrentSelection()).
+    /// \note After calling this method, only constraints near their limits will be active.
+    /// \note To restore all constraints, call makeSelectionMaximal().
+    ///
+    template<typename VectorLike>
+    void makeSelectionFilteredByLimitProximity(const Eigen::MatrixBase<VectorLike> & q);
+
+    const VectorOfSize & active_idx_in_activable() const
+    {
+      return m_cursel_active_idx_in_activable;
+    }
 
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
@@ -439,21 +522,83 @@ namespace pinocchio
       return ConstraintData(*this);
     }
 
-    // Size Management ---------------
+    // Sizes -------------------------
 
-    /// \copydoc RootBase::maxResidualSizeImpl
-    int maxResidualSizeImpl() const
+    /// \copydoc RootBase::residualSizeImpl
+    template<ConstraintSelectionType Sel>
+    int residualSizeImpl(ConstraintSelectionTag<Sel> sel) const
     {
-      return int(m_activable_idx_in_selected.size());
+      PINOCCHIO_UNUSED_VARIABLE(sel);
+      if constexpr (std::is_same_v<ConstraintSelectionTag<Sel>, MaximalSelection>)
+      {
+        return int(m_activable_idx_in_selected.size());
+      }
+      else // CurrentSelection
+      {
+        return int(m_cursel_active_idx_in_selected.size());
+      }
     }
 
-    // Methods for algorithms --------
-
-    /// \copydoc RootBase::residualSize
-    int residualSizeImpl(const ConstraintData & cdata) const
+    /// \copydoc RootBase::symmetricConeResidualSize
+    template<ConstraintSelectionType Sel>
+    int symmetricConeResidualSizeImpl(ConstraintSelectionTag<Sel> sel) const
     {
-      return int(cdata.active_idx_in_selected.size());
+      return residualSize(sel);
     }
+
+    /// \copydoc RootBase::symmetricConeResidualScalingSize
+    template<ConstraintSelectionType Sel>
+    int symmetricConeResidualScalingSizeImpl(ConstraintSelectionTag<Sel> sel) const
+    {
+      return residualSize(sel);
+    }
+
+    // Hyperparameters handling -----------
+
+    /// \brief Set the compliance
+    template<typename VectorLike, ConstraintSelectionType Sel>
+    void
+    setComplianceImpl(const Eigen::MatrixBase<VectorLike> & vector, ConstraintSelectionTag<Sel> sel)
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(vector.size()) == residualSize(sel));
+      if constexpr (std::is_same_v<ConstraintSelectionTag<Sel>, MaximalSelection>)
+      {
+        m_compliance = vector;
+      }
+      else // Current selection
+      {
+        for (Eigen::Index row_id = 0; row_id < residualSize(); ++row_id)
+        {
+          const Eigen::Index idx =
+            Eigen::Index(m_cursel_active_idx_in_activable[static_cast<size_t>(row_id)]);
+          m_compliance[idx] = vector[row_id];
+        }
+      }
+    }
+
+    /// \copydoc RootBase::retrieveCompliance
+    template<typename VectorLike, ConstraintSelectionType Sel>
+    void retrieveComplianceImpl(
+      const Eigen::MatrixBase<VectorLike> & res_, ConstraintSelectionTag<Sel> sel) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(res_.size()) == residualSize(sel));
+      auto res = res_.const_cast_derived();
+      if constexpr (std::is_same_v<ConstraintSelectionTag<Sel>, MaximalSelection>)
+      {
+        res = m_compliance;
+      }
+      else // Current selection
+      {
+        for (Eigen::Index row_id = 0; row_id < residualSize(); ++row_id)
+        {
+          const Eigen::Index idx =
+            Eigen::Index(m_cursel_active_idx_in_activable[static_cast<size_t>(row_id)]);
+          res[row_id] = m_compliance[idx];
+        }
+      }
+    }
+
+    // Methods for algorithms -------------
 
     /// \copydoc RootBase::set
     ConstraintSet setImpl(const ConstraintData & cdata) const
@@ -462,106 +607,103 @@ namespace pinocchio
       return ConstraintSet();
     }
 
-    /// \copydoc RootBase::retrieveCompliance
-    template<typename VectorLike>
-    void retrieveComplianceImpl(
-      const ConstraintData & cdata, const Eigen::MatrixBase<VectorLike> & res_) const
-    {
-      auto res = res_.const_cast_derived();
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(res.size()) == residualSize(cdata));
-      for (Eigen::Index row_id = 0; row_id < residualSize(cdata); ++row_id)
-      {
-        const Eigen::Index idx =
-          Eigen::Index(cdata.active_idx_in_activable[static_cast<size_t>(row_id)]);
-        res[row_id] = m_compliance[idx];
-      }
-    }
-
-    /// \copydoc RootBase::getRowSparsityPattern
-    template<template<typename, int> class JointCollectionTpl>
-    const BooleanVector & getRowSparsityPatternImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::Index row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize(cdata));
-      PINOCCHIO_UNUSED_VARIABLE(model);
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
-      return m_selected_row_sparsity_pattern[idx];
-    }
-
-    /// \copydoc RootBase::getRowIndexes
-    template<template<typename, int> class JointCollectionTpl>
-    const EigenIndexVector & getRowIndexesImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::Index row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize(cdata));
-      PINOCCHIO_UNUSED_VARIABLE(model);
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      const size_t idx = cdata.active_idx_in_selected[static_cast<size_t>(row_id)];
-      return m_selected_row_indexes[idx];
-    }
-
     /// \copydoc RootBase::calc
     /// \note the constraint residual is computed based on the model's lower/upper position limits,
     /// joint limit margin and data.q_in.
     /// \note it calls computeResidualAndSelectActiveConstraints which select the constraints to
     /// consider
-    template<template<typename, int> class JointCollectionTpl>
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     void calcImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       ConstraintData & cdata) const;
 
     /// \copydoc RootBase::jacobian
-    template<template<typename, int> class JointCollectionTpl, typename JacobianMatrix>
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename JacobianMatrix>
     void jacobianImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<JacobianMatrix> & _jacobian_matrix) const;
 
+    /// \copydoc RootBase::getRowSparsityPattern
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    const BooleanVector & getRowSparsityPatternImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize());
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+      const size_t idx = m_cursel_active_idx_in_selected[static_cast<size_t>(row_id)];
+      return m_selected_row_sparsity_pattern[idx];
+    }
+
+    /// \copydoc RootBase::getRowIndexes
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    const EigenIndexVector & getRowIndexesImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const Eigen::Index row_id) const
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize());
+      PINOCCHIO_UNUSED_VARIABLE(model);
+      PINOCCHIO_UNUSED_VARIABLE(data);
+      PINOCCHIO_UNUSED_VARIABLE(cdata);
+      const size_t idx = m_cursel_active_idx_in_selected[static_cast<size_t>(row_id)];
+      return m_selected_row_indexes[idx];
+    }
+
     /// \copydoc RootBase::jacobianMatrixProduct
-    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
+    template<
+      int OtherOptions,
+      typename InputMatrix,
+      template<typename, int> class JointCollectionTpl>
     typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
     jacobianMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat) const
     {
       typedef typename traits<Self>::template JacobianMatrixProductReturnType<InputMatrix>::type
         ReturnType;
-      ReturnType res(residualSize(cdata), mat.cols());
+      ReturnType res(residualSize(), mat.cols());
       jacobianMatrixProduct(model, data, cdata, mat.derived(), res);
       return res;
     }
 
     /// \copydoc RootBase::jacobianMatrixProduct
     template<
+      int OtherOptions,
       typename InputMatrix,
       typename OutputMatrix,
       template<typename, int> class JointCollectionTpl,
-      AssignmentOperatorType op = SETTO>
+      AssignmentOperatorType op>
     void jacobianMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat,
       const Eigen::MatrixBase<OutputMatrix> & _res,
-      AssignmentOperatorTag<op> aot = SetTo()) const;
+      AssignmentOperatorTag<op> aot) const;
 
     /// \copydoc RootBase::jacobianTransposeMatrixProduct
-    template<typename InputMatrix, template<typename, int> class JointCollectionTpl>
+    template<
+      int OtherOptions,
+      typename InputMatrix,
+      template<typename, int> class JointCollectionTpl>
     typename traits<Self>::template JacobianTransposeMatrixProductReturnType<InputMatrix>::type
     jacobianTransposeMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat) const
     {
@@ -575,53 +717,72 @@ namespace pinocchio
 
     /// \copydoc RootBase::jacobianTransposeMatrixProduct
     template<
+      int OtherOptions,
       typename InputMatrix,
       typename OutputMatrix,
       template<typename, int> class JointCollectionTpl,
-      AssignmentOperatorType op = SETTO>
+      AssignmentOperatorType op>
     void jacobianTransposeMatrixProductImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<InputMatrix> & mat,
       const Eigen::MatrixBase<OutputMatrix> & _res,
-      AssignmentOperatorTag<op> aot = SetTo()) const;
+      AssignmentOperatorTag<op> aot) const;
 
     /// \copydoc Base::mapConstraintForcesToJointTorques
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename ConstraintForcesLike,
       typename JointTorquesLike>
     void mapConstraintForceToJointTorquesImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<ConstraintForcesLike> & constraint_forces,
       const Eigen::MatrixBase<JointTorquesLike> & joint_torques) const;
 
     /// \copydoc Base::mapJointMotionsToConstraintMotions
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename JointMotionsLike,
       typename ConstraintMotionsLike>
     void mapJointMotionsToConstraintMotionImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<JointMotionsLike> & joint_motions,
       const Eigen::MatrixBase<ConstraintMotionsLike> & constraint_motions) const;
 
     /// \copydoc RootBase::appendCouplingConstraintInertias
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename VectorNLike,
       ReferenceFrame rf>
     void appendCouplingConstraintInertiasImpl(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      DataTpl<Scalar, Options, JointCollectionTpl> & data,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
       const Eigen::MatrixBase<VectorNLike> & diagonal_constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const;
+
+    /// \copydoc RootBase::appendCouplingConstraintInertias
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename MatrixOrMap,
+      typename MapEnable,
+      ReferenceFrame rf>
+    void appendCouplingConstraintInertiasImpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
+      const ConstraintData & cdata,
+      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
+      const ReferenceFrameTag<rf> reference_frame,
+      std::size_t & inner_constraint_id) const;
 
   protected:
     // ------------------------------
@@ -631,28 +792,23 @@ namespace pinocchio
     /// \brief Initialize the constraint model with model, activable joints, lower, upper and margin
     /// of joint limits.
     template<
+      int OtherOptions,
       template<typename, int> class JointCollectionTpl,
       typename VectorLowerConfiguration,
       typename VectorUpperConfiguration,
       typename VectorMarginConfiguration>
     void init(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndexVector & activable_joints,
       const Eigen::MatrixBase<VectorLowerConfiguration> & lb,
       const Eigen::MatrixBase<VectorUpperConfiguration> & ub,
       const Eigen::MatrixBase<VectorMarginConfiguration> & margin);
 
-    /// \brief Resize the constraint if needed at the current state given by data and store the
-    /// results in cdata.
-    template<template<typename, int> class JointCollectionTpl>
-    void computeResidualAndActiveConstraints(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      ConstraintData & cdata) const;
-
     // ------------------------------
     // MEMBERS
     // ------------------------------
+
+    // Maximal selection definition ---------------------------------------------------
 
     /// \brief List of selected joints, i.e. joint can that can be indeed reach its bounds.
     /// size = nActivableJoints
@@ -661,7 +817,7 @@ namespace pinocchio
     /// \brief Sparsity pattern for each selected joints.
     /// size = nActivableJoints
     VectorOfBooleanVector m_selected_row_sparsity_pattern;
-    VectofOfEigenIndexVector m_selected_row_indexes;
+    VectorOfEigenIndexVector m_selected_row_indexes;
 
     /// \brief Vector of size for selected joints
     std::vector<int> m_selected_joint_nqs, m_selected_joint_nvs, m_selected_joint_idx_vs;
@@ -674,51 +830,78 @@ namespace pinocchio
     /// m_max_of_nvs = MAX(j in m_selected_joints) j.nv
     int m_max_of_nvs;
 
+    /// \brief number of activable lower bound limits. By convention for i=0..lmrs lower limit and
+    /// i=lmrs..mrs upper limits.
+    // m_lower_activable_residual_size <= residualSize(MaximalSelection())
+    int m_lower_activable_residual_size;
+
     /// \brief give for each activable constraint the index of related joint in m_selected_joints
-    /// size = maxResidualSize
+    /// size = residualSize(MaximalSelection())
     VectorOfSize m_activable_idx_in_selected;
 
     /// \brief give for each activable constraint the index in [0, Nq] for the activable constraint
-    /// size = maxResidualsize
+    /// size = residualSize(MaximalSelection())
     EigenIndexVector m_activable_idx_qs;
 
     /// \brief give for each activable constraint the index in [0, Nqred] for the activable
-    /// constraint size = maxResidualsize
+    /// size = residualSize(MaximalSelection())
     EigenIndexVector m_activable_idx_qs_reduce;
 
     /// \brief Limit value of lower and upper bound in the constraint (size size()=lsize+usize)
-    /// size = maxResidualsize
+    /// size = residualSize(MaximalSelection())
     VectorXs m_activable_position_limit;
 
     /// \brief Margin value of lower and upper bound in the constraint (size size()=lsize+usize)
-    /// size = maxResidualsize
+    /// size = residualSize(MaximalSelection())
     VectorXs m_activable_position_margin;
-
-    /// \brief number of activable lower bound limits. By convention for i=0..lmrs lower limit and
-    /// i=lmrs..mrs upper limits. m_lower_max_residual_size <= maxResidualsize
-    int m_lower_max_residual_size;
 
     /// \brief Baumgarte correction parameters of the constraint model
     using BaseCommonParameters::m_baumgarte_parameters;
 
     /// \brief Compliance of the constraint model
-    /// size = maxResidualsize
+    /// size = residualSize(MaximalSelection())
     using BaseCommonParameters::m_compliance;
-  };
+
+    // Current selection definition ---------------------------------------------------
+
+    /// \brief Vector containing the indexes of the activable constraints that are currently used.
+    /// The size of the vector denoted, residualSize, is given by
+    /// cmodel.residualSize(CurrentSelection()) each element have value <
+    /// cmodel.residualSize(MaximalSelection()) This vector totally define the state of the
+    /// constraint size = residualSize(CurrentSelection())
+    VectorOfSize m_cursel_active_idx_in_activable;
+
+    /// \brief number of active lower bound limits activable (<= residualSize)
+    /// It is the number of element in active_idx_in_activable that are <
+    /// m_lower_activable_residual_size
+    // m_cursel_lower_active_residual_size <= m_lower_activable_residual_size
+    // m_cursel_lower_active_residual_size <= residualSize(CurrentSelection())
+    int m_cursel_lower_active_residual_size;
+
+    /// \brief Proxys to avoid calculus in algorithmic methods
+    /// size = residualSize(CurrentSelection())
+    VectorOfSize m_cursel_active_idx_in_selected;
+    EigenIndexVector m_cursel_active_idx_qs;
+    EigenIndexVector m_cursel_active_idx_qs_reduce;
+  }; // struct JointLimitConstraintModelTpl
 
   template<typename _Scalar, int _Options>
   struct JointLimitConstraintDataTpl
   : ConstraintDataBase<JointLimitConstraintDataTpl<_Scalar, _Options>>
   {
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
-    typedef ConstraintDataBase<JointLimitConstraintDataTpl> Base;
-    typedef std::vector<JointIndex> JointIndexVector;
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
+    typedef JointLimitConstraintDataTpl Self;
+    typedef ConstraintDataBase<Self> Base;
 
-    template<typename NewScalar, int NewOptions>
-    friend struct JointLimitConstraintModelTpl;
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
 
-    typedef JointLimitConstraintModelTpl<Scalar, Options> ConstraintModel;
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
 
     typedef typename ConstraintModel::VectorXs VectorXs;
     typedef typename ConstraintModel::RowVectorXs RowVectorXs;
@@ -727,13 +910,17 @@ namespace pinocchio
     typedef typename ConstraintModel::BooleanVector BooleanVector;
     typedef typename ConstraintModel::EigenIndexVector EigenIndexVector;
     typedef typename ConstraintModel::VectorOfSize VectorOfSize;
+    typedef typename ConstraintModel::JointIndexVector JointIndexVector;
 
-    typedef std::vector<BooleanVector> VectorOfBooleanVector;
-    typedef std::vector<EigenIndexVector> VectofOfEigenIndexVector;
+    // Friendship ---------------------------------------------------
+    template<typename NewScalar, int NewOptions>
+    friend struct JointLimitConstraintModelTpl;
 
-    typedef MatrixStackTpl<RowVectorXs> RowVectorStack;
-
+    // Base usage ---------------------------------------------------
     using Base::classname;
+
+    // Useful types ------------------------------------------------
+    typedef MatrixStackTpl<RowVectorXs> RowVectorStack;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -757,72 +944,74 @@ namespace pinocchio
 
     /// \brief Default constructor
     JointLimitConstraintDataTpl()
-    : constraint_residual(constraint_residual_storage.map())
     {
     }
 
     /// \brief Copy constructor
     JointLimitConstraintDataTpl(const JointLimitConstraintDataTpl & other)
-    : constraint_residual(constraint_residual_storage.map())
+    : constraint_residual_storage(other.constraint_residual_storage)
+    , compact_tangent_map(other.compact_tangent_map)
+    , rowise_tangent_map(other.rowise_tangent_map)
     {
-      *this = other;
     }
 
-    /// \brief Constructor from a constraint_model
-    explicit JointLimitConstraintDataTpl(const ConstraintModel & constraint_model)
-    : activable_constraint_residual(constraint_model.maxResidualSize())
-    , constraint_residual_storage(constraint_model.maxResidualSize())
-    , constraint_residual(constraint_residual_storage.map())
-    , compact_tangent_map(
-        CompactTangentMap::Zero(constraint_model.getNqReduce(), constraint_model.getMaxOfNvs()))
-    , rowise_tangent_map(
-        static_cast<size_t>(constraint_model.getNqReduce()),
-        static_cast<size_t>(constraint_model.getMaxOfNvs()))
+    /// \brief Move constructor
+    JointLimitConstraintDataTpl(JointLimitConstraintDataTpl && other)
+    : constraint_residual_storage(other.constraint_residual_storage)
+    , compact_tangent_map(std::move(other.compact_tangent_map))
+    , rowise_tangent_map(other.rowise_tangent_map)
     {
-      // Allocate the maximum size for the dynamic quantities
-      const size_t max_residual_size = static_cast<size_t>(constraint_model.maxResidualSize());
-      active_idx_in_activable.reserve(max_residual_size);
-      active_idx_in_selected.reserve(max_residual_size);
-      active_idx_qs_reduce.reserve(max_residual_size);
+    }
 
-      // By default all activable constraint are not active
-      lower_residual_size = 0;
-      constraint_residual_storage.resize(0);
-      assert(
-        constraint_model.residualSize(*this) == constraint_model.lowerResidualSize(*this)
-        == constraint_model.upperResidualSize(*this) == 0);
-
+    /// \brief Constructor from a constraint model
+    explicit JointLimitConstraintDataTpl(const ConstraintModel & cmodel)
+    : constraint_residual_storage(cmodel.residualSize(MaximalSelection()))
+    , compact_tangent_map(CompactTangentMap::Zero(cmodel.m_nq_reduce, cmodel.m_max_of_nvs))
+    , rowise_tangent_map(
+        static_cast<size_t>(cmodel.m_nq_reduce), static_cast<size_t>(cmodel.m_max_of_nvs))
+    {
       // Allocate slices for rowise_tangent_map
-      for (size_t sel_id = 0; sel_id < constraint_model.m_selected_joints.size(); sel_id++)
+      for (size_t sel_id = 0; sel_id < cmodel.m_selected_joints.size(); sel_id++)
       {
-        const int joint_nq = constraint_model.m_selected_joint_nqs[sel_id];
-        const int joint_nv = constraint_model.m_selected_joint_nvs[sel_id];
+        const int joint_nq = cmodel.m_selected_joint_nqs[sel_id];
+        const int joint_nv = cmodel.m_selected_joint_nvs[sel_id];
         for (int i = 0; i < joint_nq; ++i)
           rowise_tangent_map.push_back(1, joint_nv);
       }
 
-      assert(rowise_tangent_map.size() == static_cast<size_t>(constraint_model.getNqReduce()));
+      assert(rowise_tangent_map.size() == static_cast<size_t>(cmodel.m_nq_reduce));
     }
 
     // Operators ---------------------
 
+    /// Custom copy operator because of the ref. Thus we apply rule of five
     /// \brief Copy operator
     JointLimitConstraintDataTpl & operator=(const JointLimitConstraintDataTpl & other)
     {
       if (this != &other)
       {
-        active_idx_in_activable = other.active_idx_in_activable;
-        active_idx_in_selected = other.active_idx_in_selected;
-        active_idx_qs_reduce = other.active_idx_qs_reduce;
-        lower_residual_size = other.lower_residual_size;
-        activable_constraint_residual = other.activable_constraint_residual;
         constraint_residual_storage = other.constraint_residual_storage;
-        constraint_residual = constraint_residual_storage.map();
         compact_tangent_map = other.compact_tangent_map;
         rowise_tangent_map = other.rowise_tangent_map;
       }
       return *this;
     }
+
+    /// \brief Move assignment operator
+    JointLimitConstraintDataTpl & operator=(JointLimitConstraintDataTpl && other)
+    {
+      if (this != &other)
+      {
+        constraint_residual_storage =
+          other.constraint_residual_storage; // Move not defined for EigenStorage
+        compact_tangent_map = std::move(other.compact_tangent_map);
+        rowise_tangent_map = other.rowise_tangent_map; // Move not defined for MatrixStack
+      }
+      return *this;
+    }
+
+    /// \brief Default destructor
+    ~JointLimitConstraintDataTpl() = default;
 
     /// \brief Comparison operator
     bool operator==(const JointLimitConstraintDataTpl & other) const
@@ -830,12 +1019,7 @@ namespace pinocchio
       if (this == &other)
         return true;
       return (
-        active_idx_in_activable == other.active_idx_in_activable
-        && active_idx_in_selected == other.active_idx_in_selected
-        && active_idx_qs_reduce == other.active_idx_qs_reduce
-        && lower_residual_size == other.lower_residual_size
-        && activable_constraint_residual == other.activable_constraint_residual
-        && constraint_residual_storage == other.constraint_residual_storage
+        constraint_residual_storage == other.constraint_residual_storage
         && constraint_residual == other.constraint_residual
         && compact_tangent_map == other.compact_tangent_map
         && rowise_tangent_map == other.rowise_tangent_map);
@@ -870,43 +1054,17 @@ namespace pinocchio
     // ------------------------------
     // note: data is always public - use at your own risk
 
-    /// \brief Vector containing the indexes of the activable constraints that are currently used.
-    /// The size of the vector denoted, residualSize, is given by cmodel.residualSize(cdata)
-    /// each element have value < cmodel.maxResidualSize()
-    /// This vector totally define the state of the constraint
-    /// size = residualSize
-    VectorOfSize active_idx_in_activable;
-
-    /// \brief give for each active constraint the row_id of sparsity pattern (size = csize)
-    /// size = residualSize
-    /// \note it is a proxy to avoid double derefrence as :
-    /// m_activable_idx_in_selected[active_idx_in_activable[i]] = active_idx_in_selected[i]
-    VectorOfSize active_idx_in_selected;
-
-    /// \brief give for each active constraint of sparsity pattern (size = csize)
-    /// size = residualSize
-    /// \note it is a proxy to avoid double derefrence as :
-    /// m_activable_idx_qs_reduce[active_idx_in_activable[i]] = active_idx_qs_reduce[i]
-    EigenIndexVector active_idx_qs_reduce;
-
-    /// \brief number of active lower bound limits activable (<= residualSize)
-    /// It is the number of element in active_idx_in_activable that are < m_lower_max_residual_size
-    int lower_residual_size;
-
-    /// \brief Residual of all potential constraints
-    /// size = maxResidualSize
-    VectorXs activable_constraint_residual;
-
     /// \brief Residual of the active constraints
-    /// size = residualSize
-    /// capacity = maxResidualSize
+    /// size = cmodel.residualSize(CurrentSelection())
+    /// capacity = cmodel.residualSize(MaximalSelection())
     EigenStorageVector constraint_residual_storage;
-    typename EigenStorageVector::RefMapType constraint_residual;
+    typename EigenStorageVector::RefMapType constraint_residual = constraint_residual_storage.map();
 
     /// \brief Compact storages of the tangent map
     CompactTangentMap compact_tangent_map;
     RowVectorStack rowise_tangent_map;
-  };
+  }; // struct JointLimitConstraintDataTpl
+
 } // namespace pinocchio
 
 #include "pinocchio/algorithm/constraints/joint-limit-constraint.hxx"

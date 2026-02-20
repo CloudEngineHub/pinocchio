@@ -9,50 +9,71 @@
 #include "pinocchio/algorithm/constraints/frame-constraint-model-base.hpp"
 #include "pinocchio/algorithm/constraints/frame-constraint-data-base.hpp"
 #include "pinocchio/algorithm/constraints/sets/full-space-cone.hpp"
+#include "pinocchio/algorithm/constraints/sets/zero-cone-jordan-operation.hpp"
 
 namespace pinocchio
 {
 
+  // --------------------------------------------------------------
+  // Cast
+  // --------------------------------------------------------------
   template<typename NewScalar, typename Scalar, int Options>
   struct CastType<NewScalar, FrameAnchorConstraintModelTpl<Scalar, Options>>
   {
     typedef FrameAnchorConstraintModelTpl<NewScalar, Options> type;
   };
 
+  // --------------------------------------------------------------
+  // Traits
+  // --------------------------------------------------------------
   template<typename _Scalar, int _Options>
   struct traits<FrameAnchorConstraintModelTpl<_Scalar, _Options>>
   : traits<FrameConstraintModelBase<FrameAnchorConstraintModelTpl<_Scalar, _Options>>>
   {
-    typedef _Scalar Scalar;
-
-    static constexpr int Options = _Options;
-    static constexpr int Size = 6;
-
     // --------------------------------------------------------------
     // Traits referencing the constraint and associated types
     // --------------------------------------------------------------
-    typedef FrameAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef FrameAnchorConstraintDataTpl<Scalar, Options> ConstraintData;
-    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
+    typedef FrameAnchorConstraintModelTpl<_Scalar, _Options> ConstraintModel;
+    typedef FrameAnchorConstraintDataTpl<_Scalar, _Options> ConstraintData;
+
     typedef ConstraintModel Model;
     typedef ConstraintData Data;
 
     // --------------------------------------------------------------
-    // Traits for the algorithmic methods on current state
+    // Traits characterizing the constraints
     // --------------------------------------------------------------
-    // Elementary types
+    typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
+
+    static constexpr ConstraintFormulationLevel constraint_formulation_level =
+      ConstraintFormulationLevel::POSITION_LEVEL;
+    // constraint_size_type = ConstraintSizeType::STATIC;
+
+    static constexpr bool has_baumgarte_corrector = true;
+    static constexpr bool has_set = true;
+    static constexpr bool is_inequality_constraint = false;
+
+    // --------------------------------------------------------------
+    // Traits for associated struct and sizes
+    // --------------------------------------------------------------
+    typedef FullSpaceConeTpl<Scalar, Options> ConstraintSet;
+    typedef ZeroConeJordanOperationTpl<Scalar, Options> JordanOperation;
+    typedef BaumgarteCorrectorParametersTpl<Scalar> BaumgarteCorrectorParameters;
+
+    static constexpr int Size = 6;
+    static constexpr int SymmetricConeSize = JordanOperation::ConeSize;
+    static constexpr int SymmetricConeScalingSize = JordanOperation::ConeScalingSize;
+
+    // --------------------------------------------------------------
+    // Traits that are helper for Eigen types
+    // --------------------------------------------------------------
+    typedef Eigen::Matrix<Scalar, Size, 1, Options> ResidualVectorType;
     typedef Eigen::Matrix<Scalar, Size, Eigen::Dynamic, Options> JacobianMatrixType;
-    typedef Eigen::Matrix<Scalar, Size, 1, Options> VectorConstraintSize;
+    typedef Eigen::Matrix<Scalar, SymmetricConeSize, 1, Options> ConeVectorType;
+    typedef Eigen::Matrix<Scalar, SymmetricConeScalingSize, 1, Options> ConeScalingVectorType;
 
-    typedef Eigen::Matrix<Scalar, 3, 1, Options> Vector3;
-    typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
-
-    // -------------------------------
-    // Traits for holded Data
-    // -------------------------------
-    typedef Eigen::Matrix<Scalar, Size, 1, Options> ComplianceVectorType;
-    typedef ComplianceVectorType & ComplianceVectorTypeRef;
-    typedef const ComplianceVectorType & ComplianceVectorTypeConstRef;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+    typedef Eigen::Matrix<Scalar, 1, Eigen::Dynamic, Eigen::RowMajor> RowVectorXs;
   };
 
   template<typename _Scalar, int _Options>
@@ -62,29 +83,52 @@ namespace pinocchio
   };
 
   ///
-  /// \brief Contact model structure containg all the info describing the rigid contact model
+  /// \brief Contact model structure containing all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct FrameAnchorConstraintModelTpl
   : FrameConstraintModelBase<FrameAnchorConstraintModelTpl<_Scalar, _Options>>
   {
-
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
-
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
     typedef FrameAnchorConstraintModelTpl Self;
-    typedef FrameConstraintModelBase<FrameAnchorConstraintModelTpl> Base;
-    typedef ConstraintModelBase<FrameAnchorConstraintModelTpl> RootBase;
+    typedef FrameConstraintModelBase<Self> Base;
+    typedef ConstraintModelCommonParameters<Self> BaseCommonParameters;
+    typedef ConstraintModelBase<Self> RootBase;
 
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
+
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
+
+    static constexpr ConstraintSizeType constraint_size_type = traits<Self>::constraint_size_type;
+
+    static constexpr bool has_baumgarte_corrector = traits<Self>::has_baumgarte_corrector;
+
+    typedef typename traits<Self>::ConstraintSet ConstraintSet;
+    typedef typename traits<Self>::JordanOperation JordanOperation;
+    typedef typename traits<Self>::BaumgarteCorrectorParameters BaumgarteCorrectorParameters;
+
+    static constexpr int Size = traits<Self>::Size;
+    static constexpr int SymmetricConeSize = traits<Self>::SymmetricConeSize;
+    static constexpr int SymmetricConeScalingSize = traits<Self>::SymmetricConeScalingSize;
+
+    typedef typename traits<Self>::ResidualVectorType ResidualVectorType;
+    typedef typename traits<Self>::JacobianMatrixType JacobianMatrixType;
+    typedef typename traits<Self>::ConeVectorType ConeVectorType;
+    typedef typename traits<Self>::ConeScalingVectorType ConeScalingVectorType;
+
+    // Friendship ---------------------------------------------------
     template<typename NewScalar, int NewOptions>
     friend struct FrameAnchorConstraintModelTpl;
 
-    typedef typename traits<Self>::ConstraintData ConstraintData;
-    typedef typename traits<Self>::ConstraintSet ConstraintSet;
-
-    using typename Base::SE3;
-
+    // Base usage ---------------------------------------------------
     using RootBase::classname;
+    using typename Base::SE3;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -115,7 +159,21 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint indexes and placements.
+    /// \brief Constructor from model only.
+    ///
+    /// \param[in] model Model associated to the constraint.
+    ///
+    /// \remarks The second joint id (joint2_id) is set to be 0 (corresponding to the index of the
+    /// universe).
+    ///
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    FrameAnchorConstraintModelTpl(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
+    : Base(model)
+    {
+    }
+
+    ///
+    /// \brief Constructor from joint indexes and placements.
     ///
     /// \param[in] model Model associated to the constraint.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -136,7 +194,7 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint1_id and placement.
+    /// \brief Constructor from joint1_id and placement.
     ///
     /// \param[in] model Model associated to the constraint.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -153,7 +211,7 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor from joint ids.
+    /// \brief Constructor from joint ids.
     ///
     /// \param[in] model Model associated to the constraint.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -169,7 +227,7 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Contructor with from joint1_id.
+    /// \brief Constructor from joint1_id.
     ///
     /// \param[in] model Model associated to the constraint.
     /// \param[in] joint1_id Index of the joint 1 in the model tree.
@@ -201,7 +259,7 @@ namespace pinocchio
     ///
     /// \param[in] other Other FrameAnchorConstraintModelTpl to compare with.
     ///
-    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributs
+    /// \returns true if the two *this is equal to other (type, joint1_id and placement attributes
     /// must be the same).
     ///
     bool operator==(const FrameAnchorConstraintModelTpl & other) const
@@ -210,12 +268,12 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Oposite of the comparison operator.
+    /// \brief Opposite of the comparison operator.
     ///
     /// \param[in] other Other FrameAnchorConstraintModelTpl to compare with.
     ///
     /// \returns false if the two *this is not equal to other (at least type, joint1_id or placement
-    /// attributs is different).
+    /// attributes is different).
     ///
     bool operator!=(const FrameAnchorConstraintModelTpl & other) const
     {
@@ -257,27 +315,33 @@ namespace pinocchio
 
     // Other methods for algorithms are in FrameConstraintModelBase
 
-  }; // struct FrameAnchorConstraintModelTpl<_Scalar,_Options>
+  }; // struct FrameAnchorConstraintModelTpl
 
   ///
-  /// \brief Contact model structure containg all the info describing the rigid contact model
+  /// \brief Contact model structure containing all the info describing the rigid contact model
   ///
   template<typename _Scalar, int _Options>
   struct FrameAnchorConstraintDataTpl
   : FrameConstraintDataBase<FrameAnchorConstraintDataTpl<_Scalar, _Options>>
   {
+    // --------------------------------------------------------------
+    // Type defs
+    // --------------------------------------------------------------
+    // CRTP related types -------------------------------------------
+    typedef FrameAnchorConstraintDataTpl Self;
+    typedef FrameConstraintDataBase<Self> Base;
+    typedef ConstraintDataBase<Self> RootBase;
 
-    typedef _Scalar Scalar;
-    static constexpr int Options = _Options;
+    // Retrieving traits --------------------------------------------
+    typedef typename traits<Self>::ConstraintModel ConstraintModel;
+    typedef typename traits<Self>::ConstraintData ConstraintData;
 
-    typedef FrameAnchorConstraintModelTpl<Scalar, Options> ConstraintModel;
-    typedef FrameAnchorConstraintDataTpl ConstraintData;
-    typedef FrameConstraintDataBase<FrameAnchorConstraintDataTpl> Base;
-    typedef ConstraintDataBase<FrameAnchorConstraintDataTpl> RootBase;
+    typedef typename traits<Self>::Scalar Scalar;
+    static constexpr int Options = traits<Self>::Options;
 
+    // Base usage ---------------------------------------------------
+    using Base::classname;
     using typename Base::SE3;
-
-    using RootBase::classname;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS
@@ -301,12 +365,13 @@ namespace pinocchio
 
     /// \brief Default constructor
     FrameAnchorConstraintDataTpl()
+    : Base()
     {
     }
 
-    /// \brief Constructor from constraint_model
-    explicit FrameAnchorConstraintDataTpl(const ConstraintModel & constraint_model)
-    : Base(constraint_model)
+    /// \brief Constructor from constraint model
+    explicit FrameAnchorConstraintDataTpl(const ConstraintModel & cmodel)
+    : Base(cmodel)
     {
     }
 
@@ -339,7 +404,7 @@ namespace pinocchio
     {
       return classname();
     }
-  }; // struct FrameAnchorConstraintDataTpl<_Scalar,_Options>
+  }; // struct FrameAnchorConstraintDataTpl
 
 } // namespace pinocchio
 

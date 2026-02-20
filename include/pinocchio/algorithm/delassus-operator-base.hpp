@@ -179,12 +179,6 @@ namespace pinocchio
     }
 
     template<typename MatrixLike>
-    void updateBarrierHessian(const std::vector<MatrixLike> & blocks)
-    {
-      derived().updateBarrierHessian(blocks);
-    }
-
-    template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       derived().solveInPlace(mat.const_cast_derived());
@@ -207,9 +201,11 @@ namespace pinocchio
 
     template<typename MatrixIn, typename MatrixOut>
     void applyOnTheRight(
-      const Eigen::MatrixBase<MatrixIn> & x, const Eigen::MatrixBase<MatrixOut> & res) const
+      const Eigen::MatrixBase<MatrixIn> & x,
+      const Eigen::MatrixBase<MatrixOut> & res,
+      bool with_damping = true) const
     {
-      derived().applyOnTheRight(x.derived(), res.const_cast_derived());
+      derived().applyOnTheRight(x.derived(), res.const_cast_derived(), with_damping);
     }
 
     template<typename MatrixDerived>

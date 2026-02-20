@@ -23,7 +23,8 @@ namespace pinocchio
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
 
   template<typename Scalar, int Options>
-  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl()
+  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
+    const Scalar min_damping_value)
   : D(D_storage.map())
   , Dinv(Dinv_storage.map())
   , U(U_storage.map())
@@ -32,6 +33,7 @@ namespace pinocchio
   , sum_compliance_damping(sum_compliance_damping_storage.map())
   , delassus_block(delassus_block_storage.map())
   , decomposition_dirty(true)
+  , min_damping_value(min_damping_value)
   {
   }
 
@@ -39,22 +41,16 @@ namespace pinocchio
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
   ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
-    const DataTpl<S1, O1, JointCollectionTpl> & data)
-  : D(D_storage.map())
-  , Dinv(Dinv_storage.map())
-  , U(U_storage.map())
-  , compliance(compliance_storage.map())
-  , damping(damping_storage.map())
-  , sum_compliance_damping(sum_compliance_damping_storage.map())
-  , delassus_block(delassus_block_storage.map())
-  , decomposition_dirty(true)
+    const DataTpl<S1, O1, JointCollectionTpl> & data,
+    const Scalar min_damping_value)
+  : ContactCholeskyDecompositionTpl(min_damping_value)
   {
     typedef ConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef ConstraintDataTpl<Scalar, Options> ConstraintData;
 
     std::vector<ConstraintModel> empty_constraint_models;
     std::vector<ConstraintData> empty_constraint_datas;
-    resize(model, data, empty_constraint_models, empty_constraint_datas);
+    rebuild(model, data, empty_constraint_models, empty_constraint_datas);
   }
 
   template<typename Scalar, int Options>
@@ -70,31 +66,18 @@ namespace pinocchio
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     const DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-  : D(D_storage.map())
-  , Dinv(Dinv_storage.map())
-  , U(U_storage.map())
-  , compliance(compliance_storage.map())
-  , damping(damping_storage.map())
-  , sum_compliance_damping(sum_compliance_damping_storage.map())
-  , delassus_block(delassus_block_storage.map())
-  , decomposition_dirty(true)
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const Scalar min_damping_value)
+  : ContactCholeskyDecompositionTpl(min_damping_value)
   {
     PINOCCHIO_UNUSED_VARIABLE(data);
-    resize(model, data, constraint_models, constraint_datas);
+    rebuild(model, data, constraint_models, constraint_datas);
   }
 
   template<typename Scalar, int Options>
   ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
     const ContactCholeskyDecompositionTpl & other)
-  : D(D_storage.map())
-  , Dinv(Dinv_storage.map())
-  , U(U_storage.map())
-  , compliance(compliance_storage.map())
-  , damping(damping_storage.map())
-  , sum_compliance_damping(sum_compliance_damping_storage.map())
-  , delassus_block(delassus_block_storage.map())
-  , decomposition_dirty(true)
+  : ContactCholeskyDecompositionTpl(other.min_damping_value)
   {
     *this = other;
   }
@@ -119,6 +102,7 @@ namespace pinocchio
     delassus_block_storage = other.delassus_block_storage;
 
     decomposition_dirty = other.decomposition_dirty;
+    min_damping_value = other.min_damping_value;
 
     return *this;
   }
@@ -138,7 +122,7 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    resize(model, data, constraint_models, constraint_datas);
+    rebuild(model, data, constraint_models, constraint_datas);
   }
 
   template<typename Scalar, int Options>
@@ -150,7 +134,7 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::resize(
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::rebuild(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     const DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -162,7 +146,7 @@ namespace pinocchio
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
 
     nv = model.nv;
-    const auto total_constraint_size = residualSize(constraint_models, constraint_datas);
+    const auto total_constraint_size = residualSize(constraint_models);
 
     const Eigen::Index total_size = nv + total_constraint_size;
 
@@ -190,7 +174,7 @@ namespace pinocchio
     {
       const auto & cmodel = helper::get_ref(constraint_models[i]);
       const auto & cdata = helper::get_ref(constraint_datas[i]);
-      for (Eigen::Index k = 0; k < cmodel.residualSize(cdata); ++k, row_id++)
+      for (Eigen::Index k = 0; k < cmodel.residualSize(); ++k, row_id++)
       {
         const auto & row_active_indexes = cmodel.getRowIndexes(model, data, cdata, k);
         nv_subtree_fromRow[row_id] =
@@ -248,17 +232,20 @@ namespace pinocchio
 
     // Allocate Eigen memory if needed
     compliance_storage.resize(total_constraint_size);
-    compliance.setZero();
     damping_storage.resize(total_constraint_size);
-    damping.setZero();
     sum_compliance_damping_storage.resize(total_constraint_size);
-    decomposition_dirty = true;
 
     D_storage.resize(total_size);
     Dinv_storage.resize(total_size);
     U_storage.resize(total_size, total_size);
     delassus_block_storage.resize(total_constraint_size, total_constraint_size);
     U.setIdentity();
+
+    // get compliance from constraint models and set damping to minimum value
+    retrieveConstraintCompliance(constraint_models, compliance);
+    updateDamping(min_damping_value);
+    updateSumComplianceDamping();
+    decomposition_dirty = true;
   }
 
   template<typename Scalar, int Options>
@@ -269,14 +256,14 @@ namespace pinocchio
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
-    class ConstraintDataAllocator,
-    typename VectorLike>
+    class ConstraintDataAllocator>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::compute(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-    const Eigen::MatrixBase<VectorLike> & mus)
+    bool apply_on_the_right,
+    bool solve_in_place)
   {
     assert(model.check(data) && "data is not consistent with model.");
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
@@ -306,7 +293,7 @@ namespace pinocchio
       const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
       const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
 
-      const Eigen::Index constraint_size = cmodel.residualSize(cdata);
+      const Eigen::Index constraint_size = cmodel.residualSize();
       auto U_block = U.block(current_row, total_constraint_size, constraint_size, model.nv);
       cmodel.jacobian(model, data, cdata, U_block);
       current_row += constraint_size;
@@ -346,7 +333,7 @@ namespace pinocchio
         const size_t constraint_id = num_constraints - 1 - index;
         const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
         const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
-        const Eigen::Index constraint_size = cmodel.residualSize(cdata);
+        const Eigen::Index constraint_size = cmodel.residualSize();
 
         for (Eigen::Index constraint_row_id = constraint_size - 1; constraint_row_id >= 0;
              --constraint_row_id, --current_row)
@@ -362,21 +349,17 @@ namespace pinocchio
       }
     }
 
-    // Update damping
-    updateDamping(mus);
+    if (apply_on_the_right)
+    {
+      // Compute the Delassus matrix from the current decomposition
+      computeDelassusMatrix();
+    }
 
-    // Retrive physical compliance
-    typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
-    MapVector contraint_compliance =
-      MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraint_size, 1));
-    retrieveCompliance(constraint_models, constraint_datas, contraint_compliance);
-    updateCompliance(contraint_compliance);
-
-    // Compute the Delassus matrix from the current decomposition
-    computeDelassusMatrix();
-
-    // Compute the Cholesky decomposition of the Delassus block
-    computeDelassusCholeskyDecomposition();
+    if (solve_in_place)
+    {
+      // Compute the Cholesky decomposition of the Delassus block
+      computeDelassusCholeskyDecomposition();
+    }
   }
 
   template<typename Scalar, int Options>
@@ -1080,6 +1063,27 @@ namespace pinocchio
     class ConstraintModel,
     class ConstraintModelAllocator,
     class ConstraintData,
+    class ConstraintDataAllocator,
+    typename VectorLike>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::compute(
+    const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    DataTpl<S1, O1, JointCollectionTpl> & data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+    const Eigen::MatrixBase<VectorLike> & mus)
+  {
+    updateDamping(mus);
+    compute(model, data, constraint_models, constraint_datas, true, true);
+  }
+
+  template<typename Scalar, int Options>
+  template<
+    typename S1,
+    int O1,
+    template<typename, int> class JointCollectionTpl,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
     class ConstraintDataAllocator>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::compute(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
@@ -1088,8 +1092,8 @@ namespace pinocchio
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const S1 mu)
   {
-    compute(
-      model, data, constraint_models, constraint_datas, Vector::Constant(constraintDim(), mu));
+    updateDamping(mu);
+    compute(model, data, constraint_models, constraint_datas, true, true);
   }
 
   template<typename Scalar, int Options>

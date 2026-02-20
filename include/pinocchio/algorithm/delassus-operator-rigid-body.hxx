@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2024-2025 INRIA
+// Copyright (c) 2024-2026 INRIA
 //
 
 #ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_hxx__
@@ -29,34 +29,37 @@ namespace pinocchio
     JointCollectionTpl,
     ConstraintModel,
     Holder>::
-    update(
+    rebuild(
+      const ModelHolder & model_ref,
+      const DataHolder & data_ref,
       const ConstraintModelVectorHolder & constraint_models_ref,
       const ConstraintDataVectorHolder & constraint_datas_ref)
   {
+    // Rebuild quantities related to model
+    m_model_ref = model_ref;
+    m_data_ref = data_ref;
+    m_internal_data.rebuild(model());
+
+    // Rebuild quantities related to constraints
     m_constraint_models_ref = constraint_models_ref;
     m_constraint_datas_ref = constraint_datas_ref;
 
-    const auto old_size = m_size;
-    m_size =
-      residualSize(helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref));
+    m_size = residualSize(helper::get_ref(constraint_models_ref));
 
     // resize quantities
-    m_damping_storage.resize(m_size);
+    m_damping = VectorXs::Constant(m_size, m_min_damping_value).asDiagonal();
     m_compliance_storage.resize(m_size);
-    m_sum_compliance_damping_storage.resize(m_size);
-    m_sum_compliance_damping_inverse_storage.resize(m_size);
+    m_compliance.setZero();
+    m_sum_compliance_damping = VectorXs::Constant(m_size, m_min_damping_value).asDiagonal();
+    m_sum_compliance_damping_inverse = VectorXs::Zero(m_size).asDiagonal();
 
-    assert(m_damping.size() == m_size);
+    assert(m_damping.rows() == m_size);
+    assert(m_damping.cols() == m_size);
     assert(m_compliance.size() == m_size);
-    assert(m_sum_compliance_damping_storage.size() == m_size);
-    assert(m_sum_compliance_damping_inverse_storage.size() == m_size);
+    assert(m_sum_compliance_damping.rows() == m_size);
+    assert(m_sum_compliance_damping_inverse.rows() == m_size);
 
-    // reset or set values
-    if (old_size < m_size)
-      m_damping.tail(m_size - old_size).fill(m_min_damping_value);
-
-    retrieveCompliance(
-      helper::get_ref(constraint_models_ref), helper::get_ref(constraint_datas_ref), m_compliance);
+    retrieveConstraintCompliance(helper::get_ref(constraint_models_ref), m_compliance);
 
     computeJointMinimalOrdering(model(), data(), helper::get_ref(constraint_models_ref));
     updateSumComplianceDamping();
@@ -109,22 +112,47 @@ namespace pinocchio
       data_ref.joint_cross_coupling.apply([](Matrix6 & v) { v.setZero(); });
 
       // Append constraint inertia to oYaba_augmented
+      m_sum_compliance_damping_inverse = m_sum_compliance_damping.inverse();
       assert(!m_sum_compliance_damping_inverse.hasNaN());
-      Eigen::Index row_id = 0;
-      for (size_t constraint_id = 0; constraint_id < constraint_models_ref.size(); ++constraint_id)
+
+      const auto & blocks = m_sum_compliance_damping_inverse.blocks();
+      if (blocks.size() == 1 && constraint_models_ref.size() > 1) // we assume we have a single
+                                                                  // diagonal block to dispatch on
+                                                                  // all the contraints
       {
-        const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
-        const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
+        const auto & diagonal_block = blocks[0];
+        assert(diagonal_block.type() == MatrixBlockType::Diagonal);
+        Eigen::Index row_id = 0;
+        typedef typename BlockDiagonalMatrix::ConstVectorMap ConstVectorMap;
+        const auto & compliance_damping_inverse_vector =
+          remap<ConstVectorMap>(diagonal_block.container());
+        for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+             ++constraint_id)
+        {
+          const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
+          const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
 
-        const auto constraint_size = cmodel.residualSize(cdata);
+          const auto constraint_size = cmodel.residualSize();
+          const auto constraint_diagonal_inertia =
+            compliance_damping_inverse_vector.segment(row_id, constraint_size);
 
-        const auto constraint_diagonal_inertia =
-          this->m_sum_compliance_damping_inverse.segment(row_id, constraint_size);
-
-        cmodel.appendCouplingConstraintInertias(
-          model_ref, data_ref, cdata, constraint_diagonal_inertia, WorldFrameTag());
-
-        row_id += constraint_size;
+          cmodel.appendCouplingConstraintInertias(
+            model_ref, data_ref, cdata, constraint_diagonal_inertia, WorldFrameTag());
+          row_id += constraint_size;
+        }
+        assert(row_id == size());
+      }
+      else // we have block diagonal matrix, each block being assigned to a constraint
+      {
+        std::size_t inner_constraint_id = 0;
+        for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+             ++constraint_id)
+        {
+          const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
+          const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
+          cmodel.appendCouplingConstraintInertias(
+            model_ref, data_ref, cdata, blocks, WorldFrameTag(), inner_constraint_id);
+        }
       }
     }
 
@@ -182,7 +210,9 @@ namespace pinocchio
     ConstraintModel,
     Holder>::
     applyOnTheRight(
-      const Eigen::MatrixBase<MatrixIn> & rhs, const Eigen::MatrixBase<MatrixOut> & res_) const
+      const Eigen::MatrixBase<MatrixIn> & rhs,
+      const Eigen::MatrixBase<MatrixOut> & res_,
+      bool with_damping) const
   {
     MatrixOut & res = res_.const_cast_derived();
     PINOCCHIO_CHECK_SAME_MATRIX_SIZE(rhs, res);
@@ -282,7 +312,17 @@ namespace pinocchio
     //    }
 
     // Add damping contribution
-    res.array() += m_sum_compliance_damping.array() * rhs.array();
+    if (with_damping)
+    {
+      // res.array() += m_sum_compliance_damping.array() * rhs.array();
+      m_sum_compliance_damping.template applyOnTheRight<::pinocchio::internal::add_assign_op>(
+        rhs, res);
+    }
+    else
+    {
+      // take only compliance into account
+      res.array() += m_compliance.array() * rhs.array();
+    }
   }
 
   template<
@@ -313,7 +353,13 @@ namespace pinocchio
     const ConstraintDataVector & constraint_datas_ref = constraint_datas();
     auto & internal_data = this->m_internal_data;
 
-    mat.array() *= m_sum_compliance_damping_inverse.array();
+    typedef Eigen::Map<VectorXs, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorXs;
+    MapVectorXs mat_tmp = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, size(), 1));
+
+    // mat.array() *= m_sum_compliance_damping_inverse.array();
+    m_sum_compliance_damping_inverse.template applyOnTheRight<::pinocchio::internal::assign_op>(
+      mat, mat_tmp);
+    mat = mat_tmp;
 
     // Make a pass over the whole set of constraints to add the contributions of constraint
 
@@ -347,8 +393,6 @@ namespace pinocchio
     const auto & augmented_mass_matrix_operator = this->getAugmentedMassMatrixOperator();
     augmented_mass_matrix_operator.solveInPlace(u, false);
 
-    typedef Eigen::Map<VectorXs, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorXs;
-    MapVectorXs tmp_vec = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, size(), 1));
     //    {
     //      Eigen::Index row_id = 0;
     //      for (size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
@@ -361,7 +405,7 @@ namespace pinocchio
     //        const auto csize = cmodel.size();
     //
     //        cmodel.jacobianMatrixProduct(
-    //          model_ref, data_ref, cdata, u, tmp_vec.middleRows(row_id, csize));
+    //          model_ref, data_ref, cdata, u, mat_tmp.middleRows(row_id, csize));
     //
     //        row_id += csize;
     //      }
@@ -371,9 +415,13 @@ namespace pinocchio
     // the constraints
     mapJointSpaceToConstraintMotions(
       model_ref, data_ref, constraint_models_ref, constraint_datas_ref, internal_data.oa_augmented,
-      u, tmp_vec, WorldFrameTag());
+      u, mat_tmp, WorldFrameTag());
 
-    mat.noalias() -= m_sum_compliance_damping_inverse.asDiagonal() * tmp_vec;
+    // mat.noalias() -= m_sum_compliance_damping_inverse.asDiagonal() * mat_tmp;
+    // m_sum_compliance_damping_inverse.template
+    // applyOnTheRight<::pinocchio::internal::sub_assign_op>(mat_tmp,mat.noalias());
+    m_sum_compliance_damping_inverse.template applyOnTheRight<::pinocchio::internal::sub_assign_op>(
+      mat_tmp, mat); // TODO(jcarpent): fix me with proper noalias handling in applyOnTheRight
   }
 
   template<

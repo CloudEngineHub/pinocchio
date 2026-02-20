@@ -65,13 +65,13 @@ BOOST_AUTO_TEST_CASE(basic_constructor)
   FrameAnchorConstraintModel cmodel2(model, 0, M);
   BOOST_CHECK(cmodel2.joint1_id == 0);
   BOOST_CHECK(cmodel2.joint1_placement == M);
-  BOOST_CHECK(cmodel2.maxResidualSize() == 6);
+  BOOST_CHECK(cmodel2.residualSize() == 6);
 
   // Check contructor with two arguments
   FrameAnchorConstraintModel cmodel2prime(model, 0);
   BOOST_CHECK(cmodel2prime.joint1_id == 0);
   BOOST_CHECK(cmodel2prime.joint1_placement.isIdentity(0.));
-  BOOST_CHECK(cmodel2prime.maxResidualSize() == 6);
+  BOOST_CHECK(cmodel2prime.residualSize() == 6);
 
   // Check default copy constructor
   FrameAnchorConstraintModel cmodel3(cmodel2);
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(basic_operations)
     Inertia::Matrix6 I11 = -Inertia::Matrix6::Ones(), I12 = -Inertia::Matrix6::Ones(),
                      I22 = -Inertia::Matrix6::Ones();
 
-    cm.computeConstraintInertias(cd, diagonal_inertia, I11, I12, I22, LocalFrameTag());
+    cm.computeConstraintInertias(cd, diagonal_inertia.asDiagonal(), I11, I12, I22, LocalFrameTag());
     BOOST_CHECK(I11.isApprox(I11_ref));
     BOOST_CHECK(I12.isApprox(I12_ref));
     BOOST_CHECK(I22.isApprox(I22_ref));
@@ -173,7 +173,8 @@ BOOST_AUTO_TEST_CASE(basic_operations)
     Inertia::Matrix6 I11_scalar = -Inertia::Matrix6::Ones(), I12_scalar = -Inertia::Matrix6::Ones(),
                      I22_scalar = -Inertia::Matrix6::Ones();
 
-    cm.computeConstraintInertias(cd, diagonal_inertia_scalar, I11, I12, I22, LocalFrameTag());
+    cm.computeConstraintInertias(
+      cd, diagonal_inertia_scalar.asDiagonal(), I11, I12, I22, LocalFrameTag());
     cm.computeConstraintInertias(
       cd, constant_inertia_value, I11_scalar, I12_scalar, I22_scalar, LocalFrameTag());
     BOOST_CHECK(I11 == I11_scalar);
@@ -196,7 +197,7 @@ BOOST_AUTO_TEST_CASE(basic_operations)
     Inertia::Matrix6 I11 = -Inertia::Matrix6::Ones(), I12 = -Inertia::Matrix6::Ones(),
                      I22 = -Inertia::Matrix6::Ones();
 
-    cm.computeConstraintInertias(cd, diagonal_inertia, I11, I12, I22, WorldFrameTag());
+    cm.computeConstraintInertias(cd, diagonal_inertia.asDiagonal(), I11, I12, I22, WorldFrameTag());
     BOOST_CHECK(I11.isApprox(I11_ref));
     BOOST_CHECK(I12.isApprox(I12_ref));
     BOOST_CHECK(I22.isApprox(I22_ref));
@@ -208,7 +209,8 @@ BOOST_AUTO_TEST_CASE(basic_operations)
     Inertia::Matrix6 I11_scalar = -Inertia::Matrix6::Ones(), I12_scalar = -Inertia::Matrix6::Ones(),
                      I22_scalar = -Inertia::Matrix6::Ones();
 
-    cm.computeConstraintInertias(cd, diagonal_inertia_scalar, I11, I12, I22, WorldFrameTag());
+    cm.computeConstraintInertias(
+      cd, diagonal_inertia_scalar.asDiagonal(), I11, I12, I22, WorldFrameTag());
     cm.computeConstraintInertias(
       cd, constant_inertia_value, I11_scalar, I12_scalar, I22_scalar, WorldFrameTag());
     BOOST_CHECK(I11 == I11_scalar);
@@ -272,7 +274,7 @@ Eigen::MatrixXd compute_jacobian_fd(
   Data data_fd(model), data(model);
   FrameAnchorConstraintData cdata(cmodel), cdata_fd(cmodel);
 
-  Eigen::MatrixXd res(cmodel.residualSize(cdata), model.nv);
+  Eigen::MatrixXd res(cmodel.residualSize(), model.nv);
   res.setZero();
 
   forwardKinematics(model, data, q),
@@ -602,7 +604,7 @@ BOOST_AUTO_TEST_CASE(cholesky)
 
   crba(model, data_ref, q, Convention::WORLD);
   make_symmetric(data_ref.M);
-  const auto total_size = getTotalConstraintResidualSize(constraint_models, constraint_datas);
+  const auto total_size = getTotalConstraintResidualSize(constraint_models);
   Eigen::MatrixXd J_constraints(total_size, model.nv);
   J_constraints.setZero();
   getConstraintsJacobian(model, data_ref, constraint_models, constraint_datas, J_constraints);

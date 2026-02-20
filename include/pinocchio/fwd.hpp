@@ -1,5 +1,6 @@
 //
-// Copyright (c) 2018-2024 CNRS INRIA
+// Copyright (c) 2018-2018 CNRS
+// Copyright (c) 2018-2026 INRIA
 //
 
 #ifndef __pinocchio_fwd_hpp__
@@ -88,8 +89,16 @@ namespace pinocchio
   ///
   /// \brief Common traits structure to fully define base classes for CRTP.
   ///
-  template<class C>
+  template<class C, typename = void>
   struct traits
+  {
+  };
+
+  ///
+  /// \brief Common unsafe structure to allow advanced manipulation of classes' protected members.
+  ///
+  template<class C>
+  struct Unsafe
   {
   };
 
@@ -239,6 +248,35 @@ namespace pinocchio
     template<typename T, template<typename...> class Template>
     inline constexpr bool is_specialization_of_v = is_specialization_of<T, Template>::value;
   } // namespace internal
+
+  constexpr Eigen::AlignmentType to_eigen_alignment(std::size_t alignment_value)
+  {
+    using Eigen::Aligned;
+    using Eigen::Aligned128;
+    using Eigen::Aligned16;
+    using Eigen::Aligned32;
+    using Eigen::Aligned64;
+    using Eigen::Aligned8;
+    using Eigen::Unaligned;
+
+    switch (alignment_value)
+    {
+    case 8:
+      return Aligned8;
+    case 16:
+      return Aligned16;
+    case 32:
+      return Aligned32;
+    case 64:
+      return Aligned64;
+    case 128:
+      return Aligned128;
+    case 0:
+      return Unaligned; // treat 0 as simply unaligned
+    default:
+      return Aligned; // "default" Eigen alignment policy
+    }
+  }
 } // namespace pinocchio
 
 #include "pinocchio/alloca.hpp"
