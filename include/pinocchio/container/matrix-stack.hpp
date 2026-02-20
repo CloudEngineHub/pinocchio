@@ -825,15 +825,12 @@ namespace pinocchio
     typedef typename PlainMatrixType::Scalar Scalar;
     typedef typename Eigen::Index Index;
 
-    typedef PlainMatrixType MapType;
+    typedef Eigen::Map<PlainMatrixType> MapType;
     typedef MapType value_type;
-    typedef MapType & RefMapType;
-    typedef const MapType & ConstRefMapType;
 
     typedef const Eigen::Map<const PlainMatrixType> ConstMapType;
-    typedef ConstMapType & RefConstMapType;
 
-    typedef std::vector<MapType> MapVector;
+    typedef std::vector<PlainMatrixType> MapVector;
 
     typedef typename MapVector::iterator iterator;
     typedef typename MapVector::const_iterator const_iterator;
@@ -880,6 +877,22 @@ namespace pinocchio
       return !(*this == other);
     }
 
+    MatrixStackTpl & operator=(const MatrixStackTpl & other) = default;
+
+    void rebuild(const std::vector<MatrixInfo> & matrix_infos)
+    {
+      rebuild(matrix_infos.data(), matrix_infos.size());
+    }
+
+    void rebuild(const MatrixInfo * matrix_infos, const size_t size)
+    {
+      clear();
+      for (std::size_t i = 0; i < size; ++i)
+      {
+        push_back(matrix_infos[i]);
+      }
+    }
+
     template<typename Matrix>
     void push_back(const Eigen::MatrixBase<Matrix> & matrix)
     {
@@ -903,18 +916,21 @@ namespace pinocchio
     {
       m_matrix_maps.emplace_back(rows, cols);
       if (init_func)
-        init_func(m_matrix_maps.back());
+        init_func(back());
     }
 
     /// \brief Returns a reference to the last element in the container.
-    RefMapType back()
+    MapType back()
     {
-      return m_matrix_maps.back();
+      auto & m = m_matrix_maps.back();
+      return MapType(m.data(), m.cols(), m.rows());
     }
+
     /// \brief Returns a reference to the last element in the container.
-    ConstRefMapType back() const
+    ConstMapType back() const
     {
-      return m_matrix_maps.back();
+      const auto & m = m_matrix_maps.back();
+      return ConstMapType(m.data(), m.cols(), m.rows());
     }
 
     ///  \brief Checks if the container has no elements.
@@ -937,14 +953,16 @@ namespace pinocchio
     }
 
     /// \brief Returns a reference to the element at specified location pos.
-    RefMapType operator[](const std::size_t pos)
+    MapType operator[](const std::size_t pos)
     {
-      return m_matrix_maps[pos];
+      auto & m = m_matrix_maps[pos];
+      return MapType(m.data(), m.cols(), m.rows());
     }
     /// \brief Returns a reference to the element at specified location pos.
-    ConstRefMapType operator[](const std::size_t pos) const
+    ConstMapType operator[](const std::size_t pos) const
     {
-      return m_matrix_maps[pos];
+      const auto & m = m_matrix_maps[pos];
+      return ConstMapType(m.data(), m.cols(), m.rows());
     }
 
     /// \brief Returns the number of elements in the container.

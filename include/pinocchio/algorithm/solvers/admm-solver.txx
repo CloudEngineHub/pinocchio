@@ -5,7 +5,9 @@
 #ifndef __pinocchio_algorithm_solvers_admm_solver_txx__
 #define __pinocchio_algorithm_solvers_admm_solver_txx__
 
-#include <functional>
+#ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
+
+  #include <functional>
 
 namespace pinocchio
 {
@@ -126,5 +128,7 @@ namespace pinocchio
     ADMMSolverResultTpl<context::Scalar, context::Options> &);
 
 } // namespace pinocchio
+
+#endif // ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
 
 #endif // ifndef __pinocchio_algorithm_solvers_admm_solver_txx__

@@ -2557,7 +2557,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_cassie_proximal)
 
   Data data(model), data_fd(model);
 
-  initConstraintDynamics(model, data, constraint_models, constraint_data);
+  initConstraintDynamics(model, data, constraint_models, constraint_datas);
   for (int k = 0; k < (int)constraint_models.size(); ++k)
   {
     constraint_datas.push_back(RigidConstraintData(constraint_models[(pinocchio::JointIndex)k]));
@@ -2567,7 +2567,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_cassie_proximal)
   for (size_t k = 0; k < constraint_models.size(); ++k)
     constraint_size += constraint_models[k].residualSize();
 
-  initConstraintDynamics(model, data, constraint_models, constraint_data);
+  initConstraintDynamics(model, data, constraint_models, constraint_datas);
   constraintDynamics(model, data, q, v, tau, constraint_models, constraint_datas, prox_settings);
   data.M.triangularView<Eigen::StrictlyLower>() =
     data.M.transpose().triangularView<Eigen::StrictlyLower>();

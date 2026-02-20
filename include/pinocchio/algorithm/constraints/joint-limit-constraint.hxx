@@ -578,7 +578,7 @@ namespace pinocchio
       assert(
         joint_id > 0 && joint_id < JointIndex(model.njoints) && "joint_id value is incorrect.");
 
-      auto & support_joint_apparent_inertia = data.joint_apparent_inertia[joint_id];
+      auto support_joint_apparent_inertia = data.joint_apparent_inertia[joint_id];
       PINOCCHIO_ONLY_USED_FOR_DEBUG(constraint_size);
       assert(support_joint_apparent_inertia.rows() == constraint_size);
       assert(support_joint_apparent_inertia.cols() == constraint_size);

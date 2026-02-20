@@ -379,8 +379,8 @@ namespace pinocchio
      * @tparam AssignOp  Assignment operation used to store the result
      *                   (e.g. ::pinocchio::internal::assign_op for direct assignment,
      *                   or ::pinocchio::internal::add_assign_op for accumulation).
-     * @tparam MatrixRhs The Eigen type of the right-hand-side matrix.
-     * @tparam MatrixRes The Eigen type of the result matrix.
+     * @tparam MatrixDerivedRhs The Eigen type of the right-hand-side matrix.
+     * @tparam MatrixDerivedRes The Eigen type of the result matrix.
      *
      * @param[in]  rhs The matrix to multiply with on the right.
      * @param[out] res The matrix where the result is stored. It must be pre-allocated
@@ -395,10 +395,11 @@ namespace pinocchio
      */
     template<
       typename AssignOp = pinocchio::internal::assign_op,
-      typename MatrixRhs,
-      typename MatrixRes>
+      typename MatrixDerivedRhs,
+      typename MatrixDerivedRes>
     void applyOnTheRight(
-      const Eigen::MatrixBase<MatrixRhs> & rhs, const Eigen::MatrixBase<MatrixRes> & res) const;
+      const Eigen::MatrixBase<MatrixDerivedRhs> & rhs,
+      const Eigen::MatrixBase<MatrixDerivedRes> & res) const;
 
     /**
      * @brief Performs the matrix-matrix product `res = lhs * (*this)`.
@@ -406,8 +407,8 @@ namespace pinocchio
      * @tparam AssignOp  Assignment operation used to store the result
      *                   (e.g. ::pinocchio::internal::assign_op for direct assignment,
      *                   or ::pinocchio::internal::add_assign_op for accumulation).
-     * @tparam MatrixLhs The Eigen type of the left-hand-side matrix.
-     * @tparam MatrixRes The Eigen type of the result matrix.
+     * @tparam MatrixDerivedLhs The Eigen type of the left-hand-side matrix.
+     * @tparam MatrixDerivedRes The Eigen type of the result matrix.
      *
      * @param[in]  lhs The matrix to multiply with on the left.
      * @param[out] res The matrix where the result is stored. It must be pre-allocated
@@ -422,15 +423,16 @@ namespace pinocchio
      */
     template<
       typename AssignOp = pinocchio::internal::assign_op,
-      typename MatrixLhs,
-      typename MatrixRes>
+      typename MatrixDerivedLhs,
+      typename MatrixDerivedRes>
     void applyOnTheLeft(
-      const Eigen::MatrixBase<MatrixLhs> & lhs, const Eigen::MatrixBase<MatrixRes> & res) const;
+      const Eigen::MatrixBase<MatrixDerivedLhs> & lhs,
+      const Eigen::MatrixBase<MatrixDerivedRes> & res) const;
 
     /**
      * @brief Performs the matrix-matrix product `(*this) * rhs` and returns the result.
      *
-     * @tparam MatrixRhs The Eigen type of the right-hand-side matrix.
+     * @tparam MatrixDerivedRhs The Eigen type of the right-hand-side matrix.
      *
      * @param[in] rhs The matrix to multiply with on the right.
      *
@@ -445,11 +447,11 @@ namespace pinocchio
      * @see void applyOnTheRight(const Eigen::MatrixBase<MatrixRhs> &, const
      * Eigen::MatrixBase<MatrixRes> &) const
      */
-    template<typename MatrixRhs>
-    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixRhs)
-      applyOnTheRight(const Eigen::MatrixBase<MatrixRhs> & rhs) const
+    template<typename MatrixDerivedRhs>
+    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixDerivedRhs)
+      applyOnTheRight(const Eigen::MatrixBase<MatrixDerivedRhs> & rhs) const
     {
-      typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixRhs) ReturnType;
+      typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixDerivedRhs) ReturnType;
       ReturnType res(rows(), rhs.cols()); // Assuming this should be rows(), rhs.cols()
       applyOnTheRight(rhs.derived(), res);
       return res;
@@ -458,7 +460,7 @@ namespace pinocchio
     /**
      * @brief Performs the matrix-matrix product `lhs * (*this)` and returns the result.
      *
-     * @tparam MatrixLhs The Eigen type of the left-hand-side matrix.
+     * @tparam MatrixDerivedLhs The Eigen type of the left-hand-side matrix.
      *
      * @param[in] lhs The matrix to multiply with on the left.
      *
@@ -473,11 +475,11 @@ namespace pinocchio
      * @see void applyOnTheLeft(const Eigen::MatrixBase<MatrixLhs> &, const
      * Eigen::MatrixBase<MatrixRes> &) const
      */
-    template<typename MatrixLhs>
-    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLhs)
-      applyOnTheLeft(const Eigen::MatrixBase<MatrixLhs> & lhs) const
+    template<typename MatrixDervideLhs>
+    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixDervideLhs)
+      applyOnTheLeft(const Eigen::MatrixBase<MatrixDervideLhs> & lhs) const
     {
-      typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLhs) ReturnType;
+      typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixDervideLhs) ReturnType;
       ReturnType res(lhs.rows(), cols()); // Assuming this should be rows(), rhs.cols()
       applyOnTheLeft(lhs.derived(), res);
       return res;
@@ -486,46 +488,46 @@ namespace pinocchio
     /**
      * @brief Performs the matrix-matrix product `(*this) * rhs` and returns the result.
      *
-     * @tparam MatrixRhs The Eigen type of the right-hand-side matrix.
+     * @tparam MatrixDerivedRhs The Eigen type of the right-hand-side matrix.
      *
      * @param[in] rhs The matrix to multiply with on the right.
      *
      * @return A new matrix containing the result of the multiplication. The returned matrix
      *         type is deduced to be a plain, non-expression matrix.
      */
-    template<typename MatrixRhs>
-    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixRhs)
-    operator*(const Eigen::MatrixBase<MatrixRhs> & rhs) const
+    template<typename MatrixDerivedRhs>
+    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixDerivedRhs)
+    operator*(const Eigen::MatrixBase<MatrixDerivedRhs> & rhs) const
     {
       return applyOnTheRight(rhs);
     }
 
     /**
      * @brief Sets a dense matrix to be equal to this block-diagonal matrix.
-     * @tparam Matrix An Eigen dense matrix type.
+     * @tparam MatrixDerived An Eigen dense matrix type.
      * @param[out] matrix The dense matrix to be set. Its non-zero blocks will be filled, and
      *                    its off-diagonal blocks will be set to zero.
      */
-    template<typename Matrix>
-    void evalTo(const Eigen::MatrixBase<Matrix> & matrix) const;
+    template<typename MatrixDerived>
+    void evalTo(const Eigen::MatrixBase<MatrixDerived> & matrix) const;
 
     /**
      * @brief Adds this block-diagonal matrix to a dense matrix.
-     * @tparam Matrix An Eigen dense matrix type.
+     * @tparam MatrixDerived An Eigen dense matrix type.
      * @param[in,out] matrix The dense matrix to which this object will be added.
      */
-    template<typename Matrix>
-    void addTo(const Eigen::MatrixBase<Matrix> & matrix) const;
+    template<typename MatrixDerived>
+    void addTo(const Eigen::MatrixBase<MatrixDerived> & matrix) const;
 
     /**
      * @brief Subtracts this block-diagonal matrix from a dense matrix.
-     * @tparam Matrix An Eigen dense matrix type.
+     * @tparam MatrixDerived An Eigen dense matrix type.
      * @param[in,out] matrix The dense matrix from which this object will be subtracted.
      */
-    template<typename Matrix>
-    void subTo(const Eigen::MatrixBase<Matrix> & matrix) const;
+    template<typename MatrixDerived>
+    void subTo(const Eigen::MatrixBase<MatrixDerived> & matrix) const;
 
-    /// @brief Returns a dense `Eigen::Matrix` representation of this block-diagonal matrix.
+    /// @brief Returns a dense `Matrix` representation of this block-diagonal matrix.
     /// @note This involves a memory allocation and data copy. For performance, prefer
     ///       operations like `evalTo` that work on existing memory.
     Matrix matrix() const;
@@ -533,11 +535,11 @@ namespace pinocchio
     /**
      * @brief Fills a pre-allocated dense matrix with the values of this block-diagonal matrix.
      * @see evalTo
-     * @tparam Matrix An Eigen dense matrix type.
+     * @tparam MatrixDerived An Eigen dense matrix type.
      * @param[out] matrix The dense matrix to fill. Must have the correct dimensions.
      */
-    template<typename Matrix>
-    void matrix(const Eigen::MatrixBase<Matrix> & matrix) const;
+    template<typename MatrixDerived>
+    void matrix(const Eigen::MatrixBase<MatrixDerived> & matrix) const;
 
     /// @brief Gets a const reference to the underlying memory stack containing block data.
     const MatrixStack & getMatrixStack() const

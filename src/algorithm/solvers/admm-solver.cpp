@@ -2,14 +2,18 @@
 // Copyright (c) 2026 INRIA
 //
 
-#include "pinocchio/algorithm/solvers/admm-solver.hpp"
-#include "pinocchio/algorithm/delassus-operator-dense.hpp"
-#include "pinocchio/algorithm/constraint-cholesky.hpp"
-#include "pinocchio/algorithm/delassus-operator-cholesky-expression.hpp"
-#include "pinocchio/algorithm/delassus-operator-rigid-body.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
-#include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
-#include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
+#include "pinocchio/context.hpp"
+
+#ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
+
+  #include "pinocchio/algorithm/solvers/admm-solver.hpp"
+  #include "pinocchio/algorithm/delassus-operator-dense.hpp"
+  #include "pinocchio/algorithm/constraint-cholesky.hpp"
+  #include "pinocchio/algorithm/delassus-operator-cholesky-expression.hpp"
+  #include "pinocchio/algorithm/delassus-operator-rigid-body.hpp"
+  #include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
+  #include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
+  #include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
 
 namespace pinocchio
 {
@@ -130,3 +134,5 @@ namespace pinocchio
     ADMMSolverResultTpl<context::Scalar, context::Options> &);
 
 } // namespace pinocchio
+
+#endif // ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS

@@ -157,9 +157,9 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options, std::size_t Alignment>
-  template<typename Matrix>
+  template<typename MatrixDerived>
   void BlockDiagonalMatrixTpl<Scalar, Options, Alignment>::evalTo(
-    const Eigen::MatrixBase<Matrix> & _matrix) const
+    const Eigen::MatrixBase<MatrixDerived> & _matrix) const
   {
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       _matrix.rows(), rows(), "The input matrix has not the right number of rows.");
@@ -171,9 +171,9 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options, std::size_t Alignment>
-  template<typename Matrix>
+  template<typename MatrixDerived>
   void BlockDiagonalMatrixTpl<Scalar, Options, Alignment>::addTo(
-    const Eigen::MatrixBase<Matrix> & _matrix) const
+    const Eigen::MatrixBase<MatrixDerived> & _matrix) const
   {
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       _matrix.rows(), rows(), "The input matrix has not the right number of rows.");
@@ -184,9 +184,9 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options, std::size_t Alignment>
-  template<typename Matrix>
+  template<typename MatrixDerived>
   void BlockDiagonalMatrixTpl<Scalar, Options, Alignment>::subTo(
-    const Eigen::MatrixBase<Matrix> & _matrix) const
+    const Eigen::MatrixBase<MatrixDerived> & _matrix) const
   {
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       _matrix.rows(), rows(), "The input matrix has not the right number of rows.");
@@ -197,9 +197,9 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options, std::size_t Alignment>
-  template<typename AssignOp, typename Matrix>
+  template<typename AssignOp, typename MatrixDerived>
   void BlockDiagonalMatrixTpl<Scalar, Options, Alignment>::assign_op(
-    const Eigen::MatrixBase<Matrix> & _matrix) const
+    const Eigen::MatrixBase<MatrixDerived> & _matrix) const
   {
     auto & matrix = _matrix.const_cast_derived();
 
@@ -217,9 +217,9 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options, std::size_t Alignment>
-  template<typename Matrix>
+  template<typename MatrixDerived>
   void BlockDiagonalMatrixTpl<Scalar, Options, Alignment>::matrix(
-    const Eigen::MatrixBase<Matrix> & _matrix) const
+    const Eigen::MatrixBase<MatrixDerived> & _matrix) const
   {
     evalTo(_matrix.const_cast_derived());
   }
@@ -245,9 +245,10 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options, std::size_t Alignment>
-  template<typename AssignOp, typename MatrixRhs, typename MatrixRes>
+  template<typename AssignOp, typename MatrixDerivedRhs, typename MatrixDerivedRes>
   void BlockDiagonalMatrixTpl<Scalar, Options, Alignment>::applyOnTheRight(
-    const Eigen::MatrixBase<MatrixRhs> & rhs, const Eigen::MatrixBase<MatrixRes> & _res) const
+    const Eigen::MatrixBase<MatrixDerivedRhs> & rhs,
+    const Eigen::MatrixBase<MatrixDerivedRes> & _res) const
   {
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       rhs.rows(), cols(), "The input rhs matrix has not the right number of rows.");
@@ -305,9 +306,10 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options, std::size_t Alignment>
-  template<typename AssignOp, typename MatrixLhs, typename MatrixRes>
+  template<typename AssignOp, typename MatrixDerivedLhs, typename MatrixDerivedRes>
   void BlockDiagonalMatrixTpl<Scalar, Options, Alignment>::applyOnTheLeft(
-    const Eigen::MatrixBase<MatrixLhs> & lhs, const Eigen::MatrixBase<MatrixRes> & _res) const
+    const Eigen::MatrixBase<MatrixDerivedLhs> & lhs,
+    const Eigen::MatrixBase<MatrixDerivedRes> & _res) const
   {
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       lhs.cols(), rows(), "The input lhs matrix has not the right number of cols.");
