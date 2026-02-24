@@ -180,12 +180,11 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/macros.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/unsupported.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/arithmetic-operators.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-expression.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-inverse.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-sum.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-expression.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-inverse.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-sum.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/comparison-operators.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-1x1.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/details/matrix-inverse-2x2.hxx
@@ -205,21 +204,20 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/gram-schmidt-orthonormalisation.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/lanczos-decomposition.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-fwd.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-operation.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-plain.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-operations.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-type.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-info.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-operation.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-plain.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-element-operations.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-block-type.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-info.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-inverse.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-inverse-code-generated.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-product.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/multiprecision.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/multiprecision-mpfr.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/assign-operators.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/assign-operators.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/quaternion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/rotation.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/rpy.hpp

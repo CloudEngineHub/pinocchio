@@ -7,6 +7,7 @@
 
 // IWYU pragma: begin_keep
 #include <type_traits>
+#include <cstddef>
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

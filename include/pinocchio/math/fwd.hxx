@@ -5,8 +5,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <type_traits>
-  #include <cstddef>
+  #include "pinocchio/math/fwd.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

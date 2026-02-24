@@ -6,7 +6,8 @@
 #ifndef __pinocchio_algorithm_constraints_sets_second_order_cone_jordan_operation_hpp__
 #define __pinocchio_algorithm_constraints_sets_second_order_cone_jordan_operation_hpp__
 
-#include "pinocchio/math/fwd.hpp"
+#include <Eigen/Core>
+#include "pinocchio/math.hpp"
 
 namespace pinocchio
 {

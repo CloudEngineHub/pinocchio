@@ -5,8 +5,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
-  #include <type_traits>
+  #include "pinocchio/fwd.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

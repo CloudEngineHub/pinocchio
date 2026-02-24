@@ -14,11 +14,8 @@
 #include <Eigen/Core>
 
 #include "pinocchio/macros.hpp"
-#include "pinocchio/eigen-common.hpp"
-#include "pinocchio/utils/template-template-parameter.hpp"
 
-#include "pinocchio/math.hpp"
-#include "pinocchio/utils/promote-static-eval.hpp"
+#include "pinocchio/utils/eigen-helpers.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
