@@ -14,6 +14,7 @@
 #include <limits>
 #include <cstddef>
 #include <type_traits>
+#include <vector>
 
 #include <boost/type_traits.hpp>
 #include <boost/math/constants/constants.hpp>
@@ -23,8 +24,11 @@
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
-#include "pinocchio/utils/alloca.hpp"
 
+#include "pinocchio/container/matrix-stack.hpp"
+
+#include "pinocchio/utils/alloca.hpp"
+#include "pinocchio/utils/size-in-bytes.hpp"
 #include "pinocchio/utils/eigen-helpers.hpp"
 #include "pinocchio/utils/static-if.hpp"
 #include "pinocchio/utils/check.hpp"
@@ -80,4 +84,5 @@
 #include "pinocchio/math/block-diagonal-matrix-expression.hxx"
 #include "pinocchio/math/block-diagonal-matrix-sum.hxx"
 #include "pinocchio/math/block-diagonal-matrix-inverse.hxx"
+#include "pinocchio/math/block-diagonal-matrix.hxx"
 // IWYU pragma: end_exports

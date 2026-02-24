@@ -2,26 +2,12 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_math_block_diagonal_matrix_hpp__
-#define __pinocchio_math_block_diagonal_matrix_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/assign-operators.hpp"
-#include "pinocchio/math/matrix-block-type.hpp"
-#include "pinocchio/math/matrix-block-element.hpp"
-
-#include "pinocchio/math/block-diagonal-matrix-base.hpp"
-#include "pinocchio/math/block-diagonal-matrix-expression.hpp"
-#include "pinocchio/math/block-diagonal-matrix-inverse.hpp"
-#include "pinocchio/math/block-diagonal-matrix-sum.hpp"
-
-#include "pinocchio/container/matrix-stack.hpp"
-#include "pinocchio/utils/size-in-bytes.hpp"
-
-#include "pinocchio/macros.hpp"
-
-#include <limits>
-#include <vector>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -774,25 +760,6 @@ namespace pinocchio
     std::vector<MatrixBlockElement> m_matrix_block_elements;
   }; // struct BlockDiagonalMatrixTpl
 
-} // namespace pinocchio
-
-#include "pinocchio/math/block-diagonal-matrix.hxx"
-
-#endif // #ifndef __pinocchio_math_block_diagonal_matrix_hpp__
-//
-// Copyright (c) 2026 INRIA
-//
-
-#ifndef __pinocchio_math_block_diagonal_matrix_hxx__
-#define __pinocchio_math_block_diagonal_matrix_hxx__
-
-#include "pinocchio/math/matrix-info.hxx"
-#include "pinocchio/math/matrix.hpp"
-#include "pinocchio/utils/alloca.hpp"
-
-namespace pinocchio
-{
-
   template<typename Scalar, int Options, std::size_t Alignment>
   template<typename DiagonalVectorType>
   void BlockDiagonalMatrixTpl<Scalar, Options, Alignment>::init_or_rebuild(
@@ -1256,5 +1223,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_block_diagonal_matrix_hxx__
