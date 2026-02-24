@@ -2,11 +2,12 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_math_block_diagonal_matrix_sum_hpp__
-#define __pinocchio_math_block_diagonal_matrix_sum_hpp__
+#pragma once
 
-#include "pinocchio/math/block-diagonal-matrix.hpp"
-#include "pinocchio/alloca.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -181,5 +182,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_block_diagonal_matrix_sum_hpp__

@@ -8,7 +8,7 @@
 #include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 #include "pinocchio/utils/reference.hpp"
-#include "pinocchio/math/block-diagonal-matrix.hpp"
+#include "pinocchio/math.hpp"
 
 namespace pinocchio
 {

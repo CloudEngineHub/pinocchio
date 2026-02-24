@@ -359,7 +359,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/symmetric3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/cast.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/check.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-fix.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-fix.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-helpers.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/file-io.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/openmp.hpp

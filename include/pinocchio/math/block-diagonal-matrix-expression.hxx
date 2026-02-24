@@ -2,8 +2,12 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_math_block_diagonal_matrix_expression_hpp__
-#define __pinocchio_math_block_diagonal_matrix_expression_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -22,5 +26,3 @@ namespace pinocchio
   }; // struct BlockDiagonalMatrixExpression
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_block_diagonal_matrix_expression_hpp__

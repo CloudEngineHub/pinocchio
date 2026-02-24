@@ -2,17 +2,12 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_math_matrix_block_element_hpp__
-#define __pinocchio_math_matrix_block_element_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/matrix-block-type.hpp"
-#include "pinocchio/math/matrix-block-element-fwd.hpp"
-#include "pinocchio/math/matrix-block-element-base.hpp"
-#include "pinocchio/math/matrix-block-element-plain.hpp"
-#include "pinocchio/math/matrix-block-element-operation.hpp"
-
-#include "pinocchio/utils/eigen-helpers.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -462,12 +457,6 @@ namespace pinocchio
 
   }; // struct MatrixBlockElementTpl
 
-} // namespace pinocchio
-
-#include "pinocchio/math/matrix-block-element-operations.hpp"
-
-namespace pinocchio
-{
   template<typename MatrixOrMap, typename Enable, typename DiagonalVectorType>
   BinaryOperator<
     internal::add_op,
@@ -493,5 +482,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_matrix_block_element_hpp__

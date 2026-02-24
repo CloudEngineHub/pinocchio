@@ -18,6 +18,8 @@
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
+#include "pinocchio/utils/eigen-helpers.hpp"
+#include "pinocchio/math/matrix-info.hxx"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

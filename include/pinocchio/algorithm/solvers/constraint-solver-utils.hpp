@@ -13,7 +13,7 @@
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 #include "pinocchio/utils/std-vector.hpp"
 #include "pinocchio/utils/reference.hpp"
-#include "pinocchio/math/matrix-block.hpp"
+#include "pinocchio/math.hpp"
 
 #include <sstream>
 

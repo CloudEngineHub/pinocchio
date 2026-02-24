@@ -9,7 +9,7 @@
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/common/model-entity.hpp"
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/math/matrix-block-element.hpp"
+#include "pinocchio/math.hpp"
 
 namespace pinocchio
 {

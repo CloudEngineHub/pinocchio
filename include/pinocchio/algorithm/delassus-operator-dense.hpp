@@ -8,7 +8,7 @@
 #include "pinocchio/algorithm/fwd.hpp"
 
 #include "pinocchio/macros.hpp"
-#include "pinocchio/math/block-diagonal-matrix.hpp"
+#include "pinocchio/math.hpp"
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
 #include "pinocchio/container/eigen-storage.hpp"
 
@@ -299,8 +299,9 @@ namespace pinocchio
 
     /// \brief Update numerical damping by copying an input block diagonal matrix.
     template<int OtherOptions, std::size_t OtherAlignment>
-    void updateDamping(const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
-                         block_diagonal_damping_matrix)
+    void updateDamping(
+      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
+        block_diagonal_damping_matrix)
     {
       if (&block_diagonal_damping_matrix == &m_damping)
         return;

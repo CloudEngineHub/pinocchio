@@ -1738,17 +1738,17 @@ namespace pinocchio
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   getFrameKinematicHessian<context::Scalar, context::Options, JointCollectionDefaultTpl>(
-    const context::Model &,
-    const context::Data &,
+    const Model &,
+    const Data &,
     const JointIndex,
-    const context::SE3 &,
+    const SE3 &,
     const ReferenceFrame,
     Tensor<context::Scalar, 3, context::Options> &);
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   getFrameKinematicHessian<context::Scalar, context::Options, JointCollectionDefaultTpl>(
-    const context::Model &,
-    const context::Data &,
+    const Model &,
+    const Data &,
     const FrameIndex,
     const ReferenceFrame,
     Tensor<context::Scalar, 3, context::Options> &);
@@ -1761,16 +1761,12 @@ namespace pinocchio
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
     Tensor<context::Scalar, 3, context::Options>
     getFrameKinematicHessian<context::Scalar, context::Options, JointCollectionDefaultTpl>(
-      const context::Model &,
-      const context::Data &,
-      const JointIndex,
-      const context::SE3 &,
-      const ReferenceFrame);
+      const Model &, const Data &, const JointIndex, const SE3 &, const ReferenceFrame);
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
     Tensor<context::Scalar, 3, context::Options>
     getFrameKinematicHessian<context::Scalar, context::Options, JointCollectionDefaultTpl>(
-      const context::Model &, const context::Data &, const FrameIndex, const ReferenceFrame);
+      const Model &, const Data &, const FrameIndex, const ReferenceFrame);
 
 } // namespace pinocchio
 

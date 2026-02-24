@@ -5,7 +5,7 @@
 #ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_hpp__
 #define __pinocchio_algorithm_delassus_operator_linear_complexity_hpp__
 
-#include "pinocchio/math/block-diagonal-matrix.hpp"
+#include "pinocchio/math.hpp"
 
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/delassus-operator-base.hpp"
@@ -257,8 +257,9 @@ namespace pinocchio
 
     /// \brief Update numerical damping by copying an input block diagonal matrix.
     template<int OtherOptions, std::size_t OtherAlignment>
-    void updateDamping(const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
-                         block_diagonal_damping_matrix)
+    void updateDamping(
+      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
+        block_diagonal_damping_matrix)
     {
       if (&block_diagonal_damping_matrix == &m_damping)
         return;

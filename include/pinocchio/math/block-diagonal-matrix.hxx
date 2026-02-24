@@ -5,9 +5,9 @@
 #ifndef __pinocchio_math_block_diagonal_matrix_hxx__
 #define __pinocchio_math_block_diagonal_matrix_hxx__
 
-#include "pinocchio/math/matrix-info.hpp"
+#include "pinocchio/math/matrix-info.hxx"
 #include "pinocchio/math/matrix.hpp"
-#include "pinocchio/alloca.hpp"
+#include "pinocchio/utils/alloca.hpp"
 
 namespace pinocchio
 {

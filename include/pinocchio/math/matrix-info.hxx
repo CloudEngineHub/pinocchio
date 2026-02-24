@@ -2,10 +2,12 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_math_matrix_info_hpp__
-#define __pinocchio_math_matrix_info_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 /**
  * @file matrix-info.hpp
@@ -82,5 +84,3 @@ namespace pinocchio
   }; // struct MatrixInfo
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_math_matrix_info_hpp__

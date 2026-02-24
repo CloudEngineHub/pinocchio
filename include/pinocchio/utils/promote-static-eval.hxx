@@ -6,8 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-// TODO move in .hxx
-// #include "pinocchio/utils/promote-static-eval.hpp"
+  #include "pinocchio/utils/promote-static-eval.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -467,13 +466,3 @@ namespace pinocchio
     return {std::forward<Eigen::NoAlias<MatrixExpression, StorageBase>>(matrix_expression)};
   }
 } // namespace pinocchio
-<<<<<<<<
-  HEAD : include / pinocchio / utils / promote - static - eval.hpp
-
-#endif // ifndef __pinocchio_utils_promote_static_eval_hpp__
-  || || ||
-  || parent of acac6b9c2(utilis : Rename private headers) : include / pinocchio / utils / eigen.hpp
-
-#endif // ifndef __pinocchio_utils_eigen_hpp__
-       == == == ==>>>>>>>> acac6b9c2(utilis : Rename private headers)
-: include / pinocchio / utils / eigen.hxx

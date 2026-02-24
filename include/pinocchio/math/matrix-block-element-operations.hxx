@@ -2,13 +2,12 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_math_matrix_block_element_operations_hpp__
-#define __pinocchio_math_matrix_block_element_operations_hpp__
+#pragma once
 
-#include <type_traits>
-
-#include "matrix-block-type.hpp"
-#include "pinocchio/math/assign-operators.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/math.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -237,5 +236,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_math_matrix_block_element_operations_hpp__

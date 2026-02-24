@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include <limits>
-#include <pinocchio/math/block-diagonal-matrix.hpp>
+#include <pinocchio/math.hpp>
 
 #include <boost/variant.hpp> // to avoid C99 warnings
 

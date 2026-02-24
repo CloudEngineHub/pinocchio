@@ -6,7 +6,7 @@
 #define __pinocchio_algorithm_constraint_cholesky_hpp__
 
 #include "pinocchio/multibody/model.hpp"
-#include "pinocchio/math/matrix-block.hpp"
+#include "pinocchio/math.hpp"
 #include "pinocchio/math/triangular-matrix.hpp"
 #include "pinocchio/container/eigen-storage.hpp"
 #include "pinocchio/utils/std-vector.hpp"

@@ -25,14 +25,16 @@
 #include "pinocchio/eigen-common.hpp"
 #include "pinocchio/utils/alloca.hpp"
 
+#include "pinocchio/utils/eigen-helpers.hpp"
 #include "pinocchio/utils/static-if.hpp"
 #include "pinocchio/utils/check.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
+#include "pinocchio/math/fwd.hxx"
 #include "pinocchio/math/eigen-helpers.hxx"
 #include "pinocchio/math/comparison-operators.hxx"
-#include "pinocchio/math/fwd.hxx"
+#include "pinocchio/math/assign-operators.hxx"
 #include "pinocchio/math/alias.hxx"
 #include "pinocchio/math/taylor-expansion.hxx"
 #include "pinocchio/math/matrix.hxx"
@@ -40,6 +42,7 @@
 #include "pinocchio/math/rpy.hxx"
 #include "pinocchio/math/rotation.hxx"
 #include "pinocchio/math/quaternion.hxx"
+#include "pinocchio/math/matrix-info.hxx"
 #include "pinocchio/math/triangular-matrix.hxx"
 #include "pinocchio/math/matrix-block.hxx"
 #include "pinocchio/math/tensor.hxx"
@@ -65,4 +68,16 @@
 #include "pinocchio/math/details/matrix-inverse-12x12.hxx"
 #include "pinocchio/math/matrix-inverse.hxx"
 #include "pinocchio/math/matrix-product.hxx"
+
+#include "pinocchio/math/matrix-block-type.hxx"
+#include "pinocchio/math/matrix-block-element-operation.hxx"
+#include "pinocchio/math/matrix-block-element-operations.hxx"
+#include "pinocchio/math/matrix-block-element-base.hxx"
+#include "pinocchio/math/matrix-block-element-plain.hxx"
+#include "pinocchio/math/matrix-block-element.hxx"
+
+#include "pinocchio/math/block-diagonal-matrix-base.hxx"
+#include "pinocchio/math/block-diagonal-matrix-expression.hxx"
+#include "pinocchio/math/block-diagonal-matrix-sum.hxx"
+#include "pinocchio/math/block-diagonal-matrix-inverse.hxx"
 // IWYU pragma: end_exports

@@ -6,6 +6,7 @@
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include <type_traits>
+  #include <cstddef>
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -43,5 +44,12 @@ namespace pinocchio
   ///  \brief Foward declaration of TaylorSeriesExpansion.
   template<typename Scalar>
   struct TaylorSeriesExpansion;
+
+  template<typename Derived>
+  struct MatrixBlockElementBase;
+  template<typename Derived>
+  struct MatrixBlockElementPlain;
+  template<typename Derived>
+  struct MatrixBlockElementOperation;
 
 } // namespace pinocchio

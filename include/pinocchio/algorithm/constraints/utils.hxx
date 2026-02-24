@@ -10,7 +10,7 @@
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/utils/reference.hpp"
 
-#include "pinocchio/math/matrix-block-type.hpp"
+#include "pinocchio/math.hpp"
 #include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
 
 namespace pinocchio
