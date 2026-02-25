@@ -205,7 +205,7 @@ namespace pinocchio
       }
 
       static void
-      setCompliance(Self & self, ResidualVectorType & vector, ConstraintSelectionType sel)
+      setCompliance(Self & self, const ResidualVectorType & vector, ConstraintSelectionType sel)
       {
         switch (sel)
         {

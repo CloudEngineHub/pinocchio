@@ -575,7 +575,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & res_, ConstraintSelectionTag<Sel> sel) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(int(res_.size()) == residualSize(sel));
-      auto res = res_.const_cast_derived();
+      auto & res = res_.const_cast_derived();
       if constexpr (std::is_same_v<ConstraintSelectionTag<Sel>, MaximalSelection>)
       {
         res = m_compliance;

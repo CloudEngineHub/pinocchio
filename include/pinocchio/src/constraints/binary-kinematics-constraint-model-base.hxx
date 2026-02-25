@@ -122,6 +122,7 @@ namespace pinocchio
     , depth_joint1(0)
     , depth_joint2(0)
     {
+      m_compliance = ResidualVectorType::Zero(residualSize());
     }
 
     /// \brief Constructor with only model.
