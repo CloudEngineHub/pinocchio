@@ -574,4 +574,84 @@ BOOST_AUTO_TEST_CASE(check_maps)
   }
 }
 
+BOOST_AUTO_TEST_CASE(compliance)
+{
+  {
+    JointLimitConstraintModel empty_jmodel;
+    Eigen::VectorXd compliance;
+    empty_jmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance.size() == 0);
+  }
+
+  Model model;
+  buildModelWithAllBoundedJoints(model);
+
+  model.lowerPositionLimit.fill(-1.);
+  model.upperPositionLimit.fill(+1.);
+
+  const JointIndex last_joint_id = Model::JointIndex(model.njoints /*-1*/);
+
+  Model::IndexVector activable_joint_ids;
+  for (Model::JointIndex i = 1; i < last_joint_id; ++i)
+  {
+    activable_joint_ids.push_back(i);
+
+    const auto & jmodel = model.joints[i];
+    const int nq = jmodel.nq();
+    const auto has_configuration_limit = jmodel.hasConfigurationLimit();
+    for (size_t k = 0; k < size_t(nq); ++k)
+    {
+      BOOST_CHECK(has_configuration_limit[k] == true);
+    }
+  }
+  JointLimitConstraintModel cmodel(model, activable_joint_ids);
+  const Eigen::VectorXd q = model.lowerPositionLimit;
+
+  {
+    // check retrieve compliance
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == Eigen::VectorXd::Zero(cmodel.residualSize()));
+    //
+    Eigen::VectorXd compliance_full(cmodel.residualSize(MaximalSelection()));
+    cmodel.retrieveCompliance(compliance_full, MaximalSelection());
+    BOOST_CHECK(compliance_full == Eigen::VectorXd::Zero(cmodel.residualSize(MaximalSelection())));
+    BOOST_CHECK(compliance == compliance_full);
+
+    cmodel.makeSelectionFilteredByLimitProximity(q);
+    BOOST_CHECK(cmodel.residualSize() < cmodel.residualSize(MaximalSelection()));
+    //
+    compliance.resize(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == Eigen::VectorXd::Zero(cmodel.residualSize()));
+    //
+    cmodel.retrieveCompliance(compliance_full, MaximalSelection());
+    BOOST_CHECK(compliance_full == Eigen::VectorXd::Zero(cmodel.residualSize(MaximalSelection())));
+    BOOST_CHECK(compliance.size() < compliance_full.size());
+  }
+
+  {
+    // check set compliance
+    Eigen::VectorXd compliance_ref = Eigen::VectorXd::Random(cmodel.residualSize());
+    compliance_ref = compliance_ref.cwiseAbs();
+    Eigen::VectorXd compliance_full_ref =
+      Eigen::VectorXd::Random(cmodel.residualSize(MaximalSelection()));
+    compliance_full_ref = compliance_full_ref.cwiseAbs();
+
+    cmodel.makeSelectionFilteredByLimitProximity(q);
+    BOOST_CHECK(cmodel.residualSize() < cmodel.residualSize(MaximalSelection()));
+
+    cmodel.setCompliance(compliance_ref);
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == compliance_ref);
+
+    cmodel.setCompliance(compliance_full_ref, MaximalSelection());
+    Eigen::VectorXd compliance_full(cmodel.residualSize(MaximalSelection()));
+    cmodel.retrieveCompliance(compliance_full, MaximalSelection());
+    BOOST_CHECK(compliance_full == compliance_full_ref);
+    BOOST_CHECK(compliance.size() < compliance_full_ref.size());
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

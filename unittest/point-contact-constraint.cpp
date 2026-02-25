@@ -814,4 +814,29 @@ BOOST_AUTO_TEST_CASE(check_maps)
 
 */
 
+BOOST_AUTO_TEST_CASE(compliance)
+{
+  pinocchio::Model model;
+  pinocchio::buildModels::humanoidRandom(model, true);
+
+  const std::string RF = "rleg6_joint";
+  PointAnchorConstraintModel cmodel(model, model.getJointId(RF), SE3::Random());
+
+  {
+    // check retrieve compliance
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == Eigen::VectorXd::Zero(cmodel.residualSize()));
+  }
+
+  {
+    // check set compliance
+    Eigen::VectorXd compliance_ref = Eigen::VectorXd::Random(cmodel.residualSize()).cwiseAbs();
+    cmodel.setCompliance(compliance_ref);
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == compliance_ref);
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

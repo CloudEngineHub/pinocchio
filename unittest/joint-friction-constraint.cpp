@@ -281,4 +281,41 @@ BOOST_AUTO_TEST_CASE(check_maps)
   }
 }
 
+BOOST_AUTO_TEST_CASE(compliance)
+{
+  {
+    JointFrictionConstraintModel empty_cmodel;
+    Eigen::VectorXd compliance;
+    empty_cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance.size() == 0);
+  }
+
+  pinocchio::Model model;
+  pinocchio::buildModels::humanoidRandom(model, true);
+
+  const std::string RF_name = "rleg6_joint";
+  const JointIndex RF_id = model.getJointId(RF_name);
+
+  const Model::IndexVector & RF_support = model.supports[RF_id];
+  const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
+
+  JointFrictionConstraintModel cmodel(model, active_joint_ids);
+
+  {
+    // check retrieve compliance
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == Eigen::VectorXd::Zero(cmodel.residualSize()));
+  }
+
+  {
+    // check set compliance
+    Eigen::VectorXd compliance_ref = Eigen::VectorXd::Random(cmodel.residualSize()).cwiseAbs();
+    cmodel.setCompliance(compliance_ref);
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == compliance_ref);
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
