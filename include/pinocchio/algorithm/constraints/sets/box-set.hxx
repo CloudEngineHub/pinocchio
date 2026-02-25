@@ -2,13 +2,12 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_sets_box_set_hpp__
-#define __pinocchio_algorithm_constraints_sets_box_set_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/sets/set-base.hpp"
-#include "pinocchio/math/matrix.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -153,5 +152,3 @@ namespace pinocchio
   }; // struct BoxSetTpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_sets_box_set_hpp__

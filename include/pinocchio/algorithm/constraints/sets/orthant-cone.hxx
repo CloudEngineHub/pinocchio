@@ -2,13 +2,12 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_sets_orthant_cone_hpp__
-#define __pinocchio_algorithm_constraints_sets_orthant_cone_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/matrix.hpp"
-
-#include "pinocchio/algorithm/constraints/sets/cone-base.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -95,5 +94,3 @@ namespace pinocchio
   }; // struct NonNegativeOrthantConeTpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_sets_orthant_cone_hpp__

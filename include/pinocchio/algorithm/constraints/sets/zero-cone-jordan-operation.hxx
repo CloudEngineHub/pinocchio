@@ -2,12 +2,12 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_sets_zero_cone_jordan_operation_hpp__
-#define __pinocchio_algorithm_constraints_sets_zero_cone_jordan_operation_hpp__
+#pragma once
 
-#include "pinocchio/macros.hpp"
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/matrix.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -354,5 +354,3 @@ namespace pinocchio
   }; // struct ZeroConeJordanOperationTpl
 
 } // namespace pinocchio
-
-#endif // __pinocchio_algorithm_constraints_sets_zero_cone_jordan_operation_hpp__

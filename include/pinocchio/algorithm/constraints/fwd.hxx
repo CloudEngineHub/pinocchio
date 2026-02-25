@@ -2,11 +2,14 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_fwd_hpp__
-#define __pinocchio_algorithm_constraints_fwd_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/fwd.hpp"
-#include <boost/variant.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include <boost/blank.hpp>
+
+  #include "pinocchio/context.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -132,5 +135,3 @@ namespace pinocchio
   typedef NonNegativeOrthantConeTpl<context::Scalar> NonNegativeOrthantCone;
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_fwd_hpp__
