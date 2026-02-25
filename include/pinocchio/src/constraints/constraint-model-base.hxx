@@ -306,7 +306,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & vector,
       ConstraintSelectionTag<Sel> sel = CurrentSelection())
     {
-      assert(vector.size() == residualSize(sel));
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(vector.size() == residualSize(sel));
       if constexpr (constraint_size_type <= ConstraintSizeType::CONSTANT)
       {
         // Selection is trivial, do not generate multiple calls
@@ -325,7 +325,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & vector,
       ConstraintSelectionTag<Sel> sel = CurrentSelection()) const
     {
-      assert(vector.size() == residualSize(sel));
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(vector.size() == residualSize(sel));
       if constexpr (constraint_size_type <= ConstraintSizeType::CONSTANT)
       {
         // Selection is trivial, do not generate multiple calls
