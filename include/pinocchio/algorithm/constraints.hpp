@@ -2,6 +2,8 @@
 // Copyright (c) INRIA 2026
 //
 
+#pragma once
+
 // IWYU pragma: begin_keep
 #include <cassert>
 #include <cstddef>
@@ -68,6 +70,7 @@
 
 #include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hxx"
 
+#include "pinocchio/algorithm/constraints/blank-constraint.hxx"
 #include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hxx"
 
 #include "pinocchio/algorithm/constraints/constraint-model-base.hxx"

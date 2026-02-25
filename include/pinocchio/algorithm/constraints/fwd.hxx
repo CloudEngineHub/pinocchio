@@ -6,9 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <boost/blank.hpp>
-
-  #include "pinocchio/context.hpp"
+  #include "pinocchio/algorithm/constraints/fwd.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -34,14 +32,6 @@ namespace pinocchio
 
   using CurrentSelection = ConstraintSelectionTag<ConstraintSelectionType::CURRENT>;
   using MaximalSelection = ConstraintSelectionTag<ConstraintSelectionType::MAXIMAL>;
-
-  // Blank constraint model and data
-  struct BlankConstraintModel : boost::blank
-  {
-  };
-  struct BlankConstraintData : boost::blank
-  {
-  };
 
   // Constraints
   template<typename Scalar, int Options = 0>
