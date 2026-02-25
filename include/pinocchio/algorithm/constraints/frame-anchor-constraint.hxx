@@ -2,14 +2,12 @@
 // Copyright (c) 2019-2024 INRIA CNRS
 //
 
-#ifndef __pinocchio_algorithm_constraints_frame_anchor_constraint_hpp__
-#define __pinocchio_algorithm_constraints_frame_anchor_constraint_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/frame-constraint-model-base.hpp"
-#include "pinocchio/algorithm/constraints/frame-constraint-data-base.hpp"
-#include "pinocchio/algorithm/constraints/sets/full-space-cone.hpp"
-#include "pinocchio/algorithm/constraints/sets/zero-cone-jordan-operation.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -407,5 +405,3 @@ namespace pinocchio
   }; // struct FrameAnchorConstraintDataTpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_frame_anchor_constraint_hpp__

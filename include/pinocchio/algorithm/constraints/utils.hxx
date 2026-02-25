@@ -2,13 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_utils_hpp__
-#define __pinocchio_algorithm_constraints_utils_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/utils/std-vector.hpp"
-#include "pinocchio/utils/reference.hpp"
-#include "pinocchio/math.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -544,32 +543,6 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & block_diagonal_matrix);
 
-} // namespace pinocchio
-
-#include "pinocchio/algorithm/constraints/utils.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/constraints/utils.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // __pinocchio_algorithm_constraints_utils_hpp__
-//
-// Copyright (c) 2021-2025 INRIA
-//
-
-#ifndef __pinocchio_algorithm_constraints_utils_hxx__
-#define __pinocchio_algorithm_constraints_utils_hxx__
-
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/utils/reference.hpp"
-
-#include "pinocchio/math.hpp"
-#include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
-
-namespace pinocchio
-{
   template<
     typename Scalar,
     int Options,
@@ -1191,5 +1164,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_utils_hxx__

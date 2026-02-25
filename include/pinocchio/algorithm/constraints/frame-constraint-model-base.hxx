@@ -2,19 +2,12 @@
 // Copyright (c) 2019-2025 INRIA CNRS
 //
 
-#ifndef __pinocchio_algorithm_constraints_frame_constraint_model_base_hpp__
-#define __pinocchio_algorithm_constraints_frame_constraint_model_base_hpp__
+#pragma once
 
-#include <algorithm>
-
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/spatial/skew.hpp"
-#include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hpp"
-#include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -835,5 +828,3 @@ namespace pinocchio
   }; // struct FrameConstraintModelBase
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_frame_constraint_model_base_hpp__

@@ -2,12 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_constraint_collection_default_hpp__
-#define __pinocchio_algorithm_constraints_constraint_collection_default_hpp__
+#pragma once
 
-#include "fwd.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include <boost/variant.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -55,5 +55,3 @@ namespace pinocchio
   typedef ConstraintCollectionDefault::ConstraintDataVariant ConstraintDataVariant;
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_constraint_collection_default_hpp__

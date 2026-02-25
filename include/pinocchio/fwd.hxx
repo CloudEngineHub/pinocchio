@@ -18,6 +18,14 @@ namespace pinocchio
   {
   };
 
+  ///
+  /// \brief Common unsafe structure to allow advanced manipulation of classes' protected members.
+  ///
+  template<class C>
+  struct Unsafe
+  {
+  };
+
   /// \brief Blank type
   struct Blank
   {

@@ -1,13 +1,13 @@
 //
-// Copyright (c) 2019-2024 INRIA CNRS
+// Copyright (c) 2019-2025 INRIA CNRS
 //
 
-#ifndef __pinocchio_algorithm_constraints_frame_constraint_data_hpp__
-#define __pinocchio_algorithm_constraints_frame_constraint_data_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -15,26 +15,26 @@ namespace pinocchio
   // Declaration
   // --------------------------------------------------------------
   template<typename Derived>
-  struct FrameConstraintDataBase;
+  struct PointConstraintDataBase;
 
   // --------------------------------------------------------------
   // Helpers
   // --------------------------------------------------------------
   template<typename Derived>
-  using enable_if_frame_data_t =
-    std::enable_if_t<std::is_base_of_v<FrameConstraintDataBase<Derived>, Derived>>;
+  using enable_if_point_data_t =
+    std::enable_if_t<std::is_base_of_v<PointConstraintDataBase<Derived>, Derived>>;
 
   ///
-  /// \brief Data structure associated with FrameConstraint
+  /// \brief Data structure associated with PointConstraint
   ///
   template<typename Derived>
-  struct FrameConstraintDataBase : ConstraintDataBase<Derived>
+  struct PointConstraintDataBase : ConstraintDataBase<Derived>
   {
     // --------------------------------------------------------------
     // Type defs
     // --------------------------------------------------------------
     // CRTP related types -------------------------------------------
-    typedef FrameConstraintDataBase Self;
+    typedef PointConstraintDataBase Self;
     typedef ConstraintDataBase<Derived> Base;
 
     // Retrieving traits --------------------------------------------
@@ -52,7 +52,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, 6, 1, Options> Vector6;
     typedef Eigen::Matrix<Scalar, 6, 6, Options> Matrix6;
     typedef Eigen::Matrix<Scalar, 3, 6, Options> Matrix36;
-    typedef Matrix6 MatrixSize6;
+    typedef Matrix36 MatrixSize6;
     typedef Eigen::Matrix<Scalar, 3, 6, Eigen::RowMajor> RowMatrix36;
     typedef Eigen::Matrix<Scalar, 6, Eigen::Dynamic, Options> Matrix6x;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixX;
@@ -63,13 +63,13 @@ namespace pinocchio
 
     // CRTP related ------------------
 
-    /// \brief Cast to Base
+    /// \brief Cast to base
     Base & base()
     {
       return static_cast<Base &>(*this);
     }
 
-    /// \brief Const cast to Base
+    /// \brief Const cast to base
     const Base & base() const
     {
       return static_cast<const Base &>(*this);
@@ -78,40 +78,43 @@ namespace pinocchio
     // Constructors ------------------
 
     /// \brief Default constructor
-    FrameConstraintDataBase()
-    : constraint_force(Vector6::Zero())
+    PointConstraintDataBase()
+    : constraint_force(Vector3::Zero())
     , oMc1(SE3::Identity())
     , oMc2(SE3::Identity())
     , c1Mc2(SE3::Identity())
-    , constraint_position_error(Vector6::Zero())
-    , constraint_velocity_error(Vector6::Zero())
-    , constraint_acceleration_error(Vector6::Zero())
-    , constraint_acceleration_biais_term(Vector6::Zero())
-    , A1_world(Matrix6::Zero())
-    , A2_world(Matrix6::Zero())
-    , A_world(Matrix6::Zero())
-    , A1_local(Matrix6::Zero())
-    , A2_local(Matrix6::Zero())
-    , A_local(Matrix6::Zero())
+    , constraint_position_error(Vector3::Zero())
+    , constraint_velocity_error(Vector3::Zero())
+    , constraint_acceleration_error(Vector3::Zero())
+    , constraint_acceleration_biais_term(Vector3::Zero())
+    , A1_world(Matrix36::Zero())
+    , A2_world(Matrix36::Zero())
+    , A_world(Matrix36::Zero())
+    , A1_local(Matrix36::Zero())
+    , A2_local(Matrix36::Zero())
+    , A_local(Matrix36::Zero())
     {
     }
 
-    /// \brief Constructor from a constraint model
-    explicit FrameConstraintDataBase(const ConstraintModel & cmodel)
-    : constraint_force(Vector6::Zero())
+    /// \brief Constructor from a given ConstraintModel
+    ///
+    /// \param[in] cmodel input constraint model
+    ///
+    explicit PointConstraintDataBase(const ConstraintModel & cmodel)
+    : constraint_force(Vector3::Zero())
     , oMc1(SE3::Identity())
     , oMc2(SE3::Identity())
     , c1Mc2(SE3::Identity())
-    , constraint_position_error(Vector6::Zero())
-    , constraint_velocity_error(Vector6::Zero())
-    , constraint_acceleration_error(Vector6::Zero())
-    , constraint_acceleration_biais_term(Vector6::Zero())
-    , A1_world(Matrix6::Zero())
-    , A2_world(Matrix6::Zero())
-    , A_world(Matrix6::Zero())
-    , A1_local(Matrix6::Zero())
-    , A2_local(Matrix6::Zero())
-    , A_local(Matrix6::Zero())
+    , constraint_position_error(Vector3::Zero())
+    , constraint_velocity_error(Vector3::Zero())
+    , constraint_acceleration_error(Vector3::Zero())
+    , constraint_acceleration_biais_term(Vector3::Zero())
+    , A1_world(Matrix36::Zero())
+    , A2_world(Matrix36::Zero())
+    , A_world(Matrix36::Zero())
+    , A1_local(Matrix36::Zero())
+    , A2_local(Matrix36::Zero())
+    , A_local(Matrix36::Zero())
     {
       PINOCCHIO_UNUSED_VARIABLE(cmodel);
     }
@@ -119,7 +122,7 @@ namespace pinocchio
     // Operators ---------------------
 
     /// \brief Comparison operator
-    bool operator==(const FrameConstraintDataBase & other) const
+    bool operator==(const PointConstraintDataBase & other) const
     {
       return constraint_force == other.constraint_force && oMc1 == other.oMc1 && oMc2 == other.oMc2
              && c1Mc2 == other.c1Mc2 && constraint_position_error == other.constraint_position_error
@@ -129,11 +132,10 @@ namespace pinocchio
              && A1_world == other.A1_world && A2_world == other.A2_world && A_world == other.A_world
              && A1_local == other.A1_local && A2_local == other.A2_local
              && A_local == other.A_local;
-      ;
     }
 
     /// \brief Comparison operator
-    bool operator!=(const FrameConstraintDataBase & other) const
+    bool operator!=(const PointConstraintDataBase & other) const
     {
       return !(*this == other);
     }
@@ -144,7 +146,7 @@ namespace pinocchio
     // note: data is always public - use at your own risk
 
     /// \brief Resulting contact forces
-    Vector6 constraint_force;
+    Vector3 constraint_force;
 
     /// \brief Placement of the constraint frame 1 with respect to the WORLD frame
     SE3 oMc1;
@@ -156,34 +158,24 @@ namespace pinocchio
     SE3 c1Mc2;
 
     /// \brief Constraint position error
-    Vector6 constraint_position_error;
+    Vector3 constraint_position_error;
 
     /// \brief Constraint velocity error
-    Vector6 constraint_velocity_error;
+    Vector3 constraint_velocity_error;
 
     /// \brief Constraint acceleration error
-    Vector6 constraint_acceleration_error;
+    Vector3 constraint_acceleration_error;
 
     /// \brief Constraint acceleration biais
-    Vector6 constraint_acceleration_biais_term;
+    Vector3 constraint_acceleration_biais_term;
 
-    Matrix6 A1_world;
-    Matrix6 A2_world;
-    Matrix6 A_world; // A1 + A2
+    Matrix36 A1_world;
+    Matrix36 A2_world;
+    Matrix36 A_world; // A1 + A2
 
-    Matrix6 A1_local;
-    Matrix6 A2_local;
-    Matrix6 A_local; // A1 + A2
-
-    //    VectorOfMatrix6 extended_motion_propagators_joint1;
-    //    VectorOfMatrix6 lambdas_joint1;
-    //    VectorOfMatrix6 extended_motion_propagators_joint2;
-
-    //    Matrix6x dv1_dq, da1_dq, da1_dv, da1_da;
-    //    Matrix6x dv2_dq, da2_dq, da2_dv, da2_da;
-    //    MatrixX dvc_dq, dac_dq, dac_dv, dac_da;
-  }; // struct FrameConstraintDataBase
+    Matrix36 A1_local;
+    Matrix36 A2_local;
+    Matrix36 A_local; // A1 + A2
+  }; // struct PointConstraintDataBase
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_frame_constraint_data_hpp__

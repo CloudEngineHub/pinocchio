@@ -2,11 +2,12 @@
 // Copyright (c) 2023-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_jointwise_constraint_model_base_hpp__
-#define __pinocchio_algorithm_constraints_jointwise_constraint_model_base_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-base.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -192,5 +193,3 @@ namespace pinocchio
   }; // struct JointWiseConstraintModelBase
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_jointwise_constraint_model_base_hpp__

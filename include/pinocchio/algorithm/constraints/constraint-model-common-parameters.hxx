@@ -2,10 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_constraint_model_common_parameters_hpp__
-#define __pinocchio_algorithm_constraints_constraint_model_common_parameters_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/constraints/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -107,5 +109,3 @@ namespace pinocchio
   }; // struct ConstraintModelCommonParameters
 
 } // namespace pinocchio
-
-#endif // __pinocchio_algorithm_constraints_constraint_model_common_parameters_hpp__

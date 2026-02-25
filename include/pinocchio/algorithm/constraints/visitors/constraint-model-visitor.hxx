@@ -2,13 +2,12 @@
 // Copyright (c) 2023-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_constraint_model_visitor_hpp__
-#define __pinocchio_algorithm_constraints_constraint_model_visitor_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-base.hpp"
-#include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
-#include "pinocchio/multibody/visitor/fusion.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -1464,5 +1463,3 @@ namespace pinocchio
   } // namespace visitors
 
 } // namespace pinocchio
-
-#endif // ifdef __pinocchio_algorithm_constraints_constraint_model_visitor_hpp__

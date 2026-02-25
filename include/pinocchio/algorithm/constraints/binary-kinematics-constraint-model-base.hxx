@@ -2,17 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_relative_constraint_model_base_hpp__
-#define __pinocchio_algorithm_constraints_relative_constraint_model_base_hpp__
+#pragma once
 
-#include <algorithm>
-
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/kinematics-constraint-model-base.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -370,21 +365,6 @@ namespace pinocchio
     using BaseCommonParameters::m_compliance;
   }; // struct BinaryKinematicsConstraintModelBase
 
-} // namespace pinocchio
-
-#include "pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hxx"
-
-#endif // ifndef __pinocchio_algorithm_constraints_relative_constraint_model_base_hpp__
-//
-// Copyright (c) 2025 INRIA
-//
-
-#ifndef __pinocchio_algorithm_constraints_relative_constraint_model_base_hxx__
-#define __pinocchio_algorithm_constraints_relative_constraint_model_base_hxx__
-
-namespace pinocchio
-{
-
   template<typename Derived>
   template<int OtherOptions, template<typename, int> class JointCollectionTpl>
   void BinaryKinematicsConstraintModelBase<Derived>::init(
@@ -469,5 +449,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_relative_constraint_model_base_hxx__

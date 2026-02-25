@@ -2,14 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_constraint_ordering_hpp__
-#define __pinocchio_algorithm_constraints_constraint_ordering_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -36,28 +34,6 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models);
-
-} // namespace pinocchio
-
-#include "pinocchio/algorithm/constraints/constraint-ordering.hxx"
-
-#endif // ifndef __pinocchio_algorithm_constraints_constraint_ordering_hpp__
-//
-// Copyright (c) 2024-2025 INRIA
-//
-
-#ifndef __pinocchio_algorithm_constraints_constraint_ordering_hxx__
-#define __pinocchio_algorithm_constraints_constraint_ordering_hxx__
-
-#include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
-
-#include "pinocchio/utils/reference.hpp"
-#include "pinocchio/utils/std-vector.hpp"
-
-/// @cond DEV
-
-namespace pinocchio
-{
 
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   struct ConstraintCouplingInformationCollectorStep
@@ -342,5 +318,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_algorithm_constraints_constraint_ordering_hxx__

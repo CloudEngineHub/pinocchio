@@ -2,21 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraints_joint_limit_constraint_hpp__
-#define __pinocchio_algorithm_constraints_joint_limit_constraint_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/jointwise-constraint-model-base.hpp"
-#include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp"
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
-#include "pinocchio/algorithm/constraints/sets/orthant-cone.hpp"
-#include "pinocchio/algorithm/constraints/sets/orthant-cone-jordan-operation.hpp"
-
-#include "pinocchio/container/eigen-storage.hpp"
-#include "pinocchio/container/matrix-stack.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraints.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -1065,21 +1056,6 @@ namespace pinocchio
     RowVectorStack rowise_tangent_map;
   }; // struct JointLimitConstraintDataTpl
 
-} // namespace pinocchio
-
-#include "pinocchio/algorithm/constraints/joint-limit-constraint.hxx"
-
-#endif // ifndef __pinocchio_algorithm_constraints_joint_limit_constraint_hpp__
-//
-// Copyright (c) 2024-2025 INRIA
-//
-
-#ifndef __pinocchio_algorithm_constraints_joint_limit_constraint_hxx__
-#define __pinocchio_algorithm_constraints_joint_limit_constraint_hxx__
-
-namespace pinocchio
-{
-
   template<typename Scalar, int Options>
   template<
     int OtherOptions,
@@ -1814,5 +1790,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_constraints_joint_limit_constraint_hxx__
