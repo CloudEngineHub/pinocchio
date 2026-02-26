@@ -14,6 +14,7 @@
 #include <boost/fusion/container/vector.hpp>
 
 #include "pinocchio/config.hpp"
+#include "pinocchio/context.hpp"
 #include "pinocchio/unsupported.hpp"
 #include "pinocchio/macros.hpp"
 
