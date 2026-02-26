@@ -30,6 +30,7 @@
 
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
+#include "pinocchio/unsupported.hpp"
 #include "pinocchio/eigen-common.hpp"
 #include "pinocchio/context.hpp"
 
@@ -100,5 +101,7 @@
 #include "pinocchio/algorithm/constraints/constraint-collection-default.hxx"
 
 #include "pinocchio/algorithm/constraints/constraint-ordering.hxx"
+#include "pinocchio/algorithm/constraints/contact-info.hxx"
+
 #include "pinocchio/algorithm/constraints/utils.hxx"
 // IWYU pragma: end_exports

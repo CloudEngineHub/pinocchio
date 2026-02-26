@@ -2,16 +2,11 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraint_cholesky_hpp__
-#define __pinocchio_algorithm_constraint_cholesky_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/math.hpp"
-#include "pinocchio/math/triangular-matrix.hpp"
-#include "pinocchio/container/eigen-storage.hpp"
-#include "pinocchio/utils/std-vector.hpp"
-
-#include "pinocchio/algorithm/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -546,23 +541,4 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#include "pinocchio/algorithm/delassus-operator-cholesky-expression.hpp"
-
-/* --- Details -------------------------------------------------------------------- */
-/* --- Details -------------------------------------------------------------------- */
-/* --- Details -------------------------------------------------------------------- */
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/constraint-cholesky.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-// Because of a GCC bug we should NEVER define a function that use ContactCholeskyDecompositionTpl
-// before doing the explicit template instantiation.
-// If we don't take care, GCC will not accept any visibility attribute when declaring the
-// explicit template instantiation of the ContactCholeskyDecompositionTpl class.
-// The warning message will look like this: type attributes ignored after type is already defined
-// [-Wattributes] A minimal code example is added on the PR
-// (https://github.com/stack-of-tasks/pinocchio/pull/2469)
-#include "pinocchio/algorithm/constraint-cholesky.hxx"
-
-#endif // ifndef __pinocchio_algorithm_constraint_cholesky_hpp__
+// #include "pinocchio/algorithm/delassus-operator-cholesky-expression.hpp"
