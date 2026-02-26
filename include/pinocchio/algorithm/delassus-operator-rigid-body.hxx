@@ -2,21 +2,14 @@
 // Copyright (c) 2024-2026 INRIA
 //
 
-#ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_hpp__
-#define __pinocchio_algorithm_delassus_operator_linear_complexity_hpp__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/delassus-operator.hpp"
+#endif // PINOCCHIO_LSP
 
 #include "pinocchio/math.hpp"
-
-#include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/algorithm/delassus-operator-base.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
-#include "pinocchio/container/eigen-storage.hpp"
-
-#include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
-#include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
-#include "pinocchio/utils/template-template-parameter.hpp"
-#include "pinocchio/utils/size-in-bytes.hpp"
 
 namespace pinocchio
 {
@@ -560,25 +553,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#include "pinocchio/algorithm/delassus-operator-rigid-body.hxx"
-
-#endif // ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_hpp__
-//
-// Copyright (c) 2024-2026 INRIA
-//
-
-#ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_hxx__
-#define __pinocchio_algorithm_delassus_operator_linear_complexity_hxx__
-
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-
-#include "pinocchio/algorithm/loop-constrained-aba.hpp"
-#include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
-
-#include "pinocchio/algorithm/delassus-operator-rigid-body-visitors.hxx"
-
 namespace pinocchio
 {
 
@@ -1048,5 +1022,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_hxx__

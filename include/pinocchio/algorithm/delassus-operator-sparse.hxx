@@ -2,11 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_delassus_operator_sparse_hpp__
-#define __pinocchio_algorithm_delassus_operator_sparse_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/algorithm/delassus-operator-base.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/delassus-operator.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -296,5 +297,3 @@ namespace pinocchio
   }; // struct DelassusOperatorSparseTpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_delassus_operator_sparse_hpp__

@@ -1,14 +1,12 @@
 //
 // Copyright (c) 2025 INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_algorithm_delassus_operator_preconditioned_hpp__
-#define __pinocchio_algorithm_delassus_operator_preconditioned_hpp__
-
-#include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/math/arithmetic-operators.hpp"
-#include "pinocchio/algorithm/delassus-operator-base.hpp"
-#include "pinocchio/algorithm/preconditioner-base.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/delassus-operator.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -167,5 +165,3 @@ namespace pinocchio
   }; // struct DelassusOperatorPreconditioned
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_delassus_operator_preconditioned_hpp__

@@ -2,15 +2,12 @@
 // Copyright (c) 2024-2026 INRIA
 //
 
-#ifndef __pinocchio_algorithm_delassus_operator_dense_hpp__
-#define __pinocchio_algorithm_delassus_operator_dense_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/fwd.hpp"
-
-#include "pinocchio/macros.hpp"
-#include "pinocchio/math.hpp"
-#include "pinocchio/algorithm/delassus-operator-base.hpp"
-#include "pinocchio/container/eigen-storage.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/delassus-operator.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -503,5 +500,3 @@ namespace pinocchio
   }; // struct DelassusOperatorDenseTpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_delassus_operator_dense_hpp__
