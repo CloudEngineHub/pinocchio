@@ -54,14 +54,6 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
-    const ContactCholeskyDecompositionTpl & other)
-  : ContactCholeskyDecompositionTpl(other.min_damping_value)
-  {
-    *this = other;
-  }
-
-  template<typename Scalar, int Options>
   template<
     typename S1,
     int O1,
