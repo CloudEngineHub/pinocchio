@@ -17,21 +17,6 @@ namespace pinocchio
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
 
   template<typename Scalar, int Options>
-  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
-    const Scalar min_damping_value)
-  : D(D_storage.map())
-  , Dinv(Dinv_storage.map())
-  , U(U_storage.map())
-  , compliance(compliance_storage.map())
-  , damping(damping_storage.map())
-  , sum_compliance_damping(sum_compliance_damping_storage.map())
-  , delassus_block(delassus_block_storage.map())
-  , decomposition_dirty(true)
-  , min_damping_value(min_damping_value)
-  {
-  }
-
-  template<typename Scalar, int Options>
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
   ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
@@ -74,49 +59,6 @@ namespace pinocchio
   : ContactCholeskyDecompositionTpl(other.min_damping_value)
   {
     *this = other;
-  }
-
-  template<typename Scalar, int Options>
-  ContactCholeskyDecompositionTpl<Scalar, Options> &
-  ContactCholeskyDecompositionTpl<Scalar, Options>::operator=(
-    const ContactCholeskyDecompositionTpl & other)
-  {
-    parents_fromRow = other.parents_fromRow;
-    nv_subtree_fromRow = other.nv_subtree_fromRow;
-    nv = other.nv;
-
-    rowise_sparsity_pattern = other.rowise_sparsity_pattern;
-
-    D_storage = other.D_storage;
-    Dinv_storage = other.Dinv_storage;
-    U_storage = other.U_storage;
-    compliance_storage = other.compliance_storage;
-    damping_storage = other.damping_storage;
-    sum_compliance_damping_storage = other.sum_compliance_damping_storage;
-    delassus_block_storage = other.delassus_block_storage;
-
-    decomposition_dirty = other.decomposition_dirty;
-    min_damping_value = other.min_damping_value;
-
-    return *this;
-  }
-
-  template<typename Scalar, int Options>
-  template<
-    typename S1,
-    int O1,
-    template<typename, int> class JointCollectionTpl,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator>
-  PINOCCHIO_DEPRECATED void ContactCholeskyDecompositionTpl<Scalar, Options>::allocate(
-    const ModelTpl<S1, O1, JointCollectionTpl> & model,
-    const DataTpl<S1, O1, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-  {
-    rebuild(model, data, constraint_models, constraint_datas);
   }
 
   template<typename Scalar, int Options>
@@ -770,45 +712,6 @@ namespace pinocchio
     Matrix res(size(), size());
     inverse(res);
     return res;
-  }
-
-  template<typename Scalar, int Options>
-  template<typename S1, int O1>
-  bool ContactCholeskyDecompositionTpl<Scalar, Options>::operator==(
-    const ContactCholeskyDecompositionTpl<S1, O1> & other) const
-  {
-    bool is_same = true;
-
-    if (nv != other.nv)
-      return false;
-
-    if (
-      D.size() != other.D.size() || Dinv.size() != other.Dinv.size() || U.rows() != other.U.rows()
-      || U.cols() != other.U.cols())
-      return false;
-
-    is_same &= (D == other.D);
-    is_same &= (Dinv == other.Dinv);
-    is_same &= (U == other.U);
-
-    is_same &= (parents_fromRow == other.parents_fromRow);
-    is_same &= (nv_subtree_fromRow == other.nv_subtree_fromRow);
-    //        is_same &= (rowise_sparsity_pattern == other.rowise_sparsity_pattern);
-
-    is_same &= (compliance_storage == other.compliance_storage);
-    is_same &= (damping_storage == other.damping_storage);
-    is_same &= (sum_compliance_damping_storage == other.sum_compliance_damping_storage);
-    is_same &= (delassus_block_storage == other.delassus_block_storage);
-    is_same &= (decomposition_dirty == other.decomposition_dirty);
-    return is_same;
-  }
-
-  template<typename Scalar, int Options>
-  template<typename S1, int O1>
-  bool ContactCholeskyDecompositionTpl<Scalar, Options>::operator!=(
-    const ContactCholeskyDecompositionTpl<S1, O1> & other) const
-  {
-    return !(*this == other);
   }
 
   namespace details

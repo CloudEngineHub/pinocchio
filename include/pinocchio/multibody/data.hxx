@@ -89,7 +89,7 @@ namespace pinocchio
     // TODO Remove when API is stabilized
     PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
     PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-    // // typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
+    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     /// \brief Vector of pinocchio::JointData associated to the pinocchio::JointModel stored in
@@ -537,7 +537,7 @@ namespace pinocchio
 #endif
 
     /// \brief Cholesky decomposition of the KKT contact matrix
-    // ContactCholeskyDecomposition contact_chol;
+    ContactCholeskyDecomposition contact_chol;
 
     /// \brief RHS vector when solving the contact dynamics KKT problem
     VectorXs primal_dual_contact_solution;
@@ -994,7 +994,7 @@ namespace pinocchio
       && data1.impulse_c == data2.impulse_c && data1.staticRegressor == data2.staticRegressor
       && data1.bodyRegressor == data2.bodyRegressor
       && data1.jointTorqueRegressor == data2.jointTorqueRegressor
-      //    && data1.contact_chol == data2.contact_chol
+      && data1.contact_chol == data2.contact_chol
       && data1.primal_dual_contact_solution == data2.primal_dual_contact_solution
       && data1.extended_motion_propagator == data2.extended_motion_propagator
       && data1.extended_motion_propagator2 == data2.extended_motion_propagator2

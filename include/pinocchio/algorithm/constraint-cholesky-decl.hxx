@@ -6,7 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/algorithm/constraint-cholesky.hpp"
+  #include "pinocchio/algorithm/constraint-cholesky-decl.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
@@ -92,7 +92,18 @@ namespace pinocchio
     ///
     /// \brief Default constructor
     ///
-    explicit ContactCholeskyDecompositionTpl(const Scalar min_damping_value = Scalar(0));
+    explicit ContactCholeskyDecompositionTpl(const Scalar min_damping_value = Scalar(0))
+    : D(D_storage.map())
+    , Dinv(Dinv_storage.map())
+    , U(U_storage.map())
+    , compliance(compliance_storage.map())
+    , damping(damping_storage.map())
+    , sum_compliance_damping(sum_compliance_damping_storage.map())
+    , delassus_block(delassus_block_storage.map())
+    , decomposition_dirty(true)
+    , min_damping_value(min_damping_value)
+    {
+    }
 
     ///
     /// \brief Constructor from a model.
@@ -135,14 +146,39 @@ namespace pinocchio
     ///
     /// \param[in] other ContactCholeskyDecompositionTpl to copy
     ///
-    ContactCholeskyDecompositionTpl(const ContactCholeskyDecompositionTpl & other);
+    ContactCholeskyDecompositionTpl(const ContactCholeskyDecompositionTpl & other)
+    : ContactCholeskyDecompositionTpl(other.min_damping_value)
+    {
+      *this = other;
+    }
 
     ///
     /// \brief Copy operator
     ///
     /// \param[in] other ContactCholeskyDecompositionTpl to copy
     ///
-    ContactCholeskyDecompositionTpl & operator=(const ContactCholeskyDecompositionTpl & other);
+    ContactCholeskyDecompositionTpl & operator=(const ContactCholeskyDecompositionTpl & other)
+
+    {
+      parents_fromRow = other.parents_fromRow;
+      nv_subtree_fromRow = other.nv_subtree_fromRow;
+      nv = other.nv;
+
+      rowise_sparsity_pattern = other.rowise_sparsity_pattern;
+
+      D_storage = other.D_storage;
+      Dinv_storage = other.Dinv_storage;
+      U_storage = other.U_storage;
+      compliance_storage = other.compliance_storage;
+      damping_storage = other.damping_storage;
+      sum_compliance_damping_storage = other.sum_compliance_damping_storage;
+      delassus_block_storage = other.delassus_block_storage;
+
+      decomposition_dirty = other.decomposition_dirty;
+      min_damping_value = other.min_damping_value;
+
+      return *this;
+    }
 
     ///
     ///  \brief Internal memory allocation.
@@ -485,10 +521,40 @@ namespace pinocchio
     ///@}
 
     template<typename S1, int O1>
-    bool operator==(const ContactCholeskyDecompositionTpl<S1, O1> & other) const;
+    bool operator==(const ContactCholeskyDecompositionTpl<S1, O1> & other) const
+    {
+      bool is_same = true;
+
+      if (nv != other.nv)
+        return false;
+
+      if (
+        D.size() != other.D.size() || Dinv.size() != other.Dinv.size() || U.rows() != other.U.rows()
+        || U.cols() != other.U.cols())
+        return false;
+
+      is_same &= (D == other.D);
+      is_same &= (Dinv == other.Dinv);
+      is_same &= (U == other.U);
+
+      is_same &= (parents_fromRow == other.parents_fromRow);
+      is_same &= (nv_subtree_fromRow == other.nv_subtree_fromRow);
+      //        is_same &= (rowise_sparsity_pattern == other.rowise_sparsity_pattern);
+
+      is_same &= (compliance_storage == other.compliance_storage);
+      is_same &= (damping_storage == other.damping_storage);
+      is_same &= (sum_compliance_damping_storage == other.sum_compliance_damping_storage);
+      is_same &= (delassus_block_storage == other.delassus_block_storage);
+      is_same &= (decomposition_dirty == other.decomposition_dirty);
+      return is_same;
+    }
 
     template<typename S1, int O1>
-    bool operator!=(const ContactCholeskyDecompositionTpl<S1, O1> & other) const;
+    bool operator!=(const ContactCholeskyDecompositionTpl<S1, O1> & other) const
+    {
+      return !(*this == other);
+    }
+
     PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     /// \brief Returns the current memory footprint of this object in bytes.
@@ -541,5 +607,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-// #include "pinocchio/algorithm/delassus-operator-cholesky-expression.hpp"
