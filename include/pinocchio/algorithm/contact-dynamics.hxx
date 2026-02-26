@@ -2,14 +2,12 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_constrained_dynamics_hxx__
-#define __pinocchio_algorithm_constrained_dynamics_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/compute-all-terms.hpp"
-#include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/math/matrix.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/contact-dynamics.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -329,4 +327,30 @@ namespace pinocchio
   }
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_constrained_dynamics_hxx__
+#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+
+  #ifndef PINOCCHIO_SKIP_ALGORITHM_CONTACT_DYNAMICS
+
+namespace pinocchio
+{
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  computeKKTContactDynamicMatrixInverse<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    context::VectorXs,
+    context::MatrixXs,
+    context::MatrixXs>(
+    const context::Model &,
+    context::Data &,
+    const Eigen::MatrixBase<context::VectorXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const context::Scalar &);
+
+} // namespace pinocchio
+
+  #endif // PINOCCHIO_SKIP_ALGORITHM_CONTACT_DYNAMICS
+
+#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
