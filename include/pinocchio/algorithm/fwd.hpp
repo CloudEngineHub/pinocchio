@@ -5,6 +5,8 @@
 #pragma once
 
 // IWYU pragma: begin_keep
+#include <vector>
+
 #include <Eigen/Cholesky>
 #include <Eigen/SparseCholesky>
 

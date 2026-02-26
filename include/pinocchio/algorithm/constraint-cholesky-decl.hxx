@@ -6,6 +6,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
