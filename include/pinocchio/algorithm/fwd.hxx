@@ -50,6 +50,14 @@ namespace pinocchio
   struct DelassusOperatorSparseTpl;
   typedef DelassusOperatorSparseTpl<context::Scalar, context::Options> DelassusOperatorSparse;
 
+  template<
+    typename _Scalar,
+    int _Options,
+    template<typename, int> class _JointCollectionTpl,
+    class _ConstraintModel,
+    template<typename T> class Holder>
+  struct DelassusOperatorRigidBodySystemsTpl;
+
   template<class... D>
   struct AlgorithmCheckerList;
 

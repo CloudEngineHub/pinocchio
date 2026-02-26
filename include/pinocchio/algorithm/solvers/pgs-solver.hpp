@@ -2,19 +2,33 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_solvers_pgs_solver_hpp__
-#define __pinocchio_algorithm_solvers_pgs_solver_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/solvers/fwd.hpp"
-#include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
+// IWYU pragma: begin_keep
+#include <cstddef>
+#include <optional>
+#include <limits>
+#include <vector>
 
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/delassus-operator-dense.hpp"
+#include <Eigen/Core>
+
+#include <boost/fusion/container/vector.hpp>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
+
+#include "pinocchio/utils/check.hpp"
+#include "pinocchio/utils/reference.hpp"
 
 #include "pinocchio/container/eigen-storage.hpp"
 
-#include <optional>
-#include <limits>
+#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/algorithm/delassus-operator.hpp"
+
+#include "pinocchio/algorithm/solvers/fwd.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-utils.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -477,10 +491,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/solvers/pgs-solver.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/solvers/pgs-solver.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_solvers_pgs_solver_hpp__
+// IWYU pragma: end_exports

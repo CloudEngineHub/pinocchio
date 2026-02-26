@@ -2,20 +2,12 @@
 // Copyright (c) 2022-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_solvers_admm_solver_hxx__
-#define __pinocchio_algorithm_solvers_admm_solver_hxx__
+#pragma once
 
-#include <limits>
-
-#include "pinocchio/algorithm/solvers/constraint-solver-utils.hpp"
-#include "pinocchio/algorithm/constraints/sets/sets.hpp"
-#include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
-#include "pinocchio/algorithm/delassus-operator-preconditioned.hpp"
-#include "pinocchio/utils/reference.hpp"
-
-#include "pinocchio/tracy.hpp"
-
-#include <Eigen/Eigenvalues>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/solvers/admm-solver.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -536,15 +528,15 @@ namespace pinocchio
       VectorXs eigvals = solver.eigenvalues();
       Scalar true_L = eigvals.maxCoeff();
       PINOCCHIO_UNUSED_VARIABLE(true_L);
-        //          if (true_m > 0)
-        //          {
-        //            assert(
-        //              math::fabs((true_m - m) / math::max(true_m, m)) < 0.01
-        //              && "true_m and m are too far apart.");
-        //          }
-        // assert(
-        //   math::fabs((true_L - L) / math::max(true_L, L)) < 0.01
-        //   && "true_L and L are too far apart.");
+      //          if (true_m > 0)
+      //          {
+      //            assert(
+      //              math::fabs((true_m - m) / math::max(true_m, m)) < 0.01
+      //              && "true_m and m are too far apart.");
+      //          }
+      // assert(
+      //   math::fabs((true_L - L) / math::max(true_L, L)) < 0.01
+      //   && "true_L and L are too far apart.");
 #endif // NDEBUG
     }
     else
@@ -740,4 +732,129 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_solvers_admm_solver_hxx__
+#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+  #ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
+
+namespace pinocchio
+{
+
+  // -------------------------------------------------------------------------
+  // Struct instantiations
+  // -------------------------------------------------------------------------
+
+  extern template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+    ADMMSolverSettingsTpl<context::Scalar>;
+
+  extern template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+    ADMMSolverStatsTpl<context::Scalar>;
+
+  extern template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+    ADMMSolverResultTpl<context::Scalar, context::Options>;
+
+  namespace internal
+  {
+    extern template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+      ADMMSolverWorkspaceTpl<context::Scalar, context::Options>;
+  } // namespace internal
+
+  extern template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+    ADMMConstraintSolverTpl<context::Scalar, context::Options>;
+
+  // -------------------------------------------------------------------------
+  // solve() with DelassusOperatorDense + default constraint collection
+  // -------------------------------------------------------------------------
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
+  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solve<
+    DelassusOperatorDenseTpl<context::Scalar, context::Options>,
+    context::VectorXs,
+    ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+    std::allocator<
+      ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>,
+    ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+    std::allocator<
+      ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>>(
+    DelassusOperatorBase<DelassusOperatorDenseTpl<context::Scalar, context::Options>> &,
+    const Eigen::MatrixBase<context::VectorXs> &,
+    const std::vector<
+      ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+      std::allocator<
+        ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>> &,
+    const std::vector<
+      ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+      std::allocator<
+        ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>> &,
+    const ADMMSolverSettingsTpl<context::Scalar> &,
+    ADMMSolverResultTpl<context::Scalar, context::Options> &);
+
+  // -------------------------------------------------------------------------
+  // solve() with DelassusCholeskyExpression + default constraint collection
+  // -------------------------------------------------------------------------
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
+  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solve<
+    DelassusCholeskyExpressionTpl<
+      ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>,
+    context::VectorXs,
+    ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+    std::allocator<
+      ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>,
+    ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+    std::allocator<
+      ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>>(
+    DelassusOperatorBase<DelassusCholeskyExpressionTpl<
+      ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>> &,
+    const Eigen::MatrixBase<context::VectorXs> &,
+    const std::vector<
+      ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+      std::allocator<
+        ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>> &,
+    const std::vector<
+      ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+      std::allocator<
+        ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>> &,
+    const ADMMSolverSettingsTpl<context::Scalar> &,
+    ADMMSolverResultTpl<context::Scalar, context::Options> &);
+
+  // -------------------------------------------------------------------------
+  // solve() with DelassusOperatorRigidBodySystems + default constraint collection
+  // -------------------------------------------------------------------------
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
+  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solve<
+    DelassusOperatorRigidBodySystemsTpl<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+      std::reference_wrapper>,
+    context::VectorXs,
+    ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+    std::allocator<
+      ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>,
+    ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+    std::allocator<
+      ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>>(
+    DelassusOperatorBase<DelassusOperatorRigidBodySystemsTpl<
+      context::Scalar,
+      context::Options,
+      JointCollectionDefaultTpl,
+      ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+      std::reference_wrapper>> &,
+    const Eigen::MatrixBase<context::VectorXs> &,
+    const std::vector<
+      ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+      std::allocator<
+        ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>> &,
+    const std::vector<
+      ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
+      std::allocator<
+        ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>> &,
+    const ADMMSolverSettingsTpl<context::Scalar> &,
+    ADMMSolverResultTpl<context::Scalar, context::Options> &);
+
+} // namespace pinocchio
+
+  #endif // ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
+
+#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

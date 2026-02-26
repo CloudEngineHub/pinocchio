@@ -2,20 +2,12 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_solvers_constraint_solver_utils_hpp__
-#define __pinocchio_algorithm_solvers_constraint_solver_utils_hpp__
+#pragma once
 
-#include "pinocchio/macros.hpp"
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/comparison-operators.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/algorithm/delassus-operator-base.hpp"
-#include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp"
-#include "pinocchio/utils/std-vector.hpp"
-#include "pinocchio/utils/reference.hpp"
-#include "pinocchio/math.hpp"
-
-#include <sstream>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/solvers/constraint-solver-utils.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -828,5 +820,3 @@ namespace pinocchio
   } // namespace internal
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_solvers_constraint_solver_utils_hpp__

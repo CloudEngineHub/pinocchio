@@ -2,15 +2,12 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_solvers_constraint_solver_base_hpp__
-#define __pinocchio_algorithm_solvers_constraint_solver_base_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/comparison-operators.hpp"
-
-#ifdef PINOCCHIO_WITH_COLLISION
-  #include <coal/timings.h>
-#endif // PINOCCHIO_WITH_COLLISION
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -278,5 +275,3 @@ namespace pinocchio
   }; // struct ConstraintSolverBaseTpl
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_solvers_constraint_solver_base_hpp__

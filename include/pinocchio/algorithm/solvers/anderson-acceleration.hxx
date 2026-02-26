@@ -1,9 +1,12 @@
 //
 // Copyright (c) 2025 INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_algorithm_solvers_anderson_acceleration_hpp__
-#define __pinocchio_algorithm_solvers_anderson_acceleration_hpp__
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/solvers/anderson-acceleration.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -172,5 +175,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_solvers_anderson_acceleration_hpp__
