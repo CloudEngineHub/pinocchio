@@ -5,6 +5,7 @@
 #pragma once
 
 // IWYU pragma: begin_keep
+#include <cassert>
 #include <cstddef>
 #include <optional>
 #include <limits>
@@ -12,7 +13,7 @@
 
 #include <Eigen/Core>
 
-#include <boost/fusion/container/vector.hpp>
+#include <boost/fusion/container/vector/vector.hpp>
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
@@ -22,8 +23,9 @@
 
 #include "pinocchio/container/eigen-storage.hpp"
 
+#include "pinocchio/math.hpp"
+
 #include "pinocchio/algorithm/constraints.hpp"
-#include "pinocchio/algorithm/delassus-operator.hpp"
 
 #include "pinocchio/algorithm/solvers/fwd.hpp"
 #include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"

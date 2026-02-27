@@ -5,7 +5,7 @@
 
 // IWYU pragma: begin_keep
 #include <assert.h>
-#include <stddef.h>
+#include <cstddef>
 #include <vector>
 
 #include <Eigen/Core>

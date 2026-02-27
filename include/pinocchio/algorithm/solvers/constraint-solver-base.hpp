@@ -12,8 +12,6 @@
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/utils/check.hpp"
 
-#include "pinocchio/math.hpp"
-
 #ifdef PINOCCHIO_WITH_COLLISION
   #include <coal/timings.h>
 #endif // PINOCCHIO_WITH_COLLISION

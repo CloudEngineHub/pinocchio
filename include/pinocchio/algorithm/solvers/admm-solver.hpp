@@ -10,7 +10,6 @@
 #include <cstddef>
 #include <vector>
 #include <optional>
-#include <functional>
 #include <limits>
 
 #include <Eigen/Core>
@@ -28,8 +27,6 @@
 #include "pinocchio/utils/check.hpp"
 
 #include "pinocchio/algorithm/constraints.hpp"
-#include "pinocchio/algorithm/diagonal-preconditioner.hpp"
-#include "pinocchio/algorithm/delassus-operator.hpp"
 
 #include "pinocchio/algorithm/solvers/fwd.hpp"
 #include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
