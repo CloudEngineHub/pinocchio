@@ -5,9 +5,29 @@
 #pragma once
 
 // IWYU pragma: begin_keep
+#include <cassert>
+#include <vector>
+#include <cstddef>
+#include <type_traits>
+#include <utility>
+
+#include <Eigen/Core>
+
+#include <boost/fusion/container/vector/vector.hpp>
+
+#include "pinocchio/utils/alloca.hpp"
+#include "pinocchio/utils/check.hpp"
+
+#include "pinocchio/macros.hpp"
+
+#include "pinocchio/math.hpp"
+#include "pinocchio/spatial.hpp"
+
 #include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
 
 #include "pinocchio/algorithm/check.hpp"
+#include "pinocchio/algorithm/proximal.hpp"
 #include "pinocchio/algorithm/constraints.hpp"
 // IWYU pragma: end_keep
 
