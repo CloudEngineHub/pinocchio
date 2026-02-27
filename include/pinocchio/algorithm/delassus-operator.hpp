@@ -20,6 +20,9 @@
 
 #include <Eigen/Core>
 #include <Eigen/SparseCore>
+#ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
+  #include <Eigen/AccelerateSupport>
+#endif // ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
 
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/macros.hpp"
