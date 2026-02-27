@@ -3,13 +3,12 @@
 // Copyright (c) 2023 KU Leuven
 //
 
-#ifndef __pinocchio_algorithm_contact_delassus_hxx__
-#define __pinocchio_algorithm_contact_delassus_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/algorithm/model.hpp"
-#include "pinocchio/multibody/fwd.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/delassus.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -836,5 +835,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_contact_delassus_hxx__

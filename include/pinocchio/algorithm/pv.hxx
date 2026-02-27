@@ -3,17 +3,12 @@
 // Copyright (c) 2023 KU Leuven
 //
 // TODO: Add Baumgarte stabilization
-#ifndef __pinocchio_algorithm_pv_hxx__
-#define __pinocchio_algorithm_pv_hxx__
+#pragma once
 
-// #include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/kinematics-constraint-model-base.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-// #include "pinocchio/utils/check.hpp"
-#include "pinocchio/algorithm/aba.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/pv.hpp"
+#endif // PINOCCHIO_LSP
 
 /// @cond DEV
 
@@ -598,6 +593,7 @@ namespace pinocchio
 
     typedef typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex JointIndex;
     typedef typename DataTpl<Scalar, Options, JointCollectionTpl>::Motion Motion;
+    typedef RigidConstraintModelTpl<Scalar, Options> RigidConstraintModel;
 
     bool baumgarte_position = false;
     for (std::size_t i = 0; i < contact_models.size(); ++i)
@@ -829,5 +825,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_algorithm_pv_hxx__

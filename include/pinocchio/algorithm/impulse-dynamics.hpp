@@ -1,14 +1,31 @@
 //
 // Copyright (c) 2020 CNRS INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_algorithm_impulse_dynamics_hpp__
-#define __pinocchio_algorithm_impulse_dynamics_hpp__
+// IWYU pragma: begin_keep
+#include <cassert>
+#include <cstddef>
+#include <vector>
 
+#include <Eigen/Core>
+
+#include "pinocchio/config.hpp"
+#include "pinocchio/context.hpp"
+#include "pinocchio/macros.hpp"
+#include "pinocchio/unsupported.hpp"
+
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/multibody.hpp"
+
+#include "pinocchio/utils/check.hpp"
+
+#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
-
 #include "pinocchio/algorithm/proximal.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -67,10 +84,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/impulse-dynamics.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/impulse-dynamics.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_impulse_dynamics_hpp__
+// IWYU pragma: end_exports

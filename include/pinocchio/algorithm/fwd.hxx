@@ -6,6 +6,8 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
+  #include <vector>
+
   #include <Eigen/Cholesky>
   #include <Eigen/SparseCholesky>
 
@@ -31,6 +33,8 @@ namespace pinocchio
 
   typedef RigidConstraintModelTpl<context::Scalar, context::Options> RigidConstraintModel;
   typedef RigidConstraintDataTpl<context::Scalar, context::Options> RigidConstraintData;
+  typedef std::vector<RigidConstraintModel> RigidConstraintModelVector;
+  typedef std::vector<RigidConstraintData> RigidConstraintDataVector;
 
   template<typename DelassusOperatorDerived>
   struct DelassusOperatorBase;

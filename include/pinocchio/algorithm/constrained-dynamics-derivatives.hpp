@@ -2,11 +2,37 @@
 // Copyright (c) 2020-2022 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_constrained_dynamics_derivatives_hpp__
-#define __pinocchio_algorithm_constrained_dynamics_derivatives_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/algorithm/proximal.hpp"
+// IWYU pragma: begin_keep
+#include <cassert>
+#include <cstddef>
+#include <vector>
+
+#include <Eigen/Core>
+
+#include <boost/fusion/container/vector.hpp>
+
+#include <pinocchio/fwd.hpp>
+#include <pinocchio/context.hpp>
+#include <pinocchio/config.hpp>
+#include <pinocchio/macros.hpp>
+#include <pinocchio/unsupported.hpp>
+
+#include "pinocchio/utils/check.hpp"
+
+#include "pinocchio/math.hpp"
+
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
+
+#include <pinocchio/algorithm/constraints.hpp>
+#include <pinocchio/algorithm/proximal.hpp>
+#include "pinocchio/algorithm/check-model.hpp"
+#include <pinocchio/algorithm/rnea-derivatives.hpp>
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -112,10 +138,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/constrained-dynamics-derivatives.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/constrained-dynamics-derivatives.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_constrained_dynamics_derivatives_hpp__
+// IWYU pragma: end_exports

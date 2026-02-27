@@ -2,10 +2,35 @@
 // Copyright (c) 2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_impulse_dynamics_derivatives_hpp__
-#define __pinocchio_algorithm_impulse_dynamics_derivatives_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/contact-info.hpp"
+// IWYU pragma: begin_keep
+#include <cassert>
+#include <cstddef>
+#include <vector>
+
+#include <Eigen/Core>
+#include <boost/fusion/container/vector.hpp>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
+#include "pinocchio/unsupported.hpp"
+
+#include "pinocchio/utils/check.hpp"
+
+#include "pinocchio/math.hpp"
+
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
+
+#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/algorithm/check.hpp"
+#include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
+#include "pinocchio/algorithm/jacobian.hpp"
+#include "pinocchio/algorithm/proximal.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -57,6 +82,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/impulse-dynamics-derivatives.hxx"
-
-#endif // ifndef __pinocchio_algorithm_impulse_dynamics_derivatives_hpp__
+// IWYU pragma: end_exports

@@ -2,18 +2,12 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraint_cholesky_hxx__
-#define __pinocchio_algorithm_constraint_cholesky_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/utils/reference.hpp"
-#include "pinocchio/utils/size-in-bytes.hpp"
-
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-
-#include <algorithm>
-#include <cstddef>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constraint-cholesky.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -21,21 +15,6 @@ namespace pinocchio
   // TODO Remove when API is stabilized
   PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
   PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-
-  template<typename Scalar, int Options>
-  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
-    const Scalar min_damping_value)
-  : D(D_storage.map())
-  , Dinv(Dinv_storage.map())
-  , U(U_storage.map())
-  , compliance(compliance_storage.map())
-  , damping(damping_storage.map())
-  , sum_compliance_damping(sum_compliance_damping_storage.map())
-  , delassus_block(delassus_block_storage.map())
-  , decomposition_dirty(true)
-  , min_damping_value(min_damping_value)
-  {
-  }
 
   template<typename Scalar, int Options>
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
@@ -71,57 +50,6 @@ namespace pinocchio
   : ContactCholeskyDecompositionTpl(min_damping_value)
   {
     PINOCCHIO_UNUSED_VARIABLE(data);
-    rebuild(model, data, constraint_models, constraint_datas);
-  }
-
-  template<typename Scalar, int Options>
-  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
-    const ContactCholeskyDecompositionTpl & other)
-  : ContactCholeskyDecompositionTpl(other.min_damping_value)
-  {
-    *this = other;
-  }
-
-  template<typename Scalar, int Options>
-  ContactCholeskyDecompositionTpl<Scalar, Options> &
-  ContactCholeskyDecompositionTpl<Scalar, Options>::operator=(
-    const ContactCholeskyDecompositionTpl & other)
-  {
-    parents_fromRow = other.parents_fromRow;
-    nv_subtree_fromRow = other.nv_subtree_fromRow;
-    nv = other.nv;
-
-    rowise_sparsity_pattern = other.rowise_sparsity_pattern;
-
-    D_storage = other.D_storage;
-    Dinv_storage = other.Dinv_storage;
-    U_storage = other.U_storage;
-    compliance_storage = other.compliance_storage;
-    damping_storage = other.damping_storage;
-    sum_compliance_damping_storage = other.sum_compliance_damping_storage;
-    delassus_block_storage = other.delassus_block_storage;
-
-    decomposition_dirty = other.decomposition_dirty;
-    min_damping_value = other.min_damping_value;
-
-    return *this;
-  }
-
-  template<typename Scalar, int Options>
-  template<
-    typename S1,
-    int O1,
-    template<typename, int> class JointCollectionTpl,
-    class ConstraintModel,
-    class ConstraintModelAllocator,
-    class ConstraintData,
-    class ConstraintDataAllocator>
-  PINOCCHIO_DEPRECATED void ContactCholeskyDecompositionTpl<Scalar, Options>::allocate(
-    const ModelTpl<S1, O1, JointCollectionTpl> & model,
-    const DataTpl<S1, O1, JointCollectionTpl> & data,
-    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
-  {
     rebuild(model, data, constraint_models, constraint_datas);
   }
 
@@ -778,45 +706,6 @@ namespace pinocchio
     return res;
   }
 
-  template<typename Scalar, int Options>
-  template<typename S1, int O1>
-  bool ContactCholeskyDecompositionTpl<Scalar, Options>::operator==(
-    const ContactCholeskyDecompositionTpl<S1, O1> & other) const
-  {
-    bool is_same = true;
-
-    if (nv != other.nv)
-      return false;
-
-    if (
-      D.size() != other.D.size() || Dinv.size() != other.Dinv.size() || U.rows() != other.U.rows()
-      || U.cols() != other.U.cols())
-      return false;
-
-    is_same &= (D == other.D);
-    is_same &= (Dinv == other.Dinv);
-    is_same &= (U == other.U);
-
-    is_same &= (parents_fromRow == other.parents_fromRow);
-    is_same &= (nv_subtree_fromRow == other.nv_subtree_fromRow);
-    //        is_same &= (rowise_sparsity_pattern == other.rowise_sparsity_pattern);
-
-    is_same &= (compliance_storage == other.compliance_storage);
-    is_same &= (damping_storage == other.damping_storage);
-    is_same &= (sum_compliance_damping_storage == other.sum_compliance_damping_storage);
-    is_same &= (delassus_block_storage == other.delassus_block_storage);
-    is_same &= (decomposition_dirty == other.decomposition_dirty);
-    return is_same;
-  }
-
-  template<typename Scalar, int Options>
-  template<typename S1, int O1>
-  bool ContactCholeskyDecompositionTpl<Scalar, Options>::operator!=(
-    const ContactCholeskyDecompositionTpl<S1, O1> & other) const
-  {
-    return !(*this == other);
-  }
-
   namespace details
   {
 
@@ -1108,6 +997,116 @@ namespace pinocchio
   }
 
   PINOCCHIO_COMPILER_DIAGNOSTIC_POP
+
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_constraint_cholesky_hxx__
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+  #ifndef PINOCCHIO_SKIP_ALGORITHM_CONTACT_CHOLESKY
+
+namespace pinocchio
+{
+  // TODO Remove when API is stabilized
+  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
+  namespace details
+  {
+    extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI context::VectorXs &
+    inverseAlgo<context::Scalar, context::Options, context::VectorXs>(
+      const ContactCholeskyDecompositionTpl<context::Scalar, context::Options> &,
+      const Eigen::Index,
+      const Eigen::MatrixBase<context::VectorXs> &);
+  }
+
+  extern template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::rebuild<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    RigidConstraintModel,
+    typename RigidConstraintModelVector::allocator_type,
+    RigidConstraintData,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &,
+    const Data &,
+    const RigidConstraintModelVector &,
+    const RigidConstraintDataVector &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
+    getInverseOperationalSpaceInertiaMatrix<context::MatrixXs>(
+      const Eigen::MatrixBase<context::MatrixXs> &, bool) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
+    getOperationalSpaceInertiaMatrix<context::MatrixXs>(
+      const Eigen::MatrixBase<context::MatrixXs> &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::getInverseMassMatrix<
+    context::MatrixXs>(const Eigen::MatrixBase<context::MatrixXs> &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::compute<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    RigidConstraintModel,
+    typename RigidConstraintModelVector::allocator_type,
+    RigidConstraintData,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &,
+    Data &,
+    const RigidConstraintModelVector &,
+    const RigidConstraintDataVector &,
+    const context::Scalar);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::solveInPlace<
+    context::MatrixXs>(const Eigen::MatrixBase<context::MatrixXs> &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Matrix
+    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::solve<context::MatrixXs>(
+      const Eigen::MatrixBase<
+        ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Matrix> &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
+    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>
+    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
+      getMassMatrixChoeslkyDecomposition<
+        context::Scalar,
+        context::Options,
+        JointCollectionDefaultTpl>(const Model &, const Data &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Uv<context::MatrixXs>(
+    const Eigen::MatrixBase<context::MatrixXs> &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Utv<context::MatrixXs>(
+    const Eigen::MatrixBase<context::MatrixXs> &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Uiv<context::MatrixXs>(
+    const Eigen::MatrixBase<context::MatrixXs> &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Utiv<context::MatrixXs>(
+    const Eigen::MatrixBase<context::MatrixXs> &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::matrix<context::MatrixXs>(
+    const Eigen::MatrixBase<context::MatrixXs> &) const;
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::inverse<context::MatrixXs>(
+    const Eigen::MatrixBase<context::MatrixXs> &) const;
+
+  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
+} // namespace pinocchio
+
+  #endif // PINOCCHIO_SKIP_ALGORITHM_CONTACT_CHOLESKY
+#endif   // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

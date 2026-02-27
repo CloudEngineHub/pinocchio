@@ -2,17 +2,12 @@
 // Copyright (c) 2020-2022 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_constraint_dynamics_derivatives_hxx__
-#define __pinocchio_algorithm_constraint_dynamics_derivatives_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
-#include "pinocchio/algorithm/kinematics-derivatives.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/frames.hpp"
-#include "pinocchio/algorithm/frames-derivatives.hpp"
-#include "pinocchio/algorithm/constraint-cholesky.hpp"
-#include "pinocchio/algorithm/utils/motion.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -1050,4 +1045,85 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#endif // ifndef __pinocchio_algorithm_constraint_dynamics_derivatives_hxx__
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+  #ifndef PINOCCHIO_SKIP_ALGORITHM_CONSTRAINED_DYNAMICS
+
+namespace pinocchio
+{
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  computeConstraintDynamicsDerivatives<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    typename RigidConstraintModelVector::allocator_type,
+    typename RigidConstraintDataVector::allocator_type,
+    context::MatrixXs,
+    context::MatrixXs,
+    context::MatrixXs,
+    context::MatrixXs,
+    context::MatrixXs,
+    context::MatrixXs>(
+    const Model &,
+    Data &,
+    const RigidConstraintModelVector &,
+    RigidConstraintDataVector &,
+    const ProximalSettingsTpl<context::Scalar> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  computeConstraintDynamicsDerivatives<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    typename RigidConstraintModelVector::allocator_type,
+    typename RigidConstraintDataVector::allocator_type,
+    context::MatrixXs,
+    context::MatrixXs,
+    context::MatrixXs,
+    context::MatrixXs,
+    context::MatrixXs,
+    context::MatrixXs>(
+    const Model &,
+    Data &,
+    const RigidConstraintModelVector &,
+    RigidConstraintDataVector &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &,
+    const Eigen::MatrixBase<context::MatrixXs> &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  computeConstraintDynamicsDerivatives<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    typename RigidConstraintModelVector::allocator_type,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &,
+    Data &,
+    const RigidConstraintModelVector &,
+    RigidConstraintDataVector &,
+    const ProximalSettingsTpl<context::Scalar> &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
+  computeConstraintDynamicsDerivatives<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    typename RigidConstraintModelVector::allocator_type,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &, Data &, const RigidConstraintModelVector &, RigidConstraintDataVector &);
+
+} // namespace pinocchio
+
+  #endif // PINOCCHIO_SKIP_ALGORITHM_CONSTRAINED_DYNAMICS
+
+#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

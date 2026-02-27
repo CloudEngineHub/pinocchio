@@ -2,14 +2,12 @@
 // Copyright (c) 2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_impulse_dynamics_derivatives_hxx__
-#define __pinocchio_algorithm_impulse_dynamics_derivatives_hxx__
+#pragma once
 
-#include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
-#include "pinocchio/algorithm/kinematics-derivatives.hpp"
-#include "pinocchio/algorithm/constraint-cholesky.hpp"
-#include "pinocchio/algorithm/constrained-dynamics-derivatives.hxx"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/impulse-dynamics-derivatives.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -445,5 +443,3 @@ namespace pinocchio
     }
   }
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_algorithm_impulse_dynamics_derivatives_hxx__

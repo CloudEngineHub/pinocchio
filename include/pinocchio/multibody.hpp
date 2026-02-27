@@ -43,6 +43,7 @@
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/multibody/liegroup.hpp"
 #include "pinocchio/algorithm/fwd.hpp"
+#include "pinocchio/algorithm/constraint-cholesky-decl.hpp"
 
 #include "pinocchio/serialization/serializable.hpp"
 // IWYU pragma: end_keep
