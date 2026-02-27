@@ -3,10 +3,32 @@
 // Copyright (c) 2023 KU Leuven
 //
 
-#ifndef __pinocchio_algorithm_contact_delassus_hpp__
-#define __pinocchio_algorithm_contact_delassus_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/contact-info.hpp"
+// IWYU pragma: begin_keep
+#include <cassert>
+#include <algorithm>
+#include <vector>
+#include <cstddef>
+#include <limits>
+
+#include <Eigen/Core>
+#include <boost/fusion/container/vector.hpp>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/unsupported.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
+
+#include "pinocchio/math.hpp"
+
+#include "pinocchio/utils/check.hxx"
+
+#include "pinocchio/algorithm/check.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/algorithm/model.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -103,6 +125,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/delassus.hxx"
-
-#endif // ifndef __pinocchio_algorithm_contact_delassus_hpp__
+// IWYU pragma: end_exports
