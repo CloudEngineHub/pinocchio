@@ -201,14 +201,14 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs,
-    typename context::RigidConstraintModelVector::allocator_type,
-    typename context::RigidConstraintDataVector::allocator_type>(
-    const context::Model &,
-    context::Data &,
+    typename RigidConstraintModelVector::allocator_type,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &,
+    Data &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
-    const context::RigidConstraintModelVector &,
-    context::RigidConstraintDataVector &,
+    const RigidConstraintModelVector &,
+    RigidConstraintDataVector &,
     const context::Scalar,
     const ProximalSettingsTpl<context::Scalar> &);
 

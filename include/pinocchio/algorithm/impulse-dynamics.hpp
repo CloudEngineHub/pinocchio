@@ -10,6 +10,8 @@
 
 #include <Eigen/Core>
 
+#include "pinocchio/config.hpp"
+#include "pinocchio/context.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/unsupported.hpp"
 

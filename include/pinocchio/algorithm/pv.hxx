@@ -8,7 +8,7 @@
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/algorithm/pv.hpp"
-#endif // PINOCCHIO_LSPs
+#endif // PINOCCHIO_LSP
 
 /// @cond DEV
 
@@ -593,6 +593,7 @@ namespace pinocchio
 
     typedef typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex JointIndex;
     typedef typename DataTpl<Scalar, Options, JointCollectionTpl>::Motion Motion;
+    typedef RigidConstraintModelTpl<Scalar, Options> RigidConstraintModel;
 
     bool baumgarte_position = false;
     for (std::size_t i = 0; i < contact_models.size(); ++i)
