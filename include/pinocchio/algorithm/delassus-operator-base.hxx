@@ -12,12 +12,6 @@
 namespace pinocchio
 {
 
-  template<typename DelassusOperatorDerived>
-  struct DelassusOperatorBase;
-
-  template<typename DelassusOperatorDerived, typename MatrixDerived>
-  struct DelassusOperatorApplyOnTheRightReturnType;
-
   template<typename DelassusOperatorDerived, typename MatrixDerived>
   struct traits<DelassusOperatorApplyOnTheRightReturnType<DelassusOperatorDerived, MatrixDerived>>
   {

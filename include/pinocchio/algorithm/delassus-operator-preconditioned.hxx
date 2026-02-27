@@ -12,9 +12,6 @@ namespace pinocchio
 {
 
   template<typename DelassusOperator, typename PreconditionerType>
-  struct DelassusOperatorPreconditionedTpl;
-
-  template<typename DelassusOperator, typename PreconditionerType>
   struct traits<DelassusOperatorPreconditionedTpl<DelassusOperator, PreconditionerType>>
   : traits<DelassusOperator>
   {
