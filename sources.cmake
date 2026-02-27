@@ -27,50 +27,44 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics-derivatives.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-problem-data.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/kinematics-constraint-model-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-ordering.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/kinematics-constraint-model-base.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-ordering.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-anchor-constraint.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-anchor-constraint.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraints.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-collection-default.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-data-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-data-generic.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-model-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-model-common-parameters.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-model-generic.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-constraint-model-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-constraint-data-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-contact-constraint.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-anchor-constraint.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-anchor-constraint.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-collection-default.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-data-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-data-generic.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-model-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-model-common-parameters.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/constraint-model-generic.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-constraint-model-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/frame-constraint-data-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-contact-constraint.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/fwd.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-limit-constraint.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-limit-constraint.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-friction-constraint.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/joint-friction-constraint.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-constraint-model-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-constraint-data-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/box-set.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/cone-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/full-space-cone.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/jordan-operation-helper.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/orthant-cone-jordan-operation.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/orthant-cone.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/second-order-cone-jordan-operation.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/set-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/sets.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/zero-cone-jordan-operation.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/zero-cone.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/jointwise-constraint-model-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-constraint-model-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/point-constraint-data-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/box-set.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/cone-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/full-space-cone.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/jordan-operation-helper.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/orthant-cone-jordan-operation.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/orthant-cone.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/second-order-cone-jordan-operation.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/set-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/zero-cone-jordan-operation.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/sets/zero-cone.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/jointwise-constraint-model-base.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky-decl.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky-decl.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky-def.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hpp
@@ -85,15 +79,14 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-ref.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-base.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-preconditioned.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-cholesky-expression.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-dense.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-rigid-body.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-preconditioned.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-cholesky-expression.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-dense.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-rigid-body.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-rigid-body.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-rigid-body-visitors.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-sparse.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/delassus-operator-sparse.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/energy.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/energy.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/frames-derivatives.hpp
@@ -179,7 +172,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/macros.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/unsupported.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/arithmetic-operators.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/arithmetic-operators.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-base.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/block-diagonal-matrix-expression.hxx
@@ -481,16 +474,7 @@ set(${PROJECT_NAME}_CORE_GENERATED_PUBLIC_HEADERS
     ${_binary_headers_root}/warning.hpp)
 
 set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/proximal.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/admm-solver.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/clarabel-solver.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/pgs-solver.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics-derivatives.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/utils.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics.txx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/impulse-dynamics.txx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/solvers/clarabel-solver.txx)
 
 set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
     ${PROJECT_SOURCE_DIR}/src/algorithm/cholesky.cpp
