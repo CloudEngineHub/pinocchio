@@ -619,7 +619,18 @@ namespace pinocchio
       }
       case MatrixBlockType::Plain: {
         assert((res.type() == MatrixBlockType::Plain) && "res block type is invalid");
-        res.container().noalias() = container().inverse();
+        if (isSymmetric(container()))
+        {
+          typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
+          MapMatrix tmp =
+            MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, container().rows(), container().cols()));
+          tmp = container();
+          ::pinocchio::matrix_inversion(tmp, res.container());
+        }
+        else
+        {
+          res.container().noalias() = container().inverse();
+        }
         break;
       }
       default:
