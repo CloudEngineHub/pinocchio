@@ -732,7 +732,7 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
   #ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
 
 namespace pinocchio

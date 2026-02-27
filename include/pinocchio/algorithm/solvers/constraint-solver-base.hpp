@@ -10,7 +10,7 @@
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/fwd.hpp"
-#include "pinocchio/utils/check.hxx"
+#include "pinocchio/utils/check.hpp"
 
 #include "pinocchio/math.hpp"
 
