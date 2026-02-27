@@ -2,27 +2,16 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_contact_inverse_dynamics_hpp__
-#define __pinocchio_algorithm_contact_inverse_dynamics_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
-#include "pinocchio/algorithm/proximal.hpp"
-#include "pinocchio/utils/std-vector.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/contact-inverse-dynamics.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
 
-  ///
-  /// \brief Compute the contact forces given a target velocity of contact points.
-  ///
-  /// \param[in] constraint_models The vector of constraint models.
-  /// \param[in] c_ref The desired constraint velocity.
-  /// \param[in,out] lambda Vector of solution. Should be initialized with zeros or from an initial
-  /// estimate.
-  /// \param[in,out] settings The settings for the proximal algorithm
-  /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false).
-  ///
   template<
     typename Scalar,
     class PointContactConstraintModelVector,
@@ -35,7 +24,7 @@ namespace pinocchio
     const Eigen::MatrixBase<VectorLikeC> & c_ref,
     const Eigen::MatrixBase<VectorLikeResult> & _lambda,
     ProximalSettingsTpl<Scalar> & settings,
-    bool solve_ncp = true)
+    bool solve_ncp)
   {
     static_assert(
       helper::is_std_vector_v<PointContactConstraintModelVector>,
@@ -147,31 +136,6 @@ namespace pinocchio
     return has_converged;
   }
 
-  ///
-  /// \brief The Contact Inverse Dynamics algorithm. It computes the inverse dynamics in the
-  /// presence of contacts, aka the joint torques according to the current state of the system and
-  /// the desired joint accelerations.
-  ///
-  /// \tparam JointCollection Collection of Joint types.
-  /// \tparam ConfigVectorType Type of the joint configuration vector.
-  /// \tparam TangentVectorType1 Type of the joint velocity vector.
-  /// \tparam TangentVectorType2 Type of the joint acceleration vector.
-  ///
-  /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] data The data structure of the rigid body system.
-  /// \param[in] q The joint configuration vector (dim model.nq).
-  /// \param[in] v The joint velocity vector (dim model.nv).
-  /// \param[in] a The joint acceleration vector (dim model.nv).
-  /// \param[in] dt The time step.
-  /// \param[in] constraint_models The list of contact models.
-  /// \param[in] constraint_datas The list of constraint_datas.
-  /// \param[in] constraint_correction vector representing the constraint correction.
-  /// \param[in] lambda_sol initial guess for the contact forces
-  /// \param[in] settings The settings for the proximal algorithm
-  /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false).
-  ///
-  /// \return The desired joint torques stored in data.tau.
-  ///
   template<
     typename Scalar,
     int Options,
@@ -195,7 +159,7 @@ namespace pinocchio
     const Eigen::MatrixBase<VectorLikeGamma> & constraint_correction,
     const Eigen::MatrixBase<VectorLikeLam> & _lambda_sol,
     ProximalSettingsTpl<Scalar> & settings,
-    bool solve_ncp = true)
+    bool solve_ncp)
   {
     static_assert(
       helper::is_std_vector_v<PointContactConstraintModelVector>,
@@ -230,9 +194,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-// #if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-// #include "pinocchio/algorithm/contact-inverse-dynamics.txx"
-// #endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_contact_inverse_dynamics_hpp__
