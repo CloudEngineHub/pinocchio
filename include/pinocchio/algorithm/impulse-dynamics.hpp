@@ -15,7 +15,9 @@
 
 #include "pinocchio/spatial.hpp"
 
-#include "pinocchio/utils/check.hxx"
+#include "pinocchio/multibody.hpp"
+
+#include "pinocchio/utils/check.hpp"
 
 #include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/algorithm/check.hpp"

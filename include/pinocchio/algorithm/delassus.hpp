@@ -23,7 +23,7 @@
 
 #include "pinocchio/math.hpp"
 
-#include "pinocchio/utils/check.hxx"
+#include "pinocchio/utils/check.hpp"
 
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/constraints.hpp"

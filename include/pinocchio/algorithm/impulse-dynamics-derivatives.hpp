@@ -14,6 +14,7 @@
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
+#include "pinocchio/unsupported.hpp"
 
 #include "pinocchio/utils/check.hpp"
 
@@ -26,12 +27,9 @@
 
 #include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
-#include "pinocchio/algorithm/kinematics-derivatives.hpp"
 #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/proximal.hpp"
-#include "pinocchio/algorithm/constraint-cholesky.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio
