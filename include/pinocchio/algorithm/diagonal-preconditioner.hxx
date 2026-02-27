@@ -2,10 +2,12 @@
 // Copyright (c) 2025-2026 INRIA
 //
 
-#ifndef __pinocchio_algorithm_diagonal_preconditioner_hpp__
-#define __pinocchio_algorithm_diagonal_preconditioner_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/preconditioner-base.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/diagonal-preconditioner.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -168,5 +170,3 @@ namespace pinocchio
   }; // struct DiagonalPreconditionerTpl
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_algorithm_diagonal_preconditioner_hpp__

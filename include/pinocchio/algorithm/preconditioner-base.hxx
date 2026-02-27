@@ -1,10 +1,13 @@
 //
 // Copyright (c) 2025 INRIA
 //
-#ifndef __pinocchio_algorithm_preconditioner_base_hpp__
-#define __pinocchio_algorithm_preconditioner_base_hpp__
 
-#include "pinocchio/algorithm/fwd.hpp"
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/preconditioner-base.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -64,5 +67,3 @@ namespace pinocchio
   }; // struct PreconditionerBase
 
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_algorithm_preconditioner_base_hpp__
