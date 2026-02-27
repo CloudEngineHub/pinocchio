@@ -653,46 +653,52 @@ namespace pinocchio
       data_ref.joint_cross_coupling.apply([](Matrix6 & v) { v.setZero(); });
 
       // Append constraint inertia to oYaba_augmented
-      m_sum_compliance_damping_inverse = m_sum_compliance_damping.inverse();
-      assert(!m_sum_compliance_damping_inverse.hasNaN());
-
-      const auto & blocks = m_sum_compliance_damping_inverse.blocks();
-      if (blocks.size() == 1 && constraint_models_ref.size() > 1) // we assume we have a single
-                                                                  // diagonal block to dispatch on
-                                                                  // all the contraints
       {
-        const auto & diagonal_block = blocks[0];
-        assert(diagonal_block.type() == MatrixBlockType::Diagonal);
-        Eigen::Index row_id = 0;
-        typedef typename BlockDiagonalMatrix::ConstVectorMap ConstVectorMap;
-        const auto & compliance_damping_inverse_vector =
-          remap<ConstVectorMap>(diagonal_block.container());
-        for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
-             ++constraint_id)
-        {
-          const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
-          const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
-
-          const auto constraint_size = cmodel.residualSize();
-          const auto constraint_diagonal_inertia =
-            compliance_damping_inverse_vector.segment(row_id, constraint_size);
-
-          cmodel.appendCouplingConstraintInertias(
-            model_ref, data_ref, cdata, constraint_diagonal_inertia, WorldFrameTag());
-          row_id += constraint_size;
-        }
-        assert(row_id == size());
+        PINOCCHIO_TRACY_ZONE_SCOPED_N("Inverse compliance and damping");
+        m_sum_compliance_damping_inverse = m_sum_compliance_damping.inverse();
+        assert(!m_sum_compliance_damping_inverse.hasNaN());
       }
-      else // we have block diagonal matrix, each block being assigned to a constraint
+
       {
-        std::size_t inner_constraint_id = 0;
-        for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
-             ++constraint_id)
+        PINOCCHIO_TRACY_ZONE_SCOPED_N("appendCouplingConstraintInertias");
+        const auto & blocks = m_sum_compliance_damping_inverse.blocks();
+        if (blocks.size() == 1 && constraint_models_ref.size() > 1) // we assume we have a single
+                                                                    // diagonal block to dispatch on
+                                                                    // all the contraints
         {
-          const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
-          const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
-          cmodel.appendCouplingConstraintInertias(
-            model_ref, data_ref, cdata, blocks, WorldFrameTag(), inner_constraint_id);
+          const auto & diagonal_block = blocks[0];
+          assert(diagonal_block.type() == MatrixBlockType::Diagonal);
+          Eigen::Index row_id = 0;
+          typedef typename BlockDiagonalMatrix::ConstVectorMap ConstVectorMap;
+          const auto & compliance_damping_inverse_vector =
+            remap<ConstVectorMap>(diagonal_block.container());
+          for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+               ++constraint_id)
+          {
+            const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
+            const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
+
+            const auto constraint_size = cmodel.residualSize();
+            const auto constraint_diagonal_inertia =
+              compliance_damping_inverse_vector.segment(row_id, constraint_size);
+
+            cmodel.appendCouplingConstraintInertias(
+              model_ref, data_ref, cdata, constraint_diagonal_inertia, WorldFrameTag());
+            row_id += constraint_size;
+          }
+          assert(row_id == size());
+        }
+        else // we have block diagonal matrix, each block being assigned to a constraint
+        {
+          std::size_t inner_constraint_id = 0;
+          for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+               ++constraint_id)
+          {
+            const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
+            const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
+            cmodel.appendCouplingConstraintInertias(
+              model_ref, data_ref, cdata, blocks, WorldFrameTag(), inner_constraint_id);
+          }
         }
       }
     }
@@ -709,26 +715,29 @@ namespace pinocchio
     }                                                                                              \
   }
 
-    if (apply_on_the_right)
     {
-      if (solve_in_place)
+      PINOCCHIO_TRACY_ZONE_SCOPED_N("Backward pass");
+      if (apply_on_the_right)
       {
-        DO_PASS(true, true);
+        if (solve_in_place)
+        {
+          DO_PASS(true, true);
+        }
+        else
+        {
+          DO_PASS(true, false);
+        }
       }
       else
       {
-        DO_PASS(true, false);
-      }
-    }
-    else
-    {
-      if (solve_in_place)
-      {
-        DO_PASS(false, true);
-      }
-      else
-      {
-        DO_PASS(false, false);
+        if (solve_in_place)
+        {
+          DO_PASS(false, true);
+        }
+        else
+        {
+          DO_PASS(false, false);
+        }
       }
     }
 #undef DO_PASS

@@ -46,6 +46,8 @@
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 
+#include "pinocchio/tracy.hpp"
+
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
