@@ -2,11 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_visitors_hxx__
-#define __pinocchio_algorithm_delassus_operator_linear_complexity_visitors_hxx__
+#pragma once
 
-#include "pinocchio/utils/promote-static-eval.hpp"
-#include "pinocchio/math/matrix.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/delassus-operator.hpp"
+#endif // PINOCCHIO_LSP
 
 #define PROMOTE_STATIC_EVAL(expression) promote_static_eval<0>(expression)
 // #define PROMOTE_STATIC_EVAL(expression) expression
@@ -399,5 +400,3 @@ namespace pinocchio
 
 #undef PROMOTE_STATIC_EVAL
 #undef DO_NOT_PROMOTE_STATIC_EVAL
-
-#endif // ifndef __pinocchio_algorithm_delassus_operator_linear_complexity_visitors_hxx__

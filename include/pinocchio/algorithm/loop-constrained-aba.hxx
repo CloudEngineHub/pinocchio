@@ -2,8 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_loop_constrained_aba_hxx__
-#define __pinocchio_algorithm_loop_constrained_aba_hxx__
+#pragma once
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/loop-constrained-aba.hpp"
+#endif // PINOCCHIO_LSP
 
 /// @cond DEV
 
@@ -467,7 +471,8 @@ namespace pinocchio
             data.oYaba_augmented[joint2_id].noalias() += mu * A1tA1;
             data.of[joint2_id].toVector().noalias() +=
               A2.transpose()
-              * (/*cdata.contact_force.toVector()*/ -mu * cdata.contact_acceleration_desired.toVector());
+              * (/*cdata.contact_force.toVector()*/ -mu
+                 * cdata.contact_acceleration_desired.toVector());
 
             assert(
               bool(
@@ -488,7 +493,8 @@ namespace pinocchio
 
           data.of[joint1_id].toVector().noalias() +=
             A1.transpose()
-            * (/*cdata.contact_force.toVector()*/ -mu * cdata.contact_acceleration_desired.toVector());
+            * (/*cdata.contact_force.toVector()*/ -mu
+               * cdata.contact_acceleration_desired.toVector());
         }
         else if (cmodel.type == CONTACT_3D)
         {
@@ -522,7 +528,8 @@ namespace pinocchio
             data.oYaba_augmented[joint2_id].noalias() += mu * A2.transpose() * A2;
             data.of[joint2_id].toVector().noalias() +=
               A2.transpose()
-              * (/*cdata.contact_force.toVector()*/ -mu * cdata.contact_acceleration_desired.linear());
+              * (/*cdata.contact_force.toVector()*/ -mu
+                 * cdata.contact_acceleration_desired.linear());
 
             assert(
               bool(
@@ -547,7 +554,8 @@ namespace pinocchio
 
           data.of[joint1_id].toVector().noalias() +=
             A1.transpose()
-            * (/*cdata.contact_force.toVector()*/ -mu * cdata.contact_acceleration_desired.linear());
+            * (/*cdata.contact_force.toVector()*/ -mu
+               * cdata.contact_acceleration_desired.linear());
         }
         else
         {
@@ -755,5 +763,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 /// @endcond
-
-#endif // ifndef __pinocchio_algorithm_loop_constrained_aba_hxx__

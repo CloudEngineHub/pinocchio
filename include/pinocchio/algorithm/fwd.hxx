@@ -24,10 +24,6 @@ namespace pinocchio
   typedef ContactCholeskyDecompositionTpl<context::Scalar, context::Options>
     ContactCholeskyDecomposition;
 
-  template<typename ContactCholeskyDecomposition>
-  struct DelassusCholeskyExpressionTpl;
-  typedef DelassusCholeskyExpressionTpl<ContactCholeskyDecomposition> DelassusCholeskyExpression;
-
   template<typename Scalar, int Options>
   struct RigidConstraintModelTpl;
   template<typename Scalar, int Options>
@@ -35,6 +31,12 @@ namespace pinocchio
 
   typedef RigidConstraintModelTpl<context::Scalar, context::Options> RigidConstraintModel;
   typedef RigidConstraintDataTpl<context::Scalar, context::Options> RigidConstraintData;
+
+  template<typename DelassusOperatorDerived>
+  struct DelassusOperatorBase;
+
+  template<typename DelassusOperatorDerived, typename MatrixDerived>
+  struct DelassusOperatorApplyOnTheRightReturnType;
 
   template<
     typename Scalar,
@@ -49,6 +51,21 @@ namespace pinocchio
     class SparseCholeskyDecomposition = Eigen::SimplicialLLT<Eigen::SparseMatrix<Scalar, Options>>>
   struct DelassusOperatorSparseTpl;
   typedef DelassusOperatorSparseTpl<context::Scalar, context::Options> DelassusOperatorSparse;
+
+  template<
+    typename _Scalar,
+    int _Options,
+    template<typename, int> class _JointCollectionTpl,
+    class _ConstraintModel,
+    template<typename T> class Holder>
+  struct DelassusOperatorRigidBodySystemsTpl;
+
+  template<typename DelassusOperator, typename PreconditionerType>
+  struct DelassusOperatorPreconditionedTpl;
+
+  template<typename ContactCholeskyDecomposition>
+  struct DelassusCholeskyExpressionTpl;
+  typedef DelassusCholeskyExpressionTpl<ContactCholeskyDecomposition> DelassusCholeskyExpression;
 
   template<class... D>
   struct AlgorithmCheckerList;

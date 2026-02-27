@@ -1,12 +1,26 @@
 //
 // Copyright (c) 2016-2020 CNRS INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_algorithm_contact_dynamics_hpp__
-#define __pinocchio_algorithm_contact_dynamics_hpp__
+// IWYU pragma: begin_keep
+#include <cassert>
+#include <cstddef>
+#include <cmath>
+#include <complex>
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+#include <Eigen/Core>
+#include <Eigen/Cholesky>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
+
+#include "pinocchio/math.hpp"
+#include "pinocchio/multibody.hpp"
+
+#include "pinocchio/algorithm/cholesky.hpp"
+#include "pinocchio/algorithm/check.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -299,10 +313,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/contact-dynamics.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/contact-dynamics.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_contact_dynamics_hpp__
+// IWYU pragma: end_exports
