@@ -56,6 +56,7 @@
 #include "pinocchio/math/eigenvalues-tridiagonal-matrix.hxx"
 #include "pinocchio/math/tridiagonal-matrix.hxx"
 #include "pinocchio/math/lanczos-decomposition.hxx"
+#include "pinocchio/math/arithmetic-operators.hxx"
 
 #include "pinocchio/math/matrix-inverse-code-generated.hxx"
 #include "pinocchio/math/details/matrix-inverse-1x1.hxx"

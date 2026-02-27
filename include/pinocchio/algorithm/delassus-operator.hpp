@@ -37,8 +37,6 @@
 #include "pinocchio/container/eigen-storage.hpp"
 
 #include "pinocchio/math.hpp"
-#include "pinocchio/math/matrix-block.hpp"
-#include "pinocchio/math/arithmetic-operators.hpp"
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/joint.hpp"
 
