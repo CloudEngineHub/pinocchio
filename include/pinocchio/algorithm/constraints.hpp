@@ -99,5 +99,6 @@
 
 #include "pinocchio/algorithm/constraints/constraint-collection-default.hxx"
 
+#include "pinocchio/algorithm/constraints/constraint-ordering.hxx"
 #include "pinocchio/algorithm/constraints/utils.hxx"
 // IWYU pragma: end_exports

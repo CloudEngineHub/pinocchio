@@ -2,15 +2,14 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_loop_constrained_aba_hpp__
-#define __pinocchio_algorithm_loop_constrained_aba_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+// IWYU pragma: begin_keep
+#include "pinocchio/multibody.hpp"
 
 #include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/algorithm/constraints/constraint-ordering.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -67,6 +66,6 @@ namespace pinocchio
 } // namespace pinocchio
 
 /* --- Details -------------------------------------------------------------------- */
+// IWYU pragma: begin_exports
 #include "pinocchio/algorithm/loop-constrained-aba.hxx"
-
-#endif // ifndef __pinocchio_algorithm_loop_constrained_aba_hpp__
+// IWYU pragma: end_exports
