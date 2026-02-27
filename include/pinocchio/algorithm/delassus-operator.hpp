@@ -43,7 +43,6 @@
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/preconditioner-base.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
