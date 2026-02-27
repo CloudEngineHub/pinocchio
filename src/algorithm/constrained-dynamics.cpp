@@ -2,8 +2,7 @@
 // Copyright (c) 2022-2025 INRIA
 //
 
-#include "pinocchio/spatial/fwd.hpp"
-
+#include "pinocchio/context/template-instantiation.hxx"
 #ifndef PINOCCHIO_SKIP_ALGORITHM_CONSTRAINED_DYNAMICS
 
   #include "pinocchio/algorithm/constrained-dynamics.hpp"
@@ -16,13 +15,10 @@ namespace pinocchio
     context::Options,
     JointCollectionDefaultTpl,
     RigidConstraintModel,
-    typename context::RigidConstraintModelVector::allocator_type,
+    typename RigidConstraintModelVector::allocator_type,
     RigidConstraintData,
-    typename context::RigidConstraintDataVector::allocator_type>(
-    const context::Model &,
-    context::Data &,
-    const context::RigidConstraintModelVector &,
-    const context::RigidConstraintDataVector &);
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &, Data &, const RigidConstraintModelVector &, const RigidConstraintDataVector &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI const context::VectorXs &
   constraintDynamics<
@@ -32,15 +28,15 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs,
-    typename context::RigidConstraintModelVector::allocator_type,
-    typename context::RigidConstraintDataVector::allocator_type>(
-    const context::Model &,
-    context::Data &,
+    typename RigidConstraintModelVector::allocator_type,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &,
+    Data &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
-    const context::RigidConstraintModelVector &,
-    context::RigidConstraintDataVector &,
+    const RigidConstraintModelVector &,
+    RigidConstraintDataVector &,
     ProximalSettingsTpl<context::Scalar> &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI const context::VectorXs &
@@ -51,15 +47,15 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs,
-    typename context::RigidConstraintModelVector::allocator_type,
-    typename context::RigidConstraintDataVector::allocator_type>(
-    const context::Model &,
-    context::Data &,
+    typename RigidConstraintModelVector::allocator_type,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &,
+    Data &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
-    const context::RigidConstraintModelVector &,
-    context::RigidConstraintDataVector &);
+    const RigidConstraintModelVector &,
+    RigidConstraintDataVector &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI const context::VectorXs & contactABA<
     context::Scalar,
@@ -68,15 +64,15 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs,
-    typename context::RigidConstraintModelVector::allocator_type,
-    typename context::RigidConstraintDataVector::allocator_type>(
-    const context::Model &,
-    context::Data &,
+    typename RigidConstraintModelVector::allocator_type,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &,
+    Data &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
-    const context::RigidConstraintModelVector &,
-    context::RigidConstraintDataVector &);
+    const RigidConstraintModelVector &,
+    RigidConstraintDataVector &);
 } // namespace pinocchio
 
 #endif // PINOCCHIO_SKIP_ALGORITHM_CONSTRAINED_DYNAMICS

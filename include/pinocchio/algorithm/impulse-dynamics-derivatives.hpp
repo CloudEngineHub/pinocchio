@@ -30,6 +30,7 @@
 #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/proximal.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio

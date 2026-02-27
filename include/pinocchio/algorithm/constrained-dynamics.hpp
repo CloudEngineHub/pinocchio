@@ -33,6 +33,7 @@
 #include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio

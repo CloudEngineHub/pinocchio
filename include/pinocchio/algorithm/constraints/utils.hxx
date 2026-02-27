@@ -1164,3 +1164,40 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
+
+#ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
+  #ifndef PINOCCHIO_SKIP_ALGORITHM_CONTACT_JACOBIAN
+
+namespace pinocchio
+{
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void getConstraintJacobian<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    RigidConstraintModel,
+    RigidConstraintData,
+    context::MatrixXs>(
+    const Model &,
+    const Data &,
+    const ConstraintModelBase<RigidConstraintModel> &,
+    const ConstraintDataBase<RigidConstraintData> &,
+    const Eigen::MatrixBase<context::MatrixXs> &);
+
+  extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void getConstraintsJacobian<
+    context::Scalar,
+    context::Options,
+    JointCollectionDefaultTpl,
+    RigidConstraintModel,
+    typename RigidConstraintModelVector::allocator_type,
+    RigidConstraintData,
+    typename RigidConstraintDataVector::allocator_type,
+    context::MatrixXs>(
+    const Model &,
+    const Data &,
+    const RigidConstraintModelVector &,
+    const RigidConstraintDataVector &,
+    const Eigen::MatrixBase<context::MatrixXs> &);
+} // namespace pinocchio
+
+  #endif // ifndef PINOCCHIO_SKIP_ALGORITHM_CONTACT_JACOBIAN
+#endif   // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION

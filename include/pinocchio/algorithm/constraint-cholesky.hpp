@@ -28,6 +28,7 @@
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/algorithm/check-model.hpp"
+#include "pinocchio/algorithm/delassus-operator.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

@@ -342,8 +342,8 @@ namespace pinocchio
     context::VectorXs,
     context::MatrixXs,
     context::MatrixXs>(
-    const context::Model &,
-    context::Data &,
+    const Model &,
+    Data &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,

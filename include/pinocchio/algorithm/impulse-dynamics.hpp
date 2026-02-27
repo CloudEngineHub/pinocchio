@@ -25,6 +25,7 @@
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
 #include "pinocchio/algorithm/proximal.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio

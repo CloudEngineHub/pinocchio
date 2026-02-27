@@ -28,10 +28,14 @@
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/joint.hpp"
 
-#include <pinocchio/algorithm/constraints.hpp>
-#include <pinocchio/algorithm/proximal.hpp>
+#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/algorithm/proximal.hpp"
 #include "pinocchio/algorithm/check-model.hpp"
-#include <pinocchio/algorithm/rnea-derivatives.hpp>
+#include "pinocchio/algorithm/frames.hpp"
+#include "pinocchio/algorithm/rnea-derivatives.hpp"
+#include "pinocchio/algorithm/frames-derivatives.hpp"
+#include "pinocchio/algorithm/kinematics-derivatives.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio

@@ -480,18 +480,18 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
     ${PROJECT_SOURCE_DIR}/src/algorithm/cholesky.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/aba.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/regressor.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/contact-dynamics.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/contact-dynamics.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/frames-derivatives.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/impulse-dynamics.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/impulse-dynamics.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/model.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/constrained-dynamics.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/constrained-dynamics.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/rnea-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/compute-all-terms.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/jacobian.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/energy.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/centroidal-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/frames.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/constrained-dynamics-derivatives.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/constrained-dynamics-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/center-of-mass.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/geometry.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/kinematics.cpp
@@ -499,15 +499,14 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
     ${PROJECT_SOURCE_DIR}/src/algorithm/centroidal.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/aba-derivatives.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/crba.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/constraint-cholesky.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/constraint-cholesky.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/joint-configuration.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/center-of-mass-derivatives.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/proximal.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/admm-solver.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/admm-solver.cpp
     # ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/clarabel-solver.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/pgs-solver.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/solvers/pgs-solver.cpp
     ${PROJECT_SOURCE_DIR}/src/algorithm/kinematics-derivatives.cpp
-    # ${PROJECT_SOURCE_DIR}/src/algorithm/constraints/utils.cpp
+    ${PROJECT_SOURCE_DIR}/src/algorithm/constraints/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/model.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/data.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/sample-models.cpp)
