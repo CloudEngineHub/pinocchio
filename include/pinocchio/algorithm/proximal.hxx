@@ -2,12 +2,12 @@
 // Copyright (c) 2019-2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_proximal_hpp__
-#define __pinocchio_algorithm_proximal_hpp__
+#pragma once
 
-#include "pinocchio/fwd.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/algorithm/proximal.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -111,9 +111,3 @@ namespace pinocchio
   };
 
 } // namespace pinocchio
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/proximal.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_proximal_hpp__
