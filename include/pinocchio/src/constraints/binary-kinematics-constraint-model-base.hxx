@@ -123,15 +123,7 @@ namespace pinocchio
     , depth_joint2(0)
     {
       m_compliance = ResidualVectorType::Zero(residualSize());
-    }
-
-    /// \brief Constructor with only model.
-    /// Relative placements are identity and joints are 0.
-    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    BinaryKinematicsConstraintModelBase(
-      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
-    : BinaryKinematicsConstraintModelBase(model, 0, SE3::Identity(), 0, SE3::Identity())
-    {
+      m_baumgarte_parameters = BaumgarteCorrectorParameters();
     }
 
     /// \brief Full constructor
@@ -150,11 +142,21 @@ namespace pinocchio
     , desired_constraint_offset(ResidualVectorType::Zero(residualSize()))
     , desired_constraint_velocity(ResidualVectorType::Zero(residualSize()))
     , desired_constraint_acceleration(ResidualVectorType::Zero(residualSize()))
-    , nv(-1)
-    , depth_joint1(0)
-    , depth_joint2(0)
+    , nv(model.nv)
+    , depth_joint1(static_cast<size_t>(model.supports[joint1_id].size()))
+    , depth_joint2(static_cast<size_t>(model.supports[joint2_id].size()))
     {
-      init(model);
+      m_compliance = ResidualVectorType::Zero(residualSize());
+      m_baumgarte_parameters = BaumgarteCorrectorParameters();
+    }
+
+    /// \brief Constructor with only model.
+    /// Relative placements are identity and joints are 0.
+    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+    BinaryKinematicsConstraintModelBase(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
+    : BinaryKinematicsConstraintModelBase(model, 0, SE3::Identity(), 0, SE3::Identity())
+    {
     }
 
     /// \brief Constructor with only joint1, relative placement is identity.
@@ -272,8 +274,8 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
-      auto & sparsity_pattern_1 = model.sparsity_pattern_vector[joint1_id];
-      auto & sparsity_pattern_2 = model.sparsity_pattern_vector[joint2_id];
+      const auto & sparsity_pattern_1 = model.sparsity_pattern_vector[joint1_id];
+      const auto & sparsity_pattern_2 = model.sparsity_pattern_vector[joint2_id];
       result = sparsity_pattern_1.binaryExpr(
         sparsity_pattern_2, [](bool a, bool b) -> bool { return a || b; });
     }
@@ -290,8 +292,8 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
-      auto & span_indexes_1 = model.span_indexes_vector[joint1_id];
-      auto & span_indexes_2 = model.span_indexes_vector[joint2_id];
+      const auto & span_indexes_1 = model.span_indexes_vector[joint1_id];
+      const auto & span_indexes_2 = model.span_indexes_vector[joint2_id];
       result.clear();
       result.reserve(static_cast<std::size_t>(model.nv));
       std::set_union(
@@ -299,16 +301,6 @@ namespace pinocchio
         std::back_inserter(result));
     }
 
-  protected:
-    // ------------------------------
-    // PROTECTED METHODS
-    // ------------------------------
-
-    /// \brief Initialize the constraint model based on the kinematics loop of model.
-    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    void init(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model);
-
-  public:
     // ------------------------------
     // MEMBERS
     // ------------------------------
@@ -344,19 +336,5 @@ namespace pinocchio
     using BaseCommonParameters::m_baumgarte_parameters;
     using BaseCommonParameters::m_compliance;
   }; // struct BinaryKinematicsConstraintModelBase
-
-  template<typename Derived>
-  template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-  void BinaryKinematicsConstraintModelBase<Derived>::init(
-    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
-  {
-    nv = model.nv;
-    depth_joint1 = static_cast<size_t>(model.supports[joint1_id].size());
-    depth_joint2 = static_cast<size_t>(model.supports[joint2_id].size());
-
-    // Set compliance and Baumgarte parameters.
-    m_compliance = ResidualVectorType::Zero(residualSize());
-    m_baumgarte_parameters = BaumgarteCorrectorParameters();
-  }
 
 } // namespace pinocchio
