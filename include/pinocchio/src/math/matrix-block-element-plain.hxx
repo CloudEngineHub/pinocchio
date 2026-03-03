@@ -512,6 +512,7 @@ namespace pinocchio
       default:
         assert(false && "Should never happen");
       }
+      return true;
     }
 
     /**
