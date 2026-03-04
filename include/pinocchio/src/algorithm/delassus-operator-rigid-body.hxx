@@ -641,6 +641,9 @@ namespace pinocchio
 
     if (solve_in_place)
     {
+      PINOCCHIO_THROW_PRETTY_IF(
+        residualSize(helper::get_ref(constraint_models_ref)) == 0, std::runtime_error,
+        "Updating decomposition on empty constraint.");
       for (JointIndex joint_id = 1; joint_id < JointIndex(model_ref.njoints); ++joint_id)
       {
         const auto joint_nv = model_ref.nvs[joint_id];
@@ -662,16 +665,24 @@ namespace pinocchio
       {
         PINOCCHIO_TRACY_ZONE_SCOPED_N("appendCouplingConstraintInertias");
         const auto & blocks = m_sum_compliance_damping_inverse.blocks();
-        if (blocks.size() == 1 && constraint_models_ref.size() > 1) // we assume we have a single
-                                                                    // diagonal block to dispatch on
-                                                                    // all the contraints
+        PINOCCHIO_THROW_PRETTY_IF(
+          getSumOfBlockSizes(blocks) != residualSize(helper::get_ref(constraint_models_ref)),
+          std::runtime_error,
+          "The sum of sizes of the blocks should be the same as the total residual size of the "
+          "constraints vector.");
+        if (blocks.size() == 1 && blocks[0].type() == MatrixBlockType::Diagonal)
         {
-          const auto & diagonal_block = blocks[0];
-          assert(diagonal_block.type() == MatrixBlockType::Diagonal);
-          Eigen::Index row_id = 0;
+          // we assume we have a single diagonal block to dispatch on all the contraints
           typedef typename BlockDiagonalMatrix::ConstVectorMap ConstVectorMap;
+
+          const auto & diagonal_block = blocks[0];
           const auto & compliance_damping_inverse_vector =
             remap<ConstVectorMap>(diagonal_block.container());
+
+          assert(residualSize(helper::get_ref(constraint_models_ref)) == m_size);
+          assert(compliance_damping_inverse_vector.size() == m_size);
+
+          Eigen::Index row_id = 0;
           for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
                ++constraint_id)
           {
@@ -688,8 +699,16 @@ namespace pinocchio
           }
           assert(row_id == size());
         }
-        else // we have block diagonal matrix, each block being assigned to a constraint
+        else
         {
+          PINOCCHIO_THROW_PRETTY_IF(
+            (blocks.size() == 1) && (blocks[0].type() != MatrixBlockType::Diagonal)
+              && (constraint_models_ref.size() > 1),
+            std::runtime_error,
+            "Assuming a single non-diagonal block for multiple constraints. This should be "
+            "impossible.");
+
+          // we have block diagonal matrix, each block being assigned to a constraint
           std::size_t inner_constraint_id = 0;
           for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
                ++constraint_id)

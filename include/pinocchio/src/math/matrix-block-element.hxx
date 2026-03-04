@@ -42,6 +42,19 @@ namespace pinocchio
     typedef MatrixBlockElementTpl<Matrix> PlainBlockElement;
   };
 
+  /// @brief Returns the sum of the size of each individual block.
+  template<typename MatrixOrMap, typename Enable>
+  int getSumOfBlockSizes(
+    const std::vector<MatrixBlockElementTpl<MatrixOrMap, Enable>> blocks_vector)
+  {
+    int size = 0;
+    for (const auto & block : blocks_vector)
+    {
+      size += block.size();
+    }
+    return size;
+  }
+
   /**
    * @ingroup pinocchio_math
    * @brief A descriptor for a non-owning matrix block, implemented as a view using `Eigen::Map`.
