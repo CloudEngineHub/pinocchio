@@ -20,8 +20,8 @@
 #include "pinocchio/algorithm/aba-derivatives.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-// #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
-// #include "pinocchio/algorithm/constrained-dynamics.hpp"
+#include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
+#include "pinocchio/algorithm/constrained-dynamics.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

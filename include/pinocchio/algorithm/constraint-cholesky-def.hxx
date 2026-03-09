@@ -1017,9 +1017,6 @@ namespace pinocchio
       const Eigen::MatrixBase<context::VectorXs> &);
   }
 
-  extern template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
-    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>;
-
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::rebuild<
     context::Scalar,
