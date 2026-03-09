@@ -582,4 +582,118 @@ BOOST_AUTO_TEST_CASE(test_operator_equal)
   BOOST_CHECK(bdm2 == bdm);
 }
 
+/// Helper: build a 2-outer-block BDM where one block is NestedBlockDiagonal.
+/// Layout: [Diagonal(3×3)] [NestedBlockDiagonal: (Diagonal(2×2), Plain(3×3))]
+static BlockDiagonalMatrix create_nested_block_diagonal_matrix()
+{
+  const Eigen::Index flat_diag_size = 3;
+  const Eigen::Index sub_diag_size = 2;
+  const Eigen::Index sub_plain_size = 3;
+
+  // Outer block 0: plain Diagonal
+  MatrixBlockElement flat_block(pinocchio::MatrixBlockType::Diagonal, flat_diag_size);
+
+  // Outer block 1: NestedBlockDiagonal containing Diagonal + Plain sub-blocks
+  std::vector<MatrixBlockElement> subs;
+  subs.emplace_back(pinocchio::MatrixBlockType::Diagonal, sub_diag_size);
+  subs.emplace_back(pinocchio::MatrixBlockType::Plain, sub_plain_size);
+  MatrixBlockElement nested_block(pinocchio::MatrixBlockType::NestedBlockDiagonal, std::move(subs));
+
+  BlockDiagonalMatrix bdm({flat_block, nested_block});
+  for (auto & block : bdm.blocks())
+    block.setRandomPD(); // make it invertible for inverse tests
+  return bdm;
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_construction)
+{
+  const auto bdm = create_nested_block_diagonal_matrix();
+
+  const Eigen::Index expected_rows = 3 + 2 + 3; // flat_diag + sub_diag + sub_plain
+  BOOST_CHECK(bdm.rows() == expected_rows);
+  BOOST_CHECK(bdm.cols() == expected_rows);
+  BOOST_CHECK(bdm.blocks().size() == 2); // ONE outer block per constraint
+  BOOST_CHECK(bdm.blocks()[0].type() == pinocchio::MatrixBlockType::Diagonal);
+  BOOST_CHECK(bdm.blocks()[1].type() == pinocchio::MatrixBlockType::NestedBlockDiagonal);
+  BOOST_CHECK(bdm.blocks()[1].nested_blocks().size() == 2);
+  BOOST_CHECK(bdm.blocks()[1].nested_blocks()[0].type() == pinocchio::MatrixBlockType::Diagonal);
+  BOOST_CHECK(bdm.blocks()[1].nested_blocks()[1].type() == pinocchio::MatrixBlockType::Plain);
+
+  // Plain matrix should have zeros off the diagonal sub-blocks
+  const Matrix plain = bdm.matrix();
+  BOOST_CHECK(plain.block(0, 3, 3, 5).isZero()); // flat block row vs nested block columns
+  BOOST_CHECK(plain.block(3, 0, 5, 3).isZero()); // nested block rows vs flat block columns
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_assignment)
+{
+  const auto bdm = create_nested_block_diagonal_matrix();
+  test_assignment(bdm);
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_apply_on_the_right)
+{
+  const auto bdm = create_nested_block_diagonal_matrix();
+  test_applyOnTheRight(bdm);
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_apply_on_the_left)
+{
+  const auto bdm = create_nested_block_diagonal_matrix();
+  test_applyOnTheLeft(bdm);
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_diagonal)
+{
+  const auto bdm = create_nested_block_diagonal_matrix();
+  const Matrix plain = bdm.matrix();
+  const Vector diag_ref = plain.diagonal();
+  const Vector diag_result = bdm.diagonal();
+  BOOST_CHECK(diag_result.isApprox(diag_ref));
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_inverse)
+{
+  const auto bdm = create_nested_block_diagonal_matrix();
+  const BlockDiagonalMatrix inv = bdm.inverse();
+
+  BOOST_CHECK(inv.blocks().size() == bdm.blocks().size());
+  BOOST_CHECK(inv.blocks()[1].type() == pinocchio::MatrixBlockType::NestedBlockDiagonal);
+
+  const Matrix plain = bdm.matrix();
+  const Matrix inv_plain = inv.matrix();
+  const Eigen::Index n = bdm.rows();
+  BOOST_CHECK((plain * inv_plain).isApprox(Matrix::Identity(n, n)));
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_sum_with_diagonal)
+{
+  const auto bdm = create_nested_block_diagonal_matrix();
+  const Eigen::Index n = bdm.rows();
+
+  const Vector delta = Vector::Random(n).cwiseAbs(); // positive entries
+  const auto diag_mat = delta.asDiagonal();
+
+  const BlockDiagonalMatrix res = bdm + diag_mat;
+
+  const Matrix plain_bdm = bdm.matrix();
+  const Matrix expected = plain_bdm + Matrix(diag_mat);
+  BOOST_CHECK(res.matrix().isApprox(expected));
+
+  // The result's blocks()[1] should still be NestedBlockDiagonal (types upgraded)
+  BOOST_CHECK(res.blocks()[1].type() == pinocchio::MatrixBlockType::NestedBlockDiagonal);
+}
+
+BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_copy)
+{
+  const auto bdm = create_nested_block_diagonal_matrix();
+  const BlockDiagonalMatrix bdm_copy = bdm;
+
+  BOOST_CHECK(bdm_copy == bdm);
+  // Copies must be independent (no aliasing in NestedBlockDiagonal sub-blocks)
+  BOOST_CHECK(
+    bdm_copy.blocks()[1].nested_blocks()[0].map.data()
+    != bdm.blocks()[1].nested_blocks()[0].map.data());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

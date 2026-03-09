@@ -322,4 +322,94 @@ BOOST_AUTO_TEST_CASE(test_inverse_method)
   }
 }
 
+BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_block_element)
+{
+  const std::size_t num_tests =
+#ifdef NDEBUG
+    1000
+#else
+    10
+#endif
+    ;
+
+  for (std::size_t i = 0; i < num_tests; ++i)
+  {
+    // Build a NestedBlockDiagonal block containing a 3×3 Diagonal and a 4×4 Plain sub-block.
+    // The BlockDiagonalMatrix manages backing memory; we test through its block accessor.
+    const Eigen::Index diag_size = 3;
+    const Eigen::Index plain_size = 4;
+    const Eigen::Index total_size = diag_size + plain_size;
+
+    typedef BlockDiagonalMatrix::MatrixBlockElement BDMBlockElement;
+    std::vector<BDMBlockElement> nested_subs;
+    nested_subs.emplace_back(pinocchio::MatrixBlockType::Diagonal, diag_size);
+    nested_subs.emplace_back(pinocchio::MatrixBlockType::Plain, plain_size);
+    BDMBlockElement nested_block(
+      pinocchio::MatrixBlockType::NestedBlockDiagonal, std::move(nested_subs));
+
+    BlockDiagonalMatrix bdm({nested_block});
+
+    BOOST_CHECK(bdm.rows() == total_size);
+    BOOST_CHECK(bdm.cols() == total_size);
+    BOOST_CHECK(bdm.blocks().size() == 1);
+    BOOST_CHECK(bdm.blocks()[0].type() == pinocchio::MatrixBlockType::NestedBlockDiagonal);
+    BOOST_CHECK(bdm.blocks()[0].nested_blocks().size() == 2);
+
+    // Populate sub-blocks with random data (make it invertible for inverse test)
+    for (auto & block : bdm.blocks())
+      block.setRandomPD();
+
+    // Retrieve the block and verify evalTo / addTo / subTo
+    const auto & block = bdm.blocks()[0];
+    const Matrix expected_plain = bdm.matrix(); // full BDM as plain matrix
+
+    // evalTo
+    {
+      Matrix res = Matrix::Random(total_size, total_size);
+      block.evalTo(res);
+      BOOST_CHECK(res.isApprox(expected_plain));
+    }
+
+    // addTo
+    {
+      const Matrix base = Matrix::Random(total_size, total_size);
+      Matrix res = base;
+      block.addTo(res);
+      BOOST_CHECK(res.isApprox(base + expected_plain));
+    }
+
+    // subTo
+    {
+      const Matrix base = Matrix::Random(total_size, total_size);
+      Matrix res = base;
+      block.subTo(res);
+      BOOST_CHECK(res.isApprox(base - expected_plain));
+    }
+
+    // diagonal()
+    {
+      Vector diag_ref = expected_plain.diagonal();
+      Vector diag_result = block.diagonal();
+      BOOST_CHECK(diag_result.isApprox(diag_ref));
+    }
+
+    // in-place inverse: create a result BDM with same pattern and invert each sub-block
+    {
+
+      std::vector<BDMBlockElement> res_nested_subs;
+      res_nested_subs.emplace_back(pinocchio::MatrixBlockType::Diagonal, diag_size);
+      res_nested_subs.emplace_back(pinocchio::MatrixBlockType::Plain, plain_size);
+      BDMBlockElement res_nested_block(
+        pinocchio::MatrixBlockType::NestedBlockDiagonal, std::move(res_nested_subs));
+      BlockDiagonalMatrix res_bdm({res_nested_block});
+
+      block.inverse(res_bdm.blocks()[0]);
+
+      const Matrix inv_result = res_bdm.matrix();
+      // Verify: block * inv = I
+      BOOST_CHECK((expected_plain * inv_result).isApprox(Matrix::Identity(total_size, total_size)));
+    }
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
