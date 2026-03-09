@@ -641,9 +641,6 @@ namespace pinocchio
 
     if (solve_in_place)
     {
-      PINOCCHIO_THROW_PRETTY_IF(
-        residualSize(helper::get_ref(constraint_models_ref)) == 0, std::runtime_error,
-        "Updating decomposition on empty constraint.");
       for (JointIndex joint_id = 1; joint_id < JointIndex(model_ref.njoints); ++joint_id)
       {
         const auto joint_nv = model_ref.nvs[joint_id];
