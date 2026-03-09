@@ -701,22 +701,19 @@ namespace pinocchio
         }
         else
         {
+          // One block per outer constraint (atomic or pool as NestedBlockDiagonal).
           PINOCCHIO_THROW_PRETTY_IF(
-            (blocks.size() == 1) && (blocks[0].type() != MatrixBlockType::Diagonal)
-              && (constraint_models_ref.size() > 1),
-            std::runtime_error,
-            "Assuming a single non-diagonal block for multiple constraints. This should be "
-            "impossible.");
+            blocks.size() != constraint_models_ref.size(), std::runtime_error,
+            "The number of blocks should equal the number of constraints. "
+            "Pools must be represented as NestedBlockDiagonal blocks.");
 
-          // we have block diagonal matrix, each block being assigned to a constraint
-          std::size_t inner_constraint_id = 0;
           for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
                ++constraint_id)
           {
             const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
             const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
             cmodel.appendCouplingConstraintInertias(
-              model_ref, data_ref, cdata, blocks, WorldFrameTag(), inner_constraint_id);
+              model_ref, data_ref, cdata, blocks[constraint_id], WorldFrameTag());
           }
         }
       }
