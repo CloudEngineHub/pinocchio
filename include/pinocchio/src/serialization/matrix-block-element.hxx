@@ -18,10 +18,24 @@ namespace boost
 
     namespace internal
     {
-      template<typename Matrix>
+      /// Accessor for the owning variant (Eigen::Matrix).
+      template<typename Matrix, typename = void>
       struct MatrixBlockElementTplAccessor : public ::pinocchio::MatrixBlockElementTpl<Matrix>
       {
         typedef ::pinocchio::MatrixBlockElementTpl<Matrix> Base;
+        using Base::m_size;
+        using Base::m_type;
+      };
+
+      /// Accessor for the non-owning Map variant — also exposes m_nested_blocks.
+      template<typename Matrix>
+      struct MatrixBlockElementTplAccessor<
+        Matrix,
+        std::enable_if_t<!pinocchio::helper::is_eigen_matrix_v<Matrix>>>
+      : public ::pinocchio::MatrixBlockElementTpl<Matrix>
+      {
+        typedef ::pinocchio::MatrixBlockElementTpl<Matrix> Base;
+        using Base::m_nested_blocks;
         using Base::m_size;
         using Base::m_type;
       };
@@ -43,6 +57,14 @@ namespace boost
       {
         auto & container = matrix_block_element.container();
         ar & make_nvp("container", container);
+      }
+      else
+      {
+        // Map variant: serialize nested block structure for NestedBlockDiagonal.
+        if (matrix_block_element.m_type == pinocchio::MatrixBlockType::NestedBlockDiagonal)
+        {
+          ar & make_nvp("nested_blocks", matrix_block_element.m_nested_blocks);
+        }
       }
     }
 
