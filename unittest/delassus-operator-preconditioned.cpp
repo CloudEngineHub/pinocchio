@@ -1,4 +1,6 @@
+#define EIGEN_RUNTIME_NO_MALLOC
 #define PINOCCHIO_EIGEN_CHECK_MALLOC
+
 #include <pinocchio/fwd.hpp>
 
 #include <boost/variant.hpp> // to avoid C99 warnings
@@ -6,9 +8,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
-#include <pinocchio/algorithm/delassus-operator-dense.hpp>
-#include <pinocchio/algorithm/delassus-operator-preconditioned.hpp>
-#include "pinocchio/algorithm/diagonal-preconditioner.hpp"
+#include <pinocchio/algorithm/delassus-operator.hpp>
 #include <pinocchio/math/matrix.hpp>
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)

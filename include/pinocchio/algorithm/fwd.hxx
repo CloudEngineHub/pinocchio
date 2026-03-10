@@ -57,11 +57,11 @@ namespace pinocchio
   typedef DelassusOperatorSparseTpl<context::Scalar, context::Options> DelassusOperatorSparse;
 
   template<
-    typename _Scalar,
-    int _Options,
-    template<typename, int> class _JointCollectionTpl,
-    class _ConstraintModel,
-    template<typename T> class Holder>
+    typename Scalar,
+    int Options,
+    template<typename, int> class JointCollectionTpl,
+    typename ConstraintModel,
+    template<typename T> class Holder = std::reference_wrapper>
   struct DelassusOperatorRigidBodySystemsTpl;
 
   template<typename DelassusOperator, typename PreconditionerType>

@@ -14,8 +14,7 @@
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/utils/timer.hpp"
 #include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/algorithm/constraints/point-anchor-constraint.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 
 // Helpers
 #include "constraints/jacobians-checker.hpp"

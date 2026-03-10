@@ -2,6 +2,7 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
+#define EIGEN_RUNTIME_NO_MALLOC
 #define PINOCCHIO_EIGEN_CHECK_MALLOC
 
 #include <iostream>
@@ -9,9 +10,9 @@
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/math/eigenvalues.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
+#include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
