@@ -23,6 +23,7 @@
 #include <boost/optional.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/variant.hpp>
+#include <boost/logic/tribool.hpp>
 
 #include "pinocchio/spatial.hpp"
 

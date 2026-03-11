@@ -4,7 +4,7 @@
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/algorithm/solvers/pgs-solver.hpp"
-#include "pinocchio/algorithm/delassus-operator-dense.hpp"
+#include "pinocchio/algorithm/delassus-operator.hpp"
 
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
@@ -103,8 +103,9 @@ namespace pinocchio
       bp::class_<PGSSolverStats, bp::bases<ConstraintSolverStatsBase>>(
         "PGSSolverStats", "Per-iteration statistics of the PGS constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
-        .def(bp::init<std::size_t>(
-          bp::args("self", "max_iterations"), "Constructor with maximum iterations."));
+        .def(
+          bp::init<std::size_t>(
+            bp::args("self", "max_iterations"), "Constructor with maximum iterations."));
       // Note: No PGS-specific stats beyond base class
     }
 

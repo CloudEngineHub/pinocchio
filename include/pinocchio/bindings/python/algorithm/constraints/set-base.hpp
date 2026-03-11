@@ -8,7 +8,7 @@
 #include <eigenpy/eigenpy.hpp>
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/algorithm/constraints/sets/box-set.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
 

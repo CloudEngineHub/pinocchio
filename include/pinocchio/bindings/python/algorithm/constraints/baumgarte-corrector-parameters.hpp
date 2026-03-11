@@ -7,7 +7,7 @@
 
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
 #include "pinocchio/bindings/python/utils/comparable.hpp"

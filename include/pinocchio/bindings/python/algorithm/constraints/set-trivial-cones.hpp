@@ -7,9 +7,7 @@
 
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/algorithm/constraints/sets/zero-cone.hpp"
-#include "pinocchio/algorithm/constraints/sets/full-space-cone.hpp"
-#include "pinocchio/algorithm/constraints/sets/orthant-cone.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 
 #include "pinocchio/bindings/python/algorithm/constraints/set-base.hpp"
 #include "pinocchio/bindings/python/utils/cast.hpp"

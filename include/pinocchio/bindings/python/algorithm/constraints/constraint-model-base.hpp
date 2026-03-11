@@ -11,8 +11,7 @@
 
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-base.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
@@ -143,8 +142,8 @@ namespace pinocchio
             "Vector of the active indexes associated with a given row.")
           .def(
             "jacobian",
-            (JacobianMatrixType(Self::*)(const Model &, const Data &, ConstraintData &)
-               const)&Self::jacobian,
+            (JacobianMatrixType (Self::*)(const Model &, const Data &, ConstraintData &) const)
+              & Self::jacobian,
             bp::args("self", "model", "data", "constraint_data"),
             "Compute the constraint jacobian.")
           .def(

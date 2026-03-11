@@ -5,8 +5,8 @@
 #ifndef __pinocchio_python_algorithm_constraints_data_hpp__
 #define __pinocchio_python_algorithm_constraints_data_hpp__
 
-#include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
-#include "pinocchio/serialization/constraints-data.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include "pinocchio/bindings/python/algorithm/constraints/constraint-data-base.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
@@ -50,8 +50,9 @@ namespace pinocchio
       {
         bp::class_<ConstraintData>("ConstraintData", "Generic Constraint Data.", bp::no_init)
           .def(bp::init<>(bp::arg("self"), "Default constructor."))
-          .def(bp::init<const ConstraintData &>(
-            bp::args("self", "constraint_data"), "Copy constructor."))
+          .def(
+            bp::init<const ConstraintData &>(
+              bp::args("self", "constraint_data"), "Copy constructor."))
           .def(ConstraintDataBasePythonVisitor<ConstraintData>())
           .def(PrintableVisitor<ConstraintData>())
           .def(SerializableVisitor<ConstraintData>())

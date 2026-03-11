@@ -5,8 +5,8 @@
 #ifndef __pinocchio_python_algorithm_constraints_model_hpp__
 #define __pinocchio_python_algorithm_constraints_model_hpp__
 
-#include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
-#include "pinocchio/serialization/constraints-model.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include "pinocchio/bindings/python/algorithm/constraints/constraint-model-base.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"

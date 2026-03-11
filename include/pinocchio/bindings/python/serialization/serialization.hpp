@@ -5,7 +5,7 @@
 #ifndef __pinocchio_python_serialization_serialization_hpp__
 #define __pinocchio_python_serialization_serialization_hpp__
 
-#include "pinocchio/serialization/archive.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/namespace.hpp"

@@ -7,7 +7,7 @@
 
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/set-base.hpp"
 #include "pinocchio/bindings/python/utils/cast.hpp"
 
@@ -27,8 +27,9 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::init<const Scalar &>(
-                 bp::args("self", "mu"), "Constructor from a given friction coefficient"))
+        cl.def(
+            bp::init<const Scalar &>(
+              bp::args("self", "mu"), "Constructor from a given friction coefficient"))
           .def(bp::init<const Self &>(bp::args("self", "other"), "Copy constructor"))
           .add_property(
             "mu", bp::make_function(+[](Self & self) -> Scalar { return self.mu; }),
@@ -72,8 +73,9 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::init<const Scalar &>(
-                 bp::args("self", "mu"), "Constructor from a given friction coefficient"))
+        cl.def(
+            bp::init<const Scalar &>(
+              bp::args("self", "mu"), "Constructor from a given friction coefficient"))
           .def(bp::init<const Self &>(bp::args("self", "other"), "Copy constructor"))
           .add_property(
             "mu", bp::make_function(+[](Self & self) -> Scalar { return self.mu; }),
