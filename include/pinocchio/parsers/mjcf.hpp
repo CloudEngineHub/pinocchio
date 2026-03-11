@@ -16,20 +16,13 @@
 #include <iostream>
 
 #include <Eigen/Core>
-#include <Eigen/Dense>
 
-#include <boost/fusion/functional.hpp>
-#include <boost/fusion/algorithm.hpp>
-#include <boost/logic/tribool.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/none.hpp>
 #include <boost/none_t.hpp>
-#include <boost/optional/optional.hpp>
+#include <boost/optional.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/variant/variant.hpp>
-
-#include <boost/property_tree/ptree.hpp>
+#include <boost/variant.hpp>
 
 #include "pinocchio/spatial.hpp"
 

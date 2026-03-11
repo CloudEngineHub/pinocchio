@@ -2,12 +2,12 @@
 // Copyright (c) 2020 CNRS
 //
 
-#ifndef __pinocchio_parsers_sdf_hpp__
-#define __pinocchio_parsers_sdf_hpp__
+#pragma once
 
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/algorithm/constraints/point-anchor-constraint.hpp"
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/sdf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -256,8 +256,3 @@ namespace pinocchio
 
   } // namespace sdf
 } // namespace pinocchio
-
-#include "pinocchio/parsers/sdf/model.hxx"
-#include "pinocchio/parsers/sdf/geometry.hxx"
-
-#endif // ifndef __pinocchio_parsers_sdf_hpp__

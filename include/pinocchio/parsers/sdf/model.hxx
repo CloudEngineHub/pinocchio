@@ -2,23 +2,12 @@
 // Copyright (c) 2020 CNRS
 //
 
-#ifndef __pinocchio_multibody_parsers_sdf_model_hxx__
-#define __pinocchio_multibody_parsers_sdf_model_hxx__
+#pragma once
 
-#include "pinocchio/math/matrix.hpp"
-#include "pinocchio/parsers/config.hpp"
-// #include "pinocchio/parsers/sdf.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/parsers/urdf/model.hxx"
-
-#include <sdf/sdf.hh>
-#include <ignition/math.hh>
-#include <sstream>
-#include <boost/foreach.hpp>
-#include <limits>
-#include <iostream>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/sdf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -154,8 +143,9 @@ namespace pinocchio
           ::sdf::init(sdfElement);
           if (!::sdf::readString(xmlString, sdfElement))
           {
-            throw std::invalid_argument("The xml string does not "
-                                        "contain a valid SDF model");
+            throw std::invalid_argument(
+              "The xml string does not "
+              "contain a valid SDF model");
           }
           parseGraph(sdfElement);
         }
@@ -182,8 +172,9 @@ namespace pinocchio
 
           if (!rootElement->HasElement("model"))
           {
-            throw std::invalid_argument("The sdf model does not "
-                                        "contain model element");
+            throw std::invalid_argument(
+              "The sdf model does not "
+              "contain model element");
           }
 
           const ::sdf::ElementPtr modelElement = rootElement->GetElement("model");
@@ -833,5 +824,3 @@ namespace pinocchio
     }
   } // namespace sdf
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_parsers_sdf_hpp__
