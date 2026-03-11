@@ -41,10 +41,10 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_code_generation)
   std::vector<RigidConstraintModel> contact_models_6D3D;
   std::vector<RigidConstraintData> contact_datas_6D3D;
 
-  RigidConstraintModel ci_RF(CONTACT_6D, model.getJointId(RF), LOCAL);
+  RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL);
   contact_models_6D3D.push_back(ci_RF);
   contact_datas_6D3D.push_back(RigidConstraintData(ci_RF));
-  RigidConstraintModel ci_LF(CONTACT_3D, model.getJointId(LF), LOCAL);
+  RigidConstraintModel ci_LF(CONTACT_3D, model, model.getJointId(LF), LOCAL);
   contact_models_6D3D.push_back(ci_LF);
   contact_datas_6D3D.push_back(RigidConstraintData(ci_LF));
 
@@ -56,12 +56,11 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_code_generation)
 
   CodeGenConstraintDynamics<double> cg_constraintDynamics(model, contact_models_6D3D);
   cg_constraintDynamics.initLib();
-  cg_constraintDynamics.loadLib();
+  cg_constraintDynamics.compileAndLoadLib(PINOCCHIO_CXX_COMPILER);
   cg_constraintDynamics.evalFunction(q, v, tau);
 
-  pinocchio::initConstraintDynamics(model, data, contact_models_6D3D);
-  pinocchio::constraintDynamics(
-    model, data, q, v, tau, contact_models_6D3D, contact_datas_6D3D, 0.);
+  pinocchio::initConstraintDynamics(model, data, contact_models_6D3D, contact_datas_6D3D);
+  pinocchio::constraintDynamics(model, data, q, v, tau, contact_models_6D3D, contact_datas_6D3D);
   BOOST_CHECK(data.ddq.isApprox(cg_constraintDynamics.ddq));
   BOOST_CHECK(data.lambda_c.isApprox(cg_constraintDynamics.lambda_c));
 }
