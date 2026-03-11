@@ -289,12 +289,12 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/archive.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/block-diagonal-matrix.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-data.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-model.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-set.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/block-diagonal-matrix.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-data.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-model.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/constraints-set.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/data.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/delassus.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/delassus.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/double-entry-container.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen-storage.hxx
@@ -313,7 +313,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-motion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-motion-subspace.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-transform.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/matrix-block-element.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/matrix-block-element.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/model.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/motion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/se3.hpp
