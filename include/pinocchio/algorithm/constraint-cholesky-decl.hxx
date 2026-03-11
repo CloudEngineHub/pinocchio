@@ -487,9 +487,17 @@ namespace pinocchio
 
     // data
   protected:
+    // temporary containing the results of D * U^t
+    Vector DUt_storage;
     EigenStorageVector D_storage;
     EigenStorageVector Dinv_storage;
     EigenStorageRowMatrix U_storage;
+
+    /// \brief Inverse of the top left block of U
+    mutable Matrix U1inv_storage;
+    /// \brief Inverse of the bottom right block of U
+    mutable Matrix U4inv_storage;
+    mutable RowMatrix OSIMinv_storage, Minv_storage;
 
   public:
     typename EigenStorageVector::RefMapType D;

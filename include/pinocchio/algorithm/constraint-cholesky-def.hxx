@@ -62,6 +62,24 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::allocate(
+    const ModelTpl<S1, O1, JointCollectionTpl> & model,
+    const DataTpl<S1, O1, JointCollectionTpl> & data,
+    const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+    const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
+  {
+    rebuild(model, data, constraint_models, constraint_datas);
+  }
+
+  template<typename Scalar, int Options>
+  template<
+    typename S1,
+    int O1,
+    template<typename, int> class JointCollectionTpl,
+    class ConstraintModel,
+    class ConstraintModelAllocator,
+    class ConstraintData,
+    class ConstraintDataAllocator>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::rebuild(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     const DataTpl<S1, O1, JointCollectionTpl> & data,
@@ -166,6 +184,12 @@ namespace pinocchio
     D_storage.resize(total_size);
     Dinv_storage.resize(total_size);
     U_storage.resize(total_size, total_size);
+    DUt_storage.resize(total_size);
+    U1inv_storage.resize(total_constraint_size, total_constraint_size);
+    OSIMinv_storage.resize(total_constraint_size, total_constraint_size);
+    U4inv_storage.resize(nv, nv);
+    Minv_storage.resize(nv, nv);
+
     delassus_block_storage.resize(total_constraint_size, total_constraint_size);
     U.setIdentity();
 
@@ -234,8 +258,7 @@ namespace pinocchio
       const Eigen::Index jj = total_constraint_size + j; // shifted index
       const Eigen::Index NVT = nv_subtree_fromRow[jj] - 1;
 
-      typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
-      MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, NVT, 1));
+      auto DUt_partial = DUt_storage.head(NVT);
 
       if (NVT)
         DUt_partial.noalias() =
@@ -352,8 +375,7 @@ namespace pinocchio
     {
       const Eigen::Index slice_dim = constraint_size - j - 1;
 
-      typedef Eigen::Map<Vector, EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
-      MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, slice_dim, 1));
+      auto DUt_partial = DUt_storage.head(slice_dim);
       DUt_partial.noalias() =
         U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
 
@@ -840,13 +862,11 @@ namespace pinocchio
     const auto U1 = U.topLeftCorner(constraintDim(), constraintDim());
 
     const auto dim = constraintDim();
-    typedef Eigen::Map<RowMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapRowMatrix;
-    MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
 
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
     MatrixType & res_ = res.const_cast_derived();
-    OSIMinv.noalias() = D.head(dim).asDiagonal() * U1.adjoint();
-    res_.noalias() = -U1 * OSIMinv;
+    OSIMinv_storage.noalias() = D.head(dim).asDiagonal() * U1.adjoint();
+    res_.noalias() = -U1 * OSIMinv_storage;
     if (enforce_symmetry)
       enforceSymmetry(res_);
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
@@ -879,17 +899,12 @@ namespace pinocchio
       U.topLeftCorner(constraintDim(), constraintDim()).template triangularView<Eigen::UnitUpper>();
 
     const auto dim = constraintDim();
-    typedef Eigen::Map<RowMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapRowMatrix;
-    MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
-
-    typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
-    MapMatrix U1inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, dim, dim));
 
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-    U1inv.setIdentity();
-    U1.solveInPlace(U1inv); // TODO: implement Sparse Inverse
-    OSIMinv.noalias() = -U1inv.adjoint() * Dinv.head(dim).asDiagonal();
-    res.noalias() = OSIMinv * U1inv;
+    U1inv_storage.setIdentity();
+    U1.solveInPlace(U1inv_storage); // TODO: implement Sparse Inverse
+    OSIMinv_storage.noalias() = -U1inv_storage.adjoint() * Dinv.head(dim).asDiagonal();
+    res.noalias() = OSIMinv_storage * U1inv_storage;
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
   }
 
@@ -911,17 +926,11 @@ namespace pinocchio
     //        typedef typename RowMatrix::ConstBlockXpr ConstBlockXpr;
     const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
 
-    typedef Eigen::Map<RowMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapRowMatrix;
-    MapRowMatrix Minv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
-
-    typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
-    MapMatrix U4inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
-
     PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-    U4inv.setIdentity();
-    U4.solveInPlace(U4inv); // TODO: implement Sparse Inverse
-    Minv.noalias() = U4inv.adjoint() * Dinv.tail(nv).asDiagonal();
-    res.noalias() = Minv * U4inv;
+    U4inv_storage.setIdentity();
+    U4.solveInPlace(U4inv_storage); // TODO: implement Sparse Inverse
+    Minv_storage.noalias() = U4inv_storage.adjoint() * Dinv.tail(nv).asDiagonal();
+    res.noalias() = Minv_storage * U4inv_storage;
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
   }
 
@@ -935,12 +944,9 @@ namespace pinocchio
     const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
     auto U2 = U.topRightCorner(constraintDim(), nv);
 
-    typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
-    MapMatrix U4inv = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, nv, nv));
-
-    U4inv.setIdentity();
-    U4.solveInPlace(U4inv); // TODO: implement Sparse Inverse
-    res.noalias() = U2 * U4inv;
+    U4inv_storage.setIdentity();
+    U4.solveInPlace(U4inv_storage); // TODO: implement Sparse Inverse
+    res.noalias() = U2 * U4inv_storage;
     PINOCCHIO_EIGEN_MALLOC_ALLOWED();
   }
 
