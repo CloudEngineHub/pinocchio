@@ -399,7 +399,7 @@ void runContactDynamicsTest(const Model & model, Data & data)
     contact_data.push_back(RigidConstraintData(contact_model_6d));
 
     // Initialize contact data
-    initConstraintDynamics(model, data, contact_models);
+    initConstraintDynamics(model, data, contact_models, contact_data);
 
     [&]() noexcept [[clang::nonblocking]] {
       // Constrained forward dynamics
@@ -408,7 +408,7 @@ void runContactDynamicsTest(const Model & model, Data & data)
 
     // Contact Cholesky
     ContactCholeskyDecomposition contact_chol;
-    contact_chol.allocate(model, contact_models);
+    contact_chol.rebuild(model, data, contact_models, contact_data);
 
     [&]() noexcept [[clang::nonblocking]] {
       crba(model, data, q, Convention::WORLD);
@@ -419,7 +419,7 @@ void runContactDynamicsTest(const Model & model, Data & data)
     Data::MatrixXs ddq_dq = Data::MatrixXs::Zero(model.nv, model.nv);
     Data::MatrixXs ddq_dv = Data::MatrixXs::Zero(model.nv, model.nv);
     Data::MatrixXs ddq_dtau = Data::MatrixXs::Zero(model.nv, model.nv);
-    const int constraint_dim = contact_models[0].size();
+    const int constraint_dim = contact_models[0].residualSize();
     Data::MatrixXs lambda_dq = Data::MatrixXs::Zero(constraint_dim, model.nv);
     Data::MatrixXs lambda_dv = Data::MatrixXs::Zero(constraint_dim, model.nv);
     Data::MatrixXs lambda_dtau = Data::MatrixXs::Zero(constraint_dim, model.nv);
