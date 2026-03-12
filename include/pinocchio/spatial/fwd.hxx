@@ -82,5 +82,7 @@ namespace pinocchio
   using SE3 = SE3Tpl<context::Scalar, context::Options>;
   using Symmetric3 = Symmetric3Tpl<context::Scalar, context::Options>;
   using Inertia = InertiaTpl<context::Scalar, context::Options>;
+  using PseudoInertia = PseudoInertiaTpl<context::Scalar, context::Options>;
+  using LogCholeskyParameters = LogCholeskyParametersTpl<context::Scalar, context::Options>;
 
 } // namespace pinocchio

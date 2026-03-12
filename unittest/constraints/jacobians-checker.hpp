@@ -2,8 +2,7 @@
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
 
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 
 #include <boost/test/unit_test.hpp>
 

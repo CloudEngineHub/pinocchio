@@ -10,9 +10,11 @@
 
 #include <Eigen/Core>
 
+#include "pinocchio/config.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/deprecated.hpp"
 #include "pinocchio/eigen-common.hpp"
+#include "pinocchio/context.hpp"
 
 #include "pinocchio/container/eigen-storage.hpp"
 

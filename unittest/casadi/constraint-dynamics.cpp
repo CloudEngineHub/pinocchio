@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(test_constraintDynamics_casadi_algo)
   TangentVector v(TangentVector::Random(model.nv));
   TangentVector tau(TangentVector::Random(model.nv));
 
-  pinocchio::initConstraintDynamics(model, data, contact_models);
+  pinocchio::initConstraintDynamics(model, data, contact_models, contact_data);
   pinocchio::constraintDynamics(model, data, q, v, tau, contact_models, contact_data);
   pinocchio::computeConstraintDynamicsDerivatives(model, data, contact_models, contact_data);
   pinocchio::casadi::AutoDiffConstraintDynamics<Scalar> ad_casadi(model, contact_models);

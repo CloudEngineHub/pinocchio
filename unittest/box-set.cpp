@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "pinocchio/algorithm/constraints/sets/box-set.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

@@ -14,6 +14,9 @@
 #include <sstream>
 #include <stdexcept>
 #include <array>
+#include <algorithm>
+#include <iterator>
+#include <limits>
 
 #include <boost/version.hpp>
 #if BOOST_VERSION / 100 % 1000 == 78 && __APPLE__
@@ -82,6 +85,9 @@
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/geometry.hpp"
+
+#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/algorithm/fwd.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
@@ -111,4 +117,10 @@
 #include "pinocchio/serialization/frame.hxx"
 #include "pinocchio/serialization/model.hxx"
 #include "pinocchio/serialization/data.hxx"
+#include "pinocchio/serialization/matrix-block-element.hxx"
+#include "pinocchio/serialization/block-diagonal-matrix.hxx"
+#include "pinocchio/serialization/constraints-data.hxx"
+#include "pinocchio/serialization/constraints-model.hxx"
+#include "pinocchio/serialization/constraints-set.hxx"
+#include "pinocchio/serialization/delassus.hxx"
 // IWYU pragma: end_exports

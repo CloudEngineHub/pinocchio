@@ -2,6 +2,7 @@
 // Copyright (c) 2024-2026 INRIA
 //
 
+#define EIGEN_RUNTIME_NO_MALLOC
 #define PINOCCHIO_EIGEN_CHECK_MALLOC
 
 #include <pinocchio/fwd.hpp>
@@ -11,10 +12,8 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
-#include <pinocchio/algorithm/delassus-operator-dense.hpp>
-#include <pinocchio/algorithm/delassus-operator-cholesky-expression.hpp>
-#include <pinocchio/algorithm/delassus-operator-rigid-body.hpp>
-#include <pinocchio/algorithm/constraints/utils.hpp>
+#include <pinocchio/algorithm/delassus-operator.hpp>
+#include <pinocchio/algorithm/constraints.hpp>
 
 #include "utils.hpp"
 

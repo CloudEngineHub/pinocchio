@@ -6,7 +6,7 @@
 #define __pinocchio_python_algorithm_delassus_operator_hpp__
 
 #include <eigenpy/memory.hpp>
-#include "pinocchio/algorithm/delassus-operator-base.hpp"
+#include "pinocchio/algorithm/delassus-operator.hpp"
 
 namespace pinocchio
 {
@@ -44,7 +44,7 @@ namespace pinocchio
 
           .def(
             "updateCompliance",
-            (void(DelassusOperator::*)(const Scalar &)) & DelassusOperator::updateCompliance,
+            (void (DelassusOperator::*)(const Scalar &))&DelassusOperator::updateCompliance,
             bp::args("self", "mu"),
             "Add a compliance term to the diagonal of the Delassus matrix. The compliance term "
             "should be "
@@ -66,7 +66,7 @@ namespace pinocchio
 
           .def(
             "updateDamping",
-            (void(DelassusOperator::*)(const Scalar &)) & DelassusOperator::updateDamping,
+            (void (DelassusOperator::*)(const Scalar &))&DelassusOperator::updateDamping,
             bp::args("self", "mu"),
             "Add a damping term to the diagonal of the Delassus matrix. The damping term should be "
             "positive.")
@@ -85,7 +85,7 @@ namespace pinocchio
             "Returns the value of the damping terms contained in the Delassus operator")
 
           .def(
-            "matrix", (Matrix(DelassusOperator::*)(bool, bool) const)&DelassusOperator::matrix,
+            "matrix", (Matrix (DelassusOperator::*)(bool, bool) const) & DelassusOperator::matrix,
             (bp::arg("self"), bp::arg("enforce_symmetry") = false, bp::arg("with_damping") = true),
             "Returns the Delassus expression as a dense matrix.")
           .def(

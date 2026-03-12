@@ -2,16 +2,12 @@
 // Copyright (c) 2020 CNRS
 //
 
-#ifndef __pinocchio_multibody_parsers_sdf_geometry_hxx__
-#define __pinocchio_multibody_parsers_sdf_geometry_hxx__
+#pragma once
 
-#include "pinocchio/parsers/config.hpp"
-#include "pinocchio/parsers/sdf.hpp"
-#include "pinocchio/parsers/utils.hpp"
-#include "pinocchio/parsers/meshloader-fwd.hpp"
-
-#include <string>
-#include <vector>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/parsers/sdf.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace pinocchio
 {
@@ -85,5 +81,3 @@ namespace pinocchio
 
   } // namespace sdf
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_multibody_parsers_sdf_geometry_hxx__

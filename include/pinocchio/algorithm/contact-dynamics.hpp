@@ -21,6 +21,7 @@
 #include "pinocchio/algorithm/cholesky.hpp"
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/crba.hpp"
+#include "pinocchio/algorithm/compute-all-terms.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio

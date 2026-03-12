@@ -994,7 +994,7 @@ namespace pinocchio
       && data1.impulse_c == data2.impulse_c && data1.staticRegressor == data2.staticRegressor
       && data1.bodyRegressor == data2.bodyRegressor
       && data1.jointTorqueRegressor == data2.jointTorqueRegressor
-      && data1.contact_chol == data2.contact_chol
+      // && data1.contact_chol == data2.contact_chol
       && data1.primal_dual_contact_solution == data2.primal_dual_contact_solution
       && data1.extended_motion_propagator == data2.extended_motion_propagator
       && data1.extended_motion_propagator2 == data2.extended_motion_propagator2

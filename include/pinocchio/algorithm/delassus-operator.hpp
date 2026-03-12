@@ -42,7 +42,10 @@
 
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/algorithm/diagonal-preconditioner.hpp"
 #include "pinocchio/algorithm/aba.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
+
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

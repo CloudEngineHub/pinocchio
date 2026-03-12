@@ -11,6 +11,8 @@
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
 
+#include "pinocchio/math.hpp"
+
 #include "pinocchio/algorithm/preconditioner-base.hpp"
 // IWYU pragma: end_keep
 

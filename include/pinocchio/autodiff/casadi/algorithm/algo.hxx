@@ -403,393 +403,387 @@ namespace pinocchio
       std::vector<Scalar> q_vec, v_vec, tau_vec;
     };
 
-    // template<typename _Scalar>
-    // struct AutoDiffConstraintDynamics : public AutoDiffAlgoBase<_Scalar>
-    // {
-    //   typedef AutoDiffAlgoBase<_Scalar> Base;
-    //   typedef typename Base::Scalar Scalar;
-    //   typedef typename Base::ADScalar ADScalar;
-    //   typedef typename Base::ADSVector ADSVector;
+    template<typename _Scalar>
+    struct AutoDiffConstraintDynamics : public AutoDiffAlgoBase<_Scalar>
+    {
+      typedef AutoDiffAlgoBase<_Scalar> Base;
+      typedef typename Base::Scalar Scalar;
+      typedef typename Base::ADScalar ADScalar;
+      typedef typename Base::ADSVector ADSVector;
 
-    //   typedef typename Base::TangentVectorType TangentVectorType;
-    //   typedef typename Base::RowMatrixXs RowMatrixXs;
-    //   typedef typename Base::VectorXs VectorXs;
-    //   typedef typename Base::MatrixXs MatrixXs;
+      typedef typename Base::TangentVectorType TangentVectorType;
+      typedef typename Base::RowMatrixXs RowMatrixXs;
+      typedef typename Base::VectorXs VectorXs;
+      typedef typename Base::MatrixXs MatrixXs;
 
-    //   typedef typename Base::ADFun ADFun;
-    //   typedef typename Base::DMVector DMVector;
-    //   typedef typename Base::DMMatrix DMMatrix;
-    //   typedef typename Base::ADConfigVectorType ADConfigVectorType;
-    //   typedef typename Base::ADTangentVectorType ADTangentVectorType;
+      typedef typename Base::ADFun ADFun;
+      typedef typename Base::DMVector DMVector;
+      typedef typename Base::DMMatrix DMMatrix;
+      typedef typename Base::ADConfigVectorType ADConfigVectorType;
+      typedef typename Base::ADTangentVectorType ADTangentVectorType;
 
-    //   typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ConstraintModel;
-    //   typedef typename std::vector<ConstraintModel> ConstraintModelVector;
-    //   typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ConstraintData;
-    //   typedef typename std::vector<ConstraintData> ConstraintDataVector;
+      typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ConstraintModel;
+      typedef typename std::vector<ConstraintModel> ConstraintModelVector;
+      typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ConstraintData;
+      typedef typename std::vector<ConstraintData> ConstraintDataVector;
 
-    //   typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options>
-    //     ADConstraintModel;
-    //   typedef typename std::vector<ADConstraintModel> ADConstraintModelVector;
-    //   typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options>
-    //   ADConstraintData; typedef typename std::vector<ADConstraintData> ADConstraintDataVector;
+      typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options>
+        ADConstraintModel;
+      typedef typename std::vector<ADConstraintModel> ADConstraintModelVector;
+      typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options> ADConstraintData;
+      typedef typename std::vector<ADConstraintData> ADConstraintDataVector;
 
-    //   static Eigen::Index constraintDim(const ConstraintModelVector & contact_models)
-    //   {
-    //     Eigen::Index num_total_constraints = 0;
-    //     for (typename ConstraintModelVector::const_iterator it = contact_models.begin();
-    //          it != contact_models.end(); ++it)
-    //     {
-    //       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-    //         it->size() > 0, "The dimension of the constraint must be positive");
-    //       num_total_constraints += it->size();
-    //     }
-    //     return num_total_constraints;
-    //   }
+      static Eigen::Index constraintDim(const ConstraintModelVector & contact_models)
+      {
+        Eigen::Index num_total_constraints = 0;
+        for (typename ConstraintModelVector::const_iterator it = contact_models.begin();
+             it != contact_models.end(); ++it)
+        {
+          PINOCCHIO_CHECK_INPUT_ARGUMENT(
+            it->residualSize() > 0, "The dimension of the constraint must be positive");
+          num_total_constraints += it->residualSize();
+        }
+        return num_total_constraints;
+      }
 
-    //   explicit AutoDiffConstraintDynamics(
-    //     const Model & model,
-    //     const ConstraintModelVector & contact_models,
-    //     const std::string & filename = "casadi_contactDyn",
-    //     const std::string & libname = "libcasadi_cg_contactDyn",
-    //     const std::string & fun_name = "eval_f")
-    //   : Base(model, filename, libname, fun_name)
-    //   , nc(constraintDim(contact_models))
-    //   , cs_q(ADScalar::sym("q", model.nq))
-    //   , cs_v(ADScalar::sym("v", model.nv))
-    //   , cs_tau(ADScalar::sym("tau", model.nv))
-    //   , cs_v_int(ADScalar::sym("v_inc", model.nv))
-    //   , q_ad(model.nq)
-    //   , q_int_ad(model.nq)
-    //   , v_ad(model.nv)
-    //   , v_int_ad(model.nv)
-    //   , tau_ad(model.nv)
-    //   , cs_ddq(model.nv, 1)
-    //   , cs_lambda_c(model.nv, 1)
-    //   , q_vec((size_t)model.nq)
-    //   , v_vec((size_t)model.nv)
-    //   , v_int_vec((size_t)model.nv)
-    //   , tau_vec((size_t)model.nv)
-    //   , ddq(model.nv)
-    //   , ddq_dq(model.nv, model.nv)
-    //   , ddq_dv(model.nv, model.nv)
-    //   , ddq_dtau(model.nv, model.nv)
-    //   {
-    //     lambda_c.resize(nc);
-    //     lambda_c.setZero();
-    //     dlambda_dq.resize(nc, model.nv);
-    //     dlambda_dq.setZero();
-    //     dlambda_dv.resize(nc, model.nv);
-    //     dlambda_dv.setZero();
-    //     dlambda_dtau.resize(nc, model.nv);
-    //     dlambda_dtau.setZero();
-    //     q_ad = Eigen::Map<ADConfigVectorType>(
-    //       static_cast<std::vector<ADScalar>>(cs_q).data(), model.nq, 1);
-    //     v_int_ad = Eigen::Map<ADConfigVectorType>(
-    //       static_cast<std::vector<ADScalar>>(cs_v_int).data(), model.nv, 1);
-    //     v_ad = Eigen::Map<ADTangentVectorType>(
-    //       static_cast<std::vector<ADScalar>>(cs_v).data(), model.nv, 1);
-    //     tau_ad = Eigen::Map<ADTangentVectorType>(
-    //       static_cast<std::vector<ADScalar>>(cs_tau).data(), model.nv, 1);
+      explicit AutoDiffConstraintDynamics(
+        const Model & model,
+        const ConstraintModelVector & contact_models,
+        const std::string & filename = "casadi_contactDyn",
+        const std::string & libname = "libcasadi_cg_contactDyn",
+        const std::string & fun_name = "eval_f")
+      : Base(model, filename, libname, fun_name)
+      , nc(constraintDim(contact_models))
+      , cs_q(ADScalar::sym("q", model.nq))
+      , cs_v(ADScalar::sym("v", model.nv))
+      , cs_tau(ADScalar::sym("tau", model.nv))
+      , cs_v_int(ADScalar::sym("v_inc", model.nv))
+      , q_ad(model.nq)
+      , q_int_ad(model.nq)
+      , v_ad(model.nv)
+      , v_int_ad(model.nv)
+      , tau_ad(model.nv)
+      , cs_ddq(model.nv, 1)
+      , cs_lambda_c(model.nv, 1)
+      , q_vec((size_t)model.nq)
+      , v_vec((size_t)model.nv)
+      , v_int_vec((size_t)model.nv)
+      , tau_vec((size_t)model.nv)
+      , ddq(model.nv)
+      , ddq_dq(model.nv, model.nv)
+      , ddq_dv(model.nv, model.nv)
+      , ddq_dtau(model.nv, model.nv)
+      {
+        lambda_c.resize(nc);
+        lambda_c.setZero();
+        dlambda_dq.resize(nc, model.nv);
+        dlambda_dq.setZero();
+        dlambda_dv.resize(nc, model.nv);
+        dlambda_dv.setZero();
+        dlambda_dtau.resize(nc, model.nv);
+        dlambda_dtau.setZero();
+        q_ad = Eigen::Map<ADConfigVectorType>(
+          static_cast<std::vector<ADScalar>>(cs_q).data(), model.nq, 1);
+        v_int_ad = Eigen::Map<ADConfigVectorType>(
+          static_cast<std::vector<ADScalar>>(cs_v_int).data(), model.nv, 1);
+        v_ad = Eigen::Map<ADTangentVectorType>(
+          static_cast<std::vector<ADScalar>>(cs_v).data(), model.nv, 1);
+        tau_ad = Eigen::Map<ADTangentVectorType>(
+          static_cast<std::vector<ADScalar>>(cs_tau).data(), model.nv, 1);
 
-    //     Eigen::Map<TangentVectorType>(v_int_vec.data(), model.nv, 1).setZero();
+        Eigen::Map<TangentVectorType>(v_int_vec.data(), model.nv, 1).setZero();
 
-    //     for (int k = 0; k < contact_models.size(); ++k)
-    //     {
-    //       ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
-    //       ad_contact_datas.push_back(ADConstraintData(ad_contact_models[k]));
-    //     }
-    //   }
+        for (int k = 0; k < contact_models.size(); ++k)
+        {
+          ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
+          ad_contact_datas.push_back(ADConstraintData(ad_contact_models[k]));
+        }
+      }
 
-    //   virtual ~AutoDiffConstraintDynamics()
-    //   {
-    //   }
+      virtual ~AutoDiffConstraintDynamics()
+      {
+      }
 
-    //   virtual void buildMap()
-    //   {
-    //     pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models,
-    //     ad_contact_datas);
-    //     // Integrate q + v_int = q_int
-    //     pinocchio::integrate(ad_model, q_ad, v_int_ad, q_int_ad);
-    //     // Run contact dynamics with new q_int
-    //     pinocchio::constraintDynamics(
-    //       ad_model, ad_data, q_int_ad, v_ad, tau_ad, ad_contact_models, ad_contact_datas);
-    //     // Copy Output
-    //     pinocchio::casadi::copy(ad_data.ddq, cs_ddq);
-    //     pinocchio::casadi::copy(ad_data.lambda_c, cs_lambda_c);
+      virtual void buildMap()
+      {
+        pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
+        // Integrate q + v_int = q_int
+        pinocchio::integrate(ad_model, q_ad, v_int_ad, q_int_ad);
+        // Run contact dynamics with new q_int
+        pinocchio::constraintDynamics(
+          ad_model, ad_data, q_int_ad, v_ad, tau_ad, ad_contact_models, ad_contact_datas);
+        // Copy Output
+        pinocchio::casadi::copy(ad_data.ddq, cs_ddq);
+        pinocchio::casadi::copy(ad_data.lambda_c, cs_lambda_c);
 
-    //     cs_ddq_dq = jacobian(cs_ddq, cs_v_int);
-    //     cs_ddq_dv = jacobian(cs_ddq, cs_v);
-    //     cs_ddq_dtau = jacobian(cs_ddq, cs_tau);
+        cs_ddq_dq = jacobian(cs_ddq, cs_v_int);
+        cs_ddq_dv = jacobian(cs_ddq, cs_v);
+        cs_ddq_dtau = jacobian(cs_ddq, cs_tau);
 
-    //     cs_lambda_dq = jacobian(cs_lambda_c, cs_v_int);
-    //     cs_lambda_dv = jacobian(cs_lambda_c, cs_v);
-    //     cs_lambda_dtau = jacobian(cs_lambda_c, cs_tau);
+        cs_lambda_dq = jacobian(cs_lambda_c, cs_v_int);
+        cs_lambda_dv = jacobian(cs_lambda_c, cs_v);
+        cs_lambda_dtau = jacobian(cs_lambda_c, cs_tau);
 
-    //     ad_fun =
-    //       ADFun(fun_name, ADSVector{cs_q, cs_v_int, cs_v, cs_tau}, ADSVector{cs_ddq,
-    //       cs_lambda_c});
-    //     ad_fun_derivs = ADFun(
-    //       fun_name + "_derivs", ADSVector{cs_q, cs_v_int, cs_v, cs_tau},
-    //       ADSVector{cs_ddq_dq, cs_ddq_dv, cs_ddq_dtau, cs_lambda_dq, cs_lambda_dv,
-    //       cs_lambda_dtau});
-    //   }
+        ad_fun =
+          ADFun(fun_name, ADSVector{cs_q, cs_v_int, cs_v, cs_tau}, ADSVector{cs_ddq, cs_lambda_c});
+        ad_fun_derivs = ADFun(
+          fun_name + "_derivs", ADSVector{cs_q, cs_v_int, cs_v, cs_tau},
+          ADSVector{cs_ddq_dq, cs_ddq_dv, cs_ddq_dtau, cs_lambda_dq, cs_lambda_dv, cs_lambda_dtau});
+      }
 
-    //   template<typename ConfigVectorType1, typename TangentVectorType1, typename
-    //   TangentVectorType2> void evalFunction(
-    //     const Eigen::MatrixBase<ConfigVectorType1> & q,
-    //     const Eigen::MatrixBase<TangentVectorType1> & v,
-    //     const Eigen::MatrixBase<TangentVectorType2> & tau)
-    //   {
-    //     Eigen::Map<ConfigVectorType1>(q_vec.data(), ad_model.nq, 1) = q;
-    //     Eigen::Map<TangentVectorType1>(v_vec.data(), ad_model.nv, 1) = v;
-    //     Eigen::Map<TangentVectorType2>(tau_vec.data(), ad_model.nv, 1) = tau;
-    //     fun_output = fun(DMVector{q_vec, v_int_vec, v_vec, tau_vec});
-    //     ddq = Eigen::Map<TangentVectorType>(
-    //       static_cast<std::vector<Scalar>>(fun_output[0]).data(), ad_model.nv, 1);
-    //     lambda_c = Eigen::Map<TangentVectorType>(
-    //       static_cast<std::vector<Scalar>>(fun_output[1]).data(), nc, 1);
-    //   }
+      template<typename ConfigVectorType1, typename TangentVectorType1, typename TangentVectorType2>
+      void evalFunction(
+        const Eigen::MatrixBase<ConfigVectorType1> & q,
+        const Eigen::MatrixBase<TangentVectorType1> & v,
+        const Eigen::MatrixBase<TangentVectorType2> & tau)
+      {
+        Eigen::Map<ConfigVectorType1>(q_vec.data(), ad_model.nq, 1) = q;
+        Eigen::Map<TangentVectorType1>(v_vec.data(), ad_model.nv, 1) = v;
+        Eigen::Map<TangentVectorType2>(tau_vec.data(), ad_model.nv, 1) = tau;
+        fun_output = fun(DMVector{q_vec, v_int_vec, v_vec, tau_vec});
+        ddq = Eigen::Map<TangentVectorType>(
+          static_cast<std::vector<Scalar>>(fun_output[0]).data(), ad_model.nv, 1);
+        lambda_c = Eigen::Map<TangentVectorType>(
+          static_cast<std::vector<Scalar>>(fun_output[1]).data(), nc, 1);
+      }
 
-    //   template<typename ConfigVectorType1, typename TangentVectorType1, typename
-    //   TangentVectorType2> void evalJacobian(
-    //     const Eigen::MatrixBase<ConfigVectorType1> & q,
-    //     const Eigen::MatrixBase<TangentVectorType1> & v,
-    //     const Eigen::MatrixBase<TangentVectorType2> & tau)
-    //   {
-    //     Eigen::Map<ConfigVectorType1>(q_vec.data(), ad_model.nq, 1) = q;
-    //     Eigen::Map<TangentVectorType1>(v_vec.data(), ad_model.nv, 1) = v;
-    //     Eigen::Map<TangentVectorType2>(tau_vec.data(), ad_model.nv, 1) = tau;
-    //     fun_output_derivs = fun_derivs(DMVector{q_vec, v_int_vec, v_vec, tau_vec});
-    //     ddq_dq = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output_derivs[0]).data(), ad_model.nv,
-    //       ad_model.nv);
-    //     ddq_dv = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output_derivs[1]).data(), ad_model.nv,
-    //       ad_model.nv);
-    //     ddq_dtau = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output_derivs[2]).data(), ad_model.nv,
-    //       ad_model.nv);
-    //     dlambda_dq = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output_derivs[3]).data(), nc, ad_model.nv);
-    //     dlambda_dv = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output_derivs[4]).data(), nc, ad_model.nv);
-    //     dlambda_dtau = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output_derivs[5]).data(), nc, ad_model.nv);
-    //   }
+      template<typename ConfigVectorType1, typename TangentVectorType1, typename TangentVectorType2>
+      void evalJacobian(
+        const Eigen::MatrixBase<ConfigVectorType1> & q,
+        const Eigen::MatrixBase<TangentVectorType1> & v,
+        const Eigen::MatrixBase<TangentVectorType2> & tau)
+      {
+        Eigen::Map<ConfigVectorType1>(q_vec.data(), ad_model.nq, 1) = q;
+        Eigen::Map<TangentVectorType1>(v_vec.data(), ad_model.nv, 1) = v;
+        Eigen::Map<TangentVectorType2>(tau_vec.data(), ad_model.nv, 1) = tau;
+        fun_output_derivs = fun_derivs(DMVector{q_vec, v_int_vec, v_vec, tau_vec});
+        ddq_dq = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output_derivs[0]).data(), ad_model.nv, ad_model.nv);
+        ddq_dv = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output_derivs[1]).data(), ad_model.nv, ad_model.nv);
+        ddq_dtau = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output_derivs[2]).data(), ad_model.nv, ad_model.nv);
+        dlambda_dq = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output_derivs[3]).data(), nc, ad_model.nv);
+        dlambda_dv = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output_derivs[4]).data(), nc, ad_model.nv);
+        dlambda_dtau = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output_derivs[5]).data(), nc, ad_model.nv);
+      }
 
-    //   TangentVectorType ddq;
-    //   VectorXs lambda_c;
-    //   RowMatrixXs ddq_dq, ddq_dv, ddq_dtau, dlambda_dq, dlambda_dv, dlambda_dtau;
+      TangentVectorType ddq;
+      VectorXs lambda_c;
+      RowMatrixXs ddq_dq, ddq_dv, ddq_dtau, dlambda_dq, dlambda_dv, dlambda_dtau;
 
-    // protected:
-    //   using Base::ad_data;
-    //   using Base::ad_model;
-    //   using Base::cg_generated;
-    //   using Base::filename;
-    //   using Base::fun_name;
-    //   using Base::libname;
+    protected:
+      using Base::ad_data;
+      using Base::ad_model;
+      using Base::cg_generated;
+      using Base::filename;
+      using Base::fun_name;
+      using Base::libname;
 
-    //   using Base::ad_fun;
-    //   using Base::ad_fun_derivs;
-    //   using Base::fun;
-    //   using Base::fun_derivs;
-    //   using Base::fun_output;
-    //   using Base::fun_output_derivs;
+      using Base::ad_fun;
+      using Base::ad_fun_derivs;
+      using Base::fun;
+      using Base::fun_derivs;
+      using Base::fun_output;
+      using Base::fun_output_derivs;
 
-    //   ADConstraintModelVector ad_contact_models;
-    //   ADConstraintDataVector ad_contact_datas;
+      ADConstraintModelVector ad_contact_models;
+      ADConstraintDataVector ad_contact_datas;
 
-    //   Eigen::Index nc;
-    //   ADScalar cs_q, cs_v, cs_tau, cs_v_int, cs_ddq, cs_lambda_c;
+      Eigen::Index nc;
+      ADScalar cs_q, cs_v, cs_tau, cs_v_int, cs_ddq, cs_lambda_c;
 
-    //   // Derivatives
-    //   ADScalar cs_ddq_dq, cs_ddq_dv, cs_ddq_dtau, cs_lambda_dq, cs_lambda_dv, cs_lambda_dtau;
+      // Derivatives
+      ADScalar cs_ddq_dq, cs_ddq_dv, cs_ddq_dtau, cs_lambda_dq, cs_lambda_dv, cs_lambda_dtau;
 
-    //   ADConfigVectorType q_ad, q_int_ad;
-    //   ADTangentVectorType v_ad, v_int_ad, tau_ad;
+      ADConfigVectorType q_ad, q_int_ad;
+      ADTangentVectorType v_ad, v_int_ad, tau_ad;
 
-    //   std::vector<Scalar> q_vec, v_vec, v_int_vec, tau_vec;
-    // };
+      std::vector<Scalar> q_vec, v_vec, v_int_vec, tau_vec;
+    };
 
-    // template<typename _Scalar>
-    // struct AutoDiffConstraintDynamicsDerivatives : public AutoDiffAlgoBase<_Scalar>
-    // {
-    //   typedef AutoDiffAlgoBase<_Scalar> Base;
-    //   typedef typename Base::Scalar Scalar;
-    //   typedef typename Base::ADScalar ADScalar;
-    //   typedef typename Base::ADSVector ADSVector;
+    template<typename _Scalar>
+    struct AutoDiffConstraintDynamicsDerivatives : public AutoDiffAlgoBase<_Scalar>
+    {
+      typedef AutoDiffAlgoBase<_Scalar> Base;
+      typedef typename Base::Scalar Scalar;
+      typedef typename Base::ADScalar ADScalar;
+      typedef typename Base::ADSVector ADSVector;
 
-    //   typedef typename Base::TangentVectorType TangentVectorType;
-    //   typedef typename Base::RowMatrixXs RowMatrixXs;
-    //   typedef typename Base::VectorXs VectorXs;
-    //   typedef typename Base::MatrixXs MatrixXs;
+      typedef typename Base::TangentVectorType TangentVectorType;
+      typedef typename Base::RowMatrixXs RowMatrixXs;
+      typedef typename Base::VectorXs VectorXs;
+      typedef typename Base::MatrixXs MatrixXs;
 
-    //   typedef typename Base::ADFun ADFun;
-    //   typedef typename Base::DMVector DMVector;
-    //   typedef typename Base::DMMatrix DMMatrix;
-    //   typedef typename Base::ADConfigVectorType ADConfigVectorType;
-    //   typedef typename Base::ADTangentVectorType ADTangentVectorType;
+      typedef typename Base::ADFun ADFun;
+      typedef typename Base::DMVector DMVector;
+      typedef typename Base::DMMatrix DMMatrix;
+      typedef typename Base::ADConfigVectorType ADConfigVectorType;
+      typedef typename Base::ADTangentVectorType ADTangentVectorType;
 
-    //   typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ConstraintModel;
-    //   typedef typename std::vector<ConstraintModel> ConstraintModelVector;
-    //   typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ConstraintData;
-    //   typedef typename std::vector<ConstraintData> ConstraintDataVector;
+      typedef typename pinocchio::RigidConstraintModelTpl<Scalar, Base::Options> ConstraintModel;
+      typedef typename std::vector<ConstraintModel> ConstraintModelVector;
+      typedef typename pinocchio::RigidConstraintDataTpl<Scalar, Base::Options> ConstraintData;
+      typedef typename std::vector<ConstraintData> ConstraintDataVector;
 
-    //   typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options>
-    //     ADConstraintModel;
-    //   typedef typename std::vector<ADConstraintModel> ADConstraintModelVector;
-    //   typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options>
-    //   ADConstraintData; typedef typename std::vector<ADConstraintData> ADConstraintDataVector;
+      typedef typename pinocchio::RigidConstraintModelTpl<ADScalar, Base::Options>
+        ADConstraintModel;
+      typedef typename std::vector<ADConstraintModel> ADConstraintModelVector;
+      typedef typename pinocchio::RigidConstraintDataTpl<ADScalar, Base::Options> ADConstraintData;
+      typedef typename std::vector<ADConstraintData> ADConstraintDataVector;
 
-    //   static Eigen::Index constraintDim(const ConstraintModelVector & contact_models)
-    //   {
-    //     Eigen::Index num_total_constraints = 0;
-    //     for (typename ConstraintModelVector::const_iterator it = contact_models.begin();
-    //          it != contact_models.end(); ++it)
-    //     {
-    //       PINOCCHIO_CHECK_INPUT_ARGUMENT(
-    //         it->size() > 0, "The dimension of the constraint must be positive");
-    //       num_total_constraints += it->size();
-    //     }
-    //     return num_total_constraints;
-    //   }
+      static Eigen::Index constraintDim(const ConstraintModelVector & contact_models)
+      {
+        Eigen::Index num_total_constraints = 0;
+        for (typename ConstraintModelVector::const_iterator it = contact_models.begin();
+             it != contact_models.end(); ++it)
+        {
+          PINOCCHIO_CHECK_INPUT_ARGUMENT(
+            it->residualSize() > 0, "The dimension of the constraint must be positive");
+          num_total_constraints += it->residualSize();
+        }
+        return num_total_constraints;
+      }
 
-    //   explicit AutoDiffConstraintDynamicsDerivatives(
-    //     const Model & model,
-    //     const ConstraintModelVector & contact_models,
-    //     const std::string & filename = "casadi_contactDynDerivs",
-    //     const std::string & libname = "libcasadi_cg_contactDynDerivs",
-    //     const std::string & fun_name = "eval_f")
-    //   : Base(model, filename, libname, fun_name)
-    //   , nc(constraintDim(contact_models))
-    //   , cs_q(ADScalar::sym("q", model.nq))
-    //   , cs_v(ADScalar::sym("v", model.nv))
-    //   , cs_tau(ADScalar::sym("tau", model.nv))
-    //   , q_ad(model.nq)
-    //   , v_ad(model.nv)
-    //   , tau_ad(model.nv)
-    //   , cs_ddq(model.nv, 1)
-    //   , cs_lambda_c(model.nv, 1)
-    //   , q_vec((size_t)model.nq)
-    //   , v_vec((size_t)model.nv)
-    //   , tau_vec((size_t)model.nv)
-    //   , ddq(model.nv)
-    //   , ddq_dq(model.nv, model.nv)
-    //   , ddq_dv(model.nv, model.nv)
-    //   , ddq_dtau(model.nv, model.nv)
-    //   {
-    //     lambda_c.resize(nc);
-    //     lambda_c.setZero();
-    //     dlambda_dq.resize(nc, model.nv);
-    //     dlambda_dq.setZero();
-    //     dlambda_dv.resize(nc, model.nv);
-    //     dlambda_dv.setZero();
-    //     dlambda_dtau.resize(nc, model.nv);
-    //     dlambda_dtau.setZero();
+      explicit AutoDiffConstraintDynamicsDerivatives(
+        const Model & model,
+        const ConstraintModelVector & contact_models,
+        const std::string & filename = "casadi_contactDynDerivs",
+        const std::string & libname = "libcasadi_cg_contactDynDerivs",
+        const std::string & fun_name = "eval_f")
+      : Base(model, filename, libname, fun_name)
+      , nc(constraintDim(contact_models))
+      , cs_q(ADScalar::sym("q", model.nq))
+      , cs_v(ADScalar::sym("v", model.nv))
+      , cs_tau(ADScalar::sym("tau", model.nv))
+      , q_ad(model.nq)
+      , v_ad(model.nv)
+      , tau_ad(model.nv)
+      , cs_ddq(model.nv, 1)
+      , cs_lambda_c(model.nv, 1)
+      , q_vec((size_t)model.nq)
+      , v_vec((size_t)model.nv)
+      , tau_vec((size_t)model.nv)
+      , ddq(model.nv)
+      , ddq_dq(model.nv, model.nv)
+      , ddq_dv(model.nv, model.nv)
+      , ddq_dtau(model.nv, model.nv)
+      {
+        lambda_c.resize(nc);
+        lambda_c.setZero();
+        dlambda_dq.resize(nc, model.nv);
+        dlambda_dq.setZero();
+        dlambda_dv.resize(nc, model.nv);
+        dlambda_dv.setZero();
+        dlambda_dtau.resize(nc, model.nv);
+        dlambda_dtau.setZero();
 
-    //     q_ad = Eigen::Map<ADConfigVectorType>(
-    //       static_cast<std::vector<ADScalar>>(cs_q).data(), model.nq, 1);
-    //     v_ad = Eigen::Map<ADTangentVectorType>(
-    //       static_cast<std::vector<ADScalar>>(cs_v).data(), model.nv, 1);
-    //     tau_ad = Eigen::Map<ADTangentVectorType>(
-    //       static_cast<std::vector<ADScalar>>(cs_tau).data(), model.nv, 1);
+        q_ad = Eigen::Map<ADConfigVectorType>(
+          static_cast<std::vector<ADScalar>>(cs_q).data(), model.nq, 1);
+        v_ad = Eigen::Map<ADTangentVectorType>(
+          static_cast<std::vector<ADScalar>>(cs_v).data(), model.nv, 1);
+        tau_ad = Eigen::Map<ADTangentVectorType>(
+          static_cast<std::vector<ADScalar>>(cs_tau).data(), model.nv, 1);
 
-    //     for (int k = 0; k < contact_models.size(); ++k)
-    //     {
-    //       ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
-    //       ad_contact_datas.push_back(ADConstraintData(ad_contact_models[k]));
-    //     }
+        for (int k = 0; k < contact_models.size(); ++k)
+        {
+          ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
+          ad_contact_datas.push_back(ADConstraintData(ad_contact_models[k]));
+        }
 
-    //     Base::build_jacobian = false;
-    //   }
+        Base::build_jacobian = false;
+      }
 
-    //   virtual ~AutoDiffConstraintDynamicsDerivatives()
-    //   {
-    //   }
+      virtual ~AutoDiffConstraintDynamicsDerivatives()
+      {
+      }
 
-    //   virtual void buildMap()
-    //   {
-    //     pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models,
-    //     ad_contact_datas); pinocchio::constraintDynamics(
-    //       ad_model, ad_data, q_ad, v_ad, tau_ad, ad_contact_models, ad_contact_datas);
-    //     pinocchio::computeConstraintDynamicsDerivatives(
-    //       ad_model, ad_data, ad_contact_models, ad_contact_datas);
-    //     // Copy Output
-    //     pinocchio::casadi::copy(ad_data.ddq, cs_ddq);
-    //     pinocchio::casadi::copy(ad_data.lambda_c, cs_lambda_c);
-    //     pinocchio::casadi::copy(ad_data.ddq_dq, cs_ddq_dq);
-    //     pinocchio::casadi::copy(ad_data.ddq_dv, cs_ddq_dv);
-    //     pinocchio::casadi::copy(ad_data.ddq_dtau, cs_ddq_dtau);
-    //     pinocchio::casadi::copy(ad_data.dlambda_dq, cs_lambda_dq);
-    //     pinocchio::casadi::copy(ad_data.dlambda_dv, cs_lambda_dv);
-    //     pinocchio::casadi::copy(ad_data.dlambda_dtau, cs_lambda_dtau);
+      virtual void buildMap()
+      {
+        pinocchio::initConstraintDynamics(ad_model, ad_data, ad_contact_models, ad_contact_datas);
+        pinocchio::constraintDynamics(
+          ad_model, ad_data, q_ad, v_ad, tau_ad, ad_contact_models, ad_contact_datas);
+        pinocchio::computeConstraintDynamicsDerivatives(
+          ad_model, ad_data, ad_contact_models, ad_contact_datas);
+        // Copy Output
+        pinocchio::casadi::copy(ad_data.ddq, cs_ddq);
+        pinocchio::casadi::copy(ad_data.lambda_c, cs_lambda_c);
+        pinocchio::casadi::copy(ad_data.ddq_dq, cs_ddq_dq);
+        pinocchio::casadi::copy(ad_data.ddq_dv, cs_ddq_dv);
+        pinocchio::casadi::copy(ad_data.ddq_dtau, cs_ddq_dtau);
+        pinocchio::casadi::copy(ad_data.dlambda_dq, cs_lambda_dq);
+        pinocchio::casadi::copy(ad_data.dlambda_dv, cs_lambda_dv);
+        pinocchio::casadi::copy(ad_data.dlambda_dtau, cs_lambda_dtau);
 
-    //     ad_fun = ADFun(
-    //       fun_name, ADSVector{cs_q, cs_v, cs_tau},
-    //       ADSVector{
-    //         cs_ddq, cs_lambda_c, cs_ddq_dq, cs_ddq_dv, cs_ddq_dtau, cs_lambda_dq, cs_lambda_dv,
-    //         cs_lambda_dtau});
-    //   }
+        ad_fun = ADFun(
+          fun_name, ADSVector{cs_q, cs_v, cs_tau},
+          ADSVector{
+            cs_ddq, cs_lambda_c, cs_ddq_dq, cs_ddq_dv, cs_ddq_dtau, cs_lambda_dq, cs_lambda_dv,
+            cs_lambda_dtau});
+      }
 
-    //   template<typename ConfigVectorType1, typename TangentVectorType1, typename
-    //   TangentVectorType2> void evalFunction(
-    //     const Eigen::MatrixBase<ConfigVectorType1> & q,
-    //     const Eigen::MatrixBase<TangentVectorType1> & v,
-    //     const Eigen::MatrixBase<TangentVectorType2> & tau)
-    //   {
-    //     Eigen::Map<ConfigVectorType1>(q_vec.data(), ad_model.nq, 1) = q;
-    //     Eigen::Map<TangentVectorType1>(v_vec.data(), ad_model.nv, 1) = v;
-    //     Eigen::Map<TangentVectorType2>(tau_vec.data(), ad_model.nv, 1) = tau;
-    //     fun_output = fun(DMVector{q_vec, v_vec, tau_vec});
-    //     ddq = Eigen::Map<TangentVectorType>(
-    //       static_cast<std::vector<Scalar>>(fun_output[0]).data(), ad_model.nv, 1);
-    //     lambda_c = Eigen::Map<TangentVectorType>(
-    //       static_cast<std::vector<Scalar>>(fun_output[1]).data(), nc, 1);
-    //     ddq_dq = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output[2]).data(), ad_model.nv, ad_model.nv);
-    //     ddq_dv = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output[3]).data(), ad_model.nv, ad_model.nv);
-    //     ddq_dtau = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output[4]).data(), ad_model.nv, ad_model.nv);
-    //     dlambda_dq = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output[5]).data(), nc, ad_model.nv);
-    //     dlambda_dv = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output[6]).data(), nc, ad_model.nv);
-    //     dlambda_dtau = Eigen::Map<MatrixXs>(
-    //       static_cast<std::vector<Scalar>>(fun_output[7]).data(), nc, ad_model.nv);
-    //   }
+      template<typename ConfigVectorType1, typename TangentVectorType1, typename TangentVectorType2>
+      void evalFunction(
+        const Eigen::MatrixBase<ConfigVectorType1> & q,
+        const Eigen::MatrixBase<TangentVectorType1> & v,
+        const Eigen::MatrixBase<TangentVectorType2> & tau)
+      {
+        Eigen::Map<ConfigVectorType1>(q_vec.data(), ad_model.nq, 1) = q;
+        Eigen::Map<TangentVectorType1>(v_vec.data(), ad_model.nv, 1) = v;
+        Eigen::Map<TangentVectorType2>(tau_vec.data(), ad_model.nv, 1) = tau;
+        fun_output = fun(DMVector{q_vec, v_vec, tau_vec});
+        ddq = Eigen::Map<TangentVectorType>(
+          static_cast<std::vector<Scalar>>(fun_output[0]).data(), ad_model.nv, 1);
+        lambda_c = Eigen::Map<TangentVectorType>(
+          static_cast<std::vector<Scalar>>(fun_output[1]).data(), nc, 1);
+        ddq_dq = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output[2]).data(), ad_model.nv, ad_model.nv);
+        ddq_dv = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output[3]).data(), ad_model.nv, ad_model.nv);
+        ddq_dtau = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output[4]).data(), ad_model.nv, ad_model.nv);
+        dlambda_dq = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output[5]).data(), nc, ad_model.nv);
+        dlambda_dv = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output[6]).data(), nc, ad_model.nv);
+        dlambda_dtau = Eigen::Map<MatrixXs>(
+          static_cast<std::vector<Scalar>>(fun_output[7]).data(), nc, ad_model.nv);
+      }
 
-    //   TangentVectorType ddq, lambda_c;
-    //   RowMatrixXs ddq_dq, ddq_dv, ddq_dtau, dlambda_dq, dlambda_dv, dlambda_dtau;
+      TangentVectorType ddq, lambda_c;
+      RowMatrixXs ddq_dq, ddq_dv, ddq_dtau, dlambda_dq, dlambda_dv, dlambda_dtau;
 
-    // protected:
-    //   using Base::ad_data;
-    //   using Base::ad_model;
-    //   using Base::cg_generated;
-    //   using Base::filename;
-    //   using Base::fun_name;
-    //   using Base::libname;
+    protected:
+      using Base::ad_data;
+      using Base::ad_model;
+      using Base::cg_generated;
+      using Base::filename;
+      using Base::fun_name;
+      using Base::libname;
 
-    //   using Base::ad_fun;
-    //   using Base::ad_fun_derivs;
-    //   using Base::fun;
-    //   using Base::fun_derivs;
-    //   using Base::fun_output;
-    //   using Base::fun_output_derivs;
-    //   ADConstraintModelVector ad_contact_models;
-    //   ADConstraintDataVector ad_contact_datas;
+      using Base::ad_fun;
+      using Base::ad_fun_derivs;
+      using Base::fun;
+      using Base::fun_derivs;
+      using Base::fun_output;
+      using Base::fun_output_derivs;
+      ADConstraintModelVector ad_contact_models;
+      ADConstraintDataVector ad_contact_datas;
 
-    //   Eigen::Index nc;
-    //   ADScalar cs_q, cs_v, cs_tau, cs_ddq, cs_lambda_c;
+      Eigen::Index nc;
+      ADScalar cs_q, cs_v, cs_tau, cs_ddq, cs_lambda_c;
 
-    //   // Derivatives
-    //   ADScalar cs_ddq_dq, cs_ddq_dv, cs_ddq_dtau, cs_lambda_dq, cs_lambda_dv, cs_lambda_dtau;
+      // Derivatives
+      ADScalar cs_ddq_dq, cs_ddq_dv, cs_ddq_dtau, cs_lambda_dq, cs_lambda_dv, cs_lambda_dtau;
 
-    //   ADConfigVectorType q_ad;
-    //   ADTangentVectorType v_ad, tau_ad;
+      ADConfigVectorType q_ad;
+      ADTangentVectorType v_ad, tau_ad;
 
-    //   std::vector<Scalar> q_vec, v_vec, tau_vec;
-    // };
+      std::vector<Scalar> q_vec, v_vec, tau_vec;
+    };
 
   } // namespace casadi
 

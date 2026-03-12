@@ -12,8 +12,8 @@
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/algorithm/constraints/point-anchor-constraint.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 
 #include <boost/test/tools/old/interface.hpp>
 #include <boost/test/unit_test.hpp>
