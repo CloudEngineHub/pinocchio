@@ -8,6 +8,7 @@
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/spatial/fwd.hpp"
 #include "pinocchio/multibody/fwd.hpp"
+#include "pinocchio/multibody/joint/fwd.hpp"
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/constraints/fwd.hpp"
 
