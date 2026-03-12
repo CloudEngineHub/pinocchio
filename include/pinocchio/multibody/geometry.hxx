@@ -222,8 +222,9 @@ namespace pinocchio
     static constexpr int Options = 0;
   };
 
-  struct GeometryData : NumericalBase<GeometryData>
-  // , serialization::Serializable<GeometryData>
+  struct GeometryData
+  : NumericalBase<GeometryData>
+  , serialization::Serializable<GeometryData>
   {
 
     typedef typename traits<GeometryData>::Scalar Scalar;

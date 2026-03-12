@@ -5,8 +5,7 @@
 #ifndef __pinocchio_python_algorithm_constraints_datas_hpp__
 #define __pinocchio_python_algorithm_constraints_datas_hpp__
 
-#include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
-#include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
+#include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraint-data-inheritance.hpp"
@@ -40,8 +39,9 @@ namespace pinocchio
     {
       typedef context::JointLimitConstraintData Self;
       return cl
-        .def(bp::init<const typename Self::ConstraintModel &>(
-          bp::args("self", "constraint_model"), "From model constructor."))
+        .def(
+          bp::init<const typename Self::ConstraintModel &>(
+            bp::args("self", "constraint_model"), "From model constructor."))
         .PINOCCHIO_ADD_PROPERTY(Self, rowise_tangent_map, "Rowise tangent map.")
         .add_property(
           "constraint_residual",

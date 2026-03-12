@@ -118,4 +118,9 @@
 #include "pinocchio/serialization/model.hxx"
 #include "pinocchio/serialization/data.hxx"
 #include "pinocchio/serialization/matrix-block-element.hxx"
+#include "pinocchio/serialization/block-diagonal-matrix.hxx"
+#include "pinocchio/serialization/constraints-data.hxx"
+#include "pinocchio/serialization/constraints-model.hxx"
+#include "pinocchio/serialization/constraints-set.hxx"
+#include "pinocchio/serialization/delassus.hxx"
 // IWYU pragma: end_exports

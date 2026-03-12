@@ -27,6 +27,7 @@
 #include "pinocchio/math.hpp"
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/joint.hpp"
+#include "pinocchio/geometry.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
