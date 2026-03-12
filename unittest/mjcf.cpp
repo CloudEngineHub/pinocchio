@@ -5,6 +5,9 @@
 #include <iostream>
 #include <cstdio> // for std::tmpnam
 
+#include <boost/filesystem.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+
 #include "pinocchio/multibody/model.hpp"
 
 #include "pinocchio/parsers/mjcf.hpp"

@@ -198,7 +198,7 @@ add_pinocchio_unit_test(rnea-derivatives)
 add_pinocchio_unit_test(aba-derivatives)
 add_pinocchio_unit_test(centroidal-derivatives)
 add_pinocchio_unit_test(center-of-mass-derivatives)
-# add_pinocchio_unit_test(constrained-dynamics-derivatives)
+add_pinocchio_unit_test(constrained-dynamics-derivatives)
 
 # if(BUILD_WITH_SDF_SUPPORT)
 #   add_pinocchio_unit_test(contact-dynamics-derivatives PARSERS)
@@ -245,10 +245,10 @@ add_pinocchio_unit_test(preconditioner)
 add_pinocchio_unit_test(pv-solver)
 add_pinocchio_parallel_unit_test(openmp-exception)
 
-# add_pinocchio_unit_test(
-#   mjcf
-#   PARSERS
-#   COLLISION_OPTIONAL)
+add_pinocchio_unit_test(
+  mjcf
+  PARSERS
+  COLLISION_OPTIONAL)
 
 if(BUILD_WITH_URDF_SUPPORT)
   add_pinocchio_unit_test(
@@ -283,9 +283,9 @@ if(BUILD_WITH_URDF_SUPPORT)
   endif()
 endif()
 
-# if(BUILD_WITH_SDF_SUPPORT)
-#   add_pinocchio_unit_test(sdf PARSERS)
-# endif()
+if(BUILD_WITH_SDF_SUPPORT)
+  add_pinocchio_unit_test(sdf PARSERS)
+endif()
 
 if(BUILD_WITH_EXTRA_SUPPORT)
   add_pinocchio_unit_test(
@@ -301,11 +301,11 @@ if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
   add_pinocchio_unit_test(python_parser PYTHON_PARSER)
 endif()
 
-# if(BUILD_PYTHON_INTERFACE)
-#   add_subdirectory(python)
-# endif()
+if(BUILD_PYTHON_INTERFACE)
+  add_subdirectory(python)
+endif()
 
-# # Test over the joints
+# Test over the joints
 add_pinocchio_unit_test(all-joints)
 add_pinocchio_unit_test(joint-revolute)
 add_pinocchio_unit_test(joint-prismatic)
@@ -321,7 +321,7 @@ add_pinocchio_unit_test(joint-helical)
 add_pinocchio_unit_test(joint-universal)
 add_pinocchio_unit_test(joint-visitors)
 
-# # Main corpus
+# Main corpus
 add_pinocchio_unit_test(model COLLISION_OPTIONAL)
 add_pinocchio_unit_test(data)
 add_pinocchio_unit_test(joint-motion-subspace)
@@ -358,7 +358,7 @@ add_pinocchio_unit_test(zero-cone)
 add_pinocchio_unit_test(orthant-cone)
 add_pinocchio_unit_test(coulomb-friction-cone)
 
-# # Solvers
+# Solvers
 add_pinocchio_unit_test(pgs-solver)
 add_pinocchio_unit_test(admm-solver)
 
