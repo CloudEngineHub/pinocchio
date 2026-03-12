@@ -237,6 +237,7 @@ add_pinocchio_unit_test(impulse-dynamics)
 add_pinocchio_unit_test(sample-models COLLISION_OPTIONAL)
 add_pinocchio_unit_test(kinematics)
 add_pinocchio_unit_test(delassus)
+add_pinocchio_unit_test(delassus-operations)
 add_pinocchio_unit_test(delassus-operator-dense)
 # delassus-operator-preconditioned is broken and unused
 #add_pinocchio_unit_test(delassus-operator-preconditioned)
@@ -372,6 +373,10 @@ add_pinocchio_unit_test(serialization COLLISION_OPTIONAL)
 add_test_cflags(
   serialization
   "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
+add_pinocchio_unit_test(serialization-math)
+add_test_cflags(
+  serialization-math
+  "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
 add_pinocchio_unit_test(csv)
 add_test_cflags(
   csv "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
@@ -379,9 +384,11 @@ add_test_cflags(
 add_subdirectory(algorithm)
 
 # Multiprecision arithmetic
-add_pinocchio_unit_test(multiprecision)
-if(BUILD_ADVANCED_TESTING AND MPFR_FOUND)
-  add_pinocchio_unit_test(multiprecision-mpfr PACKAGES mpfr gmp)
+if(BUILD_ADVANCED_TESTING)
+  add_pinocchio_unit_test(multiprecision)
+  if(MPFR_FOUND)
+    add_pinocchio_unit_test(multiprecision-mpfr PACKAGES mpfr gmp)
+  endif()
 endif()
 
 if(BUILD_WITH_AUTODIFF_SUPPORT)

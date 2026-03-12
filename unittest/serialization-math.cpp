@@ -8,11 +8,7 @@
 
 #include "pinocchio/spatial/inertia.hpp"
 
-#include "pinocchio/serialization/eigen-storage.hpp"
-#include "pinocchio/serialization/double-entry-container.hpp"
-#include "pinocchio/serialization/matrix-stack.hpp"
-#include "pinocchio/serialization/matrix-block-element.hpp"
-#include "pinocchio/serialization/block-diagonal-matrix.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
