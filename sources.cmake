@@ -402,8 +402,8 @@ set(${PROJECT_NAME}_COLLISION_PARALLEL_PUBLIC_HEADERS
 
 set(${PROJECT_NAME}_PARSERS_SOURCES
     ${PROJECT_SOURCE_DIR}/src/utils/file-explorer.cpp
-    # ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph.cpp
-    # ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph-geom.cpp
+    ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph.cpp
+    ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph-geom.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph-algo.cpp)
 

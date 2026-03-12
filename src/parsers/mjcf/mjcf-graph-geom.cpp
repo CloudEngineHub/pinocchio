@@ -2,11 +2,36 @@
 // Copyright (c) 2016-2024 CNRS INRIA
 //
 
+#include <cassert>
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+#include <boost/math/constants/constants.hpp>
+#include <boost/optional/optional.hpp>
+#include <boost/property_tree/ptree.hpp>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/geometry.hpp"
 #include "pinocchio/parsers/mjcf/mjcf-graph.hpp"
+
 #ifdef PINOCCHIO_WITH_COLLISION
 
+  #include <coal/BV/OBBRSS.h>
+  #include <coal/BVH/BVH_model.h>
   #include <coal/mesh_loader/loader.h>
-  #include <coal/mesh_loader/assimp.h>
+  #include <coal/shape/geometric_shapes.h>
 
 #endif // PINOCCHIO_WITH_COLLISION
 
