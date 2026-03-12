@@ -9,7 +9,7 @@
 
 #include <Eigen/Core>
 
-#include <boost/multiprecision/mpfr.hpp>
+#include <boost/multiprecision/number.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 #include <boost/type_traits/is_convertible.hpp>
 
@@ -18,5 +18,4 @@
 
 // IWYU pragma: begin_exports
 #include "pinocchio/math/multiprecision.hxx"
-#include "pinocchio/math/multiprecision-mpfr.hxx"
 // IWYU pragma: end_exports

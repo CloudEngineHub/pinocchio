@@ -56,10 +56,12 @@ int main(int argc, char ** argv)
 
   // Get access to the joint torque with standard or multiprecision arithmetic and print sufficient
   // decimals for both precisions
-  std::cout << "Joint torque standard arithmetic:\n"
-            << std::setprecision(std::numeric_limits<float_100>::max_digits10) << data.tau
-            << std::endl;
-  std::cout << "Joint torque multiprecision arithmetic:\n"
-            << std::setprecision(std::numeric_limits<float_100>::max_digits10) << data_multi.tau
-            << std::endl;
+  // TODO: Eigen output is broken with cpp_dec_float backend
+  //       This should be fixed in math/multiprecision.hxx
+  // std::cout << "Joint torque standard arithmetic:\n"
+  //           << std::setprecision(std::numeric_limits<float_100>::max_digits10) << data.tau
+  //           << std::endl;
+  // std::cout << "Joint torque multiprecision arithmetic:\n"
+  //           << std::setprecision(std::numeric_limits<float_100>::max_digits10) << data_multi.tau
+  //           << std::endl;
 }
