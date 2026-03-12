@@ -2,15 +2,12 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_serialization_block_diagonal_matrix_hpp__
-#define __pinocchio_serialization_block_diagonal_matrix_hpp__
+#pragma once
 
-#include "pinocchio/serialization/eigen.hpp"
-#include "pinocchio/serialization/matrix-block-element.hpp"
-#include "pinocchio/math/block-diagonal-matrix.hpp"
-
-#include <limits>
-#include <algorithm>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -88,5 +85,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // ifndef __pinocchio_serialization_block_diagonal_matrix_hpp__

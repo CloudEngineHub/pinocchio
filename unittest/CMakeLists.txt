@@ -238,6 +238,7 @@ add_pinocchio_unit_test(sample-models COLLISION_OPTIONAL)
 add_pinocchio_unit_test(kinematics)
 add_pinocchio_unit_test(delassus)
 add_pinocchio_unit_test(delassus-operator-dense)
+# delassus-operator-preconditioned is broken and unused
 #add_pinocchio_unit_test(delassus-operator-preconditioned)
 add_pinocchio_unit_test(delassus-operator-rigid-body)
 add_pinocchio_unit_test(preconditioner)

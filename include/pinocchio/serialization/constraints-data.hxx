@@ -2,16 +2,12 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_serialization_constraints_data_hpp__
-#define __pinocchio_serialization_constraints_data_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/serialization/eigen.hpp"
-#include "pinocchio/serialization/se3.hpp"
-#include "pinocchio/serialization/boost-blank.hpp"
-#include "pinocchio/serialization/matrix-stack.hpp"
-
-#include <boost/serialization/variant.hpp>
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization.hpp"
+#endif // PINOCCHIO_LSP
 
 namespace boost
 {
@@ -183,5 +179,3 @@ namespace boost
 
   } // namespace serialization
 } // namespace boost
-
-#endif // __pinocchio_serialization_constraints_data_hpp__
