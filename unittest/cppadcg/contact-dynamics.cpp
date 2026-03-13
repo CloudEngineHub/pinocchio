@@ -42,13 +42,15 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_code_generation)
   std::vector<RigidConstraintData> contact_datas_6D3D;
 
   RigidConstraintModel ci_RF(CONTACT_6D, model, model.getJointId(RF), LOCAL);
+  ci_RF.joint1_placement.setRandom();
   contact_models_6D3D.push_back(ci_RF);
   contact_datas_6D3D.push_back(RigidConstraintData(ci_RF));
   RigidConstraintModel ci_LF(CONTACT_3D, model, model.getJointId(LF), LOCAL);
+  ci_LF.joint1_placement.setRandom();
   contact_models_6D3D.push_back(ci_LF);
   contact_datas_6D3D.push_back(RigidConstraintData(ci_LF));
 
-  Eigen::VectorXd q = Eigen::VectorXd::Random(model.nq);
+  Eigen::VectorXd q = pinocchio::randomConfiguration(model);
   Eigen::VectorXd v = Eigen::VectorXd::Random(model.nv);
   Eigen::VectorXd tau = Eigen::VectorXd::Random(model.nv);
   std::vector<Eigen::VectorXd> results_q(2, Eigen::VectorXd::Zero(model.nq));
