@@ -296,7 +296,7 @@ PINOCCHIO_DONT_INLINE void constraintDynamicsDerivativeCall(
 }
 BENCHMARK_DEFINE_F(CGFixture, CONSTRAINT_DYNAMICS_DERIVATIVES)(benchmark::State & st)
 {
-  pinocchio::initConstraintDynamics(model, data, CONTACT_MODELS_6D6D);
+  pinocchio::initConstraintDynamics(model, data, CONTACT_MODELS_6D6D, CONTACT_DATAS_6D6D);
   for (auto _ : st)
   {
     constraintDynamicsDerivativeCall(

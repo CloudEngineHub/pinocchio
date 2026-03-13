@@ -38,6 +38,8 @@ struct ContactFixture : ModelFixture
       pinocchio::CONTACT_6D, model, RF_id, pinocchio::LOCAL);
     ci_LF_6D = std::make_unique<pinocchio::RigidConstraintModel>(
       pinocchio::CONTACT_6D, model, LF_id, pinocchio::LOCAL);
+    pinocchio::FrameAnchorConstraintModel fa_RF_6D(model, RF_id, pinocchio::SE3::Random());
+    pinocchio::FrameAnchorConstraintModel fa_LF_6D(model, LF_id, pinocchio::SE3::Random());
 
     contact_chol_empty = pinocchio::ContactCholeskyDecomposition(model, data);
 
@@ -60,6 +62,20 @@ struct ContactFixture : ModelFixture
 
     contact_chol_6D6D =
       pinocchio::ContactCholeskyDecomposition(model, data, contact_models_6D6D, contact_datas_6D6D);
+
+    frame_anchor_models_6D.clear();
+    frame_anchor_models_6D.push_back(fa_RF_6D);
+
+    frame_anchor_datas_6D.clear();
+    frame_anchor_datas_6D.push_back(pinocchio::FrameAnchorConstraintData(fa_RF_6D));
+
+    frame_anchor_models_6D6D.clear();
+    frame_anchor_models_6D6D.push_back(fa_RF_6D);
+    frame_anchor_models_6D6D.push_back(fa_LF_6D);
+
+    frame_anchor_datas_6D6D.clear();
+    frame_anchor_datas_6D6D.push_back(pinocchio::FrameAnchorConstraintData(fa_RF_6D));
+    frame_anchor_datas_6D6D.push_back(pinocchio::FrameAnchorConstraintData(fa_LF_6D));
 
     prox_settings.max_iter = 10;
     prox_settings.mu = 1e8;
@@ -84,6 +100,13 @@ struct ContactFixture : ModelFixture
   std::vector<pinocchio::RigidConstraintData> contact_datas_6D;
   std::vector<pinocchio::RigidConstraintModel> contact_models_6D6D;
   std::vector<pinocchio::RigidConstraintData> contact_datas_6D6D;
+
+  std::vector<pinocchio::FrameAnchorConstraintModel> frame_anchor_models_empty;
+  std::vector<pinocchio::FrameAnchorConstraintData> frame_anchor_datas_empty;
+  std::vector<pinocchio::FrameAnchorConstraintModel> frame_anchor_models_6D;
+  std::vector<pinocchio::FrameAnchorConstraintData> frame_anchor_datas_6D;
+  std::vector<pinocchio::FrameAnchorConstraintModel> frame_anchor_models_6D6D;
+  std::vector<pinocchio::FrameAnchorConstraintData> frame_anchor_datas_6D6D;
 
   pinocchio::ContactCholeskyDecomposition contact_chol_empty;
   pinocchio::ContactCholeskyDecomposition contact_chol_6D;
@@ -168,18 +191,19 @@ PINOCCHIO_DONT_INLINE static void pvCall(
   const Eigen::VectorXd & q,
   const Eigen::VectorXd & v,
   const Eigen::VectorXd & tau,
-  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
-  std::vector<pinocchio::RigidConstraintData> & contact_data,
+  const std::vector<pinocchio::FrameAnchorConstraintModel> & contact_models,
+  std::vector<pinocchio::FrameAnchorConstraintData> & contact_data,
   pinocchio::ProximalSettings & prox_settings)
 {
   pinocchio::pv(model, data, q, v, tau, contact_models, contact_data, prox_settings);
 }
 BENCHMARK_DEFINE_F(ContactFixture, PV_EMPTY)(benchmark::State & st)
 {
-  pinocchio::initPvSolver(model, data, contact_models_empty);
+  pinocchio::initPvSolver(model, data, frame_anchor_models_empty);
   for (auto _ : st)
   {
-    pvCall(model, data, q, v, tau, contact_models_empty, contact_datas_empty, prox_settings);
+    pvCall(
+      model, data, q, v, tau, frame_anchor_models_empty, frame_anchor_datas_empty, prox_settings);
   }
 }
 BENCHMARK_REGISTER_F(ContactFixture, PV_EMPTY)->Apply(CustomArguments);
@@ -192,19 +216,19 @@ PINOCCHIO_DONT_INLINE static void constrainedABACall(
   const Eigen::VectorXd & q,
   const Eigen::VectorXd & v,
   const Eigen::VectorXd & tau,
-  const std::vector<pinocchio::RigidConstraintModel> & contact_models,
-  std::vector<pinocchio::RigidConstraintData> & contact_data,
+  const std::vector<pinocchio::FrameAnchorConstraintModel> & contact_models,
+  std::vector<pinocchio::FrameAnchorConstraintData> & contact_data,
   pinocchio::ProximalSettings & prox_settings)
 {
   pinocchio::constrainedABA(model, data, q, v, tau, contact_models, contact_data, prox_settings);
 }
 BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINED_ABA_EMPTY)(benchmark::State & st)
 {
-  pinocchio::initPvSolver(model, data, contact_models_empty);
+  pinocchio::initPvSolver(model, data, frame_anchor_models_empty);
   for (auto _ : st)
   {
     constrainedABACall(
-      model, data, q, v, tau, contact_models_empty, contact_datas_empty, prox_settings);
+      model, data, q, v, tau, frame_anchor_models_empty, frame_anchor_datas_empty, prox_settings);
   }
 }
 BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINED_ABA_EMPTY)->Apply(CustomArguments);
@@ -294,10 +318,10 @@ BENCHMARK_REGISTER_F(ContactFixture, CONTACT_ABA_6D)->Apply(CustomArguments);
 
 BENCHMARK_DEFINE_F(ContactFixture, PV_6D)(benchmark::State & st)
 {
-  pinocchio::initPvSolver(model, data, contact_models_6D);
+  pinocchio::initPvSolver(model, data, frame_anchor_models_6D);
   for (auto _ : st)
   {
-    pvCall(model, data, q, v, tau, contact_models_6D, contact_datas_6D, prox_settings);
+    pvCall(model, data, q, v, tau, frame_anchor_models_6D, frame_anchor_datas_6D, prox_settings);
   }
 }
 BENCHMARK_REGISTER_F(ContactFixture, PV_6D)->Apply(CustomArguments);
@@ -306,10 +330,11 @@ BENCHMARK_REGISTER_F(ContactFixture, PV_6D)->Apply(CustomArguments);
 
 BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINED_ABA_6D)(benchmark::State & st)
 {
-  pinocchio::initPvSolver(model, data, contact_models_6D);
+  pinocchio::initPvSolver(model, data, frame_anchor_models_6D);
   for (auto _ : st)
   {
-    constrainedABACall(model, data, q, v, tau, contact_models_6D, contact_datas_6D, prox_settings);
+    constrainedABACall(
+      model, data, q, v, tau, frame_anchor_models_6D, frame_anchor_datas_6D, prox_settings);
   }
 }
 BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINED_ABA_6D)->Apply(CustomArguments);
@@ -407,10 +432,11 @@ BENCHMARK_REGISTER_F(ContactFixture, CONTACT_ABA_6D6D)->Apply(CustomArguments);
 
 BENCHMARK_DEFINE_F(ContactFixture, PV_6D6D)(benchmark::State & st)
 {
-  pinocchio::initPvSolver(model, data, contact_models_6D6D);
+  pinocchio::initPvSolver(model, data, frame_anchor_models_6D6D);
   for (auto _ : st)
   {
-    pvCall(model, data, q, v, tau, contact_models_6D6D, contact_datas_6D6D, prox_settings);
+    pvCall(
+      model, data, q, v, tau, frame_anchor_models_6D6D, frame_anchor_datas_6D6D, prox_settings);
   }
 }
 BENCHMARK_REGISTER_F(ContactFixture, PV_6D6D)->Apply(CustomArguments);
@@ -419,11 +445,11 @@ BENCHMARK_REGISTER_F(ContactFixture, PV_6D6D)->Apply(CustomArguments);
 
 BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINED_ABA_6D6D)(benchmark::State & st)
 {
-  pinocchio::initPvSolver(model, data, contact_models_6D6D);
+  pinocchio::initPvSolver(model, data, frame_anchor_models_6D6D);
   for (auto _ : st)
   {
     constrainedABACall(
-      model, data, q, v, tau, contact_models_6D6D, contact_datas_6D6D, prox_settings);
+      model, data, q, v, tau, frame_anchor_models_6D6D, frame_anchor_datas_6D6D, prox_settings);
   }
 }
 BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINED_ABA_6D6D)->Apply(CustomArguments);

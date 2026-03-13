@@ -70,12 +70,14 @@ int main(int argc, const char ** argv)
                  "/example-robot-data/robots/allegro_hand_description/urdf/allegro_left_hand.urdf");
   else if (case_num == 1)
     filename = PINOCCHIO_MODEL_DIR
-               + std::string("/example-robot-data/robots/allegro_hand_description/urdf/"
-                             "allegro_left_and_right_hands.urdf");
+               + std::string(
+                 "/example-robot-data/robots/allegro_hand_description/urdf/"
+                 "allegro_left_and_right_hands.urdf");
   else if (case_num >= 2)
     filename = PINOCCHIO_MODEL_DIR
-               + std::string("/example-robot-data/robots/allegro_hand_description/urdf/"
-                             "allegro_left_right_simple_humanoid.urdf");
+               + std::string(
+                 "/example-robot-data/robots/allegro_hand_description/urdf/"
+                 "allegro_left_right_simple_humanoid.urdf");
   // std::string filename2 = PINOCCHIO_MODEL_DIR +
   // std::string("/example-robot-data/robots/allegro_hand_description/urdf/allegro_right_hand.urdf");
 
@@ -95,22 +97,22 @@ int main(int argc, const char ** argv)
     "link_3.0_tip_r", "link_7.0_tip_r", "link_11.0_tip_r", "link_15.0_tip_r"};
 
   const std::string RF = allegro_hand_links[3];
-  const JointIndex RF_id = model.frames[model.getFrameId(RF)].parent;
+  const JointIndex RF_id = model.frames[model.getFrameId(RF)].parentJoint;
   const std::string MF = allegro_hand_links[2];
-  const JointIndex MF_id = model.frames[model.getFrameId(MF)].parent;
+  const JointIndex MF_id = model.frames[model.getFrameId(MF)].parentJoint;
   const std::string TF = allegro_hand_links[0];
-  const JointIndex TF_id = model.frames[model.getFrameId(TF)].parent;
+  const JointIndex TF_id = model.frames[model.getFrameId(TF)].parentJoint;
   const std::string IF = allegro_hand_links[1];
-  const JointIndex IF_id = model.frames[model.getFrameId(IF)].parent;
+  const JointIndex IF_id = model.frames[model.getFrameId(IF)].parentJoint;
 
   const std::string RF_r = allegro_right_hand_links[3];
-  const JointIndex RF_id_r = model.frames[model.getFrameId(RF)].parent;
+  const JointIndex RF_id_r = model.frames[model.getFrameId(RF)].parentJoint;
   const std::string MF_r = allegro_right_hand_links[2];
-  const JointIndex MF_id_r = model.frames[model.getFrameId(MF)].parent;
+  const JointIndex MF_id_r = model.frames[model.getFrameId(MF)].parentJoint;
   const std::string TF_r = allegro_right_hand_links[0];
-  const JointIndex TF_id_r = model.frames[model.getFrameId(TF)].parent;
+  const JointIndex TF_id_r = model.frames[model.getFrameId(TF)].parentJoint;
   const std::string IF_r = allegro_right_hand_links[1];
-  const JointIndex IF_id_r = model.frames[model.getFrameId(IF)].parent;
+  const JointIndex IF_id_r = model.frames[model.getFrameId(IF)].parentJoint;
 
   JointIndex cube_joint = model.addJoint(0, JointModelFreeFlyer(), SE3::Random(), "joint_cube");
   model.appendBodyToJoint(cube_joint, Inertia::Random(), SE3::Random());
@@ -217,9 +219,9 @@ int main(int argc, const char ** argv)
   if (case_num >= 3)
   {
     const std::string RFoot = "RLEG_LINK6";
-    const JointIndex RFoot_id = model.frames[model.getFrameId(RFoot)].parent;
+    const JointIndex RFoot_id = model.frames[model.getFrameId(RFoot)].parentJoint;
     const std::string LFoot = "LLEG_LINK6";
-    const JointIndex LFoot_id = model.frames[model.getFrameId(LFoot)].parent;
+    const JointIndex LFoot_id = model.frames[model.getFrameId(LFoot)].parentJoint;
     Foot_id = RFoot_id;
     RigidConstraintModel ci_LFoot(CONTACT_6D, model, LFoot_id, LOCAL_WORLD_ALIGNED);
     RigidConstraintModel ci_RFoot(CONTACT_6D, model, RFoot_id, LOCAL_WORLD_ALIGNED);
@@ -243,8 +245,8 @@ int main(int argc, const char ** argv)
   {
     // Investigate the convergence of the algorithms over different proximal iterations
     computeJointMinimalOrdering(model, data_caba, contact_model_CL);
-    initConstraintDynamics(model, data_caba_ref, contact_model_CL);
-    initConstraintDynamics(model, data, contact_model_CL);
+    initConstraintDynamics(model, data_caba_ref, contact_model_CL, contact_data_CL);
+    initConstraintDynamics(model, data, contact_model_CL, contact_data_CL);
 
     double old_mu = prox_settings.mu;
     int old_max_iter = prox_settings.max_iter;
@@ -367,7 +369,7 @@ int main(int argc, const char ** argv)
   }
   else
   {
-    computeJointMinimalOrdering(model, data_caba, contact_model_CL, contact_data_CL);
+    computeJointMinimalOrdering(model, data_caba, contact_model_CL);
     timer.tic();
     SMOOTH(NBT)
     {
@@ -378,7 +380,7 @@ int main(int argc, const char ** argv)
     std::cout << "CL-constrainedABA closed loops {6D} = \t";
     timer.toc(std::cout, NBT);
 
-    initConstraintDynamics(model, data, contact_model_CL);
+    initConstraintDynamics(model, data, contact_model_CL, contact_data_CL);
     timer.tic();
     SMOOTH(NBT)
     {
