@@ -70,6 +70,13 @@ target_include_directories(
   INTERFACE $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
 
+if(PINOCCHIO_INSTALL_DEPRECATED_HEADERS)
+target_include_directories(
+  ${PROJECT_NAME}_headers
+  INTERFACE $<INSTALL_INTERFACE:include/pinocchio/deprecated>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated>)
+endif()
+
 cxx_flags_by_compiler_frontend(
   MSVC "/bigobj"
   OUTPUT PUBLIC_OPTIONS

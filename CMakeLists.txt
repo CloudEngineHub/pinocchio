@@ -151,6 +151,8 @@ option(PINOCCHIO_USE_CLARABEL "Use Clarabel as a constraint solver option" OFF)
 
 option(BUILD_WITH_RTSAN "Build with the Realtime Sanitizer (clang >=20, linux/mac only)" OFF)
 
+option(PINOCCHIO_INSTALL_DEPRECATED_HEADERS "Use and install deprecated headers" ON)
+
 set(PINOCCHIO_MODEL_DIR "${PROJECT_SOURCE_DIR}/models")
 if(BUILD_BENCHMARK
    OR BUILD_EXAMPLES
