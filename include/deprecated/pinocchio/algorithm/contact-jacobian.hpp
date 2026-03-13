@@ -11,5 +11,3 @@ PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/algorithm/contact-jacobian.hpp, pino
 // clang-format on
 
 #include "pinocchio/algorithm/constraints.hpp"
-
-#endif // ifndef __pinocchio_algorithm_contact_jacobian_hpp__

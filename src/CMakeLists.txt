@@ -11,9 +11,7 @@ add_library(${PROJECT_NAME}_headers INTERFACE)
 # On CMake 3.16, we can't target_sources(${PROJECT_NAME}_headers INTERFACE
 # ${${PROJECT_NAME}_CORE_PUBLIC_HEADERS})
 
-# Enforce the preprocessed version of boost::list and boost::vector This information is redundant
-# with the content of include/pinocchio/container/boost-container-limits.hpp but it avoids any
-# compilation issue.
+# Enforce the preprocessed version of boost::list and boost::vector
 # Enforce boost::fusion::invoke argument limits.
 target_compile_definitions(${PROJECT_NAME}_headers INTERFACE BOOST_MPL_LIMIT_LIST_SIZE=30
                                                              BOOST_MPL_LIMIT_VECTOR_SIZE=30

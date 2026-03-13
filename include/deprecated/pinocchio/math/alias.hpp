@@ -4,8 +4,7 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include <Eigen/Core>
-#include <boost/math/constants/constants.hpp>
+#include "pinocchio/math.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

@@ -3,8 +3,7 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#ifndef __pinocchio_container_aligned_vector_hpp__
-#define __pinocchio_container_aligned_vector_hpp__
+#pragma once
 
 #include "pinocchio/deprecated.hpp"
 #include "pinocchio/warning.hpp"
@@ -33,5 +32,3 @@ namespace pinocchio
   } // namespace container
 
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_container_aligned_vector_hpp__
