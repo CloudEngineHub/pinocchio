@@ -11,5 +11,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/utils/force.hxx"
+#include "pinocchio/src/algorithm/utils/force.hxx"
 // IWYU pragma: end_exports

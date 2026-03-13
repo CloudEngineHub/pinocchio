@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/tridiagonal-matrix.hxx"
+#include "pinocchio/src/math/tridiagonal-matrix.hxx"
 // IWYU pragma: end_exports

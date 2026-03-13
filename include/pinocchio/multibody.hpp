@@ -34,7 +34,7 @@
 #include "pinocchio/container/double-entry-container.hpp"
 #include "pinocchio/container/matrix-stack.hpp"
 
-#include "pinocchio/fwd.hxx"
+#include "pinocchio/src/fwd.hxx"
 
 #include "pinocchio/utils/static-if.hpp"
 
@@ -49,12 +49,12 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/fwd.hxx"
-#include "pinocchio/multibody/force-set.hxx"
-#include "pinocchio/multibody/model-item.hxx"
-#include "pinocchio/multibody/frame.hxx"
-#include "pinocchio/multibody/model.hxx"
-#include "pinocchio/multibody/data.hxx"
+#include "pinocchio/src/multibody/fwd.hxx"
+#include "pinocchio/src/multibody/force-set.hxx"
+#include "pinocchio/src/multibody/model-item.hxx"
+#include "pinocchio/src/multibody/frame.hxx"
+#include "pinocchio/src/multibody/model.hxx"
+#include "pinocchio/src/multibody/data.hxx"
 // IWYU pragma: end_exports
 
 // IWYU pragma: begin_keep

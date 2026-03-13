@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/taylor-expansion.hxx"
+#include "pinocchio/src/math/taylor-expansion.hxx"
 // IWYU pragma: end_exports

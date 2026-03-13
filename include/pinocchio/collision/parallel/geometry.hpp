@@ -63,5 +63,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/collision/parallel/geometry.hxx"
+#include "pinocchio/src/collision/parallel/geometry.hxx"
 // IWYU pragma: end_exports

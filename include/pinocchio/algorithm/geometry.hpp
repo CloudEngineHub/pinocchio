@@ -93,7 +93,7 @@ namespace pinocchio
 
 /* --- Details -------------------------------------------------------------------- */
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/geometry.hxx"
+#include "pinocchio/src/algorithm/geometry.hxx"
 // IWYU pragma: end_exports
 
 // In Pinocchio 2, this header declare computeCollision and computeDistances

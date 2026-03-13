@@ -61,5 +61,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/collision/parallel/broadphase.hxx"
+#include "pinocchio/src/collision/parallel/broadphase.hxx"
 // IWYU pragma: end_exports

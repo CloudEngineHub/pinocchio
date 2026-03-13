@@ -9,7 +9,7 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/se3-common.hxx"
-#include "pinocchio/spatial/se3-base.hxx"
-#include "pinocchio/spatial/se3-tpl.hxx"
+#include "pinocchio/src/spatial/se3-common.hxx"
+#include "pinocchio/src/spatial/se3-base.hxx"
+#include "pinocchio/src/spatial/se3-tpl.hxx"
 // IWYU pragma: end_exports

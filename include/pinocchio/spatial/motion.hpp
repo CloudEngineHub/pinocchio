@@ -10,10 +10,10 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/motion-common.hxx"
-#include "pinocchio/spatial/motion-base.hxx"
-#include "pinocchio/spatial/motion-dense.hxx"
-#include "pinocchio/spatial/motion-tpl.hxx"
-#include "pinocchio/spatial/motion-ref.hxx"
-#include "pinocchio/spatial/motion-zero.hxx"
+#include "pinocchio/src/spatial/motion-common.hxx"
+#include "pinocchio/src/spatial/motion-base.hxx"
+#include "pinocchio/src/spatial/motion-dense.hxx"
+#include "pinocchio/src/spatial/motion-tpl.hxx"
+#include "pinocchio/src/spatial/motion-ref.hxx"
+#include "pinocchio/src/spatial/motion-zero.hxx"
 // IWYU pragma: end_exports

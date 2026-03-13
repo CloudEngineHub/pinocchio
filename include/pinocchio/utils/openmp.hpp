@@ -13,5 +13,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/openmp.hxx"
+#include "pinocchio/src/utils/openmp.hxx"
 // IWYU pragma: end_exports

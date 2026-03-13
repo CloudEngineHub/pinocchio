@@ -11,5 +11,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/fwd.hxx"
+#include "pinocchio/src/math/fwd.hxx"
 // IWYU pragma: end_exports

@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/liegroup/vector-space.hxx"
+#include "pinocchio/src/multibody/liegroup/vector-space.hxx"
 // IWYU pragma: end_exports

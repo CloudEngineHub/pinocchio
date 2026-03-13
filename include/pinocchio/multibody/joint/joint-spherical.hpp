@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/joint/joint-spherical.hxx"
+#include "pinocchio/src/multibody/joint/joint-spherical.hxx"
 // IWYU pragma: end_exports

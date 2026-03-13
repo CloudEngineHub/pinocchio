@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/instance-filter.hxx"
+#include "pinocchio/src/multibody/instance-filter.hxx"
 // IWYU pragma: end_exports

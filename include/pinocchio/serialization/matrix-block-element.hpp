@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/serialization/matrix-block-element.hxx"
+#include "pinocchio/src/serialization/matrix-block-element.hxx"
 // IWYU pragma: end_exports

@@ -29,8 +29,8 @@
 #include "pinocchio/multibody/joint.hpp"
 
 #include "pinocchio/parsers/config.hpp"
-#include "pinocchio/parsers/scalar-model.hxx"
-#include "pinocchio/parsers/meshloader-fwd.hxx"
+#include "pinocchio/src/parsers/scalar-model.hxx"
+#include "pinocchio/src/parsers/meshloader-fwd.hxx"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
@@ -44,8 +44,8 @@ namespace pinocchio
     }
   } // namespace urdf
 } // namespace pinocchio
-#include "pinocchio/parsers/urdf/urdf.hxx"
-#include "pinocchio/parsers/urdf/utils.hxx"
-#include "pinocchio/parsers/urdf/model.hxx"
-#include "pinocchio/parsers/urdf/geometry.hxx"
+#include "pinocchio/src/parsers/urdf/urdf.hxx"
+#include "pinocchio/src/parsers/urdf/utils.hxx"
+#include "pinocchio/src/parsers/urdf/model.hxx"
+#include "pinocchio/src/parsers/urdf/geometry.hxx"
 // IWYU pragma: end_exports

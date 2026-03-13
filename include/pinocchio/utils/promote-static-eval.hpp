@@ -18,5 +18,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/promote-static-eval.hxx"
+#include "pinocchio/src/utils/promote-static-eval.hxx"
 // IWYU pragma: end_exports

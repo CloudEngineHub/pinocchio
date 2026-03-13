@@ -159,5 +159,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/collision/collision.hxx"
+#include "pinocchio/src/collision/collision.hxx"
 // IWYU pragma: end_exports

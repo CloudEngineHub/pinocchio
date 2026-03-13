@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/collision/pool/fwd.hxx"
+#include "pinocchio/src/collision/pool/fwd.hxx"
 // IWYU pragma: end_exports

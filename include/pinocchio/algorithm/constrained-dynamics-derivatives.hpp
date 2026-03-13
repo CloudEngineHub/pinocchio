@@ -143,5 +143,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/constrained-dynamics-derivatives.hxx"
+#include "pinocchio/src/algorithm/constrained-dynamics-derivatives.hxx"
 // IWYU pragma: end_exports

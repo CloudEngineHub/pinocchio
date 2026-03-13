@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/act-on-set.hxx"
+#include "pinocchio/src/spatial/act-on-set.hxx"
 // IWYU pragma: end_exports

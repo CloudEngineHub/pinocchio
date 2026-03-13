@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/cartesian-axis.hxx"
+#include "pinocchio/src/spatial/cartesian-axis.hxx"
 // IWYU pragma: end_exports

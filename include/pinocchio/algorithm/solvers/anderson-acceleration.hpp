@@ -16,5 +16,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/solvers/anderson-acceleration.hxx"
+#include "pinocchio/src/algorithm/solvers/anderson-acceleration.hxx"
 // IWYU pragma: end_exports

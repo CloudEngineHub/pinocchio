@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/serialization/delassus.hxx"
+#include "pinocchio/src/serialization/delassus.hxx"
 // IWYU pragma: end_exports

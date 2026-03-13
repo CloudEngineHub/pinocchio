@@ -236,5 +236,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/extra/reachable-workspace.hxx"
+#include "pinocchio/src/extra/reachable-workspace.hxx"
 // IWYU pragma: end_exports

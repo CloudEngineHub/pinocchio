@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/liegroup/liegroup-joint.hxx"
+#include "pinocchio/src/multibody/liegroup/liegroup-joint.hxx"
 // IWYU pragma: end_exports

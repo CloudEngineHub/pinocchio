@@ -34,14 +34,14 @@
 #include "pinocchio/algorithm/constraints.hpp"
 
 #include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/parsers/meshloader-fwd.hxx"
+#include "pinocchio/src/parsers/meshloader-fwd.hxx"
 #include "pinocchio/parsers/config.hpp"
-#include "pinocchio/parsers/scalar-model.hxx"
+#include "pinocchio/src/parsers/scalar-model.hxx"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/parsers/mjcf/mjcf.hxx"
-#include "pinocchio/parsers/mjcf/mjcf-graph.hxx"
-#include "pinocchio/parsers/mjcf/model.hxx"
-#include "pinocchio/parsers/mjcf/geometry.hxx"
+#include "pinocchio/src/parsers/mjcf/mjcf.hxx"
+#include "pinocchio/src/parsers/mjcf/mjcf-graph.hxx"
+#include "pinocchio/src/parsers/mjcf/model.hxx"
+#include "pinocchio/src/parsers/mjcf/geometry.hxx"
 // IWYU pragma: end_exports

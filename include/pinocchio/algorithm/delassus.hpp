@@ -126,5 +126,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/delassus.hxx"
+#include "pinocchio/src/algorithm/delassus.hxx"
 // IWYU pragma: end_exports

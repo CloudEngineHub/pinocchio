@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/tensor.hxx"
+#include "pinocchio/src/math/tensor.hxx"
 // IWYU pragma: end_exports

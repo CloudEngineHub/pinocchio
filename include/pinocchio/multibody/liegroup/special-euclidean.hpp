@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/liegroup/special-euclidean.hxx"
+#include "pinocchio/src/multibody/liegroup/special-euclidean.hxx"
 // IWYU pragma: end_exports

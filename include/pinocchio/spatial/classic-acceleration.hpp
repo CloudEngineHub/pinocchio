@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/classic-acceleration.hxx"
+#include "pinocchio/src/spatial/classic-acceleration.hxx"
 // IWYU pragma: end_exports

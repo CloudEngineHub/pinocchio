@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/lanczos-decomposition.hxx"
+#include "pinocchio/src/math/lanczos-decomposition.hxx"
 // IWYU pragma: end_exports

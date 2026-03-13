@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/parsers/urdf/utils.hxx"
+#include "pinocchio/src/parsers/urdf/utils.hxx"
 // IWYU pragma: end_exports

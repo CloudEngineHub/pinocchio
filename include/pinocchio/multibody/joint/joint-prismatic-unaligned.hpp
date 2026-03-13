@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/joint/joint-prismatic-unaligned.hxx"
+#include "pinocchio/src/multibody/joint/joint-prismatic-unaligned.hxx"
 // IWYU pragma: end_exports

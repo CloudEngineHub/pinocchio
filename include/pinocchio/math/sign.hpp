@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/sign.hxx"
+#include "pinocchio/src/math/sign.hxx"
 // IWYU pragma: end_exports

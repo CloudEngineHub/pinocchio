@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/inertia.hxx"
+#include "pinocchio/src/spatial/inertia.hxx"
 // IWYU pragma: end_exports

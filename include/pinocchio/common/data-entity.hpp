@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/common/data-entity.hxx"
+#include "pinocchio/src/common/data-entity.hxx"
 // IWYU pragma: end_exports

@@ -166,5 +166,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/energy.hxx"
+#include "pinocchio/src/algorithm/energy.hxx"
 // IWYU pragma: end_exports

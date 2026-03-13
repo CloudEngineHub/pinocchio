@@ -7,5 +7,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/comparison-operators.hxx"
+#include "pinocchio/src/math/comparison-operators.hxx"
 // IWYU pragma: end_exports

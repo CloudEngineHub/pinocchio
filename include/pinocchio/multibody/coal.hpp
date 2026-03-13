@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/coal.hxx"
+#include "pinocchio/src/multibody/coal.hxx"
 // IWYU pragma: end_exports

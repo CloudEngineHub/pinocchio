@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/parsers/mjcf/mjcf-graph.hxx"
+#include "pinocchio/src/parsers/mjcf/mjcf-graph.hxx"
 // IWYU pragma: end_exports

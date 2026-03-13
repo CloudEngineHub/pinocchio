@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/matrix-product.hxx"
+#include "pinocchio/src/math/matrix-product.hxx"
 // IWYU pragma: end_exports

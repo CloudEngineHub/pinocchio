@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-#include "pinocchio/context.hxx"
+#include "pinocchio/src/context.hxx"
 
 #include "pinocchio/macros.hpp"
 
@@ -46,5 +46,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/visualizers/base-visualizer.hxx"
+#include "pinocchio/src/visualizers/base-visualizer.hxx"
 // IWYU pragma: end_exports

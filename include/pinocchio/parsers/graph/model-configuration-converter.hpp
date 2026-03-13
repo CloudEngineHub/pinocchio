@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/parsers/graph/model-configuration-converter.hxx"
+#include "pinocchio/src/parsers/graph/model-configuration-converter.hxx"
 // IWYU pragma: end_exports

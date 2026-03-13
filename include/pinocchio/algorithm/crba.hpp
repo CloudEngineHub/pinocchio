@@ -71,5 +71,5 @@ namespace pinocchio
 
 } // namespace pinocchio
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/crba.hxx"
+#include "pinocchio/src/algorithm/crba.hxx"
 // IWYU pragma: end_exports

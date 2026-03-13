@@ -19,6 +19,6 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/joint-motion-subspace-base.hxx"
-#include "pinocchio/multibody/joint-motion-subspace-generic.hxx"
+#include "pinocchio/src/multibody/joint-motion-subspace-base.hxx"
+#include "pinocchio/src/multibody/joint-motion-subspace-generic.hxx"
 // IWYU pragma: end_exports

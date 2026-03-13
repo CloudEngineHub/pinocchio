@@ -2,7 +2,7 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include "pinocchio/context/template-instantiation.hxx"
+#include "pinocchio/src/context/template-instantiation.hxx"
 #include "pinocchio/collision/distance.hpp"
 
 namespace pinocchio

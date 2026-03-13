@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/joint/joint-composite.hxx"
+#include "pinocchio/src/multibody/joint/joint-composite.hxx"
 // IWYU pragma: end_exports

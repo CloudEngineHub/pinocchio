@@ -17,5 +17,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/std-vector.hxx"
+#include "pinocchio/src/utils/std-vector.hxx"
 // IWYU pragma: end_exports

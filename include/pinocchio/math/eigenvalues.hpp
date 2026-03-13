@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/eigenvalues.hxx"
+#include "pinocchio/src/math/eigenvalues.hxx"
 // IWYU pragma: end_exports

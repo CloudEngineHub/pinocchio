@@ -150,5 +150,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/aba.hxx"
+#include "pinocchio/src/algorithm/aba.hxx"
 // IWYU pragma: end_exports

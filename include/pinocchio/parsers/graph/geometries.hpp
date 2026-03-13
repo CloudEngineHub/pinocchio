@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/parsers/graph/geometries.hxx"
+#include "pinocchio/src/parsers/graph/geometries.hxx"
 // IWYU pragma: end_exports

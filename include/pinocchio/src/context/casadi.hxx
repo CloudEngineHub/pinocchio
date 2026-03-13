@@ -14,5 +14,5 @@
 #include <casadi/casadi.hpp>
 
 #define PINOCCHIO_SCALAR_TYPE ::casadi::SX
-#include "pinocchio/context/generic.hxx"
+#include "pinocchio/src/context/generic.hxx"
 #undef PINOCCHIO_SCALAR_TYPE

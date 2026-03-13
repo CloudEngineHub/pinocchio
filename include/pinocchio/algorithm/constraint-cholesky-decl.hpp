@@ -23,5 +23,5 @@
 
 // IWYU pragma: begin_exports
 #include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/algorithm/constraint-cholesky-decl.hxx"
+#include "pinocchio/src/algorithm/constraint-cholesky-decl.hxx"
 // IWYU pragma: end_exports

@@ -9,5 +9,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/constraints/constraint-data-generic.hxx"
+#include "pinocchio/src/algorithm/constraints/constraint-data-generic.hxx"
 // IWYU pragma: end_exports

@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/force-set.hxx"
+#include "pinocchio/src/multibody/force-set.hxx"
 // IWYU pragma: end_exports

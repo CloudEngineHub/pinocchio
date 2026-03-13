@@ -15,5 +15,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/timer.hxx"
+#include "pinocchio/src/utils/timer.hxx"
 // IWYU pragma: export

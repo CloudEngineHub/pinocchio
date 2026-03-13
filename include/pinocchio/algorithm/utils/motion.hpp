@@ -11,5 +11,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/utils/motion.hxx"
+#include "pinocchio/src/algorithm/utils/motion.hxx"
 // IWYU pragma: end_exports

@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/sincos.hxx"
+#include "pinocchio/src/math/sincos.hxx"
 // IWYU pragma: end_exports

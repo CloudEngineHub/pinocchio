@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/parsers/graph/graph-visitor.hxx"
+#include "pinocchio/src/parsers/graph/graph-visitor.hxx"
 // IWYU pragma: end_exports

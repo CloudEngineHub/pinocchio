@@ -9,5 +9,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/sample-models.hxx"
+#include "pinocchio/src/multibody/sample-models.hxx"
 // IWYU pragma: end_exports

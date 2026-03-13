@@ -9,5 +9,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/alias.hxx"
+#include "pinocchio/src/math/alias.hxx"
 // IWYU pragma: end_exports

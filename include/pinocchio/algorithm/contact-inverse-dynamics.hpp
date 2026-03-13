@@ -102,5 +102,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/contact-inverse-dynamics.hxx"
+#include "pinocchio/src/algorithm/contact-inverse-dynamics.hxx"
 // IWYU pragma: end_exports

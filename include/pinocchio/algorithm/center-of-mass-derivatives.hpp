@@ -55,5 +55,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/center-of-mass-derivatives.hxx"
+#include "pinocchio/src/algorithm/center-of-mass-derivatives.hxx"
 // IWYU pragma: end_exports

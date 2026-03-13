@@ -54,5 +54,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/parallel/rnea.hxx"
+#include "pinocchio/src/algorithm/parallel/rnea.hxx"
 // IWYU pragma: end_exports

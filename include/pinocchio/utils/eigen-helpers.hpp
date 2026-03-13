@@ -10,5 +10,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/eigen-helpers.hxx"
+#include "pinocchio/src/utils/eigen-helpers.hxx"
 // IWYU pragma: end_exports

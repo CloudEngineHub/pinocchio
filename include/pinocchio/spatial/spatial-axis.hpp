@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/spatial-axis.hxx"
+#include "pinocchio/src/spatial/spatial-axis.hxx"
 // IWYU pragma: end_exports

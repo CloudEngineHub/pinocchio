@@ -7,5 +7,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/quaternion.hxx"
+#include "pinocchio/src/math/quaternion.hxx"
 // IWYU pragma: end_exports

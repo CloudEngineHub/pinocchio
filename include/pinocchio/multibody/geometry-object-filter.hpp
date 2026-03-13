@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/geometry-object-filter.hxx"
+#include "pinocchio/src/multibody/geometry-object-filter.hxx"
 // IWYU pragma: end_exports

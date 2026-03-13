@@ -224,7 +224,7 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/autodiff/casadi/math/alias.hxx"
+#include "pinocchio/src/autodiff/casadi/math/alias.hxx"
 // IWYU pragma: end_exports
 
 namespace Eigen
@@ -312,11 +312,11 @@ namespace Eigen
 } // namespace Eigen
 
 // IWYU pragma: begin_exports
-#include "pinocchio/autodiff/casadi/math/taylor-series-expansion.hxx"
-#include "pinocchio/autodiff/casadi/math/alias.hxx"
-#include "pinocchio/autodiff/casadi/math/matrix.hxx"
-#include "pinocchio/autodiff/casadi/math/quaternion.hxx"
-#include "pinocchio/autodiff/casadi/math/triangular-matrix.hxx"
-#include "pinocchio/autodiff/casadi/spatial/se3-tpl.hxx"
-#include "pinocchio/autodiff/casadi/utils/static-if.hxx"
+#include "pinocchio/src/autodiff/casadi/math/taylor-series-expansion.hxx"
+#include "pinocchio/src/autodiff/casadi/math/alias.hxx"
+#include "pinocchio/src/autodiff/casadi/math/matrix.hxx"
+#include "pinocchio/src/autodiff/casadi/math/quaternion.hxx"
+#include "pinocchio/src/autodiff/casadi/math/triangular-matrix.hxx"
+#include "pinocchio/src/autodiff/casadi/spatial/se3-tpl.hxx"
+#include "pinocchio/src/autodiff/casadi/utils/static-if.hxx"
 // IWYU pragma: end_exports

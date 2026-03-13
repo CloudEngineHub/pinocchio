@@ -14,5 +14,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/proximal.hxx"
+#include "pinocchio/src/algorithm/proximal.hxx"
 // IWYU pragma: end_exports

@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/symmetric3.hxx"
+#include "pinocchio/src/spatial/symmetric3.hxx"
 // IWYU pragma: end_exports

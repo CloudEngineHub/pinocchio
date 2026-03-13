@@ -17,5 +17,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/diagonal-preconditioner.hxx"
+#include "pinocchio/src/algorithm/diagonal-preconditioner.hxx"
 // IWYU pragma: end_exports

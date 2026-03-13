@@ -34,5 +34,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/copy.hxx"
+#include "pinocchio/src/algorithm/copy.hxx"
 // IWYU pragma: end_exports

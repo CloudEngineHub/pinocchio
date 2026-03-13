@@ -87,5 +87,5 @@ namespace pinocchio
 
 /* --- Details -------------------------------------------------------------------- */
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/loop-constrained-aba.hxx"
+#include "pinocchio/src/algorithm/loop-constrained-aba.hxx"
 // IWYU pragma: end_exports

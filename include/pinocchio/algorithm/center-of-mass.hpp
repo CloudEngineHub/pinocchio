@@ -15,7 +15,7 @@
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"
 
-#include "pinocchio/utils/check.hxx"
+#include "pinocchio/src/utils/check.hxx"
 
 #include "pinocchio/math.hpp"
 
@@ -405,5 +405,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/center-of-mass.hxx"
+#include "pinocchio/src/algorithm/center-of-mass.hxx"
 // IWYU pragma: end_exports

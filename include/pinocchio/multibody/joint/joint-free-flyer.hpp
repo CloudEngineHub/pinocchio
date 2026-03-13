@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/joint/joint-free-flyer.hxx"
+#include "pinocchio/src/multibody/joint/joint-free-flyer.hxx"
 // IWYU pragma: end_exports

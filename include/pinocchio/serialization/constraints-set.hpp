@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/serialization/constraints-set.hxx"
+#include "pinocchio/src/serialization/constraints-set.hxx"
 // IWYU pragma: end_exports

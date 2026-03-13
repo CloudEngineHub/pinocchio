@@ -72,5 +72,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/compute-all-terms.hxx"
+#include "pinocchio/src/algorithm/compute-all-terms.hxx"
 // IWYU pragma: end_exports

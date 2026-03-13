@@ -55,53 +55,53 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/constraints/fwd.hxx"
+#include "pinocchio/src/algorithm/constraints/fwd.hxx"
 
-#include "pinocchio/algorithm/constraints/sets/set-base.hxx"
-#include "pinocchio/algorithm/constraints/sets/box-set.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/set-base.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/box-set.hxx"
 
-#include "pinocchio/algorithm/constraints/sets/cone-base.hxx"
-#include "pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hxx"
-#include "pinocchio/algorithm/constraints/sets/zero-cone.hxx"
-#include "pinocchio/algorithm/constraints/sets/zero-cone-jordan-operation.hxx"
-#include "pinocchio/algorithm/constraints/sets/second-order-cone-jordan-operation.hxx"
-#include "pinocchio/algorithm/constraints/sets/orthant-cone.hxx"
-#include "pinocchio/algorithm/constraints/sets/orthant-cone-jordan-operation.hxx"
-#include "pinocchio/algorithm/constraints/sets/full-space-cone.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/cone-base.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/coulomb-friction-cone.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/zero-cone.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/zero-cone-jordan-operation.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/second-order-cone-jordan-operation.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/orthant-cone.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/orthant-cone-jordan-operation.hxx"
+#include "pinocchio/src/algorithm/constraints/sets/full-space-cone.hxx"
 
-#include "pinocchio/algorithm/constraints/baumgarte-corrector-parameters.hxx"
+#include "pinocchio/src/algorithm/constraints/baumgarte-corrector-parameters.hxx"
 
-#include "pinocchio/algorithm/constraints/blank-constraint.hxx"
-#include "pinocchio/algorithm/constraints/constraint-model-common-parameters.hxx"
+#include "pinocchio/src/algorithm/constraints/blank-constraint.hxx"
+#include "pinocchio/src/algorithm/constraints/constraint-model-common-parameters.hxx"
 
-#include "pinocchio/algorithm/constraints/constraint-model-base.hxx"
-#include "pinocchio/algorithm/constraints/constraint-data-base.hxx"
+#include "pinocchio/src/algorithm/constraints/constraint-model-base.hxx"
+#include "pinocchio/src/algorithm/constraints/constraint-data-base.hxx"
 
-#include "pinocchio/algorithm/constraints/visitors/constraint-model-visitor.hxx"
+#include "pinocchio/src/algorithm/constraints/visitors/constraint-model-visitor.hxx"
 
-#include "pinocchio/algorithm/constraints/constraint-data-generic.hxx"
-#include "pinocchio/algorithm/constraints/constraint-model-generic.hxx"
+#include "pinocchio/src/algorithm/constraints/constraint-data-generic.hxx"
+#include "pinocchio/src/algorithm/constraints/constraint-model-generic.hxx"
 
-#include "pinocchio/algorithm/constraints/kinematics-constraint-model-base.hxx"
-#include "pinocchio/algorithm/constraints/binary-kinematics-constraint-model-base.hxx"
+#include "pinocchio/src/algorithm/constraints/kinematics-constraint-model-base.hxx"
+#include "pinocchio/src/algorithm/constraints/binary-kinematics-constraint-model-base.hxx"
 
-#include "pinocchio/algorithm/constraints/point-constraint-data-base.hxx"
-#include "pinocchio/algorithm/constraints/point-constraint-model-base.hxx"
-#include "pinocchio/algorithm/constraints/point-anchor-constraint.hxx"
-#include "pinocchio/algorithm/constraints/point-contact-constraint.hxx"
+#include "pinocchio/src/algorithm/constraints/point-constraint-data-base.hxx"
+#include "pinocchio/src/algorithm/constraints/point-constraint-model-base.hxx"
+#include "pinocchio/src/algorithm/constraints/point-anchor-constraint.hxx"
+#include "pinocchio/src/algorithm/constraints/point-contact-constraint.hxx"
 
-#include "pinocchio/algorithm/constraints/frame-constraint-data-base.hxx"
-#include "pinocchio/algorithm/constraints/frame-constraint-model-base.hxx"
-#include "pinocchio/algorithm/constraints/frame-anchor-constraint.hxx"
+#include "pinocchio/src/algorithm/constraints/frame-constraint-data-base.hxx"
+#include "pinocchio/src/algorithm/constraints/frame-constraint-model-base.hxx"
+#include "pinocchio/src/algorithm/constraints/frame-anchor-constraint.hxx"
 
-#include "pinocchio/algorithm/constraints/jointwise-constraint-model-base.hxx"
-#include "pinocchio/algorithm/constraints/joint-friction-constraint.hxx"
-#include "pinocchio/algorithm/constraints/joint-limit-constraint.hxx"
+#include "pinocchio/src/algorithm/constraints/jointwise-constraint-model-base.hxx"
+#include "pinocchio/src/algorithm/constraints/joint-friction-constraint.hxx"
+#include "pinocchio/src/algorithm/constraints/joint-limit-constraint.hxx"
 
-#include "pinocchio/algorithm/constraints/constraint-collection-default.hxx"
+#include "pinocchio/src/algorithm/constraints/constraint-collection-default.hxx"
 
-#include "pinocchio/algorithm/constraints/constraint-ordering.hxx"
-#include "pinocchio/algorithm/constraints/contact-info.hxx"
+#include "pinocchio/src/algorithm/constraints/constraint-ordering.hxx"
+#include "pinocchio/src/algorithm/constraints/contact-info.hxx"
 
-#include "pinocchio/algorithm/constraints/utils.hxx"
+#include "pinocchio/src/algorithm/constraints/utils.hxx"
 // IWYU pragma: end_exports

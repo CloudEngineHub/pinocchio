@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/visitor/fusion.hxx"
+#include "pinocchio/src/multibody/visitor/fusion.hxx"
 // IWYU pragma: end_exports

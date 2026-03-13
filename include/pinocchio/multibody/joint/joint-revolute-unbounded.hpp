@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/joint/joint-revolute-unbounded.hxx"
+#include "pinocchio/src/multibody/joint/joint-revolute-unbounded.hxx"
 // IWYU pragma: end_exports

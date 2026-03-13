@@ -10,6 +10,6 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/joint/joint-model-base.hxx"
-#include "pinocchio/multibody/joint/joint-data-base.hxx"
+#include "pinocchio/src/multibody/joint/joint-model-base.hxx"
+#include "pinocchio/src/multibody/joint/joint-data-base.hxx"
 // IWYU pragma: end_exports

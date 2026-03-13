@@ -13,5 +13,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/container/double-entry-container.hxx"
+#include "pinocchio/src/container/double-entry-container.hxx"
 // IWYU pragma: end_exports

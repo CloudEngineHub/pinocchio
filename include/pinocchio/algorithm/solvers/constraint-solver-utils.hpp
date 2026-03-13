@@ -21,5 +21,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/solvers/constraint-solver-utils.hxx"
+#include "pinocchio/src/algorithm/solvers/constraint-solver-utils.hxx"
 // IWYU pragma: end_exports

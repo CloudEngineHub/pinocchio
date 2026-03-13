@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/rotation.hxx"
+#include "pinocchio/src/math/rotation.hxx"
 // IWYU pragma: end_exports

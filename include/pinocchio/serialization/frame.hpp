@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/serialization/frame.hxx"
+#include "pinocchio/src/serialization/frame.hxx"
 // IWYU pragma: end_exports

@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/serialization/static-buffer.hxx"
+#include "pinocchio/src/serialization/static-buffer.hxx"
 // IWYU pragma: end_exports

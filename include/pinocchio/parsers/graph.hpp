@@ -32,17 +32,17 @@
 #include "pinocchio/multibody/joint.hpp"
 
 #include "pinocchio/parsers/config.hpp"
-#include "pinocchio/parsers/meshloader-fwd.hxx"
+#include "pinocchio/src/parsers/meshloader-fwd.hxx"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/parsers/graph/fwd.hxx"
-#include "pinocchio/parsers/graph/frames.hxx"
-#include "pinocchio/parsers/graph/joints.hxx"
-#include "pinocchio/parsers/graph/geometries.hxx"
-#include "pinocchio/parsers/graph/model-graph.hxx"
-#include "pinocchio/parsers/graph/graph-visitor.hxx"
-#include "pinocchio/parsers/graph/model-graph-algo.hxx"
-#include "pinocchio/parsers/graph/model-graph-algo-geometry.hxx"
-#include "pinocchio/parsers/graph/model-configuration-converter.hxx"
+#include "pinocchio/src/parsers/graph/fwd.hxx"
+#include "pinocchio/src/parsers/graph/frames.hxx"
+#include "pinocchio/src/parsers/graph/joints.hxx"
+#include "pinocchio/src/parsers/graph/geometries.hxx"
+#include "pinocchio/src/parsers/graph/model-graph.hxx"
+#include "pinocchio/src/parsers/graph/graph-visitor.hxx"
+#include "pinocchio/src/parsers/graph/model-graph-algo.hxx"
+#include "pinocchio/src/parsers/graph/model-graph-algo-geometry.hxx"
+#include "pinocchio/src/parsers/graph/model-configuration-converter.hxx"
 // IWYU pragma: end_exports

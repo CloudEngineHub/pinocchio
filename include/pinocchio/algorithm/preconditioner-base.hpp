@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/preconditioner-base.hxx"
+#include "pinocchio/src/algorithm/preconditioner-base.hxx"
 // IWYU pragma: end_exports

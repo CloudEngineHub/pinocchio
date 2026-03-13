@@ -393,5 +393,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/regressor.hxx"
+#include "pinocchio/src/algorithm/regressor.hxx"
 // IWYU pragma: end_exports

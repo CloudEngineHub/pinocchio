@@ -20,5 +20,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/default-check.hxx"
+#include "pinocchio/src/algorithm/default-check.hxx"
 // IWYU pragma: end_exports
