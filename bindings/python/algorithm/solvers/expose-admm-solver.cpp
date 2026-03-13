@@ -136,19 +136,19 @@ namespace pinocchio
 
     // Wrapper functions for retrieve methods
     static void retrievePrimalSolution_wrapper(
-      const ADMMSolverResult & solution, const Eigen::Ref<VectorXs> & primal_solution)
+      const ADMMSolverResult & solution, Eigen::Ref<VectorXs> primal_solution)
     {
       solution.retrievePrimalSolution(primal_solution);
     }
 
     static void retrieveDualSolution_wrapper(
-      const ADMMSolverResult & solution, const Eigen::Ref<VectorXs> & dual_solution)
+      const ADMMSolverResult & solution, Eigen::Ref<VectorXs> dual_solution)
     {
       solution.retrieveDualSolution(dual_solution);
     }
 
     static void retrieveDesaxceTerm_wrapper(
-      const ADMMSolverResult & solution, const Eigen::Ref<VectorXs> & desaxce_term)
+      const ADMMSolverResult & solution, Eigen::Ref<VectorXs> desaxce_term)
     {
       solution.retrieveDesaxceTerm(desaxce_term);
     }

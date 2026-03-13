@@ -56,13 +56,13 @@ namespace pinocchio
 
     // Wrapper functions for retrieve methods
     static void retrievePrimalSolution_pgs_wrapper(
-      const PGSSolverResult & solution, const Eigen::Ref<VectorXs> & primal_solution)
+      const PGSSolverResult & solution, Eigen::Ref<VectorXs> primal_solution)
     {
       solution.retrievePrimalSolution(primal_solution);
     }
 
     static void retrieveDualSolution_pgs_wrapper(
-      const PGSSolverResult & solution, const Eigen::Ref<VectorXs> & dual_solution)
+      const PGSSolverResult & solution, Eigen::Ref<VectorXs> dual_solution)
     {
       solution.retrieveDualSolution(dual_solution);
     }
