@@ -67,10 +67,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraint-cholesky-def.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/contact-dynamics.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-cholesky.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-info.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-jacobian.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-inverse-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/copy.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/crba.hpp
@@ -151,14 +147,9 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/spatial/log.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/spatial/se3-tpl.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/utils/static-if.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/common/data-entity.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/common/fwd.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/common/model-entity.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/code-generator-algo.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg-algo.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/container/aligned-vector.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/container/boost-container-limits.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/double-entry-container.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/eigen-storage.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/matrix-stack.hpp
@@ -178,7 +169,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/block-diagonal-matrix-expression.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/block-diagonal-matrix-inverse.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/block-diagonal-matrix-sum.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/comparison-operators.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-1x1.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-2x2.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-3x3.hxx
@@ -192,11 +182,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-11x11.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-12x12.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/eigen-helpers.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigenvalues.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/fwd.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/gram-schmidt-orthonormalisation.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/lanczos-decomposition.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/matrix-block.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/matrix-block-element.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/matrix-block-element-base.hxx
@@ -205,86 +191,26 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/matrix-block-element-operations.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/matrix-block-type.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/matrix-info.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-inverse.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-inverse-code-generated.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/matrix-product.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/multiprecision.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/multiprecision-mpfr.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/assign-operators.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/quaternion.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/rotation.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/rpy.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/rpy.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/sign.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/sincos.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/taylor-expansion.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/tensor.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/triangular-matrix.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/tridiagonal-matrix.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/math/eigenvalues-tridiagonal-matrix.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/data.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/coal.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/fcl.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/force-set.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/frame.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/fwd.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/geometry.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/geometry.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/geometry-object-filter.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/geometry-object.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/geometry-object.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/instance-filter.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/fwd.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-basic-visitors.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-collection.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-common-operations.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-composite.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-composite.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-free-flyer.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-generic.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-generic.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-helical.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-helical-unaligned.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-mimic.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-planar.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-prismatic.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-prismatic-unaligned.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-revolute.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-revolute-unaligned.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-revolute-unbounded.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-revolute-unbounded-unaligned.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joints.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-spherical.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-spherical-ZYX.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-ellipsoid.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-translation.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint/joint-universal.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/joint-motion-subspace.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/cartesian-product.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/cartesian-product-variant.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/liegroup/cartesian-product-variant.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/liegroup/fwd.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup-algo.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/liegroup/liegroup-algo.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup-base.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/liegroup/liegroup-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup-collection.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup-generic.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup-joint.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/liegroup-variant-visitors.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/liegroup/liegroup-variant-visitors.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/special-euclidean.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/special-orthogonal.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/liegroup/vector-space.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/model.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/model.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/model-item.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/pool/fwd.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/pool/geometry.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/pool/model.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/visitor.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody/sample-models.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/sample-models.hxx
@@ -293,61 +219,29 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/constraints-data.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/constraints-model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/constraints-set.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/delassus.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/double-entry-container.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/eigen-storage.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/matrix-stack.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/csv.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/coal.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/fcl.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/force.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/frame.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/fwd.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/geometry.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/inertia.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-data.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-model.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-motion.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-motion-subspace.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/joints-transform.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/matrix-block-element.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/model.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/motion.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/se3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/serializable.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/spatial.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/static-buffer.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/symmetric3.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/vector.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/act-on-set.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/act-on-set.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/cartesian-axis.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/classic-acceleration.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/explog.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/explog-quaternion.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/force-base.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/force-dense.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/force.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/force-ref.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/force-tpl.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/fwd.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/inertia.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/log.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/motion-base.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/motion-dense.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/motion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/motion-ref.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/motion-tpl.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/motion-zero.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/se3-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/se3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/se3-tpl.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/skew.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/spatial-axis.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/symmetric3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/cast.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/check.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/utils/eigen-fix.hxx
@@ -370,7 +264,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
 
 set(${PROJECT_NAME}_PARALLEL_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/parallel/aba.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/parallel/omp.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/parallel/rnea.hpp)
 
 set(${PROJECT_NAME}_COLLISION_TEMPLATE_INSTANTIATION_SOURCES
@@ -392,7 +285,6 @@ set(${PROJECT_NAME}_COLLISION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/tree-broadphase-manager.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/tree-broadphase-manager.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/coal-pinocchio-conversions.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/fcl-pinocchio-conversions.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/pool/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/pool/broadphase-manager.hpp)
 
@@ -419,19 +311,10 @@ set(${PROJECT_NAME}_PARSERS_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/mjcf/model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/mjcf/geometry.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf/mjcf-graph.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/graph/fwd.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/model-graph.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/model-graph-algo.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/graph-visitor.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/joints.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/frames.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/geometries.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/model-configuration-converter.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/graph/model-configuration-converter.hxx)
 
-set(${PROJECT_NAME}_GRAPH_GEOMETRY_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/model-graph-algo-geometry.hpp)
+set(${PROJECT_NAME}_GRAPH_GEOMETRY_HEADERS)
 
 set(${PROJECT_NAME}_URDF_SOURCES
     ${PROJECT_SOURCE_DIR}/src/parsers/urdf/model.cpp
