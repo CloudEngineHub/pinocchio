@@ -532,6 +532,47 @@ set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/joint/joint-collection.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/joint/joint-helical.hpp)
 
+# Casadi
+set(${PROJECT_NAME}_CASADI_PUBLIC_HEADERS
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi-algo.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi.hpp)
+
+set(${PROJECT_NAME}_CASADI_PRIVATE_HEADERS
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/algorithm/algo.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/math/alias.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/math/matrix.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/math/quaternion.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/math/taylor-series-expansion.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/math/triangular-matrix.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/spatial/se3-tpl.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/utils/static-if.hxx)
+
+# CPPAD
+set(${PROJECT_NAME}_CPPAD_PUBLIC_HEADERS
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad.hpp)
+
+set(${PROJECT_NAME}_CPPAD_PRIVATE_HEADERS
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/algorithm/aba.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/math/quaternion.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/math/taylor-series-expansion.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/spatial/log.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/spatial/se3-tpl.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/utils/static-if.hxx)
+
+# CPPADCG
+set(${PROJECT_NAME}_CPPADCG_PUBLIC_HEADERS
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg-algo.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg.hpp)
+
+set(${PROJECT_NAME}_CPPADCG_PRIVATE_HEADERS
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/codegen/cppadcg/algorithm/code-generator-algo.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/codegen/cppadcg/algorithm/code-generator-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/codegen/cppadcg/math/cast.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/codegen/cppadcg/math/taylor-series-expansion.hxx)
+
+set(${PROJECT_NAME}_CPPADCG_DEPRECATED_HEADERS
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/codegen/code-generator-algo.hpp)
+
 # OpenMP dependent algorithm
 set(${PROJECT_NAME}_PARALLEL_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/parallel/aba.hpp
@@ -807,6 +848,7 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/multibody/joint/joint-derived.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/multibody/joint/joints-models.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/multibody/joint/joints-variant.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/multibody/joint/joints-liegroup.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/multibody/joint/joints-datas.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/multibody/joint/joint-data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/multibody/liegroups.hpp
