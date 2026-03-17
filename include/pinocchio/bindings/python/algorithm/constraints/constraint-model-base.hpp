@@ -122,8 +122,9 @@ namespace pinocchio
             bp::make_function(
               +[](
                  const Self & self, const Model & model, const Data & data,
-                 const ConstraintData & cdata, const Eigen::Index row_id) -> const BooleanVector {
-                const BooleanVector res = self.getRowSparsityPattern(model, data, cdata, row_id);
+                 const ConstraintData & cdata, const Eigen::Index row_id) -> BooleanVector {
+                BooleanVector res;
+                self.getRowSparsityPattern(model, data, cdata, row_id, res);
                 return res;
               }),
             "Active colwise sparsity associated with a given row.")
@@ -132,9 +133,9 @@ namespace pinocchio
             bp::make_function(
               +[](
                  const Self & self, const Model & model, const Data & data,
-                 const ConstraintData & cdata,
-                 const Eigen::Index row_id) -> const EigenIndexVector {
-                const EigenIndexVector res = self.getRowIndexes(model, data, cdata, row_id);
+                 const ConstraintData & cdata, const Eigen::Index row_id) -> EigenIndexVector {
+                EigenIndexVector res;
+                self.getRowIndexes(model, data, cdata, row_id, res);
                 return res;
               }),
             "Vector of the active indexes associated with a given row.")

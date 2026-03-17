@@ -157,6 +157,17 @@ namespace pinocchio
             "Vector of subtrees. subtree[j] corresponds to the subtree supported by the joint j.")
 
           .def_readwrite(
+            "sparsity_pattern_vector", &Model::sparsity_pattern_vector,
+            "Sparsity pattern for each joint, indexed by joint_id. "
+            "sparsity_pattern_vector[i] is a boolean vector of size nv indicating which columns "
+            "of the Jacobian are nonzero for joint i.")
+
+          .def_readwrite(
+            "span_indexes_vector", &Model::span_indexes_vector,
+            "Colwise span indexes for each joint, indexed by joint_id. "
+            "span_indexes_vector[i] lists the column indexes of nonzero entries for joint i.")
+
+          .def_readwrite(
             "mimicking_joints", &Model::mimicking_joints,
             "Vector of mimicking joints in the tree (with type MimicTpl)")
 
@@ -392,6 +403,11 @@ namespace pinocchio
         StdVectorPythonVisitor<std::vector<std::string>, true>::expose("StdVec_StdString");
         StdVectorPythonVisitor<std::vector<bool>, true>::expose("StdVec_Bool");
         StdVectorPythonVisitor<std::vector<Scalar>, true>::expose("StdVec_Scalar");
+        StdVectorPythonVisitor<typename Model::EigenIndexVector, true>::expose("StdVec_EigenIndex");
+        StdVectorPythonVisitor<typename Model::VectorOfEigenIndexVector>::expose(
+          "StdVec_EigenIndexVector");
+        StdVectorPythonVisitor<typename Model::VectorOfBooleanVector>::expose(
+          "StdVec_BooleanVector");
 
 #if defined(PINOCCHIO_PYTHON_INTERFACE_MAIN_MODULE)
         bp::scope().attr("StdVec_Double") = bp::scope().attr("StdVec_Scalar"); // alias

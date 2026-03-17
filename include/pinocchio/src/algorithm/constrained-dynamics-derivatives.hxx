@@ -445,9 +445,8 @@ namespace pinocchio
 
       const RigidConstraintModel & cmodel = contact_models[k];
       RigidConstraintData & cdata = contact_data[k];
-      //      const BooleanVector & joint1_indexes = cmodel.colwise_joint1_sparsity;
-      const BooleanVector & joint1_indexes = cmodel.colwise_joint1_sparsity;
-      const BooleanVector & joint2_indexes = cmodel.colwise_joint2_sparsity;
+      const BooleanVector & joint1_indexes = model.sparsity_pattern_vector[cmodel.joint1_id];
+      const BooleanVector & joint2_indexes = model.sparsity_pattern_vector[cmodel.joint2_id];
 
       switch (cmodel.type)
       {
@@ -502,7 +501,8 @@ namespace pinocchio
           if (cmodel.reference_frame == LOCAL)
           {
             Eigen::Index col_id(0);
-            const auto & colwise_span_indexes = cmodel.getRowIndexes(model, data, cdata, 0);
+            std::vector<Eigen::Index> colwise_span_indexes;
+            cmodel.getRowIndexes(model, data, cdata, 0, colwise_span_indexes);
             for (Eigen::Index k = 0; k < Eigen::Index(colwise_span_indexes.size()); k++)
             {
               col_id = colwise_span_indexes[size_t(k)];
@@ -630,7 +630,8 @@ namespace pinocchio
           }
 
           // d./dq
-          const auto & colwise_span_indexes = cmodel.getRowIndexes(model, data, cdata, 0);
+          std::vector<Eigen::Index> colwise_span_indexes;
+          cmodel.getRowIndexes(model, data, cdata, 0, colwise_span_indexes);
           for (size_t k = 0; k < colwise_span_indexes.size(); ++k)
           {
             const Eigen::Index col_id = colwise_span_indexes[k];
@@ -766,10 +767,11 @@ namespace pinocchio
           contact_dac_dq += cmodel.m_baumgarte_parameters.Kd * contact_dvc_dq;
           contact_dac_dv += cmodel.m_baumgarte_parameters.Kd * contact_dac_da;
           // d./dq
-          const auto & colwise_span_indexes = cmodel.getRowIndexes(model, data, cdata, 0);
+          std::vector<Eigen::Index> colwise_span_indexes;
+          cmodel.getRowIndexes(model, data, cdata, 0, colwise_span_indexes);
           for (size_t k = 0; k < colwise_span_indexes.size(); ++k)
           {
-            const Eigen::Index row_id = cmodel.colwise_span_indexes[k];
+            const Eigen::Index row_id = colwise_span_indexes[k];
             // contact_dac_dq.col(row_id) += cmodel.m_baumgarte_parameters.Kd *
             // contact_dvc_dq.col(row_id);
             contact_dac_dq.col(row_id).noalias() +=

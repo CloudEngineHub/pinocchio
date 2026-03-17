@@ -221,20 +221,24 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
 
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
-      BOOST_CHECK(J_RF_LOCAL.col(k).isZero() != cm_RF_LOCAL.colwise_joint1_sparsity[k]);
-      BOOST_CHECK(J_LF_LOCAL.col(k).isZero() != cm_LF_LOCAL.colwise_joint1_sparsity[k]);
+      BOOST_CHECK(
+        J_RF_LOCAL.col(k).isZero() != model.sparsity_pattern_vector[cm_RF_LOCAL.joint1_id][k]);
+      BOOST_CHECK(
+        J_LF_LOCAL.col(k).isZero() != model.sparsity_pattern_vector[cm_LF_LOCAL.joint1_id][k]);
     }
-    BOOST_CHECK(cm_RF_LOCAL.colwise_joint2_sparsity.isZero());
-    BOOST_CHECK(cm_LF_LOCAL.colwise_joint2_sparsity.isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_RF_LOCAL.joint2_id].isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_LF_LOCAL.joint2_id].isZero());
 
     const SE3 oMc1 = data.oMi[clm_RF_LF_LOCAL.joint1_id] * clm_RF_LF_LOCAL.joint1_placement;
     const SE3 oMc2 = data.oMi[clm_RF_LF_LOCAL.joint2_id] * clm_RF_LF_LOCAL.joint2_placement;
     const SE3 c1Mc2 = oMc1.actInv(oMc2);
     const Data::Matrix6x J_clm_LOCAL = J_RF_LOCAL - c1Mc2.toActionMatrix() * J_LF_LOCAL;
 
+    Model::EigenIndexVector colwise_span_indexes;
+    clm_RF_LF_LOCAL.getRowIndexes(model, data, cld_RF_LF_LOCAL, 0, colwise_span_indexes);
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
-      if (!within(k, clm_RF_LF_LOCAL.colwise_span_indexes))
+      if (!within(k, colwise_span_indexes))
         BOOST_CHECK(J_clm_LOCAL.col(k).isZero());
     }
 
@@ -294,11 +298,13 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
 
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
-      BOOST_CHECK(J_RF_LWA.col(k).isZero() != cm_RF_LWA.colwise_joint1_sparsity[k]);
-      BOOST_CHECK(J_LF_LWA.col(k).isZero() != cm_LF_LWA.colwise_joint1_sparsity[k]);
+      BOOST_CHECK(
+        J_RF_LWA.col(k).isZero() != model.sparsity_pattern_vector[cm_RF_LWA.joint1_id][k]);
+      BOOST_CHECK(
+        J_LF_LWA.col(k).isZero() != model.sparsity_pattern_vector[cm_LF_LWA.joint1_id][k]);
     }
-    BOOST_CHECK(cm_RF_LWA.colwise_joint2_sparsity.isZero());
-    BOOST_CHECK(cm_LF_LWA.colwise_joint2_sparsity.isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_RF_LWA.joint2_id].isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_LF_LWA.joint2_id].isZero());
 
     const SE3 oMc1 = data.oMi[clm_RF_LF_LWA.joint1_id] * clm_RF_LF_LWA.joint1_placement;
     const SE3 oMc2 = data.oMi[clm_RF_LF_LWA.joint2_id] * clm_RF_LF_LWA.joint2_placement;
@@ -308,9 +314,11 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     const Data::Matrix6x J_clm_LWA =
       oMc1_lwa.toActionMatrix() * J_RF_LOCAL - oMc2_lwa.toActionMatrix() * J_LF_LOCAL;
 
+    Model::EigenIndexVector colwise_span_indexes;
+    clm_RF_LF_LWA.getRowIndexes(model, data, cld_RF_LF_LWA, 0, colwise_span_indexes);
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
-      if (!within(k, clm_RF_LF_LWA.colwise_span_indexes))
+      if (!within(k, colwise_span_indexes))
         BOOST_CHECK(J_clm_LWA.col(k).isZero());
     }
 
@@ -363,13 +371,13 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     {
       BOOST_CHECK(
         J_RF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero()
-        != cm_RF_LOCAL.colwise_joint1_sparsity[k]);
+        != model.sparsity_pattern_vector[cm_RF_LOCAL.joint1_id][k]);
       BOOST_CHECK(
         J_LF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero()
-        != cm_LF_LOCAL.colwise_joint1_sparsity[k]);
+        != model.sparsity_pattern_vector[cm_LF_LOCAL.joint1_id][k]);
     }
-    BOOST_CHECK(cm_RF_LOCAL.colwise_joint2_sparsity.isZero());
-    BOOST_CHECK(cm_LF_LOCAL.colwise_joint2_sparsity.isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_RF_LOCAL.joint2_id].isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_LF_LOCAL.joint2_id].isZero());
 
     const SE3 oMc1 = data.oMi[clm_RF_LF_LOCAL.joint1_id] * clm_RF_LF_LOCAL.joint1_placement;
     const SE3 oMc2 = data.oMi[clm_RF_LF_LOCAL.joint2_id] * clm_RF_LF_LOCAL.joint2_placement;
@@ -377,9 +385,11 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     const Data::Matrix3x J_clm_LOCAL = J_RF_LOCAL.middleRows<3>(SE3::LINEAR)
                                        - c1Mc2.rotation() * J_LF_LOCAL.middleRows<3>(SE3::LINEAR);
 
+    Model::EigenIndexVector colwise_span_indexes;
+    clm_RF_LF_LOCAL.getRowIndexes(model, data, cld_RF_LF_LOCAL, 0, colwise_span_indexes);
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
-      BOOST_CHECK(J_clm_LOCAL.col(k).isZero(0) != within(k, clm_RF_LF_LOCAL.colwise_span_indexes));
+      BOOST_CHECK(J_clm_LOCAL.col(k).isZero(0) != within(k, colwise_span_indexes));
     }
 
     // Check Jacobian
@@ -444,13 +454,13 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     {
       BOOST_CHECK(
         J_RF_LWA.middleRows<3>(SE3::LINEAR).col(k).isZero()
-        != cm_RF_LWA.colwise_joint1_sparsity[k]);
+        != model.sparsity_pattern_vector[cm_RF_LWA.joint1_id][k]);
       BOOST_CHECK(
         J_LF_LWA.middleRows<3>(SE3::LINEAR).col(k).isZero()
-        != cm_LF_LWA.colwise_joint1_sparsity[k]);
+        != model.sparsity_pattern_vector[cm_LF_LWA.joint1_id][k]);
     }
-    BOOST_CHECK(cm_RF_LWA.colwise_joint2_sparsity.isZero());
-    BOOST_CHECK(cm_LF_LWA.colwise_joint2_sparsity.isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_RF_LWA.joint2_id].isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_LF_LWA.joint2_id].isZero());
 
     const SE3 oMc1 = data.oMi[clm_RF_LF_LWA.joint1_id] * clm_RF_LF_LWA.joint1_placement;
     const SE3 oMc2 = data.oMi[clm_RF_LF_LWA.joint2_id] * clm_RF_LF_LWA.joint2_placement;
@@ -460,9 +470,11 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
       (oMc1_lwa.toActionMatrix() * J_RF_LOCAL - oMc2_lwa.toActionMatrix() * J_LF_LOCAL)
         .middleRows<3>(Motion::LINEAR);
 
+    Model::EigenIndexVector colwise_span_indexes;
+    clm_RF_LF_LWA.getRowIndexes(model, data, cld_RF_LF_LWA, 0, colwise_span_indexes);
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
-      BOOST_CHECK(J_clm_LWA.col(k).isZero(0) != within(k, clm_RF_LF_LWA.colwise_span_indexes));
+      BOOST_CHECK(J_clm_LWA.col(k).isZero(0) != within(k, colwise_span_indexes));
     }
 
     // Check Jacobian

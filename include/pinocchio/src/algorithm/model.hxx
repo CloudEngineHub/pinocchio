@@ -1014,6 +1014,41 @@ namespace pinocchio
 
     details::insertSort(index_mimicking, output_model.mimicking_joints);
     details::insertSort(index_mimicked, output_model.mimicked_joints);
+
+    // Rebuild sparsity patterns from the updated model structure (supports, nvs, idx_vs).
+    // The patterns copied from input_model via operator= are stale because nv and joint
+    // velocity indexes have changed after the mimic transformation.
+    typedef typename Model::BooleanVector BooleanVector;
+    typedef typename Model::EigenIndexVector EigenIndexVector;
+    output_model.sparsity_pattern_vector.clear();
+    output_model.span_indexes_vector.clear();
+    output_model.sparsity_pattern_vector.push_back(BooleanVector::Zero(nv));
+    output_model.span_indexes_vector.push_back(EigenIndexVector());
+    for (JointIndex jid = 1; jid < (JointIndex)output_model.njoints; ++jid)
+    {
+      EigenIndexVector extended_support;
+      extended_support.reserve(size_t(nv));
+      const auto & jsupport = output_model.supports[jid];
+      for (size_t j = 1; j < jsupport.size() - 1; ++j)
+      {
+        const JointIndex jsupport_id = jsupport[j];
+        const int jsupport_nv = output_model.nvs[jsupport_id];
+        const int jsupport_idx_v = output_model.idx_vs[jsupport_id];
+        for (int k = 0; k < jsupport_nv; ++k)
+          extended_support.push_back(jsupport_idx_v + k);
+      }
+      const int jnv = output_model.nvs[jid];
+      const int jidx_v = output_model.idx_vs[jid];
+      for (int k = 0; k < jnv; ++k)
+        extended_support.push_back(jidx_v + k);
+
+      BooleanVector sparsity_pattern = BooleanVector::Zero(nv);
+      for (const auto col_id : extended_support)
+        sparsity_pattern[col_id] = true;
+
+      output_model.sparsity_pattern_vector.push_back(std::move(sparsity_pattern));
+      output_model.span_indexes_vector.push_back(std::move(extended_support));
+    }
   }
 
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>

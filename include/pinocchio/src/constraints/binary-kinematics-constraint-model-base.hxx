@@ -150,8 +150,6 @@ namespace pinocchio
     , desired_constraint_offset(ResidualVectorType::Zero(residualSize()))
     , desired_constraint_velocity(ResidualVectorType::Zero(residualSize()))
     , desired_constraint_acceleration(ResidualVectorType::Zero(residualSize()))
-    , colwise_joint1_sparsity(model.nv)
-    , colwise_joint2_sparsity(model.nv)
     , nv(-1)
     , depth_joint1(0)
     , depth_joint2(0)
@@ -209,12 +207,6 @@ namespace pinocchio
       res.desired_constraint_velocity = desired_constraint_velocity.template cast<NewScalar>();
       res.desired_constraint_acceleration =
         desired_constraint_acceleration.template cast<NewScalar>();
-      res.colwise_joint1_sparsity = colwise_joint1_sparsity;
-      res.colwise_joint2_sparsity = colwise_joint2_sparsity;
-      res.joint1_span_indexes = joint1_span_indexes;
-      res.joint2_span_indexes = joint2_span_indexes;
-      res.colwise_sparsity = colwise_sparsity;
-      res.colwise_span_indexes = colwise_span_indexes;
       res.nv = nv;
       res.depth_joint1 = depth_joint1;
       res.depth_joint2 = depth_joint2;
@@ -234,12 +226,6 @@ namespace pinocchio
              && desired_constraint_offset == other.desired_constraint_offset
              && desired_constraint_velocity == other.desired_constraint_velocity
              && desired_constraint_acceleration == other.desired_constraint_acceleration
-             && colwise_joint1_sparsity == other.colwise_joint1_sparsity
-             && colwise_joint2_sparsity == other.colwise_joint2_sparsity
-             && joint1_span_indexes == other.joint1_span_indexes
-             && joint2_span_indexes == other.joint2_span_indexes
-             && colwise_sparsity == other.colwise_sparsity
-             && colwise_span_indexes == other.colwise_span_indexes && nv == other.nv
              && depth_joint1 == other.depth_joint1 && depth_joint2 == other.depth_joint2;
     }
 
@@ -276,32 +262,41 @@ namespace pinocchio
 
     /// \copydoc Base::getRowSparsityPattern
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const BooleanVector & getRowSparsityPatternImpl(
+    void getRowSparsityPatternImpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      BooleanVector & result) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return colwise_sparsity;
+      auto & sparsity_pattern_1 = model.sparsity_pattern_vector[joint1_id];
+      auto & sparsity_pattern_2 = model.sparsity_pattern_vector[joint2_id];
+      result = sparsity_pattern_1.binaryExpr(
+        sparsity_pattern_2, [](bool a, bool b) -> bool { return a || b; });
     }
 
     /// \copydoc Base::getRowIndexes
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const EigenIndexVector & getRowIndexesImpl(
+    void getRowIndexesImpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      EigenIndexVector & result) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return colwise_span_indexes;
+      auto & span_indexes_1 = model.span_indexes_vector[joint1_id];
+      auto & span_indexes_2 = model.span_indexes_vector[joint2_id];
+      result.clear();
+      result.reserve(static_cast<std::size_t>(model.nv));
+      std::set_union(
+        span_indexes_1.begin(), span_indexes_1.end(), span_indexes_2.begin(), span_indexes_2.end(),
+        std::back_inserter(result));
     }
 
   protected:
@@ -339,24 +334,6 @@ namespace pinocchio
     /// \brief Desired constraint acceleration at acceleration level.
     ResidualVectorType desired_constraint_acceleration;
 
-    /// \brief Column-wise sparsity pattern associated with joint 1.
-    BooleanVector colwise_joint1_sparsity;
-
-    /// \brief Column-wise sparsity pattern associated with joint 2.
-    BooleanVector colwise_joint2_sparsity;
-
-    /// \brief Joint-wise span indexes associated with joint 1.
-    EigenIndexVector joint1_span_indexes;
-
-    /// \brief Joint-wise span indexes associated with joint 2.
-    EigenIndexVector joint2_span_indexes;
-
-    /// \brief Sparsity pattern associated to the constraint.
-    BooleanVector colwise_sparsity;
-
-    /// \brief Indexes of the columns spanned by the constraints.
-    EigenIndexVector colwise_span_indexes;
-
     /// \brief Dimensions of the model.
     int nv;
 
@@ -376,75 +353,6 @@ namespace pinocchio
     nv = model.nv;
     depth_joint1 = static_cast<size_t>(model.supports[joint1_id].size());
     depth_joint2 = static_cast<size_t>(model.supports[joint2_id].size());
-
-    typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
-    typedef typename Model::JointModel JointModel;
-    static const bool default_sparsity_value = false;
-    colwise_joint1_sparsity.fill(default_sparsity_value);
-    colwise_joint2_sparsity.fill(default_sparsity_value);
-
-    joint1_span_indexes.reserve(size_t(model.njoints));
-    joint2_span_indexes.reserve(size_t(model.njoints));
-
-    JointIndex current1_id = joint1_id > 0 ? joint1_id : JointIndex(0);
-    JointIndex current2_id = joint2_id > 0 ? joint2_id : JointIndex(0);
-
-    while (current1_id != current2_id)
-    {
-      if (current1_id > current2_id)
-      {
-        const JointModel & joint1 = model.joints[current1_id];
-        joint1_span_indexes.push_back((Eigen::Index)current1_id);
-        Eigen::Index current1_col_id = joint1.idx_v();
-        for (int k = 0; k < joint1.nv(); ++k, ++current1_col_id)
-        {
-          colwise_joint1_sparsity[current1_col_id] = true;
-        }
-        current1_id = model.parents[current1_id];
-      }
-      else
-      {
-        const JointModel & joint2 = model.joints[current2_id];
-        joint2_span_indexes.push_back((Eigen::Index)current2_id);
-        Eigen::Index current2_col_id = joint2.idx_v();
-        for (int k = 0; k < joint2.nv(); ++k, ++current2_col_id)
-        {
-          colwise_joint2_sparsity[current2_col_id] = true;
-        }
-        current2_id = model.parents[current2_id];
-      }
-    }
-    assert(current1_id == current2_id && "current1_id should be equal to current2_id");
-
-    {
-      JointIndex current_id = current1_id;
-      while (current_id > 0)
-      {
-        const JointModel & joint = model.joints[current_id];
-        joint1_span_indexes.push_back((Eigen::Index)current_id);
-        joint2_span_indexes.push_back((Eigen::Index)current_id);
-        Eigen::Index current_row_id = joint.idx_v();
-        for (int k = 0; k < joint.nv(); ++k, ++current_row_id)
-        {
-          colwise_joint1_sparsity[current_row_id] = true;
-          colwise_joint2_sparsity[current_row_id] = true;
-        }
-        current_id = model.parents[current_id];
-      }
-    }
-    std::reverse(joint1_span_indexes.begin(), joint1_span_indexes.end());
-    std::reverse(joint2_span_indexes.begin(), joint2_span_indexes.end());
-    colwise_span_indexes.reserve((size_t)model.nv);
-    colwise_sparsity.resize(model.nv);
-    colwise_sparsity.setZero();
-    for (Eigen::Index col_id = 0; col_id < model.nv; ++col_id)
-    {
-      if (colwise_joint1_sparsity[col_id] || colwise_joint2_sparsity[col_id])
-      {
-        colwise_span_indexes.push_back(col_id);
-        colwise_sparsity[col_id] = true;
-      }
-    }
 
     // Set compliance and Baumgarte parameters.
     m_compliance = ResidualVectorType::Zero(residualSize());

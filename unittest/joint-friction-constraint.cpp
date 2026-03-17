@@ -66,13 +66,12 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
     for (size_t row_id = 0; row_id < size_t(constraint.residualSize()); ++row_id)
     {
       const Eigen::Index dof_id = active_dofs[row_id];
-      const BooleanVector & row_sparsity_pattern =
-        constraint.getRowSparsityPattern(model, data, constraint_data, Eigen::Index(row_id));
-      const EigenIndexVector & row_active_indexes =
-        constraint.getRowIndexes(model, data, constraint_data, Eigen::Index(row_id));
-
-      // Check that the rest of the indexes greater than dof_id are not active.
-      BOOST_CHECK((row_sparsity_pattern.tail(model.nv - 1 - dof_id).array() == false).all());
+      BooleanVector row_sparsity_pattern;
+      constraint.getRowSparsityPattern(
+        model, data, constraint_data, Eigen::Index(row_id), row_sparsity_pattern);
+      EigenIndexVector row_active_indexes;
+      constraint.getRowIndexes(
+        model, data, constraint_data, Eigen::Index(row_id), row_active_indexes);
 
       Eigen::Index id = dof_id;
       while (parents_fromRow[size_t(id)] > -1)

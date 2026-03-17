@@ -880,28 +880,29 @@ namespace pinocchio
       int OtherOptions,
       template<typename, int> class JointCollectionTpl>
     struct ConstraintModelgetRowSparsityPatternVisitor
-    : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelgetRowSparsityPatternVisitor<
-          Scalar,
-          Options,
-          OtherOptions,
-          JointCollectionTpl>,
-        const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> &>
+    : visitors::ConstraintUnaryVisitorBase<ConstraintModelgetRowSparsityPatternVisitor<
+        Scalar,
+        Options,
+        OtherOptions,
+        JointCollectionTpl>>
     {
-      typedef const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & ReturnType;
+      typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
       typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
       typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
-      typedef boost::fusion::vector<const Model &, const Data &, const Eigen::Index> ArgsType;
+      typedef boost::fusion::
+        vector<const Model &, const Data &, const Eigen::Index, BooleanVector &>
+          ArgsType;
 
       template<typename ConstraintModel>
-      static ReturnType algo(
+      static void algo(
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
         const typename ConstraintModel::ConstraintData & cdata,
         const Model & model,
         const Data & data,
-        const Eigen::Index row_id)
+        const Eigen::Index row_id,
+        BooleanVector & result)
       {
-        return cmodel.getRowSparsityPattern(model, data, cdata.derived(), row_id);
+        cmodel.getRowSparsityPattern(model, data, cdata.derived(), row_id, result);
       }
     };
 
@@ -911,17 +912,18 @@ namespace pinocchio
       int OtherOptions,
       template<typename S, int O> class JointCollectionTpl,
       template<typename S, int O> class ConstraintCollectionTpl>
-    const Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & getRowSparsityPattern(
+    void getRowSparsityPattern(
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const Eigen::Index row_id)
+      const Eigen::Index row_id,
+      Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> & result)
     {
       typedef ConstraintModelgetRowSparsityPatternVisitor<
         Scalar, Options, OtherOptions, JointCollectionTpl>
         Algo;
-      return Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data, row_id));
+      Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data, row_id, result));
     }
 
     /**
@@ -930,23 +932,25 @@ namespace pinocchio
     template<typename Scalar, int OtherOptions, template<typename, int> class JointCollectionTpl>
     struct ConstraintModelgetRowIndexesVisitor
     : visitors::ConstraintUnaryVisitorBase<
-        ConstraintModelgetRowIndexesVisitor<Scalar, OtherOptions, JointCollectionTpl>,
-        const std::vector<Eigen::Index> &>
+        ConstraintModelgetRowIndexesVisitor<Scalar, OtherOptions, JointCollectionTpl>>
     {
-      typedef const std::vector<Eigen::Index> & ReturnType;
+      typedef std::vector<Eigen::Index> EigenIndexVector;
       typedef ModelTpl<Scalar, OtherOptions, JointCollectionTpl> Model;
       typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
-      typedef boost::fusion::vector<const Model &, const Data &, const Eigen::Index> ArgsType;
+      typedef boost::fusion::
+        vector<const Model &, const Data &, const Eigen::Index, EigenIndexVector &>
+          ArgsType;
 
       template<typename ConstraintModel>
-      static ReturnType algo(
+      static void algo(
         const pinocchio::ConstraintModelBase<ConstraintModel> & cmodel,
         const typename ConstraintModel::ConstraintData & cdata,
         const Model & model,
         const Data & data,
-        const Eigen::Index row_id)
+        const Eigen::Index row_id,
+        EigenIndexVector & result)
       {
-        return cmodel.getRowIndexes(model, data, cdata.derived(), row_id);
+        cmodel.getRowIndexes(model, data, cdata.derived(), row_id, result);
       }
     };
 
@@ -956,15 +960,16 @@ namespace pinocchio
       int OtherOptions,
       template<typename S, int O> class JointCollectionTpl,
       template<typename S, int O> class ConstraintCollectionTpl>
-    const std::vector<Eigen::Index> & getRowIndexes(
+    void getRowIndexes(
       const ConstraintModelTpl<Scalar, Options, ConstraintCollectionTpl> & cmodel,
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const Eigen::Index row_id)
+      const Eigen::Index row_id,
+      std::vector<Eigen::Index> & result)
     {
       typedef ConstraintModelgetRowIndexesVisitor<Scalar, OtherOptions, JointCollectionTpl> Algo;
-      return Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data, row_id));
+      Algo::run(cmodel, cdata, typename Algo::ArgsType(model, data, row_id, result));
     }
 
     /**

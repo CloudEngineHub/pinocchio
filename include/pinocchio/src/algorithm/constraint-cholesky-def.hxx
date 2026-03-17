@@ -124,10 +124,10 @@ namespace pinocchio
       const auto & cdata = helper::get_ref(constraint_datas[i]);
       for (Eigen::Index k = 0; k < cmodel.residualSize(); ++k, row_id++)
       {
-        const auto & row_active_indexes = cmodel.getRowIndexes(model, data, cdata, k);
+        cmodel.getRowIndexes(model, data, cdata, k, m_scratch_row_indexes);
         nv_subtree_fromRow[row_id] =
           total_constraint_size - row_id + 1
-          + (row_active_indexes.size() > 0 ? row_active_indexes.back() : 0);
+          + (m_scratch_row_indexes.size() > 0 ? m_scratch_row_indexes.back() : 0);
       }
     }
     assert(row_id == total_constraint_size);
@@ -145,7 +145,6 @@ namespace pinocchio
               ++it, ++constraint_id)
           {
             const RigidConstraintModel & cmodel = *it;
-            const BooleanVector & joint1_indexes_ee = cmodel.colwise_joint1_sparsity;
             const Eigen::Index contact_dim = cmodel.size();
 
             for(Eigen::Index k = 0; k < contact_dim; ++k)
@@ -291,9 +290,9 @@ namespace pinocchio
         for (Eigen::Index constraint_row_id = constraint_size - 1; constraint_row_id >= 0;
              --constraint_row_id, --current_row)
         {
-          const auto & colwise_sparsity =
-            cmodel.getRowSparsityPattern(model, data, cdata, constraint_row_id);
-          if (colwise_sparsity[j])
+          cmodel.getRowSparsityPattern(
+            model, data, cdata, constraint_row_id, m_scratch_colwise_sparsity);
+          if (m_scratch_colwise_sparsity[j])
           {
             U(current_row, jj) -= U.row(current_row).segment(jj + 1, NVT).dot(DUt_partial);
             U(current_row, jj) *= Dinv[jj];

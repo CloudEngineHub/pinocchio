@@ -382,21 +382,25 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     for (DenseIndex k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(
-        J_RF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero() != cm_RF.colwise_joint1_sparsity[k]);
+        J_RF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero()
+        != model.sparsity_pattern_vector[cm_RF.joint1_id][k]);
       BOOST_CHECK(
-        J_LF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero() != cm_LF.colwise_joint1_sparsity[k]);
+        J_LF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero()
+        != model.sparsity_pattern_vector[cm_LF.joint1_id][k]);
     }
-    BOOST_CHECK(cm_RF.colwise_joint2_sparsity.isZero());
-    BOOST_CHECK(cm_LF.colwise_joint2_sparsity.isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_RF.joint2_id].isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_LF.joint2_id].isZero());
 
     const SE3 oMc1 = data.oMi[clm_RF_LF.joint1_id] * clm_RF_LF.joint1_placement;
     const SE3 oMc2 = data.oMi[clm_RF_LF.joint2_id] * clm_RF_LF.joint2_placement;
     const SE3 c1Mc2 = oMc1.actInv(oMc2);
     const Data::Matrix6x J_clm_LOCAL = c1Mc2.toActionMatrix() * J_LF_LOCAL - J_RF_LOCAL;
 
+    Model::EigenIndexVector colwise_span_indexes;
+    clm_RF_LF.getRowIndexes(model, data, cld_RF_LF, 0, colwise_span_indexes);
     for (DenseIndex k = 0; k < model.nv; ++k)
     {
-      BOOST_CHECK(J_clm_LOCAL.col(k).isZero(0) != within(k, clm_RF_LF.colwise_span_indexes));
+      BOOST_CHECK(J_clm_LOCAL.col(k).isZero(0) != within(k, colwise_span_indexes));
     }
 
     // Check Jacobian vs sparse Jacobian computation

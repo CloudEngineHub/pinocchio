@@ -1213,4 +1213,79 @@ BOOST_AUTO_TEST_CASE(test_append_model_universe_with_inertia_issue_2805)
   BOOST_CHECK(new_model.inertias[1].isApprox(expected_model.inertias[1]));
 }
 
+BOOST_AUTO_TEST_CASE(test_colwise_sparsity_pattern_and_span_indexes)
+{
+  // --- Exact value check on a simple sequential 1-DOF chain ---
+  Model chain;
+  chain.addJoint(0, JointModelRX(), SE3::Identity(), "j1");
+  chain.addJoint(1, JointModelRY(), SE3::Identity(), "j2");
+  chain.addJoint(2, JointModelRZ(), SE3::Identity(), "j3");
+
+  // sparsity_pattern_vector is indexed by joint_id:
+  //   index 0 = universe (nv=0, all-false pattern)
+  //   index 1 = j1, index 2 = j2, index 3 = j3
+  BOOST_REQUIRE_EQUAL(chain.sparsity_pattern_vector.size(), 4u);
+  BOOST_REQUIRE_EQUAL(chain.span_indexes_vector.size(), 4u);
+
+  // All patterns must have the final nv as size
+  for (const auto & pat : chain.sparsity_pattern_vector)
+    BOOST_CHECK_EQUAL(pat.size(), chain.nv);
+
+  // j1 (col 0): only its own DOF — joint_id = 1
+  BOOST_CHECK_EQUAL(chain.span_indexes_vector[1].size(), 1u);
+  BOOST_CHECK_EQUAL(chain.span_indexes_vector[1][0], 0);
+  BOOST_CHECK(chain.sparsity_pattern_vector[1][0]);
+  BOOST_CHECK(!chain.sparsity_pattern_vector[1][1]);
+  BOOST_CHECK(!chain.sparsity_pattern_vector[1][2]);
+
+  // j2 (col 1): j1's DOF + own DOF — joint_id = 2
+  BOOST_CHECK_EQUAL(chain.span_indexes_vector[2].size(), 2u);
+  BOOST_CHECK_EQUAL(chain.span_indexes_vector[2][0], 0);
+  BOOST_CHECK_EQUAL(chain.span_indexes_vector[2][1], 1);
+  BOOST_CHECK(chain.sparsity_pattern_vector[2][0]);
+  BOOST_CHECK(chain.sparsity_pattern_vector[2][1]);
+  BOOST_CHECK(!chain.sparsity_pattern_vector[2][2]);
+
+  // j3 (col 2): j1's + j2's + own DOF — joint_id = 3
+  BOOST_CHECK_EQUAL(chain.span_indexes_vector[3].size(), 3u);
+  BOOST_CHECK_EQUAL(chain.span_indexes_vector[3][0], 0);
+  BOOST_CHECK_EQUAL(chain.span_indexes_vector[3][1], 1);
+  BOOST_CHECK_EQUAL(chain.span_indexes_vector[3][2], 2);
+  BOOST_CHECK(chain.sparsity_pattern_vector[3][0]);
+  BOOST_CHECK(chain.sparsity_pattern_vector[3][1]);
+  BOOST_CHECK(chain.sparsity_pattern_vector[3][2]);
+
+  // --- Consistency check on humanoidRandom ---
+  Model model;
+  buildModels::humanoidRandom(model);
+
+  // One entry per joint (indexed by joint_id, including universe at index 0)
+  BOOST_CHECK_EQUAL(model.sparsity_pattern_vector.size(), (size_t)model.njoints);
+  BOOST_CHECK_EQUAL(model.span_indexes_vector.size(), (size_t)model.njoints);
+
+  for (size_t i = 0; i < model.sparsity_pattern_vector.size(); ++i)
+  {
+    const auto & pattern = model.sparsity_pattern_vector[i];
+    const auto & span_idx = model.span_indexes_vector[i];
+
+    // Patterns must be resized to the final nv
+    BOOST_CHECK_EQUAL(pattern.size(), model.nv);
+
+    // All span indexes must be in [0, nv)
+    for (const auto idx : span_idx)
+    {
+      BOOST_CHECK_GE(idx, 0);
+      BOOST_CHECK_LT(idx, model.nv);
+    }
+
+    // Cross-check: number of true entries in pattern == size of span_indexes
+    const Eigen::Index n_true = pattern.count();
+    BOOST_CHECK_EQUAL(n_true, (Eigen::Index)span_idx.size());
+
+    // Every span index maps to a true entry in the pattern
+    for (const auto idx : span_idx)
+      BOOST_CHECK(pattern[idx]);
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

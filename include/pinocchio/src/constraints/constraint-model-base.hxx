@@ -392,33 +392,35 @@ namespace pinocchio
       derived().calcImpl(model, data, cdata);
     }
 
-    /// \brief Returns the colwise sparsity associated with a given row of the active set of
+    /// \brief Fills the colwise sparsity associated with a given row of the active set of
     /// the constraints.
     /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
     /// calling the calc method.
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const BooleanVector & getRowSparsityPattern(
+    void getRowSparsityPattern(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      BooleanVector & result) const
     {
       assert(row_id < residualSize());
-      return derived().getRowSparsityPatternImpl(model, data, cdata, row_id);
+      derived().getRowSparsityPatternImpl(model, data, cdata, row_id, result);
     }
 
-    /// \brief Returns the vector of the active indexes associated with a given row
+    /// \brief Fills the vector of the active indexes associated with a given row
     /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
     /// calling the calc method.
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const EigenIndexVector & getRowIndexes(
+    void getRowIndexes(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      EigenIndexVector & result) const
     {
       assert(row_id < residualSize());
-      return derived().getRowIndexesImpl(model, data, cdata, row_id);
+      derived().getRowIndexesImpl(model, data, cdata, row_id, result);
     }
 
     /// \brief Evaluate the Jacobian associated to the constraint at the given state stored in data

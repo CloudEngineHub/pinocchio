@@ -614,6 +614,13 @@ namespace pinocchio
 
     /// \brief Minimum damping value that uninitialized damping is set at.
     Scalar min_damping_value;
+
+    /// \brief Scratch buffer reused across calls to getRowIndexes to avoid repeated allocations.
+    mutable std::vector<Eigen::Index> m_scratch_row_indexes;
+
+    /// \brief Scratch buffer reused across calls to getRowSparsityPattern to avoid repeated
+    /// allocations.
+    mutable BooleanVector m_scratch_colwise_sparsity;
   };
 
 } // namespace pinocchio

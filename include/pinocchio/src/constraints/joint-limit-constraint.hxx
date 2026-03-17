@@ -194,8 +194,6 @@ namespace pinocchio
     typedef EigenStorageTpl<VectorXs> EigenStorageVector;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
       CompactTangentMap;
-    typedef std::vector<BooleanVector> VectorOfBooleanVector;
-    typedef std::vector<EigenIndexVector> VectorOfEigenIndexVector;
     typedef std::vector<size_t> VectorOfSize;
     typedef std::vector<JointIndex> JointIndexVector;
 
@@ -321,8 +319,6 @@ namespace pinocchio
       BaseCommonParameters::template cast<NewScalar>(res);
       // Constraint definition related
       res.m_selected_joints = m_selected_joints;
-      res.m_selected_row_sparsity_pattern = m_selected_row_sparsity_pattern;
-      res.m_selected_row_indexes = m_selected_row_indexes;
       res.m_selected_joint_nqs = m_selected_joint_nqs;
       res.m_selected_joint_nvs = m_selected_joint_nvs;
       res.m_selected_joint_idx_vs = m_selected_joint_idx_vs;
@@ -356,8 +352,6 @@ namespace pinocchio
     {
       return base() == other.base() && base_common_parameters() == other.base_common_parameters()
              && m_selected_joints == other.m_selected_joints
-             && m_selected_row_sparsity_pattern == other.m_selected_row_sparsity_pattern
-             && m_selected_row_indexes == other.m_selected_row_indexes
              && m_selected_joint_nqs == other.m_selected_joint_nqs
              && m_selected_joint_nvs == other.m_selected_joint_nvs
              && m_selected_joint_idx_vs == other.m_selected_joint_idx_vs
@@ -409,7 +403,6 @@ namespace pinocchio
       return m_activable_position_margin;
     }
 
-    // m_selected_row_sparsity_pattern, m_selected_row_indexes,
     // m_selected_joint_nqs, m_selected_joint_nvs, m_selected_joint_idx_vs,
     // m_activable_idx_in_selected, m_activable_idx_qs, m_activable_idx_qs_reduce
     // m_cursel_active_idx_in_selected, m_cursel_active_idx_qs, m_cursel_active_idx_qs_reduce
@@ -624,34 +617,36 @@ namespace pinocchio
 
     /// \copydoc RootBase::getRowSparsityPattern
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const BooleanVector & getRowSparsityPatternImpl(
+    void getRowSparsityPatternImpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      BooleanVector & result) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
-      const size_t idx = m_cursel_active_idx_in_selected[static_cast<size_t>(row_id)];
-      return m_selected_row_sparsity_pattern[idx];
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[static_cast<size_t>(row_id)];
+
+      result = model.sparsity_pattern_vector[m_selected_joints[idx_in_selected]];
     }
 
     /// \copydoc RootBase::getRowIndexes
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const EigenIndexVector & getRowIndexesImpl(
+    void getRowIndexesImpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      EigenIndexVector & result) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(int(row_id) < residualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
-      const size_t idx = m_cursel_active_idx_in_selected[static_cast<size_t>(row_id)];
-      return m_selected_row_indexes[idx];
+      const size_t idx_in_selected = m_cursel_active_idx_in_selected[static_cast<size_t>(row_id)];
+
+      result = model.span_indexes_vector[m_selected_joints[idx_in_selected]];
     }
 
     /// \copydoc RootBase::jacobianMatrixProduct
@@ -806,11 +801,6 @@ namespace pinocchio
     /// \brief List of selected joints, i.e. joint can that can be indeed reach its bounds.
     /// size = nActivableJoints
     JointIndexVector m_selected_joints;
-
-    /// \brief Sparsity pattern for each selected joints.
-    /// size = nActivableJoints
-    VectorOfBooleanVector m_selected_row_sparsity_pattern;
-    VectorOfEigenIndexVector m_selected_row_indexes;
 
     /// \brief Vector of size for selected joints
     std::vector<int> m_selected_joint_nqs, m_selected_joint_nvs, m_selected_joint_idx_vs;
@@ -1153,7 +1143,6 @@ namespace pinocchio
       }
 
       // At least one lower or upper constraint for a component of the joint is selected
-      // so calculate its sparsity pattern
       if (is_joint_selected)
       {
         m_selected_joints.push_back(joint_id);
@@ -1164,40 +1153,7 @@ namespace pinocchio
         idx_selected += 1;
         m_nq_reduce += nq;
         m_max_of_nvs = std::max(m_max_of_nvs, nv);
-
-        // Compute the row indexes of the joint
-        const auto & joint_support = model.supports[joint_id];
-        extended_support.clear();
-        for (size_t i = 1; i < joint_support.size() - 1; ++i)
-        {
-          const JointIndex joint_support_id = joint_support[i];
-          const JointModel & joint_support = model.joints[joint_support_id];
-          const int joint_support_nv = joint_support.nv();
-          const int joint_support_idx_v = joint_support.idx_v();
-          for (int k = 0; k < joint_support_nv; ++k)
-          {
-            const int extended_row_id = joint_support_idx_v + k;
-            extended_support.push_back(extended_row_id);
-          }
-        }
-        for (int k = 0; k < nv; ++k)
-        {
-          const int extended_row_id = idx_v + k;
-          extended_support.push_back(extended_row_id);
-        }
-        m_selected_row_indexes.push_back(extended_support);
       }
-    }
-
-    // Fill m_selected_row_sparsity_pattern from m_selected_row_indexes content
-    m_selected_row_sparsity_pattern.resize(
-      m_selected_row_indexes.size(), BooleanVector::Zero(model.nv));
-    for (size_t idx_sel = 0; idx_sel < m_selected_row_indexes.size(); ++idx_sel)
-    {
-      auto & sparsity_pattern = m_selected_row_sparsity_pattern[idx_sel];
-      const auto & extended_support = m_selected_row_indexes[idx_sel];
-      for (const auto val : extended_support)
-        sparsity_pattern[val] = true;
     }
 
     // Recover max sizes of constraint
