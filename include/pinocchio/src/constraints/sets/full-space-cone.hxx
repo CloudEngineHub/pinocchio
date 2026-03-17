@@ -8,6 +8,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
+  #include "pinocchio/constraints.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio
