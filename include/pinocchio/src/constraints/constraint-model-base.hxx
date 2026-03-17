@@ -625,7 +625,9 @@ namespace pinocchio
     }
 
     /// \brief Append to data the apparent inertia due to the constraint.
-    /// Accepts a MatrixBlockElementPlain.
+    /// Accepts a single MatrixBlockElement (atomic constraints receive their block directly;
+    /// pool constraints receive a NestedBlockDiagonal block containing one sub-block per inner
+    /// constraint).
     template<
       int OtherOptions,
       template<typename, int> class JointCollectionTpl,
@@ -636,12 +638,11 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id) const
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
     {
       derived().appendCouplingConstraintInertiasImpl(
-        model, data, cdata, constraint_inertias, reference_frame, inner_constraint_id);
+        model, data, cdata, constraint_inertia, reference_frame);
     }
 
     // -------------------------------

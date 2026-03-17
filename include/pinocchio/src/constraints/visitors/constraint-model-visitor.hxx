@@ -1396,7 +1396,10 @@ namespace pinocchio
     }
 
     /**
-     * @brief ConstraintModelAppendCouplingConstraintBlockInertiasVisitor visitor
+     * @brief ConstraintModelAppendCouplingConstraintBlockInertiasVisitor visitor.
+     *        Dispatches a single MatrixBlockElement to the concrete constraint model.
+     *        Atomic constraints receive their block directly; pool constraints receive
+     *        a NestedBlockDiagonal block containing one sub-block per inner constraint.
      */
     template<
       typename Scalar,
@@ -1420,9 +1423,8 @@ namespace pinocchio
       typedef boost::fusion::vector<
         const Model &,
         Data &,
-        const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> &,
-        ReferenceFrameTag<rf>,
-        std::size_t &>
+        const MatrixBlockElementTpl<MatrixOrMap, MapEnable> &,
+        ReferenceFrameTag<rf>>
         ArgsType;
 
       template<typename ConstraintModel>
@@ -1431,12 +1433,11 @@ namespace pinocchio
         const typename ConstraintModel::ConstraintData & cdata,
         const Model & model,
         Data & data,
-        const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-        const ReferenceFrameTag<rf> reference_frame,
-        std::size_t & inner_constraint_id)
+        const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+        const ReferenceFrameTag<rf> reference_frame)
       {
         cmodel.appendCouplingConstraintInertias(
-          model, data, cdata.derived(), constraint_inertias, reference_frame, inner_constraint_id);
+          model, data, cdata.derived(), constraint_inertia, reference_frame);
       }
     };
 
@@ -1454,16 +1455,14 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id)
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame)
     {
       typedef ConstraintModelAppendCouplingConstraintBlockInertiasVisitor<
         Scalar, OtherOptions, JointCollectionTpl, MatrixOrMap, MapEnable, rf>
         Algo;
 
-      typename Algo::ArgsType args(
-        model, data, constraint_inertias, reference_frame, inner_constraint_id);
+      typename Algo::ArgsType args(model, data, constraint_inertia, reference_frame);
       Algo::run(cmodel, cdata, args);
     }
 

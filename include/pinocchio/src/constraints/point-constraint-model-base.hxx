@@ -804,12 +804,9 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id) const
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
     {
-      const auto & constraint_inertia = constraint_inertias[inner_constraint_id];
-
       assert(constraint_inertia.size() == 3);
       switch (constraint_inertia.type())
       {
@@ -843,10 +840,9 @@ namespace pinocchio
       }
       default:
         assert(false && "Should never happened");
+        PINOCCHIO_THROW_PRETTY(
+          std::invalid_argument, "Invalid MatrixBlockType for PointConstraintModelBase.");
       }
-
-      // increment inner constraint id counter
-      ++inner_constraint_id;
     }
 
     /// \copydoc Base::getA1

@@ -521,12 +521,11 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id) const
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
     {
       ::pinocchio::visitors::appendCouplingConstraintInertias(
-        *this, model, data, cdata, constraint_inertias, reference_frame, inner_constraint_id);
+        *this, model, data, cdata, constraint_inertia, reference_frame);
     }
   }; // struct ConstraintModelTpl
 

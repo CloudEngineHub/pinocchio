@@ -563,9 +563,8 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id) const;
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const;
 
   protected:
     // ------------------------------
@@ -926,12 +925,9 @@ namespace pinocchio
     const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
     DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
-    const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-    const ReferenceFrameTag<rf> reference_frame,
-    std::size_t & inner_constraint_id) const
+    const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+    const ReferenceFrameTag<rf> reference_frame) const
   {
-    const auto & constraint_inertia = constraint_inertias[inner_constraint_id];
-
     assert(constraint_inertia.size() == residualSize());
     switch (constraint_inertia.type())
     {
@@ -961,11 +957,10 @@ namespace pinocchio
       break;
     }
     default:
-      assert(false && "Should never happened");
+      assert(false && "Invalid MatrixBlockType for JointFrictionConstraintModel.");
+      PINOCCHIO_THROW_PRETTY(
+        std::invalid_argument, "Invalid MatrixBlockType for JointFrictionConstraintModel.");
     }
-
-    // increment inner constraint id counter
-    ++inner_constraint_id;
   }
 
 } // namespace pinocchio
