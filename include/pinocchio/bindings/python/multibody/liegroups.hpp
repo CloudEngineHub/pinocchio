@@ -2,8 +2,7 @@
 // Copyright (c) 2015-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_python_lie_group_hpp__
-#define __pinocchio_python_lie_group_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 
@@ -277,5 +276,3 @@ namespace pinocchio
     };
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_geometry_model_hpp__

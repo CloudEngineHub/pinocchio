@@ -2,8 +2,7 @@
 // Copyright (c) 2020-2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_contact_cholesky_hpp__
-#define __pinocchio_python_algorithm_contact_cholesky_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 #include <eigenpy/copyable.hpp>
@@ -382,5 +381,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_contact_cholesky_hpp__

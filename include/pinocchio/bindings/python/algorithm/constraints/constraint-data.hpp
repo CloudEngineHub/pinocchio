@@ -2,8 +2,7 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_constraints_data_hpp__
-#define __pinocchio_python_algorithm_constraints_data_hpp__
+#pragma once
 
 #include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/serialization.hpp"
@@ -65,5 +64,3 @@ namespace pinocchio
     };
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_constraints_data_hpp__

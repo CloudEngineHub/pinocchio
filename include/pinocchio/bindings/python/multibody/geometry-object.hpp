@@ -2,8 +2,7 @@
 // Copyright (c) 2017-2023 CNRS INRIA, 2025 INRIA
 //
 
-#ifndef __pinocchio_python_geometry_object_hpp__
-#define __pinocchio_python_geometry_object_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 #include <eigenpy/eigen-from-python.hpp>
@@ -37,30 +36,33 @@ namespace pinocchio
         typedef eigenpy::VariantConverter<GeometryMaterial> Converter;
         Converter::registration();
 
-        cl.def(bp::init<
-                 std::string, JointIndex, FrameIndex, const SE3 &, CollisionGeometryPtr,
-                 bp::optional<
-                   std::string, const Eigen::Vector3d &, bool, const Eigen::Vector4d &, std::string,
-                   GeometryMaterial>>(
-                 bp::args(
-                   "self", "name", "parent_joint", "parent_frame", "placement",
-                   "collision_geometry", "mesh_path", "mesh_scale", "override_material",
-                   "mesh_color", "mesh_texture_path", "mesh_material"),
-                 "Full constructor of a GeometryObject."))
-          .def(bp::init<
-               std::string, JointIndex, const SE3 &, CollisionGeometryPtr,
-               bp::optional<
-                 std::string, const Eigen::Vector3d &, bool, const Eigen::Vector4d &, std::string,
-                 GeometryMaterial>>(
-            bp::args(
-              "self", "name", "parent_joint", "placement", "collision_geometry", "mesh_path",
-              "mesh_scale", "override_material", "mesh_color", "mesh_texture_path",
-              "mesh_material"),
-            "Reduced constructor of a GeometryObject. This constructor does not require to "
-            "specify "
-            "the parent frame index."))
-          .def(bp::init<const GeometryObject &>(
-            bp::args("self", "otherGeometryObject"), "Copy constructor"))
+        cl.def(
+            bp::init<
+              std::string, JointIndex, FrameIndex, const SE3 &, CollisionGeometryPtr,
+              bp::optional<
+                std::string, const Eigen::Vector3d &, bool, const Eigen::Vector4d &, std::string,
+                GeometryMaterial>>(
+              bp::args(
+                "self", "name", "parent_joint", "parent_frame", "placement", "collision_geometry",
+                "mesh_path", "mesh_scale", "override_material", "mesh_color", "mesh_texture_path",
+                "mesh_material"),
+              "Full constructor of a GeometryObject."))
+          .def(
+            bp::init<
+              std::string, JointIndex, const SE3 &, CollisionGeometryPtr,
+              bp::optional<
+                std::string, const Eigen::Vector3d &, bool, const Eigen::Vector4d &, std::string,
+                GeometryMaterial>>(
+              bp::args(
+                "self", "name", "parent_joint", "placement", "collision_geometry", "mesh_path",
+                "mesh_scale", "override_material", "mesh_color", "mesh_texture_path",
+                "mesh_material"),
+              "Reduced constructor of a GeometryObject. This constructor does not require to "
+              "specify "
+              "the parent frame index."))
+          .def(
+            bp::init<const GeometryObject &>(
+              bp::args("self", "otherGeometryObject"), "Copy constructor"))
           .add_property(
             "meshScale",
             bp::make_getter(&GeometryObject::meshScale, bp::return_internal_reference<>()),
@@ -155,20 +157,22 @@ namespace pinocchio
           bp::class_<CollisionObject, bp::bases<::coal::CollisionObject>>(
             "CollisionObject", "A Pinocchio collision object derived from coal CollisionObject.",
             bp::no_init)
-            .def(bp::init<
-                 const std::shared_ptr<::coal::CollisionGeometry> &,
-                 bp::optional<const size_t, bool>>(
-              (bp::arg("self"), bp::arg("collision_geometry"),
-               bp::arg("geometryObjectIndex") = (std::numeric_limits<size_t>::max)(),
-               bp::arg("compute_local_aabb") = true),
-              "Constructor"))
-            .def(bp::init<
-                 const std::shared_ptr<::coal::CollisionGeometry> &, SE3,
-                 bp::optional<const size_t, bool>>(
-              (bp::arg("self"), bp::arg("collision_geometry"), bp::arg("placement"),
-               bp::arg("geometryObjectIndex") = (std::numeric_limits<size_t>::max)(),
-               bp::arg("compute_local_aabb") = true),
-              "Constructor"));
+            .def(
+              bp::init<
+                const std::shared_ptr<::coal::CollisionGeometry> &,
+                bp::optional<const size_t, bool>>(
+                (bp::arg("self"), bp::arg("collision_geometry"),
+                 bp::arg("geometryObjectIndex") = (std::numeric_limits<size_t>::max)(),
+                 bp::arg("compute_local_aabb") = true),
+                "Constructor"))
+            .def(
+              bp::init<
+                const std::shared_ptr<::coal::CollisionGeometry> &, SE3,
+                bp::optional<const size_t, bool>>(
+                (bp::arg("self"), bp::arg("collision_geometry"), bp::arg("placement"),
+                 bp::arg("geometryObjectIndex") = (std::numeric_limits<size_t>::max)(),
+                 bp::arg("compute_local_aabb") = true),
+                "Constructor"));
         }
 #endif
 
@@ -247,5 +251,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_geometry_object_hpp__

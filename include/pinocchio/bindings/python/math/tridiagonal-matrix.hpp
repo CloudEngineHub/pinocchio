@@ -2,8 +2,7 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_python_math_tridiagonal_matrix_hpp__
-#define __pinocchio_python_math_tridiagonal_matrix_hpp__
+#pragma once
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/math/tridiagonal-matrix.hpp"
@@ -32,8 +31,9 @@ namespace pinocchio
       {
         static const Scalar dummy_precision = Eigen::NumTraits<Scalar>::dummy_precision();
 
-        cl.def(bp::init<Eigen::Index>(
-                 (bp::arg("self"), bp::arg("size")), "Default constructor from a given size."))
+        cl.def(
+            bp::init<Eigen::Index>(
+              (bp::arg("self"), bp::arg("size")), "Default constructor from a given size."))
 #ifndef PINOCCHIO_PYTHON_SKIP_COMPARISON_OPERATIONS
           .def(bp::self == bp::self)
           .def(bp::self != bp::self)
@@ -115,5 +115,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_math_tridiagonal_matrix_hpp__

@@ -2,8 +2,7 @@
 // Copyright (c) 2019-2022 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_contact_info_hpp__
-#define __pinocchio_python_algorithm_contact_info_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 
@@ -292,5 +291,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_contact_info_hpp__

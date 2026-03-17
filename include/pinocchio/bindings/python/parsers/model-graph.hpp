@@ -2,8 +2,7 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_python_parsers_model_graph_hpp__
-#define __pinocchio_python_parsers_model_graph_hpp__
+#pragma once
 
 #include <boost/python/class.hpp>
 #include <boost/python/scope.hpp>
@@ -56,5 +55,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_parsers_mjcf_hpp__

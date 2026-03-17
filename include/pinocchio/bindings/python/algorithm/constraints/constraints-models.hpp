@@ -2,8 +2,7 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_constraints_models_hpp__
-#define __pinocchio_python_algorithm_constraints_models_hpp__
+#pragma once
 
 #include "pinocchio/algorithm/constraints.hpp"
 #include "pinocchio/bindings/python/fwd.hpp"
@@ -169,5 +168,3 @@ namespace pinocchio
     }
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_constraints_models_hpp__

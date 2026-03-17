@@ -2,8 +2,7 @@
 // Copyright (c) 2025 CNRS INRIA
 //
 
-#ifndef __pinocchio_benchmark_model_fixture_hpp__
-#define __pinocchio_benchmark_model_fixture_hpp__
+#pragma once
 
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
@@ -151,5 +150,3 @@ inline boost::optional<ExtraArgs> parseExtraArgs(int argc, char ** argv)
 
 // BENCHMARK_MAIN() macro expansion edited to take some extra argument
 #define PINOCCHIO_BENCHMARK_MAIN() PINOCCHIO_BENCHMARK_MAIN_WITH_SETUP(ModelFixture::GlobalSetUp)
-
-#endif // #ifndef __pinocchio_benchmark_model_fixture_hpp__

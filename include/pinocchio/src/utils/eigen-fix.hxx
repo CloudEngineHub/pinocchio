@@ -3,8 +3,7 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_utils_eigen_fix_hpp__
-#define __pinocchio_utils_eigen_fix_hpp__
+#pragma once
 
 #if EIGEN_VERSION_AT_LEAST(3, 4, 90)
   #define EIGEN_EMPTY_STRUCT_CTOR(x)
@@ -45,5 +44,3 @@ namespace pinocchio
     } // namespace Eigen
   } // namespace fix
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_utils_eigen_fix_hpp__

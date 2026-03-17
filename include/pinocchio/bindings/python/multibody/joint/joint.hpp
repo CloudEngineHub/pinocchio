@@ -2,8 +2,7 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_python_multibody_joint_joint_hpp__
-#define __pinocchio_python_multibody_joint_joint_hpp__
+#pragma once
 
 #include <boost/python.hpp>
 
@@ -121,5 +120,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_multibody_joint_joint_hpp__

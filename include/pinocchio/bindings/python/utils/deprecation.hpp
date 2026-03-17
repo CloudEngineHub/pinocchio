@@ -2,8 +2,7 @@
 // Copyright (c) 2020-2025 INRIA
 //
 
-#ifndef __pinocchio_python_utils_deprecation_hpp__
-#define __pinocchio_python_utils_deprecation_hpp__
+#pragma once
 
 #include <eigenpy/eigenpy.hpp>
 #include <eigenpy/deprecation-policy.hpp>
@@ -25,5 +24,3 @@ namespace pinocchio
     using eigenpy::deprecated_function;
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_utils_deprecation_hpp__

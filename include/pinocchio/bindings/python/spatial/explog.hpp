@@ -3,8 +3,7 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_python_explog_hpp__
-#define __pinocchio_python_explog_hpp__
+#pragma once
 
 #include "pinocchio/spatial/explog.hpp"
 
@@ -233,5 +232,3 @@ namespace pinocchio
     }
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_explog_hpp__

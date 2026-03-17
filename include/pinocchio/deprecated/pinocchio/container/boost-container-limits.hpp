@@ -2,8 +2,7 @@
 // Copyright (c) 2019-2021 INRIA
 //
 
-#ifndef __pinocchio_container_boost_container_limits_hpp__
-#define __pinocchio_container_boost_container_limits_hpp__
+#pragma once
 
 #include "pinocchio/macros.hpp"
 
@@ -34,5 +33,3 @@
   #endif
 
 #endif
-
-#endif // ifndef __pinocchio_container_boost_container_limits_hpp__

@@ -2,8 +2,7 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_python_parsers_graph_model_configuration_converter_hpp__
-#define __pinocchio_python_parsers_graph_model_configuration_converter_hpp__
+#pragma once
 
 #include "pinocchio/parsers/graph/model-configuration-converter.hpp"
 
@@ -89,5 +88,3 @@ namespace pinocchio
     } // namespace python
   } // namespace graph
 } // namespace pinocchio
-
-#endif // define __pinocchio_python_parsers_graph_model_configuration_converter_hpp__

@@ -3,8 +3,7 @@
 // Copyright (c) 2017-2018 CNRS
 //
 
-#ifndef __pinocchio_macros_hpp__
-#define __pinocchio_macros_hpp__
+#pragma once
 
 #include <sstream>
 #include <boost/core/demangle.hpp>
@@ -295,5 +294,3 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
 PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
 #define PINOCCHIO_DECLTYPE(value) std::remove_cv_t<std::remove_reference_t<decltype(value)>>
-
-#endif // ifndef __pinocchio_macros_hpp__

@@ -2,8 +2,7 @@
 // Copyright (c) 2019 INRIA
 //
 
-#ifndef __pinocchio_python_collision_coal_transform_hpp__
-#define __pinocchio_python_collision_coal_transform_hpp__
+#pragma once
 
 #include "pinocchio/spatial/se3.hpp"
 #include <coal/math/transform.h>
@@ -86,5 +85,3 @@ namespace boost
     } // namespace converter
   } // namespace python
 } // namespace boost
-
-#endif // ifndef __pinocchio_python_collision_coal_transform_hpp__

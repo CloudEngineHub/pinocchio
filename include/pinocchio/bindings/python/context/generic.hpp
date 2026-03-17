@@ -2,8 +2,7 @@
 // Copyright (c) 2021-2024 INRIA
 //
 
-#ifndef __pinocchio_python_context_generic_hpp__
-#define __pinocchio_python_context_generic_hpp__
+#pragma once
 
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/spatial/fwd.hpp"
@@ -212,5 +211,3 @@ namespace pinocchio
     } // namespace context
   } // namespace python
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_python_context_generic_hpp__

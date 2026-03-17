@@ -2,8 +2,7 @@
 // Copyright (c) 2024-2026 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_delassus_operator_hpp__
-#define __pinocchio_python_algorithm_delassus_operator_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 #include "pinocchio/algorithm/delassus-operator.hpp"
@@ -102,5 +101,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_delassus_operator_hpp__

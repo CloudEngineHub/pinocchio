@@ -4,8 +4,7 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_python_multibody_model_hpp__
-#define __pinocchio_python_multibody_model_hpp__
+#pragma once
 
 #include <eigenpy/eigen-to-python.hpp>
 #include <eigenpy/copyable.hpp>
@@ -261,7 +260,7 @@ namespace pinocchio
             "Create a Data object for the given model.")
 
           .def(
-            "check", (bool(Model::*)(const Data &) const) & Model::check, bp::args("self", "data"),
+            "check", (bool (Model::*)(const Data &) const) & Model::check, bp::args("self", "data"),
             "Check consistency of data wrt model.")
 
           .def(
@@ -424,5 +423,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_multibody_model_hpp__

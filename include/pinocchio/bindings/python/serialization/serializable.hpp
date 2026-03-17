@@ -2,8 +2,7 @@
 // Copyright (c) 2017-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_python_serialization_serializable_hpp__
-#define __pinocchio_python_serialization_serializable_hpp__
+#pragma once
 
 #include "pinocchio/serialization.hpp"
 #include "pinocchio/bindings/python/serialization/serialization.hpp"
@@ -75,5 +74,3 @@ namespace pinocchio
     };
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_serialization_serializable_hpp__

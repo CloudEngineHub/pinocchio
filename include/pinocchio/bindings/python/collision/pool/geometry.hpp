@@ -2,8 +2,7 @@
 // Copyright (c) 2021-2025 INRIA
 //
 
-#ifndef __pinocchio_python_collision_pool_geometry_hpp__
-#define __pinocchio_python_collision_pool_geometry_hpp__
+#pragma once
 
 #include <boost/python/overloads.hpp>
 #include <eigenpy/copyable.hpp>
@@ -39,8 +38,9 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::init<const Model &, const GeometryModel &, bp::optional<size_t>>(
-                 bp::args("self", "model", "geometry_model", "size"), "Default constructor."))
+        cl.def(
+            bp::init<const Model &, const GeometryModel &, bp::optional<size_t>>(
+              bp::args("self", "model", "geometry_model", "size"), "Default constructor."))
           .def(bp::init<const GeometryPool &>(bp::args("self", "other"), "Copy constructor."))
 
           .def(
@@ -70,7 +70,7 @@ namespace pinocchio
             "geometry indexes.")
 
           .def(
-            "update", (void(GeometryPool::*)(const GeometryData &)) & GeometryPool::update,
+            "update", (void (GeometryPool::*)(const GeometryData &))&GeometryPool::update,
             bp::args("self", "geometry_data"),
             "Update all the geometry datas with the input geometry data value.");
       }
@@ -91,5 +91,3 @@ namespace pinocchio
     };
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifnded __pinocchio_python_collision_pool_geometry_hpp__

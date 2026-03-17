@@ -2,8 +2,7 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_python_utils_keep_alive_hpp__
-#define __pinocchio_python_utils_keep_alive_hpp__
+#pragma once
 
 #include <eigenpy/eigenpy.hpp>
 
@@ -70,5 +69,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_utils_keep_alive_hpp__

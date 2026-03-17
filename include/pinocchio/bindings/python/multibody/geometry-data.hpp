@@ -3,8 +3,7 @@
 // Copyright (x) 2018-2025 INRIA
 //
 
-#ifndef __pinocchio_python_geometry_data_hpp__
-#define __pinocchio_python_geometry_data_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 #include <eigenpy/copyable.hpp>
@@ -35,8 +34,9 @@ namespace pinocchio
           bp::class_<CollisionPair>(
             "CollisionPair", "Pair of ordered index defining a pair of collisions", bp::no_init)
             .def(bp::init<>(bp::args("self"), "Empty constructor."))
-            .def(bp::init<const GeomIndex &, const GeomIndex &>(
-              bp::args("self", "index1", "index2"), "Initializer of collision pair."))
+            .def(
+              bp::init<const GeomIndex &, const GeomIndex &>(
+                bp::args("self", "index1", "index2"), "Initializer of collision pair."))
             .def(PrintableVisitor<CollisionPair>())
             .def(::eigenpy::CopyableVisitor<CollisionPair>())
             .def(bp::self == bp::self)
@@ -57,9 +57,10 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl
-          .def(bp::init<const GeometryModel &>(
-            bp::args("self", "geometry_model"), "Default constructor from a given GeometryModel."))
+        cl.def(
+            bp::init<const GeometryModel &>(
+              bp::args("self", "geometry_model"),
+              "Default constructor from a given GeometryModel."))
 
           .def_readwrite(
             "oMg", &GeometryData::oMg,
@@ -170,5 +171,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_geometry_data_hpp__

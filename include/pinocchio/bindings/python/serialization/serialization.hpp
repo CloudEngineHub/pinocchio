@@ -2,8 +2,7 @@
 // Copyright (c) 2021 INRIA
 //
 
-#ifndef __pinocchio_python_serialization_serialization_hpp__
-#define __pinocchio_python_serialization_serialization_hpp__
+#pragma once
 
 #include "pinocchio/serialization.hpp"
 
@@ -48,5 +47,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_serialization_serialization_hpp__

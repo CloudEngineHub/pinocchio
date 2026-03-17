@@ -2,8 +2,7 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#ifndef __pinocchio_utils_static_if_hxx__
-#define __pinocchio_utils_static_if_hxx__
+#pragma once
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
@@ -128,5 +127,3 @@ namespace pinocchio
     }
   } // namespace internal
 } // namespace pinocchio
-
-#endif

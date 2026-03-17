@@ -3,8 +3,7 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#ifndef __pinocchio_python_fwd_hpp__
-#define __pinocchio_python_fwd_hpp__
+#pragma once
 
 #include "pinocchio/bindings/python/context.hpp"
 #include <eigenpy/eigenpy.hpp>
@@ -74,5 +73,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_fwd_hpp__

@@ -2,8 +2,7 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_multibody_fcl_serialization_hpp__
-#define __pinocchio_multibody_fcl_serialization_hpp__
+#pragma once
 
 #include "pinocchio/macros.hpp"
 
@@ -12,5 +11,3 @@ PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/serialization/fcl.hpp, pinocchio/ser
 // clang-format on
 
 #include "pinocchio/serialization/coal.hpp"
-
-#endif // __pinocchio_multibody_fcl_serialization_hpp__

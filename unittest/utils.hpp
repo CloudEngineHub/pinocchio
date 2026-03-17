@@ -1,5 +1,4 @@
-#ifndef __pinocchio_unittest_utils_hpp__
-#define __pinocchio_unittest_utils_hpp__
+#pragma once
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/multibody/model.hpp"
@@ -227,5 +226,3 @@ namespace pinocchio
 
   } // namespace unittest
 } // namespace pinocchio
-
-#endif // __pinocchio_unittest_utils_hpp__
