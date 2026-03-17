@@ -6,7 +6,7 @@
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include <iostream>
 

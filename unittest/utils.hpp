@@ -3,14 +3,14 @@
 #include "pinocchio/macros.hpp"
 #include "pinocchio/multibody/model.hpp"
 #include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/contact-dynamics.hpp"
 
 #include <vector>

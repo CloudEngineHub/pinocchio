@@ -86,7 +86,7 @@
 #include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/geometry.hpp"
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/fwd.hpp"
 // IWYU pragma: end_keep
 

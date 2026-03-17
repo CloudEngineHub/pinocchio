@@ -12,7 +12,7 @@
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 
 #include <boost/test/tools/old/interface.hpp>

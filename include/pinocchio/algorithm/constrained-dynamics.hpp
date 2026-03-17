@@ -30,7 +30,7 @@
 #include "pinocchio/algorithm/fwd.hpp"
 #include "pinocchio/algorithm/proximal.hpp"
 #include "pinocchio/algorithm/check-model.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"

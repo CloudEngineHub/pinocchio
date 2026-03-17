@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/serialization.hpp"
 
 #include "pinocchio/bindings/python/algorithm/constraints/constraint-model-base.hpp"

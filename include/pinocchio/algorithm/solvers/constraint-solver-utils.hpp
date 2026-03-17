@@ -17,7 +17,7 @@
 
 #include "pinocchio/utils/reference.hpp"
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

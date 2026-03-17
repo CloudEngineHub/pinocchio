@@ -9,7 +9,7 @@
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/diagonal-preconditioner.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include <boost/variant.hpp> // to avoid C99 warnings
 

@@ -37,7 +37,7 @@
 
 #include "pinocchio/utils/check.hpp"
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include "pinocchio/parsers/urdf.hpp"
 #include "pinocchio/parsers/config.hpp"

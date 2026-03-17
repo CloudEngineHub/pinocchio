@@ -18,7 +18,7 @@
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/loop-constrained-aba.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/proximal.hpp"
 #include "pinocchio/utils/reference.hpp"
 #include "pinocchio/utils/size-in-bytes.hpp"

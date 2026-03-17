@@ -25,7 +25,7 @@
 
 #include "pinocchio/math.hpp"
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include "pinocchio/algorithm/solvers/fwd.hpp"
 #include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"

@@ -9,7 +9,7 @@
 #include <eigenpy/eigen-to-python.hpp>
 
 #include "pinocchio/multibody/model.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
 

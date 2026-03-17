@@ -31,7 +31,7 @@
 
 #include "pinocchio/geometry.hpp"
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include "pinocchio/parsers/urdf.hpp"
 #include "pinocchio/src/parsers/meshloader-fwd.hxx"

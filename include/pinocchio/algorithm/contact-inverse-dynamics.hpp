@@ -21,7 +21,7 @@
 
 #include "pinocchio/algorithm/proximal.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 // IWYU pragma: end_keep
 
 namespace pinocchio

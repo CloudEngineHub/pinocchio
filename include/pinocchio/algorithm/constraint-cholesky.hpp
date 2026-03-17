@@ -26,7 +26,7 @@
 
 #include "pinocchio/math.hpp"
 #include "pinocchio/multibody.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/check-model.hpp"
 #include "pinocchio/algorithm/delassus-operator.hpp"
 #include "pinocchio/algorithm/delassus.hpp"

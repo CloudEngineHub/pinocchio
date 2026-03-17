@@ -3,7 +3,7 @@
 //
 
 #include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 
 #include "constraints/init_constraints.hpp"

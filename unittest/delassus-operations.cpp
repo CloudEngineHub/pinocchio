@@ -10,7 +10,7 @@
 #include <boost/utility/binary.hpp>
 
 #include <pinocchio/algorithm/delassus-operator.hpp>
-#include <pinocchio/algorithm/constraints.hpp>
+#include <pinocchio/constraints.hpp>
 
 #include "utils.hpp"
 

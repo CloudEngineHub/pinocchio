@@ -9,7 +9,7 @@
 #include "pinocchio/multibody/fwd.hpp"
 #include "pinocchio/multibody/joint/fwd.hpp"
 #include "pinocchio/algorithm/fwd.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
+#include "pinocchio/constraints/fwd.hpp"
 
 #ifdef PINOCCHIO_PYTHON_INTERFACE_WITH_OPENMP
   #include "pinocchio/multibody/pool/fwd.hpp"

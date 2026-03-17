@@ -11,7 +11,7 @@
 
   #include "pinocchio/algorithm/delassus-operator-base.hpp"
 
-  #include "pinocchio/algorithm/constraints/fwd.hpp"
+  #include "pinocchio/constraints/fwd.hpp"
   #include "pinocchio/math/fwd.hpp"
 
   #include "pinocchio/container/eigen-storage.hpp"

@@ -7,7 +7,7 @@
 #include "pinocchio/algorithm/contact-inverse-dynamics.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/algorithm/solvers/constraint-solver-utils.hpp"
 

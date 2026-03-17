@@ -24,7 +24,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/variant/get.hpp>
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/macros.hpp"

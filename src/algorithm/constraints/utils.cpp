@@ -5,7 +5,7 @@
 #include "pinocchio/src/context/template-instantiation.hxx"
 #ifndef PINOCCHIO_SKIP_ALGORITHM_CONTACT_JACOBIAN
 
-  #include "pinocchio/algorithm/constraints.hpp"
+  #include "pinocchio/constraints.hpp"
 
 namespace pinocchio
 {

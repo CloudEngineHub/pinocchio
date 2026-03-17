@@ -25,7 +25,7 @@
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/joint.hpp"
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"

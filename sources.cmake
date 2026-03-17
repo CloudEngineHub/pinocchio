@@ -19,8 +19,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constrained-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky-decl.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraint-cholesky.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints/fwd.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/constraints.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/contact-inverse-dynamics.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/copy.hpp
@@ -60,6 +58,8 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/utils/motion.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/common/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/common.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/constraints/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/constraints.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/double-entry-container.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/eigen-storage.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/container/matrix-stack.hpp
@@ -373,44 +373,44 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-helical-unaligned.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-revolute.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-data-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/constraint-data-base.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-basic-visitors.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-model-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/kinematics-constraint-model-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/baumgarte-corrector-parameters.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/point-anchor-constraint.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/constraint-model-common-parameters.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/constraint-collection-default.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/visitors/constraint-model-visitor.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/frame-constraint-data-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/point-constraint-data-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/binary-kinematics-constraint-model-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/constraint-model-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/blank-constraint.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/constraint-ordering.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/fwd.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/jointwise-constraint-model-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/point-constraint-model-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/joint-limit-constraint.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/second-order-cone-jordan-operation.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/full-space-cone.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/orthant-cone.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/orthant-cone-jordan-operation.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/coulomb-friction-cone.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/cone-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/zero-cone-jordan-operation.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/box-set.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/zero-cone.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/set-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/sets/jordan-operation-helper.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/constraint-data-generic.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/utils.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/frame-constraint-model-base.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/point-contact-constraint.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/frame-anchor-constraint.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/joint-friction-constraint.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/contact-info.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/constraints/constraint-model-generic.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/constraint-data-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/kinematics-constraint-model-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/baumgarte-corrector-parameters.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/point-anchor-constraint.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/constraint-model-common-parameters.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/constraint-collection-default.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/visitors/constraint-model-visitor.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/frame-constraint-data-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/point-constraint-data-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/binary-kinematics-constraint-model-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/constraint-model-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/blank-constraint.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/constraint-ordering.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/fwd.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/jointwise-constraint-model-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/point-constraint-model-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/joint-limit-constraint.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/second-order-cone-jordan-operation.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/full-space-cone.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/orthant-cone.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/orthant-cone-jordan-operation.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/coulomb-friction-cone.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/cone-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/zero-cone-jordan-operation.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/box-set.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/zero-cone.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/set-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/sets/jordan-operation-helper.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/constraint-data-generic.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/utils.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/frame-constraint-model-base.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/point-contact-constraint.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/frame-anchor-constraint.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/joint-friction-constraint.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/contact-info.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/constraint-model-generic.hxx)
 
 set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/math/gram-schmidt-orthonormalisation.hpp

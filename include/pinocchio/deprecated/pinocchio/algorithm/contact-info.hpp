@@ -7,7 +7,7 @@
 #include "pinocchio/macros.hpp"
 
 // clang-format off
-PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/algorithm/contact-info.hpp, pinocchio/algorithm/constraints.hpp)
+PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/algorithm/contact-info.hpp, pinocchio/constraints.hpp)
 // clang-format on
 
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"

@@ -5,5 +5,5 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#include "pinocchio/algorithm/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 // IWYU pragma: end_keep
