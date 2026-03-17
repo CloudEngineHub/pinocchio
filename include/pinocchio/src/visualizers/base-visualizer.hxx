@@ -4,6 +4,8 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/visualizers/base-visualizer.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/visualizers/base-visualizer.hpp"

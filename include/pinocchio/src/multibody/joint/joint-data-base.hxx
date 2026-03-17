@@ -5,9 +5,11 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/multibody/joint.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/multibody/joint/joint-base.hpp"
+  #include "pinocchio/multibody/joint.hpp"
 #endif // PINOCCHIO_LSP
 
 #define PINOCCHIO_JOINT_DATA_TYPEDEF_GENERIC(Joint, TYPENAME)                                      \

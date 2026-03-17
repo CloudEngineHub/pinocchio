@@ -4,6 +4,8 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/algorithm/joint-configuration.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/algorithm/joint-configuration.hpp"

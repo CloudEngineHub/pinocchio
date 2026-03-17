@@ -6,6 +6,8 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/utils/file-io.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/utils/file-io.hpp"

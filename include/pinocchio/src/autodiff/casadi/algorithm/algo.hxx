@@ -4,6 +4,8 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/autodiff/casadi-algo.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/autodiff/casadi-algo.hpp"

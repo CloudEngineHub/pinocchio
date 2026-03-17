@@ -5,6 +5,13 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/eigen-common.hpp"
+
+#ifdef PINOCCHIO_LSP
+  #undef PINOCCHIO_LSP
+  #include "pinocchio/eigen-common.hpp"
+#endif // PINOCCHIO_LSP
+
 #if EIGEN_VERSION_AT_LEAST(3, 4, 90)
   #define EIGEN_EMPTY_STRUCT_CTOR(x)
 #endif

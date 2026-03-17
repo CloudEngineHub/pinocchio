@@ -6,8 +6,10 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/spatial/force.hpp"
+
 #ifdef PINOCCHIO_LSP
-  #include "pinocchio/spatial/force.hpp"
+  #include "pinocchio/spatial.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

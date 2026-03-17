@@ -4,13 +4,11 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/multibody/fwd.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <cstddef>
-
-  #include <Eigen/Core>
-
-  #include "pinocchio/context.hpp"
+  #include "pinocchio/multibody/fwd.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

@@ -1,7 +1,10 @@
 //
 // Copyright (c) 2026 INRIA
 //
+
 #pragma once
+
+// IWYU pragma: private, include "pinocchio/fwd.hpp"
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP

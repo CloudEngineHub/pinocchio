@@ -4,6 +4,8 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/math.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/math.hpp"
@@ -73,9 +75,9 @@ namespace pinocchio
         assert(is_symmetric(matrix, math::sqrt(dummy_precision<RealScalar>())));
 
 #define CASE_RUN_SPECIFIC_MATRIX_INVERSE_FOR_SIZE(size)                                            \
-case size:                                                                                         \
-  MatrixInversionImpl<size>::run(matrix.derived(), matrix_inverse.const_cast_derived());           \
-  break;
+  case size:                                                                                       \
+    MatrixInversionImpl<size>::run(matrix.derived(), matrix_inverse.const_cast_derived());         \
+    break;
 
         switch (matrix.rows())
         {

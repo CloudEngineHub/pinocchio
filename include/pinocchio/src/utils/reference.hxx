@@ -4,12 +4,12 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/utils/reference.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/utils/reference.hpp"
 #endif // PINOCCHIO_LSP
-
-
 
 namespace pinocchio
 {

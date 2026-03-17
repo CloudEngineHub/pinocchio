@@ -3,6 +3,8 @@
 //
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/utils/string-generator.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/utils/string-generator.hpp"

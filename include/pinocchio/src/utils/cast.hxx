@@ -4,9 +4,11 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/utils/cast.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
+  #include "pinocchio/utils/cast.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

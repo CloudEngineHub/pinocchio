@@ -3,9 +3,11 @@
 //
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/math.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/math/alias.hpp"
+  #include "pinocchio/math.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

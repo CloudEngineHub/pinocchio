@@ -3,9 +3,11 @@
 //
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/spatial/fwd.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/context.hpp"
+  #include "pinocchio/spatial/fwd.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

@@ -2,14 +2,14 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-
 #pragma once
+
+// IWYU pragma: private, include "pinocchio/algorithm/copy.hpp"
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/algorithm/copy.hpp"
 #endif // PINOCCHIO_LSP
-
 
 /// \internal
 namespace pinocchio

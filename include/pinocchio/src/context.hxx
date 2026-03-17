@@ -3,6 +3,8 @@
 //
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/context.hpp"
+
 #define PINOCCHIO_SCALAR_TYPE_DEFAULT double
 #define PINOCCHIO_OPTIONS_DEFAULT 0
 

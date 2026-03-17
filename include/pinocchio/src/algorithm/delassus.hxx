@@ -5,6 +5,8 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/algorithm/delassus.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/algorithm/delassus.hpp"

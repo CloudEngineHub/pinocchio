@@ -4,6 +4,8 @@
 
 #pragma once
 
+// IWYU pragma: private
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/multibody.hpp"

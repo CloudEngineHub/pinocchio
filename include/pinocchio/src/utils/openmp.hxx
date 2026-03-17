@@ -4,10 +4,11 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/utils/openmp.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/utils/openmp.hpp"
-
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

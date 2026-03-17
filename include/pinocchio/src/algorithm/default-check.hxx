@@ -2,8 +2,9 @@
 // Copyright (c) 2016-2018 CNRS
 //
 
-
 #pragma once
+
+// IWYU pragma: private, include "pinocchio/algorithm/default-check.hpp"
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP

@@ -4,6 +4,8 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/math.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/math.hpp"
@@ -160,4 +162,3 @@ namespace pinocchio
     }
   } // namespace internal
 } // namespace pinocchio
-

@@ -4,13 +4,11 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/eigen-common.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include <Eigen/Core>
-  // IWYU pragma: begin_keep
-  #include "pinocchio/fwd.hpp"
-  #include "pinocchio/utils/eigen-fix.hxx"
-// IWYU pragma: end_keep
+  #include "pinocchio/eigen-common.hpp"
 #endif // PINOCCHIO_LSP
 
 /// \brief Macro giving access to the equivalent plain type of D

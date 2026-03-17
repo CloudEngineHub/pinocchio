@@ -3,6 +3,8 @@
 //
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/context.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include <Eigen/Core>

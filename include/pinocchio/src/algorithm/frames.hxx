@@ -3,6 +3,8 @@
 //
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/algorithm/frames.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/algorithm/frames.hpp"

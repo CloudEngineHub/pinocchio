@@ -1,3 +1,5 @@
+// IWYU pragma: private
+
 #include "pinocchio/context.hpp"
 #ifdef PINOCCHIO_TEMPLATE_INSTANTIATION_HEADER
   #include PINOCCHIO_TEMPLATE_INSTANTIATION_HEADER

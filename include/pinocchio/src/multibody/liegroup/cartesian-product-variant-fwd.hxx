@@ -1,6 +1,8 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/multibody/liegroup.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/multibody/liegroup.hpp"

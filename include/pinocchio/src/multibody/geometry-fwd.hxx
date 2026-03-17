@@ -4,8 +4,11 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/geometry.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
+  #include "pinocchio/geometry.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

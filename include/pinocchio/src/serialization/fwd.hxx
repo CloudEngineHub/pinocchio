@@ -4,8 +4,11 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/serialization/fwd.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
+  #include "pinocchio/serialization/fwd.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

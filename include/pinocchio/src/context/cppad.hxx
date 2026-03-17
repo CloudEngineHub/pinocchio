@@ -4,6 +4,8 @@
 
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/context.hpp"
+
 #define PINOCCHIO_SKIP_ALGORITHM_MODEL
 #define PINOCCHIO_SKIP_ALGORITHM_GEOMETRY
 #define PINOCCHIO_SKIP_MULTIBODY_SAMPLE_MODELS

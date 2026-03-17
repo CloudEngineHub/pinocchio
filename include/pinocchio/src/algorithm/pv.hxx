@@ -5,6 +5,8 @@
 // TODO: Add Baumgarte stabilization
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/algorithm/pv.hpp"
+
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
   #include "pinocchio/algorithm/pv.hpp"

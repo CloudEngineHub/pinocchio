@@ -3,6 +3,8 @@
 //
 #pragma once
 
+// IWYU pragma: private, include "pinocchio/spatial.hpp"
+
 #define FORCE_TYPEDEF_GENERIC(Derived, TYPENAME)                                                   \
   typedef TYPENAME traits<Derived>::Scalar Scalar;                                                 \
   typedef TYPENAME traits<Derived>::Vector3 Vector3;                                               \
