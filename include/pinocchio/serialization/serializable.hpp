@@ -9,10 +9,10 @@
 
 #include <boost/asio/streambuf.hpp>
 
-#include "pinocchio/serialization/static-buffer.hxx"
+#include "pinocchio/src/serialization/static-buffer.hxx"
 #include "pinocchio/serialization/archive.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/serialization/serializable.hxx"
+#include "pinocchio/src/serialization/serializable.hxx"
 // IWYU pragma: end_exports

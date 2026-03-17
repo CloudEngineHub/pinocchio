@@ -12,5 +12,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/alloca.hxx"
+#include "pinocchio/src/utils/alloca.hxx"
 // IWYU pragma: end_exports

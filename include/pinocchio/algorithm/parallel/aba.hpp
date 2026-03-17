@@ -56,5 +56,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/parallel/aba.hxx"
+#include "pinocchio/src/algorithm/parallel/aba.hxx"
 // IWYU pragma: end_exports

@@ -10,5 +10,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/spatial/fwd.hxx"
+#include "pinocchio/src/spatial/fwd.hxx"
 // IWYU pragma: end_exports

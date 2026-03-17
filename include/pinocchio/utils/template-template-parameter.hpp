@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/template-template-parameter.hxx"
+#include "pinocchio/src/utils/template-template-parameter.hxx"
 // IWYU pragma: end_exports

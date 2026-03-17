@@ -614,5 +614,5 @@ namespace pinocchio
 
 } // namespace pinocchio
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/frames.hxx"
+#include "pinocchio/src/algorithm/frames.hxx"
 // IWYU pragma: end_exports

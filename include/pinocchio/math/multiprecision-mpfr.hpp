@@ -12,5 +12,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/math/multiprecision-mpfr.hxx"
+#include "pinocchio/src/math/multiprecision-mpfr.hxx"
 // IWYU pragma: end_exports

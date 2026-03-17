@@ -109,5 +109,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/collision/distance.hxx"
+#include "pinocchio/src/collision/distance.hxx"
 // IWYU pragma: end_exports

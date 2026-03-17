@@ -37,23 +37,23 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/liegroup/fwd.hxx"
+#include "pinocchio/src/multibody/liegroup/fwd.hxx"
 
-#include "pinocchio/multibody/liegroup/liegroup-base.hxx"
-#include "pinocchio/multibody/liegroup/liegroup-algo.hxx"
+#include "pinocchio/src/multibody/liegroup/liegroup-base.hxx"
+#include "pinocchio/src/multibody/liegroup/liegroup-algo.hxx"
 
-#include "pinocchio/multibody/liegroup/vector-space.hxx"
-#include "pinocchio/multibody/liegroup/cartesian-product.hxx"
-#include "pinocchio/multibody/liegroup/special-orthogonal.hxx"
-#include "pinocchio/multibody/liegroup/special-euclidean.hxx"
+#include "pinocchio/src/multibody/liegroup/vector-space.hxx"
+#include "pinocchio/src/multibody/liegroup/cartesian-product.hxx"
+#include "pinocchio/src/multibody/liegroup/special-orthogonal.hxx"
+#include "pinocchio/src/multibody/liegroup/special-euclidean.hxx"
 
-#include "pinocchio/multibody/liegroup/liegroup-collection.hxx"
+#include "pinocchio/src/multibody/liegroup/liegroup-collection.hxx"
 
-#include "pinocchio/multibody/liegroup/cartesian-product-variant-fwd.hxx"
-#include "pinocchio/multibody/liegroup/liegroup-variant-visitors.hxx"
-#include "pinocchio/multibody/liegroup/cartesian-product-variant.hxx"
+#include "pinocchio/src/multibody/liegroup/cartesian-product-variant-fwd.hxx"
+#include "pinocchio/src/multibody/liegroup/liegroup-variant-visitors.hxx"
+#include "pinocchio/src/multibody/liegroup/cartesian-product-variant.hxx"
 
-#include "pinocchio/multibody/liegroup/liegroup-generic.hxx"
-#include "pinocchio/multibody/liegroup/liegroup-map.hxx"
-#include "pinocchio/multibody/liegroup/liegroup-joint.hxx"
+#include "pinocchio/src/multibody/liegroup/liegroup-generic.hxx"
+#include "pinocchio/src/multibody/liegroup/liegroup-map.hxx"
+#include "pinocchio/src/multibody/liegroup/liegroup-joint.hxx"
 // IWYU pragma: end_exports

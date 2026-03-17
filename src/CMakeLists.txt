@@ -9,11 +9,9 @@
 # Create header-only target All other target will depend on it.
 add_library(${PROJECT_NAME}_headers INTERFACE)
 # On CMake 3.16, we can't target_sources(${PROJECT_NAME}_headers INTERFACE
-# ${${PROJECT_NAME}_CORE_PUBLIC_HEADERS})
+# ${${PROJECT_NAME}_CORE_HEADERS})
 
-# Enforce the preprocessed version of boost::list and boost::vector This information is redundant
-# with the content of include/pinocchio/container/boost-container-limits.hpp but it avoids any
-# compilation issue.
+# Enforce the preprocessed version of boost::list and boost::vector
 # Enforce boost::fusion::invoke argument limits.
 target_compile_definitions(${PROJECT_NAME}_headers INTERFACE BOOST_MPL_LIMIT_LIST_SIZE=30
                                                              BOOST_MPL_LIMIT_VECTOR_SIZE=30
@@ -72,6 +70,13 @@ target_include_directories(
   INTERFACE $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
 
+if(PINOCCHIO_INSTALL_DEPRECATED_HEADERS)
+  target_include_directories(
+    ${PROJECT_NAME}_headers
+    INTERFACE $<INSTALL_INTERFACE:include/pinocchio/deprecated>
+              $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated>)
+endif()
+
 cxx_flags_by_compiler_frontend(
   MSVC "/bigobj"
   OUTPUT PUBLIC_OPTIONS
@@ -120,9 +125,9 @@ function(PINOCCHIO_TARGET target_name)
   # INSTALL_RPATH and VERSION on an INTERFACE target.
   if(NOT ARGS_INTERFACE OR CMAKE_VERSION GREATER 3.16)
     target_sources(${LIB_NAME} PRIVATE ${ARGS_SOURCES})
+    # For IDE to get includes part of the project automatically.
     target_sources(
-      ${LIB_NAME} PRIVATE ${${PROJECT_NAME}_CORE_PUBLIC_HEADERS}) # For IDE to get includes part of
-                                                                  # the project automatically.
+      ${LIB_NAME} PRIVATE ${${PROJECT_NAME}_CORE__HEADERS})
     set_target_properties(
       ${LIB_NAME}
       PROPERTIES LINKER_LANGUAGE CXX
@@ -133,7 +138,7 @@ function(PINOCCHIO_TARGET target_name)
   endif()
 
   if(ENABLE_TEMPLATE_INSTANTIATION AND NOT ARGS_INTERFACE)
-    set(PINOCCHIO_CONTEXT_FILE_VALUE "pinocchio/context/${ARGS_SCALAR}.hxx")
+    set(PINOCCHIO_CONTEXT_FILE_VALUE "pinocchio/src/context/${ARGS_SCALAR}.hxx")
     target_compile_definitions(
       ${LIB_NAME}
       PUBLIC PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
@@ -205,12 +210,12 @@ add_source_group(${PROJECT_NAME}_CORE_SOURCES)
 add_source_group(${PROJECT_NAME}_PARSERS_SOURCES)
 add_source_group(${PROJECT_NAME}_EXTRA_SOURCES)
 add_source_group(${PROJECT_NAME}_VISUALIZERS_SOURCES)
-add_header_group(${PROJECT_NAME}_CORE_PUBLIC_HEADERS)
-add_header_group(${PROJECT_NAME}_PARSERS_PUBLIC_HEADERS)
-add_header_group(${PROJECT_NAME}_COLLISION_PUBLIC_HEADERS)
-add_header_group(${PROJECT_NAME}_EXTRA_PUBLIC_HEADERS)
-add_header_group(${PROJECT_NAME}_CORE_GENERATED_PUBLIC_HEADERS)
-add_header_group(${PROJECT_NAME}_VISUALIZERS_PUBLIC_HEADERS)
+add_header_group(${PROJECT_NAME}_CORE_HEADERS)
+add_header_group(${PROJECT_NAME}_PARSERS_HEADERS)
+add_header_group(${PROJECT_NAME}_COLLISION_HEADERS)
+add_header_group(${PROJECT_NAME}_EXTRA_HEADERS)
+add_header_group(${PROJECT_NAME}_CORE_GENERATED_HEADERS)
+add_header_group(${PROJECT_NAME}_VISUALIZERS_HEADERS)
 
 # (optional) define profiling target (tracy) on which downstream targets will depend
 if(PINOCCHIO_BUILD_WITH_TRACY)
@@ -249,7 +254,7 @@ if(BUILD_WITH_EXTRA_SUPPORT)
   pinocchio_target(
     ${EXTRA_LIB_NAME}
     SCALAR default
-    SOURCES ${${PROJECT_NAME}_EXTRA_SOURCES} ${${PROJECT_NAME}_EXTRA_PUBLIC_HEADERS})
+    SOURCES ${${PROJECT_NAME}_EXTRA_SOURCES} ${${PROJECT_NAME}_EXTRA_HEADERS})
   pinocchio_config(extra ${EXTRA_LIB_NAME})
 
   target_link_libraries(${EXTRA_LIB_NAME} PUBLIC ${PROJECT_NAME}_default Qhull::qhullcpp
@@ -265,7 +270,7 @@ if(BUILD_WITH_OPENMP_SUPPORT)
   pinocchio_target(
     ${PARALLEL_LIB_NAME}
     SCALAR default
-    SOURCES ${${PROJECT_NAME}_PARALLEL_PUBLIC_HEADERS}
+    SOURCES ${${PROJECT_NAME}_PARALLEL_HEADERS}
     INTERFACE)
 
   target_link_libraries(${PARALLEL_LIB_NAME} INTERFACE ${PROJECT_NAME}_default OpenMP::OpenMP_CXX)
@@ -278,7 +283,7 @@ if(BUILD_WITH_COLLISION_SUPPORT)
   pinocchio_target(
     ${COLLISION_LIB_NAME}
     SCALAR default
-    SOURCES ${${PROJECT_NAME}_COLLISION_SOURCES} ${${PROJECT_NAME}_COLLISION_PUBLIC_HEADERS})
+    SOURCES ${${PROJECT_NAME}_COLLISION_SOURCES} ${${PROJECT_NAME}_COLLISION_HEADERS})
   pinocchio_config(collision ${COLLISION_LIB_NAME})
 
   target_compile_definitions(${COLLISION_LIB_NAME} PUBLIC PINOCCHIO_WITH_COLLISION)
@@ -291,7 +296,7 @@ if(BUILD_WITH_COLLISION_SUPPORT)
     pinocchio_target(
       ${COLLISION_PARALLEL_LIB_NAME}
       SCALAR default
-      SOURCES ${${PROJECT_NAME}_COLLISION_PARALLEL_PUBLIC_HEADERS}
+      SOURCES ${${PROJECT_NAME}_COLLISION_PARALLEL_HEADERS}
       INTERFACE)
 
     target_link_libraries(${COLLISION_PARALLEL_LIB_NAME} INTERFACE ${COLLISION_LIB_NAME}
@@ -304,7 +309,7 @@ set(VISUALIZERS_LIB_NAME "${PROJECT_NAME}_visualizers")
 pinocchio_target(
   ${VISUALIZERS_LIB_NAME}
   SCALAR default
-  SOURCES ${${PROJECT_NAME}_VISUALIZERS_SOURCES} ${${PROJECT_NAME}_VISUALIZERS_PUBLIC_HEADERS})
+  SOURCES ${${PROJECT_NAME}_VISUALIZERS_SOURCES} ${${PROJECT_NAME}_VISUALIZERS_HEADERS})
 pinocchio_config(visualizers ${VISUALIZERS_LIB_NAME})
 target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC ${PROJECT_NAME}_default)
 if(BUILD_WITH_COLLISION_SUPPORT)
@@ -321,7 +326,7 @@ if(BUILD_WITH_PARSERS_SUPPORT)
   pinocchio_target(
     ${PARSERS_LIB_NAME}
     SCALAR default
-    SOURCES ${${PROJECT_NAME}_PARSERS_SOURCES} ${${PROJECT_NAME}_PARSERS_PUBLIC_HEADERS})
+    SOURCES ${${PROJECT_NAME}_PARSERS_SOURCES} ${${PROJECT_NAME}_PARSERS_HEADERS})
   pinocchio_config(parsers ${PARSERS_LIB_NAME})
 
   target_link_libraries(${PARSERS_LIB_NAME} PUBLIC ${PROJECT_NAME}_default)
@@ -391,7 +396,7 @@ if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
     ${PYTHON_PARSER_LIB_NAME}
     SCALAR default
     SOURCES ${${PROJECT_NAME}_PYTHON_PARSER_SOURCES}
-            ${${PROJECT_NAME}_PYTHON_PARSER_PUBLIC_HEADERS})
+            ${${PROJECT_NAME}_PYTHON_PARSER_HEADERS})
   pinocchio_config(python_parser ${PYTHON_PARSER_LIB_NAME})
 
   target_link_libraries(${PYTHON_PARSER_LIB_NAME} PUBLIC ${PROJECT_NAME}_default Python3::Python)

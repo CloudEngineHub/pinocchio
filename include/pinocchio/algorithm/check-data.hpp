@@ -31,5 +31,5 @@ namespace pinocchio
 
 /* --- Details -------------------------------------------------------------------- */
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/check-data.hxx"
+#include "pinocchio/src/algorithm/check-data.hxx"
 // IWYU pragma: end_exports

@@ -25,9 +25,9 @@
 #include <boost/math/special_functions/nonfinite_num_facets.hpp>
 
 #include "pinocchio/macros.hpp"
-#include "pinocchio/serialization/static-buffer.hxx"
+#include "pinocchio/src/serialization/static-buffer.hxx"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/serialization/archive.hxx"
+#include "pinocchio/src/serialization/archive.hxx"
 // IWYU pragma: end_exports

@@ -9,5 +9,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/check.hxx"
+#include "pinocchio/src/utils/check.hxx"
 // IWYU pragma: end_exports

@@ -1097,5 +1097,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/solvers/admm-solver.hxx"
+#include "pinocchio/src/algorithm/solvers/admm-solver.hxx"
 // IWYU pragma: end_exports

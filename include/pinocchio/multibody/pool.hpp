@@ -21,7 +21,7 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/pool/fwd.hxx"
-#include "pinocchio/multibody/pool/model.hxx"
-#include "pinocchio/multibody/pool/geometry.hxx"
+#include "pinocchio/src/multibody/pool/fwd.hxx"
+#include "pinocchio/src/multibody/pool/model.hxx"
+#include "pinocchio/src/multibody/pool/geometry.hxx"
 // IWYU pragma: end_exports

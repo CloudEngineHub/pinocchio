@@ -31,5 +31,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/parsers/srdf/srdf.hxx"
+#include "pinocchio/src/parsers/srdf/srdf.hxx"
 // IWYU pragma: end_exports

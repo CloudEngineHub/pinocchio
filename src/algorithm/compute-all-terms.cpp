@@ -2,7 +2,7 @@
 // Copyright (c) 2022 INRIA
 //
 
-#include "pinocchio/context/template-instantiation.hxx"
+#include "pinocchio/src/context/template-instantiation.hxx"
 #include "pinocchio/algorithm/compute-all-terms.hpp"
 
 namespace pinocchio

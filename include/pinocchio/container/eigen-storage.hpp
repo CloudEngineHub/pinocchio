@@ -16,5 +16,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/container/eigen-storage.hxx"
+#include "pinocchio/src/container/eigen-storage.hxx"
 // IWYU pragma: end_exports

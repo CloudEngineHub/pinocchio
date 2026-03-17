@@ -17,7 +17,7 @@
 #include "pinocchio/macros.hpp"
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/parsers/graph.hpp"
-#include "pinocchio/parsers/meshloader-fwd.hxx"
+#include "pinocchio/src/parsers/meshloader-fwd.hxx"
 
 namespace pinocchio
 {

@@ -316,5 +316,5 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------------- */
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/cholesky.hxx"
+#include "pinocchio/src/algorithm/cholesky.hxx"
 // IWYU pragma: end_exports

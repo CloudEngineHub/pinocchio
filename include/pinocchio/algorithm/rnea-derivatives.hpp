@@ -278,5 +278,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/rnea-derivatives.hxx"
+#include "pinocchio/src/algorithm/rnea-derivatives.hxx"
 // IWYU pragma: end_exports

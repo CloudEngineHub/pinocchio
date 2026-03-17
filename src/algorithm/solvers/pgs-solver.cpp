@@ -2,7 +2,7 @@
 // Copyright (c) 2026 INRIA
 //
 
-#include "pinocchio/context/template-instantiation.hxx"
+#include "pinocchio/src/context/template-instantiation.hxx"
 #ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
 
   #include "pinocchio/algorithm/solvers/pgs-solver.hpp"

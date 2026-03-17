@@ -2,7 +2,7 @@
 // Copyright (c) 2022-2025 INRIA
 //
 
-#include "pinocchio/context/template-instantiation.hxx"
+#include "pinocchio/src/context/template-instantiation.hxx"
 #ifndef PINOCCHIO_SKIP_ALGORITHM_CONSTRAINED_DYNAMICS
 
   #include "pinocchio/algorithm/constrained-dynamics.hpp"

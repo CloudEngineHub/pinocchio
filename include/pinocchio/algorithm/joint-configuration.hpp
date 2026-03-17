@@ -1783,5 +1783,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/joint-configuration.hxx"
+#include "pinocchio/src/algorithm/joint-configuration.hxx"
 // IWYU pragma: end_exports

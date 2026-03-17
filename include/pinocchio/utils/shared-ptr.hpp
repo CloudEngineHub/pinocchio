@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/shared-ptr.hxx"
+#include "pinocchio/src/utils/shared-ptr.hxx"
 // IWYU pragma: end_exports

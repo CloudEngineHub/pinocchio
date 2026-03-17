@@ -344,5 +344,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/aba-derivatives.hxx"
+#include "pinocchio/src/algorithm/aba-derivatives.hxx"
 // IWYU pragma: end_exports

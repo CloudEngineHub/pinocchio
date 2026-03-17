@@ -41,11 +41,11 @@
 
 #include "pinocchio/parsers/urdf.hpp"
 #include "pinocchio/parsers/config.hpp"
-#include "pinocchio/parsers/meshloader-fwd.hxx"
+#include "pinocchio/src/parsers/meshloader-fwd.hxx"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/parsers/sdf/sdf.hxx"
-#include "pinocchio/parsers/sdf/model.hxx"
-#include "pinocchio/parsers/sdf/geometry.hxx"
+#include "pinocchio/src/parsers/sdf/sdf.hxx"
+#include "pinocchio/src/parsers/sdf/model.hxx"
+#include "pinocchio/src/parsers/sdf/geometry.hxx"
 // IWYU pragma: end_exports

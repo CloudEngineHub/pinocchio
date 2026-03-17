@@ -494,5 +494,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/solvers/pgs-solver.hxx"
+#include "pinocchio/src/algorithm/solvers/pgs-solver.hxx"
 // IWYU pragma: end_exports

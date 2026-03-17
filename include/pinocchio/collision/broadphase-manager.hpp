@@ -31,5 +31,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/collision/broadphase-manager.hxx"
+#include "pinocchio/src/collision/broadphase-manager.hxx"
 // IWYU pragma: end_exports

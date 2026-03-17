@@ -33,53 +33,53 @@
 #include "pinocchio/spatial.hpp"
 
 #include "pinocchio/multibody/fwd.hpp"
-#include "pinocchio/multibody/joint-motion-subspace-base.hxx"
-#include "pinocchio/multibody/joint-motion-subspace-generic.hxx"
+#include "pinocchio/src/multibody/joint-motion-subspace-base.hxx"
+#include "pinocchio/src/multibody/joint-motion-subspace-generic.hxx"
 
 #include "pinocchio/serialization/fwd.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/joint/fwd.hxx"
-#include "pinocchio/multibody/joint/joint-model-base.hxx"
-#include "pinocchio/multibody/joint/joint-data-base.hxx"
-#include "pinocchio/multibody/joint/joint-common-operations.hxx"
+#include "pinocchio/src/multibody/joint/fwd.hxx"
+#include "pinocchio/src/multibody/joint/joint-model-base.hxx"
+#include "pinocchio/src/multibody/joint/joint-data-base.hxx"
+#include "pinocchio/src/multibody/joint/joint-common-operations.hxx"
 
-#include "pinocchio/multibody/visitor/fusion.hxx"
-#include "pinocchio/multibody/visitor/joint-unary-visitor.hxx"
-#include "pinocchio/multibody/visitor/joint-binary-visitor.hxx"
+#include "pinocchio/src/multibody/visitor/fusion.hxx"
+#include "pinocchio/src/multibody/visitor/joint-unary-visitor.hxx"
+#include "pinocchio/src/multibody/visitor/joint-binary-visitor.hxx"
 
-#include "pinocchio/multibody/joint/joint-revolute.hxx"
-#include "pinocchio/multibody/joint/joint-revolute-unaligned.hxx"
-#include "pinocchio/multibody/joint/joint-revolute-unbounded.hxx"
-#include "pinocchio/multibody/joint/joint-revolute-unbounded-unaligned.hxx"
+#include "pinocchio/src/multibody/joint/joint-revolute.hxx"
+#include "pinocchio/src/multibody/joint/joint-revolute-unaligned.hxx"
+#include "pinocchio/src/multibody/joint/joint-revolute-unbounded.hxx"
+#include "pinocchio/src/multibody/joint/joint-revolute-unbounded-unaligned.hxx"
 
-#include "pinocchio/multibody/joint/joint-translation.hxx"
+#include "pinocchio/src/multibody/joint/joint-translation.hxx"
 
-#include "pinocchio/multibody/joint/joint-prismatic.hxx"
-#include "pinocchio/multibody/joint/joint-prismatic-unaligned.hxx"
+#include "pinocchio/src/multibody/joint/joint-prismatic.hxx"
+#include "pinocchio/src/multibody/joint/joint-prismatic-unaligned.hxx"
 
-#include "pinocchio/multibody/joint/joint-planar.hxx"
+#include "pinocchio/src/multibody/joint/joint-planar.hxx"
 
-#include "pinocchio/multibody/joint/joint-ellipsoid.hxx"
+#include "pinocchio/src/multibody/joint/joint-ellipsoid.hxx"
 
-#include "pinocchio/multibody/joint/joint-helical.hxx"
-#include "pinocchio/multibody/joint/joint-helical-unaligned.hxx"
+#include "pinocchio/src/multibody/joint/joint-helical.hxx"
+#include "pinocchio/src/multibody/joint/joint-helical-unaligned.hxx"
 
-#include "pinocchio/multibody/joint/joint-spherical.hxx"
-#include "pinocchio/multibody/joint/joint-spherical-ZYX.hxx"
+#include "pinocchio/src/multibody/joint/joint-spherical.hxx"
+#include "pinocchio/src/multibody/joint/joint-spherical-ZYX.hxx"
 
-#include "pinocchio/multibody/joint/joint-universal.hxx"
+#include "pinocchio/src/multibody/joint/joint-universal.hxx"
 
-#include "pinocchio/multibody/joint/joint-free-flyer.hxx"
+#include "pinocchio/src/multibody/joint/joint-free-flyer.hxx"
 
-#include "pinocchio/multibody/joint/joint-basic-visitors.hxx"
+#include "pinocchio/src/multibody/joint/joint-basic-visitors.hxx"
 
-#include "pinocchio/multibody/joint/joint-composite.hxx"
+#include "pinocchio/src/multibody/joint/joint-composite.hxx"
 
-#include "pinocchio/multibody/joint/joint-mimic.hxx"
+#include "pinocchio/src/multibody/joint/joint-mimic.hxx"
 
-#include "pinocchio/multibody/joint/joint-collection.hxx"
+#include "pinocchio/src/multibody/joint/joint-collection.hxx"
 
-#include "pinocchio/multibody/joint/joint-generic.hxx"
+#include "pinocchio/src/multibody/joint/joint-generic.hxx"
 // IWYU pragma: end_exports

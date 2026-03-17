@@ -127,5 +127,5 @@ namespace pinocchio
 
 } // namespace pinocchio
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/centroidal-derivatives.hxx"
+#include "pinocchio/src/algorithm/centroidal-derivatives.hxx"
 // IWYU pragma: end_exports

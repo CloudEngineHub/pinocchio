@@ -434,7 +434,7 @@ namespace pinocchio
 #endif // PINOCCHIO_WITH_CLARABEL_SUPPORT
 
 // Include implementation
-#include "pinocchio/algorithm/solvers/clarabel-solver.hxx"
+#include "pinocchio/src/algorithm/solvers/clarabel-solver.hxx"
 
 #if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
   #include "pinocchio/algorithm/solvers/clarabel-solver.txx"

@@ -210,5 +210,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/kinematics.hxx"
+#include "pinocchio/src/algorithm/kinematics.hxx"
 // IWYU pragma: end_exports

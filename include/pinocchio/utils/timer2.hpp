@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/timer2.hxx"
+#include "pinocchio/src/utils/timer2.hxx"
 // IWYU pragma: export

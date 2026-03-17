@@ -10,5 +10,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/file-io.hxx"
+#include "pinocchio/src/utils/file-io.hxx"
 // IWYU pragma: export

@@ -34,6 +34,6 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/codegen/cppadcg/algorithm/code-generator-base.hxx"
-#include "pinocchio/codegen/cppadcg/algorithm/code-generator-algo.hxx"
+#include "pinocchio/src/codegen/cppadcg/algorithm/code-generator-base.hxx"
+#include "pinocchio/src/codegen/cppadcg/algorithm/code-generator-algo.hxx"
 // IWYU pragma: end_exports

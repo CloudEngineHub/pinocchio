@@ -57,5 +57,5 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------------- */
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/check-model.hxx"
+#include "pinocchio/src/algorithm/check-model.hxx"
 // IWYU pragma: end_exports

@@ -202,10 +202,10 @@ namespace CppAD
 } // namespace CppAD
 
 // IWYU pragma: begin_exports
-#include "pinocchio/autodiff/cppad/utils/static-if.hxx"
-#include "pinocchio/autodiff/cppad/math/quaternion.hxx"
-#include "pinocchio/autodiff/cppad/math/taylor-series-expansion.hxx"
-#include "pinocchio/autodiff/cppad/spatial/se3-tpl.hxx"
-#include "pinocchio/autodiff/cppad/spatial/log.hxx"
-#include "pinocchio/autodiff/cppad/algorithm/aba.hxx"
+#include "pinocchio/src/autodiff/cppad/utils/static-if.hxx"
+#include "pinocchio/src/autodiff/cppad/math/quaternion.hxx"
+#include "pinocchio/src/autodiff/cppad/math/taylor-series-expansion.hxx"
+#include "pinocchio/src/autodiff/cppad/spatial/se3-tpl.hxx"
+#include "pinocchio/src/autodiff/cppad/spatial/log.hxx"
+#include "pinocchio/src/autodiff/cppad/algorithm/aba.hxx"
 // IWYU pragma: end_exports

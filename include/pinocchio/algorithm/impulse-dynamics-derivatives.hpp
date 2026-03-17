@@ -84,5 +84,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/impulse-dynamics-derivatives.hxx"
+#include "pinocchio/src/algorithm/impulse-dynamics-derivatives.hxx"
 // IWYU pragma: end_exports

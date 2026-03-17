@@ -49,11 +49,11 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/delassus-operator-base.hxx"
-#include "pinocchio/algorithm/delassus-operator-sparse.hxx"
-#include "pinocchio/algorithm/delassus-operator-rigid-body-visitors.hxx"
-#include "pinocchio/algorithm/delassus-operator-rigid-body.hxx"
-#include "pinocchio/algorithm/delassus-operator-dense.hxx"
-#include "pinocchio/algorithm/delassus-operator-preconditioned.hxx"
-#include "pinocchio/algorithm/delassus-operator-cholesky-expression.hxx"
+#include "pinocchio/src/algorithm/delassus-operator-base.hxx"
+#include "pinocchio/src/algorithm/delassus-operator-sparse.hxx"
+#include "pinocchio/src/algorithm/delassus-operator-rigid-body-visitors.hxx"
+#include "pinocchio/src/algorithm/delassus-operator-rigid-body.hxx"
+#include "pinocchio/src/algorithm/delassus-operator-dense.hxx"
+#include "pinocchio/src/algorithm/delassus-operator-preconditioned.hxx"
+#include "pinocchio/src/algorithm/delassus-operator-cholesky-expression.hxx"
 // IWYU pragma: end_exports

@@ -10,5 +10,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/pool/fwd.hxx"
+#include "pinocchio/src/multibody/pool/fwd.hxx"
 // IWYU pragma: end_exports

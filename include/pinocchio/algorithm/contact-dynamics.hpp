@@ -316,5 +316,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/contact-dynamics.hxx"
+#include "pinocchio/src/algorithm/contact-dynamics.hxx"
 // IWYU pragma: end_exports

@@ -8,4 +8,4 @@
 #include "pinocchio/fwd.hpp"
 // IWYU pragma: end_keep
 
-#include "pinocchio/utils/static-if.hxx" // IWYU pragma: export
+#include "pinocchio/src/utils/static-if.hxx" // IWYU pragma: export

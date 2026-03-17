@@ -258,5 +258,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/jacobian.hxx"
+#include "pinocchio/src/algorithm/jacobian.hxx"
 // IWYU pragma: end_exports

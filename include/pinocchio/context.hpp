@@ -8,5 +8,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/context.hxx"
+#include "pinocchio/src/context.hxx"
 // IWYU pragma: end_exports

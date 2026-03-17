@@ -356,5 +356,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/frames-derivatives.hxx"
+#include "pinocchio/src/algorithm/frames-derivatives.hxx"
 // IWYU pragma: end_exports

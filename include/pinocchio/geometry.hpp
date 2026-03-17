@@ -20,7 +20,7 @@
 #include <boost/variant.hpp>
 #include <boost/foreach.hpp>
 
-#include "pinocchio/fwd.hxx"
+#include "pinocchio/src/fwd.hxx"
 #include "pinocchio/deprecated.hpp"
 
 #include "pinocchio/utils/shared-ptr.hpp"
@@ -32,11 +32,11 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/multibody/geometry-fwd.hxx"
-#include "pinocchio/multibody/coal.hxx"
-#include "pinocchio/multibody/model-item.hxx"
-#include "pinocchio/multibody/instance-filter.hxx"
-#include "pinocchio/multibody/geometry-object.hxx"
-#include "pinocchio/multibody/geometry.hxx"
-#include "pinocchio/multibody/geometry-object-filter.hxx"
+#include "pinocchio/src/multibody/geometry-fwd.hxx"
+#include "pinocchio/src/multibody/coal.hxx"
+#include "pinocchio/src/multibody/model-item.hxx"
+#include "pinocchio/src/multibody/instance-filter.hxx"
+#include "pinocchio/src/multibody/geometry-object.hxx"
+#include "pinocchio/src/multibody/geometry.hxx"
+#include "pinocchio/src/multibody/geometry-object-filter.hxx"
 // IWYU pragma: end_exports

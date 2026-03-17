@@ -7,4 +7,4 @@
 #include <Eigen/Core>
 // IWYU pragma: end_keep
 
-#include "pinocchio/utils/cast.hxx" // IWYU pragma: export
+#include "pinocchio/src/utils/cast.hxx" // IWYU pragma: export

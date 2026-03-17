@@ -2,7 +2,7 @@
 // Copyright (c) 2022 INRIA
 //
 
-#include "pinocchio/context/template-instantiation.hxx"
+#include "pinocchio/src/context/template-instantiation.hxx"
 #ifndef PINOCCHIO_SKIP_ALGORITHM_IMPULSE_DYNAMICS
 
   #include "pinocchio/algorithm/impulse-dynamics.hpp"

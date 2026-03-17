@@ -103,6 +103,6 @@ namespace CppAD
 } // namespace CppAD
 
 // IWYU pragma: begin_exports
-#include "pinocchio/codegen/cppadcg/math/cast.hxx"
-#include "pinocchio/codegen/cppadcg/math/taylor-series-expansion.hxx"
+#include "pinocchio/src/codegen/cppadcg/math/cast.hxx"
+#include "pinocchio/src/codegen/cppadcg/math/taylor-series-expansion.hxx"
 // IWYU pragma: end_exports

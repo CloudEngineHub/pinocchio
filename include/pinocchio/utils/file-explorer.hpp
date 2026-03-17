@@ -11,5 +11,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/file-explorer.hxx"
+#include "pinocchio/src/utils/file-explorer.hxx"
 // IWYU pragma: end_exports

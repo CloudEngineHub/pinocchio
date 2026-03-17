@@ -19,5 +19,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/utils/size-in-bytes.hxx"
+#include "pinocchio/src/utils/size-in-bytes.hxx"
 // IWYU pragma: end_exports

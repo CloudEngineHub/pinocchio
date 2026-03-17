@@ -11,5 +11,5 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/check-base.hxx"
+#include "pinocchio/src/algorithm/check-base.hxx"
 // IWYU pragma: end_exports

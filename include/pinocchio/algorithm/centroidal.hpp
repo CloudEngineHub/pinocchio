@@ -265,5 +265,5 @@ namespace pinocchio
 } // namespace pinocchio
 
 // IWYU pragma: begin_exports
-#include "pinocchio/algorithm/centroidal.hxx"
+#include "pinocchio/src/algorithm/centroidal.hxx"
 // IWYU pragma: end_exports
