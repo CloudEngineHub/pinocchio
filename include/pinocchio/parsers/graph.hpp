@@ -43,6 +43,8 @@
 #include "pinocchio/src/parsers/graph/model-graph.hxx"
 #include "pinocchio/src/parsers/graph/graph-visitor.hxx"
 #include "pinocchio/src/parsers/graph/model-graph-algo.hxx"
-#include "pinocchio/src/parsers/graph/model-graph-algo-geometry.hxx"
+#ifdef PINOCCHIO_WITH_COLLISION
+  #include "pinocchio/src/parsers/graph/model-graph-algo-geometry.hxx"
+#endif // ifdef PINOCCHIO_WITH_COLLISION
 #include "pinocchio/src/parsers/graph/model-configuration-converter.hxx"
 // IWYU pragma: end_exports
