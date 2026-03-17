@@ -6,7 +6,3 @@
 // IWYU pragma: begin_keep
 #include "pinocchio/geometry.hpp"
 // IWYU pragma: end_keep
-
-// IWYU pragma: begin_exports
-#include "pinocchio/src/multibody/coal.hxx"
-// IWYU pragma: end_exports

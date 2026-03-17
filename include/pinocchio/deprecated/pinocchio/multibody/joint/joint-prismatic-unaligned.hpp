@@ -6,7 +6,3 @@
 // IWYU pragma: begin_keep
 #include "pinocchio/multibody/joint.hpp"
 // IWYU pragma: end_keep
-
-// IWYU pragma: begin_exports
-#include "pinocchio/src/multibody/joint/joint-prismatic-unaligned.hxx"
-// IWYU pragma: end_exports

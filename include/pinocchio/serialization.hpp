@@ -123,4 +123,5 @@
 #include "pinocchio/src/serialization/constraints-model.hxx"
 #include "pinocchio/src/serialization/constraints-set.hxx"
 #include "pinocchio/src/serialization/delassus.hxx"
+#include "pinocchio/src/serialization/geometry.hxx"
 // IWYU pragma: end_exports

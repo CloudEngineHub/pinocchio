@@ -8,8 +8,3 @@
 // IWYU pragma: begin_keep
 #include "pinocchio/multibody/joint.hpp"
 // IWYU pragma: end_keep
-
-// IWYU pragma: begin_exports
-#include "pinocchio/src/multibody/joint/joint-model-base.hxx"
-#include "pinocchio/src/multibody/joint/joint-data-base.hxx"
-// IWYU pragma: end_exports
