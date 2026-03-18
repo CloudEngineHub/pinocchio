@@ -2,11 +2,11 @@
 // Copyright (c) 2021-2022 INRIA
 //
 
-#include "pinocchio/math/matrix.hpp"
+#include "pinocchio/math.hpp"
 #include "pinocchio/parsers/sdf.hpp"
 #include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include <sdf/sdf.hh>
 #include <ignition/math.hh>

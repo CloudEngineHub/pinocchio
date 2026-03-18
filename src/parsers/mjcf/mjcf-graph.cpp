@@ -30,7 +30,7 @@
 #include "pinocchio/macros.hpp"
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/joint.hpp"
-#include "pinocchio/parsers/mjcf/mjcf-graph.hpp"
+#include "pinocchio/parsers/mjcf.hpp"
 #include "pinocchio/parsers/urdf.hpp"
 #include "pinocchio/spatial.hpp"
 

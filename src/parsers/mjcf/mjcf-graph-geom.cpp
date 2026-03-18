@@ -24,7 +24,7 @@
 #include "pinocchio/spatial.hpp"
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/geometry.hpp"
-#include "pinocchio/parsers/mjcf/mjcf-graph.hpp"
+#include "pinocchio/parsers/mjcf.hpp"
 
 #ifdef PINOCCHIO_WITH_COLLISION
 
