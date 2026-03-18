@@ -486,10 +486,6 @@ namespace pinocchio
     , rho(std::numeric_limits<Scalar>::quiet_NaN())
     , spectral_rho_power(std::numeric_limits<Scalar>::quiet_NaN())
     , mu_prox(std::numeric_limits<Scalar>::quiet_NaN())
-    , x(x_storage.map())
-    , y(y_storage.map())
-    , z(z_storage.map())
-    , desaxce(desaxce_storage.map())
     {
     }
 
@@ -649,19 +645,19 @@ namespace pinocchio
     /// \note Order of storage/map declaration is important!
     /// First declare the storage, then the map, otherwise map will point to nothing.
     VectorXsStorage x_storage;
-    typename VectorXsStorage::RefMapType x;
+    typename VectorXsStorage::RefMapType x = x_storage.map();
 
     /// \brief Primal solution projected onto constraints.
     VectorXsStorage y_storage;
-    typename VectorXsStorage::RefMapType y;
+    typename VectorXsStorage::RefMapType y = y_storage.map();
 
     /// \brief Dual solution.
     VectorXsStorage z_storage;
-    typename VectorXsStorage::RefMapType z;
+    typename VectorXsStorage::RefMapType z = z_storage.map();
 
     /// \brief Desaxce term of the solution.
     VectorXsStorage desaxce_storage;
-    typename VectorXsStorage::RefMapType desaxce;
+    typename VectorXsStorage::RefMapType desaxce = desaxce_storage.map();
   }; // struct ADMMSolverResultTpl
 
   template<typename _Scalar>
@@ -785,20 +781,6 @@ namespace pinocchio
           static_cast<Eigen::Index>(
             math::max(std::size_t(2), math::min(problem_size, lanczos_size))))
       , anderson_history(problem_size, anderson_capacity)
-      , x(x_storage.map())
-      , x_previous(x_previous_storage.map())
-      , x_anderson(x_anderson_storage.map())
-      , y(y_storage.map())
-      , y_previous(y_previous_storage.map())
-      , z(z_storage.map())
-      , z_previous(z_previous_storage.map())
-      , z_anderson(z_anderson_storage.map())
-      , desaxce(desaxce_storage.map())
-      , rhs(rhs_storage.map())
-      , tmp(tmp_storage.map())
-      , primal_feasibility_vector(primal_feasibility_vector_storage.map())
-      , anderson_primal_feasibility_vector(anderson_primal_feasibility_vector_storage.map())
-      , dual_feasibility_vector(dual_feasibility_vector_storage.map())
       {
         resize(problem_size, lanczos_size, anderson_capacity);
         reset();
@@ -915,59 +897,59 @@ namespace pinocchio
 
       /// \brief Primal variable at current iteration.
       VectorXsStorage x_storage;
-      typename VectorXsStorage::RefMapType x;
+      typename VectorXsStorage::RefMapType x = x_storage.map();
 
       /// \brief Primal variable at previous iteration.
       VectorXsStorage x_previous_storage;
-      typename VectorXsStorage::RefMapType x_previous;
+      typename VectorXsStorage::RefMapType x_previous = x_previous_storage.map();
 
       /// \brief Anderson accelerated primal variable at current iteration.
       VectorXsStorage x_anderson_storage;
-      typename VectorXsStorage::RefMapType x_anderson;
+      typename VectorXsStorage::RefMapType x_anderson = x_anderson_storage.map();
 
       /// \brief Projected primal variable at current iteration.
       VectorXsStorage y_storage;
-      typename VectorXsStorage::RefMapType y;
+      typename VectorXsStorage::RefMapType y = y_storage.map();
 
       /// \brief Projected primal variable at previous iteration.
       VectorXsStorage y_previous_storage;
-      typename VectorXsStorage::RefMapType y_previous;
+      typename VectorXsStorage::RefMapType y_previous = y_previous_storage.map();
 
       /// \brief Dual variable at current iteration.
       VectorXsStorage z_storage;
-      typename VectorXsStorage::RefMapType z;
+      typename VectorXsStorage::RefMapType z = z_storage.map();
 
       /// \brief Dual variable at previous iteration.
       VectorXsStorage z_previous_storage;
-      typename VectorXsStorage::RefMapType z_previous;
+      typename VectorXsStorage::RefMapType z_previous = z_previous_storage.map();
 
       /// \brief Anderson accelerated dual variable at current iteration.
       VectorXsStorage z_anderson_storage;
-      typename VectorXsStorage::RefMapType z_anderson;
+      typename VectorXsStorage::RefMapType z_anderson = z_anderson_storage.map();
 
       /// \brief Desaxce correction (always 0 when solving CCP) at current iteration.
       VectorXsStorage desaxce_storage;
-      typename VectorXsStorage::RefMapType desaxce;
+      typename VectorXsStorage::RefMapType desaxce = desaxce_storage.map();
 
       /// \brief Temporary variable for solving linear system.
       VectorXsStorage rhs_storage;
-      typename VectorXsStorage::RefMapType rhs;
+      typename VectorXsStorage::RefMapType rhs = rhs_storage.map();
 
       /// \brief Temporary variable for holding various vectors.
       VectorXsStorage tmp_storage;
-      typename VectorXsStorage::RefMapType tmp;
+      typename VectorXsStorage::RefMapType tmp = tmp_storage.map();
 
       /// \brief Primal feasibility vector at current iteration.
       VectorXsStorage primal_feasibility_vector_storage;
-      typename VectorXsStorage::RefMapType primal_feasibility_vector;
+      typename VectorXsStorage::RefMapType primal_feasibility_vector = primal_feasibility_vector_storage.map();
 
       /// \brief Anderson related primal feasibility vector at current iteration.
       VectorXsStorage anderson_primal_feasibility_vector_storage;
-      typename VectorXsStorage::RefMapType anderson_primal_feasibility_vector;
+      typename VectorXsStorage::RefMapType anderson_primal_feasibility_vector = anderson_primal_feasibility_vector_storage.map();
 
       /// \brief Dual feasibility vector at current iteration.
       VectorXsStorage dual_feasibility_vector_storage;
-      typename VectorXsStorage::RefMapType dual_feasibility_vector;
+      typename VectorXsStorage::RefMapType dual_feasibility_vector = dual_feasibility_vector_storage.map();
     }; // struct ADMMSolverWorkspaceTpl
 
     ///
