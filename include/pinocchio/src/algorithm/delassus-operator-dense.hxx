@@ -129,14 +129,14 @@ namespace pinocchio
     template<
       template<typename, int> class JointCollectionTpl,
       typename ConstraintModel,
-      template<typename T> class Holder>
+      template<typename T> class StorageHolder>
     explicit DelassusOperatorDenseTpl(
       const DelassusOperatorRigidBodySystemsTpl<
         Scalar,
         Options,
         JointCollectionTpl,
         ConstraintModel,
-        Holder> & delassus_rigid_body,
+        StorageHolder> & delassus_rigid_body,
       const bool enforce_symmetry = false)
     : DelassusOperatorDenseTpl()
     {
@@ -187,7 +187,7 @@ namespace pinocchio
       m_cholesky_decomposition_data.setZero();
 
       // resize/reset damping and compliance
-      m_damping = delassus_expression.getDamping().asDiagonal();
+      m_damping = delassus_expression.getDamping();
       m_compliance_storage.resize(size);
       m_compliance = delassus_expression.getCompliance();
 
@@ -199,14 +199,14 @@ namespace pinocchio
     template<
       template<typename, int> class JointCollectionTpl,
       typename ConstraintModel,
-      template<typename T> class Holder = std::reference_wrapper>
+      template<typename T> class StorageHolder>
     void rebuild(
       const DelassusOperatorRigidBodySystemsTpl<
         Scalar,
         Options,
         JointCollectionTpl,
         ConstraintModel,
-        Holder> & delassus_rigid_body,
+        StorageHolder> & delassus_rigid_body,
       const bool enforce_symmetry = false)
     {
       assert(delassus_rigid_body.rows() == delassus_rigid_body.size());

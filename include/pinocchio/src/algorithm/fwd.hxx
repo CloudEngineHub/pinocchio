@@ -52,12 +52,17 @@ namespace pinocchio
   struct DelassusOperatorSparseTpl;
   typedef DelassusOperatorSparseTpl<context::Scalar, context::Options> DelassusOperatorSparse;
 
+  /// \tparam _ConstraintModel The element type stored in the constraint model vector.
+  ///   May itself be a holder type (e.g. std::reference_wrapper<const ConstraintModel>)
+  ///   when the vector holds non-owning references to externally-managed constraints.
+  /// \tparam StorageHolder Controls how the operator stores its own external references
+  ///   (model, data, and constraint vectors). Default: std::reference_wrapper (non-owning).
   template<
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConstraintModel,
-    template<typename T> class Holder = std::reference_wrapper>
+    template<typename T> class StorageHolder = std::reference_wrapper>
   struct DelassusOperatorRigidBodySystemsTpl;
 
   template<typename DelassusOperator, typename PreconditionerType>

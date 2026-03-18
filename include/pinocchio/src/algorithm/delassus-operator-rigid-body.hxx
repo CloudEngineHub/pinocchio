@@ -21,13 +21,13 @@ namespace pinocchio
     int _Options,
     template<typename, int> class JointCollectionTpl,
     class _ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   struct traits<DelassusOperatorRigidBodySystemsTpl<
     _Scalar,
     _Options,
     JointCollectionTpl,
     _ConstraintModel,
-    Holder>>
+    StorageHolder>>
   {
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
@@ -46,20 +46,13 @@ namespace pinocchio
     typedef _ConstraintModel ConstraintModel;
     typedef typename helper::remove_holder<ConstraintModel>::type InnerConstraintModel;
     typedef typename helper::remove_holder<ConstraintModel>::ref_type ConstraintModelReference;
-    typedef
-      typename std::remove_reference<ConstraintModelReference>::type ConstraintModelReferenceValue;
-    static constexpr bool ConstraintModelIsConst =
-      std::is_const<ConstraintModelReferenceValue>::value;
+    static constexpr bool ConstraintModelIsConst = helper::remove_holder<ConstraintModel>::is_const;
 
-    typedef
-      typename helper::remove_holder<ConstraintModel>::type::ConstraintData InnerConstraintData;
-    typedef typename std::conditional<
-      helper::is_type_holder<ConstraintModel>::value,
-      typename internal::extract_template_template_parameter<ConstraintModel>::template type<
-        typename std::
-          conditional<ConstraintModelIsConst, const InnerConstraintData, InnerConstraintData>::
-            type>,
-      InnerConstraintData>::type ConstraintData;
+    typedef typename InnerConstraintModel::ConstraintData InnerConstraintData;
+    typedef typename helper::remove_holder<ConstraintModel>::template rebind<
+      typename std::conditional<
+        ConstraintModelIsConst, const InnerConstraintData, InnerConstraintData>::type>
+      ConstraintData;
 
     typedef std::vector<ConstraintModel> ConstraintModelVector;
     typedef std::vector<ConstraintData> ConstraintDataVector;
@@ -75,20 +68,20 @@ namespace pinocchio
     int _Options,
     template<typename, int> class _JointCollectionTpl,
     class _ConstraintModel,
-    template<typename T> class _Holder>
+    template<typename T> class _StorageHolder>
   struct Unsafe<DelassusOperatorRigidBodySystemsTpl<
     _Scalar,
     _Options,
     _JointCollectionTpl,
     _ConstraintModel,
-    _Holder>>
+    _StorageHolder>>
   {
     typedef DelassusOperatorRigidBodySystemsTpl<
       _Scalar,
       _Options,
       _JointCollectionTpl,
       _ConstraintModel,
-      _Holder>
+      _StorageHolder>
       SafeSelf;
     typedef typename SafeSelf::BlockDiagonalMatrix BlockDiagonalMatrix;
 
@@ -121,14 +114,14 @@ namespace pinocchio
     int _Options,
     template<typename, int> class _JointCollectionTpl,
     class _ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   struct DelassusOperatorRigidBodySystemsTpl
   : DelassusOperatorBase<DelassusOperatorRigidBodySystemsTpl<
       _Scalar,
       _Options,
       _JointCollectionTpl,
       _ConstraintModel,
-      Holder>>
+      StorageHolder>>
   {
 
     typedef DelassusOperatorRigidBodySystemsTpl Self;
@@ -143,9 +136,9 @@ namespace pinocchio
     typedef typename traits<Self>::BlockDiagonalMatrix BlockDiagonalMatrix;
 
     typedef typename traits<Self>::Model Model;
-    typedef Holder<const Model> ModelHolder;
+    typedef StorageHolder<const Model> ModelHolder;
     typedef typename traits<Self>::Data Data;
-    typedef Holder<Data> DataHolder;
+    typedef StorageHolder<Data> DataHolder;
 
     typedef typename Data::Force Force;
     typedef typename Data::VectorXs VectorXs;
@@ -154,12 +147,12 @@ namespace pinocchio
     typedef typename traits<Self>::ConstraintModel ConstraintModel;
     typedef typename traits<Self>::InnerConstraintModel InnerConstraintModel;
     typedef typename traits<Self>::ConstraintModelVector ConstraintModelVector;
-    typedef Holder<const ConstraintModelVector> ConstraintModelVectorHolder;
+    typedef StorageHolder<const ConstraintModelVector> ConstraintModelVectorHolder;
 
     typedef typename traits<Self>::ConstraintData ConstraintData;
     typedef typename traits<Self>::InnerConstraintData InnerConstraintData;
     typedef typename traits<Self>::ConstraintDataVector ConstraintDataVector;
-    typedef Holder<const ConstraintDataVector> ConstraintDataVectorHolder;
+    typedef StorageHolder<const ConstraintDataVector> ConstraintDataVectorHolder;
 
     /// \brief Cast this class to its unsafe version.
     Unsafe<Self> unsafe()
@@ -563,13 +556,13 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::
+    StorageHolder>::
     rebuild(
       const ModelHolder & model_ref,
       const DataHolder & data_ref,
@@ -611,13 +604,13 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::compute_or_update_decomposition(bool apply_on_the_right, bool solve_in_place)
+    StorageHolder>::compute_or_update_decomposition(bool apply_on_the_right, bool solve_in_place)
   {
     typedef typename Data::Inertia Inertia;
     using Matrix6 = typename Inertia::Matrix6;
@@ -764,14 +757,14 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   template<typename MatrixIn, typename MatrixOut>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::
+    StorageHolder>::
     applyOnTheRight(
       const Eigen::MatrixBase<MatrixIn> & rhs,
       const Eigen::MatrixBase<MatrixOut> & res_,
@@ -893,14 +886,14 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   template<typename MatrixLike>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat_) const
+    StorageHolder>::solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat_) const
   {
     MatrixLike & mat = mat_.const_cast_derived();
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
@@ -992,14 +985,14 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   template<typename MatrixLike>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::AugmentedMassMatrixOperator::
+    StorageHolder>::AugmentedMassMatrixOperator::
     solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat_, bool reset_joint_force_vector) const
   {
     MatrixLike & mat = mat_.const_cast_derived();

@@ -56,6 +56,9 @@ namespace pinocchio
     {
       typedef T type;
       typedef T & ref_type;
+      static constexpr bool is_const = false;
+      template<typename U>
+      using rebind = U;
       static ref_type get_ref(T & v)
       {
         return v;
@@ -67,6 +70,9 @@ namespace pinocchio
     {
       typedef T type;
       typedef const T & ref_type;
+      static constexpr bool is_const = true;
+      template<typename U>
+      using rebind = U;
       static ref_type get_ref(const T & v)
       {
         return v;
@@ -78,6 +84,9 @@ namespace pinocchio
     {
       typedef typename remove_holder<T>::type type;
       typedef typename remove_holder<T>::ref_type ref_type;
+      static constexpr bool is_const = remove_holder<T>::is_const;
+      template<typename U>
+      using rebind = std::reference_wrapper<U>;
 
       static ref_type get_ref(std::reference_wrapper<T> & ref)
       {
@@ -102,6 +111,9 @@ namespace pinocchio
     {
       typedef typename remove_holder<const T>::type type;
       typedef typename remove_holder<const T>::ref_type ref_type;
+      static constexpr bool is_const = true;
+      template<typename U>
+      using rebind = std::reference_wrapper<U>;
 
       static ref_type get_ref(const std::reference_wrapper<const T> & ref)
       {
@@ -114,6 +126,9 @@ namespace pinocchio
     {
       typedef typename remove_holder<T>::type type;
       typedef typename remove_holder<T>::ref_type ref_type;
+      static constexpr bool is_const = remove_holder<T>::is_const;
+      template<typename U>
+      using rebind = std::shared_ptr<U>;
 
       static ref_type get_ref(const std::shared_ptr<T> & ptr)
       {
@@ -131,6 +146,9 @@ namespace pinocchio
     {
       typedef typename remove_holder<const T>::type type;
       typedef typename remove_holder<const T>::ref_type ref_type;
+      static constexpr bool is_const = true;
+      template<typename U>
+      using rebind = std::shared_ptr<U>;
 
       static ref_type get_ref(const std::shared_ptr<const T> & ptr)
       {
@@ -148,6 +166,9 @@ namespace pinocchio
     {
       typedef typename remove_holder<T>::type type;
       typedef typename remove_holder<T>::ref_type ref_type;
+      static constexpr bool is_const = remove_holder<T>::is_const;
+      template<typename U>
+      using rebind = std::unique_ptr<U>;
 
       static ref_type get_ref(const std::unique_ptr<T> & ptr)
       {
@@ -165,6 +186,9 @@ namespace pinocchio
     {
       typedef typename remove_holder<const T>::type type;
       typedef typename remove_holder<const T>::ref_type ref_type;
+      static constexpr bool is_const = true;
+      template<typename U>
+      using rebind = std::unique_ptr<U>;
 
       static ref_type get_ref(const std::unique_ptr<const T> & ptr)
       {
