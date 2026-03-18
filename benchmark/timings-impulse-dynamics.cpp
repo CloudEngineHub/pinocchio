@@ -4,23 +4,9 @@
 
 #include "model-fixture.hpp"
 
-#include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/kinematics-derivatives.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
-#include "pinocchio/algorithm/aba-derivatives.hpp"
-#include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/frames.hpp"
 #include "pinocchio/algorithm/impulse-dynamics.hpp"
-#include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
 
 #include <benchmark/benchmark.h>
-
-#include <iostream>
 
 struct ContactFixture : ModelFixture
 {

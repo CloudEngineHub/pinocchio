@@ -3,13 +3,12 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#include "pinocchio/fwd.hpp"
-
-#include <iostream>
 #include <benchmark/benchmark.h>
 
+#include <Eigen/Core>
+
 #include "pinocchio/utils/promote-static-eval.hpp"
-#include "pinocchio/math/matrix-product.hpp"
+#include "pinocchio/math.hpp"
 
 using namespace Eigen;
 // using namespace pinocchio;
@@ -459,9 +458,10 @@ BENCH_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(6, 6)
 
 #define BENCH_GENERAL_MATRIX_MATRIX_PRODUCT(                                                       \
   rows, cols, static_res, static_lhs, static_rhs, evaluation_mode)                                 \
-  BENCHMARK(Generic_MatrixMatrixProduct<                                                           \
-              static_res, static_lhs, static_rhs, rows, cols, ColMajor, ColMajor, ColMajor,        \
-              evaluation_mode>)                                                                    \
+  BENCHMARK(                                                                                       \
+    Generic_MatrixMatrixProduct<                                                                   \
+      static_res, static_lhs, static_rhs, rows, cols, ColMajor, ColMajor, ColMajor,                \
+      evaluation_mode>)                                                                            \
     ->Apply(CustomArguments);
 
 #define BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_STATICOP(                                              \

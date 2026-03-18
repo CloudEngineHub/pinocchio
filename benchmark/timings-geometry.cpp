@@ -12,8 +12,7 @@
   #include "pinocchio/collision/distance.hpp"
 #endif // PINOCCHIO_WITH_COLLISION
 #include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/multibody/geometry.hpp"
+#include "pinocchio/geometry.hpp"
 
 #include <iostream>
 

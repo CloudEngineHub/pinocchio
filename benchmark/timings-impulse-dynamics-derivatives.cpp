@@ -4,16 +4,10 @@
 
 #include "model-fixture.hpp"
 
-#include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/impulse-dynamics.hpp"
 #include "pinocchio/algorithm/impulse-dynamics-derivatives.hpp"
-#include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
 
 #include <benchmark/benchmark.h>
-
-#include <iostream>
 
 struct ContactFixture : ModelFixture
 {

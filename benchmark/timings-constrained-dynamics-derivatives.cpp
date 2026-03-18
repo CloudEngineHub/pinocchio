@@ -4,19 +4,12 @@
 //
 #include "model-fixture.hpp"
 
-#include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
 #include "pinocchio/algorithm/aba-derivatives.hpp"
-#include "pinocchio/algorithm/contact-dynamics.hpp"
 #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
-#include "pinocchio/algorithm/cholesky.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
 
 #include <benchmark/benchmark.h>
-
-#include <iostream>
 
 struct ContactFixture : ModelFixture
 {

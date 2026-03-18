@@ -14,6 +14,7 @@
 
 #include "pinocchio/multibody/pool.hpp"
 #include "pinocchio/collision/broadphase-manager.hpp"
+#include "pinocchio/collision/tree-broadphase-manager.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

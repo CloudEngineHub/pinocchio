@@ -2,26 +2,17 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
+#include <benchmark/benchmark.h>
+
 #include "model-fixture.hpp"
 
-#include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/kinematics-derivatives.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
-#include "pinocchio/algorithm/aba-derivatives.hpp"
 #include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/rnea.hpp"
 #include "pinocchio/algorithm/crba.hpp"
+#include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/contact-dynamics.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/algorithm/pv.hpp"
-
-#include <benchmark/benchmark.h>
-
-#include <iostream>
 
 struct ContactFixture : ModelFixture
 {

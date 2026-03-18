@@ -2,22 +2,13 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#include "pinocchio/algorithm/contact-info.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/kinematics-derivatives.hpp"
-#include "pinocchio/algorithm/model.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
-#include "pinocchio/algorithm/aba-derivatives.hpp"
 #include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/contact-dynamics.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
-#include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/multibody/fwd.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/algorithm/pv.hpp"
 #include "pinocchio/algorithm/loop-constrained-aba.hpp"
+
+#include "pinocchio/parsers/urdf.hpp"
 
 #include <iostream>
 #include <numeric>
