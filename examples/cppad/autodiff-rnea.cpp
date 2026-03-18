@@ -1,6 +1,5 @@
 #include "pinocchio/autodiff/cppad.hpp"
 
-#include <Eigen/src/plugins/ReshapedMethods.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <boost/core/ref.hpp>
