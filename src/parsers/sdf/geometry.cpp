@@ -14,8 +14,6 @@
   #include <coal/mesh_loader/assimp.h>
 #endif // PINOCCHIO_WITH_COLLISION
 
-#include "pinocchio/utils/file-explorer.hpp"
-
 namespace pinocchio
 {
   namespace sdf
