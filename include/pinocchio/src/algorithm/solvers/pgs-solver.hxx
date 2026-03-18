@@ -579,14 +579,14 @@ namespace pinocchio
 
   template<typename _Scalar, int _Options>
   template<
-    typename MatrixType,
+    typename DelassusDerived,
     typename VectorLike,
     typename ConstraintModel,
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  bool PGSConstraintSolverTpl<_Scalar, _Options>::solve(
-    const Eigen::MatrixBase<MatrixType> & delassus,
+  bool PGSConstraintSolverTpl<_Scalar, _Options>::solveImpl(
+    DelassusOperatorBase<DelassusDerived> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
@@ -594,7 +594,7 @@ namespace pinocchio
     PGSSolverResult & result)
   {
     // for easier access
-    const MatrixType & G = delassus.derived();
+    const auto & G = delassus.derived().matrix();
     PGSSolverResult & res = result;
     PGSSolverWorkspace & ws = m_workspace;
 
@@ -611,7 +611,8 @@ namespace pinocchio
     settings.checkValidity();
 
     // -- reset workspace
-    ws.reset(problem_size);
+    ws.resize(problem_size);
+    ws.reset();
     assert(ws.problem_size == problem_size);
     assert(ws.x.size() == np);
 
@@ -623,18 +624,18 @@ namespace pinocchio
     }
 
     // -- retrieve warmstart from results, then reset results
-    bool has_primal_guess = res.primal_guess.has_value();
-    if (has_primal_guess)
+    bool has_impulse_guess = res.impulse_guess.has_value();
+    if (has_impulse_guess)
     {
-      if (res.primal_guess.value().size() != ws.x.size())
+      if (res.impulse_guess.value().size() != ws.x.size())
       {
-        has_primal_guess = false;
+        has_impulse_guess = false;
       }
     }
 
-    if (has_primal_guess)
+    if (has_impulse_guess)
     {
-      ws.x = res.primal_guess.value();
+      ws.x = res.impulse_guess.value();
     }
     else
     {
@@ -642,7 +643,8 @@ namespace pinocchio
     }
     PINOCCHIO_CHECK_ARGUMENT_SIZE(ws.x.size(), np);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(ws.y.size(), np);
-    res.reset(problem_size);
+    res.resize(problem_size);
+    res.reset();
     assert(res.isValid() == false);
     assert(res.problem_size == problem_size);
     assert(res.iterations == 0);
@@ -810,12 +812,13 @@ namespace pinocchio
     PGSConstraintSolverTpl<context::Scalar, context::Options>;
 
   // -------------------------------------------------------------------------
-  // solve() with MatrixXs + default constraint collection
+  // solve() with DelassusCholeskyExpression + default constraint collection
   // -------------------------------------------------------------------------
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
   PGSConstraintSolverTpl<context::Scalar, context::Options>::solve<
-    context::MatrixXs,
+    DelassusCholeskyExpressionTpl<
+      ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>,
     context::VectorXs,
     ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
     std::allocator<
@@ -823,7 +826,8 @@ namespace pinocchio
     ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
     std::allocator<
       ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>>(
-    const Eigen::MatrixBase<context::MatrixXs> &,
+    DelassusOperatorBase<DelassusCholeskyExpressionTpl<
+      ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const std::vector<
       ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,

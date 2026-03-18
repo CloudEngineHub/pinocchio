@@ -115,8 +115,7 @@ class TestADMM(TestCase):
             delassus, g, constraint_models, constraint_datas, settings, result
         )
 
-        primal_sol = np.zeros(result.problem_size)
-        result.retrievePrimalSolution(primal_sol)
+        primal_sol = result.retrieveConstraintImpulses()
         print(f"{primal_sol=}")
 
         print(f"{result.iterations=}")

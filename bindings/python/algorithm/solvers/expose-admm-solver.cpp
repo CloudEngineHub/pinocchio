@@ -7,6 +7,7 @@
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/delassus-operator.hpp"
 
+#include "pinocchio/bindings/python/algorithm/constraint-solver-base.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
 
@@ -25,17 +26,11 @@ namespace pinocchio
     typedef context::Scalar Scalar;
     static constexpr int Options = context::Options;
     typedef context::VectorXs VectorXs;
-    typedef context::MatrixXs MatrixXs;
 
     typedef ADMMConstraintSolverTpl<Scalar, Options> ADMMSolver;
     typedef typename ADMMSolver::ADMMSolverSettings ADMMSolverSettings;
     typedef typename ADMMSolver::ADMMSolverResult ADMMSolverResult;
     typedef typename ADMMSolver::ADMMSolverStats ADMMSolverStats;
-
-    typedef ConstraintSolverSettingsBaseTpl<Scalar> ConstraintSolverSettingsBase;
-    typedef ConstraintSolverResultBaseTpl<Scalar> ConstraintSolverResultBase;
-    typedef ConstraintSolverStatsBaseTpl<Scalar> ConstraintSolverStatsBase;
-    typedef ConstraintSolverBaseTpl<Scalar> ConstraintSolverBase;
 
     typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
 
@@ -65,7 +60,7 @@ namespace pinocchio
     }
 
     // ============================================================================
-    // Expose ADMMSolverSettings (inheriting from base)
+    // Expose ADMMSolverSettings
     // ============================================================================
 
     // Wrapper functions for std::optional<Scalar> <-> boost::optional<Scalar> conversion
@@ -88,11 +83,14 @@ namespace pinocchio
 
     void exposeADMMSolverSettings()
     {
-      bp::class_<ADMMSolverSettings, bp::bases<ConstraintSolverSettingsBase>>(
+      bp::class_<ADMMSolverSettings>(
         "ADMMSolverSettings", "Settings for the ADMM constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor with default settings."))
 
-        // ADMM specific settings (base class properties are inherited)
+        // Base settings
+        .def(ConstraintSolverSettingsBasePythonVisitor<ADMMSolverSettings>())
+
+        // ADMM specific settings
         .add_property(
           "rho_init", &getRhoInitWrapper, &setRhoInitWrapper,
           "Initial value of rho parameter (optional). If None, will be estimated from Delassus.")
@@ -131,10 +129,20 @@ namespace pinocchio
     }
 
     // ============================================================================
-    // Expose ADMMSolverResult (inheriting from base)
+    // Expose ADMMSolverResult
     // ============================================================================
 
-    // Wrapper functions for retrieve methods
+    static void setConstraintVelocityGuess_vector(
+      ADMMSolverResult & self, const Eigen::Ref<const VectorXs> & v)
+    {
+      self.setConstraintVelocityGuess(v);
+    }
+
+    static void clearConstraintVelocityGuess(ADMMSolverResult & self)
+    {
+      self.setConstraintVelocityGuess(std::nullopt);
+    }
+
     static void retrievePrimalSolution_wrapper(
       const ADMMSolverResult & solution, Eigen::Ref<VectorXs> primal_solution)
     {
@@ -155,11 +163,14 @@ namespace pinocchio
 
     void exposeADMMSolverResult()
     {
-      bp::class_<ADMMSolverResult, bp::bases<ConstraintSolverResultBase>>(
+      bp::class_<ADMMSolverResult>(
         "ADMMSolverResult", "Solution of the ADMM constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
 
-        // ADMM specific properties (base class properties are inherited)
+        // Base result
+        .def(ConstraintSolverResultBasePythonVisitor<ADMMSolverResult>())
+
+        // ADMM specific properties
         .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverResult, problem_size, "Problem size")
         .PINOCCHIO_ADD_PROPERTY_READONLY(
           ADMMSolverResult, delassus_decomposition_update_count,
@@ -169,12 +180,17 @@ namespace pinocchio
           ADMMSolverResult, spectral_rho_power, "Final spectral rho power")
         .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverResult, mu_prox, "Final proximal parameter")
 
+        .def("resize", &ADMMSolverResult::resize, bp::args("self", "problem_size"),
+             "Resize solution vectors")
+
+        // ADMM-specific warmstart: velocity guess
         .def(
-          "reset", static_cast<void (ADMMSolverResult::*)(std::size_t)>(&ADMMSolverResult::reset),
-          (bp::arg("self"), bp::arg("problem_size") = 0), "Reset the result")
+          "setConstraintVelocityGuess", setConstraintVelocityGuess_vector,
+          bp::args("self", "velocity_guess"),
+          "Set the velocity warmstart for the solver (copies the vector).")
         .def(
-          "resize", &ADMMSolverResult::resize, bp::args("self", "problem_size"),
-          "Resize solution vectors")
+          "clearConstraintVelocityGuess", clearConstraintVelocityGuess, bp::arg("self"),
+          "Clear the velocity warmstart (equivalent to passing std::nullopt).")
 
         // Retrieve methods
         .def(
@@ -190,19 +206,22 @@ namespace pinocchio
     }
 
     // ============================================================================
-    // Expose ADMMSolverStats (inheriting from base)
+    // Expose ADMMSolverStats
     // ============================================================================
 
     void exposeADMMSolverStats()
     {
-      bp::class_<ADMMSolverStats, bp::bases<ConstraintSolverStatsBase>>(
+      bp::class_<ADMMSolverStats>(
         "ADMMSolverStats", "Per-iteration statistics of the ADMM constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
         .def(
           bp::init<std::size_t>(
             bp::args("self", "max_iterations"), "Constructor with maximum iterations."))
 
-        // ADMM specific properties (base class properties are inherited)
+        // Base stats
+        .def(ConstraintSolverStatsBasePythonVisitor<ADMMSolverStats>())
+
+        // ADMM specific properties
         .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverStats, rho, "History of rho values")
         .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverStats, mu_prox, "History of mu_prox values")
         .PINOCCHIO_ADD_PROPERTY_READONLY(
@@ -217,7 +236,7 @@ namespace pinocchio
     }
 
     // ============================================================================
-    // Expose ADMMConstraintSolver (inheriting from base)
+    // Expose ADMMConstraintSolver
     // ============================================================================
 
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
@@ -243,7 +262,7 @@ namespace pinocchio
     template<typename Solver>
     struct ADMMSolveMethodExposer
     {
-      ADMMSolveMethodExposer(bp::class_<Solver, bp::bases<ConstraintSolverBase>> & class_)
+      ADMMSolveMethodExposer(bp::class_<Solver> & class_)
       : class_(class_)
       {
       }
@@ -317,7 +336,7 @@ namespace pinocchio
         PINOCCHIO_UNUSED_VARIABLE(ptr);
       }
 
-      bp::class_<Solver, bp::bases<ConstraintSolverBase>> & class_;
+      bp::class_<Solver> & class_;
     };
 
     void exposeADMMConstraintSolver()
@@ -327,23 +346,26 @@ namespace pinocchio
       // Expose enums first
       exposeADMMEnums();
 
-      // Expose Settings, Solution, Stats (they inherit from base)
+      // Expose Settings, Solution, Stats
       exposeADMMSolverSettings();
       exposeADMMSolverResult();
       exposeADMMSolverStats();
 
-      // Expose the solver itself (inherits from base)
-      bp::class_<ADMMSolver, bp::bases<ConstraintSolverBase>> cl(
+      // Expose the solver itself
+      bp::class_<ADMMSolver> cl(
         "ADMMConstraintSolver",
         "Alternating Direction Method of Multipliers (ADMM) solver for contact dynamics.",
         bp::init<std::size_t>(
           bp::args("self", "problem_size"), "Constructor with problem dimension."));
 
-      cl.PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolver, stats, "Access the statistics of the solver")
+      cl
+        // Base solver
+        .def(ConstraintSolverBasePythonVisitor<ADMMSolver>())
+        // ADMM solver specific
+        .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolver, stats, "Access the statistics of the solver")
         .def(
           "isValid", &ADMMSolver::isValid, bp::arg("self"),
-          "Check if the solver is in a valid state (has solved a constraint problem)")
-        .def("reset", &ADMMSolver::reset, bp::arg("self"), "Reset the solver to initial state");
+          "Check if the solver is in a valid state (has solved a constraint problem)");
 
       // Expose solve methods for different constraint models
       ADMMSolveMethodExposer<ADMMSolver> solve_exposer(cl);

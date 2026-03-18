@@ -33,7 +33,7 @@ struct TestBoxTpl
     }
 
     const Eigen::Index constraint_size = getTotalConstraintResidualSize(constraint_models);
-    primal_solution = dual_solution = dual_solution_sparse = Eigen::VectorXd::Zero(constraint_size);
+    impulse_solution = velocity_solution = Eigen::VectorXd::Zero(constraint_size);
   }
 
   void operator()(
@@ -85,27 +85,27 @@ struct TestBoxTpl
     pgs_settings.absolute_complementarity_tol = absolute_tol;
     pgs_settings.relative_complementarity_tol = relative_tol;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     has_converged = pgs_solver.solve(
       G_expression, g, constraint_models, constraint_datas, pgs_settings, pgs_result);
     BOOST_CHECK(pgs_result.problem_size == static_cast<std::size_t>(G_expression.rows()));
     BOOST_CHECK(pgs_solver.isValid() == true);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
 
     if (test_warmstart)
     {
-      pgs_result.primal_guess.emplace(primal_solution);
+      pgs_result.setConstraintImpulseGuess(impulse_solution);
       has_converged =
         has_converged
         && pgs_solver.solve(
           G_expression, g, constraint_models, constraint_datas, pgs_settings, pgs_result);
-      pgs_result.retrievePrimalSolution(primal_solution);
+      pgs_result.retrieveConstraintImpulses(impulse_solution);
     }
 
-    pgs_result.retrieveDualSolution(dual_solution);
+    pgs_result.retrieveConstraintVelocities(velocity_solution);
     n_iter = pgs_result.iterations;
-    const Eigen::VectorXd tau_ext = constraint_jacobian.transpose() * primal_solution / dt;
+    const Eigen::VectorXd tau_ext = constraint_jacobian.transpose() * impulse_solution / dt;
 
     v_next =
       v0
@@ -118,7 +118,7 @@ struct TestBoxTpl
   std::vector<ConstraintData> constraint_datas;
   Eigen::VectorXd v_next;
 
-  Eigen::VectorXd primal_solution, dual_solution, dual_solution_sparse;
+  Eigen::VectorXd impulse_solution, velocity_solution;
   bool has_converged;
   std::size_t n_iter;
 };
@@ -165,17 +165,17 @@ BOOST_AUTO_TEST_CASE(ball)
     test(q0, v0, tau0, fext, dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(2e-10));
+    BOOST_CHECK(test.velocity_solution.isZero(2e-10));
     const Force::Vector3 f_tot_ref = -ball_mass * Model::gravity981 - fext.linear();
-    Force::Vector3 f_tot = test.primal_solution.head(3) / dt;
+    Force::Vector3 f_tot = test.impulse_solution.head(3) / dt;
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-8));
     BOOST_CHECK(test.v_next.isZero(2e-10));
 
     // Test warmstart
     test(q0, v0, tau0, fext, dt, true);
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(2e-10));
-    f_tot = test.primal_solution.head(3) / dt;
+    BOOST_CHECK(test.velocity_solution.isZero(2e-10));
+    f_tot = test.impulse_solution.head(3) / dt;
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-8));
     BOOST_CHECK(test.v_next.isZero(2e-10));
     BOOST_CHECK(test.n_iter == 0);
@@ -273,9 +273,9 @@ BOOST_AUTO_TEST_CASE(box)
     test(q0, v0, tau0, fext, dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(2e-10));
+    BOOST_CHECK(test.velocity_solution.isZero(2e-10));
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - fext.linear();
-    const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.primal_solution / dt);
+    const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.impulse_solution / dt);
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-8));
     BOOST_CHECK(test.v_next.isZero(2e-10));
   }
@@ -295,9 +295,9 @@ BOOST_AUTO_TEST_CASE(box)
     test(q0, v0, tau0, fext, dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(1e-6));
+    BOOST_CHECK(test.velocity_solution.isZero(1e-6));
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - fext.linear();
-    const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.primal_solution / dt);
+    const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.impulse_solution / dt);
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-4));
     BOOST_CHECK(test.v_next.isZero(1e-4));
   }
@@ -315,7 +315,7 @@ BOOST_AUTO_TEST_CASE(box)
 
     BOOST_CHECK(test.has_converged == true);
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - 1 / scaling * fext.linear();
-    const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.primal_solution / dt);
+    const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.impulse_solution / dt);
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-6));
     BOOST_CHECK(
       math::fabs(Motion(test.v_next).linear().norm() - (f_sliding * 0.1 / box_mass * dt)) <= 1e-6);
@@ -366,10 +366,10 @@ BOOST_AUTO_TEST_CASE(stack_of_boxes)
     test(q0, v0, tau0, fext, dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(2e-6));
+    BOOST_CHECK(test.velocity_solution.isZero(2e-6));
     // We check the total force applied on the bottom box of the stack
     const Force::Vector3 f_tot_ref = -mass_tot * Model::gravity981;
-    const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.primal_solution / dt);
+    const Force::Vector3 f_tot = computeFtotOfFirstBoxInStackOfBoxes(test.impulse_solution / dt);
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-3));
     BOOST_CHECK(test.v_next.isZero(1e-4));
   }
@@ -428,12 +428,12 @@ BOOST_AUTO_TEST_CASE(point_anchor_box)
     test(q0, v0, tau0, fext, dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(2e-10));
+    BOOST_CHECK(test.velocity_solution.isZero(2e-10));
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981;
     Force::Vector3 f_tot = Force::Vector3::Zero();
     for (int k = 0; k < 4; ++k)
     {
-      f_tot += test.primal_solution.segment(3 * k, 3);
+      f_tot += test.impulse_solution.segment(3 * k, 3);
     }
     f_tot /= dt;
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-6));
@@ -449,12 +449,12 @@ BOOST_AUTO_TEST_CASE(point_anchor_box)
     test(q0, v0, tau0, fext, dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(1e-8));
+    BOOST_CHECK(test.velocity_solution.isZero(1e-8));
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - fext.linear();
     Force::Vector3 f_tot = Force::Vector3::Zero();
     for (int k = 0; k < 4; ++k)
     {
-      f_tot += test.primal_solution.segment(3 * k, 3);
+      f_tot += test.impulse_solution.segment(3 * k, 3);
     }
     f_tot /= dt;
     BOOST_CHECK(f_tot.isApprox(f_tot_ref, 1e-6));
@@ -521,8 +521,8 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
 
   Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g.size());
   G_expression.updateCompliance(compliance);
-  Eigen::VectorXd dual_solution(Eigen::VectorXd::Zero(g.size()));
-  Eigen::VectorXd primal_solution(Eigen::VectorXd::Zero(g.size()));
+  Eigen::VectorXd velocity_solution(Eigen::VectorXd::Zero(g.size()));
+  Eigen::VectorXd impulse_solution(Eigen::VectorXd::Zero(g.size()));
 
   PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
   PGSSolverSettings pgs_settings;
@@ -531,17 +531,17 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   pgs_settings.absolute_complementarity_tol = 1e-13;
   pgs_settings.relative_complementarity_tol = 1e-14;
   PGSSolverResult pgs_result;
-  pgs_result.primal_guess.emplace(primal_solution);
+  pgs_result.setConstraintImpulseGuess(impulse_solution);
 
   const bool has_converged = pgs_solver.solve(
     G_expression, g, constraint_models, constraint_datas, pgs_settings, pgs_result);
-  pgs_result.retrievePrimalSolution(primal_solution);
+  pgs_result.retrieveConstraintImpulses(impulse_solution);
   BOOST_CHECK(has_converged);
 
-  dual_solution = G * primal_solution + g;
+  velocity_solution = G * impulse_solution + g;
 
-  BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-  BOOST_CHECK(primal_solution.isZero());
+  BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+  BOOST_CHECK(impulse_solution.isZero());
 
   typedef TestBoxTpl<ConstraintModel> TestBox;
 
@@ -551,9 +551,9 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
     test(q0, v0, tau0, Force::Zero(), dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(test.dual_solution.isZero(2e-10));
+    BOOST_CHECK(test.velocity_solution.isZero(2e-10));
     BOOST_CHECK(test.v_next.isZero(2e-10));
-    BOOST_CHECK(box_set.isInside(test.primal_solution));
+    BOOST_CHECK(box_set.isInside(test.impulse_solution));
   }
 
   for (int i = 0; i < 6; ++i)
@@ -561,12 +561,12 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
     TestBox test(model, constraint_models);
     test(q0, v0, tau0 + 2 * Force::Vector6::Unit(i) / dt, Force::Zero(), dt);
 
-    //    std::cout << "test.dual_solution: " << test.dual_solution.transpose() << std::endl;
+    //    std::cout << "test.velocity_solution: " << test.velocity_solution.transpose() << std::endl;
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(!test.primal_solution.isZero(2e-10));
+    BOOST_CHECK(!test.impulse_solution.isZero(2e-10));
     BOOST_CHECK(!test.v_next.isZero(2e-10));
-    BOOST_CHECK(box_set.isInside(test.primal_solution));
-    BOOST_CHECK(std::fabs(test.primal_solution[i] - box_set.lb[i]) < 1e-8);
+    BOOST_CHECK(box_set.isInside(test.impulse_solution));
+    BOOST_CHECK(std::fabs(test.impulse_solution[i] - box_set.lb[i]) < 1e-8);
   }
 
   // Sign reversed
@@ -576,10 +576,10 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
     test(q0, v0, tau0 - 2 * Force::Vector6::Unit(i) / dt, Force::Zero(), dt);
 
     BOOST_CHECK(test.has_converged == true);
-    BOOST_CHECK(!test.dual_solution.isZero(2e-10));
+    BOOST_CHECK(!test.velocity_solution.isZero(2e-10));
     BOOST_CHECK(!test.v_next.isZero(2e-10));
-    BOOST_CHECK(box_set.isInside(test.primal_solution));
-    BOOST_CHECK(std::fabs(test.primal_solution[i] - box_set.ub[i]) < 1e-8);
+    BOOST_CHECK(box_set.isInside(test.impulse_solution));
+    BOOST_CHECK(std::fabs(test.impulse_solution[i] - box_set.ub[i]) < 1e-8);
   }
 }
 
@@ -647,8 +647,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd velocity_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     PGSConstraintSolver pgs_solver(std::size_t(delassus_matrix_plain.rows()));
     PGSSolverSettings pgs_settings;
@@ -657,24 +657,24 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    dual_solution = G_plain * primal_solution + g_against_lower_bound;
-    Eigen::VectorXd dual_solution2;
-    pgs_result.retrieveDualSolution(dual_solution2);
+    velocity_solution = G_plain * impulse_solution + g_against_lower_bound;
+    Eigen::VectorXd velocity_solution2;
+    pgs_result.retrieveConstraintVelocities(velocity_solution2);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-    BOOST_CHECK(dual_solution.isZero(1e-6));
-    BOOST_CHECK(dual_solution2.isZero(1e-6));
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+    BOOST_CHECK(velocity_solution.isZero(1e-6));
+    BOOST_CHECK(velocity_solution2.isZero(1e-6));
 
     BOOST_CHECK(
-      (tau_push_against_lower_bound + constraint_jacobian.transpose() * primal_solution / dt)
+      (tau_push_against_lower_bound + constraint_jacobian.transpose() * impulse_solution / dt)
         .isZero(1e-6));
   }
 
@@ -683,8 +683,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd velocity_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -696,21 +696,21 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2;
-    pgs_result.retrieveDualSolution(dual_solution2);
+    velocity_solution = G_plain * impulse_solution + g_move_away;
+    Eigen::VectorXd velocity_solution2;
+    pgs_result.retrieveConstraintVelocities(velocity_solution2);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-    BOOST_CHECK(primal_solution.isZero());
-    BOOST_CHECK(dual_solution.isApprox(g_move_away));
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+    BOOST_CHECK(impulse_solution.isZero());
+    BOOST_CHECK(velocity_solution.isApprox(g_move_away));
   }
 }
 
@@ -787,8 +787,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd velocity_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -800,29 +800,29 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    dual_solution = G_plain * primal_solution + g_against_lower_bound;
-    Eigen::VectorXd dual_solution2;
-    pgs_result.retrieveDualSolution(dual_solution2);
+    velocity_solution = G_plain * impulse_solution + g_against_lower_bound;
+    Eigen::VectorXd velocity_solution2;
+    pgs_result.retrieveConstraintVelocities(velocity_solution2);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-    BOOST_CHECK(dual_solution.isZero(1e-6));
-    BOOST_CHECK(dual_solution2.isZero(1e-6));
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+    BOOST_CHECK(velocity_solution.isZero(1e-6));
+    BOOST_CHECK(velocity_solution2.isZero(1e-6));
 
     // std::cout << "tau_push_against_lower_bound:   " << tau_push_against_lower_bound << std::endl;
-    // std::cout << "constraint_jacobian.transpose() * primal_solution:   "
-    //           << constraint_jacobian.transpose() * primal_solution << std::endl;
-    // std::cout << "primal_solution:   " << primal_solution << std::endl;
+    // std::cout << "constraint_jacobian.transpose() * impulse_solution:   "
+    //           << constraint_jacobian.transpose() * impulse_solution << std::endl;
+    // std::cout << "impulse_solution:   " << impulse_solution << std::endl;
 
     BOOST_CHECK(
-      (tau_push_against_lower_bound + constraint_jacobian.transpose() * primal_solution / dt)
+      (tau_push_against_lower_bound + constraint_jacobian.transpose() * impulse_solution / dt)
         .isZero(1e-6));
   }
 
@@ -831,8 +831,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd velocity_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -844,21 +844,21 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2;
-    pgs_result.retrieveDualSolution(dual_solution2);
+    velocity_solution = G_plain * impulse_solution + g_move_away;
+    Eigen::VectorXd velocity_solution2;
+    pgs_result.retrieveConstraintVelocities(velocity_solution2);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-    BOOST_CHECK(primal_solution.isZero());
-    BOOST_CHECK(dual_solution.isApprox(g_move_away));
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+    BOOST_CHECK(impulse_solution.isZero());
+    BOOST_CHECK(velocity_solution.isApprox(g_move_away));
   }
 }
 
@@ -935,8 +935,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     const Eigen::VectorXd g_tilde_against_lower_bound =
       g_against_lower_bound + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd velocity_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -948,29 +948,29 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    dual_solution = G_plain * primal_solution + g_against_lower_bound;
-    Eigen::VectorXd dual_solution2;
-    pgs_result.retrieveDualSolution(dual_solution2);
+    velocity_solution = G_plain * impulse_solution + g_against_lower_bound;
+    Eigen::VectorXd velocity_solution2;
+    pgs_result.retrieveConstraintVelocities(velocity_solution2);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-    BOOST_CHECK(dual_solution.isZero(1e-6));
-    BOOST_CHECK(dual_solution2.isZero(1e-6));
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+    BOOST_CHECK(velocity_solution.isZero(1e-6));
+    BOOST_CHECK(velocity_solution2.isZero(1e-6));
 
     // std::cout << "tau_push_against_lower_bound:   " << tau_push_against_lower_bound << std::endl;
-    // std::cout << "constraint_jacobian.transpose() * primal_solution:   "
-    //           << constraint_jacobian.transpose() * primal_solution << std::endl;
-    // std::cout << "primal_solution:   " << primal_solution << std::endl;
+    // std::cout << "constraint_jacobian.transpose() * impulse_solution:   "
+    //           << constraint_jacobian.transpose() * impulse_solution << std::endl;
+    // std::cout << "impulse_solution:   " << impulse_solution << std::endl;
 
     BOOST_CHECK(
-      (tau_push_against_lower_bound + constraint_jacobian.transpose() * primal_solution / dt)
+      (tau_push_against_lower_bound + constraint_jacobian.transpose() * impulse_solution / dt)
         .isZero(1e-6));
   }
 
@@ -979,8 +979,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd velocity_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -992,21 +992,21 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2;
-    pgs_result.retrieveDualSolution(dual_solution2);
+    velocity_solution = G_plain * impulse_solution + g_move_away;
+    Eigen::VectorXd velocity_solution2;
+    pgs_result.retrieveConstraintVelocities(velocity_solution2);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-    BOOST_CHECK(primal_solution.isZero());
-    BOOST_CHECK(dual_solution.isApprox(g_move_away));
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+    BOOST_CHECK(impulse_solution.isZero());
+    BOOST_CHECK(velocity_solution.isApprox(g_move_away));
   }
 }
 
@@ -1075,7 +1075,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
       g_against_lower_bound + cdata.constraint_residual / dt;
 
     Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -1087,26 +1087,26 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
+    constraint_velocity = G_plain * impulse_solution + g_against_lower_bound;
     constraint_velocity /= dt;
-    Eigen::VectorXd dual_solution;
-    pgs_result.retrieveDualSolution(dual_solution);
+    Eigen::VectorXd velocity_solution;
+    pgs_result.retrieveConstraintVelocities(velocity_solution);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
     BOOST_CHECK(
-      (dual_solution - (G_plain * primal_solution + g_tilde_against_lower_bound)).isZero(1e-6));
+      (velocity_solution - (G_plain * impulse_solution + g_tilde_against_lower_bound)).isZero(1e-6));
 
     BOOST_CHECK(
-      (-tau_gravity + constraint_jacobian.transpose() * primal_solution / dt).isZero(1e-6));
+      (-tau_gravity + constraint_jacobian.transpose() * impulse_solution / dt).isZero(1e-6));
   }
 
   // External torques compensate the gravity to push the freeflyer away from the lower bound
@@ -1114,8 +1114,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd velocity_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -1127,21 +1127,21 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2;
-    pgs_result.retrieveDualSolution(dual_solution2);
+    velocity_solution = G_plain * impulse_solution + g_move_away;
+    Eigen::VectorXd velocity_solution2;
+    pgs_result.retrieveConstraintVelocities(velocity_solution2);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-    BOOST_CHECK(primal_solution.isZero());
-    BOOST_CHECK(dual_solution.isApprox(g_move_away));
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+    BOOST_CHECK(impulse_solution.isZero());
+    BOOST_CHECK(velocity_solution.isApprox(g_move_away));
   }
 }
 
@@ -1210,7 +1210,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
       g_against_lower_bound + cdata.constraint_residual / dt;
 
     Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -1222,25 +1222,25 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
-    Eigen::VectorXd dual_solution;
-    pgs_result.retrieveDualSolution(dual_solution);
+    constraint_velocity = G_plain * impulse_solution + g_against_lower_bound;
+    Eigen::VectorXd velocity_solution;
+    pgs_result.retrieveConstraintVelocities(velocity_solution);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
     BOOST_CHECK(
-      (dual_solution - (G_plain * primal_solution + g_tilde_against_lower_bound)).isZero(1e-6));
+      (velocity_solution - (G_plain * impulse_solution + g_tilde_against_lower_bound)).isZero(1e-6));
 
     BOOST_CHECK(
-      (-tau_gravity + constraint_jacobian.transpose() * primal_solution / dt).isZero(1e-6));
+      (-tau_gravity + constraint_jacobian.transpose() * impulse_solution / dt).isZero(1e-6));
   }
 
   // External torques compensate the gravity to push the freeflyer away from the lower bound
@@ -1248,8 +1248,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd velocity_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -1261,21 +1261,21 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2;
-    pgs_result.retrieveDualSolution(dual_solution2);
+    velocity_solution = G_plain * impulse_solution + g_move_away;
+    Eigen::VectorXd velocity_solution2;
+    pgs_result.retrieveConstraintVelocities(velocity_solution2);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-    BOOST_CHECK(primal_solution.isZero());
-    BOOST_CHECK(dual_solution.isApprox(g_move_away));
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+    BOOST_CHECK(impulse_solution.isZero());
+    BOOST_CHECK(velocity_solution.isApprox(g_move_away));
   }
 }
 
@@ -1347,7 +1347,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
       g_against_lower_bound + cdata.constraint_residual / dt;
 
     Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_against_lower_bound.size());
     G_expression.updateCompliance(compliance);
@@ -1359,27 +1359,27 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_against_lower_bound, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    constraint_velocity = G_plain * primal_solution + g_against_lower_bound;
+    constraint_velocity = G_plain * impulse_solution + g_against_lower_bound;
 
-    Eigen::VectorXd dual_solution;
-    pgs_result.retrieveDualSolution(dual_solution);
+    Eigen::VectorXd velocity_solution;
+    pgs_result.retrieveConstraintVelocities(velocity_solution);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
     BOOST_CHECK(std::abs(constraint_velocity[0]) < 1e-6);
     BOOST_CHECK(
-      (dual_solution - (G_plain * primal_solution + g_tilde_against_lower_bound)).isZero(1e-6));
+      (velocity_solution - (G_plain * impulse_solution + g_tilde_against_lower_bound)).isZero(1e-6));
 
     BOOST_CHECK(
       std::abs(
-        (tau_push_against_lower_bound + constraint_jacobian.transpose() * primal_solution / dt)(1))
+        (tau_push_against_lower_bound + constraint_jacobian.transpose() * impulse_solution / dt)(1))
       < 1e-6);
   }
 
@@ -1388,8 +1388,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     const Eigen::VectorXd g_move_away = constraint_jacobian * v_free_move_away;
     const Eigen::VectorXd g_tilde_move_away = g_move_away + cdata.constraint_residual / dt;
 
-    Eigen::VectorXd dual_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
-    Eigen::VectorXd primal_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd velocity_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
+    Eigen::VectorXd impulse_solution = Eigen::VectorXd::Zero(cmodel.residualSize());
 
     Eigen::VectorXd compliance = Eigen::VectorXd::Zero(g_tilde_move_away.size());
     G_expression.updateCompliance(compliance);
@@ -1401,21 +1401,21 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
     pgs_settings.absolute_complementarity_tol = 1e-13;
     pgs_settings.relative_complementarity_tol = 1e-14;
     PGSSolverResult pgs_result;
-    pgs_result.primal_guess.emplace(primal_solution);
+    pgs_result.setConstraintImpulseGuess(impulse_solution);
 
     const bool has_converged = pgs_solver.solve(
       G_expression, g_tilde_move_away, constraint_models, constraint_datas, pgs_settings,
       pgs_result);
-    pgs_result.retrievePrimalSolution(primal_solution);
+    pgs_result.retrieveConstraintImpulses(impulse_solution);
     BOOST_CHECK(has_converged);
 
-    dual_solution = G_plain * primal_solution + g_move_away;
-    Eigen::VectorXd dual_solution2;
-    pgs_result.retrieveDualSolution(dual_solution2);
+    velocity_solution = G_plain * impulse_solution + g_move_away;
+    Eigen::VectorXd velocity_solution2;
+    pgs_result.retrieveConstraintVelocities(velocity_solution2);
 
-    BOOST_CHECK(std::fabs(primal_solution.dot(dual_solution)) <= 1e-8);
-    BOOST_CHECK(primal_solution.isZero());
-    BOOST_CHECK(dual_solution.isApprox(g_move_away));
+    BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
+    BOOST_CHECK(impulse_solution.isZero());
+    BOOST_CHECK(velocity_solution.isApprox(g_move_away));
   }
 }
 
