@@ -1,8 +1,33 @@
 #include "pinocchio/autodiff/casadi.hpp"
 
+#include <stddef.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include <Eigen/Core>
+#include <Eigen/SparseCore>
+
+#include <boost/core/ref.hpp>
+#include <boost/fusion/algorithm.hpp>
+#include <boost/fusion/functional.hpp>
+#include <boost/variant.hpp>
+
+#include <casadi/casadi.hpp>
+
+#include "pinocchio/math.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/utils/cast.hpp"
+#include "pinocchio/utils/check.hpp"
+
 #include "pinocchio/algorithm/aba.hpp"
+#include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 
 int main(int /*argc*/, char ** /*argv*/)

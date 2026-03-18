@@ -1,3 +1,0 @@
-[
-  { "include": ["@<casadi/core/.*>", "private", "<casadi/casadi.hpp>", "public"] }
-]
