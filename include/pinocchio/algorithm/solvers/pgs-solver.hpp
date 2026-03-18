@@ -427,8 +427,10 @@ namespace pinocchio
     {
       typedef _Scalar Scalar;
       static constexpr int Options = _Options;
-      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
       typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
+      typedef EigenStorageTpl<MatrixXs> MatrixXsStorage;
 
       /// \brief Constructor given problem_size.
       PGSSolverWorkspaceTpl(std::size_t problem_size = 0)
@@ -444,6 +446,7 @@ namespace pinocchio
         resize(problem_size);
 
 #ifndef NDEBUG
+        delassus_matrix.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
         x.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
         x_previous.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
         y.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
@@ -458,6 +461,7 @@ namespace pinocchio
         problem_size = problem_size_;
 
         Eigen::Index np = static_cast<Eigen::Index>(problem_size);
+        delassus_matrix_storage.resize(np, np);
         x_storage.resize(np);
         x_previous_storage.resize(np);
         y_storage.resize(np);
@@ -467,6 +471,10 @@ namespace pinocchio
 
       /// \brief Size of problem.
       std::size_t problem_size;
+
+      /// \brief Storage for the delassus matrix.
+      MatrixXsStorage delassus_matrix_storage;
+      typename MatrixXsStorage::RefMapType delassus_matrix = delassus_matrix_storage.map();
 
       /// \brief Primal variable (impulses) at current iteration.
       VectorXsStorage x_storage;

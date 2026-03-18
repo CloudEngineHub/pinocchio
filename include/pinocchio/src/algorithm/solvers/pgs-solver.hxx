@@ -594,17 +594,16 @@ namespace pinocchio
     PGSSolverResult & result)
   {
     // for easier access
-    const auto & G = delassus.derived().matrix();
     PGSSolverResult & res = result;
     PGSSolverWorkspace & ws = m_workspace;
 
     // Configure/reset workspace, stats and results.
     // note: the order matters as workspace is initialized using
     // optional warmstarts contained in results.
-    const Eigen::Index np = G.rows();
+    const Eigen::Index np = g.size();
     const std::size_t problem_size = static_cast<std::size_t>(np);
-    assert(G.cols() == np);
-    assert(g.size() == np);
+    assert(delassus.cols() == np);
+    assert(delassus.rows() == np);
     assert(residualSize(constraint_models) == np);
 
     // -- check if settings are valid
@@ -613,8 +612,12 @@ namespace pinocchio
     // -- reset workspace
     ws.resize(problem_size);
     ws.reset();
+    assert(ws.delassus_matrix.cols() == np);
+    assert(ws.delassus_matrix.rows() == np);
     assert(ws.problem_size == problem_size);
     assert(ws.x.size() == np);
+    delassus.derived().matrix(ws.delassus_matrix, true /*enforce symmetry*/, true /*with damping*/);
+    const auto& G = ws.delassus_matrix;
 
     // -- reset per-iteration statistics
     stats.reset();
