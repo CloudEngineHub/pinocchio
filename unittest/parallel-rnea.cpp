@@ -2,14 +2,11 @@
 // Copyright (c) 2021-2022 INRIA
 //
 
-#include "pinocchio/spatial/fwd.hpp"
+#include "pinocchio/spatial.hpp"
 #include "pinocchio/algorithm/parallel/rnea.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/utils/timer.hpp"
-
-#include <iostream>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

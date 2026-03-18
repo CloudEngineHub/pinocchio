@@ -2,19 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#include "pinocchio/multibody/data.hpp"
+#include "pinocchio/multibody.hpp"
 #include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/frames.hpp"
 
-#include "pinocchio/parsers/graph/model-graph.hpp"
-#include "pinocchio/parsers/graph/joints.hpp"
-#include "pinocchio/parsers/graph/model-graph-algo.hpp"
-#include "pinocchio/parsers/graph/model-configuration-converter.hpp"
+#include "pinocchio/parsers/graph.hpp"
 
-#if defined(PINOCCHIO_WITH_COLLISION)
-  #include "pinocchio/parsers/graph/model-graph-algo-geometry.hpp"
-#endif
 #include <boost/test/unit_test.hpp>
 #include <stdexcept>
 
@@ -26,8 +19,9 @@ pinocchio::graph::ModelGraph buildReversableModelGraph(const pinocchio::graph::J
   //////////////////////////////////////// Bodies
   g.addFrame("body1", BodyFrame(pinocchio::Inertia::Identity()));
   g.addFrame(
-    "body2", BodyFrame(pinocchio::Inertia(
-               4., pinocchio::Inertia::Vector3(0., 2., 0.), pinocchio::Symmetric3::Zero())));
+    "body2", BodyFrame(
+               pinocchio::Inertia(
+                 4., pinocchio::Inertia::Vector3(0., 2., 0.), pinocchio::Symmetric3::Zero())));
 
   /////////////////////////////////////// Joints
   pinocchio::SE3 poseBody1 =

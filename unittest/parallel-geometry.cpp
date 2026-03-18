@@ -4,14 +4,14 @@
 
 #include <iostream>
 
-#include "pinocchio/multibody/geometry.hpp"
+#include "pinocchio/geometry.hpp"
+
 #include "pinocchio/collision/collision.hpp"
-#include "pinocchio/collision/pool/fwd.hpp"
+#include "pinocchio/collision/broadphase-manager.hpp"
 #include "pinocchio/collision/pool/broadphase-manager.hpp"
 #include "pinocchio/collision/tree-broadphase-manager.hpp"
 #include "pinocchio/collision/parallel/broadphase.hpp"
 #include "pinocchio/collision/parallel/geometry.hpp"
-#include "pinocchio/algorithm/geometry.hpp"
 #include "pinocchio/parsers/urdf.hpp"
 #include "pinocchio/parsers/srdf.hpp"
 

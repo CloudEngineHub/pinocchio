@@ -8,7 +8,6 @@
 #include "pinocchio/algorithm/solvers/pgs-solver.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/delassus.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

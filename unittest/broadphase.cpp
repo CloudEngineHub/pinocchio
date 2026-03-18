@@ -9,7 +9,6 @@
 #include "pinocchio/parsers/srdf.hpp"
 
 #include "pinocchio/collision/collision.hpp"
-#include "pinocchio/collision/distance.hpp"
 #include "pinocchio/collision/broadphase-manager.hpp"
 #include "pinocchio/collision/broadphase.hpp"
 

@@ -4,15 +4,11 @@
 
 #include <iostream>
 
-#include "pinocchio/algorithm/frames.hpp"
-#include "pinocchio/algorithm/jacobian.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/algorithm/proximal.hpp"
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/constraints.hpp"
+
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
-#include "pinocchio/algorithm/contact-dynamics.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/spatial/classic-acceleration.hpp"
 #include "pinocchio/algorithm/loop-constrained-aba.hpp"
 
 #include <boost/test/unit_test.hpp>

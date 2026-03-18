@@ -4,10 +4,8 @@
 
 #include <iostream>
 
-#include <pinocchio/math/matrix-inverse.hpp>
+#include <pinocchio/math.hpp>
 #include <Eigen/LU>
-
-#include <boost/variant.hpp> // to avoid C99 warnings
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

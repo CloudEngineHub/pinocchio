@@ -2,7 +2,6 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include <iostream>
 #include "pinocchio/constraints.hpp"
 
 #include <boost/test/unit_test.hpp>

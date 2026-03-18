@@ -3,16 +3,15 @@
 // Copyright (c) 2023 KU Leuven
 //
 
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/multibody/sample-models.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/pv.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
 #include "pinocchio/algorithm/compute-all-terms.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 
 #include <boost/test/tools/old/interface.hpp>

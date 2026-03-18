@@ -7,6 +7,7 @@
 #include <boost/utility/binary.hpp>
 
 #include "pinocchio/container/matrix-stack.hpp"
+
 // #define ALIGNMENT_VALUE 128
 #define ALIGNMENT_VALUE 8
 

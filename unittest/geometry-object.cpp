@@ -2,14 +2,10 @@
 // Copyright (c) 2022 INRIA
 //
 
-#include <iostream>
+#include "pinocchio/geometry.hpp"
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+#include <coal/shape/geometric_shapes.h>
 
-#include "pinocchio/multibody/geometry-object.hpp"
-
-#include <vector>
 #include <boost/test/unit_test.hpp>
 
 using namespace pinocchio;

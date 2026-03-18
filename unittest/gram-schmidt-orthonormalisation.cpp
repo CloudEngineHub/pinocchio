@@ -2,9 +2,8 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#include <iostream>
+#include <pinocchio/math.hpp>
 
-#include <pinocchio/math/gram-schmidt-orthonormalisation.hpp>
 #include <Eigen/QR>
 
 #include <boost/variant.hpp> // to avoid C99 warnings

@@ -2,19 +2,16 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/rnea.hpp"
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/constraints.hpp"
+#include "pinocchio/multibody/sample-models.hpp"
+
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/frames.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/utils/timer.hpp"
-#include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/constraints.hpp"
 
 // Helpers
 #include "constraints/jacobians-checker.hpp"

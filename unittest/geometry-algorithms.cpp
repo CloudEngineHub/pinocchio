@@ -4,11 +4,9 @@
 
 #include <iostream>
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/geometry.hpp"
 
-#include "pinocchio/multibody/geometry.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/collision/collision.hpp"
 #include "pinocchio/collision/distance.hpp"
 #include "pinocchio/algorithm/geometry.hpp"

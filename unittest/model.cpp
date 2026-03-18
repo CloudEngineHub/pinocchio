@@ -3,12 +3,10 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/multibody/model.hpp"
+#include "pinocchio/multibody.hpp"
 
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/model.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/frames.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/geometry.hpp"

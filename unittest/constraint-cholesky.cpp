@@ -5,18 +5,16 @@
 #define EIGEN_RUNTIME_NO_MALLOC
 #define PINOCCHIO_EIGEN_CHECK_MALLOC
 
-#include <iostream>
+#include "pinocchio/math.hpp"
+#include "pinocchio/constraints.hpp"
+#include "pinocchio/multibody/sample-models.hpp"
 
-#include "pinocchio/fwd.hpp"
-#include "pinocchio/math/eigenvalues.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

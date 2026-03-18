@@ -3,14 +3,10 @@
 //
 
 #include <iostream>
-#include <iomanip>
 
-#include "pinocchio/multibody/liegroup/liegroup.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-collection.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-generic.hpp"
-#include "pinocchio/multibody/liegroup/cartesian-product-variant.hpp"
+#include "pinocchio/multibody/liegroup.hpp"
 
-#include "pinocchio/multibody/joint/joint-generic.hpp"
+#include "pinocchio/multibody/joint.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
@@ -371,9 +367,10 @@ struct LieGroup_Jdifference
   }
 
   template<typename Scalar, int Options>
-  void specificTests(const CartesianProductOperation<
-                     VectorSpaceOperationTpl<3, Scalar, Options>,
-                     SpecialOrthogonalOperationTpl<3, Scalar, Options>>) const
+  void specificTests(
+    const CartesianProductOperation<
+      VectorSpaceOperationTpl<3, Scalar, Options>,
+      SpecialOrthogonalOperationTpl<3, Scalar, Options>>) const
   {
     typedef SE3Tpl<Scalar> SE3;
     typedef CartesianProductOperation<

@@ -2,9 +2,7 @@
 // Copyright (c) 2015-2018 CNRS
 //
 
-#include <iostream>
-
-#include "pinocchio/multibody/model.hpp"
+#include "pinocchio/multibody.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/geometry.hpp"

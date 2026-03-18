@@ -3,9 +3,9 @@
 //
 
 #include "pinocchio/codegen/cppadcg.hpp"
-#include "pinocchio/codegen/code-generator-algo.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/algorithm/contact-dynamics.hpp"
+#include "pinocchio/codegen/cppadcg-algo.hpp"
+
+#include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 
 #include <boost/test/unit_test.hpp>

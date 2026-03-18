@@ -2,22 +2,14 @@
 // Copyright (c) 2025 INRIA
 //
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/multibody/joint/joints.hpp"
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
 #include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/jacobian.hpp"
-#include "pinocchio/algorithm/compute-all-terms.hpp"
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/inertia.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/frames.hpp"
 
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 
 using namespace pinocchio;
 template<typename D>

@@ -16,7 +16,7 @@
 #include "pinocchio/macros.hpp"
 
 #include "pinocchio/multibody.hpp"
-#include "pinocchio/multibody/pool/geometry.hpp"
+#include "pinocchio/multibody/pool.hpp"
 
 #include "pinocchio/algorithm/geometry.hpp"
 

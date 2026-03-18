@@ -3,9 +3,9 @@
 //
 
 #include "utils/model-generator.hpp"
+#include "pinocchio/math.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/math/quaternion.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

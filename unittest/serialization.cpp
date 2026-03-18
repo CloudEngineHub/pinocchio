@@ -2,7 +2,7 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#include "pinocchio/multibody/data.hpp"
+#include "pinocchio/multibody.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/geometry.hpp"
@@ -10,23 +10,7 @@
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/delassus-operator.hpp"
 
-#include "pinocchio/serialization/fwd.hpp"
-#include "pinocchio/serialization/archive.hpp"
-
-#include "pinocchio/serialization/spatial.hpp"
-
-#include "pinocchio/serialization/frame.hpp"
-
-#include "pinocchio/serialization/joints.hpp"
-#include "pinocchio/serialization/model.hpp"
-#include "pinocchio/serialization/data.hpp"
-
-#include "pinocchio/serialization/geometry.hpp"
-
-#include "pinocchio/serialization/delassus.hpp"
-
-#include "pinocchio/serialization/constraints-model.hpp"
-#include "pinocchio/serialization/constraints-data.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include "pinocchio/multibody/sample-models.hpp"
 

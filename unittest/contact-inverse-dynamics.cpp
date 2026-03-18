@@ -2,13 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#include <iostream>
+#include "pinocchio/multibody/sample-models.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include "pinocchio/algorithm/contact-inverse-dynamics.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 
-#include "pinocchio/constraints.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/algorithm/solvers/constraint-solver-utils.hpp"
 
 #include <boost/test/unit_test.hpp>

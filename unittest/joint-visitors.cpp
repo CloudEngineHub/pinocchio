@@ -1,19 +1,11 @@
 //
 // Copyright (c) 2024-2025 INRIA
 //
-
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/multibody/joint/joint-basic-visitors.hpp"
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-
-#include <iostream>
+#include "pinocchio/multibody/joint.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 #include <boost/mpl/vector.hpp>
-
-namespace bf = boost::fusion;
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 

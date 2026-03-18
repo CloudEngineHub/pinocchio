@@ -3,7 +3,7 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#include "pinocchio/spatial/explog.hpp"
+#include "pinocchio/spatial.hpp"
 
 #include <boost/test/unit_test.hpp>
 

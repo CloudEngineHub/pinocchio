@@ -4,6 +4,8 @@
 
 #pragma once
 
+// IWYU pragma: always_keep
+
 #define PINOCCHIO_WITH_CPPAD_SUPPORT
 
 // IWYU pragma: begin_keep

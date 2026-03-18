@@ -2,15 +2,8 @@
 // Copyright (c) 2015-2019 CNRS INRIA
 //
 
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/inertia.hpp"
-#include "pinocchio/multibody/force-set.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
-
-#include "utils/macros.hpp"
-
-#include <iostream>
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/multibody.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

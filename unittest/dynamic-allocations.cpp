@@ -2,6 +2,10 @@
 // Copyright (c) 2025 INRIA
 //
 
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/multibody/sample-models.hpp"
+#include "pinocchio/constraints.hpp"
+
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/aba-derivatives.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
@@ -19,18 +23,13 @@
 #include "pinocchio/algorithm/compute-all-terms.hpp"
 #include "pinocchio/algorithm/energy.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/algorithm/contact-dynamics.hpp"
-#include "pinocchio/algorithm/contact-cholesky.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
 #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
 #include "pinocchio/algorithm/impulse-dynamics.hpp"
 #include "pinocchio/algorithm/impulse-dynamics-derivatives.hpp"
 #include "pinocchio/algorithm/regressor.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/spatial/explog.hpp"
 using namespace pinocchio;
 
 #include <boost/test/unit_test.hpp>

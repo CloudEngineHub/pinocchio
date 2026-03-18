@@ -2,13 +2,11 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/constraints.hpp"
+
+#include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
-
-#include <iostream>
 
 // Helpers
 #include "constraints/jacobians-checker.hpp"

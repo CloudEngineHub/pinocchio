@@ -2,13 +2,10 @@
 // Copyright (c) 2019 INRIA
 //
 
-#include "pinocchio/math/tensor.hpp"
-#include "pinocchio/multibody/model.hpp"
+#include "pinocchio/math.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
-
-#include <iostream>
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 

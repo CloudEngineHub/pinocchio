@@ -5,8 +5,6 @@
 #include "pinocchio/autodiff/casadi.hpp"
 #include "pinocchio/autodiff/casadi-algo.hpp"
 
-#include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/aba-derivatives.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"

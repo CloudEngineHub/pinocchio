@@ -8,7 +8,6 @@
 #include "pinocchio/algorithm/solvers/admm-solver.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/delassus.hpp"
 
 #ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
   #include "pinocchio/algorithm/solvers/clarabel-solver.hpp"

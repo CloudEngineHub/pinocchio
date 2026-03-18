@@ -2,13 +2,9 @@
 // Copyright (c) 2026 INRIA
 //
 
-#include <iostream>
-#include "pinocchio/serialization/fwd.hpp"
-#include "pinocchio/serialization/archive.hpp"
-
-#include "pinocchio/spatial/inertia.hpp"
-
 #include "pinocchio/serialization.hpp"
+
+#include "pinocchio/spatial.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

@@ -2,16 +2,16 @@
 // Copyright (c) 2020 INRIA
 //
 
+#include "pinocchio/math/multiprecision.hpp"
+
+#include "pinocchio/multibody/sample-models.hpp"
+
+#include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
-#include "pinocchio/algorithm/center-of-mass.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/centroidal.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-
-#include "pinocchio/math/multiprecision.hpp"
 
 #include <boost/multiprecision/cpp_dec_float.hpp>
 #include <boost/math/special_functions/gamma.hpp>
