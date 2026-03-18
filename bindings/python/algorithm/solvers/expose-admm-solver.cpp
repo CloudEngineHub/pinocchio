@@ -132,17 +132,6 @@ namespace pinocchio
     // Expose ADMMSolverResult
     // ============================================================================
 
-    static void setConstraintVelocityGuess_vector(
-      ADMMSolverResult & self, const Eigen::Ref<const VectorXs> & v)
-    {
-      self.setConstraintVelocityGuess(v);
-    }
-
-    static void clearConstraintVelocityGuess(ADMMSolverResult & self)
-    {
-      self.setConstraintVelocityGuess(std::nullopt);
-    }
-
     static void retrievePrimalSolution_wrapper(
       const ADMMSolverResult & solution, Eigen::Ref<VectorXs> primal_solution)
     {
@@ -182,15 +171,6 @@ namespace pinocchio
 
         .def("resize", &ADMMSolverResult::resize, bp::args("self", "problem_size"),
              "Resize solution vectors")
-
-        // ADMM-specific warmstart: velocity guess
-        .def(
-          "setConstraintVelocityGuess", setConstraintVelocityGuess_vector,
-          bp::args("self", "velocity_guess"),
-          "Set the velocity warmstart for the solver (copies the vector).")
-        .def(
-          "clearConstraintVelocityGuess", clearConstraintVelocityGuess, bp::arg("self"),
-          "Clear the velocity warmstart (equivalent to passing std::nullopt).")
 
         // Retrieve methods
         .def(

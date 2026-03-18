@@ -300,6 +300,13 @@ namespace pinocchio
         impulse_guess.emplace(impulse_guess_);
     }
 
+    /// \brief \copydoc Base::setConstraintVelocityGuess
+    template<typename ImpulseGuess>
+    void setConstraintVelocityGuessImpl(const ImpulseGuess & /*velocity_guess_*/)
+    {
+      PINOCCHIO_THROW_PRETTY(std::runtime_error, "Cannot set constraint velocity guess for PGS for now.");
+    }
+
     /// \brief \copydoc Base::retrieveConstraintImpulses
     template<typename VectorLike>
     void

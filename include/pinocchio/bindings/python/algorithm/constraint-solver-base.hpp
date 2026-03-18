@@ -79,6 +79,17 @@ namespace pinocchio
         self.setConstraintImpulseGuess(std::nullopt);
       }
 
+      static void
+      setConstraintVelocityGuess_vector(Result & self, const Eigen::Ref<const VectorXs> & v)
+      {
+        self.setConstraintVelocityGuess(v);
+      }
+
+      static void clearConstraintVelocityGuess(Result & self)
+      {
+        self.setConstraintVelocityGuess(std::nullopt);
+      }
+
       static VectorXs retrieveConstraintImpulses_wrapper(const Result & self)
       {
         VectorXs out(static_cast<Eigen::Index>(self.problem_size));
@@ -113,10 +124,17 @@ namespace pinocchio
           .def(
             "setConstraintImpulseGuess", setConstraintImpulseGuess_vector,
             bp::args("self", "impulse_guess"),
-            "Set the impulse warmstart for the solver (copies the vector).")
+            "Set the constraint impulse warmstart for the solver (copies the vector).")
           .def(
             "clearConstraintImpulseGuess", clearConstraintImpulseGuess, bp::arg("self"),
-            "Clear the impulse warmstart (equivalent to passing std::nullopt).")
+            "Clear the constraint impulse warmstart (equivalent to passing std::nullopt).")
+          .def(
+            "setConstraintVelocityGuess", setConstraintVelocityGuess_vector,
+            bp::args("self", "velocity_guess"),
+            "Set the constraint velocities warmstart for the solver (copies the vector).")
+          .def(
+            "clearConstraintVelocityGuess", clearConstraintVelocityGuess, bp::arg("self"),
+            "Clear the constraint velocities warmstart (equivalent to passing std::nullopt).")
           .def(
             "retrieveConstraintImpulses", retrieveConstraintImpulses_wrapper, bp::arg("self"),
             "Return the primal solution (constraint impulses) as a new vector.")
