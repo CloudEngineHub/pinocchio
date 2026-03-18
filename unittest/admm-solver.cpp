@@ -97,7 +97,7 @@ struct TestBoxTpl
     admm_settings.solve_ncp = true;
     ADMMSolverResult admm_result;
     admm_result.setConstraintImpulseGuess(impulse_solution);
-    admm_result.setConstraintVelocityGuess(std::nullopt);
+    admm_result.clearConstraintVelocityGuess();
 
     has_converged = admm_solver.solve(
       G_expression, g, constraint_models, constraint_datas, admm_settings, admm_result);

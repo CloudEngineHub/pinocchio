@@ -596,6 +596,7 @@ namespace pinocchio
 
     // check if primal/dual have been given
     bool has_impulse_guess = res.impulse_guess.has_value();
+    PINOCCHIO_THROW_PRETTY_IF(has_impulse_guess && (res.impulse_guess.value().size() != ws.x.size()), std::runtime_error, "Impulse guess given to ADMM is of incorrect size.");
     if (has_impulse_guess)
     {
       // primal guess given but we need to check for size
@@ -606,6 +607,7 @@ namespace pinocchio
     }
 
     bool has_velocity_guess = res.velocity_guess.has_value();
+    PINOCCHIO_THROW_PRETTY_IF(has_velocity_guess && (res.velocity_guess.value().size() != ws.z.size()), std::runtime_error, "Velocity guess given to ADMM is of incorrect size.");
     if (has_velocity_guess)
     {
       if (res.velocity_guess.value().size() != ws.z.size())

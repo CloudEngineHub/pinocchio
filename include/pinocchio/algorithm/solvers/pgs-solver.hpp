@@ -246,12 +246,20 @@ namespace pinocchio
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
+    using Base::constraintSize;
+
     /// \brief Default constructor.
     PGSSolverResultTpl()
     : Base()
     , problem_size(0)
     , impulse_guess(std::nullopt)
     {
+    }
+
+    /// \brief \copydoc Base::constraintSize
+    int constraintSizeImpl() const
+    {
+      return static_cast<int>(problem_size);
     }
 
     /// \brief \copydoc Base::reset
@@ -291,20 +299,29 @@ namespace pinocchio
     }
 
     /// \brief \copydoc Base::setConstraintImpulseGuess
-    template<typename ImpulseGuess>
-    void setConstraintImpulseGuessImpl(const ImpulseGuess & impulse_guess_)
+    template<typename VectorLike>
+    void setConstraintImpulseGuessImpl(const Eigen::MatrixBase<VectorLike> & impulse_guess_)
     {
-      if constexpr (std::is_same_v<ImpulseGuess, std::nullopt_t>)
-        impulse_guess.reset();
-      else
-        impulse_guess.emplace(impulse_guess_);
+      impulse_guess.emplace(impulse_guess_);
+    }
+
+    /// \brief \copydoc Base::clearConstraintImpulseGuess
+    void clearConstraintImpulseGuessImpl()
+    {
+      impulse_guess.reset();
     }
 
     /// \brief \copydoc Base::setConstraintVelocityGuess
-    template<typename ImpulseGuess>
-    void setConstraintVelocityGuessImpl(const ImpulseGuess & /*velocity_guess_*/)
+    template<typename VectorLike>
+    void setConstraintVelocityGuessImpl(const Eigen::MatrixBase<VectorLike> & /*velocity_guess_*/)
     {
-      PINOCCHIO_THROW_PRETTY(std::runtime_error, "Cannot set constraint velocity guess for PGS for now.");
+      // do nothing, no velocity guess for PGS
+    }
+
+    /// \brief \copydoc Base::clearConstraintVelocityGuess
+    void clearConstraintVelocityGuessImpl()
+    {
+      // do nothing, no velocity guess for PGS
     }
 
     /// \brief \copydoc Base::retrieveConstraintImpulses

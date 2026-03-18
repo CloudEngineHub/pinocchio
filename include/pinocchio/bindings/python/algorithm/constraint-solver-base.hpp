@@ -68,40 +68,28 @@ namespace pinocchio
       typedef typename Result::Scalar Scalar;
       typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Result::Options> VectorXs;
 
-      static void
-      setConstraintImpulseGuess_vector(Result & self, const Eigen::Ref<const VectorXs> & v)
-      {
-        self.setConstraintImpulseGuess(v);
-      }
-
-      static void clearConstraintImpulseGuess(Result & self)
-      {
-        self.setConstraintImpulseGuess(std::nullopt);
-      }
-
-      static void
-      setConstraintVelocityGuess_vector(Result & self, const Eigen::Ref<const VectorXs> & v)
-      {
-        self.setConstraintVelocityGuess(v);
-      }
-
-      static void clearConstraintVelocityGuess(Result & self)
-      {
-        self.setConstraintVelocityGuess(std::nullopt);
-      }
-
       static VectorXs retrieveConstraintImpulses_wrapper(const Result & self)
       {
-        VectorXs out(static_cast<Eigen::Index>(self.problem_size));
+        VectorXs out(static_cast<Eigen::Index>(self.constraintSize()));
         self.retrieveConstraintImpulses(out);
         return out;
       }
 
       static VectorXs retrieveConstraintVelocities_wrapper(const Result & self)
       {
-        VectorXs out(static_cast<Eigen::Index>(self.problem_size));
+        VectorXs out(static_cast<Eigen::Index>(self.constraintSize()));
         self.retrieveConstraintVelocities(out);
         return out;
+      }
+
+      static void setConstraintImpulseGuess_wrapper(Result & self, const VectorXs & impulse_guess)
+      {
+        self.setConstraintImpulseGuess(impulse_guess);
+      }
+
+      static void setConstraintVelocityGuess_wrapper(Result & self, const VectorXs & velocity_guess)
+      {
+        self.setConstraintVelocityGuess(velocity_guess);
       }
 
       template<class PyClass>
@@ -119,28 +107,31 @@ namespace pinocchio
             "isValid", &Result::isValid, bp::arg("self"),
             "Return True if the result represents a valid (post-solve) state.")
           .def(
+            "constraintSize", &Result::constraintSize, bp::arg("self"),
+            "Size of quantities related to constraints contained in result (typically constraint impulses or velocities).")
+          .def(
             "reset", &Result::reset, bp::arg("self"),
             "Reset the result to an invalid (pre-solve) state.")
-          .def(
-            "setConstraintImpulseGuess", setConstraintImpulseGuess_vector,
-            bp::args("self", "impulse_guess"),
-            "Set the constraint impulse warmstart for the solver (copies the vector).")
-          .def(
-            "clearConstraintImpulseGuess", clearConstraintImpulseGuess, bp::arg("self"),
-            "Clear the constraint impulse warmstart (equivalent to passing std::nullopt).")
-          .def(
-            "setConstraintVelocityGuess", setConstraintVelocityGuess_vector,
-            bp::args("self", "velocity_guess"),
-            "Set the constraint velocities warmstart for the solver (copies the vector).")
-          .def(
-            "clearConstraintVelocityGuess", clearConstraintVelocityGuess, bp::arg("self"),
-            "Clear the constraint velocities warmstart (equivalent to passing std::nullopt).")
           .def(
             "retrieveConstraintImpulses", retrieveConstraintImpulses_wrapper, bp::arg("self"),
             "Return the primal solution (constraint impulses) as a new vector.")
           .def(
             "retrieveConstraintVelocities", retrieveConstraintVelocities_wrapper, bp::arg("self"),
-            "Return the dual solution (constraint velocities) as a new vector.");
+            "Return the dual solution (constraint velocities) as a new vector.")
+          .def(
+            "setConstraintImpulseGuess", setConstraintImpulseGuess_wrapper,
+            bp::args("self", "impulse_guess"),
+            "Set the constraint impulse warmstart guess for the next solve call.")
+          .def(
+            "clearConstraintImpulseGuess", &Result::clearConstraintImpulseGuess, bp::arg("self"),
+            "Clear the constraint impulse warmstart guess.")
+          .def(
+            "setConstraintVelocityGuess", setConstraintVelocityGuess_wrapper,
+            bp::args("self", "velocity_guess"),
+            "Set the constraint velocity warmstart guess for the next solve call.")
+          .def(
+            "clearConstraintVelocityGuess", &Result::clearConstraintVelocityGuess, bp::arg("self"),
+            "Clear the constraint velocity warmstart guess.");
       }
     }; // struct ConstraintSolverResultBasePythonVisitor
 

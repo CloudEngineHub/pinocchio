@@ -628,6 +628,7 @@ namespace pinocchio
 
     // -- retrieve warmstart from results, then reset results
     bool has_impulse_guess = res.impulse_guess.has_value();
+    PINOCCHIO_THROW_PRETTY_IF(has_impulse_guess && (res.impulse_guess.value().size() != ws.x.size()), std::runtime_error, "Impulse guess given to PGS is of incorrect size.");
     if (has_impulse_guess)
     {
       if (res.impulse_guess.value().size() != ws.x.size())

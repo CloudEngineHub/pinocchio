@@ -472,15 +472,16 @@ namespace pinocchio
     typedef ConstraintSolverResultBase<Self> Base;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
+
+    using Base::constraintSize;
 
     /// \brief Default constructor.
     ADMMSolverResultTpl()
     : Base()
     , problem_size(0)
     , delassus_decomposition_update_count(0)
-    , preconditioner(std::nullopt)
     , impulse_guess(std::nullopt)
     , velocity_guess(std::nullopt)
     , rho(std::numeric_limits<Scalar>::quiet_NaN())
@@ -489,12 +490,17 @@ namespace pinocchio
     {
     }
 
+    /// \brief \copydoc Base::constraintSize
+    int constraintSizeImpl() const
+    {
+      return static_cast<int>(problem_size);
+    }
+
     /// \brief Reset the results.
     void resetImpl()
     {
       delassus_decomposition_update_count = 0;
 
-      preconditioner.reset();
       impulse_guess.reset();
       velocity_guess.reset();
 
@@ -556,23 +562,29 @@ namespace pinocchio
     }
 
     /// \brief \copydoc Base::setConstraintImpulseGuess
-    template<typename ImpulseGuess>
-    void setConstraintImpulseGuessImpl(const ImpulseGuess & impulse_guess_)
+    template<typename VectorLike>
+    void setConstraintImpulseGuessImpl(const Eigen::MatrixBase<VectorLike> & impulse_guess_)
     {
-      if constexpr (std::is_same_v<ImpulseGuess, std::nullopt_t>)
-        impulse_guess.reset();
-      else
-        impulse_guess.emplace(impulse_guess_);
+      impulse_guess.emplace(impulse_guess_);
+    }
+
+    /// \brief \copydoc Base::clearConstraintImpulseGuess
+    void clearConstraintImpulseGuessImpl()
+    {
+      impulse_guess.reset();
     }
 
     /// \brief \copydoc Base::setConstraintVelocityGuess
-    template<typename VelocityGuess>
-    void setConstraintVelocityGuessImpl(const VelocityGuess & velocity_guess_)
+    template<typename VectorLike>
+    void setConstraintVelocityGuessImpl(const Eigen::MatrixBase<VectorLike> & velocity_guess_)
     {
-      if constexpr (std::is_same_v<VelocityGuess, std::nullopt_t>)
-        velocity_guess.reset();
-      else
-        velocity_guess.emplace(velocity_guess_);
+      velocity_guess.emplace(velocity_guess_);
+    }
+
+    /// \brief \copydoc Base::clearConstraintVelocityGuess
+    void clearConstraintVelocityGuessImpl()
+    {
+      velocity_guess.reset();
     }
 
     /// \brief \copydoc Base::retrieveConstraintImpulses
@@ -618,9 +630,6 @@ namespace pinocchio
 
     // ----------------------
     // Solution warmstart
-
-    /// \brief Optional preconditioner. Not used yet.
-    std::optional<RefConstVectorXs> preconditioner;
 
     /// \brief Optional guess for the primal variable (impulses).
     std::optional<RefConstVectorXs> impulse_guess;

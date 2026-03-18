@@ -187,18 +187,36 @@ namespace pinocchio
       return m_is_valid;
     }
 
+    /// \brief Size of quantities related to constraints contained in result (typically constraint impulses or velocities).
+    int constraintSize() const
+    {
+      return derived().constraintSizeImpl();
+    }
+
     /// \brief Set the constraint impulse guess given to the solver.
-    template<typename ImpulseGuess>
-    void setConstraintImpulseGuess(const ImpulseGuess& impulse_guess)
+    template<typename VectorLike>
+    void setConstraintImpulseGuess(const Eigen::MatrixBase<VectorLike>& impulse_guess)
     {
       derived().setConstraintImpulseGuessImpl(impulse_guess);
     }
 
+    /// \brief Clears the constraint impulse guess - as if no guess were given to the solver.
+    void clearConstraintImpulseGuess()
+    {
+      derived().clearConstraintImpulseGuessImpl();
+    }
+
     /// \brief Set the constraint velocity guess given to the solver.
-    template<typename VelocityGuess>
-    void setConstraintVelocityGuess(const VelocityGuess& velocity_guess)
+    template<typename VectorLike>
+    void setConstraintVelocityGuess(const Eigen::MatrixBase<VectorLike>& velocity_guess)
     {
       derived().setConstraintVelocityGuessImpl(velocity_guess);
+    }
+
+    /// \brief Clears the constraint velocity guess - as if no guess were given to the solver.
+    void clearConstraintVelocityGuess()
+    {
+      derived().clearConstraintVelocityGuessImpl();
     }
 
     /// \brief Retrieve constraint impulses.
