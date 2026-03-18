@@ -2,15 +2,13 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_constraints_data_base_hpp__
-#define __pinocchio_python_algorithm_constraints_data_base_hpp__
+#pragma once
 
 #include <boost/python.hpp>
 #include <eigenpy/exception.hpp>
 #include <eigenpy/eigen-to-python.hpp>
 
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/constraint-data-base.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/bindings/python/fwd.hpp"
 
 namespace pinocchio
@@ -41,5 +39,3 @@ namespace pinocchio
     };
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_constraints_data_base_hpp__

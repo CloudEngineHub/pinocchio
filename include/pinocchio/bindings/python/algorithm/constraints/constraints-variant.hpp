@@ -2,8 +2,7 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_constraints_variant_hpp__
-#define __pinocchio_python_algorithm_constraints_variant_hpp__
+#pragma once
 
 #include <boost/algorithm/string/replace.hpp>
 
@@ -99,5 +98,3 @@ namespace pinocchio
     };
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_constraints_variant_hpp__

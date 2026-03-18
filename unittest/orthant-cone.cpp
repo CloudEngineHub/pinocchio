@@ -2,8 +2,7 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include <iostream>
-#include "pinocchio/algorithm/constraints/sets/orthant-cone.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

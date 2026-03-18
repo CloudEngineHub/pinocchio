@@ -2,14 +2,12 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/solvers/admm-solver.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/delassus.hpp"
 
 #ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
   #include "pinocchio/algorithm/solvers/clarabel-solver.hpp"

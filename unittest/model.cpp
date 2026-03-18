@@ -3,17 +3,14 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/multibody/model.hpp"
+#include "pinocchio/multibody.hpp"
 
 #include "pinocchio/algorithm/check.hpp"
 #include "pinocchio/algorithm/model.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/frames.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/geometry.hpp"
 #include "pinocchio/algorithm/center-of-mass.hpp"
-#include "pinocchio/algorithm/constraint-cholesky.hpp"
 
 #include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/spatial/fwd.hpp"

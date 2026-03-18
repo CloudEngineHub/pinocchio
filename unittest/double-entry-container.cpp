@@ -5,7 +5,6 @@
 #include "pinocchio/container/double-entry-container.hpp"
 #include "pinocchio/container/matrix-stack.hpp"
 
-#include <iostream>
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 

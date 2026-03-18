@@ -3,13 +3,11 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#ifndef __pinocchio_python_multibody_frame_hpp__
-#define __pinocchio_python_multibody_frame_hpp__
+#pragma once
 
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/multibody/fwd.hpp"
-#include "pinocchio/multibody/frame.hpp"
+#include "pinocchio/multibody.hpp"
 
 #include <eigenpy/deprecation-policy.hpp>
 #include "pinocchio/bindings/python/utils/cast.hpp"
@@ -32,20 +30,23 @@ namespace pinocchio
       {
         cl.def(bp::init<>(bp::arg("self"), "Default constructor"))
           .def(bp::init<const Frame &>(bp::args("self", "other"), "Copy constructor"))
-          .def(bp::init<
-               const std::string &, const JointIndex, const SE3 &, FrameType,
-               bp::optional<const Inertia &>>(
-            (bp::arg("name"), bp::arg("parent_joint"), bp::arg("placement"), bp::arg("type"),
-             bp::arg("inertia")),
-            "Initialize from a given name, type, parent frame index and placement wrt parent joint "
-            "and an spatial inertia object."))
-          .def(bp::init<
-               const std::string &, const JointIndex, const FrameIndex, const SE3 &, FrameType,
-               bp::optional<const Inertia &>>(
-            (bp::arg("name"), bp::arg("parent_joint"), bp::args("parent_frame"),
-             bp::arg("placement"), bp::arg("type"), bp::arg("inertia")),
-            "Initialize from a given name, type, parent joint index, parent frame index and "
-            "placement wrt parent joint and an spatial inertia object."))
+          .def(
+            bp::init<
+              const std::string &, const JointIndex, const SE3 &, FrameType,
+              bp::optional<const Inertia &>>(
+              (bp::arg("name"), bp::arg("parent_joint"), bp::arg("placement"), bp::arg("type"),
+               bp::arg("inertia")),
+              "Initialize from a given name, type, parent frame index and placement wrt parent "
+              "joint "
+              "and an spatial inertia object."))
+          .def(
+            bp::init<
+              const std::string &, const JointIndex, const FrameIndex, const SE3 &, FrameType,
+              bp::optional<const Inertia &>>(
+              (bp::arg("name"), bp::arg("parent_joint"), bp::args("parent_frame"),
+               bp::arg("placement"), bp::arg("type"), bp::arg("inertia")),
+              "Initialize from a given name, type, parent joint index, parent frame index and "
+              "placement wrt parent joint and an spatial inertia object."))
           .def(bp::init<const Frame &>((bp::arg("self"), bp::arg("clone")), "Copy constructor"))
 
           .def_readwrite("name", &Frame::name, "name of the frame")
@@ -140,5 +141,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_multibody_frame_hpp__

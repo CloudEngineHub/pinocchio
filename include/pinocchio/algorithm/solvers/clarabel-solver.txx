@@ -2,8 +2,7 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_algorithm_solvers_clarabel_solver_txx__
-#define __pinocchio_algorithm_solvers_clarabel_solver_txx__
+#pragma once
 
 #ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
 
@@ -127,5 +126,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 #endif // PINOCCHIO_WITH_CLARABEL_SUPPORT
-
-#endif // ifndef __pinocchio_algorithm_solvers_clarabel_solver_txx__

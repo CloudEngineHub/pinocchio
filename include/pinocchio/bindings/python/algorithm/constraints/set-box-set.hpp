@@ -2,13 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_constraints_set_box_set_hpp__
-#define __pinocchio_python_algorithm_constraints_set_box_set_hpp__
+#pragma once
 
 #include <eigenpy/eigenpy.hpp>
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/algorithm/constraints/sets/box-set.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include "pinocchio/bindings/python/algorithm/constraints/set-base.hpp"
 #include "pinocchio/bindings/python/utils/cast.hpp"
@@ -30,8 +29,9 @@ namespace pinocchio
       void visit(PyClass & cl) const
       {
         cl.def(bp::init<const Self &>(bp::args("self", "other"), "Copy constructor."))
-          .def(bp::init<context::VectorXs, context::VectorXs>(
-            bp::args("self", "lb", "ub"), "Constructor from lower and upper bounds."))
+          .def(
+            bp::init<context::VectorXs, context::VectorXs>(
+              bp::args("self", "lb", "ub"), "Constructor from lower and upper bounds."))
           .add_property(
             "lb", bp::make_function(+[](Self & self) { return self.lb; }),
             "Returns a copy of the vector of lower bounds")
@@ -54,5 +54,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_constraints_set_box_set_hpp__

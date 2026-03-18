@@ -5,17 +5,12 @@
 #include "pinocchio/autodiff/casadi.hpp"
 #include "pinocchio/autodiff/casadi-algo.hpp"
 
-#include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
-#include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/aba-derivatives.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 
 #include "pinocchio/multibody/sample-models.hpp"
 
 #include <casadi/casadi.hpp>
 
-#include <iostream>
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
@@ -63,7 +58,7 @@ BOOST_AUTO_TEST_CASE(test_constraintDynamicsDerivatives_casadi_algo)
   TangentVector v(TangentVector::Random(model.nv));
   TangentVector tau(TangentVector::Random(model.nv));
 
-  pinocchio::initConstraintDynamics(model, data, contact_models);
+  pinocchio::initConstraintDynamics(model, data, contact_models, contact_data);
   pinocchio::constraintDynamics(model, data, q, v, tau, contact_models, contact_data);
   pinocchio::computeConstraintDynamicsDerivatives(model, data, contact_models, contact_data);
   pinocchio::casadi::AutoDiffConstraintDynamicsDerivatives<Scalar> ad_casadi(model, contact_models);

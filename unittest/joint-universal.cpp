@@ -2,8 +2,7 @@
 // Copyright (c) 2023 INRIA
 //
 
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/multibody/joint/joints.hpp"
+#include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/crba.hpp"
@@ -11,7 +10,6 @@
 #include "pinocchio/algorithm/compute-all-terms.hpp"
 
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 
 using namespace pinocchio;
 using namespace Eigen;

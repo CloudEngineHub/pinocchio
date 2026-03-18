@@ -2,19 +2,14 @@
 // Copyright (c) 2020-2022 INRIA
 //
 
-#include <iostream>
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/constraints.hpp"
+#include "pinocchio/multibody/sample-models.hpp"
 
 #include "pinocchio/algorithm/frames.hpp"
-#include "pinocchio/algorithm/jacobian.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/algorithm/proximal.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
 #include "pinocchio/algorithm/contact-dynamics.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/spatial/classic-acceleration.hpp"
-#include "pinocchio/spatial/explog.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

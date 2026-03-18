@@ -3,7 +3,7 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#include "pinocchio/multibody/model.hpp"
+#include "pinocchio/multibody.hpp"
 #include "pinocchio/algorithm/model.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 #include <iostream>

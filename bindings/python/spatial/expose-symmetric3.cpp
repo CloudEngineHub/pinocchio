@@ -2,7 +2,7 @@
 // Copyright (c) 2022 INRIA
 //
 
-#include "pinocchio/serialization/symmetric3.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/spatial/symmetric3.hpp"

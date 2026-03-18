@@ -2,13 +2,12 @@
 // Copyright (c) 2016-2023 CNRS INRIA
 //
 
+#include "pinocchio/multibody/sample-models.hpp"
+#include "pinocchio/geometry.hpp"
+
 #include "pinocchio/extra/reachable-workspace.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-#include "pinocchio/multibody/geometry.hpp"
 #include "pinocchio/parsers/urdf.hpp"
-
-#include <iostream>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

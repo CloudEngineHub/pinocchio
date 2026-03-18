@@ -2,13 +2,12 @@
 // Copyright (c) 2020-2025 INRIA
 //
 
-#ifndef __pinocchio_python_utils_eigen_hpp__
-#define __pinocchio_python_utils_eigen_hpp__
+#pragma once
 
 #include <string>
 #include <sstream>
 
-#include "pinocchio/math/matrix.hpp"
+#include "pinocchio/math.hpp"
 
 namespace pinocchio
 {
@@ -48,5 +47,3 @@ namespace pinocchio
     }
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_utils_eigen_hpp__

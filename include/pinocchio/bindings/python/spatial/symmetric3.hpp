@@ -2,8 +2,7 @@
 // Copyright (c) 2022-2025 INRIA
 //
 
-#ifndef __pinocchio_python_spatial_symmetric3_hpp__
-#define __pinocchio_python_spatial_symmetric3_hpp__
+#pragma once
 
 #include <eigenpy/exception.hpp>
 #include <eigenpy/memory.hpp>
@@ -12,7 +11,7 @@
 
 #include <boost/python/tuple.hpp>
 
-#include "pinocchio/spatial/symmetric3.hpp"
+#include "pinocchio/spatial.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
@@ -48,16 +47,19 @@ namespace pinocchio
         PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
         PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_SELF_ASSIGN_OVERLOADED
         cl.def(bp::init<>((bp::arg("self")), "Default constructor."))
-          .def(bp::init<const Matrix3 &>(
-            (bp::arg("self"), bp::arg("I")), "Initialize from symmetrical matrix I of size 3x3."))
-          .def(bp::init<const Vector6 &>(
-            (bp::arg("self"), bp::arg("I")), "Initialize from vector I of size 6."))
-          .def(bp::init<
-               const Scalar &, const Scalar &, const Scalar &, const Scalar &, const Scalar &,
-               const Scalar &>(
-            (bp::arg("self"), bp::arg("a0"), bp::arg("a1"), bp::arg("a2"), bp::arg("a3"),
-             bp::arg("a4"), bp::arg("a5")),
-            "Initialize from 6 scalar values."))
+          .def(
+            bp::init<const Matrix3 &>(
+              (bp::arg("self"), bp::arg("I")), "Initialize from symmetrical matrix I of size 3x3."))
+          .def(
+            bp::init<const Vector6 &>(
+              (bp::arg("self"), bp::arg("I")), "Initialize from vector I of size 6."))
+          .def(
+            bp::init<
+              const Scalar &, const Scalar &, const Scalar &, const Scalar &, const Scalar &,
+              const Scalar &>(
+              (bp::arg("self"), bp::arg("a0"), bp::arg("a1"), bp::arg("a2"), bp::arg("a3"),
+               bp::arg("a4"), bp::arg("a5")),
+              "Initialize from 6 scalar values."))
           .def(
             bp::init<const Symmetric3 &>((bp::arg("self"), bp::arg("other")), "Copy constructor."))
           .def("Zero", &Symmetric3::Zero, "Returns a zero 3x3 matrix.")
@@ -181,5 +183,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // __pinocchio_python_spatial_symmetric3_hpp__

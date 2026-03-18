@@ -7,6 +7,7 @@
 #include <boost/utility/binary.hpp>
 
 #include "pinocchio/container/matrix-stack.hpp"
+
 // #define ALIGNMENT_VALUE 128
 #define ALIGNMENT_VALUE 8
 
@@ -212,7 +213,8 @@ BOOST_AUTO_TEST_CASE(matrix_stack_move_constructor)
   const Eigen::Index rows = 10, cols = 20;
   const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
 
-  const MatrixXsStack matrix_stack(matrix_infos);
+  MatrixXsStack matrix_stack(matrix_infos);
+  matrix_stack.back().setZero();
   const MatrixXs map_copy = matrix_stack.back();
 
   const MatrixXsStack matrix_stack_move(std::move(matrix_stack));

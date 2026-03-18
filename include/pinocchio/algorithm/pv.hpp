@@ -3,15 +3,32 @@
 // Copyright (c) 2023 KU Leuven
 //
 
-#ifndef __pinocchio_algorithm_pv_hpp__
-#define __pinocchio_algorithm_pv_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-// #include "pinocchio/algorithm/check.hpp"
-// #include "pinocchio/algorithm/constraints/fwd.hpp"
-// #include "pinocchio/algorithm/contact-info.hpp"
+// IWYU pragma: begin_keep
+#include <cassert>
+#include <cstddef>
+#include <algorithm>
+#include <vector>
+
+#include <Eigen/Core>
+#include <Eigen/Cholesky>
+#include <boost/fusion/container/vector.hpp>
+
+#include "pinocchio/macros.hpp"
+
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/utils/check.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
+
+#include "pinocchio/constraints.hpp"
+#include "pinocchio/algorithm/fwd.hpp"
+#include "pinocchio/algorithm/check.hpp"
+#include "pinocchio/algorithm/aba.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -138,7 +155,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
-#include "pinocchio/algorithm/pv.hxx"
-
-#endif // ifndef __pinocchio_algorithm_pv_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/src/algorithm/pv.hxx"
+// IWYU pragma: end_exports

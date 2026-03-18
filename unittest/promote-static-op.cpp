@@ -2,8 +2,6 @@
 // Copyright (c) 2025 INRIA
 //
 
-#include <iostream>
-
 #include "pinocchio/utils/promote-static-eval.hpp"
 
 #include <boost/test/unit_test.hpp>

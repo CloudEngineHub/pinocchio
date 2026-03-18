@@ -2,7 +2,7 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#include "pinocchio/serialization/inertia.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/spatial/inertia.hpp"

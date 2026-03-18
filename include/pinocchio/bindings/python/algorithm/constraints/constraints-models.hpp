@@ -2,11 +2,9 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_constraints_models_hpp__
-#define __pinocchio_python_algorithm_constraints_models_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
-#include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraint-model-inheritance.hpp"
@@ -42,12 +40,14 @@ namespace pinocchio
       typedef typename context::JointFrictionConstraintModel::JointIndexVector JointIndexVector;
       typedef context::JointFrictionConstraintModel Self;
       typedef context::VectorXs VectorXs;
-      cl.def(bp::init<const context::Model &, const JointIndexVector &>(
-               (bp::arg("self"), bp::arg("model"), bp::arg("m_active_joints")),
-               "Constructor from given joint index vector "
-               "implied in the constraint."))
-        .def(bp::init<const context::Model &>(
-          (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
+      cl.def(
+          bp::init<const context::Model &, const JointIndexVector &>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("m_active_joints")),
+            "Constructor from given joint index vector "
+            "implied in the constraint."))
+        .def(
+          bp::init<const context::Model &>(
+            (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
         .def(
           "getActiveJoints", &Self::getActiveJoints,
           bp::return_value_policy<bp::copy_const_reference>())
@@ -79,26 +79,30 @@ namespace pinocchio
     {
       typedef typename context::JointLimitConstraintModel::JointIndexVector JointIndexVector;
       typedef typename context::JointLimitConstraintModel Self;
-      cl.def(bp::init<const context::Model &, const JointIndexVector &>(
-               (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints")),
-               "Constructor from given joint index vector "
-               "implied in the constraint."))
-        .def(bp::init<
-             const context::Model &, const JointIndexVector &, const context::VectorXs &,
-             const context::VectorXs &>(
-          (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints"), bp::arg("lb"),
-           bp::arg("ub")),
-          "Constructor from given joint index vector "
-          "implied in the constraint."))
-        .def(bp::init<
-             const context::Model &, const JointIndexVector &, const context::VectorXs &,
-             const context::VectorXs &, const context::VectorXs &>(
-          (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints"), bp::arg("lb"),
-           bp::arg("ub"), bp::arg("margin")),
-          "Constructor from given joint index vector "
-          "implied in the constraint."))
-        .def(bp::init<const context::Model &>(
-          (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
+      cl.def(
+          bp::init<const context::Model &, const JointIndexVector &>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints")),
+            "Constructor from given joint index vector "
+            "implied in the constraint."))
+        .def(
+          bp::init<
+            const context::Model &, const JointIndexVector &, const context::VectorXs &,
+            const context::VectorXs &>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints"), bp::arg("lb"),
+             bp::arg("ub")),
+            "Constructor from given joint index vector "
+            "implied in the constraint."))
+        .def(
+          bp::init<
+            const context::Model &, const JointIndexVector &, const context::VectorXs &,
+            const context::VectorXs &, const context::VectorXs &>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("activable_joints"), bp::arg("lb"),
+             bp::arg("ub"), bp::arg("margin")),
+            "Constructor from given joint index vector "
+            "implied in the constraint."))
+        .def(
+          bp::init<const context::Model &>(
+            (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
         .def(
           "getSelectedJoints", &Self::getSelectedJoints,
           bp::return_value_policy<bp::copy_const_reference>(),
@@ -164,5 +168,3 @@ namespace pinocchio
     }
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_constraints_models_hpp__

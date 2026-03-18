@@ -3,9 +3,9 @@
 //
 
 #include "pinocchio/utils/size-in-bytes.hpp"
+#include "pinocchio/math.hpp"
 
 #include <cstddef>
-#include <iostream>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

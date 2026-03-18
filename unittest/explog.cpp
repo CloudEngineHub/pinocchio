@@ -3,13 +3,9 @@
 // Copyright (c) 2015 Wandercraft, 86 rue de Paris 91400 Orsay, France.
 //
 
-#include "pinocchio/spatial/explog.hpp"
+#include "pinocchio/spatial.hpp"
 
-#include <iostream>
 #include <boost/test/unit_test.hpp>
-#include <boost/utility/binary.hpp>
-
-#include "utils/macros.hpp"
 
 using namespace pinocchio;
 

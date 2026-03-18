@@ -2,26 +2,21 @@
 // Copyright (c) 2024-2026 INRIA
 //
 
+#define EIGEN_RUNTIME_NO_MALLOC
 #define PINOCCHIO_EIGEN_CHECK_MALLOC
 
-#include <pinocchio/fwd.hpp>
+#include <pinocchio/multibody/sample-models.hpp>
+#include <pinocchio/constraints.hpp>
 
-#include <boost/variant.hpp> // to avoid C99 warnings
+#include <pinocchio/algorithm/crba.hpp>
+#include <pinocchio/algorithm/delassus-operator.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
-#include <pinocchio/algorithm/delassus-operator-dense.hpp>
-#include <pinocchio/algorithm/delassus-operator-cholesky-expression.hpp>
-#include <pinocchio/algorithm/delassus-operator-rigid-body.hpp>
-#include <pinocchio/algorithm/constraints/utils.hpp>
-
-#include "utils.hpp"
-
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 using namespace pinocchio;
-using namespace pinocchio::unittest;
 
 BOOST_AUTO_TEST_CASE(test_memory_allocation)
 {

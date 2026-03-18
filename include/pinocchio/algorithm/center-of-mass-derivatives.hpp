@@ -2,11 +2,29 @@
 // Copyright (c) 2019 CNRS
 //
 
-#ifndef __pinocchio_algorithm_center_of_mass_derivatives_hpp__
-#define __pinocchio_algorithm_center_of_mass_derivatives_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
+
+#include <cassert>
+#include <vector>
+
+#include <boost/fusion/container/vector.hpp>
+//
+#include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
+//
+#include "pinocchio/math.hpp"
+
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
+#include "pinocchio/multibody/visitor.hpp"
+
+#include "pinocchio/algorithm/check.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -36,10 +54,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#include "pinocchio/algorithm/center-of-mass-derivatives.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/center-of-mass-derivatives.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_center_of_mass_derivatives_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/src/algorithm/center-of-mass-derivatives.hxx"
+// IWYU pragma: end_exports

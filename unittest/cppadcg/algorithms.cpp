@@ -4,17 +4,11 @@
 
 #include "pinocchio/codegen/cppadcg.hpp"
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/sample-models.hpp"
 
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
-
-#include "pinocchio/multibody/sample-models.hpp"
 
 #include <iostream>
 

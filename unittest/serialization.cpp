@@ -2,33 +2,15 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#include "pinocchio/multibody/data.hpp"
+#include "pinocchio/multibody.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/geometry.hpp"
 #include "pinocchio/algorithm/crba.hpp"
+#include "pinocchio/algorithm/aba.hpp"
+#include "pinocchio/algorithm/delassus-operator.hpp"
 
-#include "pinocchio/serialization/fwd.hpp"
-#include "pinocchio/serialization/archive.hpp"
-
-#include "pinocchio/serialization/spatial.hpp"
-
-#include "pinocchio/serialization/frame.hpp"
-
-#include "pinocchio/serialization/joints.hpp"
-#include "pinocchio/serialization/model.hpp"
-#include "pinocchio/serialization/data.hpp"
-
-#include "pinocchio/serialization/geometry.hpp"
-
-#include "pinocchio/serialization/delassus.hpp"
-
-#include "pinocchio/serialization/constraints-model.hpp"
-#include "pinocchio/serialization/constraints-data.hpp"
-
-#include "pinocchio/serialization/eigen-storage.hpp"
-#include "pinocchio/serialization/double-entry-container.hpp"
-#include "pinocchio/serialization/matrix-stack.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include "pinocchio/multibody/sample-models.hpp"
 
@@ -48,14 +30,14 @@ struct empty_contructor_algo<pinocchio::GeometryObject>
   }
 };
 
-template<>
-struct empty_contructor_algo<pinocchio::DelassusOperatorDense>
-{
-  static pinocchio::DelassusOperatorDense * run()
-  {
-    return new pinocchio::DelassusOperatorDense(Eigen::MatrixXd(2, 2));
-  }
-};
+// template<>
+// struct empty_contructor_algo<pinocchio::DelassusOperatorDense>
+// {
+//   static pinocchio::DelassusOperatorDense * run()
+//   {
+//     return new pinocchio::DelassusOperatorDense(Eigen::MatrixXd(2, 2));
+//   }
+// };
 
 template<typename MatrixLike, std::size_t Alignment>
 struct empty_contructor_algo<pinocchio::MatrixStackTpl<MatrixLike, Alignment>>
@@ -874,8 +856,7 @@ struct initConstraint<pinocchio::PointContactConstraintModel, void>
 
   static ConstraintModel run(const Model & model)
   {
-    // Note: For PointContact constraints, the friction coeff of the coulomb cone needs to be
-    // set.
+    // Note: For PointContact constraints, the friction coeff of the coulomb cone needs to be set.
     ConstraintModel cmodel = PointAndFrameConstraintModelInitializer<ConstraintModel>::run(model);
     cmodel.setFriction(0.1234);
     return cmodel;

@@ -2,8 +2,7 @@
 // Copyright (c) 2019-2020 INRIA
 //
 
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/multibody/model.hpp"
+#include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 
 #include "pinocchio/algorithm/check.hpp"

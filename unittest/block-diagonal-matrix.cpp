@@ -2,11 +2,7 @@
 // Copyright (c) 2026 INRIA
 //
 
-#include <iostream>
-
-#include <pinocchio/math/block-diagonal-matrix.hpp>
-
-#include <boost/variant.hpp> // to avoid C99 warnings
+#include <pinocchio/math.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

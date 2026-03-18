@@ -2,8 +2,6 @@
 // Copyright (c) 2022 INRIA
 //
 
-#include <iostream>
-
 #include "pinocchio/collision/collision.hpp"
 #include "pinocchio/collision/broadphase.hpp"
 #include "pinocchio/collision/tree-broadphase-manager.hpp"

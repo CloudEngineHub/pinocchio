@@ -2,14 +2,13 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_python_multibody_joint_joints_liegroup_hpp__
-#define __pinocchio_python_multibody_joint_joints_liegroup_hpp__
+#pragma once
 
 #include <boost/python.hpp>
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-joint.hpp"
+#include "pinocchio/multibody/joint.hpp"
+#include "pinocchio/multibody/liegroup.hpp"
 
 namespace pinocchio
 {
@@ -107,5 +106,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_multibody_joint_joints_liegroup_hpp__

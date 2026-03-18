@@ -2,14 +2,12 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#include "pinocchio/algorithm/constraints/constraints.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/algorithm/solvers/pgs-solver.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/delassus.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

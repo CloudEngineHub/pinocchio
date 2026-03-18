@@ -4,7 +4,7 @@
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/namespace.hpp"
-#include "pinocchio/math/rpy.hpp"
+#include "pinocchio/math.hpp"
 
 namespace pinocchio
 {

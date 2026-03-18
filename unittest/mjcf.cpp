@@ -3,18 +3,19 @@
 //
 
 #include <iostream>
-#include <cstdio> // for std::tmpnam
 
-#include "pinocchio/multibody/model.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+
+#include "pinocchio/multibody.hpp"
 
 #include "pinocchio/parsers/mjcf.hpp"
-#include "pinocchio/parsers/mjcf/mjcf-graph.hpp"
 #include "pinocchio/parsers/urdf.hpp"
 
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/frames.hpp"
 
-#include "pinocchio/multibody/joint/joints.hpp"
+#include "pinocchio/multibody/joint.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/filesystem/fstream.hpp>

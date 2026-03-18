@@ -376,6 +376,7 @@ CCACHE_SLOPPINESS = "include_file_ctime,include_file_mtime,pch_defines,time_macr
 
 [feature.clang-sanitizers.tasks]
 configure = { cmd = [
+  "CXXFLAGS=-DNDEBUG",
   "cmake",
   "-G",
   "Ninja",

@@ -1,11 +1,38 @@
 //
 // Copyright (c) 2016-2024 CNRS INRIA
 //
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <cstddef>
+#include <iostream>
+#include <limits>
+#include <map>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
-#include "pinocchio/parsers/mjcf/mjcf-graph.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+#include <boost/filesystem/path.hpp>
+#include <boost/optional/optional.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/variant/get.hpp>
+
+#include "pinocchio/constraints.hpp"
+#include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/kinematics.hpp"
+#include "pinocchio/macros.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/joint.hpp"
+#include "pinocchio/parsers/mjcf.hpp"
+#include "pinocchio/parsers/urdf.hpp"
+#include "pinocchio/spatial.hpp"
 
 namespace pinocchio
 {

@@ -2,16 +2,14 @@
 // Copyright (c) 2020-2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_contact_cholesky_hpp__
-#define __pinocchio_python_algorithm_contact_cholesky_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 #include <eigenpy/copyable.hpp>
 
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 
-#include "pinocchio/algorithm/delassus-operator-dense.hpp"
-#include "pinocchio/algorithm/delassus-operator-sparse.hpp"
+#include "pinocchio/algorithm/delassus-operator.hpp"
 
 #include "pinocchio/bindings/python/utils/macros.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
@@ -59,23 +57,26 @@ namespace pinocchio
       void visit(PyClass & cl) const
       {
         cl.def(bp::init<>(bp::arg("self"), "Default constructor."))
-          .def(bp::init<const Model &, const Data &>(
-            bp::args("self", "model", "data"),
-            "Constructor from a model.")[mimic_not_supported_function<>(1)])
-          .def(bp::init<
-               const Model &, const Data &, const RigidConstraintModelVector &,
-               const RigidConstraintDataVector>(
-            (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("contact_models"),
-             bp::arg("contact_datas")),
-            "Constructor from a model and a collection of RigidConstraintModels.")
-                 [mimic_not_supported_function<>(1)])
-          .def(bp::init<
-               const Model &, const Data &, const ConstraintModelVector &,
-               const ConstraintDataVector>(
-            (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
-             bp::arg("constraint_datas")),
-            "Constructor from a model and a collection of ConstraintModels.")
-                 [mimic_not_supported_function<>(1)])
+          .def(
+            bp::init<const Model &, const Data &>(
+              bp::args("self", "model", "data"),
+              "Constructor from a model.")[mimic_not_supported_function<>(1)])
+          .def(
+            bp::init<
+              const Model &, const Data &, const RigidConstraintModelVector &,
+              const RigidConstraintDataVector>(
+              (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("contact_models"),
+               bp::arg("contact_datas")),
+              "Constructor from a model and a collection of RigidConstraintModels.")
+              [mimic_not_supported_function<>(1)])
+          .def(
+            bp::init<
+              const Model &, const Data &, const ConstraintModelVector &,
+              const ConstraintDataVector>(
+              (bp::arg("self"), bp::arg("model"), bp::arg("data"), bp::arg("constraint_models"),
+               bp::arg("constraint_datas")),
+              "Constructor from a model and a collection of ConstraintModels.")
+              [mimic_not_supported_function<>(1)])
 
           .add_property(
             "U",
@@ -102,7 +103,7 @@ namespace pinocchio
             "Returns the total dimension of the constraints contained in the Cholesky "
             "factorization.")
           .def(
-            "matrix", (Matrix(Self::*)(void) const)&Self::matrix, bp::arg("self"),
+            "matrix", (Matrix (Self::*)(void) const) & Self::matrix, bp::arg("self"),
             "Returns the matrix resulting from the decomposition.")
 
           .def(
@@ -180,7 +181,7 @@ namespace pinocchio
             "regularized with a factor mu.")
 
           .def(
-            "updateDamping", (void(Self::*)(const Scalar &)) & Self::updateDamping,
+            "updateDamping", (void (Self::*)(const Scalar &))&Self::updateDamping,
             bp::args("self", "mu"),
             "Update the damping term on the upper left block part of the KKT matrix. The damping "
             "term should be positive.")
@@ -196,7 +197,7 @@ namespace pinocchio
 
           .def(
             "getInverseOperationalSpaceInertiaMatrix",
-            (Matrix(Self::*)(bool) const)&Self::getInverseOperationalSpaceInertiaMatrix,
+            (Matrix (Self::*)(bool) const) & Self::getInverseOperationalSpaceInertiaMatrix,
             (bp::arg("self"), bp::arg("enforce_symmetry") = false),
             "Returns the Inverse of the Operational Space Inertia Matrix resulting from the "
             "decomposition.",
@@ -204,12 +205,13 @@ namespace pinocchio
 
           .def(
             "getOperationalSpaceInertiaMatrix",
-            (Matrix(Self::*)(void) const)&Self::getOperationalSpaceInertiaMatrix, bp::arg("self"),
+            (Matrix (Self::*)(void) const) & Self::getOperationalSpaceInertiaMatrix,
+            bp::arg("self"),
             "Returns the Operational Space Inertia Matrix resulting from the decomposition.",
             bp::return_value_policy<bp::return_by_value>())
 
           .def(
-            "getInverseMassMatrix", (Matrix(Self::*)(void) const)&Self::getInverseMassMatrix,
+            "getInverseMassMatrix", (Matrix (Self::*)(void) const) & Self::getInverseMassMatrix,
             bp::arg("self"),
             "Returns the inverse of the Joint Space Inertia Matrix or \"mass matrix\".",
             bp::return_value_policy<bp::return_by_value>())
@@ -221,7 +223,7 @@ namespace pinocchio
             bp::return_value_policy<bp::return_by_value>())
 
           .def(
-            "inverse", (Matrix(Self::*)(void) const)&Self::inverse, bp::arg("self"),
+            "inverse", (Matrix (Self::*)(void) const) & Self::inverse, bp::arg("self"),
             "Returns the inverse matrix resulting from the decomposition.")
 
           .def(
@@ -258,10 +260,11 @@ namespace pinocchio
             "Delassus Cholesky expression associated to a given ContactCholeskyDecomposition "
             "object.",
             bp::no_init)
-            .def(bp::init<ContactCholeskyDecomposition &>(
-              bp::args("self", "cholesky_decomposition"),
-              "Build from a given ContactCholeskyDecomposition object.")
-                   [bp::with_custodian_and_ward<1, 2>()])
+            .def(
+              bp::init<ContactCholeskyDecomposition &>(
+                bp::args("self", "cholesky_decomposition"),
+                "Build from a given ContactCholeskyDecomposition object.")
+                [bp::with_custodian_and_ward<1, 2>()])
             .def(
               "cholesky",
               +[](DelassusCholeskyExpression & self) -> ContactCholeskyDecomposition & {
@@ -280,8 +283,9 @@ namespace pinocchio
           bp::class_<DelassusOperatorDense>(
             "DelassusOperatorDense", "Delassus Cholesky dense operator from a dense matrix.",
             bp::no_init)
-            .def(bp::init<const context::RefConstMatrixXs>(
-              bp::args("self", "matrix"), "Build from a given dense matrix"))
+            .def(
+              bp::init<const context::RefConstMatrixXs>(
+                bp::args("self", "matrix"), "Build from a given dense matrix"))
 
             .def(DelassusOperatorBasePythonVisitor<DelassusOperatorDense>());
 #endif // PINOCCHIO_PYTHON_SKIP_CASADI_UNSUPPORTED
@@ -294,8 +298,9 @@ namespace pinocchio
           bp::class_<DelassusOperatorSparse, boost::noncopyable>(
             "DelassusOperatorSparse", "Delassus Cholesky sparse operator from a sparse matrix.",
             bp::no_init)
-            .def(bp::init<const context::SparseMatrix &>(
-              bp::args("self", "matrix"), "Build from a given sparse matrix"))
+            .def(
+              bp::init<const context::SparseMatrix &>(
+                bp::args("self", "matrix"), "Build from a given sparse matrix"))
 
             .def(DelassusOperatorBasePythonVisitor<DelassusOperatorSparse>());
 #endif // PINOCCHIO_PYTHON_SKIP_CASADI_UNSUPPORTED
@@ -311,8 +316,9 @@ namespace pinocchio
             "Delassus Cholesky sparse operator leveraging the Accelerate framework on APPLE "
             "systems.",
             bp::no_init)
-            .def(bp::init<const context::SparseMatrix &>(
-              bp::args("self", "matrix"), "Build from a given sparse matrix"))
+            .def(
+              bp::init<const context::SparseMatrix &>(
+                bp::args("self", "matrix"), "Build from a given sparse matrix"))
 
             .def(DelassusOperatorBasePythonVisitor<DelassusOperatorSparseAccelerate>());
         }
@@ -375,5 +381,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_contact_cholesky_hpp__

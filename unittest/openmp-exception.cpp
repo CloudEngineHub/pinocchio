@@ -2,9 +2,7 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include <iostream>
 #include <sstream>
-#include <exception>
 
 #include "pinocchio/utils/openmp.hpp"
 

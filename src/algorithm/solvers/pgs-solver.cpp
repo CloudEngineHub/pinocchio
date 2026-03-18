@@ -2,13 +2,10 @@
 // Copyright (c) 2026 INRIA
 //
 
-#include "pinocchio/context.hpp"
+#include "pinocchio/src/context/template-instantiation.hxx"
 #ifndef PINOCCHIO_SKIP_ALGORITHM_SOLVERS
 
   #include "pinocchio/algorithm/solvers/pgs-solver.hpp"
-  #include "pinocchio/algorithm/constraints/constraint-model-generic.hpp"
-  #include "pinocchio/algorithm/constraints/constraint-data-generic.hpp"
-  #include "pinocchio/algorithm/constraints/constraint-collection-default.hpp"
 
 namespace pinocchio
 {

@@ -2,13 +2,9 @@
 // Copyright (c) 2024 INRIA
 //
 
-#include <iostream>
-
-#include <pinocchio/math/tridiagonal-matrix.hpp>
-#include <pinocchio/math/eigenvalues-tridiagonal-matrix.hpp>
+#include <pinocchio/math.hpp>
 
 #include <Eigen/Eigenvalues>
-#include <boost/variant.hpp> // to avoid C99 warnings
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

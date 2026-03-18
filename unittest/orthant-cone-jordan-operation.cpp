@@ -2,7 +2,7 @@
 // Copyright (c) 2025 INRIA
 //
 
-#include "pinocchio/algorithm/constraints/sets/orthant-cone-jordan-operation.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include <boost/test/unit_test.hpp>
 

@@ -4,11 +4,8 @@
 
 #include "pinocchio/autodiff/cppad.hpp"
 
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-#include "pinocchio/multibody/liegroup/liegroup.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-algo.hpp"
-
-#include <iostream>
+#include "pinocchio/multibody/joint.hpp"
+#include "pinocchio/multibody/liegroup.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

@@ -1,17 +1,13 @@
-#ifndef __pinocchio_unittest_utils_hpp__
-#define __pinocchio_unittest_utils_hpp__
+#pragma once
 
 #include "pinocchio/macros.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
+#include "pinocchio/multibody.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
+#include "pinocchio/constraints.hpp"
+#include "pinocchio/algorithm/joint-configuration.hpp"
+#include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
-#include "pinocchio/algorithm/contact-dynamics.hpp"
 
 #include <vector>
 
@@ -226,5 +222,3 @@ namespace pinocchio
 
   } // namespace unittest
 } // namespace pinocchio
-
-#endif // __pinocchio_unittest_utils_hpp__

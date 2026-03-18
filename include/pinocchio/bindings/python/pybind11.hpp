@@ -1,5 +1,4 @@
-#ifndef __pinocchio_python_pybind11_hpp__
-#define __pinocchio_python_pybind11_hpp__
+#pragma once
 
 /// \mainpage Pinocchio PyBind11 helpers
 ///
@@ -235,5 +234,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 #undef _SINGLE_ARG
-
-#endif // #ifndef __pinocchio_python_pybind11_hpp__

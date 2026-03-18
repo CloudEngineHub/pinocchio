@@ -2,15 +2,11 @@
 // Copyright (c) 2015-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_python_lie_group_hpp__
-#define __pinocchio_python_lie_group_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 
-#include "pinocchio/multibody/liegroup/liegroup.hpp"
-#include "pinocchio/multibody/liegroup/cartesian-product-variant.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-generic.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-collection.hpp"
+#include "pinocchio/multibody/liegroup.hpp"
 
 namespace pinocchio
 {
@@ -277,5 +273,3 @@ namespace pinocchio
     };
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_geometry_model_hpp__

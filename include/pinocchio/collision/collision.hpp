@@ -2,16 +2,35 @@
 // Copyright (c) 2015-2024 CNRS INRIA
 //
 
-#ifndef __pinocchio_collision_collision_hpp__
-#define __pinocchio_collision_collision_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/multibody/geometry.hpp"
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
 
-#include "pinocchio/collision/config.hpp"
+#include <cassert>
+#include <cstddef>
+#include <stdexcept>
+#include <ostream>
+#include <algorithm>
+#include <math.h>
+#include <vector>
+
+#include <boost/foreach.hpp>
 
 #include <coal/collision_data.h>
+#include <coal/BV/AABB.h>
+#include <coal/collision_object.h>
+#include <coal/math/transform.h>
+
+#include "pinocchio/macros.hpp"
+
+#include "pinocchio/spatial.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/algorithm/geometry.hpp"
+
+#include "pinocchio/collision/config.hpp"
+#include "pinocchio/collision/coal-pinocchio-conversions.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -139,11 +158,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
-#include "pinocchio/collision/collision.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/collision/collision.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_collision_collision_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/src/collision/collision.hxx"
+// IWYU pragma: end_exports

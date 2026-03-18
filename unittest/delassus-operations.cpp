@@ -9,10 +9,8 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
-#include <pinocchio/algorithm/delassus-operator-dense.hpp>
-#include <pinocchio/algorithm/delassus-operator-cholesky-expression.hpp>
-#include <pinocchio/algorithm/delassus-operator-rigid-body.hpp>
-#include <pinocchio/algorithm/constraints/utils.hpp>
+#include <pinocchio/algorithm/delassus-operator.hpp>
+#include <pinocchio/constraints.hpp>
 
 #include "utils.hpp"
 

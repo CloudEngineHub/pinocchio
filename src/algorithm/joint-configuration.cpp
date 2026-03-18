@@ -2,6 +2,7 @@
 // Copyright (c) 2022 INRIA
 //
 
+#include "pinocchio/src/context/template-instantiation.hxx"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 
 namespace pinocchio
@@ -15,7 +16,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
@@ -27,7 +28,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
@@ -40,7 +41,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const context::Scalar &,
@@ -53,7 +54,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const context::Scalar &,
@@ -67,7 +68,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
@@ -79,7 +80,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
@@ -92,7 +93,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
@@ -104,7 +105,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
@@ -117,7 +118,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
@@ -129,7 +130,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
@@ -139,11 +140,11 @@ namespace pinocchio
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,
-    context::VectorXs>(const context::Model &, const Eigen::MatrixBase<context::VectorXs> &);
+    context::VectorXs>(const Model &, const Eigen::MatrixBase<context::VectorXs> &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
   neutral<context::Scalar, context::Options, JointCollectionDefaultTpl, context::VectorXs>(
-    const context::Model &, const Eigen::MatrixBase<context::VectorXs> &);
+    const Model &, const Eigen::MatrixBase<context::VectorXs> &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void dIntegrate<
     LieGroupMap,
@@ -153,7 +154,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -167,7 +168,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -180,7 +181,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -194,7 +195,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
     const AssignmentOperatorType);
@@ -205,7 +206,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
     const AssignmentOperatorType);
@@ -218,7 +219,7 @@ namespace pinocchio
     context::VectorXs,
     context::MatrixXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -231,7 +232,7 @@ namespace pinocchio
     context::VectorXs,
     context::MatrixXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -245,7 +246,7 @@ namespace pinocchio
     context::VectorXs,
     context::MatrixXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -258,7 +259,7 @@ namespace pinocchio
     context::VectorXs,
     context::MatrixXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -273,7 +274,7 @@ namespace pinocchio
     context::VectorXs,
     context::MatrixXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -288,7 +289,7 @@ namespace pinocchio
     context::VectorXs,
     context::MatrixXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -303,7 +304,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -317,7 +318,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -330,7 +331,7 @@ namespace pinocchio
     context::VectorXs,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &,
@@ -343,7 +344,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -353,7 +354,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -364,7 +365,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -374,7 +375,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -383,20 +384,20 @@ namespace pinocchio
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,
-    context::VectorXs>(const context::Model &, const Eigen::MatrixBase<context::VectorXs> &);
+    context::VectorXs>(const Model &, const Eigen::MatrixBase<context::VectorXs> &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
   normalize<context::Scalar, context::Options, JointCollectionDefaultTpl, context::VectorXs>(
-    const context::Model &, const Eigen::MatrixBase<context::VectorXs> &);
+    const Model &, const Eigen::MatrixBase<context::VectorXs> &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
   lieGroup<LieGroupMap, context::Scalar, context::Options, JointCollectionDefaultTpl>(
-    const context::Model &,
+    const Model &,
     typename LieGroupMap::template operationProduct<context::Scalar, context::Options>::type &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
   lieGroup<context::Scalar, context::Options, JointCollectionDefaultTpl>(
-    const context::Model &,
+    const Model &,
     typename LieGroupMap::template operationProduct<context::Scalar, context::Options>::type &);
 
 #ifndef PINOCCHIO_SKIP_CASADI_UNSUPPORTED
@@ -407,11 +408,11 @@ namespace pinocchio
     context::Options,
     JointCollectionDefaultTpl,
     context::VectorXs>(
-    const context::Model &, const Eigen::MatrixBase<context::VectorXs> &, const context::Scalar &);
+    const Model &, const Eigen::MatrixBase<context::VectorXs> &, const context::Scalar &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI bool
   isNormalized<context::Scalar, context::Options, JointCollectionDefaultTpl, context::VectorXs>(
-    const context::Model &, const Eigen::MatrixBase<context::VectorXs> &, const context::Scalar &);
+    const Model &, const Eigen::MatrixBase<context::VectorXs> &, const context::Scalar &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI bool isSameConfiguration<
     LieGroupMap,
@@ -420,7 +421,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const context::Scalar &);
@@ -431,7 +432,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const context::Scalar &);
@@ -443,7 +444,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &);
 
@@ -453,7 +454,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::MatrixXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::MatrixXs> &);
 
@@ -466,7 +467,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -476,7 +477,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -487,7 +488,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const context::Scalar &);
@@ -498,7 +499,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const context::Scalar &);
@@ -510,7 +511,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -520,7 +521,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -531,7 +532,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -541,7 +542,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -552,7 +553,7 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
@@ -562,31 +563,29 @@ namespace pinocchio
     JointCollectionDefaultTpl,
     context::VectorXs,
     context::VectorXs>(
-    const context::Model &,
+    const Model &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const Eigen::MatrixBase<context::VectorXs> &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI context::VectorXs
   randomConfiguration<LieGroupMap, context::Scalar, context::Options, JointCollectionDefaultTpl>(
-    const context::Model &);
+    const Model &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI context::VectorXs
-  randomConfiguration<context::Scalar, context::Options, JointCollectionDefaultTpl>(
-    const context::Model &);
+  randomConfiguration<context::Scalar, context::Options, JointCollectionDefaultTpl>(const Model &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI context::VectorXs
-  neutral<LieGroupMap, context::Scalar, context::Options, JointCollectionDefaultTpl>(
-    const context::Model &);
+  neutral<LieGroupMap, context::Scalar, context::Options, JointCollectionDefaultTpl>(const Model &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI context::VectorXs
-  neutral<context::Scalar, context::Options, JointCollectionDefaultTpl>(const context::Model &);
+  neutral<context::Scalar, context::Options, JointCollectionDefaultTpl>(const Model &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI
     typename LieGroupMap::template operationProduct<context::Scalar, context::Options>::type
     lieGroup<LieGroupMap, context::Scalar, context::Options, JointCollectionDefaultTpl>(
-      const context::Model &);
+      const Model &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI
     typename LieGroupMap::template operationProduct<context::Scalar, context::Options>::type
-    lieGroup<context::Scalar, context::Options, JointCollectionDefaultTpl>(const context::Model &);
+    lieGroup<context::Scalar, context::Options, JointCollectionDefaultTpl>(const Model &);
 } // namespace pinocchio

@@ -2,8 +2,7 @@
 // Copyright (c) 2022-2024 INRIA
 //
 
-#include <iostream>
-#include "pinocchio/algorithm/constraints/sets/coulomb-friction-cone.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

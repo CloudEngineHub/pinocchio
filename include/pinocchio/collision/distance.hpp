@@ -2,16 +2,29 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_collision_distance_hpp__
-#define __pinocchio_collision_distance_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/multibody/geometry.hpp"
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
 
-#include "pinocchio/collision/config.hpp"
+#include <cassert>
+#include <cstddef>
+#include <limits>
+#include <sstream>
+#include <stdexcept>
+#include <vector>
 
 #include <coal/collision_data.h>
+#include <coal/math/transform.h>
+
+#include "pinocchio/macros.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/algorithm/geometry.hpp"
+
+#include "pinocchio/collision/config.hpp"
+#include "pinocchio/collision/coal-pinocchio-conversions.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -95,10 +108,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
-#include "pinocchio/collision/distance.hxx"
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/collision/distance.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_collision_distance_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/src/collision/distance.hxx"
+// IWYU pragma: end_exports

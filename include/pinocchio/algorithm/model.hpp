@@ -1,12 +1,35 @@
 //
 // Copyright (c) 2019 CNRS INRIA
 //
+#pragma once
 
-#ifndef __pinocchio_algorithm_model_hpp__
-#define __pinocchio_algorithm_model_hpp__
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
+//
+#include <cassert>
+#include <cstddef>
+#include <stdexcept>
+#include <algorithm>
+#include <type_traits>
+#include <utility>
+#include <iterator>
+#include <string>
+#include <vector>
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/geometry.hpp"
+#include <boost/fusion/container/vector.hpp>
+#include <boost/variant/get.hpp>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/fwd.hpp"
+
+#include "pinocchio/spatial.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/geometry.hpp"
+#include "pinocchio/multibody/joint.hpp"
+
+#include "pinocchio/algorithm/joint-configuration.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -286,10 +309,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#include "pinocchio/algorithm/model.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/model.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_model_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/src/algorithm/model.hxx"
+// IWYU pragma: end_exports

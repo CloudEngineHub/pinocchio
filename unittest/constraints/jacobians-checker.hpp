@@ -1,9 +1,8 @@
 #pragma once
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
 
-#include "pinocchio/algorithm/constraints/constraints.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
+#include "pinocchio/multibody.hpp"
+
+#include "pinocchio/constraints.hpp"
 
 #include <boost/test/unit_test.hpp>
 

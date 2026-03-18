@@ -2,11 +2,7 @@
 // Copyright (c) 2025 INRIA
 //
 
-#include <iostream>
-
-#include <pinocchio/math/matrix-product.hpp>
-
-#include <boost/variant.hpp> // to avoid C99 warnings
+#include <pinocchio/math.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

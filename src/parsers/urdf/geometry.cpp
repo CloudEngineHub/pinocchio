@@ -2,23 +2,43 @@
 // Copyright (c) 2015-2020 CNRS INRIA
 //
 
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/parsers/urdf/types.hpp"
-#include "pinocchio/parsers/urdf/utils.hpp"
-#include "pinocchio/parsers/utils.hpp"
+#include <cassert>
+#include <cstddef>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
-#include <urdf_model/model.h>
-#include <urdf_parser/urdf_parser.h>
+#include <Eigen/Core>
 
 #ifdef PINOCCHIO_WITH_COLLISION
-
+  #include <coal/fwd.hh>
+  #include <coal/BVH/BVH_model.h>
+  #include <coal/data_types.h>
   #include <coal/mesh_loader/loader.h>
-  #include <coal/mesh_loader/assimp.h>
-
+  #include <coal/shape/geometric_shapes.h>
 #endif // PINOCCHIO_WITH_COLLISION
+
+#include <urdf_model/color.h>
+#include <urdf_model/link.h>
+#include <urdf_model/model.h>
+#include <urdf_model/pose.h>
+#include <urdf_model/types.h>
+#include <urdf_parser/urdf_parser.h>
+#include <urdf_world/types.h>
+
+#include "pinocchio/eigen-common.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/parsers/urdf.hpp"
+#include "pinocchio/parsers/utils.hpp"
+#include "pinocchio/utils/file-explorer.hpp"
 
 namespace pinocchio
 {
@@ -65,15 +85,9 @@ namespace pinocchio
           {
             if (cc.first == "capsule")
             {
-#ifdef PINOCCHIO_URDFDOM_COLLISION_WITH_GROUP_NAME
-              std::cerr << "Warning: support for tag link/collision_checking/capsule"
-                           " is not available for URDFDOM < 0.3.0"
-                        << std::endl;
-#else
               std::string name = cc.second.get<std::string>("<xmlattr>.name");
               if (geomName == name)
                 return true;
-#endif
             }
           } // BOOST_FOREACH
 
@@ -91,15 +105,9 @@ namespace pinocchio
           {
             if (cc.first == "convex")
             {
-#ifdef PINOCCHIO_URDFDOM_COLLISION_WITH_GROUP_NAME
-              std::cerr << "Warning: support for tag link/collision_checking/convex"
-                           " is not available for URDFDOM < 0.3.0"
-                        << std::endl;
-#else
               std::string name = cc.second.get<std::string>("<xmlattr>.name");
               if (geomName == name)
                 return true;
-#endif
             }
           } // BOOST_FOREACH
 
@@ -252,8 +260,7 @@ namespace pinocchio
        * @return Either the first collision or visual
        */
       template<typename T>
-      inline PINOCCHIO_URDF_SHARED_PTR(const T)
-        getLinkGeometry(const ::urdf::LinkConstSharedPtr link);
+      inline std::shared_ptr<const T> getLinkGeometry(const ::urdf::LinkConstSharedPtr link);
 
       template<>
       inline ::urdf::CollisionConstSharedPtr
@@ -281,7 +288,7 @@ namespace pinocchio
        */
       template<typename urdfObject>
       inline bool getVisualMaterial(
-        const PINOCCHIO_URDF_SHARED_PTR(urdfObject) urdf_object,
+        const std::shared_ptr<urdfObject> urdf_object,
         std::string & meshTexturePath,
         Eigen::Vector4d & meshColor,
         const std::vector<std::string> & package_dirs);
@@ -328,7 +335,7 @@ namespace pinocchio
        * @return the array of either collisions or visuals
        */
       template<typename T>
-      inline const std::vector<PINOCCHIO_URDF_SHARED_PTR(T)> &
+      inline const std::vector<std::shared_ptr<T>> &
       getLinkGeometryArray(const ::urdf::LinkConstSharedPtr link);
 
       template<>
@@ -373,7 +380,7 @@ namespace pinocchio
         PINOCCHIO_UNUSED_VARIABLE(meshLoader);
 #endif // PINOCCHIO_WITH_COLLISION
 
-        typedef std::vector<PINOCCHIO_URDF_SHARED_PTR(GeometryType)> VectorSharedT;
+        typedef std::vector<std::shared_ptr<GeometryType>> VectorSharedT;
         typedef GeometryModel::SE3 SE3;
 
         if (getLinkGeometry<GeometryType>(link))
@@ -396,12 +403,7 @@ namespace pinocchio
           {
             meshPath.clear();
 #ifdef PINOCCHIO_WITH_COLLISION
-
-  #ifdef PINOCCHIO_URDFDOM_COLLISION_WITH_GROUP_NAME
-            const std::string & geom_name = (*i)->group_name;
-  #else
             const std::string & geom_name = (*i)->name;
-  #endif // PINOCCHIO_URDFDOM_COLLISION_WITH_GROUP_NAME
             const GeometryObject::CollisionGeometryPtr geometry = retrieveCollisionGeometry(
               tree, meshLoader, link_name, geom_name, (*i)->geometry, package_dirs, meshPath,
               meshScale);

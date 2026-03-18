@@ -2,12 +2,8 @@
 // Copyright (c) 2015-2022 CNRS INRIA
 //
 
-#include <iostream>
-
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-
-#include "pinocchio/multibody/geometry.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/geometry.hpp"
 #include "pinocchio/parsers/urdf.hpp"
 
 #include <vector>
@@ -51,8 +47,9 @@ BOOST_AUTO_TEST_CASE(manage_collision_pairs)
     }
   }
 
-  GeometryModel::MatrixXb collision_map(GeometryModel::MatrixXb::Zero(
-    (Eigen::Index)geom_model.ngeoms, (Eigen::Index)geom_model.ngeoms));
+  GeometryModel::MatrixXb collision_map(
+    GeometryModel::MatrixXb::Zero(
+      (Eigen::Index)geom_model.ngeoms, (Eigen::Index)geom_model.ngeoms));
 
   for (size_t k = 0; k < geom_model.collisionPairs.size(); ++k)
   {
@@ -103,8 +100,9 @@ BOOST_AUTO_TEST_CASE(manage_collision_pairs)
     geom_data_copy.deactivateAllCollisionPairs();
     geom_data_copy_lower.deactivateAllCollisionPairs();
 
-    GeometryData::MatrixXb collision_map(GeometryModel::MatrixXb::Zero(
-      (Eigen::Index)geom_model.ngeoms, (Eigen::Index)geom_model.ngeoms));
+    GeometryData::MatrixXb collision_map(
+      GeometryModel::MatrixXb::Zero(
+        (Eigen::Index)geom_model.ngeoms, (Eigen::Index)geom_model.ngeoms));
     for (size_t k = 0; k < geom_data.activeCollisionPairs.size(); ++k)
     {
       const CollisionPair & cp = geom_model.collisionPairs[k];
@@ -124,8 +122,9 @@ BOOST_AUTO_TEST_CASE(manage_collision_pairs)
   {
     GeometryData geom_data_upper(geom_model), geom_data_lower(geom_model);
 
-    const GeometryData::MatrixXs security_margin_map(GeometryData::MatrixXs::Ones(
-      (Eigen::Index)geom_model.ngeoms, (Eigen::Index)geom_model.ngeoms));
+    const GeometryData::MatrixXs security_margin_map(
+      GeometryData::MatrixXs::Ones(
+        (Eigen::Index)geom_model.ngeoms, (Eigen::Index)geom_model.ngeoms));
     GeometryData::MatrixXs security_margin_map_upper(security_margin_map);
     security_margin_map_upper.triangularView<Eigen::Lower>().fill(0.);
 

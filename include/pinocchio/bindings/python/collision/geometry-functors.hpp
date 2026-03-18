@@ -2,10 +2,9 @@
 // Copyright (c) 2021 INRIA
 //
 
-#ifndef __pinocchio_python_collision_geometry_functors_hpp__
-#define __pinocchio_python_collision_geometry_functors_hpp__
+#pragma once
 
-#include "pinocchio/multibody/geometry.hpp"
+#include "pinocchio/geometry.hpp"
 
 namespace pinocchio
 {
@@ -23,9 +22,10 @@ namespace pinocchio
       {
         const std::string class_name = bp::type_id<GeometryFunctor>().name();
 
-        cl.def(bp::init<const GeometryObject &, const GeometryObject &>(
-                 bp::args("self", "geometry_object1", "geometry_object2"),
-                 (std::string("Constructor of a ") + class_name).c_str()))
+        cl.def(
+            bp::init<const GeometryObject &, const GeometryObject &>(
+              bp::args("self", "geometry_object1", "geometry_object2"),
+              (std::string("Constructor of a ") + class_name).c_str()))
           .def(
             "run", &GeometryFunctor::run, bp::args("self", "tf1", "tf2", "request", "result"),
             "Call the function and return the result")
@@ -49,5 +49,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_collision_geometry_functors_hpp__

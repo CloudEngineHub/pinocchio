@@ -2,7 +2,7 @@
 // Copyright (c) 2015-2021 CNRS INRIA
 //
 
-#include "pinocchio/serialization/frame.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/multibody/frame.hpp"

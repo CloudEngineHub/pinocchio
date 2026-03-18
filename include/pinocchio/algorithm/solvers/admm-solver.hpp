@@ -2,28 +2,37 @@
 // Copyright (c) 2022-2025 INRIA
 //
 
-#ifndef __pinocchio_algorithm_solvers_admm_solver_hpp__
-#define __pinocchio_algorithm_solvers_admm_solver_hpp__
+#pragma once
 
-#include "pinocchio/algorithm/solvers/fwd.hpp"
-#include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
+// IWYU pragma: begin_keep
+#include <cassert>
+#include <cmath>
+#include <cstddef>
+#include <vector>
+#include <optional>
+#include <limits>
 
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/math/fwd.hpp"
-#include "pinocchio/math/comparison-operators.hpp"
-#include "pinocchio/math/eigenvalues.hpp"
+#include <Eigen/Core>
+#include <Eigen/Eigenvalues>
 
-#include "pinocchio/algorithm/delassus-operator-base.hpp"
-#include "pinocchio/algorithm/solvers/anderson-acceleration.hpp"
-
-#include "pinocchio/math/lanczos-decomposition.hpp"
-
-#include "pinocchio/algorithm/diagonal-preconditioner.hpp"
+#include "pinocchio/eigen-common.hpp"
+#include "pinocchio/macros.hpp"
 
 #include "pinocchio/container/eigen-storage.hpp"
 
-#include <optional>
-#include <limits>
+#include "pinocchio/math.hpp"
+
+#include "pinocchio/tracy.hpp"
+
+#include "pinocchio/utils/check.hpp"
+
+#include "pinocchio/constraints.hpp"
+
+#include "pinocchio/algorithm/solvers/fwd.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-base.hpp"
+#include "pinocchio/algorithm/solvers/constraint-solver-utils.hpp"
+#include "pinocchio/algorithm/solvers/anderson-acceleration.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -1087,10 +1096,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-#include "pinocchio/algorithm/solvers/admm-solver.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/solvers/admm-solver.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_solvers_admm_solver_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/src/algorithm/solvers/admm-solver.hxx"
+// IWYU pragma: end_exports

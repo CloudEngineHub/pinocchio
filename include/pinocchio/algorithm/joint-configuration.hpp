@@ -2,11 +2,29 @@
 // Copyright (c) 2016-2021 CNRS INRIA
 //
 
-#ifndef __pinocchio_algorithm_joint_configuration_hpp__
-#define __pinocchio_algorithm_joint_configuration_hpp__
+//
+// Copyright (c) INRIA 2026
+//
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/liegroup/liegroup.hpp"
+// IWYU pragma: begin_keep
+#include <Eigen/Core>
+
+#include <cassert>
+#include <vector>
+
+#include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
+#include "pinocchio/fwd.hpp"
+#include "pinocchio/context.hpp"
+
+#include "pinocchio/utils/check.hpp"
+
+#include "pinocchio/math.hpp"
+
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/multibody/liegroup.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -1764,11 +1782,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
-#include "pinocchio/algorithm/joint-configuration.hxx"
-
-#if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-  #include "pinocchio/algorithm/joint-configuration.txx"
-#endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // ifndef __pinocchio_algorithm_joint_configuration_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/src/algorithm/joint-configuration.hxx"
+// IWYU pragma: end_exports

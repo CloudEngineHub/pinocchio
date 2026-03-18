@@ -2,17 +2,14 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_constraints_model_inheritance_hpp__
-#define __pinocchio_python_algorithm_constraints_model_inheritance_hpp__
+#pragma once
 
 #include <boost/python.hpp>
 #include <eigenpy/exception.hpp>
 #include <eigenpy/eigen-to-python.hpp>
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/frame-constraint-model-base.hpp"
-#include "pinocchio/algorithm/constraints/point-constraint-model-base.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
 
@@ -77,25 +74,31 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::init<const Model &, JointIndex, const SE3 &, JointIndex, const SE3 &>(
-                 (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"),
-                  bp::arg("joint1_placement"), bp::arg("joint2_id"), bp::arg("joint2_placement")),
-                 "Constructor from given joint index and placement for the two joints "
-                 "implied in the constraint."))
-          .def(bp::init<const Model &, JointIndex>(
-            (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id")),
-            "Constructor from given joint index of the first joint "
-            "implied in the constraint."))
-          .def(bp::init<const Model &, JointIndex, const SE3 &>(
-            (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint1_placement")),
-            "Constructor from given joint index and placement of the first joint "
-            "implied in the constraint."))
-          .def(bp::init<const Model &, JointIndex, JointIndex>(
-            (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint2_id")),
-            "Constructor from given joint index for the two joints "
-            "implied in the constraint."))
-          .def(bp::init<const Model &>(
-            (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
+        cl.def(
+            bp::init<const Model &, JointIndex, const SE3 &, JointIndex, const SE3 &>(
+              (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint1_placement"),
+               bp::arg("joint2_id"), bp::arg("joint2_placement")),
+              "Constructor from given joint index and placement for the two joints "
+              "implied in the constraint."))
+          .def(
+            bp::init<const Model &, JointIndex>(
+              (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id")),
+              "Constructor from given joint index of the first joint "
+              "implied in the constraint."))
+          .def(
+            bp::init<const Model &, JointIndex, const SE3 &>(
+              (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"),
+               bp::arg("joint1_placement")),
+              "Constructor from given joint index and placement of the first joint "
+              "implied in the constraint."))
+          .def(
+            bp::init<const Model &, JointIndex, JointIndex>(
+              (bp::arg("self"), bp::arg("model"), bp::arg("joint1_id"), bp::arg("joint2_id")),
+              "Constructor from given joint index for the two joints "
+              "implied in the constraint."))
+          .def(
+            bp::init<const Model &>(
+              (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
           .def(
             "getA1", &getA1, bp::args("self", "constraint_data", "reference_frame"),
             "Returns the constraint projector associated with joint 1. "
@@ -207,5 +210,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_constraints_model_inheritance_hpp__

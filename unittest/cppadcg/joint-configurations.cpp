@@ -3,9 +3,9 @@
 //
 
 #include "pinocchio/codegen/cppadcg.hpp"
-#include "pinocchio/codegen/code-generator-algo.hpp"
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/algorithm/joint-configuration.hpp"
+#include "pinocchio/codegen/cppadcg-algo.hpp"
+
+#include "pinocchio/multibody.hpp"
 
 #include "../utils/model-generator.hpp"
 

@@ -6,28 +6,17 @@
 #include "model-fixture.hpp"
 
 #include "pinocchio/codegen/cppadcg.hpp"
+#include "pinocchio/codegen/cppadcg-algo.hpp"
 
-#include "pinocchio/algorithm/joint-configuration.hpp"
+#include "pinocchio/constraints.hpp"
+
 #include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/centroidal.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/constrained-dynamics-derivatives.hpp"
 #include "pinocchio/algorithm/constrained-dynamics.hpp"
-#include "pinocchio/algorithm/contact-info.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/algorithm/jacobian.hpp"
-#include "pinocchio/algorithm/center-of-mass.hpp"
-#include "pinocchio/algorithm/compute-all-terms.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/macros.hpp"
 #include "pinocchio/multibody/fwd.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
-
-#include "pinocchio/codegen/code-generator-algo.hpp"
-
-#include <iostream>
 
 struct CGFixture : ModelFixture
 {
@@ -296,7 +285,7 @@ PINOCCHIO_DONT_INLINE void constraintDynamicsDerivativeCall(
 }
 BENCHMARK_DEFINE_F(CGFixture, CONSTRAINT_DYNAMICS_DERIVATIVES)(benchmark::State & st)
 {
-  pinocchio::initConstraintDynamics(model, data, CONTACT_MODELS_6D6D);
+  pinocchio::initConstraintDynamics(model, data, CONTACT_MODELS_6D6D, CONTACT_DATAS_6D6D);
   for (auto _ : st)
   {
     constraintDynamicsDerivativeCall(

@@ -7,13 +7,14 @@
 #include "pinocchio/algorithm/parallel/rnea.hpp"
 #include "pinocchio/algorithm/parallel/aba.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
+
+#include "pinocchio/parsers/urdf.hpp"
+#include "pinocchio/parsers/srdf.hpp"
 
 #ifdef PINOCCHIO_WITH_COLLISION
-  #include "pinocchio/collision/tree-broadphase-manager.hpp"
   #include "pinocchio/collision/parallel/geometry.hpp"
-  #include "pinocchio/collision/pool/fwd.hpp"
   #include "pinocchio/collision/parallel/broadphase.hpp"
+  #include "pinocchio/collision/pool/broadphase-manager.hpp"
 
   #include <coal/broadphase/broadphase_dynamic_AABB_tree.h>
   #include <coal/broadphase/broadphase_dynamic_AABB_tree_array.h>
@@ -24,10 +25,6 @@
   #include <coal/broadphase/broadphase_spatialhash.h>
   #include <coal/mesh_loader/loader.h>
 #endif
-
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/parsers/srdf.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
 
 #include <benchmark/benchmark.h>
 #include <boost/filesystem.hpp>

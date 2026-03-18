@@ -2,17 +2,13 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#include <iostream>
+#include "pinocchio/math.hpp"
+#include "pinocchio/constraints.hpp"
 
-#include "pinocchio/math/lanczos-decomposition.hpp"
-#include "pinocchio/algorithm/delassus-operator-dense.hpp"
+#include "pinocchio/algorithm/delassus-operator.hpp"
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/diagonal-preconditioner.hpp"
-#include "pinocchio/algorithm/delassus-operator-preconditioned.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
-
-#include <boost/variant.hpp> // to avoid C99 warnings
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

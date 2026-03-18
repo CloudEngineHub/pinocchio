@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pinocchio/algorithm/constraints/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 
 namespace pinocchio
 {

@@ -4,24 +4,14 @@
 
 #include "model-fixture.hpp"
 
-#include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/kinematics.hpp"
-#include "pinocchio/algorithm/kinematics-derivatives.hpp"
-#include "pinocchio/algorithm/rnea-derivatives.hpp"
-#include "pinocchio/algorithm/aba-derivatives.hpp"
-#include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/contact-dynamics.hpp"
-#include "pinocchio/algorithm/constrained-dynamics.hpp"
 #include "pinocchio/algorithm/cholesky.hpp"
-#include "pinocchio/parsers/urdf.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
 #include "pinocchio/algorithm/delassus.hpp"
+#include "pinocchio/algorithm/delassus-operator.hpp"
+#include "pinocchio/algorithm/proximal.hpp"
+#include "pinocchio/algorithm/jacobian.hpp"
 
 #include <benchmark/benchmark.h>
-
-#include <iostream>
 
 struct DelassusFixture : ModelFixture
 {

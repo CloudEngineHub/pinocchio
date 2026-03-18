@@ -2,8 +2,7 @@
 // Copyright (c) 2019 INRIA
 //
 
-#ifndef __pinocchio_python_utils_list_hpp__
-#define __pinocchio_python_utils_list_hpp__
+#pragma once
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/path.hpp"
@@ -63,5 +62,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_utils_list_hpp__

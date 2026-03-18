@@ -1,8 +1,8 @@
 //
 // Copyright (c) 2024-2025 INRIA
 //
-#ifndef __pinocchio_python_extra_extras_hpp__
-#define __pinocchio_python_extra_extras_hpp__
+
+#pragma once
 
 #include "pinocchio/visualizers/base-visualizer.hpp"
 #include "pinocchio/bindings/python/fwd.hpp"
@@ -93,5 +93,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // #ifndef __pinocchio_python_extra_extras_hpp__

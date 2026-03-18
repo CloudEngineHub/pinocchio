@@ -2,11 +2,10 @@
 // Copyright (c) 2024-2025 INRIA
 //
 
-#ifndef __pinocchio_python_math_lanczos_decomposition_hpp__
-#define __pinocchio_python_math_lanczos_decomposition_hpp__
+#pragma once
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/math/lanczos-decomposition.hpp"
+#include "pinocchio/math.hpp"
 #include <eigenpy/copyable.hpp>
 
 #include <eigenpy/eigenpy.hpp>
@@ -33,13 +32,15 @@ namespace pinocchio
       {
         //        static const Scalar dummy_precision = Eigen::NumTraits<Scalar>::dummy_precision();
 
-        cl.def(bp::init<const context::MatrixXs &, const Eigen::Index>(
-                 (bp::arg("self"), bp::arg("matrix"), bp::arg("decomposition_size")),
-                 "Default constructor from a given matrix and a given decomposition size."))
+        cl.def(
+            bp::init<const context::MatrixXs &, const Eigen::Index>(
+              (bp::arg("self"), bp::arg("matrix"), bp::arg("decomposition_size")),
+              "Default constructor from a given matrix and a given decomposition size."))
 
-          .def(bp::init<const Eigen::Index, const Eigen::Index>(
-            (bp::arg("self"), bp::arg("size"), bp::arg("decomposition_size")),
-            "Default constructor for the Lanczos decomposition from a given matrix size."))
+          .def(
+            bp::init<const Eigen::Index, const Eigen::Index>(
+              (bp::arg("self"), bp::arg("size"), bp::arg("decomposition_size")),
+              "Default constructor for the Lanczos decomposition from a given matrix size."))
 
           .def(
             "compute", &LanczosDecomposition::template compute<context::MatrixXs>,
@@ -92,5 +93,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_math_lanczos_decomposition_hpp__

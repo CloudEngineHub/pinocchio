@@ -5,10 +5,6 @@
 #include "pinocchio/autodiff/cppad.hpp"
 #include <cppad/speed/det_by_minor.hpp>
 
-#include <boost/variant.hpp> // to avoid C99 warnings
-
-#include <iostream>
-
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 

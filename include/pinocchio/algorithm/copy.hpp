@@ -2,12 +2,13 @@
 // Copyright (c) 2016-2020 CNRS INRIA
 //
 
-#ifndef __pinocchio_copy_hpp__
-#define __pinocchio_copy_hpp__
+#pragma once
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/check.hpp"
+// IWYU pragma: begin_keep
+#include "pinocchio/macros.hpp"
+//
+#include "pinocchio/multibody.hpp"
+// IWYU pragma: end_keep
 
 namespace pinocchio
 {
@@ -32,41 +33,6 @@ namespace pinocchio
 
 } // namespace pinocchio
 
-/* --- Details -------------------------------------------------------------------- */
-// #include "pinocchio/algorithm/copy.hxx"
-
-/// \internal
-namespace pinocchio
-{
-  template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-  inline void copy(
-    const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const DataTpl<Scalar, Options, JointCollectionTpl> & origin,
-    DataTpl<Scalar, Options, JointCollectionTpl> & dest,
-    KinematicLevel kinematic_level)
-  {
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
-
-    PINOCCHIO_CHECK_INPUT_ARGUMENT(kinematic_level >= POSITION);
-
-    for (JointIndex jid = 1; jid < (JointIndex)model.njoints; ++jid)
-    {
-      dest.oMi[jid] = origin.oMi[jid];
-      if (kinematic_level >= VELOCITY)
-      {
-        dest.v[jid] = origin.v[jid];
-      }
-      if (kinematic_level >= ACCELERATION)
-      {
-        dest.a[jid] = origin.a[jid];
-        dest.a_gf[jid] = origin.a_gf[jid];
-        dest.f[jid] = origin.f[jid];
-      }
-    }
-  }
-
-} // namespace pinocchio
-/// \endinternal
-
-#endif // ifndef __pinocchio_copy_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/src/algorithm/copy.hxx"
+// IWYU pragma: end_exports

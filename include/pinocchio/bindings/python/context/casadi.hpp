@@ -2,8 +2,7 @@
 // Copyright (c) 2020 INRIA
 //
 
-#ifndef __pinocchio_python_context_casadi_hpp__
-#define __pinocchio_python_context_casadi_hpp__
+#pragma once
 
 #include "pinocchio/autodiff/casadi.hpp"
 
@@ -480,5 +479,3 @@ namespace eigenpy
   };
 
 } // namespace eigenpy
-
-#endif // #ifndef __pinocchio_python_context_casadi_hpp__

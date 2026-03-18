@@ -2,8 +2,7 @@
 // Copyright (c) 2026 INRIA
 //
 
-#ifndef __pinocchio_python_collision_fcl_transform_hpp__
-#define __pinocchio_python_collision_fcl_transform_hpp__
+#pragma once
 
 #include "pinocchio/macros.hpp"
 
@@ -12,5 +11,3 @@ PINOCCHIO_MOVED_HEADER_PINOCCHIO4(pinocchio/bindings/python/collision/fcl/transf
 // clang-format on
 
 #include "pinocchio/bindings/python/collision/coal/transform.hpp"
-
-#endif // ifndef __pinocchio_python_collision_fcl_transform_hpp__

@@ -3,8 +3,7 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#ifndef __pinocchio_python_geometry_model_hpp__
-#define __pinocchio_python_geometry_model_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 #include <eigenpy/copyable.hpp>
@@ -15,7 +14,7 @@
 #include "pinocchio/bindings/python/utils/pickle.hpp"
 #include "pinocchio/bindings/python/serialization/serializable.hpp"
 
-#include "pinocchio/multibody/geometry.hpp"
+#include "pinocchio/geometry.hpp"
 
 namespace pinocchio
 {
@@ -138,5 +137,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_geometry_model_hpp__

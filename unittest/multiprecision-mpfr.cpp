@@ -11,13 +11,10 @@
 #include <iostream>
 
 #include "pinocchio/algorithm/aba.hpp"
-#include "pinocchio/algorithm/center-of-mass.hpp"
-#include "pinocchio/algorithm/centroidal.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
-#include "pinocchio/math/multiprecision.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)

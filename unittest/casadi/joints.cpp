@@ -4,9 +4,8 @@
 
 #include "pinocchio/autodiff/casadi.hpp"
 
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-#include "pinocchio/multibody/liegroup/liegroup.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-algo.hpp"
+#include "pinocchio/multibody/joint.hpp"
+#include "pinocchio/multibody/liegroup.hpp"
 
 #include <iostream>
 #include <boost/test/unit_test.hpp>

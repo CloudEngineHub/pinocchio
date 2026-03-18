@@ -2,12 +2,11 @@
 // Copyright (c) 2019-2022 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_contact_info_hpp__
-#define __pinocchio_python_algorithm_contact_info_hpp__
+#pragma once
 
 #include <eigenpy/memory.hpp>
 
-#include "pinocchio/algorithm/contact-info.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
@@ -43,25 +42,29 @@ namespace pinocchio
         cl
           //        .def(bp::init<>(bp::arg("self"),
           //                        "Default constructor."))
-          .def(bp::init<
-               ContactType, const Model &, JointIndex, const SE3 &, JointIndex, const SE3 &,
-               bp::optional<ReferenceFrame>>(
-            (bp::arg("self"), bp::arg("contact_type"), bp::arg("model"), bp::arg("joint1_id"),
-             bp::arg("joint1_placement"), bp::arg("joint2_id"), bp::arg("joint2_placement"),
-             bp::arg("reference_frame")),
-            "Constructor from a given ContactType, joint index and placement for the two joints "
-            "implied in the constraint."))
-          .def(bp::init<
-               ContactType, const Model &, JointIndex, const SE3 &, bp::optional<ReferenceFrame>>(
-            (bp::arg("self"), bp::arg("contact_type"), bp::arg("model"), bp::arg("joint1_id"),
-             bp::arg("joint1_placement"), bp::arg("reference_frame")),
-            "Constructor from a given ContactType, joint index and placement only for the first "
-            "joint implied in the constraint."))
-          .def(bp::init<ContactType, const Model &, JointIndex, bp::optional<ReferenceFrame>>(
-            (bp::arg("self"), bp::arg("contact_type"), bp::arg("model"), bp::arg("joint1_id"),
-             bp::arg("reference_frame")),
-            "Constructor from a given ContactType and joint index. The base joint is taken as 0 in "
-            "the constraint."))
+          .def(
+            bp::init<
+              ContactType, const Model &, JointIndex, const SE3 &, JointIndex, const SE3 &,
+              bp::optional<ReferenceFrame>>(
+              (bp::arg("self"), bp::arg("contact_type"), bp::arg("model"), bp::arg("joint1_id"),
+               bp::arg("joint1_placement"), bp::arg("joint2_id"), bp::arg("joint2_placement"),
+               bp::arg("reference_frame")),
+              "Constructor from a given ContactType, joint index and placement for the two joints "
+              "implied in the constraint."))
+          .def(
+            bp::init<
+              ContactType, const Model &, JointIndex, const SE3 &, bp::optional<ReferenceFrame>>(
+              (bp::arg("self"), bp::arg("contact_type"), bp::arg("model"), bp::arg("joint1_id"),
+               bp::arg("joint1_placement"), bp::arg("reference_frame")),
+              "Constructor from a given ContactType, joint index and placement only for the first "
+              "joint implied in the constraint."))
+          .def(
+            bp::init<ContactType, const Model &, JointIndex, bp::optional<ReferenceFrame>>(
+              (bp::arg("self"), bp::arg("contact_type"), bp::arg("model"), bp::arg("joint1_id"),
+               bp::arg("reference_frame")),
+              "Constructor from a given ContactType and joint index. The base joint is taken as 0 "
+              "in "
+              "the constraint."))
           .PINOCCHIO_ADD_PROPERTY(Self, name, "Name of the contact.")
           .PINOCCHIO_ADD_PROPERTY(Self, type, "Type of the contact.")
           .PINOCCHIO_ADD_PROPERTY(Self, joint1_id, "Index of first parent joint in the model tree.")
@@ -94,7 +97,7 @@ namespace pinocchio
             "Create a Data object for the given model.")
           .def(ComparableVisitor<Self, pinocchio::is_floating_point<Scalar>::value>())
           .def(
-            "calc", (void(Self::*)(const Model &, const Data &, ContactData &) const) & Self::calc,
+            "calc", (void (Self::*)(const Model &, const Data &, ContactData &) const) & Self::calc,
             bp::args("self", "model", "data", "constraint_data"))
           .def("jacobian", &jacobian, bp::args("self", "model", "data", "constraint_data"))
           .def(
@@ -135,8 +138,9 @@ namespace pinocchio
           bp::no_init)
           .def(RigidConstraintModelPythonVisitor())
           .def(CastVisitor<RigidConstraintModel>())
-          .def(ExposeConstructorByCastVisitor<
-               RigidConstraintModel, ::pinocchio::context::RigidConstraintModel>());
+          .def(
+            ExposeConstructorByCastVisitor<
+              RigidConstraintModel, ::pinocchio::RigidConstraintModel>());
       }
 
       static ContactData createData(const Self & self)
@@ -217,8 +221,9 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::init<const ContactModel &>(
-                 bp::args("self", "contact_model"), "Default constructor."))
+        cl.def(
+            bp::init<const ContactModel &>(
+              bp::args("self", "contact_model"), "Default constructor."))
 
           .PINOCCHIO_ADD_PROPERTY(Self, contact_force, "Constraint force.")
           .PINOCCHIO_ADD_PROPERTY(
@@ -286,5 +291,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_contact_info_hpp__

@@ -3,8 +3,7 @@
 // Copyright (c) 2017-2018 CNRS
 //
 
-#ifndef __pinocchio_macros_hpp__
-#define __pinocchio_macros_hpp__
+#pragma once
 
 #include <sstream>
 #include <boost/core/demangle.hpp>
@@ -97,20 +96,6 @@
 #define PINOCCHIO_GET_DEMANGLED_TYPE_NAME(type)                                                    \
   ::boost::core::demangle(PINOCCHIO_GET_TYPE_NAME(type))
 
-namespace pinocchio
-{
-  namespace helper
-  {
-    template<typename T>
-    struct argument_type;
-    template<typename T, typename U>
-    struct argument_type<T(U)>
-    {
-      typedef U type;
-    };
-  } // namespace helper
-} // namespace pinocchio
-
 /// \brief Empty macro argument
 #define PINOCCHIO_MACRO_EMPTY_ARG
 
@@ -148,18 +133,6 @@ namespace pinocchio
     int msg[(condition) ? 1 : -1]; /*avoid unused-variable warning*/                               \
     (void)msg;                                                                                     \
   }
-
-namespace pinocchio
-{
-  namespace helper
-  {
-    template<typename D, template<typename> class TypeAccess>
-    struct handle_return_type_without_typename
-    {
-      typedef typename TypeAccess<typename argument_type<void(D)>::type>::type type;
-    };
-  } // namespace helper
-} // namespace pinocchio
 
 /// \brief macros for pragma push/pop/ignore deprecated warnings
 #if defined(__GNUC__) || defined(__clang__)
@@ -321,5 +294,3 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
 PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
 #define PINOCCHIO_DECLTYPE(value) std::remove_cv_t<std::remove_reference_t<decltype(value)>>
-
-#endif // ifndef __pinocchio_macros_hpp__

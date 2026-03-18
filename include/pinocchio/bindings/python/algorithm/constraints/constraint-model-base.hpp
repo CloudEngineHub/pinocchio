@@ -2,17 +2,14 @@
 // Copyright (c) 2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_constraints_model_base_hpp__
-#define __pinocchio_python_algorithm_constraints_model_base_hpp__
+#pragma once
 
 #include <boost/python.hpp>
 #include <eigenpy/exception.hpp>
 #include <eigenpy/eigen-to-python.hpp>
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/algorithm/constraints/fwd.hpp"
-#include "pinocchio/algorithm/constraints/constraint-model-base.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
@@ -143,8 +140,8 @@ namespace pinocchio
             "Vector of the active indexes associated with a given row.")
           .def(
             "jacobian",
-            (JacobianMatrixType(Self::*)(const Model &, const Data &, ConstraintData &)
-               const)&Self::jacobian,
+            (JacobianMatrixType (Self::*)(const Model &, const Data &, ConstraintData &) const)
+              & Self::jacobian,
             bp::args("self", "model", "data", "constraint_data"),
             "Compute the constraint jacobian.")
           .def(
@@ -362,5 +359,3 @@ namespace pinocchio
     };
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_constraints_model_base_hpp__

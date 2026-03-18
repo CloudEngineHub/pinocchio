@@ -2,8 +2,7 @@
 // Copyright (c) 2022-2026 INRIA
 //
 
-#include "pinocchio/spatial/fwd.hpp"
-
+#include "pinocchio/src/context/template-instantiation.hxx"
 #ifndef PINOCCHIO_SKIP_ALGORITHM_CONTACT_CHOLESKY
 
   #include "pinocchio/algorithm/constraint-cholesky.hpp"
@@ -29,14 +28,14 @@ namespace pinocchio
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,
-    context::RigidConstraintModel,
-    typename context::RigidConstraintModelVector::allocator_type,
-    context::RigidConstraintData,
-    typename context::RigidConstraintDataVector::allocator_type>(
-    const context::Model &,
-    const context::Data &,
-    const context::RigidConstraintModelVector &,
-    const context::RigidConstraintDataVector &);
+    RigidConstraintModel,
+    typename RigidConstraintModelVector::allocator_type,
+    RigidConstraintData,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &,
+    const Data &,
+    const RigidConstraintModelVector &,
+    const RigidConstraintDataVector &);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
@@ -57,14 +56,14 @@ namespace pinocchio
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,
-    context::RigidConstraintModel,
-    typename context::RigidConstraintModelVector::allocator_type,
-    context::RigidConstraintData,
-    typename context::RigidConstraintDataVector::allocator_type>(
-    const context::Model &,
-    context::Data &,
-    const context::RigidConstraintModelVector &,
-    const context::RigidConstraintDataVector &,
+    RigidConstraintModel,
+    typename RigidConstraintModelVector::allocator_type,
+    RigidConstraintData,
+    typename RigidConstraintDataVector::allocator_type>(
+    const Model &,
+    Data &,
+    const RigidConstraintModelVector &,
+    const RigidConstraintDataVector &,
     const context::Scalar);
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
@@ -83,7 +82,7 @@ namespace pinocchio
       getMassMatrixChoeslkyDecomposition<
         context::Scalar,
         context::Options,
-        JointCollectionDefaultTpl>(const context::Model &, const context::Data &) const;
+        JointCollectionDefaultTpl>(const Model &, const Data &) const;
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI void
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Uv<context::MatrixXs>(

@@ -3,7 +3,7 @@
 //
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/math/gram-schmidt-orthonormalisation.hpp"
+#include "pinocchio/math.hpp"
 
 namespace pinocchio
 {

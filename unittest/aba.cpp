@@ -2,15 +2,13 @@
 // Copyright (c) 2016-2021 CNRS INRIA
 //
 
+#include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/rnea.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
-
-#include "pinocchio/algorithm/compute-all-terms.hpp"
-#include "pinocchio/utils/timer.hpp"
 
 #include <iostream>
 

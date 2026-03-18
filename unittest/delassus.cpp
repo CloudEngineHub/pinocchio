@@ -3,13 +3,14 @@
 // Copyright (c) 2023 KU Leuven
 //
 
-#include "pinocchio/algorithm/contact-info.hpp"
-#include "pinocchio/algorithm/contact-dynamics.hpp"
+#include "pinocchio/multibody/sample-models.hpp"
+#include "pinocchio/constraints.hpp"
+
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
-#include "pinocchio/algorithm/constraints/utils.hpp"
-#include "pinocchio/multibody/sample-models.hpp"
+#include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/delassus.hpp"
+#include "pinocchio/algorithm/compute-all-terms.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

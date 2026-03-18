@@ -3,11 +3,10 @@
 // Copyright (c) 2018-2025 INRIA
 //
 
-#ifndef __pinocchio_python_multibody_data_hpp__
-#define __pinocchio_python_multibody_data_hpp__
+#pragma once
 
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/serialization/data.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include <eigenpy/memory.hpp>
 #include <eigenpy/eigen-to-python.hpp>
@@ -90,8 +89,9 @@ namespace pinocchio
       void visit(PyClass & cl) const
       {
         cl.def(bp::init<>(bp::arg("self"), "Default constructor."))
-          .def(bp::init<const context::Model &>(
-            bp::args("self", "model"), "Constructs a data structure from a given model."))
+          .def(
+            bp::init<const context::Model &>(
+              bp::args("self", "model"), "Constructs a data structure from a given model."))
 
           .ADD_DATA_PROPERTY(
             joints,
@@ -340,5 +340,3 @@ namespace pinocchio
 #undef ADD_DATA_PROPERTY
 #undef ADD_DATA_PROPERTY_READONLY
 #undef ADD_DATA_PROPERTY_READONLY_BYVALUE
-
-#endif // ifndef __pinocchio_python_multibody_data_hpp__

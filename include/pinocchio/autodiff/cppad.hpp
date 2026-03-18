@@ -2,20 +2,34 @@
 // Copyright (c) 2018-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_autodiff_cppad_hpp__
-#define __pinocchio_autodiff_cppad_hpp__
+#pragma once
 
-#include "pinocchio/math/fwd.hpp"
+// IWYU pragma: always_keep
+
 #define PINOCCHIO_WITH_CPPAD_SUPPORT
 
-// Do not include this file directly.
-// Copy and use directly the intructions from <cppad/example/cppad_eigen.hpp>
-// to avoid redifinition of EIGEN_MATRIXBASE_PLUGIN for Eigen 3.3.0 and later
-// #include <cppad/example/cppad_eigen.hpp>
+// IWYU pragma: begin_keep
+#include <cmath>
 
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+#include <boost/version.hpp>
+#include <boost/math/constants/constants.hpp>
 #include <boost/mpl/int.hpp>
+
 #include <cppad/cppad.hpp>
-#include <Eigen/Dense>
+
+#include "pinocchio/fwd.hpp"
+#include "pinocchio/macros.hpp"
+#include "pinocchio/eigen-common.hpp"
+#include "pinocchio/fwd.hpp"
+
+#include "pinocchio/utils/static-if.hpp"
+
+#include "pinocchio/math.hpp"
+#include "pinocchio/spatial.hpp"
+// IWYU pragma: end_keep
 
 namespace boost
 {
@@ -137,8 +151,6 @@ namespace Eigen
 } // namespace Eigen
 
 // Source from #include <cppad/example/cppad_eigen.hpp>
-#include "pinocchio/utils/static-if.hpp"
-
 namespace CppAD
 {
   // functions that return references
@@ -191,38 +203,11 @@ namespace CppAD
   }
 } // namespace CppAD
 
-#include "pinocchio/utils/static-if.hpp"
-
-namespace pinocchio
-{
-  template<typename Scalar>
-  struct TaylorSeriesExpansion<CppAD::AD<Scalar>> : TaylorSeriesExpansion<Scalar>
-  {
-    typedef TaylorSeriesExpansion<Scalar> Base;
-    typedef CppAD::AD<Scalar> ADScalar;
-
-    template<int degree>
-    static ADScalar precision()
-    {
-      return ADScalar(Base::template precision<degree>());
-    }
-  };
-
-  template<typename Scalar, typename ADScalar>
-  struct ScalarCast<Scalar, CppAD::AD<ADScalar>>
-  {
-    static Scalar cast(const CppAD::AD<ADScalar> & value)
-    {
-      return scalar_cast<Scalar>(CppAD::Value(value));
-    }
-  };
-
-} // namespace pinocchio
-
-#include "pinocchio/autodiff/cppad/spatial/se3-tpl.hpp"
-#include "pinocchio/autodiff/cppad/spatial/log.hxx"
-#include "pinocchio/autodiff/cppad/utils/static-if.hpp"
-#include "pinocchio/autodiff/cppad/math/quaternion.hpp"
-#include "pinocchio/autodiff/cppad/algorithm/aba.hpp"
-
-#endif // #ifndef __pinocchio_autodiff_cppad_hpp__
+// IWYU pragma: begin_exports
+#include "pinocchio/src/autodiff/cppad/utils/static-if.hxx"
+#include "pinocchio/src/autodiff/cppad/math/quaternion.hxx"
+#include "pinocchio/src/autodiff/cppad/math/taylor-series-expansion.hxx"
+#include "pinocchio/src/autodiff/cppad/spatial/se3-tpl.hxx"
+#include "pinocchio/src/autodiff/cppad/spatial/log.hxx"
+#include "pinocchio/src/autodiff/cppad/algorithm/aba.hxx"
+// IWYU pragma: end_exports

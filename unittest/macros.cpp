@@ -7,8 +7,6 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
-using namespace pinocchio;
-
 std::string expected_msg;
 
 bool check_exception_msg(const std::exception & exception)

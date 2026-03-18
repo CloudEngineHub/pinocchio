@@ -2,8 +2,7 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#ifndef __pinocchio_python_utils_registration_hpp__
-#define __pinocchio_python_utils_registration_hpp__
+#pragma once
 
 #include "pinocchio/deprecated.hpp"
 #include <eigenpy/registration.hpp>
@@ -17,5 +16,3 @@ namespace pinocchio
     using eigenpy::register_symbolic_link_to_registered_type;
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_utils_registration_hpp__

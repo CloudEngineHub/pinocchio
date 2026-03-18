@@ -2,10 +2,9 @@
 // Copyright (c) 2015-2022 CNRS INRIA
 //
 
-#ifndef __pinocchio_python_multibody_joint_joint_model_hpp__
-#define __pinocchio_python_multibody_joint_joint_model_hpp__
+#pragma once
 
-#include "pinocchio/multibody/joint/joint-generic.hpp"
+#include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/bindings/python/multibody/joint/joint-derived.hpp"
 #include "pinocchio/bindings/python/multibody/joint/joints-liegroup.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
@@ -56,5 +55,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_multibody_joint_joint_model_hpp__

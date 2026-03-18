@@ -3,7 +3,7 @@
 //
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/algorithm/constraints/constraints.hpp"
+#include "pinocchio/constraints.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/bindings/python/algorithm/constraints/constraints-variant.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"

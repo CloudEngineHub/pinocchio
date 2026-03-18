@@ -2,14 +2,11 @@
 // Copyright (c) 2022-2025 INRIA
 //
 
-#ifndef __pinocchio_python_algorithm_constraints_set_trivial_cones_hpp__
-#define __pinocchio_python_algorithm_constraints_set_trivial_cones_hpp__
+#pragma once
 
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/algorithm/constraints/sets/zero-cone.hpp"
-#include "pinocchio/algorithm/constraints/sets/full-space-cone.hpp"
-#include "pinocchio/algorithm/constraints/sets/orthant-cone.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include "pinocchio/bindings/python/algorithm/constraints/set-base.hpp"
 #include "pinocchio/bindings/python/utils/cast.hpp"
@@ -36,5 +33,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithm_constraints_set_trivial_cones_hpp__

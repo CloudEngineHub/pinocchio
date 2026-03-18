@@ -2,8 +2,7 @@
 // Copyright (c) 2025-2026 INRIA
 //
 
-#ifndef __pinocchio_python_utils_model_checker_hpp__
-#define __pinocchio_python_utils_model_checker_hpp__
+#pragma once
 
 #include <Python.h>
 #include <string>
@@ -54,4 +53,3 @@ namespace pinocchio
       "This algorithm does not support Joint Mimic type in the model.";
   } // namespace python
 } // namespace pinocchio
-#endif // model_checker

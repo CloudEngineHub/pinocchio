@@ -2,8 +2,7 @@
 // Copyright (c) 2016-2023 CNRS INRIA
 //
 
-#ifndef __pinocchio_python_algorithms_hpp__
-#define __pinocchio_python_algorithms_hpp__
+#pragma once
 
 #include "pinocchio/bindings/python/fwd.hpp"
 
@@ -52,5 +51,3 @@ namespace pinocchio
 
   } // namespace python
 } // namespace pinocchio
-
-#endif // ifndef __pinocchio_python_algorithms_hpp__

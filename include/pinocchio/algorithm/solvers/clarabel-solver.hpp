@@ -2,8 +2,7 @@
 // Copyright (c) 2024 INRIA
 //
 
-#ifndef __pinocchio_algorithm_solvers_clarabel_solver_hpp__
-#define __pinocchio_algorithm_solvers_clarabel_solver_hpp__
+#pragma once
 
 #ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
 
@@ -12,7 +11,7 @@
 
   #include "pinocchio/algorithm/delassus-operator-base.hpp"
 
-  #include "pinocchio/algorithm/constraints/fwd.hpp"
+  #include "pinocchio/constraints/fwd.hpp"
   #include "pinocchio/math/fwd.hpp"
 
   #include "pinocchio/container/eigen-storage.hpp"
@@ -434,10 +433,8 @@ namespace pinocchio
 #endif // PINOCCHIO_WITH_CLARABEL_SUPPORT
 
 // Include implementation
-#include "pinocchio/algorithm/solvers/clarabel-solver.hxx"
+#include "pinocchio/src/algorithm/solvers/clarabel-solver.hxx"
 
 #if PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
   #include "pinocchio/algorithm/solvers/clarabel-solver.txx"
 #endif // PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-#endif // __pinocchio_algorithm_solvers_clarabel_solver_hpp__

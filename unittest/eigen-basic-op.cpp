@@ -2,11 +2,9 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/math/matrix.hpp"
-#include "pinocchio/math/eigen-helpers.hpp"
-
 #include "pinocchio/utils/std-vector.hpp"
+
+#include "pinocchio/math.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>

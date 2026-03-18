@@ -2,10 +2,11 @@
 // Copyright (c) 2025 INRIA
 //
 
-#include "pinocchio/fwd.hpp"
-#include "pinocchio/multibody/joint/joint-common-operations.hpp"
-
 #include <benchmark/benchmark.h>
+
+#include <Eigen/Core>
+
+#include "pinocchio/math.hpp"
 
 using namespace pinocchio;
 
