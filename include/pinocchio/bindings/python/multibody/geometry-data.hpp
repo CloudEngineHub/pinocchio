@@ -8,7 +8,7 @@
 #include <eigenpy/memory.hpp>
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/serialization/geometry.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include "pinocchio/bindings/python/utils/address.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"

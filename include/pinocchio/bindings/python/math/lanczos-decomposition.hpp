@@ -5,7 +5,7 @@
 #pragma once
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/math/lanczos-decomposition.hpp"
+#include "pinocchio/math.hpp"
 #include <eigenpy/copyable.hpp>
 
 #include <eigenpy/eigenpy.hpp>

@@ -11,7 +11,7 @@
 #include "pinocchio/bindings/python/utils/dependencies.hpp"
 
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
-#include "pinocchio/spatial/cartesian-axis.hpp"
+#include "pinocchio/spatial.hpp"
 #include "pinocchio/bindings/python/serialization/serialization.hpp"
 
 #include <eigenpy/eigenpy.hpp>

@@ -15,7 +15,7 @@
 #include "pinocchio/bindings/python/utils/pickle.hpp"
 #include "pinocchio/bindings/python/serialization/serializable.hpp"
 
-#include "pinocchio/multibody/geometry.hpp"
+#include "pinocchio/geometry.hpp"
 
 namespace pinocchio
 {

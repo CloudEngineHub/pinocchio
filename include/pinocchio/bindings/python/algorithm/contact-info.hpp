@@ -6,7 +6,7 @@
 
 #include <eigenpy/memory.hpp>
 
-#include "pinocchio/algorithm/contact-info.hpp"
+#include "pinocchio/constraints.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"

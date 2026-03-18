@@ -8,7 +8,7 @@
 
 #include <boost/python.hpp>
 
-#include "pinocchio/multibody/joint/joint-collection.hpp"
+#include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/bindings/python/multibody/joint/joints-models.hpp"
 #include "pinocchio/bindings/python/multibody/joint/joints-datas.hpp"
 #include "pinocchio/bindings/python/multibody/joint/joints-liegroup.hpp"

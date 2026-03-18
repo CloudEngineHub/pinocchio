@@ -5,7 +5,7 @@
 #pragma once
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/math/tridiagonal-matrix.hpp"
+#include "pinocchio/math.hpp"
 
 #include <eigenpy/eigenpy.hpp>
 #include <eigenpy/memory.hpp>

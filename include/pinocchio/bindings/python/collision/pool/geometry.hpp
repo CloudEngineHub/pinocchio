@@ -14,7 +14,7 @@
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 
 #include "pinocchio/algorithm/check.hpp"
-#include "pinocchio/multibody/pool/geometry.hpp"
+#include "pinocchio/multibody/pool.hpp"
 
 namespace pinocchio
 {

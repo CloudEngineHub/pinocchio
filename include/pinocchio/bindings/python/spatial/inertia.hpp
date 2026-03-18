@@ -11,7 +11,7 @@
 #include <eigenpy/memory.hpp>
 #include <boost/python/tuple.hpp>
 
-#include "pinocchio/spatial/inertia.hpp"
+#include "pinocchio/spatial.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
 #include <eigenpy/copyable.hpp>

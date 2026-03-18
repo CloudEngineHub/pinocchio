@@ -8,7 +8,7 @@
 #include <eigenpy/exception.hpp>
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/multibody/joint/joint-collection.hpp"
+#include "pinocchio/multibody/joint.hpp"
 
 namespace pinocchio
 {

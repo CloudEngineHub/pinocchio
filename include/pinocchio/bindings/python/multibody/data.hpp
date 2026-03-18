@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "pinocchio/multibody/data.hpp"
-#include "pinocchio/serialization/data.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include <eigenpy/memory.hpp>
 #include <eigenpy/eigen-to-python.hpp>

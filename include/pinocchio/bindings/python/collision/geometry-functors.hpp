@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "pinocchio/multibody/geometry.hpp"
+#include "pinocchio/geometry.hpp"
 
 namespace pinocchio
 {

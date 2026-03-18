@@ -7,8 +7,8 @@
 #include <boost/python.hpp>
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-joint.hpp"
+#include "pinocchio/multibody/joint.hpp"
+#include "pinocchio/multibody/liegroup.hpp"
 
 namespace pinocchio
 {

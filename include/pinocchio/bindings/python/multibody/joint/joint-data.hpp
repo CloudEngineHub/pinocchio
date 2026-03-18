@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "pinocchio/multibody/joint/joint-generic.hpp"
+#include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/bindings/python/multibody/joint/joint-derived.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
 

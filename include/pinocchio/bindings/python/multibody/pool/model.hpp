@@ -7,7 +7,7 @@
 #include <eigenpy/eigen-to-python.hpp>
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/multibody/pool/model.hpp"
+#include "pinocchio/multibody/pool.hpp"
 
 #include <boost/python/overloads.hpp>
 #include <eigenpy/memory.hpp>

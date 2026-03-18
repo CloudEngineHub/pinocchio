@@ -9,8 +9,8 @@
 #include <eigenpy/eigen-to-python.hpp>
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/serialization/model.hpp"
+#include "pinocchio/multibody.hpp"
+#include "pinocchio/serialization.hpp"
 
 #include <boost/python/overloads.hpp>
 #include <eigenpy/memory.hpp>

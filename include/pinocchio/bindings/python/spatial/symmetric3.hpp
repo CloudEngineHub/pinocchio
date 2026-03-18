@@ -11,7 +11,7 @@
 
 #include <boost/python/tuple.hpp>
 
-#include "pinocchio/spatial/symmetric3.hpp"
+#include "pinocchio/spatial.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"

@@ -5,7 +5,7 @@
 #include <boost/python.hpp>
 
 #include "pinocchio/bindings/python/parsers/model-graph.hpp"
-#include "pinocchio/parsers/graph/model-graph.hpp"
+#include "pinocchio/parsers/graph.hpp"
 #include "pinocchio/serialization.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 

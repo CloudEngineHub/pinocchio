@@ -11,8 +11,7 @@
 #include <boost/python/tuple.hpp>
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/force.hpp"
+#include "pinocchio/spatial.hpp"
 
 #include "pinocchio/bindings/python/utils/cast.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"

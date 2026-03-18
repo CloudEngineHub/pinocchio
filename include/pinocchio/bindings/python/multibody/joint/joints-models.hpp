@@ -6,10 +6,7 @@
 
 #include <boost/python.hpp>
 
-#include "pinocchio/multibody/joint/joint-collection.hpp"
-#include "pinocchio/multibody/joint/joint-composite.hpp"
-#include "pinocchio/multibody/joint/joint-generic.hpp"
-#include "pinocchio/multibody/joint/joint-mimic.hpp"
+#include "pinocchio/multibody/joint.hpp"
 
 #include <eigenpy/eigen-to-python.hpp>
 

@@ -7,8 +7,7 @@
 
 #include <eigenpy/copyable.hpp>
 
-#include "pinocchio/multibody/fwd.hpp"
-#include "pinocchio/multibody/frame.hpp"
+#include "pinocchio/multibody.hpp"
 
 #include <eigenpy/deprecation-policy.hpp>
 #include "pinocchio/bindings/python/utils/cast.hpp"

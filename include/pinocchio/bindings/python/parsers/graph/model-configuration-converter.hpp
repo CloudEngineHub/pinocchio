@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "pinocchio/parsers/graph/model-configuration-converter.hpp"
+#include "pinocchio/parsers/graph.hpp"
 
 namespace pinocchio
 {

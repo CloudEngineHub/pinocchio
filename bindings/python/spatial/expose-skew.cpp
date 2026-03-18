@@ -4,8 +4,7 @@
 //
 
 #include "pinocchio/bindings/python/fwd.hpp"
-#include "pinocchio/spatial/se3.hpp"
-#include "pinocchio/spatial/skew.hpp"
+#include "pinocchio/spatial.hpp"
 
 namespace pinocchio
 {

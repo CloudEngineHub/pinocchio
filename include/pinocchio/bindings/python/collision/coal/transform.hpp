@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "pinocchio/spatial/se3.hpp"
+#include "pinocchio/spatial.hpp"
 #include <coal/math/transform.h>
 
 namespace boost

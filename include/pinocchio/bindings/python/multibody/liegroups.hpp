@@ -6,10 +6,7 @@
 
 #include <eigenpy/memory.hpp>
 
-#include "pinocchio/multibody/liegroup/liegroup.hpp"
-#include "pinocchio/multibody/liegroup/cartesian-product-variant.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-generic.hpp"
-#include "pinocchio/multibody/liegroup/liegroup-collection.hpp"
+#include "pinocchio/multibody/liegroup.hpp"
 
 namespace pinocchio
 {

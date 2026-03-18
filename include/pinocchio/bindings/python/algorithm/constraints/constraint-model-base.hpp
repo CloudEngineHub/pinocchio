@@ -8,8 +8,7 @@
 #include <eigenpy/exception.hpp>
 #include <eigenpy/eigen-to-python.hpp>
 
-#include "pinocchio/multibody/model.hpp"
-#include "pinocchio/multibody/data.hpp"
+#include "pinocchio/multibody.hpp"
 #include "pinocchio/constraints.hpp"
 
 #include "pinocchio/bindings/python/fwd.hpp"

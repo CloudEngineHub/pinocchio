@@ -7,7 +7,7 @@
 #include <string>
 #include <sstream>
 
-#include "pinocchio/math/matrix.hpp"
+#include "pinocchio/math.hpp"
 
 namespace pinocchio
 {

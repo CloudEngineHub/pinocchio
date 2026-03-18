@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "pinocchio/spatial/explog.hpp"
+#include "pinocchio/spatial.hpp"
 
 namespace pinocchio
 {

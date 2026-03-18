@@ -6,7 +6,7 @@
 
 #include <boost/python.hpp>
 
-#include "pinocchio/multibody/joint/joint-generic.hpp"
+#include "pinocchio/multibody/joint.hpp"
 #include "pinocchio/bindings/python/utils/printable.hpp"
 
 namespace pinocchio
