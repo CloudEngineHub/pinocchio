@@ -343,20 +343,6 @@ if(BUILD_PYTHON_INTERFACE)
     # We bind some enum of this library and then must link against it.
     add_project_dependency(console_bridge REQUIRED)
   endif()
-
-  # Check wether this a PyPy Python
-  execute_process(
-    COMMAND ${PYTHON_EXECUTABLE} -c "import platform; print(platform.python_implementation())"
-    OUTPUT_VARIABLE _python_implementation_value
-    OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
-
-  message(STATUS "Python compiler: ${_python_implementation_value}")
-  if(_python_implementation_value MATCHES "PyPy")
-    set(BUILD_WITH_PYTHON_PARSER_SUPPORT OFF)
-    message(
-      STATUS
-        "PyPy detected, therefore libpython is not available and BUILD_WITH_LIBPYTHON set to OFF.")
-  endif()
 else()
   message(
     STATUS
