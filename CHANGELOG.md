@@ -71,6 +71,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Remove PINOCCHIO_WITH_EIGEN_TENSOR_MODULE define
 - Boost 1.74 is the minimal Boost supported version:
   - Remove Boost < 1.74 workaround
+- pkg-config file are no more generate
 
 ## [3.9.0] - 2026-01-05
 
