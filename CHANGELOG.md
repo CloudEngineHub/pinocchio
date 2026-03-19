@@ -72,6 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Boost 1.74 is the minimal Boost supported version:
   - Remove Boost < 1.74 workaround
 - pkg-config file are no more generate
+- PyPy interpreter is no more supported
 
 ## [3.9.0] - 2026-01-05
 
