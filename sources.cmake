@@ -437,6 +437,7 @@ set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/fcl.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/geometry-object.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/geometry-object-filter.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/utils/file-explorer.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/se3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/serialization/se3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/inertia.hpp
