@@ -8,7 +8,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/utils/file-explorer.hpp"
+  #include "pinocchio/parsers/utils.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

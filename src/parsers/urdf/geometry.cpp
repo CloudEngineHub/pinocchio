@@ -38,7 +38,6 @@
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/parsers/urdf.hpp"
 #include "pinocchio/parsers/utils.hpp"
-#include "pinocchio/utils/file-explorer.hpp"
 
 namespace pinocchio
 {

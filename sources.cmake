@@ -94,7 +94,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/cast.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/check.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/eigen-helpers.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/file-explorer.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/file-io.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/openmp.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/promote-static-eval.hpp
@@ -317,7 +316,6 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-composite.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-4x4.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-3x3.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/utils/file-explorer.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-6x6.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-10x10.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-5x5.hxx
@@ -439,6 +437,7 @@ set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/fcl.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/geometry-object.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/geometry-object-filter.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/utils/file-explorer.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/se3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/serialization/se3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/inertia.hpp
@@ -626,7 +625,7 @@ set(${PROJECT_NAME}_COLLISION_PARALLEL_PRIVATE_HEADERS
 
 # Dependencies free parsers
 set(${PROJECT_NAME}_PARSERS_SOURCES
-    ${PROJECT_SOURCE_DIR}/src/utils/file-explorer.cpp
+    ${PROJECT_SOURCE_DIR}/src/parsers/utils/file-explorer.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph-geom.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph.cpp
@@ -656,7 +655,8 @@ set(${PROJECT_NAME}_PARSERS_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/mjcf/model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/scalar-model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/srdf/srdf.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/utils.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/utils/utils.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/utils/file-explorer.hxx)
 
 set(${PROJECT_NAME}_PARSERS_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/parsers/graph/joints.hpp

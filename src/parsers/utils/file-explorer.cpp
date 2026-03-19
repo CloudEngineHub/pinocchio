@@ -4,7 +4,7 @@
 
 #include <cstdlib>
 #include <boost/filesystem.hpp>
-#include "pinocchio/utils/file-explorer.hpp"
+#include "pinocchio/parsers/utils.hpp"
 
 namespace fs = boost::filesystem;
 namespace pinocchio
