@@ -369,7 +369,7 @@ add_pinocchio_unit_test(orthant-cone-jordan-operation)
 
 # Serialization
 make_directory("${CMAKE_CURRENT_BINARY_DIR}/serialization-data")
-add_pinocchio_unit_test(serialization COLLISION_OPTIONAL)
+add_pinocchio_unit_test(serialization)
 add_test_cflags(
   serialization
   "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
@@ -377,7 +377,24 @@ add_pinocchio_unit_test(serialization-math)
 add_test_cflags(
   serialization-math
   "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
-add_pinocchio_unit_test(csv)
+  add_pinocchio_unit_test(serialization-multibody COLLISION_OPTIONAL)
+  add_test_cflags(
+  serialization-multibody
+  "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
+  add_pinocchio_unit_test(serialization-multibody-joint)
+  add_test_cflags(
+  serialization-multibody-joint
+  "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
+  add_pinocchio_unit_test(serialization-algorithm)
+  add_test_cflags(
+  serialization-algorithm
+  "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
+  add_pinocchio_unit_test(serialization-constraints)
+  add_test_cflags(
+  serialization-constraints
+  "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
+
+  add_pinocchio_unit_test(csv)
 add_test_cflags(
   csv "-DTEST_SERIALIZATION_FOLDER=\\\"${CMAKE_CURRENT_BINARY_DIR}/serialization-data\\\"")
 
