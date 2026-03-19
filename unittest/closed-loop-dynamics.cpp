@@ -93,10 +93,7 @@ BOOST_AUTO_TEST_CASE(closed_loop_constraint_6D_LOCAL)
   KKT_matrix_ref.topRightCorner(constraint_size, model.nv) = J_ref;
   KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_size) = J_ref.transpose();
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   forwardDynamics(model, data_ref, q, v, tau, J_ref, rhs_ref, mu0);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   forwardKinematics(model, data_ref, q, v, data_ref.ddq);
 

@@ -13,6 +13,7 @@
 #include <Eigen/Cholesky>
 
 #include "pinocchio/macros.hpp"
+#include "pinocchio/unsupported.hpp"
 #include "pinocchio/eigen-common.hpp"
 
 #include "pinocchio/math.hpp"
@@ -29,11 +30,12 @@ namespace pinocchio
 
   ///
   /// \brief Compute the forward dynamics with contact constraints. Internally,
-  /// pinocchio::computeAllTerms is called. \deprecated This function has been deprecated and will
-  /// be removed in future releases of Pinocchio.
-  ///  Please use the class RigidConstraintModel to define new contacts, and
-  ///  initConstraintDynamics(model, data, contact_models) and constraintDynamics(model, data, q, v,
-  ///  tau, contact_models, contact_datas[,prox_settings]) instead.
+  /// pinocchio::computeAllTerms is called.
+  /// \warning This function is no more supported.
+  /// Please use the class RigidConstraintModel to define new contacts, and
+  /// initConstraintDynamics(model, data, contact_models) and
+  /// constraintDynamics(model, data, q, v, tau, contact_models, contact_datas[,prox_settings])
+  /// instead.
   /// \note It solves the following problem: <BR>
   ///       <CENTER> \f$ \begin{eqnarray} \underset{\ddot{q}}{\min} & & \| \ddot{q} -
   ///       \ddot{q}_{\text{free}} \|_{M(q)} \\{}
@@ -77,7 +79,7 @@ namespace pinocchio
     typename TangentVectorType2,
     typename ConstraintMatrixType,
     typename DriftVectorType>
-  PINOCCHIO_DEPRECATED inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::
+  PINOCCHIO_UNSUPPORTED inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::
     TangentVectorType &
     forwardDynamics(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -91,12 +93,12 @@ namespace pinocchio
 
   ///
   /// \brief Compute the forward dynamics with contact constraints, assuming
-  /// pinocchio::computeAllTerms has been called. \deprecated This function has been deprecated and
-  /// will be removed in future releases of Pinocchio.
-  ///  Please use the class RigidConstraintModel to define new contacts, and
-  ///  initConstraintDynamics(model, data, contact_models) and constraintDynamics(model, data, q, v,
-  ///  tau, contact_models, contact_datas[,prox_settings]) instead.
-
+  /// pinocchio::computeAllTerms has been called.
+  /// \warning This function is no more supported.
+  /// Please use the class RigidConstraintModel to define new contacts, and
+  /// initConstraintDynamics(model, data, contact_models) and
+  /// constraintDynamics(model, data, q, v, tau, contact_models, contact_datas[,prox_settings])
+  /// instead.
   /// \note It solves the following problem: <BR>
   ///       <CENTER> \f$ \begin{eqnarray} \underset{\ddot{q}}{\min} & & \| \ddot{q} -
   ///       \ddot{q}_{\text{free}} \|_{M(q)} \\{}
@@ -137,7 +139,7 @@ namespace pinocchio
     typename TangentVectorType,
     typename ConstraintMatrixType,
     typename DriftVectorType>
-  PINOCCHIO_DEPRECATED inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::
+  PINOCCHIO_UNSUPPORTED inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::
     TangentVectorType &
     forwardDynamics(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -179,8 +181,8 @@ namespace pinocchio
 
   ///
   /// \brief Computes the inverse of the KKT matrix for dynamics with contact constraints.
-  /// \deprecated forwardDynamics/impuseDynamics is deprecated, and this function signature needs
-  /// forwardDynamics to be called before. Please use the inverse() function in
+  /// \warning forwardDynamics/impuseDynamics are unsupported algorithm, and this function signature
+  /// needs forwardDynamics to be called before. Please use the inverse() function in
   /// ContactCholeskyDecomposition class instead. It computes the following matrix: <BR>
   ///       <CENTER> \f$
   ///       \left[\begin{matrix}\mathbf{M}^{-1}-\mathbf{M}^{-1}\mathbf{J}^{\top}_c\widehat{\mathbf{M}}^{-1}\mathbf{J}_c\mathbf{M}^{-1}
@@ -205,7 +207,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConstraintMatrixType,
     typename KKTMatrixType>
-  PINOCCHIO_DEPRECATED void getKKTContactDynamicMatrixInverse(
+  PINOCCHIO_UNSUPPORTED void getKKTContactDynamicMatrixInverse(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const Eigen::MatrixBase<ConstraintMatrixType> & J,
@@ -213,11 +215,12 @@ namespace pinocchio
 
   ///
   /// \brief Compute the impulse dynamics with contact constraints. Internally, pinocchio::crba is
-  /// called. \deprecated This function has been deprecated and will be removed in future releases
-  /// of Pinocchio.
-  ///  Please use the class RigidConstraintModel to define new contacts, and
-  ///  initConstraintDynamics(model, data, contact_models) and impulseDynamics(model, data, q,
-  ///  v_before, contact_models, contact_datas[,r_coeff, mu]) instead.
+  /// called.
+  /// \warning This function is no more supported.
+  /// Please use the class RigidConstraintModel to define new contacts, and
+  /// initConstraintDynamics(model, data, contact_models) and
+  /// impulseDynamics(model, data, q, v_before, contact_models, contact_datas[,r_coeff, mu])
+  /// instead.
   /// \note It solves the following problem: <BR>
   ///       <CENTER> \f$ \begin{eqnarray} \underset{\dot{q}^{+}}{\min} & & \| \dot{q}^{+} -
   ///       \dot{q}^{-} \|_{M(q)} \\{}
@@ -252,7 +255,7 @@ namespace pinocchio
     typename ConfigVectorType,
     typename TangentVectorType,
     typename ConstraintMatrixType>
-  PINOCCHIO_DEPRECATED inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::
+  PINOCCHIO_UNSUPPORTED inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::
     TangentVectorType &
     impulseDynamics(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -265,11 +268,12 @@ namespace pinocchio
 
   ///
   /// \brief Compute the impulse dynamics with contact constraints, assuming pinocchio::crba has
-  /// been called. \deprecated This function has been deprecated and will be removed in future
-  /// releases of Pinocchio.
-  ///  Please use the class RigidConstraintModel to define new contacts, and
-  ///  initConstraintDynamics(model, data, contact_models) and impulseDynamics(model, data, q,
-  ///  v_before, contact_models, contact_datas[,r_coeff, mu]) instead.
+  /// been called.
+  /// \warning This function is no more supported.
+  /// Please use the class RigidConstraintModel to define new contacts, and
+  /// initConstraintDynamics(model, data, contact_models) and
+  /// impulseDynamics(model, data, q, v_before, contact_models, contact_datas[,r_coeff, mu])
+  /// instead.
   /// \note It solves the following problem: <BR>
   ///       <CENTER> \f$ \begin{eqnarray} \underset{\dot{q}^{+}}{\min} & & \| \dot{q}^{+} -
   ///       \dot{q}^{-} \|_{M(q)} \\{}
@@ -303,7 +307,7 @@ namespace pinocchio
     typename ConfigVectorType,
     typename TangentVectorType,
     typename ConstraintMatrixType>
-  PINOCCHIO_DEPRECATED inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::
+  PINOCCHIO_UNSUPPORTED inline const typename DataTpl<Scalar, Options, JointCollectionTpl>::
     TangentVectorType &
     impulseDynamics(
       const ModelTpl<Scalar, Options, JointCollectionTpl> & model,

@@ -116,10 +116,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
   KKT_matrix_ref.topRightCorner(constraint_size, model.nv) = J_ref;
   KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_size) = J_ref.transpose();
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   impulseDynamics(model, data_ref, q, v, J_ref, r_coeff, mu0);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   data_ref.M.triangularView<Eigen::StrictlyLower>() =
     data_ref.M.transpose().triangularView<Eigen::StrictlyLower>();
@@ -255,10 +252,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   KKT_matrix_ref.topRightCorner(constraint_size, model.nv) = J_ref;
   KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_size) = J_ref.transpose();
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   impulseDynamics(model, data_ref, q, v, J_ref, r_coeff, mu0);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   data_ref.M.triangularView<Eigen::StrictlyLower>() =
     data_ref.M.transpose().triangularView<Eigen::StrictlyLower>();
@@ -392,10 +386,7 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_3D)
   KKT_matrix_ref.topRightCorner(constraint_size, model.nv) = J_ref;
   KKT_matrix_ref.bottomLeftCorner(model.nv, constraint_size) = J_ref.transpose();
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   impulseDynamics(model, data_ref, q, v, J_ref, r_coeff, mu0);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   data_ref.M.triangularView<Eigen::StrictlyLower>() =
     data_ref.M.transpose().triangularView<Eigen::StrictlyLower>();
