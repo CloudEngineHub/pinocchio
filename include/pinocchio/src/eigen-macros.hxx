@@ -41,48 +41,17 @@
 /// \brief Macro for an automatic const_cast
 #define PINOCCHIO_EIGEN_CONST_CAST(TYPE, OBJ) const_cast<TYPE &>(OBJ.derived())
 
-/// \brief Check memory allocation for Eigen.
-/// \warning These macros do *not* work well with multithreading for Eigen <= 3.4
-/// and *will* create a race condition - special care is required.
-
-#ifdef PINOCCHIO_EIGEN_CHECK_MALLOC
-  #define PINOCCHIO_EIGEN_MALLOC(allowed) ::Eigen::internal::set_is_malloc_allowed(allowed)
-  #define PINOCCHIO_EIGEN_MALLOC_ALLOWED() PINOCCHIO_EIGEN_MALLOC(true)
-  #define PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED() PINOCCHIO_EIGEN_MALLOC(false)
-  #define PINOCCHIO_EIGEN_MALLOC_SAVE_STATUS() ::pinocchio::internal::save_eigen_malloc_status()
-  #define PINOCCHIO_EIGEN_MALLOC_RESTORE_STATUS()                                                  \
-    PINOCCHIO_EIGEN_MALLOC((::pinocchio::internal::get_saved_eigen_malloc_status()))
-#else
-  #define PINOCCHIO_EIGEN_MALLOC(allowed)
-  #define PINOCCHIO_EIGEN_MALLOC_ALLOWED()
-  #define PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED()
-  #define PINOCCHIO_EIGEN_MALLOC_SAVE_STATUS()
-  #define PINOCCHIO_EIGEN_MALLOC_RESTORE_STATUS()
-#endif
-
-#ifdef PINOCCHIO_EIGEN_CHECK_MALLOC
-namespace pinocchio
-{
-  namespace internal
-  {
-
-    inline bool save_or_get_malloc_status(bool update, bool new_value = false)
-    {
-      thread_local static bool value;
-      if (update)
-        value = new_value;
-      return value;
-    }
-
-    inline void save_eigen_malloc_status()
-    {
-      save_or_get_malloc_status(true, ::Eigen::internal::is_malloc_allowed());
-    }
-
-    inline bool get_saved_eigen_malloc_status()
-    {
-      return save_or_get_malloc_status(false);
-    }
-  } // namespace internal
-} // namespace pinocchio
-#endif // ifdef PINOCCHIO_EIGEN_CHECK_MALLOC
+/// All Eigen malloc management macro are deactivated
+#define PINOCCHIO_EIGEN_MALLOC(allowed)                                                            \
+  PINOCCHIO_PRAGMA("WARNING: \"PINOCCHIO_EIGEN_MALLOC is deprecated and will be removed\"")
+#define PINOCCHIO_EIGEN_MALLOC_ALLOWED()                                                           \
+  PINOCCHIO_PRAGMA("WARNING: \"PINOCCHIO_EIGEN_MALLOC_ALLOWED is deprecated and will be removed\"")
+#define PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED()                                                       \
+  PINOCCHIO_PRAGMA(                                                                                \
+    "WARNING: \"PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED is deprecated and will be removed\"")
+#define PINOCCHIO_EIGEN_MALLOC_SAVE_STATUS()                                                       \
+  PINOCCHIO_PRAGMA(                                                                                \
+    "WARNING: \"PINOCCHIO_EIGEN_MALLOC_SAVE_STATUS is deprecated and will be removed\"")
+#define PINOCCHIO_EIGEN_MALLOC_RESTORE_STATUS()                                                    \
+  PINOCCHIO_PRAGMA(                                                                                \
+    "WARNING: \"PINOCCHIO_EIGEN_MALLOC_RESTORE_STATUSE is deprecated and will be removed\"")

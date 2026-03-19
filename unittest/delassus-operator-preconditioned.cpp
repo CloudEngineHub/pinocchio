@@ -1,6 +1,3 @@
-#define EIGEN_RUNTIME_NO_MALLOC
-#define PINOCCHIO_EIGEN_CHECK_MALLOC
-
 #include <pinocchio/algorithm/delassus-operator.hpp>
 #include <pinocchio/math.hpp>
 

@@ -7,6 +7,7 @@
 #include <Eigen/Core>
 
 #include "pinocchio/fwd.hpp"
+#include "pinocchio/deprecated.hpp"
 #include "pinocchio/src/utils/eigen-fix.hxx"
 // IWYU pragma: end_keep
 

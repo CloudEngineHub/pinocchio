@@ -135,11 +135,9 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLikeIn2> & scale,
       const Eigen::MatrixBase<VectorLikeOut> & res_) const
     {
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
       assert((scale.array() > 0).all() && "scale vector should be positive");
       pinocchio::clip(
         x, (lb.array() / scale.array()).matrix(), (ub.array() / scale.array()).matrix(), res_);
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
     }
 
     // ------------------------------

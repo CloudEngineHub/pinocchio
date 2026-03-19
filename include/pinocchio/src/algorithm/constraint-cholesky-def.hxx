@@ -890,13 +890,11 @@ namespace pinocchio
 
     const auto dim = constraintDim();
 
-    PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
     MatrixType & res_ = res.const_cast_derived();
     OSIMinv_storage.noalias() = D.head(dim).asDiagonal() * U1.adjoint();
     res_.noalias() = -U1 * OSIMinv_storage;
     if (enforce_symmetry)
       enforceSymmetry(res_);
-    PINOCCHIO_EIGEN_MALLOC_ALLOWED();
   }
 
   template<typename Scalar, int Options>
@@ -927,12 +925,10 @@ namespace pinocchio
 
     const auto dim = constraintDim();
 
-    PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
     U1inv_storage.setIdentity();
     U1.solveInPlace(U1inv_storage); // TODO: implement Sparse Inverse
     OSIMinv_storage.noalias() = -U1inv_storage.adjoint() * Dinv.head(dim).asDiagonal();
     res.noalias() = OSIMinv_storage * U1inv_storage;
-    PINOCCHIO_EIGEN_MALLOC_ALLOWED();
   }
 
   template<typename Scalar, int Options>
@@ -953,12 +949,10 @@ namespace pinocchio
     //        typedef typename RowMatrix::ConstBlockXpr ConstBlockXpr;
     const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
 
-    PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
     U4inv_storage.setIdentity();
     U4.solveInPlace(U4inv_storage); // TODO: implement Sparse Inverse
     Minv_storage.noalias() = U4inv_storage.adjoint() * Dinv.tail(nv).asDiagonal();
     res.noalias() = Minv_storage * U4inv_storage;
-    PINOCCHIO_EIGEN_MALLOC_ALLOWED();
   }
 
   template<typename Scalar, int Options>
@@ -966,7 +960,6 @@ namespace pinocchio
   void ContactCholeskyDecompositionTpl<Scalar, Options>::getJMinv(
     const Eigen::MatrixBase<MatrixType> & res_) const
   {
-    PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
     auto & res = res_.const_cast_derived();
     const auto U4 = U.bottomRightCorner(nv, nv).template triangularView<Eigen::UnitUpper>();
     auto U2 = U.topRightCorner(constraintDim(), nv);
@@ -974,7 +967,6 @@ namespace pinocchio
     U4inv_storage.setIdentity();
     U4.solveInPlace(U4inv_storage); // TODO: implement Sparse Inverse
     res.noalias() = U2 * U4inv_storage;
-    PINOCCHIO_EIGEN_MALLOC_ALLOWED();
   }
 
   template<typename Scalar, int Options>

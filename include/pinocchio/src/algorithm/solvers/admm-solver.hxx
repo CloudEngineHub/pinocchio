@@ -156,8 +156,6 @@ namespace pinocchio
         break;
       }
 
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-
       // Update the decomposition of the Delassus
       Scalar prox_value = settings.tau_prox * ws.mu_prox + settings.tau * ws.rho;
       G.updateDamping(prox_value);
@@ -480,8 +478,6 @@ namespace pinocchio
           ws.rho);
       }
     }
-
-    PINOCCHIO_EIGEN_MALLOC_ALLOWED();
 
 #ifdef PINOCCHIO_WITH_COLLISION
     if (settings.measure_timings)

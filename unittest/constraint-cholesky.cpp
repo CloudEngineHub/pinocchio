@@ -2,9 +2,6 @@
 // Copyright (c) 2019-2025 INRIA
 //
 
-#define EIGEN_RUNTIME_NO_MALLOC
-#define PINOCCHIO_EIGEN_CHECK_MALLOC
-
 #include "pinocchio/math.hpp"
 #include "pinocchio/constraints.hpp"
 #include "pinocchio/multibody/sample-models.hpp"
@@ -614,10 +611,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
     PowerIterationAlgoTpl<Eigen::VectorXd> power_iteration(delassus_chol.rows());
     const Eigen::VectorXd rhs = Eigen::VectorXd::Random(delassus_chol.rows());
     Eigen::VectorXd res = Eigen::VectorXd::Random(delassus_chol.rows());
-    PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
     res.noalias() = delassus_chol * rhs;
     power_iteration.run(delassus_chol);
-    PINOCCHIO_EIGEN_MALLOC_ALLOWED();
   }
 }
 

@@ -74,6 +74,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Remove Boost < 1.74 workaround
 - pkg-config file are no more generate
 - PyPy interpreter is no more supported
+- Favorize `RTSan` over `EIGEN_RUNTIME_NO_MALLOC`:
+  - Remove `CHECK_RUNTIME_MALLOC` CMake option
+  - Remove `PINOCCHIO_EIGEN_CHECK_MALLOC` C++ definition
+  - Deprecate `PINOCCHIO_EIGEN_MALLOC*` macros
 
 ## [3.9.0] - 2026-01-05
 
