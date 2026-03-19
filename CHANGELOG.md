@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added joint method `lieGroup` that returns the Lie group instance associated to a joint. This allows performing some operations (e.g. `integrate`...) individually.
 - Added model method `lieGroup` that returns the Lie group instance associated to the model. It is a Cartesian product of multiple Lie groups. It allows combination of the model Lie group with other Lie groups.
 - Add Python example showcasing the candlewick visualizer
+- Add `PINOCCHIO_DISABLE_UNSUPPORTED_WARNINGS` C++ definition to disable unsupported algorithm warnings
 
 ### Changed
 - bindings/python : Add missing arg names in `visualizer-visitor.hpp`
@@ -44,7 +45,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Deprecate `PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR` replaced by `std::vector`
     - Deprecate `pinocchio::container::aligned_vector` replaced by `std::allocator`
     - Deprecate `pinocchio/container/aligned-vector.hpp`
-- `getKKTContactDynamicMatrixInverse` is no more deprecated
+- Following algorithms are now unsupported algorithms (no more deprecated):
+  - `forwardDynamics`
+  - `impulseDynamics`
+  - `getKKTContactDynamicMatrixInverse`
 - Replace headers guards by `#pragma once`
 
 ### Removed
