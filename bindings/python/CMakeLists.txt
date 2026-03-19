@@ -155,7 +155,6 @@ if(BUILD_PYTHON_INTERFACE)
   python_build_get_target(python_build_target)
   add_dependencies(${PROJECT_NAME}-python ${python_build_target})
 
-  set(PKG_CONFIG_PYWRAP_REQUIRES "eigenpy >= 2.6.5")
   if(IS_ABSOLUTE ${PYTHON_SITELIB})
     set(ABSOLUTE_PYTHON_SITELIB ${PYTHON_SITELIB})
   else()
@@ -297,43 +296,6 @@ if(BUILD_PYTHON_INTERFACE)
   endif(GENERATE_PYTHON_STUBS)
 
   # --- PACKAGING --- #
-
-  # Format string
-  set(_PKG_CONFIG_PYWRAP_LIBDIR ${PINOCCHIO_PYTHON_INSTALL_DIR})
-  set(_PKG_CONFIG_PYWRAP_BINDIR ${PINOCCHIO_PYTHON_INSTALL_DIR})
-  set(_PKG_CONFIG_PYWRAP_CONFLICTS)
-  set(_PKG_CONFIG_PYWRAP_REQUIRES "${PROJECT_NAME}")
-  foreach(dep ${PKG_CONFIG_PYWRAP_REQUIRES})
-    set(_PKG_CONFIG_PYWRAP_REQUIRES "${_PKG_CONFIG_PYWRAP_REQUIRES}, ${dep}")
-  endforeach(dep ${PKG_CONFIG_PYWRAP_REQUIRES})
-
-  set(_PKG_CONFIG_PYWRAP_LIBS "-L\${libdir} -l${PYWRAP}")
-  if(APPLE)
-    set(_PKG_CONFIG_PYWRAP_LIBS
-        "${_PKG_CONFIG_PYWRAP_LIBS} -Wl,-undefined,dynamic_lookup,${Boost_${UPPERCOMPONENT}_LIBRARY}"
-    )
-  else(APPLE)
-    set(_PKG_CONFIG_PYWRAP_LIBS "${_PKG_CONFIG_PYWRAP_LIBS} ${LIBINCL_KW}boost_python")
-  endif(APPLE)
-
-  set(_PKG_CONFIG_PYWRAP_CFLAGS "-I\${includedir}")
-  set(_PKG_CONFIG_PYWRAP_CFLAGS "${_PKG_CONFIG_PYWRAP_CFLAGS} -I${PYTHON_INCLUDE_DIRS}")
-  foreach(cflags ${CFLAGS_DEPENDENCIES})
-    set(_PKG_CONFIG_PYWRAP_CFLAGS "${_PKG_CONFIG_PYWRAP_CFLAGS} ${cflags}")
-  endforeach(cflags ${CFLAGS_DEPENDENCIES})
-  foreach(cflags ${CFLAGS_OPTIONS})
-    set(_PKG_CONFIG_PYWRAP_CFLAGS "${_PKG_CONFIG_PYWRAP_CFLAGS} ${cflags}")
-  endforeach()
-
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/pinocchiopy.pc.cmake"
-                 "${CMAKE_CURRENT_BINARY_DIR}/pinocchiopy.pc")
-
-  if(NOT BUILD_STANDALONE_PYTHON_INTERFACE)
-    install(
-      FILES "${CMAKE_CURRENT_BINARY_DIR}/pinocchiopy.pc"
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-      PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE)
-  endif()
 
   if(DOXYGEN_FOUND AND DOXYGEN_VERSION VERSION_GREATER 1.8.17)
     set(DOXYGEN_GENERATE_HTML YES)
