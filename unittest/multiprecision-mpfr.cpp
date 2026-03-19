@@ -10,6 +10,7 @@
 #include <boost/utility/binary.hpp>
 #include <iostream>
 
+#include "pinocchio/algorithm/kinematics.hpp"
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
