@@ -174,11 +174,6 @@ if(BUILD_BENCHMARK
   endif()
 endif()
 
-# Variable containing all the cflags definition, options and libraries to setup pkg-config.
-set(CFLAGS_OPTIONS)
-set(CFLAGS_DEPENDENCIES)
-set(LIBRARIES_DEPENDENCIES)
-
 if(BUILD_WITH_CODEGEN_SUPPORT)
   set(BUILD_WITH_CPPAD_CODEGEN_SUPPORT TRUE)
   set(BUILD_WITH_AUTODIFF_SUPPORT ON)
@@ -188,10 +183,6 @@ if(BUILD_WITH_AUTODIFF_SUPPORT)
 endif()
 if(BUILD_WITH_LIBPYTHON)
   set(BUILD_WITH_PYTHON_PARSER_SUPPORT TRUE)
-endif()
-
-if(BUILD_WITH_EXTRA_SUPPORT)
-  list(APPEND CFLAGS_OPTIONS "-DPINOCCHIO_WITH_EXTRA_SUPPORT")
 endif()
 
 if(INITIALIZE_WITH_NAN)
@@ -204,8 +195,6 @@ endif(CHECK_RUNTIME_MALLOC)
 
 if(ENABLE_TEMPLATE_INSTANTIATION)
   message(STATUS "Template instantiation of the main library")
-  list(APPEND CFLAGS_OPTIONS "-DPINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION")
-  list(APPEND LIBRARIES_DEPENDENCIES ${PROJECT_NAME}_default)
 endif(ENABLE_TEMPLATE_INSTANTIATION)
 
 macro(TAG_LIBRARY_VERSION target)
@@ -216,13 +205,12 @@ endmacro(TAG_LIBRARY_VERSION)
 # --- DEPENDENCIES -----------------------------------
 # ----------------------------------------------------
 set(CMAKE_MODULE_PATH "${JRL_CMAKE_MODULES}/find-external/CppAD/" ${CMAKE_MODULE_PATH})
-add_project_dependency(Eigen3 REQUIRED PKG_CONFIG_REQUIRES "eigen3 >= 3.0.5")
+add_project_dependency(Eigen3 REQUIRED)
 
 if(BUILD_WITH_URDF_SUPPORT)
   add_project_dependency(urdfdom_headers REQUIRED)
-  add_project_dependency(urdfdom REQUIRED PKG_CONFIG_REQUIRES "urdfdom >= 0.2.0")
+  add_project_dependency(urdfdom REQUIRED)
   set(urdfdom_VERSION ${urdfdom_headers_VERSION})
-  list(APPEND CFLAGS_DEPENDENCIES "-DPINOCCHIO_WITH_URDFDOM")
 
   if(${urdfdom_VERSION} VERSION_GREATER "0.4.2")
     check_minimal_cxx_standard(11 ENFORCE)
@@ -240,7 +228,6 @@ if(BUILD_WITH_SDF_SUPPORT)
     check_minimal_cxx_standard(11 REQUIRED)
     include_directories(${SDFormat_INCLUDE_DIRS})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SDFormat_CXX_FLAGS}")
-    list(APPEND CFLAGS_DEPENDENCIES "-DPINOCCHIO_WITH_SDFORMAT")
   endif()
 endif()
 
@@ -248,10 +235,6 @@ if (BUILD_WITH_URDF_SUPPORT OR BUILD_WITH_SDF_SUPPORT)
   set(BUILD_WITH_PARSERS_SUPPORT TRUE)
 else()
   set(BUILD_WITH_PARSERS_SUPPORT FALSE)
-endif()
-
-if(BUILD_WITH_PARSERS_SUPPORT)
-  list(APPEND LIBRARIES_DEPENDENCIES ${PROJECT_NAME}_parsers)
 endif()
 
 # -- tracy (optional)
@@ -295,27 +278,22 @@ endif(PINOCCHIO_USE_CLARABEL)
 if(BUILD_WITH_AUTODIFF_SUPPORT)
   # Check first CppADCodeGen
   if(BUILD_WITH_CODEGEN_SUPPORT)
-    # No need to add cppadcg to pkg-config (no lib and header in the same directory than cppad)
     add_project_dependency(cppadcg 2.4.1 REQUIRED)
-    list(APPEND LIBRARIES_DEPENDENCIES ${PROJECT_NAME}_cppadcg)
   endif(BUILD_WITH_CODEGEN_SUPPORT)
 
   add_project_dependency(
     cppad 20180000.0 REQUIRED
-    PKG_CONFIG_REQUIRES "cppad >= 20220624.0"
     FIND_EXTERNAL "CppAD")
-  list(APPEND LIBRARIES_DEPENDENCIES ${PROJECT_NAME}_cppad)
 endif(BUILD_WITH_AUTODIFF_SUPPORT)
 
 if(BUILD_WITH_CASADI_SUPPORT)
-  add_project_dependency(casadi 3.4.5 REQUIRED PKG_CONFIG_REQUIRES "casadi >= 3.4.5")
+  add_project_dependency(casadi 3.4.5 REQUIRED)
 
   # Normalize CasADi link target across versions. Prefer imported target (casadi::casadi), then
   # legacy target (casadi)
   if(NOT TARGET casadi::casadi AND TARGET casadi)
     add_library(casadi::casadi ALIAS casadi)
   endif()
-  list(APPEND LIBRARIES_DEPENDENCIES ${PROJECT_NAME}_casadi)
 endif(BUILD_WITH_CASADI_SUPPORT)
 
 if(BUILD_WITH_OPENMP_SUPPORT)
@@ -323,16 +301,13 @@ if(BUILD_WITH_OPENMP_SUPPORT)
 endif()
 
 if(BUILD_WITH_EXTRA_SUPPORT)
-  list(APPEND LIBRARIES_DEPENDENCIES ${PROJECT_NAME}_extra qhullcpp qhull_r)
   add_project_dependency(Qhull COMPONENTS qhullcpp qhull_r REQUIRED)
   message(STATUS "Found Qhull.")
 endif()
 
-set(BOOST_REQUIRED_COMPONENTS filesystem serialization)
-
 set_boost_default_options()
 export_boost_default_options()
-add_project_dependency(Boost REQUIRED COMPONENTS ${BOOST_REQUIRED_COMPONENTS})
+add_project_dependency(Boost REQUIRED COMPONENTS filesystem serialization)
 
 if(Boost_VERSION_STRING VERSION_LESS 1.81)
   if(BUILD_WITH_URDF_SUPPORT AND "${urdfdom_VERSION}" VERSION_GREATER "0.4.2")
@@ -610,68 +585,63 @@ if(BUILD_BENCHMARK AND NOT BUILD_STANDALONE_PYTHON_INTERFACE)
 endif()
 
 # --- PACKAGING ----------------------------------------------------------------
-macro(EXPORT_VARIABLE var_name var_value)
-  get_directory_property(has_parent PARENT_DIRECTORY)
-  if(has_parent)
-    set(${var_name}
-        ${var_value}
-        PARENT_SCOPE)
-  else()
-    set(${var_name} ${var_value})
+# Export variables in CMake module and in parent scope for workspace compatibility
+# PARENT_SCOPE_ONLY: If set: only export in parent scope
+# CONDITION: Condition to setup the variable
+# VAR_NAME: Variable name
+# VAR_VALUE: Varible value
+macro(EXPORT_VARIABLE)
+  set(options PARENT_SCOPE_ONLY)
+  set(oneValueArgs CONDITION VAR_NAME VAR_VALUE)
+  set(multiValueArgs)
+  cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  if(${ARGS_CONDITION})
+    get_directory_property(has_parent PARENT_DIRECTORY)
+    if(has_parent)
+      set(${ARGS_VAR_NAME} ${ARGS_VAR_VALUE} PARENT_SCOPE)
+    else()
+      set(${ARGS_VAR_NAME} ${ARGS_VAR_VALUE})
+    endif()
+    if(NOT ${ARGS_PARENT_SCOPE_ONLY})
+      string(APPEND PACKAGE_EXTRA_MACROS "\nset(${ARGS_VAR_NAME} ${ARGS_VAR_VALUE})")
+    endif()
   endif()
-endmacro(
-  EXPORT_VARIABLE
-  var_name
-  var_value)
+endmacro()
 
-if(PINOCCHIO_BUILD_WITH_TRACY)
-  export_variable(PINOCCHIO_USE_TRACY ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_USE_TRACY \"\")")
-endif()
-if(BUILD_WITH_URDF_SUPPORT)
-  export_variable(PINOCCHIO_USE_URDFDOM ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_USE_URDFDOM \"\")")
-endif()
-if(BUILD_WITH_COLLISION_SUPPORT)
-  export_variable(PINOCCHIO_USE_COAL ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_USE_COAL \"\")")
-endif()
-if(PINOCCHIO_USE_CLARABEL)
-  export_variable(PINOCCHIO_USE_CLARABEL ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_USE_CLARABEL \"\")")
-endif()
-if(BUILD_WITH_CPPAD_SUPPORT)
-  export_variable(PINOCCHIO_USE_CPPAD ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_USE_CPPAD \"\")")
-endif()
-if(BUILD_WITH_CPPAD_CODEGEN_SUPPORT)
-  export_variable(PINOCCHIO_USE_CPPAD_CODEGEN ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_USE_CPPAD_CODEGEN \"\")")
-endif()
-if(BUILD_WITH_CASADI_SUPPORT)
-  export_variable(PINOCCHIO_USE_CASADI ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_USE_CASADI \"\")")
-endif()
-if(BUILD_PYTHON_INTERFACE)
-  export_variable(PINOCCHIO_WITH_PYTHON_INTERFACE ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_WITH_PYTHON_INTERFACE \"\")")
-endif()
-if(BUILD_WITH_EXTRA_SUPPORT)
-  export_variable(PINOCCHIO_USE_EXTRA ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_USE_EXTRA \"\")")
-endif()
-if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
-  export_variable(PINOCCHIO_USE_PYTHON_PARSER ON)
-  set(PACKAGE_EXTRA_MACROS "${PACKAGE_EXTRA_MACROS}\nset(PINOCCHIO_USE_PYTHON_PARSER \"\")")
-endif()
-export_variable(pinocchio_VERSION ${pinocchio_VERSION})
-
-# Setup pkg-configs flags and libs
-pkg_config_append_libs("${LIBRARIES_DEPENDENCIES}")
-foreach(boostlib ${BOOST_REQUIRED_COMPONENTS})
-  pkg_config_append_libs("boost_${boostlib}")
-endforeach()
-pkg_config_append_cflags("${CFLAGS_DEPENDENCIES}")
-pkg_config_append_cflags("${CFLAGS_OPTIONS}")
+export_variable(CONDITION PINOCCHIO_BUILD_WITH_TRACY
+                VAR_NAME PINOCCHIO_USE_TRACY
+                VAR_VALUE ON)
+export_variable(CONDITION BUILD_WITH_URDF_SUPPORT
+                VAR_NAME PINOCCHIO_USE_URDFDOM
+                VAR_VALUE ON)
+export_variable(CONDITION BUILD_WITH_COLLISION_SUPPORT
+                VAR_NAME PINOCCHIO_USE_COAL
+                VAR_VALUE ON)
+export_variable(CONDITION PINOCCHIO_USE_CLARABEL
+                VAR_NAME PINOCCHIO_USE_CLARABEL
+                VAR_VALUE ON)
+export_variable(CONDITION BUILD_WITH_CPPAD_SUPPORT
+                VAR_NAME PINOCCHIO_USE_CPPAD
+                VAR_VALUE ON)
+export_variable(CONDITION BUILD_WITH_CPPAD_CODEGEN_SUPPORT
+                VAR_NAME PINOCCHIO_USE_CPPAD_CODEGEN
+                VAR_VALUE ON)
+export_variable(CONDITION BUILD_WITH_CASADI_SUPPORT
+                VAR_NAME PINOCCHIO_USE_CASADI
+                VAR_VALUE ON)
+export_variable(CONDITION BUILD_PYTHON_INTERFACE
+                VAR_NAME PINOCCHIO_WITH_PYTHON_INTERFACE
+                VAR_VALUE ON)
+export_variable(CONDITION BUILD_WITH_EXTRA_SUPPORT
+                VAR_NAME PINOCCHIO_USE_EXTRA
+                VAR_VALUE ON)
+export_variable(CONDITION BUILD_WITH_PYTHON_PARSER_SUPPORT
+                VAR_NAME PINOCCHIO_USE_PYTHON_PARSER
+                VAR_VALUE ON)
+export_variable(CONDITION TRUE
+                VAR_NAME pinocchio_VERSION
+                VAR_VALUE ${pinocchio_VERSION}
+                PARENT_SCOPE_ONLY)
 
 setup_project_finalize()
