@@ -46,10 +46,7 @@ BOOST_AUTO_TEST_CASE(test_FD_with_contact_cst_gamma)
   forwardKinematics(model, data, q, v, VectorXd::Zero(model.nv));
   gamma_RF += data.a[RF_id].toVector(); // Jdot * qdot
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   forwardDynamics(model, data, q, v, tau, J_RF, gamma_RF);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   VectorXd ddq_ref = data.ddq;
   Force::Vector6 contact_force_ref = data.lambda_c;
@@ -80,10 +77,7 @@ BOOST_AUTO_TEST_CASE(test_FD_with_contact_cst_gamma)
   {
     tau_plus[k] += eps;
 
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     forwardDynamics(model, data_fd, q, v, tau_plus, J_RF, gamma_RF);
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     const Data::TangentVectorType & ddq_plus = data_fd.ddq;
     Force::Vector6 contact_force_plus = data_fd.lambda_c;
@@ -113,10 +107,7 @@ BOOST_AUTO_TEST_CASE(test_FD_with_contact_cst_gamma)
   {
     v_plus[k] += eps;
 
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     forwardDynamics(model, data_fd, q, v_plus, tau, J_RF, gamma_RF);
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     const Data::TangentVectorType & ddq_plus = data_fd.ddq;
     Force::Vector6 contact_force_plus = data_fd.lambda_c;
@@ -144,10 +135,7 @@ BOOST_AUTO_TEST_CASE(test_FD_with_contact_cst_gamma)
     computeJointJacobians(model, data_fd, q_plus);
     getJointJacobian(model, data_fd, RF_id, LOCAL, J_RF);
 
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     forwardDynamics(model, data_fd, q_plus, v, tau, J_RF, gamma_RF);
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     const Data::TangentVectorType & ddq_plus = data_fd.ddq;
     Force::Vector6 contact_force_plus = data_fd.lambda_c;
@@ -198,10 +186,7 @@ VectorXd constraintDynamics(
   forwardKinematics(model, data, q, v, VectorXd::Zero(model.nv));
   gamma = data.a[id].toVector();
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   forwardDynamics(model, data, q, v, tau, J, gamma);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   VectorXd res(VectorXd::Zero(model.nv + 6));
 

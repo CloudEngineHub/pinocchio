@@ -52,10 +52,7 @@ BOOST_AUTO_TEST_CASE(test_FD)
 
   Eigen::MatrixXd H(J.transpose());
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   pinocchio::forwardDynamics(model, data, q, v, tau, J, gamma, 0.);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   data.M.triangularView<Eigen::StrictlyLower>() =
     data.M.transpose().triangularView<Eigen::StrictlyLower>();
@@ -167,10 +164,7 @@ BOOST_AUTO_TEST_CASE(test_getKKTMatrix)
   Eigen::MatrixXd H(J.transpose());
 
   // Check Forward Dynamics
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   pinocchio::forwardDynamics(model, data, q, v, tau, J, gamma, 0.);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   data.M.triangularView<Eigen::StrictlyLower>() =
     data.M.transpose().triangularView<Eigen::StrictlyLower>();
@@ -188,10 +182,7 @@ BOOST_AUTO_TEST_CASE(test_getKKTMatrix)
   const double r_coeff = 1.;
   VectorXd v_before = VectorXd::Ones(model.nv);
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   pinocchio::impulseDynamics(model, data, q, v_before, J, r_coeff, 0.);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   data.M.triangularView<Eigen::StrictlyLower>() =
     data.M.transpose().triangularView<Eigen::StrictlyLower>();
@@ -233,10 +224,7 @@ BOOST_AUTO_TEST_CASE(test_FD_with_damping)
   Eigen::VectorXd gamma(VectorXd::Ones(12));
 
   // Forward Dynamics with damping
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   pinocchio::forwardDynamics(model, data, q, v, tau, J, gamma, 1e-12);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   // Matrix Definitions
   Eigen::MatrixXd H(J.transpose());
@@ -297,10 +285,7 @@ BOOST_AUTO_TEST_CASE(test_ID)
 
   Eigen::MatrixXd H(J.transpose());
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   pinocchio::impulseDynamics(model, data, q, v_before, J, r_coeff, 0.);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   data.M.triangularView<Eigen::StrictlyLower>() =
     data.M.transpose().triangularView<Eigen::StrictlyLower>();
@@ -382,10 +367,7 @@ BOOST_AUTO_TEST_CASE(timings_fd_llt)
   timer.tic();
   SMOOTH(NBT)
   {
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     pinocchio::forwardDynamics(model, data, q, v, tau, J, gamma, 0.);
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
   }
   timer.toc(std::cout, NBT);
 }
