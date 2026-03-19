@@ -5,8 +5,6 @@
 
 include(${JRL_CMAKE_MODULES}/python-helpers.cmake)
 include(${JRL_CMAKE_MODULES}/stubs.cmake)
-set(CMAKE_MODULE_PATH "${JRL_CMAKE_MODULES}/find-external/GMP"
-                      "${JRL_CMAKE_MODULES}/find-external/MPFR" ${CMAKE_MODULE_PATH})
 
 # --- PYTHON TARGET --- #
 set(PYWRAP ${PROJECT_NAME}_pywrap)
@@ -235,8 +233,6 @@ if(BUILD_PYTHON_INTERFACE)
   endif(BUILD_WITH_CASADI_SUPPORT)
 
   if(BUILD_PYTHON_BINDINGS_WITH_BOOST_MPFR_SUPPORT)
-    find_package(GMP REQUIRED 6.0.0)
-    find_package(MPFR REQUIRED 4.0.0)
     pinocchio_python_bindings_specific_type(mpfr)
 
     target_link_libraries(${PYWRAP}_mpfr PRIVATE gmp mpfr)
@@ -248,7 +244,7 @@ if(BUILD_PYTHON_INTERFACE)
 
     # --- INSTALL SCRIPTS
     install_python_files(MODULE mpfr FILES __init__.py)
-  endif(BUILD_PYTHON_BINDINGS_WITH_BOOST_MPFR_SUPPORT)
+  endif()
 
   # --- INSTALL SCRIPTS
   install_python_files(

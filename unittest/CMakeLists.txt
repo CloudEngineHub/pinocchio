@@ -386,7 +386,7 @@ add_subdirectory(algorithm)
 # Multiprecision arithmetic
 if(BUILD_ADVANCED_TESTING)
   add_pinocchio_unit_test(multiprecision)
-  if(MPFR_FOUND)
+  if(PINOCCHIO_BUILD_MPFR_TESTING)
     add_pinocchio_unit_test(multiprecision-mpfr PACKAGES mpfr gmp)
   endif()
 endif()

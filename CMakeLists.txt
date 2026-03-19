@@ -114,6 +114,7 @@ if(DEFINED BUILD_UNIT_TESTS)
 endif(DEFINED BUILD_UNIT_TESTS)
 
 option(BUILD_ADVANCED_TESTING "Build the advanced tests (multiprecision, etc.) of Pinocchio" OFF)
+option(PINOCCHIO_BUILD_MPFR_TESTING "Build MPFR dependent tests" OFF)
 
 # --- OPTIONAL DEPENDENCIES -------------------------
 option(BUILD_WITH_URDF_SUPPORT "Build the library with the URDF format support" ON)
@@ -129,7 +130,6 @@ if(NOT WIN32)
          "Build the library with the support of code generation (via CppADCodeGen)" OFF)
 endif()
 option(BUILD_WITH_OPENMP_SUPPORT "Build the library with the OpenMP support" OFF)
-option(BUILD_WITH_EXTRA_SUPPORT "Build the library with extra algorithms support" OFF)
 cmake_dependent_option(
   BUILD_PYTHON_BINDINGS_WITH_BOOST_MPFR_SUPPORT
   "Build the Python interface with Boost.Multiprecision MPFR support" OFF BUILD_PYTHON_INTERFACE
@@ -207,6 +207,7 @@ endmacro(TAG_LIBRARY_VERSION)
 # --- DEPENDENCIES -----------------------------------
 # ----------------------------------------------------
 set(CMAKE_MODULE_PATH "${JRL_CMAKE_MODULES}/find-external/CppAD/" ${CMAKE_MODULE_PATH})
+
 add_project_dependency(Eigen3 REQUIRED)
 
 if(BUILD_WITH_URDF_SUPPORT)
@@ -369,7 +370,15 @@ if(BUILD_WITH_ACCELERATE_SUPPORT)
   find_package(Accelerate REQUIRED)
   message(STATUS "Build with Accelerate support framework.")
   add_definitions(-DPINOCCHIO_WITH_ACCELERATE_SUPPORT)
-endif(BUILD_WITH_ACCELERATE_SUPPORT)
+endif()
+
+if(PINOCCHIO_BUILD_MPFR_TESTING OR BUILD_PYTHON_BINDINGS_WITH_BOOST_MPFR_SUPPORT)
+  message(STATUS "Build with MPFR support")
+  set(CMAKE_MODULE_PATH "${JRL_CMAKE_MODULES}/find-external/GMP"
+                        "${JRL_CMAKE_MODULES}/find-external/MPFR" ${CMAKE_MODULE_PATH})
+  find_package(GMP REQUIRED 6.0.0)
+  find_package(MPFR REQUIRED 4.0.0)
+endif()
 
 # Sources definition
 include(sources.cmake)
