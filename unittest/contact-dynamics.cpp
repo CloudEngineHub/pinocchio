@@ -180,10 +180,7 @@ BOOST_AUTO_TEST_CASE(test_getKKTMatrix)
 
   Eigen::MatrixXd KKTMatrix_inv(model.nv + 12, model.nv + 12);
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   getKKTContactDynamicMatrixInverse(model, data, J, KKTMatrix_inv);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   BOOST_CHECK(KKTMatrix_inv.isApprox(MJtJ.inverse()));
 
@@ -200,10 +197,7 @@ BOOST_AUTO_TEST_CASE(test_getKKTMatrix)
     data.M.transpose().triangularView<Eigen::StrictlyLower>();
   MJtJ << data.M, J.transpose(), J, Eigen::MatrixXd::Zero(12, 12);
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   getKKTContactDynamicMatrixInverse(model, data, J, KKTMatrix_inv);
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   BOOST_CHECK(KKTMatrix_inv.isApprox(MJtJ.inverse()));
 }

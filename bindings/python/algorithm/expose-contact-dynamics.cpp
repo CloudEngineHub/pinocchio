@@ -92,10 +92,7 @@ namespace pinocchio
     {
       context::MatrixXs MJtJ_inv(model.nv + J.rows(), model.nv + J.rows());
 
-      PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-      PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
       getKKTContactDynamicMatrixInverse(model, data, J, MJtJ_inv);
-      PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
       return MJtJ_inv;
     }

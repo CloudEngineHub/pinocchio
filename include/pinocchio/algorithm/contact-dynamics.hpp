@@ -205,7 +205,7 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConstraintMatrixType,
     typename KKTMatrixType>
-  PINOCCHIO_DEPRECATED void getKKTContactDynamicMatrixInverse(
+  void getKKTContactDynamicMatrixInverse(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const DataTpl<Scalar, Options, JointCollectionTpl> & data,
     const Eigen::MatrixBase<ConstraintMatrixType> & J,

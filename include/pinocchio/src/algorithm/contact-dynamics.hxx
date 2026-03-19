@@ -204,10 +204,7 @@ namespace pinocchio
     //    data.llt_JMinvJt.compute(data.JMinvJt);
     internal::PerformCholeskyCompute<Scalar>::run(data.JMinvJt, data.llt_JMinvJt);
 
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     getKKTContactDynamicMatrixInverse(model, data, J, KKTMatrix_inv.const_cast_derived());
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
   }
 
   template<
