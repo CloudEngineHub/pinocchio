@@ -16,7 +16,8 @@ add_library(${PROJECT_NAME}_headers INTERFACE)
 target_compile_definitions(${PROJECT_NAME}_headers INTERFACE BOOST_MPL_LIMIT_LIST_SIZE=30
                                                              BOOST_MPL_LIMIT_VECTOR_SIZE=30
                                                              BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS
-                                                             BOOST_FUSION_INVOKE_MAX_ARITY=12)
+                                                             BOOST_FUSION_INVOKE_MAX_ARITY=12
+                                                             $<BUILD_INTERFACE:PINOCCHIO_DISABLE_UNSUPPORTED_WARNINGS>)
 
 if(INITIALIZE_WITH_NAN)
   target_compile_definitions(${PROJECT_NAME}_headers INTERFACE EIGEN_INITIALIZE_MATRICES_BY_NAN)
