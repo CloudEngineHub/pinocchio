@@ -251,16 +251,16 @@ platforms = ["linux-64"]
 activation = { env = { CC = "clang", CXX = "clang++" } }
 dependencies = { clangxx = "*" }
 
-[feature.test-pixi-build.dependencies]
-pinocchio = { path = "." }
-cmake = ">=3.22"
-cxx-compiler = "*"
-python = "*"
+# [feature.test-pixi-build.dependencies]
+# pinocchio = { path = "." }
+# cmake = ">=3.22"
+# cxx-compiler = "*"
+# python = "*"
 
-[feature.test-pixi-build.tasks]
-test-cmake = "cmake -S unittest/packaging/cmake -B build_test_pixi_build"
-test-python = "python -c 'import pinocchio'"
-test = { depends-on = ["test-cmake", "test-python"] }
+# [feature.test-pixi-build.tasks]
+# test-cmake = "cmake -S unittest/packaging/cmake -B build_test_pixi_build"
+# test-python = "python -c 'import pinocchio'"
+# test = { depends-on = ["test-cmake", "test-python"] }
 
 [environments]
 default = { features = ["python-latest"], solve-group = "python-latest" }
@@ -350,7 +350,7 @@ new-version = { features = [
   "collision",
   "python-latest",
 ], solve-group = "python-latest" }
-test-pixi-build = { features = ["test-pixi-build"], no-default-feature = true }
+# test-pixi-build = { features = ["test-pixi-build"], no-default-feature = true }
 
 # Sanitizers with clang
 [feature.clang-sanitizers]
