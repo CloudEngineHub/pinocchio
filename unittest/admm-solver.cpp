@@ -9,10 +9,6 @@
 #include "pinocchio/algorithm/aba.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 
-#ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
-  #include "pinocchio/algorithm/solvers/clarabel-solver.hpp"
-#endif
-
 #include <boost/test/unit_test.hpp>
 #include <boost/utility/binary.hpp>
 
@@ -46,8 +42,7 @@ struct TestBoxTpl
     const Eigen::VectorXd & tau0,
     const Force & fext,
     const double dt,
-    const bool test_warmstart = false,
-    const bool run_clarabel_if_available = false)
+    const bool test_warmstart = false)
   {
     std::vector<Force> external_forces(size_t(model.njoints), Force::Zero());
     external_forces[1] = fext;
@@ -105,40 +100,6 @@ struct TestBoxTpl
     BOOST_CHECK(admm_solver.isValid() == true);
     BOOST_CHECK(admm_result.isValid() == true);
     admm_result.retrieveConstraintImpulses(impulse_solution);
-
-#ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
-    ClarabelSolverResult clarabel_result;
-    if (run_clarabel_if_available)
-    {
-      // Run CLARABEL
-      ClarabelConstraintSolver clarabel_solver;
-      ClarabelSolverSettings clarabel_settings;
-      clarabel_settings.max_iterations = 10000;
-      clarabel_settings.absolute_feasibility_tol = 1e-10;
-      clarabel_settings.relative_feasibility_tol = 1e-12;
-      clarabel_settings.absolute_complementarity_tol = 1e-10;
-      clarabel_settings.relative_complementarity_tol = 1e-12;
-      clarabel_settings.solve_ncp = true;
-
-      // before calling clarabel, we need to make sure the delassus has no numerical damping
-      // we don't need to update the decomposition though as solveInPlace will not be called in
-      // clarabel.
-      G_expression.updateDamping(0.);
-      clarabel_solver.solve(
-        G_expression, g, constraint_models, constraint_datas, clarabel_settings, clarabel_result);
-
-      std::cout << "NUMIT CLARABEL: " << clarabel_result.iterations
-                << " / NUMIT ADMMSolver: " << admm_result.iterations
-                << " (chol updates: " << admm_result.delassus_decomposition_update_count << ")\n";
-
-      Eigen::VectorXd clarabel_primal_sol;
-      clarabel_result.retrieveConstraintImpulses(clarabel_primal_sol);
-      std::cout << "||admm sol - clarabel sol|| = "
-                << (impulse_solution - clarabel_primal_sol).norm() << "\n";
-    }
-#else
-    PINOCCHIO_UNUSED_VARIABLE(run_clarabel_if_available);
-#endif
 
     if (test_warmstart)
     {

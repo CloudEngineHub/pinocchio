@@ -44,20 +44,4 @@ namespace pinocchio
   struct ADMMSolverStatsTpl;
   typedef ADMMSolverStatsTpl<context::Scalar> ADMMSolverStats;
 
-#ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
-  // -------------------------
-  // Optional clarabel IPM constraint solver
-  template<typename Scalar, int Options>
-  struct ClarabelConstraintSolverTpl;
-  typedef ClarabelConstraintSolverTpl<context::Scalar, context::Options> ClarabelConstraintSolver;
-
-  template<typename Scalar>
-  struct ClarabelSolverSettingsTpl;
-  typedef ClarabelSolverSettingsTpl<context::Scalar> ClarabelSolverSettings;
-
-  template<typename Scalar, int Options>
-  struct ClarabelSolverResultTpl;
-  typedef ClarabelSolverResultTpl<context::Scalar, context::Options> ClarabelSolverResult;
-#endif
-
 } // namespace pinocchio

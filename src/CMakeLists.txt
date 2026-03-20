@@ -39,28 +39,6 @@ modernize_target_link_libraries(
   LIBRARIES ${Boost_SERIALIZATION_LIBRARY}
   INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 
-# Enable Clarabel constraint solver
-if(PINOCCHIO_USE_CLARABEL)
-  target_compile_definitions(${PROJECT_NAME}_headers INTERFACE PINOCCHIO_WITH_CLARABEL_SUPPORT)
-  if(TARGET clarabel::clarabel)
-    target_link_libraries(${PROJECT_NAME}_headers INTERFACE clarabel::clarabel)
-  elseif(TARGET PkgConfig::clarabel)
-    target_link_libraries(${PROJECT_NAME}_headers INTERFACE PkgConfig::clarabel)
-  else()
-    # Fallback: Try to find the library directly in the conda environment
-    find_library(
-      CLARABEL_LIBRARY
-      NAMES clarabel_c
-      PATHS ${CMAKE_INSTALL_PREFIX}/lib ENV LD_LIBRARY_PATH)
-    if(CLARABEL_LIBRARY)
-      message(STATUS "Found Clarabel library at: ${CLARABEL_LIBRARY}")
-      target_link_libraries(${PROJECT_NAME}_headers INTERFACE ${CLARABEL_LIBRARY})
-    else()
-      message(WARNING "Clarabel library not found. Please install Clarabel.cpp")
-    endif()
-  endif()
-endif(PINOCCHIO_USE_CLARABEL)
-
 target_include_directories(
   ${PROJECT_NAME}_headers
   INTERFACE $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
