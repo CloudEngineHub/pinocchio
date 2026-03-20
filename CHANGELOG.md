@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added model method `lieGroup` that returns the Lie group instance associated to the model. It is a Cartesian product of multiple Lie groups. It allows combination of the model Lie group with other Lie groups.
 - Add Python example showcasing the candlewick visualizer
 - Add `PINOCCHIO_DISABLE_UNSUPPORTED_WARNINGS` C++ definition to disable unsupported algorithm warnings
+- Add `PINOCCHIO_BUILD_MPFR_TESTING` CMake option to build MPFR tests
 
 ### Changed
 - bindings/python : Add missing arg names in `visualizer-visitor.hpp`
@@ -71,6 +72,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Remove PINOCCHIO_WITH_EIGEN_TENSOR_MODULE define
 - Boost 1.74 is the minimal Boost supported version:
   - Remove Boost < 1.74 workaround
+- pkg-config file are no more generate
+- PyPy interpreter is no more supported
 
 ## [3.9.0] - 2026-01-05
 
