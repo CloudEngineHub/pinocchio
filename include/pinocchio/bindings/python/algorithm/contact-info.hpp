@@ -15,6 +15,8 @@
 #include "pinocchio/bindings/python/algorithm/constraints/baumgarte-corrector-parameters.hpp"
 #include "pinocchio/bindings/python/utils/eigen.hpp"
 
+#include "pinocchio/bindings/python/utils/model-checker.hpp"
+
 namespace pinocchio
 {
   namespace python
@@ -122,6 +124,22 @@ namespace pinocchio
           "Baumgarte parameters associated with the constraint.");
       }
 
+      static context::RigidConstraintModel convertToRigidConstraintModel_point(
+        const context::Model & model,
+        const context::PointAnchorConstraintModel & constraint,
+        const ReferenceFrame reference_frame)
+      {
+        return convertToRigidConstraintModel(model, constraint, reference_frame);
+      }
+
+      static context::RigidConstraintModel convertToRigidConstraintModel_frame(
+        const context::Model & model,
+        const context::FrameAnchorConstraintModel & constraint,
+        const ReferenceFrame reference_frame)
+      {
+        return convertToRigidConstraintModel(model, constraint, reference_frame);
+      }
+
       static void expose()
       {
         bp::class_<RigidConstraintModel>(
@@ -132,6 +150,29 @@ namespace pinocchio
           .def(
             ExposeConstructorByCastVisitor<
               RigidConstraintModel, ::pinocchio::RigidConstraintModel>());
+
+        bp::def(
+          "convertToRigidConstraintModel", convertToRigidConstraintModel_point,
+          (bp::arg("model"), bp::arg("constraint"),
+           bp::arg("reference_frame") = ReferenceFrame::LOCAL),
+          "Convert a PointAnchorConstraintModel to a RigidConstraintModel with contact type "
+          "CONTACT_3D.\n\n"
+          "The kinematic structure (joint IDs and placements) is preserved. The 3D desired "
+          "offset is placed in the translation of desired_contact_placement, and the 3D desired "
+          "velocity/acceleration are placed in the linear parts of the corresponding Motion "
+          "fields.",
+          mimic_not_supported_function<>(0));
+
+        bp::def(
+          "convertToRigidConstraintModel", convertToRigidConstraintModel_frame,
+          (bp::arg("model"), bp::arg("constraint"),
+           bp::arg("reference_frame") = ReferenceFrame::LOCAL),
+          "Convert a FrameAnchorConstraintModel to a RigidConstraintModel with contact type "
+          "CONTACT_6D.\n\n"
+          "The kinematic structure (joint IDs and placements) is preserved. The 6D desired "
+          "offset (ordered [linear; angular]) is mapped to desired_contact_placement via exp6, "
+          "and the 6D desired velocity/acceleration vectors are mapped directly to Motion fields.",
+          mimic_not_supported_function<>(0));
       }
 
       static ContactData createData(const Self & self)
