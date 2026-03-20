@@ -12,8 +12,6 @@
 #include <type_traits>
 
 #include "pinocchio/macros.hpp"
-
-#include "pinocchio/utils/template-template-parameter.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

@@ -140,10 +140,10 @@ namespace pinocchio
   template<typename Derived>
   struct sizeInBytesImpl<
     Derived,
-    typename std::enable_if<std::is_base_of<Eigen::PlainObjectBase<Derived>, Derived>::value>::type>
+    std::enable_if_t<std::is_base_of_v<Eigen::PlainObjectBase<Derived>, Derived>>>
   {
     template<typename U = Derived>
-    static typename std::enable_if<helper::has_fixed_size_v<U>, std::size_t>::type
+    static std::enable_if_t<helper::has_fixed_size_v<U>, std::size_t>
     run(const Eigen::PlainObjectBase<Derived> & matrix)
     {
       PINOCCHIO_UNUSED_VARIABLE(matrix);
@@ -152,7 +152,7 @@ namespace pinocchio
     }
 
     template<typename U = Derived>
-    static typename std::enable_if<!helper::has_fixed_size_v<U>, std::size_t>::type
+    static std::enable_if_t<!helper::has_fixed_size_v<U>, std::size_t>
     run(const Eigen::PlainObjectBase<Derived> & matrix)
     {
       typedef typename Derived::Scalar Scalar;

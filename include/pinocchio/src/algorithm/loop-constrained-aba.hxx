@@ -137,8 +137,8 @@ namespace pinocchio
       if (joint_neighbours.size() == 0)
         return; // We can return from this point as this joint has no neighbours
 
-      using Matrix6xNV = typename std::remove_reference<typename JointData::UDTypeRef>::type;
-      typedef Eigen::Map<Matrix6xNV> MapMatrix6xNV;
+      using Matrix6xNV = std::remove_reference_t<typename JointData::UDTypeRef>;
+      using MapMatrix6xNV = Eigen::Map<Matrix6xNV>;
       MapMatrix6xNV mat1_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
       MapMatrix6xNV mat2_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
 

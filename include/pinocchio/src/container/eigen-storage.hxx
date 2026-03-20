@@ -23,9 +23,7 @@ namespace pinocchio
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike) PlainMatrixType;
 
     typedef typename PlainMatrixType::template CastXpr<NewScalar>::Type NewPlainMatrixExpression;
-    typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(
-      typename std::remove_reference<
-        typename std::remove_const<NewPlainMatrixExpression>::type>::type) NewPlainMatrixType;
+    typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(std::decay_t<NewPlainMatrixExpression>) NewPlainMatrixType;
     typedef EigenStorageTpl<NewPlainMatrixType> type;
   };
 

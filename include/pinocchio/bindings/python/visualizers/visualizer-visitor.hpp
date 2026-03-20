@@ -21,7 +21,7 @@ namespace pinocchio
     {
       typedef ::pinocchio::visualizers::BaseVisualizer Base;
       static_assert(
-        std::is_base_of<Base, Visualizer>::value,
+        std::is_base_of_v<Base, Visualizer>,
         "Visualizer class must be derived from pinocchio::visualizers::BaseVisualizer.");
 
       static void setCameraPose_proxy(Visualizer & vis, const Base::Matrix4 & pose)

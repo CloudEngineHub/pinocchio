@@ -16,40 +16,6 @@ namespace pinocchio
   namespace internal
   {
     /**
-     * @brief Helper trait for reusing the allocator type of a given `std::vector`‑like type.
-     *
-     * This trait extracts the allocator template template‑parameter from a type `V`
-     * (typically a `std::vector<...>`) and exposes a nested alias template `type`
-     * that can be used to rebind the allocator to a different element type.
-     *
-     * Internally it relies on another trait,
-     * `extract_template_template_parameter`, to retrieve the allocator’s
-     * template template‑parameter so that it can be applied as
-     * `Allocator<T>` for an arbitrary element type `T`.
-     *
-     * Example:
-     * @code
-     *   using VecDouble = std::vector<double, std::allocator<double>>;
-     *   using Extractor = std_vector_extract_allocator_type<VecDouble>;
-     *
-     *   // Get the allocator type suitable for 'int'
-     *   using AllocForInt = Extractor::type<int>;
-     *   std::vector<int, AllocForInt> intVec;
-     * @endcode
-     *
-     * @tparam V The vector‑like type from which to extract the allocator.
-     *
-     * @see extract_template_template_parameter
-     */
-    template<typename V>
-    struct std_vector_extract_allocator_type
-    {
-      template<typename T>
-      using type =
-        typename extract_template_template_parameter<typename V::allocator_type>::template type<T>;
-    };
-
-    /**
      * @brief Helper trait for creating `std::vector` types that reuse the allocator of another
      * vector.
      *
@@ -74,14 +40,14 @@ namespace pinocchio
      * @endcode
      *
      * @tparam V  The existing vector-like type whose allocator type should be reused.
-     *
-     * @see std_vector_extract_allocator_type
      */
     template<typename V>
     struct std_vector_with_same_allocator
     {
+      using curr_alloc_traits = std::allocator_traits<typename V::allocator_type>;
+
       template<typename T>
-      using allocator_type = typename std_vector_extract_allocator_type<V>::template type<T>;
+      using allocator_type = typename curr_alloc_traits::template rebind_alloc<T>;
 
       template<typename T>
       using type = std::vector<T, allocator_type<T>>;
@@ -225,8 +191,7 @@ namespace pinocchio
     /**
      * @brief Convenience variable template yielding the `is_std_vector` result.
      *
-     * Expands to a `bool` constant equal to
-     * `is_std_vector<std::remove_cv_t<std::remove_reference_t<T>>>::value`,
+     * Expands to a `bool` constant equal to `is_std_vector<std::decay_t<T>>::value`,
      * allowing easy usage as `is_std_vector_v<T>`.
      *
      * @tparam T The type to test.
@@ -237,8 +202,7 @@ namespace pinocchio
      * @since C++17
      */
     template<class T>
-    inline constexpr bool is_std_vector_v =
-      is_std_vector<std::remove_cv_t<std::remove_reference_t<T>>>::value;
+    inline constexpr bool is_std_vector_v = is_std_vector<std::decay_t<T>>::value;
 
     /// @brief Tag type used to indicate that only the first matching element
     /// should be erased from the vector.

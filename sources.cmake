@@ -104,7 +104,6 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/std-vector.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/string-generator.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/string.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/template-template-parameter.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/timer.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/timer2.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/version.hpp)
@@ -119,7 +118,6 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/context/casadi.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/context/cppad.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/context/default.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/context/template-instantiation.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/context/cppadcg.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/geometry-object-filter.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/geometry-fwd.hxx

@@ -29,7 +29,7 @@ namespace pinocchio
         {
           assert(false && "Should never happened.");
           // Hacky way to not have to return something real. The system should throw before.
-          const typename std::remove_reference<T>::type * null_ptr = NULL;
+          const typename std::remove_reference_t<T> * null_ptr = NULL;
           return *null_ptr;
         }
       };
@@ -279,7 +279,7 @@ namespace pinocchio
           typedef typename ConstraintModelBase<ConstraintModelDerived>::ConstraintData
             ConstraintDataDerived;
           using ConstraintDataGet = typename std::conditional<
-            std::is_const<ConstraintData>::value, const ConstraintDataDerived,
+            std::is_const_v<ConstraintData>, const ConstraintDataDerived,
             ConstraintDataDerived>::type;
 
           return bf::invoke(
@@ -295,7 +295,7 @@ namespace pinocchio
           typedef typename ConstraintModelBase<ConstraintModelDerived>::ConstraintData
             ConstraintDataDerived;
           using ConstraintDataGet = typename std::conditional<
-            std::is_const<ConstraintData>::value, const ConstraintDataDerived,
+            std::is_const_v<ConstraintData>, const ConstraintDataDerived,
             ConstraintDataDerived>::type;
 
           return bf::invoke(
@@ -332,7 +332,7 @@ namespace pinocchio
           typedef typename ConstraintModelBase<ConstraintModelDerived>::ConstraintData
             ConstraintDataDerived;
           using ConstraintDataGet = typename std::conditional<
-            std::is_const<ConstraintData>::value, const ConstraintDataDerived,
+            std::is_const_v<ConstraintData>, const ConstraintDataDerived,
             ConstraintDataDerived>::type;
 
           return bf::invoke(
@@ -347,7 +347,7 @@ namespace pinocchio
           typedef typename ConstraintModelBase<ConstraintModelDerived>::ConstraintData
             ConstraintDataDerived;
           using ConstraintDataGet = typename std::conditional<
-            std::is_const<ConstraintData>::value, const ConstraintDataDerived,
+            std::is_const_v<ConstraintData>, const ConstraintDataDerived,
             ConstraintDataDerived>::type;
 
           return bf::invoke(

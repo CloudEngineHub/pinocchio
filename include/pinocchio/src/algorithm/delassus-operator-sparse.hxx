@@ -97,8 +97,8 @@ namespace pinocchio
         const Eigen::MatrixBase<Dest> & dest)
       {
         static_assert(
-          std::is_base_of<
-            Eigen::SimplicialCholeskyBase<SparseCholeskySolver>, SparseCholeskySolver>::value,
+          std::is_base_of_v<
+            Eigen::SimplicialCholeskyBase<SparseCholeskySolver>, SparseCholeskySolver>,
           "The solver is not a base of SimplicialCholeskyBase.");
         typedef SimplicialCholeskyWrapper<SparseCholeskySolver> CholeskyWrapper;
 
