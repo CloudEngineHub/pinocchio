@@ -264,6 +264,7 @@ namespace pinocchio
       m_data_ptr = other.m_data_ptr;
       m_memory_capacity = other.m_memory_capacity;
       m_matrix_maps = std::move(other.m_matrix_maps);
+      m_offsets = std::move(other.m_offsets);
 
       other.m_data_ptr = nullptr;
       other.m_memory_capacity = 0;

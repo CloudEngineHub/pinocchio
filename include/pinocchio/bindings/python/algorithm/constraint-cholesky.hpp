@@ -192,8 +192,9 @@ namespace pinocchio
             "terms should be all positives.")
 
           .def(
-            "getDamping", +[](const Self & self) -> Vector { return Vector(self.getDamping()); },
-            bp::arg("self"), "Returns the current damping vector.")
+            "getDamping",
+            +[](const Self & self) -> Matrix { return self.getDamping().matrix(); },
+            bp::arg("self"), "Returns the current damping as a dense matrix.")
 
           .def(
             "getInverseOperationalSpaceInertiaMatrix",

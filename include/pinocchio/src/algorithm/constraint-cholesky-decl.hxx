@@ -47,6 +47,10 @@ namespace pinocchio
   /// \tparam _Scalar Scalar type.
   ///  \tparam _Options Alignment Options of the Eigen objects contained in the data structure.
   ///
+  // Forward declaration of Unsafe so ContactCholeskyDecompositionTpl can friend it.
+  template<typename>
+  struct Unsafe;
+
   template<typename _Scalar, int _Options>
   struct ContactCholeskyDecompositionTpl
   {
@@ -64,6 +68,7 @@ namespace pinocchio
     typedef EigenStorageTpl<Vector> EigenStorageVector;
     typedef EigenStorageTpl<Matrix> EigenStorageMatrix;
     typedef EigenStorageTpl<RowMatrix> EigenStorageRowMatrix;
+    typedef BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
 
     typedef Eigen::Matrix<Eigen::Index, Eigen::Dynamic, 1, Options> EigenIndexVector;
     typedef typename std::vector<EigenIndexVector> VectorOfEigenIndexVector;
@@ -86,6 +91,7 @@ namespace pinocchio
     typedef DelassusCholeskyExpressionTpl<ContactCholeskyDecompositionTpl>
       DelassusCholeskyExpression;
     friend struct DelassusCholeskyExpressionTpl<ContactCholeskyDecompositionTpl>;
+    friend struct Unsafe<DelassusCholeskyExpressionTpl<ContactCholeskyDecompositionTpl>>;
 
     typedef std::vector<Slice> SliceVector;
     typedef std::vector<SliceVector> VectorOfSliceVector;
@@ -99,8 +105,6 @@ namespace pinocchio
     , Dinv(Dinv_storage.map())
     , U(U_storage.map())
     , compliance(compliance_storage.map())
-    , damping(damping_storage.map())
-    , sum_compliance_damping(sum_compliance_damping_storage.map())
     , delassus_block(delassus_block_storage.map())
     , decomposition_dirty(true)
     , min_damping_value(min_damping_value)
@@ -172,8 +176,8 @@ namespace pinocchio
       Dinv_storage = other.Dinv_storage;
       U_storage = other.U_storage;
       compliance_storage = other.compliance_storage;
-      damping_storage = other.damping_storage;
-      sum_compliance_damping_storage = other.sum_compliance_damping_storage;
+      m_damping = other.m_damping;
+      m_sum_compliance_damping = other.m_sum_compliance_damping;
       delassus_block_storage = other.delassus_block_storage;
 
       decomposition_dirty = other.decomposition_dirty;
@@ -411,9 +415,22 @@ namespace pinocchio
     void updateDamping(const Scalar & mu);
 
     ///
-    /// \brief Returns the current damping vector.
+    /// \brief Update the damping from a block diagonal matrix (copy overload).
     ///
-    const typename EigenStorageVector::ConstMapType getDamping() const;
+    template<int OtherOptions, std::size_t OtherAlignment>
+    void
+    updateDamping(const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping);
+
+    ///
+    /// \brief Update the damping from a block diagonal matrix (move overload).
+    ///
+    template<int OtherOptions, std::size_t OtherAlignment>
+    void updateDamping(BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping);
+
+    ///
+    /// \brief Returns the current damping as a block diagonal matrix.
+    ///
+    const BlockDiagonalMatrix & getDamping() const;
 
     /// \brief Size of the decomposition.
     Eigen::Index size() const;
@@ -552,8 +569,8 @@ namespace pinocchio
       //        is_same &= (rowise_sparsity_pattern == other.rowise_sparsity_pattern);
 
       is_same &= (compliance_storage == other.compliance_storage);
-      is_same &= (damping_storage == other.damping_storage);
-      is_same &= (sum_compliance_damping_storage == other.sum_compliance_damping_storage);
+      is_same &= (m_damping == other.m_damping);
+      is_same &= (m_sum_compliance_damping == other.m_sum_compliance_damping);
       is_same &= (delassus_block_storage == other.delassus_block_storage);
       is_same &= (decomposition_dirty == other.decomposition_dirty);
       return is_same;
@@ -597,13 +614,11 @@ namespace pinocchio
     EigenStorageVector compliance_storage;
     typename EigenStorageVector::RefMapType compliance;
 
-    /// \brief Store the current damping value
-    EigenStorageVector damping_storage;
-    typename EigenStorageVector::RefMapType damping;
+    /// \brief Store the current damping as a block diagonal matrix
+    BlockDiagonalMatrix m_damping;
 
-    /// \brief Store the sum of compliance and damping vectors
-    EigenStorageVector sum_compliance_damping_storage;
-    typename EigenStorageVector::RefMapType sum_compliance_damping;
+    /// \brief Store the sum of compliance and damping as a block diagonal matrix
+    BlockDiagonalMatrix m_sum_compliance_damping;
 
     /// \brief Store the Delassus block
     EigenStorageRowMatrix delassus_block_storage;

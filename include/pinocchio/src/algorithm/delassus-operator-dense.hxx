@@ -260,7 +260,7 @@ namespace pinocchio
       PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), size());
       MatrixOut & res = res_.const_cast_derived();
       res.noalias() = m_delassus_matrix * x;
-      res.array() += m_compliance.array() * x.array();
+      res.noalias() += m_compliance.asDiagonal() * x;
       if (with_damping)
       {
         m_damping.template applyOnTheRight<pinocchio::internal::add_assign_op>(x, res);
