@@ -148,7 +148,6 @@ option(ASSERT_ON_EXCEPTION "Turns Pinocchio excpetions into asserts for debug pu
 option(ENABLE_TEMPLATE_INSTANTIATION "Template instantiation of the main library" ON)
 
 option(PINOCCHIO_BUILD_WITH_TRACY "Build with tracy profiler for performance analysis" OFF)
-option(PINOCCHIO_USE_CLARABEL "Use Clarabel as a constraint solver option" OFF)
 
 option(BUILD_WITH_RTSAN "Build with the Realtime Sanitizer (clang >=20, linux/mac only)" OFF)
 
@@ -249,29 +248,6 @@ if(PINOCCHIO_BUILD_WITH_TRACY)
         " Install it, or set the option PINOCCHIO_DOWNLOAD_TRACY to ON so we can fetch it.")
   endif()
 endif(PINOCCHIO_BUILD_WITH_TRACY)
-
-# -- clarabel (optional)
-if(PINOCCHIO_USE_CLARABEL)
-  message(STATUS "Building with Clarabel constraint solver support")
-  find_package(clarabel QUIET)
-  if(NOT clarabel_FOUND)
-    message(STATUS "Clarabel not found via find_package, trying pkg-config")
-    find_package(PkgConfig QUIET)
-    if(PKG_CONFIG_FOUND)
-      pkg_check_modules(clarabel QUIET IMPORTED_TARGET clarabel)
-    endif()
-  endif()
-
-  if(clarabel_FOUND OR TARGET PkgConfig::clarabel)
-    message(STATUS "Clarabel found and will be linked")
-    add_definitions(-DPINOCCHIO_WITH_CLARABEL_SUPPORT)
-  else()
-    message(
-      WARNING
-        "Clarabel support requested but library not found. Please install Clarabel.cpp or set PINOCCHIO_USE_CLARABEL=OFF"
-    )
-  endif()
-endif(PINOCCHIO_USE_CLARABEL)
 
 if(BUILD_WITH_AUTODIFF_SUPPORT)
   # Check first CppADCodeGen
@@ -609,9 +585,6 @@ export_variable(CONDITION BUILD_WITH_URDF_SUPPORT
                 VAR_VALUE ON)
 export_variable(CONDITION BUILD_WITH_COLLISION_SUPPORT
                 VAR_NAME PINOCCHIO_USE_COAL
-                VAR_VALUE ON)
-export_variable(CONDITION PINOCCHIO_USE_CLARABEL
-                VAR_NAME PINOCCHIO_USE_CLARABEL
                 VAR_VALUE ON)
 export_variable(CONDITION BUILD_WITH_CPPAD_SUPPORT
                 VAR_NAME PINOCCHIO_USE_CPPAD
