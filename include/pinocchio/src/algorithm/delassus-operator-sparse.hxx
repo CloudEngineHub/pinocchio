@@ -187,10 +187,7 @@ namespace pinocchio
 
     void updateDecomposition()
     {
-      PINOCCHIO_EIGEN_MALLOC_SAVE_STATUS();
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
       m_cholsky_decomposition.factorize(m_damped_delassus_matrix);
-      PINOCCHIO_EIGEN_MALLOC_RESTORE_STATUS();
       m_cholesky_decomposition_dirty = false;
     }
 

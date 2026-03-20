@@ -144,7 +144,6 @@ endif(APPLE)
 
 option(INITIALIZE_WITH_NAN "Initialize Eigen entries with NaN" OFF)
 option(ASSERT_ON_EXCEPTION "Turns Pinocchio excpetions into asserts for debug purposes" OFF)
-option(CHECK_RUNTIME_MALLOC "Check if some memory allocations are performed at runtime" OFF)
 
 option(ENABLE_TEMPLATE_INSTANTIATION "Template instantiation of the main library" ON)
 
@@ -190,10 +189,6 @@ endif()
 if(INITIALIZE_WITH_NAN)
   message(STATUS "Initialize with NaN all the Eigen entries.")
 endif(INITIALIZE_WITH_NAN)
-
-if(CHECK_RUNTIME_MALLOC)
-  message(STATUS "Check if some memory allocations are performed at runtime.")
-endif(CHECK_RUNTIME_MALLOC)
 
 if(ENABLE_TEMPLATE_INSTANTIATION)
   message(STATUS "Template instantiation of the main library")

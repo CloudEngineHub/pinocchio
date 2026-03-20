@@ -656,8 +656,6 @@ namespace pinocchio
     // the solver can now be marked as reset
     m_is_valid = false;
 
-    PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
-
 #ifdef PINOCCHIO_WITH_COLLISION
     if (settings.measure_timings)
     {
@@ -769,8 +767,6 @@ namespace pinocchio
 #ifdef PINOCCHIO_WITH_COLLISION
     timer.stop();
 #endif // PINOCCHIO_WITH_COLLISION
-
-    PINOCCHIO_EIGEN_MALLOC_ALLOWED();
 
     // Retrieve solution
     res.x = ws.x;

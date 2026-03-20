@@ -731,7 +731,6 @@ namespace pinocchio
         alignment >= sizeof(void *) && alignment <= 256 && (alignment & (alignment - 1)) == 0
         && "Alignment must be at least sizeof(void*), less than or equal to 256, and a power of 2");
 
-      Eigen::internal::check_that_malloc_is_allowed();
       EIGEN_USING_STD(malloc)
       void * original = malloc(size + alignment);
       if (original == nullptr)
@@ -752,7 +751,6 @@ namespace pinocchio
         std::size_t offset = static_cast<std::size_t>(*(static_cast<uint8_t *>(ptr) - 1)) + 1;
         void * original = static_cast<void *>(static_cast<uint8_t *>(ptr) - offset);
 
-        Eigen::internal::check_that_malloc_is_allowed();
         EIGEN_USING_STD(free)
         free(original);
       }
@@ -773,7 +771,6 @@ namespace pinocchio
       std::size_t old_offset = static_cast<std::size_t>(*(static_cast<uint8_t *>(ptr) - 1)) + 1;
       void * old_original = static_cast<uint8_t *>(ptr) - old_offset;
 
-      Eigen::internal::check_that_malloc_is_allowed();
       EIGEN_USING_STD(realloc)
       void * original = realloc(old_original, new_size + alignment);
       if (original == nullptr)

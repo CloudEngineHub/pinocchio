@@ -125,7 +125,6 @@ namespace pinocchio
 
       // const auto U1 = self.U.topLeftCorner(self.constraintDim(), self.constraintDim());
       // {
-      //   PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
       //   typedef Eigen::Map<RowMatrix> MapType;
       //   MapType tmp_mat = MapType(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, x.rows(), x.cols()));
       //   //            tmp_mat.noalias() = U1.adjoint() * x;
@@ -139,7 +138,6 @@ namespace pinocchio
 
       //   //            res.const_cast_derived().noalias() = U1 * tmp_mat;
       //   triangularMatrixMatrixProduct<Eigen::UnitUpper>(U1, tmp_mat, res.const_cast_derived());
-      //   PINOCCHIO_EIGEN_MALLOC_ALLOWED();
       // }
     }
 
@@ -174,7 +172,6 @@ namespace pinocchio
       const auto U1 = self.U.topLeftCorner(self.constraintDim(), self.constraintDim())
                         .template triangularView<Eigen::UnitUpper>();
 
-      PINOCCHIO_EIGEN_MALLOC_NOT_ALLOWED();
       U1.solveInPlace(x.const_cast_derived());
 
       // The following commented lines produced some memory allocation.
@@ -185,7 +182,6 @@ namespace pinocchio
         x.const_cast_derived().col(i).array() *= -self.Dinv.head(self.constraintDim()).array();
 
       U1.adjoint().solveInPlace(x);
-      PINOCCHIO_EIGEN_MALLOC_ALLOWED();
     }
 
     /// \brief Same as solveInPlace but stores the result in res.

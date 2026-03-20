@@ -27,11 +27,6 @@ if(ASSERT_ON_EXCEPTION)
   target_compile_definitions(${PROJECT_NAME}_headers INTERFACE PINOCCHIO_ASSERT_ON_EXCEPTION)
 endif()
 
-if(CHECK_RUNTIME_MALLOC)
-  target_compile_definitions(${PROJECT_NAME}_headers INTERFACE PINOCCHIO_EIGEN_CHECK_MALLOC
-                                                               EIGEN_RUNTIME_NO_MALLOC)
-endif(CHECK_RUNTIME_MALLOC)
-
 modernize_target_link_libraries(
   ${PROJECT_NAME}_headers
   SCOPE INTERFACE

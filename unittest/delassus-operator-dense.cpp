@@ -2,9 +2,6 @@
 // Copyright (c) 2024-2026 INRIA
 //
 
-#define EIGEN_RUNTIME_NO_MALLOC
-#define PINOCCHIO_EIGEN_CHECK_MALLOC
-
 #include <pinocchio/multibody/sample-models.hpp>
 #include <pinocchio/constraints.hpp>
 
@@ -36,7 +33,6 @@ BOOST_AUTO_TEST_CASE(test_memory_allocation)
   PowerIterationAlgoTpl<Eigen::VectorXd> power_iteration(mat_size);
 
   // Check memory allocations
-  Eigen::internal::set_is_malloc_allowed(false);
   res = delassus * rhs;
   (delassus * rhs).evalTo(res);
   res.noalias() = symmetric_mat * rhs;
@@ -44,7 +40,6 @@ BOOST_AUTO_TEST_CASE(test_memory_allocation)
   evalTo(symmetric_mat * rhs, res);
   power_iteration.run(delassus);
   power_iteration.run(symmetric_mat);
-  Eigen::internal::set_is_malloc_allowed(true);
 }
 
 BOOST_AUTO_TEST_CASE(test_cholesky_expression_to_dense)

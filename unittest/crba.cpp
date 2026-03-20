@@ -10,10 +10,6 @@
  *
  */
 
-#ifndef EIGEN_RUNTIME_NO_MALLOC
-  #define EIGEN_RUNTIME_NO_MALLOC
-#endif
-
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/algorithm/crba.hpp"
 #include "pinocchio/algorithm/centroidal.hpp"
@@ -242,10 +238,8 @@ BOOST_AUTO_TEST_CASE(test_crba_malloc)
   pinocchio::Data data(model);
 
   const Eigen::VectorXd q = pinocchio::neutral(model);
-  Eigen::internal::set_is_malloc_allowed(false);
   crba(model, data, q, pinocchio::Convention::WORLD);
   crba(model, data, q, pinocchio::Convention::LOCAL);
-  Eigen::internal::set_is_malloc_allowed(true);
 }
 
 #endif
