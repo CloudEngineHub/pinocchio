@@ -767,11 +767,11 @@ namespace pinocchio
     ADMMConstraintSolverTpl<context::Scalar, context::Options>;
 
   // -------------------------------------------------------------------------
-  // solve() with DelassusOperatorDense + default constraint collection
+  // solveImpl() with DelassusOperatorDense + default constraint collection
   // -------------------------------------------------------------------------
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
-  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solve<
+  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
     DelassusOperatorDenseTpl<context::Scalar, context::Options>,
     context::VectorXs,
     ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
@@ -794,11 +794,11 @@ namespace pinocchio
     ADMMSolverResultTpl<context::Scalar, context::Options> &);
 
   // -------------------------------------------------------------------------
-  // solve() with DelassusCholeskyExpression + default constraint collection
+  // solveImpl() with DelassusCholeskyExpression + default constraint collection
   // -------------------------------------------------------------------------
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
-  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solve<
+  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
     DelassusCholeskyExpressionTpl<
       ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>,
     context::VectorXs,
@@ -823,11 +823,11 @@ namespace pinocchio
     ADMMSolverResultTpl<context::Scalar, context::Options> &);
 
   // -------------------------------------------------------------------------
-  // solve() with DelassusOperatorRigidBodySystems + default constraint collection
+  // solveImpl() with DelassusOperatorRigidBodySystems + default constraint collection
   // -------------------------------------------------------------------------
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
-  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solve<
+  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
     DelassusOperatorRigidBodySystemsTpl<
       context::Scalar,
       context::Options,

@@ -33,11 +33,11 @@ namespace pinocchio
     PGSConstraintSolverTpl<context::Scalar, context::Options>;
 
   // -------------------------------------------------------------------------
-  // solve() with DelassusCholeskyExpression + default constraint collection
+  // solveImpl() with DelassusCholeskyExpression + default constraint collection
   // -------------------------------------------------------------------------
 
   template PINOCCHIO_EXPLICIT_INSTANTIATION_DEFINITION_DLLAPI bool
-  PGSConstraintSolverTpl<context::Scalar, context::Options>::solve<
+  PGSConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
     DelassusCholeskyExpressionTpl<
       ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>,
     context::VectorXs,
