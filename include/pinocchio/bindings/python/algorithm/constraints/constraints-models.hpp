@@ -30,7 +30,9 @@ namespace pinocchio
     {
       typedef context::PointContactConstraintModel Self;
       return cl.def("getFriction", &Self::getFriction, "Get coulomb friction coefficient.")
-        .def("setFriction", &Self::setFriction, "Set coulomb friction coefficient.");
+        .def("setFriction", &Self::setFriction, "Set coulomb friction coefficient.")
+        .def_readwrite("geom1_id", &Self::geom1_id, "Index of the first geometry object.")
+        .def_readwrite("geom2_id", &Self::geom2_id, "Index of the second geometry object.");
     }
 
     template<>

@@ -45,8 +45,6 @@ namespace pinocchio
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
 
-    static constexpr ConstraintFormulationLevel constraint_formulation_level =
-      ConstraintFormulationLevel::POSITION_LEVEL;
     // constraint_size_type = ConstraintSizeType::STATIC;
 
     static constexpr bool has_baumgarte_corrector = true;
@@ -252,6 +250,8 @@ namespace pinocchio
       ReturnType res;
       Base::template cast<NewScalar>(res);
       res.m_friction = static_cast<NewScalar>(m_friction);
+      res.geom1_id = geom1_id;
+      res.geom2_id = geom2_id;
       return res;
     }
 
@@ -265,7 +265,8 @@ namespace pinocchio
     ///
     bool operator==(const PointContactConstraintModelTpl & other) const
     {
-      return base() == other.base() && m_friction == other.m_friction;
+      return base() == other.base() && m_friction == other.m_friction && geom1_id == other.geom1_id
+             && geom2_id == other.geom2_id;
     }
 
     ///
@@ -334,6 +335,12 @@ namespace pinocchio
     // ------------------------------
     // MEMBERS
     // ------------------------------
+    /// \brief Index of first geometry to which the point contact constraint is attached.
+    GeomIndex geom1_id = 0;
+
+    /// \brief Index of second geometry to which the point contact constraint is attached.
+    GeomIndex geom2_id = 0;
+
   protected:
     Scalar m_friction = Scalar(0.5);
 

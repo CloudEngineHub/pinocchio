@@ -22,13 +22,6 @@ namespace pinocchio
   // --------------------------------------------------------------
   // Helper struct
   // --------------------------------------------------------------
-  enum struct ConstraintFormulationLevel
-  {
-    POSITION_LEVEL,    // scaling dt^2
-    VELOCITY_LEVEL,    // scaling dt
-    ACCELERATION_LEVEL // scaling 1
-  };
-
   enum struct ConstraintSizeType
   {
     STATIC = 0,   // The size is fixed at compile time. residualSize = maxResidualSize
