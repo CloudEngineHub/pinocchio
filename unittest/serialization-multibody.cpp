@@ -39,8 +39,6 @@ BOOST_AUTO_TEST_CASE(test_multibody_serialization)
   generic_test(frame, TEST_SERIALIZATION_FOLDER "/Frame", "Frame");
 }
 
-// --------------------- MULTIBODY-GEOMETRY------------------------ //
-
 BOOST_AUTO_TEST_CASE(test_collision_pair)
 {
   using namespace pinocchio;

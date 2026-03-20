@@ -206,8 +206,6 @@ BOOST_AUTO_TEST_CASE(test_multibody_joints_model_serialization)
   boost::mpl::for_each<JointModelVariant::types>(TestJointModel());
 }
 
-// --------------------- TEST JOINT TRANSFORM ------------------------ //
-
 struct TestJointTransform
 {
   template<typename JointModel>
@@ -263,8 +261,6 @@ BOOST_AUTO_TEST_CASE(test_multibody_joints_transform_serialization)
   using namespace pinocchio;
   boost::mpl::for_each<JointModelVariant::types>(TestJointTransform());
 }
-
-/////// TEST JOINT MOTION //////////////////////////
 
 struct TestJointMotion
 {
@@ -323,8 +319,6 @@ BOOST_AUTO_TEST_CASE(test_multibody_joints_motion_serialization)
   using namespace pinocchio;
   boost::mpl::for_each<JointModelVariant::types>(TestJointMotion());
 }
-
-/////// TEST JOINT DATA //////////////////////////
 
 struct TestJointData
 {
