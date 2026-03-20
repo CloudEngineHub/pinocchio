@@ -93,6 +93,8 @@ namespace pinocchio
     // Base usage ---------------------------------------------------
     using Base::getA1;
     using Base::getA2;
+    using Base::joint1_id;
+    using Base::joint2_id;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
     using RootBase::residualSize;
@@ -413,25 +415,28 @@ namespace pinocchio
       typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
       JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
 
+      auto & colwise_joint1_sparsity = model.sparsity_pattern_vector[joint1_id];
+      auto & colwise_joint2_sparsity = model.sparsity_pattern_vector[joint2_id];
+
       //      const FrameConstraintModelBase & cmodel = *this;
 
       const SE3 & oMc1 = cdata.oMc1;
 
       for (Eigen::Index j = 0; j < model.nv; ++j)
       {
-        if (this->colwise_joint1_sparsity[j] || this->colwise_joint2_sparsity[j])
+        if (colwise_joint1_sparsity[j] || colwise_joint2_sparsity[j])
         {
           typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
           const ConstColXpr Jcol = data.J.col(j);
           const MotionRef<const ConstColXpr> Jcol_motion(Jcol);
 
           // TODO: simplify computations
-          if (this->colwise_joint1_sparsity[j] == this->colwise_joint2_sparsity[j])
+          if (colwise_joint1_sparsity[j] == colwise_joint2_sparsity[j])
             jacobian_matrix.col(j).setZero();
           else
           {
             const Motion Jcol_local(oMc1.actInv(Jcol_motion));
-            if (this->colwise_joint1_sparsity[j])
+            if (colwise_joint1_sparsity[j])
               jacobian_matrix.col(j) = -Jcol_local.toVector();
             else
               jacobian_matrix.col(j) = Jcol_local.toVector();
@@ -494,18 +499,21 @@ namespace pinocchio
 
       const Matrix6 A = getA2(cdata, WorldFrameTag());
 
+      auto & colwise_joint1_sparsity = model.sparsity_pattern_vector[joint1_id];
+      auto & colwise_joint2_sparsity = model.sparsity_pattern_vector[joint2_id];
+
       for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
-        if (!(this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj]))
+        if (!(colwise_joint1_sparsity[jj] || colwise_joint2_sparsity[jj]))
           continue;
-        if (this->colwise_joint1_sparsity[jj] == this->colwise_joint2_sparsity[jj])
+        if (colwise_joint1_sparsity[jj] == colwise_joint2_sparsity[jj])
           continue;
         Vector6 AxSi;
 
         typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
         const ConstColXpr Jcol = data.J.col(jj);
 
-        if (this->colwise_joint1_sparsity[jj])
+        if (colwise_joint1_sparsity[jj])
           AxSi.noalias() = -A * Jcol;
         else
           AxSi.noalias() = A * Jcol;
@@ -565,18 +573,21 @@ namespace pinocchio
 
       const Matrix6 A = getA2(cdata, WorldFrameTag());
 
+      auto & colwise_joint1_sparsity = model.sparsity_pattern_vector[joint1_id];
+      auto & colwise_joint2_sparsity = model.sparsity_pattern_vector[joint2_id];
+
       for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
-        if (!(this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj]))
+        if (!(colwise_joint1_sparsity[jj] || colwise_joint2_sparsity[jj]))
           continue;
-        if (this->colwise_joint1_sparsity[jj] == this->colwise_joint2_sparsity[jj])
+        if (colwise_joint1_sparsity[jj] == colwise_joint2_sparsity[jj])
           continue;
         Vector6 AxSi;
 
         typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
         const ConstColXpr Jcol = data.J.col(jj);
 
-        if (this->colwise_joint1_sparsity[jj])
+        if (colwise_joint1_sparsity[jj])
           AxSi.noalias() = -A * Jcol;
         else
           AxSi.noalias() = A * Jcol;
@@ -741,12 +752,9 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id) const
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
     {
-      const auto & constraint_inertia = constraint_inertias[inner_constraint_id];
-
       assert(constraint_inertia.size() == 6);
       switch (constraint_inertia.type())
       {
@@ -779,11 +787,10 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "Should never happened");
+        assert(false && "Invalid MatrixBlockType for FrameConstraintModelBase.");
+        PINOCCHIO_THROW_PRETTY(
+          std::invalid_argument, "Invalid MatrixBlockType for FrameConstraintModelBase.");
       }
-
-      // increment inner constraint id counter
-      ++inner_constraint_id;
     }
 
     /// \copydoc Base::getA1

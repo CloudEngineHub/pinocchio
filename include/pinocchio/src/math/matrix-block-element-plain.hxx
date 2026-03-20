@@ -214,6 +214,30 @@ namespace pinocchio
         AssignOp::run(container(), matrix);
         break;
       }
+      case MatrixBlockType::NestedBlockDiagonal: {
+        // Use Map with OuterStride to break the recursive template instantiation chain:
+        // matrix.block() yields Block<Matrix,...> which causes Block<Block<...>> nesting
+        // in recursive assign_op calls, exceeding the template depth limit.
+        // Map<MatrixXd, Unaligned, OuterStride<Dynamic>> is a fixed concrete type,
+        // so assign_op is always called with the same instantiation (no type explosion).
+        const Eigen::Index outer_stride = matrix.outerStride();
+        Scalar * const base_ptr = matrix.derived().data();
+        Eigen::Index sub_row_id = 0;
+        for (const auto & sub_block : derived().nested_blocks())
+        {
+          const auto sub_size = sub_block.size();
+          Eigen::Map<
+            Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Unaligned,
+            Eigen::OuterStride<Eigen::Dynamic>>
+            sub_map(
+              // base ptr + col ptr + row ptr
+              base_ptr + sub_row_id + sub_row_id * outer_stride, sub_size, sub_size,
+              Eigen::OuterStride<Eigen::Dynamic>(outer_stride));
+          sub_block.template assign_op<AssignOp>(sub_map);
+          sub_row_id += sub_size;
+        }
+        break;
+      }
       default:
         assert(false && "Should never happen");
       }
@@ -405,6 +429,23 @@ namespace pinocchio
         diagonal_slice = container().diagonal();
         break;
       }
+      case MatrixBlockType::NestedBlockDiagonal: {
+        // Use Map<VectorXd> from raw pointer to break the recursive template instantiation
+        // chain. Calling .segment() would yield VectorBlock<DiagonalSlice>, causing
+        // VectorBlock<VectorBlock<...>> nesting on recursive calls, exceeding template depth.
+        // Map<VectorXd> is a fixed concrete type: always the same instantiation (no explosion).
+        Scalar * const base_ptr = diagonal_slice.derived().data();
+        Eigen::Index sub_offset = 0;
+        for (const auto & sub_block : derived().nested_blocks())
+        {
+          const auto sub_size = sub_block.size();
+          Eigen::Map<Eigen::Matrix<Scalar, Eigen::Dynamic, 1>> sub_map(
+            base_ptr + sub_offset, sub_size);
+          sub_block.diagonal(sub_map);
+          sub_offset += sub_size;
+        }
+        break;
+      }
       default:
         assert(false && "Should never happen");
       }
@@ -443,6 +484,10 @@ namespace pinocchio
       case MatrixBlockType::Diagonal:
       case MatrixBlockType::Plain:
         container().setRandom();
+        break;
+      case MatrixBlockType::NestedBlockDiagonal:
+        for (auto & sub_block : derived().nested_blocks())
+          sub_block.setRandom();
         break;
       default:
         assert(false && "Should never happen");
@@ -491,6 +536,11 @@ namespace pinocchio
         container().diagonal().array() += Scalar(0.1); // Ensure strict positive definiteness
         break;
       }
+      case MatrixBlockType::NestedBlockDiagonal: {
+        for (auto & sub_block : derived().nested_blocks())
+          sub_block.setRandomPD();
+        break;
+      }
       default:
         assert(false && "Should never happen");
       }
@@ -509,9 +559,15 @@ namespace pinocchio
       case MatrixBlockType::Diagonal:
       case MatrixBlockType::Plain:
         return container().hasNaN();
+      case MatrixBlockType::NestedBlockDiagonal:
+        for (const auto & sub_block : derived().nested_blocks())
+          if (sub_block.hasNaN())
+            return true;
+        return false;
       default:
         assert(false && "Should never happen");
       }
+      return true;
     }
 
     /**
@@ -619,7 +675,27 @@ namespace pinocchio
       }
       case MatrixBlockType::Plain: {
         assert((res.type() == MatrixBlockType::Plain) && "res block type is invalid");
-        res.container().noalias() = container().inverse();
+        if (isSymmetric(container()))
+        {
+          typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
+          MapMatrix tmp =
+            MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, container().rows(), container().cols()));
+          tmp = container();
+          ::pinocchio::matrix_inversion(tmp, res.container());
+        }
+        else
+        {
+          res.container().noalias() = container().inverse();
+        }
+        break;
+      }
+      case MatrixBlockType::NestedBlockDiagonal: {
+        assert(res.type() == MatrixBlockType::NestedBlockDiagonal && "res block type is invalid");
+        const auto & src_subs = derived().nested_blocks();
+        auto & res_subs = res.derived().nested_blocks();
+        assert(src_subs.size() == res_subs.size());
+        for (std::size_t i = 0; i < src_subs.size(); ++i)
+          src_subs[i].inverse(res_subs[i]);
         break;
       }
       default:
@@ -672,6 +748,18 @@ namespace pinocchio
       }
       case MatrixBlockType::Plain: {
         res_type = MatrixBlockType::Plain;
+        break;
+      }
+      case MatrixBlockType::NestedBlockDiagonal: {
+        // For NestedBlockDiagonal, we can't return a PlainBlockElement that contains nested
+        // blocks (PlainBlockElement = owning Matrix variant doesn't support nested blocks).
+        // This path should not be called — use the in-place inverse() with a matching res block.
+        assert(
+          false && "NestedBlockDiagonal inverse() factory not supported; use in-place version");
+        PINOCCHIO_THROW_PRETTY(
+          std::runtime_error,
+          "Calling unsupported inverse() on NestedBlockDiagonal; use in-place version instead.")
+        res_type = MatrixBlockType::NestedBlockDiagonal;
         break;
       }
       default:

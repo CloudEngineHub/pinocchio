@@ -337,10 +337,16 @@ class TestJointsAlgo(TestCase):
                     gcm.residualSize()
                     <= gcm.residualSize(pin.ConstraintSelectionType.MAXIMAL)
                 )
-            # TODO: Update compliance test...
-            # dummy_compliance = 0.1 * np.ones(gcm.residualSize())
-            # gcm.compliance = dummy_compliance
-            # self.assertTrue(np.all(dummy_compliance == gcm.compliance))
+            # default compliance should be 0
+            self.assertTrue(
+                np.all(np.zeros(gcm.residualSize()) == gcm.retrieveCompliance())
+            )
+            # test settings compliance
+            dummy_compliance = 0.1 * np.ones(gcm.residualSize())
+            gcm.setCompliance(dummy_compliance)
+            self.assertTrue(np.all(dummy_compliance == gcm.retrieveCompliance()))
+            ccm.setCompliance(dummy_compliance)
+            self.assertTrue(np.all(dummy_compliance == ccm.retrieveCompliance()))
             self.assertTrue(len(ccm.retrieveCompliance()) == ccm.residualSize())
             if not hasattr(ccm, "baumgarte_corrector_parameters"):
                 self.assertTrue(isinstance(ccm, pin.JointFrictionConstraintModel))
@@ -352,8 +358,15 @@ class TestJointsAlgo(TestCase):
                     do_except = True
                 self.assertTrue(do_except)
             else:
-                ccm.baumgarte_corrector_parameters.Kp = 1.0
-                ccm.baumgarte_corrector_parameters.Kd = 1.0
+                bp = pin.BaumgarteCorrectorParameters(1.0, 2.0)
+                ccm.setBaumgarteCorrectorParameters(bp)
+                self.assertTrue(ccm.baumgarte_corrector_parameters.Kp == 1.0)
+                self.assertTrue(ccm.baumgarte_corrector_parameters.Kd == 2.0)
+                #
+                bp = pin.BaumgarteCorrectorParameters(2.0, 3.0)
+                gcm.setBaumgarteCorrectorParameters(bp)
+                self.assertTrue(gcm.baumgarte_corrector_parameters.Kp == 2.0)
+                self.assertTrue(gcm.baumgarte_corrector_parameters.Kd == 3.0)
 
     def test_jacobians_methods(self):
         model = self.model

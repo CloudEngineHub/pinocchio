@@ -848,57 +848,105 @@ namespace pinocchio
         _MatrixBlockElement, pinocchio::MatrixBlockElementTpl>,
       "_MatrixBlockElement is not of type pinocchio::MatrixBlockElementTpl<...>");
 
+    // First pass: count total number of MatrixStack entries needed
+    // (handles nested sub-blocks as well as flat data blocks)
+    std::size_t total_memory_entries = 0;
+    for (std::size_t i = 0; i < size; ++i)
+    {
+      const auto & block_info = input_block_pattern[i];
+      if (block_info.type() == MatrixBlockType::NestedBlockDiagonal)
+      {
+        for (const auto & sub : block_info.nested_blocks())
+          if (isDataBlock(sub.type()))
+            total_memory_entries++;
+      }
+      else if (isDataBlock(block_info.type()))
+      {
+        total_memory_entries++;
+      }
+    }
+
     // analysis block pattern and extract memory/size info
     const std::size_t num_blocks = size;
     MatrixInfo * memory_block_sizes =
-      static_cast<MatrixInfo *>(PINOCCHIO_ALLOCA(num_blocks * sizeof(MatrixInfo)));
+      static_cast<MatrixInfo *>(PINOCCHIO_ALLOCA(total_memory_entries * sizeof(MatrixInfo)));
     std::size_t memory_block_id = 0;
 
     m_matrix_block_elements.reserve(size);
     m_rows = 0;
-    for (std::size_t i = 0; i < size; ++i)
+    for (std::size_t i = 0; i < num_blocks; ++i)
     {
       const auto & block_info = input_block_pattern[i];
       assert(block_info.type() != MatrixBlockType::Undefined);
 
       m_rows += block_info.size();
 
-      m_matrix_block_elements.push_back({block_info.type(), block_info.size()});
+      if (block_info.type() == MatrixBlockType::NestedBlockDiagonal)
+      {
+        // Build nested block: copy sub-block structure (null maps to be filled later)
+        std::vector<MatrixBlockElement> empty_subs;
+        empty_subs.reserve(block_info.nested_blocks().size());
+        for (const auto & sub : block_info.nested_blocks())
+        {
+          empty_subs.emplace_back(sub.type(), sub.size());
+          if (sub.type() == MatrixBlockType::ScalarIdentity)
+            memory_block_sizes[memory_block_id++] = {1, 1};
+          else if (sub.type() == MatrixBlockType::Diagonal)
+            memory_block_sizes[memory_block_id++] = {sub.size(), 1};
+          else if (sub.type() == MatrixBlockType::Plain)
+            memory_block_sizes[memory_block_id++] = {sub.size(), sub.size()};
+        }
+        m_matrix_block_elements.emplace_back(
+          MatrixBlockType::NestedBlockDiagonal, std::move(empty_subs));
+      }
+      else
+      {
+        m_matrix_block_elements.push_back({block_info.type(), block_info.size()});
 
-      if (block_info.type() == MatrixBlockType::ScalarIdentity)
-      {
-        const MatrixInfo memory_block_size = {1, 1};
-        memory_block_sizes[memory_block_id++] = memory_block_size;
-      }
-      else if (block_info.type() == MatrixBlockType::Diagonal)
-      {
-        const MatrixInfo memory_block_size = {block_info.size(), 1};
-        memory_block_sizes[memory_block_id++] = memory_block_size;
-      }
-      else if (block_info.type() == MatrixBlockType::Plain)
-      {
-        const MatrixInfo memory_block_size = {block_info.size(), block_info.size()};
-        memory_block_sizes[memory_block_id++] = memory_block_size;
+        if (block_info.type() == MatrixBlockType::ScalarIdentity)
+          memory_block_sizes[memory_block_id++] = {1, 1};
+        else if (block_info.type() == MatrixBlockType::Diagonal)
+          memory_block_sizes[memory_block_id++] = {block_info.size(), 1};
+        else if (block_info.type() == MatrixBlockType::Plain)
+          memory_block_sizes[memory_block_id++] = {block_info.size(), block_info.size()};
       }
     }
 
     m_matrix_stack.rebuild(memory_block_sizes, memory_block_id);
 
-    // Fill with data
+    // Fill with data: remap MatrixStack slots to block elements
     std::size_t matrix_stack_id = 0;
     for (std::size_t i = 0; i < m_matrix_block_elements.size(); ++i)
     {
       auto & block_info = m_matrix_block_elements[i];
-      auto & input_block_info = input_block_pattern[i];
+      const auto & input_block_info = input_block_pattern[i];
 
       assert(block_info.type() != MatrixBlockType::Undefined);
-      if (isDataBlock(block_info.type()))
+
+      if (block_info.type() == MatrixBlockType::NestedBlockDiagonal)
+      {
+        const auto & input_subs = input_block_info.nested_blocks();
+        auto & subs = block_info.nested_blocks();
+        for (std::size_t j = 0; j < subs.size(); ++j)
+        {
+          auto & sub = subs[j];
+          if (isDataBlock(sub.type()))
+          {
+            auto matrix_map = m_matrix_stack[matrix_stack_id];
+            sub.remap(matrix_map);
+            if (input_subs[j].data() != nullptr)
+              sub.container() = input_subs[j].container();
+            matrix_stack_id++;
+          }
+        }
+      }
+      else if (isDataBlock(block_info.type()))
       {
         auto matrix_map = m_matrix_stack[matrix_stack_id];
         block_info.remap(matrix_map); // remap data to the matrix stack
         if (input_block_info.data() != nullptr)
           block_info.container() = input_block_info.container(); // copy data
-        // otherwise, unitialized
+        // otherwise, uninitialized
         matrix_stack_id++;
       }
     }
@@ -1047,6 +1095,39 @@ namespace pinocchio
         AssignOp::run(map * rhs_block, res_block.noalias());
         break;
       }
+      case MatrixBlockType::NestedBlockDiagonal: {
+        Eigen::Index sub_offset = 0;
+        for (const auto & sub : block_info.nested_blocks())
+        {
+          const auto sub_size = sub.size();
+          const auto sub_rhs = rhs.middleRows(row_id + sub_offset, sub_size);
+          auto sub_res = res.middleRows(row_id + sub_offset, sub_size);
+          switch (sub.type())
+          {
+          case MatrixBlockType::Zero:
+            AssignOp::run(Matrix::Zero(sub_rhs.rows(), sub_rhs.cols()), sub_res);
+            break;
+          case MatrixBlockType::Identity:
+            AssignOp::run(sub_rhs, sub_res);
+            break;
+          case MatrixBlockType::ScalarIdentity: {
+            const auto & scalar = sub.map(0, 0);
+            AssignOp::run(scalar * sub_rhs, sub_res);
+            break;
+          }
+          case MatrixBlockType::Diagonal:
+            AssignOp::run(sub.map.asDiagonal() * sub_rhs, sub_res.noalias());
+            break;
+          case MatrixBlockType::Plain:
+            AssignOp::run(sub.map * sub_rhs, sub_res.noalias());
+            break;
+          default:
+            assert(false && "Should never happen");
+          }
+          sub_offset += sub_size;
+        }
+        break;
+      }
       default:
         assert(false && "Should never happen");
       }
@@ -1108,6 +1189,39 @@ namespace pinocchio
         AssignOp::run(lhs_block * map, res_block.noalias());
         break;
       }
+      case MatrixBlockType::NestedBlockDiagonal: {
+        Eigen::Index sub_offset = 0;
+        for (const auto & sub : block_info.nested_blocks())
+        {
+          const auto sub_size = sub.size();
+          const auto sub_lhs = lhs.middleCols(col_id + sub_offset, sub_size);
+          auto sub_res = res.middleCols(col_id + sub_offset, sub_size);
+          switch (sub.type())
+          {
+          case MatrixBlockType::Zero:
+            AssignOp::run(Matrix::Zero(sub_lhs.rows(), sub_lhs.cols()), sub_res);
+            break;
+          case MatrixBlockType::Identity:
+            AssignOp::run(sub_lhs, sub_res);
+            break;
+          case MatrixBlockType::ScalarIdentity: {
+            const auto & scalar = sub.map(0, 0);
+            AssignOp::run(sub_lhs * scalar, sub_res);
+            break;
+          }
+          case MatrixBlockType::Diagonal:
+            AssignOp::run(sub_lhs * sub.map.asDiagonal(), sub_res.noalias());
+            break;
+          case MatrixBlockType::Plain:
+            AssignOp::run(sub_lhs * sub.map, sub_res.noalias());
+            break;
+          default:
+            assert(false && "Should never happen");
+          }
+          sub_offset += sub_size;
+        }
+        break;
+      }
       default:
         assert(false && "Should never happen");
       }
@@ -1139,7 +1253,19 @@ namespace pinocchio
     size_t matrix_stack_id = 0;
     for (auto & block_info : m_matrix_block_elements)
     {
-      if (isDataBlock(block_info.type()))
+      if (block_info.type() == MatrixBlockType::NestedBlockDiagonal)
+      {
+        for (auto & sub : block_info.nested_blocks())
+        {
+          if (isDataBlock(sub.type()))
+          {
+            auto matrix_map = m_matrix_stack[matrix_stack_id];
+            sub.remap(matrix_map);
+            matrix_stack_id++;
+          }
+        }
+      }
+      else if (isDataBlock(block_info.type()))
       {
         auto matrix_map = m_matrix_stack[matrix_stack_id];
         block_info.remap(matrix_map);

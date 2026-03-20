@@ -31,8 +31,12 @@ namespace pinocchio
     /// Generic, dense block with arbitrary values.
     Plain = 16,
 
+    /// A block that is itself block-diagonal, composed of a list of sub-blocks.
+    /// Used to represent a pool of constraints as a single outer block.
+    NestedBlockDiagonal = 32,
+
     /// Undefined type.
-    Undefined = 32
+    Undefined = 64
   }; // enum class MatrixBlockType
 
   ///  @brief Block type tags
@@ -60,6 +64,7 @@ namespace pinocchio
   /// @brief Helper constexpr to test whether a block type implies raw non-trivial data.
   /// Example: Identity and Zero don't need to be associated to any data.
   /// On the contrary, ScalarIdentity, Diagonal and Plain are typically associated to some data.
+  /// NestedBlockDiagonal stores data only in its sub-blocks, not in the outer block itself.
   constexpr bool isDataBlock(MatrixBlockType type)
   {
     constexpr MatrixBlockType data_block_types = static_cast<MatrixBlockType>(
@@ -67,6 +72,12 @@ namespace pinocchio
       | static_cast<unsigned char>(MatrixBlockType::Diagonal)
       | static_cast<unsigned char>(MatrixBlockType::Plain));
     return hasFlag(type, data_block_types);
+  }
+
+  /// @brief Helper constexpr to test whether a block is a nested block-diagonal.
+  constexpr bool isNestedBlock(MatrixBlockType type)
+  {
+    return type == MatrixBlockType::NestedBlockDiagonal;
   }
 
 } // namespace pinocchio

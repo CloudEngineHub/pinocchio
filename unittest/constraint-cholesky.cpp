@@ -439,8 +439,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_contact6D_LOCAL)
     BOOST_CHECK(osim.isApprox(JMinvJt.inverse()));
 
     const MatrixXd rhs = MatrixXd::Random(12, 12);
-    BOOST_CHECK(contact_chol_decomposition.getDelassusCholeskyExpression().getDamping().isApprox(
-      Eigen::VectorXd::Zero(12)));
+    BOOST_CHECK(contact_chol_decomposition.getDelassusCholeskyExpression()
+                  .getDamping()
+                  .matrix()
+                  .isZero());
     const MatrixXd res_delassus = contact_chol_decomposition.getDelassusCholeskyExpression() * rhs;
     const MatrixXd res_delassus_ref = iosim * rhs;
 
@@ -1625,10 +1627,10 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_updateDamping)
     contact_chol_decomposition.rebuild(model, data, contact_models, contact_datas);
 
     contact_chol_decomposition.compute(model, data, contact_models, contact_datas, mu1);
-    BOOST_CHECK(contact_chol_decomposition.getDamping().isConstant(mu1));
+    BOOST_CHECK(contact_chol_decomposition.getDamping().diagonal().isConstant(mu1));
 
     contact_chol_decomposition.updateDamping(mu2);
-    BOOST_CHECK(contact_chol_decomposition.getDamping().isConstant(mu2));
+    BOOST_CHECK(contact_chol_decomposition.getDamping().diagonal().isConstant(mu2));
     contact_chol_decomposition.computeDelassusCholeskyDecomposition();
 
     ContactCholeskyDecomposition contact_chol_decomposition_ref;
@@ -1776,7 +1778,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_generic)
     BOOST_CHECK(contact_chol_decomposition.sizeInBytes() > 0);
     BOOST_CHECK(
       contact_chol_decomposition.sizeInBytes()
-      > sizeInBytes(contact_chol_decomposition.getDamping()));
+      > contact_chol_decomposition.getDamping().sizeInBytes());
     BOOST_CHECK(
       contact_chol_decomposition.sizeInBytes() == contact_chol_decomposition_ref.sizeInBytes());
   }
@@ -2030,7 +2032,7 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_with_compliance)
   compliance_vec.head(3) = Eigen::VectorXd::Constant(3, 6e-4);
   compliance_vec.tail(3) = Eigen::VectorXd::Constant(3, 7e-4);
 
-  BOOST_CHECK(delassus_chol.getDamping().isApprox(Eigen::VectorXd::Constant(6, mu)));
+  BOOST_CHECK(delassus_chol.getDamping().matrix().isApprox(mu * Eigen::MatrixXd::Identity(6, 6)));
   BOOST_CHECK(delassus_chol.getCompliance().isApprox(compliance_vec));
 
   const double new_mu = 1e-3;
@@ -2038,7 +2040,8 @@ BOOST_AUTO_TEST_CASE(contact_cholesky_model_with_compliance)
   const double new_compliance = 1e1;
   delassus_chol.updateCompliance(new_compliance);
 
-  BOOST_CHECK(delassus_chol.getDamping().isApprox(Eigen::VectorXd::Constant(6, new_mu)));
+  BOOST_CHECK(
+    delassus_chol.getDamping().matrix().isApprox(new_mu * Eigen::MatrixXd::Identity(6, 6)));
   BOOST_CHECK(delassus_chol.getCompliance().isApprox(Eigen::VectorXd::Constant(6, new_compliance)));
 }
 

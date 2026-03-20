@@ -49,36 +49,56 @@ namespace boost
       if (Archive::is_loading::value)
       {
         ar & make_nvp("index_map", index_map);
-        for (size_t k = 0; k < index_map.size(); ++k)
+        std::size_t idx = 0;
+        for (auto & block : m_matrix_block_elements)
         {
-          const auto index_value = index_map[k];
-          if (index_value == std::numeric_limits<std::size_t>::max())
-            continue;
-          auto & block = m_matrix_block_elements[k];
-
-          block.remap(matrix_.m_matrix_stack[index_value]);
+          if (block.type() == ::pinocchio::MatrixBlockType::NestedBlockDiagonal)
+          {
+            // Remap each sub-block; the outer NestedBlockDiagonal block itself has no data.
+            for (auto & sub : block.nested_blocks())
+            {
+              const auto index_value = index_map[idx++];
+              if (index_value != std::numeric_limits<std::size_t>::max())
+                sub.remap(matrix_.m_matrix_stack[index_value]);
+            }
+          }
+          else
+          {
+            const auto index_value = index_map[idx++];
+            if (index_value != std::numeric_limits<std::size_t>::max())
+              block.remap(matrix_.m_matrix_stack[index_value]);
+          }
         }
       }
       else
       {
         const auto & m_matrix_stack = matrix_.m_matrix_stack;
 
-        for (const auto & block : m_matrix_block_elements)
-        {
-          const auto block_data = block.data();
-          if (block_data != nullptr)
+        const auto push_data_index = [&](const void * data_ptr) {
+          if (data_ptr != nullptr)
           {
             const auto it = std::find_if(
               m_matrix_stack.begin(), m_matrix_stack.end(),
-              [&block_data](const auto & stack_elt) { return block_data == stack_elt.data(); });
-
+              [&data_ptr](const auto & stack_elt) { return data_ptr == stack_elt.data(); });
             assert(it != m_matrix_stack.end() && "must_never happened");
-
-            std::size_t stack_elt_index = std::size_t(std::distance(m_matrix_stack.begin(), it));
-            index_map.push_back(stack_elt_index);
+            index_map.push_back(std::size_t(std::distance(m_matrix_stack.begin(), it)));
           }
           else
             index_map.push_back(std::numeric_limits<std::size_t>::max());
+        };
+
+        for (const auto & block : m_matrix_block_elements)
+        {
+          if (block.type() == ::pinocchio::MatrixBlockType::NestedBlockDiagonal)
+          {
+            // The outer block has no data; push one entry per sub-block.
+            for (const auto & sub : block.nested_blocks())
+              push_data_index(sub.data());
+          }
+          else
+          {
+            push_data_index(block.data());
+          }
         }
 
         ar & make_nvp("index_map", index_map);

@@ -78,15 +78,14 @@ namespace pinocchio
       m_compliance = vector;
     }
 
-    /// \brief Fill the compliance of size residualSize relted to the courant state of the
+    /// \brief Fill the compliance of size residualSize related to the current state of the
     /// constraint
     template<typename VectorLike, ConstraintSelectionType Sel>
     void retrieveComplianceImpl(
       const Eigen::MatrixBase<VectorLike> & vector_, ConstraintSelectionTag<Sel> sel) const
     {
-      auto vector = vector_.const_cast_derived();
       PINOCCHIO_UNUSED_VARIABLE(sel);
-      vector = m_compliance;
+      vector_.const_cast_derived() = m_compliance;
     }
 
     /// \brief Returns the Baumgarte parameters internally stored in the constraint model

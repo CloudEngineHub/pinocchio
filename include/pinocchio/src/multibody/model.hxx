@@ -73,6 +73,11 @@ namespace pinocchio
     typedef std::vector<Inertia> InertiaVector;
     typedef std::vector<SE3> SE3Vector;
 
+    typedef Eigen::Matrix<bool, Eigen::Dynamic, 1, Options> BooleanVector;
+    typedef std::vector<Eigen::Index> EigenIndexVector;
+    typedef std::vector<BooleanVector> VectorOfBooleanVector;
+    typedef std::vector<EigenIndexVector> VectorOfEigenIndexVector;
+
     /// \brief Dense vectorized version of a joint configuration vector.
     typedef VectorXs ConfigVectorType;
 
@@ -224,6 +229,15 @@ namespace pinocchio
     /// The first element of subtree[j] is the index of the joint *j* itself.
     std::vector<IndexVector> subtrees;
 
+    /// \brief Sparsity pattern for each joint.
+    /// sparsity_pattern_vector[i] is a boolean vector of size nv indicating which columns
+    /// of the Jacobian are nonzero for joint i.
+    VectorOfBooleanVector sparsity_pattern_vector;
+
+    /// \brief Colwise span indexes for each joints.
+    /// span_indexes_vector[i] lists the column indexes of nonzero entries for joint i.
+    VectorOfEigenIndexVector span_indexes_vector;
+
     /// \brief Spatial gravity of the model.
     Motion gravity;
 
@@ -259,6 +273,8 @@ namespace pinocchio
     , supports(1, IndexVector(1, 0))
     , mimic_joint_supports(1, IndexVector(1, 0))
     , subtrees(1)
+    , sparsity_pattern_vector(1)
+    , span_indexes_vector(1)
     , gravity(gravity981, Vector3::Zero())
     {
       names[0] = "universe"; // Should be "universe joint (trivial)"
@@ -909,6 +925,43 @@ namespace pinocchio
     supports.push_back(supports[parent]);
     supports[joint_id].push_back(joint_id);
 
+    // Resize existing BooleanVectors to the new nv, zero-initializing the new tail entries.
+    // conservativeResize alone does not initialize new elements.
+    if (joint_nq > 0 && joint_nv > 0)
+    {
+      for (auto & sparsity : sparsity_pattern_vector)
+      {
+        const Eigen::Index old_size = sparsity.size();
+        sparsity.conservativeResize(nv);
+        sparsity.tail(nv - old_size).setZero();
+      }
+    }
+
+    // Build sparsity pattern and span indexes of the new joint.
+    EigenIndexVector extended_support;
+    extended_support.reserve(size_t(nv));
+    const auto & jsupport = supports[joint_id];
+    for (size_t j = 1; j < jsupport.size() - 1; ++j)
+    {
+      const JointIndex jsupport_id = jsupport[j];
+      const int jsupport_nv = nvs[jsupport_id];
+      const int jsupport_idx_v = idx_vs[jsupport_id];
+      for (int k = 0; k < jsupport_nv; ++k)
+        extended_support.push_back(jsupport_idx_v + k);
+    }
+    for (int k = 0; k < joint_nv; ++k)
+    {
+      extended_support.push_back(joint_idx_v + k);
+    }
+
+    BooleanVector sparsity_pattern = BooleanVector::Zero(nv);
+    for (const auto col_id : extended_support)
+      sparsity_pattern[col_id] = true;
+
+    sparsity_pattern_vector.push_back(std::move(sparsity_pattern));
+    span_indexes_vector.push_back(std::move(extended_support));
+
+    // Update mimicking.
     mimic_joint_supports.push_back(mimic_joint_supports[parent]);
     if (
       const auto & jmodel_ =
@@ -1078,7 +1131,8 @@ namespace pinocchio
     res.mimicked_joints = mimicked_joints;
     res.gravity = gravity.template cast<NewScalar>();
     res.name = name;
-
+    res.sparsity_pattern_vector = sparsity_pattern_vector;
+    res.span_indexes_vector = span_indexes_vector;
     res.idx_qs = idx_qs;
     res.nqs = nqs;
     res.idx_vs = idx_vs;
@@ -1180,6 +1234,8 @@ namespace pinocchio
     this->mimicked_joints = other.mimicked_joints;
     this->gravity = other.gravity;
     this->name = other.name;
+    this->sparsity_pattern_vector = other.sparsity_pattern_vector;
+    this->span_indexes_vector = other.span_indexes_vector;
     return *this;
   }
 
@@ -1190,6 +1246,8 @@ namespace pinocchio
                && other.njoints == njoints && other.nbodies == nbodies && other.nframes == nframes
                && other.parents == parents && other.children == children && other.names == names
                && other.subtrees == subtrees && other.mimic_joint_supports == mimic_joint_supports
+               && other.sparsity_pattern_vector == sparsity_pattern_vector
+               && other.span_indexes_vector == span_indexes_vector
                && other.mimicking_joints == mimicking_joints
                && other.mimicked_joints == mimicked_joints && other.gravity == gravity
                && other.name == name;

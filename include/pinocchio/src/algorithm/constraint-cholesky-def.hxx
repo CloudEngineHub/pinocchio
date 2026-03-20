@@ -124,10 +124,10 @@ namespace pinocchio
       const auto & cdata = helper::get_ref(constraint_datas[i]);
       for (Eigen::Index k = 0; k < cmodel.residualSize(); ++k, row_id++)
       {
-        const auto & row_active_indexes = cmodel.getRowIndexes(model, data, cdata, k);
+        cmodel.getRowIndexes(model, data, cdata, k, m_scratch_row_indexes);
         nv_subtree_fromRow[row_id] =
           total_constraint_size - row_id + 1
-          + (row_active_indexes.size() > 0 ? row_active_indexes.back() : 0);
+          + (m_scratch_row_indexes.size() > 0 ? m_scratch_row_indexes.back() : 0);
       }
     }
     assert(row_id == total_constraint_size);
@@ -145,7 +145,6 @@ namespace pinocchio
               ++it, ++constraint_id)
           {
             const RigidConstraintModel & cmodel = *it;
-            const BooleanVector & joint1_indexes_ee = cmodel.colwise_joint1_sparsity;
             const Eigen::Index contact_dim = cmodel.size();
 
             for(Eigen::Index k = 0; k < contact_dim; ++k)
@@ -180,8 +179,6 @@ namespace pinocchio
 
     // Allocate Eigen memory if needed
     compliance_storage.resize(total_constraint_size);
-    damping_storage.resize(total_constraint_size);
-    sum_compliance_damping_storage.resize(total_constraint_size);
 
     D_storage.resize(total_size);
     Dinv_storage.resize(total_size);
@@ -291,9 +288,9 @@ namespace pinocchio
         for (Eigen::Index constraint_row_id = constraint_size - 1; constraint_row_id >= 0;
              --constraint_row_id, --current_row)
         {
-          const auto & colwise_sparsity =
-            cmodel.getRowSparsityPattern(model, data, cdata, constraint_row_id);
-          if (colwise_sparsity[j])
+          cmodel.getRowSparsityPattern(
+            model, data, cdata, constraint_row_id, m_scratch_colwise_sparsity);
+          if (m_scratch_colwise_sparsity[j])
           {
             U(current_row, jj) -= U.row(current_row).segment(jj + 1, NVT).dot(DUt_partial);
             U(current_row, jj) *= Dinv[jj];
@@ -369,8 +366,10 @@ namespace pinocchio
 
     auto U_delassus_block = U.topLeftCorner(constraint_size, constraint_size);
     U_delassus_block.diagonal().setOnes();
-    // U_delassus_block.template triangularView<Eigen::StrictlyLower>() = delassus_block.template
-    // triangularView<Eigen::StrictlyLower>();
+
+    // Temporarily bake compliance+damping into delassus_block so the LDLT loop
+    // captures full block contributions (including off-diagonal within each block).
+    m_sum_compliance_damping.addTo(delassus_block);
 
     // Upper left triangular part of U
     for (Eigen::Index j = constraint_size - 1; j >= 0; --j)
@@ -381,7 +380,7 @@ namespace pinocchio
       DUt_partial.noalias() =
         U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
 
-      D[j] = -delassus_block(j, j) - sum_compliance_damping[j]
+      D[j] = -delassus_block(j, j)
              - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
 
       assert(
@@ -396,13 +395,16 @@ namespace pinocchio
       }
     }
 
+    // Restore delassus_block to its pure form (without compliance+damping).
+    m_sum_compliance_damping.subTo(delassus_block);
+
     decomposition_dirty = false;
   }
 
   template<typename Scalar, int Options>
   void ContactCholeskyDecompositionTpl<Scalar, Options>::updateSumComplianceDamping()
   {
-    sum_compliance_damping = damping + compliance;
+    m_sum_compliance_damping = m_damping + compliance.asDiagonal();
     decomposition_dirty = true;
   }
 
@@ -411,7 +413,7 @@ namespace pinocchio
   void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
     const Eigen::MatrixBase<VectorLike> & damping_vector)
   {
-    damping = damping_vector;
+    m_damping = damping_vector.asDiagonal();
     updateSumComplianceDamping();
   }
 
@@ -420,7 +422,30 @@ namespace pinocchio
   {
     //      PINOCCHIO_CHECK_INPUT_ARGUMENT(check_expression_if_real<Scalar>(mu >= 0), "mu should be
     //      positive.");
-    updateDamping(Vector::Constant(constraintDim(), mu));
+    m_damping = BlockDiagonalMatrix::ScalarIdentity(constraintDim(), mu);
+    updateSumComplianceDamping();
+  }
+
+  template<typename Scalar, int Options>
+  template<int OtherOptions, std::size_t OtherAlignment>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+    const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
+  {
+    if (&block_damping == &m_damping)
+      return;
+    m_damping = block_damping;
+    updateSumComplianceDamping();
+  }
+
+  template<typename Scalar, int Options>
+  template<int OtherOptions, std::size_t OtherAlignment>
+  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+    BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
+  {
+    if (&block_damping == &m_damping)
+      return;
+    m_damping = std::move(block_damping);
+    updateSumComplianceDamping();
   }
 
   template<typename Scalar, int Options>
@@ -828,10 +853,10 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::EigenStorageVector::ConstMapType
+  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::BlockDiagonalMatrix &
   ContactCholeskyDecompositionTpl<Scalar, Options>::getDamping() const
   {
-    return damping_storage.const_map();
+    return m_damping;
   }
 
   template<typename Scalar, int Options>
@@ -997,8 +1022,8 @@ namespace pinocchio
   std::size_t ContactCholeskyDecompositionTpl<Scalar, Options>::sizeInBytes() const
   {
     return U_storage.sizeInBytes() + D_storage.sizeInBytes() + Dinv_storage.sizeInBytes()
-           + compliance_storage.sizeInBytes() + damping_storage.sizeInBytes()
-           + sum_compliance_damping_storage.sizeInBytes() + delassus_block_storage.sizeInBytes()
+           + compliance_storage.sizeInBytes() + m_damping.sizeInBytes()
+           + m_sum_compliance_damping.sizeInBytes() + delassus_block_storage.sizeInBytes()
            + pinocchio::sizeInBytes(parents_fromRow) + pinocchio::sizeInBytes(nv_subtree_fromRow)
       // + pinocchio::sizeInBytes(rowise_sparsity_pattern)
       ;

@@ -127,4 +127,29 @@ BOOST_AUTO_TEST_CASE(block_diagonal_matrix)
     block_diagonal_matrix, TEST_SERIALIZATION_FOLDER "/Container", "block_diagonal_matrix");
 }
 
+BOOST_AUTO_TEST_CASE(block_diagonal_matrix_nested)
+{
+  typedef pinocchio::BlockDiagonalMatrix::MatrixBlockElement MatrixBlockElement;
+
+  const Eigen::Index flat_diag_size = 3;
+  const Eigen::Index sub_diag_size = 2;
+  const Eigen::Index sub_plain_size = 4;
+
+  // Build a BDM with one flat Diagonal block and one NestedBlockDiagonal block
+  // (containing a Diagonal sub-block and a Plain sub-block).
+  MatrixBlockElement flat_block(pinocchio::MatrixBlockType::Diagonal, flat_diag_size);
+
+  std::vector<MatrixBlockElement> subs;
+  subs.emplace_back(pinocchio::MatrixBlockType::Diagonal, sub_diag_size);
+  subs.emplace_back(pinocchio::MatrixBlockType::Plain, sub_plain_size);
+  MatrixBlockElement nested_block(pinocchio::MatrixBlockType::NestedBlockDiagonal, std::move(subs));
+
+  pinocchio::BlockDiagonalMatrix block_diagonal_matrix({flat_block, nested_block});
+  for (auto & block : block_diagonal_matrix.blocks())
+    block.setRandom();
+
+  generic_test(
+    block_diagonal_matrix, TEST_SERIALIZATION_FOLDER "/Container", "block_diagonal_matrix_nested");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

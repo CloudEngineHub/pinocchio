@@ -24,7 +24,7 @@ class TestPGS(TestCase):
         tau0 = np.zeros(model.nv)
         fext = [pin.Force.Zero() for _ in range(model.njoints)]
         dt = 1e-3
-        delassus, g, constraint_datas = self.setupTest(
+        delassus_matrix, g, constraint_datas = self.setupTest(
             model, constraint_models, q0, v0, tau0, fext, dt
         )
         dim_pb = g.shape[0]
@@ -35,6 +35,7 @@ class TestPGS(TestCase):
         settings.absolute_complementarity_tol = 1e-13
         settings.relative_complementarity_tol = 1e-14
         result = pin.PGSSolverResult()
+        delassus = pin.DelassusOperatorDense(delassus_matrix)
         solver.solve(delassus, g, constraint_models, constraint_datas, settings, result)
 
     @unittest.skipUnless(coal_found, "Needs Coal.")

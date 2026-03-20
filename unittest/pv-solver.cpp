@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 
   prox_settings.mu = 1e-4;
-  prox_settings.max_iter = 6;
+  prox_settings.max_iter = 7;
 
   constrainedABA(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));

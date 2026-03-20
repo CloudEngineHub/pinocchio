@@ -110,12 +110,6 @@ namespace boost
       ar & make_nvp("desired_constraint_offset", cmodel.desired_constraint_offset);
       ar & make_nvp("desired_constraint_velocity", cmodel.desired_constraint_velocity);
       ar & make_nvp("desired_constraint_acceleration", cmodel.desired_constraint_acceleration);
-      ar & make_nvp("colwise_joint1_sparsity", cmodel.colwise_joint1_sparsity);
-      ar & make_nvp("colwise_joint2_sparsity", cmodel.colwise_joint2_sparsity);
-      ar & make_nvp("joint1_span_indexes", cmodel.joint1_span_indexes);
-      ar & make_nvp("joint2_span_indexes", cmodel.joint2_span_indexes);
-      ar & make_nvp("colwise_sparsity", cmodel.colwise_sparsity);
-      ar & make_nvp("colwise_span_indexes", cmodel.colwise_span_indexes);
       ar & make_nvp("nv", cmodel.nv);
       ar & make_nvp("depth_joint1", cmodel.depth_joint1);
       ar & make_nvp("depth_joint2", cmodel.depth_joint2);
@@ -172,8 +166,6 @@ namespace boost
         using Base::m_selected_joint_nqs;
         using Base::m_selected_joint_nvs;
         using Base::m_selected_joints;
-        using Base::m_selected_row_indexes;
-        using Base::m_selected_row_sparsity_pattern;
       };
     } // namespace internal
 
@@ -193,8 +185,6 @@ namespace boost
       typedef internal::JointLimitConstraintModelAccessor<Scalar, Options> Accessor;
       auto & cmodel_ = reinterpret_cast<Accessor &>(cmodel);
       ar & make_nvp("m_selected_joints", cmodel_.m_selected_joints);
-      ar & make_nvp("m_selected_row_sparsity_pattern", cmodel_.m_selected_row_sparsity_pattern);
-      ar & make_nvp("m_selected_row_indexes", cmodel_.m_selected_row_indexes);
       ar & make_nvp("m_selected_joint_nqs", cmodel_.m_selected_joint_nqs);
       ar & make_nvp("m_selected_joint_nvs", cmodel_.m_selected_joint_nvs);
       ar & make_nvp("m_selected_joint_idx_vs", cmodel_.m_selected_joint_idx_vs);
@@ -222,11 +212,10 @@ namespace boost
       {
         typedef ::pinocchio::JointFrictionConstraintModelTpl<Scalar, Options> Base;
         using Base::m_active_dofs;
+        using Base::m_active_joint_ids;
         using Base::m_active_joints;
         using Base::m_friction_lower_limit;
         using Base::m_friction_upper_limit;
-        using Base::m_row_active_indexes;
-        using Base::m_row_sparsity_pattern;
       };
     } // namespace internal
 
@@ -247,8 +236,7 @@ namespace boost
       auto & cmodel_ = reinterpret_cast<Accessor &>(cmodel);
       ar & make_nvp("m_active_joints", cmodel_.m_active_joints);
       ar & make_nvp("m_active_dofs", cmodel_.m_active_dofs);
-      ar & make_nvp("m_row_sparsity_pattern", cmodel_.m_row_sparsity_pattern);
-      ar & make_nvp("m_row_active_indexes", cmodel_.m_row_active_indexes);
+      ar & make_nvp("m_active_joint_ids", cmodel_.m_active_joint_ids);
       ar & make_nvp("friction_lower_limit", cmodel_.m_friction_lower_limit);
       ar & make_nvp("friction_upper_limit", cmodel_.m_friction_upper_limit);
     }

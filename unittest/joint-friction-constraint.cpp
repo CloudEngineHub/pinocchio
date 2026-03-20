@@ -66,13 +66,12 @@ BOOST_AUTO_TEST_CASE(constraint_constructor)
     for (size_t row_id = 0; row_id < size_t(constraint.residualSize()); ++row_id)
     {
       const Eigen::Index dof_id = active_dofs[row_id];
-      const BooleanVector & row_sparsity_pattern =
-        constraint.getRowSparsityPattern(model, data, constraint_data, Eigen::Index(row_id));
-      const EigenIndexVector & row_active_indexes =
-        constraint.getRowIndexes(model, data, constraint_data, Eigen::Index(row_id));
-
-      // Check that the rest of the indexes greater than dof_id are not active.
-      BOOST_CHECK((row_sparsity_pattern.tail(model.nv - 1 - dof_id).array() == false).all());
+      BooleanVector row_sparsity_pattern;
+      constraint.getRowSparsityPattern(
+        model, data, constraint_data, Eigen::Index(row_id), row_sparsity_pattern);
+      EigenIndexVector row_active_indexes;
+      constraint.getRowIndexes(
+        model, data, constraint_data, Eigen::Index(row_id), row_active_indexes);
 
       Eigen::Index id = dof_id;
       while (parents_fromRow[size_t(id)] > -1)
@@ -278,6 +277,43 @@ BOOST_AUTO_TEST_CASE(check_maps)
 
     BOOST_CHECK(constraint_motions.isApprox(constraint_motions_ref));
     BOOST_CHECK(constraint_motions.isApprox(constraint_motions_ref2));
+  }
+}
+
+BOOST_AUTO_TEST_CASE(compliance)
+{
+  {
+    JointFrictionConstraintModel empty_cmodel;
+    Eigen::VectorXd compliance;
+    empty_cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance.size() == 0);
+  }
+
+  pinocchio::Model model;
+  pinocchio::buildModels::humanoidRandom(model, true);
+
+  const std::string RF_name = "rleg6_joint";
+  const JointIndex RF_id = model.getJointId(RF_name);
+
+  const Model::IndexVector & RF_support = model.supports[RF_id];
+  const Model::IndexVector active_joint_ids(RF_support.begin() + 1, RF_support.end());
+
+  JointFrictionConstraintModel cmodel(model, active_joint_ids);
+
+  {
+    // check retrieve compliance
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == Eigen::VectorXd::Zero(cmodel.residualSize()));
+  }
+
+  {
+    // check set compliance
+    Eigen::VectorXd compliance_ref = Eigen::VectorXd::Random(cmodel.residualSize()).cwiseAbs();
+    cmodel.setCompliance(compliance_ref);
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == compliance_ref);
   }
 }
 

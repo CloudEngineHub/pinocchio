@@ -93,6 +93,8 @@ namespace pinocchio
     // Base usage ---------------------------------------------------
     using Base::getA1;
     using Base::getA2;
+    using Base::joint1_id;
+    using Base::joint2_id;
     using RootBase::jacobianMatrixProduct;
     using RootBase::jacobianTransposeMatrixProduct;
     using RootBase::residualSize;
@@ -451,6 +453,9 @@ namespace pinocchio
       typedef DataTpl<Scalar, OtherOptions, JointCollectionTpl> Data;
       JacobianMatrix & jacobian_matrix = _jacobian_matrix.const_cast_derived();
 
+      auto & colwise_joint1_sparsity = model.sparsity_pattern_vector[joint1_id];
+      auto & colwise_joint2_sparsity = model.sparsity_pattern_vector[joint2_id];
+
       const SE3 & oMc1 = cdata.oMc1;
       const SE3 & oMc2 = cdata.oMc2;
       const SE3 & c1Mc2 = cdata.c1Mc2;
@@ -458,21 +463,21 @@ namespace pinocchio
 
       for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
-        if (this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj])
+        if (colwise_joint1_sparsity[jj] || colwise_joint2_sparsity[jj])
         {
           typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
           const ConstColXpr Jcol = data.J.col(jj);
           const MotionRef<const ConstColXpr> Jcol_motion(Jcol);
 
           jacobian_matrix.col(jj).setZero();
-          if (this->colwise_joint1_sparsity[jj])
+          if (colwise_joint1_sparsity[jj])
           {
             const Motion Jcol_local(oMc1.actInv(Jcol_motion)); // TODO: simplify computations
             jacobian_matrix.col(jj).noalias() -= Jcol_local.linear();
             jacobian_matrix.col(jj).noalias() += -Jcol_local.angular().cross(position_error);
           }
 
-          if (this->colwise_joint2_sparsity[jj])
+          if (colwise_joint2_sparsity[jj])
           {
             const Motion Jcol_local(oMc2.actInv(Jcol_motion)); // TODO: simplify computations
             jacobian_matrix.col(jj) += c1Mc2.rotation() * Jcol_local.linear();
@@ -536,21 +541,24 @@ namespace pinocchio
       const auto & A1 = cdata.A1_world;
       const auto & A2 = cdata.A2_world;
 
+      auto & colwise_joint1_sparsity = model.sparsity_pattern_vector[joint1_id];
+      auto & colwise_joint2_sparsity = model.sparsity_pattern_vector[joint2_id];
+
       const auto & A = cdata.A_world;
       for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
-        if (!(this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj]))
+        if (!(colwise_joint1_sparsity[jj] || colwise_joint2_sparsity[jj]))
           continue;
         Vector3 AxSi;
 
         typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
         const ConstColXpr Jcol = data.J.col(jj);
 
-        if (this->colwise_joint1_sparsity[jj] && this->colwise_joint2_sparsity[jj])
+        if (colwise_joint1_sparsity[jj] && colwise_joint2_sparsity[jj])
         {
           AxSi.noalias() = A * Jcol;
         }
-        else if (this->colwise_joint1_sparsity[jj])
+        else if (colwise_joint1_sparsity[jj])
           AxSi.noalias() = A1 * Jcol;
         else
           AxSi.noalias() = A2 * Jcol;
@@ -611,21 +619,24 @@ namespace pinocchio
       const auto & A1 = cdata.A1_world;
       const auto & A2 = cdata.A2_world;
 
+      auto & colwise_joint1_sparsity = model.sparsity_pattern_vector[joint1_id];
+      auto & colwise_joint2_sparsity = model.sparsity_pattern_vector[joint2_id];
+
       const auto & A = cdata.A_world;
       for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
-        if (!(this->colwise_joint1_sparsity[jj] || this->colwise_joint2_sparsity[jj]))
+        if (!(colwise_joint1_sparsity[jj] || colwise_joint2_sparsity[jj]))
           continue;
         Vector3 AxSi;
 
         typedef typename Data::Matrix6x::ConstColXpr ConstColXpr;
         const ConstColXpr Jcol = data.J.col(jj);
 
-        if (this->colwise_joint1_sparsity[jj] && this->colwise_joint2_sparsity[jj])
+        if (colwise_joint1_sparsity[jj] && colwise_joint2_sparsity[jj])
         {
           AxSi.noalias() = A * Jcol;
         }
-        else if (this->colwise_joint1_sparsity[jj])
+        else if (colwise_joint1_sparsity[jj])
           AxSi.noalias() = A1 * Jcol;
         else
           AxSi.noalias() = A2 * Jcol;
@@ -793,12 +804,9 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id) const
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
     {
-      const auto & constraint_inertia = constraint_inertias[inner_constraint_id];
-
       assert(constraint_inertia.size() == 3);
       switch (constraint_inertia.type())
       {
@@ -832,10 +840,9 @@ namespace pinocchio
       }
       default:
         assert(false && "Should never happened");
+        PINOCCHIO_THROW_PRETTY(
+          std::invalid_argument, "Invalid MatrixBlockType for PointConstraintModelBase.");
       }
-
-      // increment inner constraint id counter
-      ++inner_constraint_id;
     }
 
     /// \copydoc Base::getA1

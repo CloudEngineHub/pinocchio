@@ -331,24 +331,26 @@ namespace pinocchio
 
     /// \copydoc RootBase::getRowSparsityPattern
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const BooleanVector & getRowSparsityPatternImpl(
+    void getRowSparsityPatternImpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      BooleanVector & result) const
     {
-      return ::pinocchio::visitors::getRowSparsityPattern(*this, model, data, cdata, row_id);
+      ::pinocchio::visitors::getRowSparsityPattern(*this, model, data, cdata, row_id, result);
     }
 
     /// \copydoc RootBase::getRowIndexes
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const EigenIndexVector & getRowIndexesImpl(
+    void getRowIndexesImpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      EigenIndexVector & result) const
     {
-      return ::pinocchio::visitors::getRowIndexes(*this, model, data, cdata, row_id);
+      ::pinocchio::visitors::getRowIndexes(*this, model, data, cdata, row_id, result);
     }
 
     /// \copydoc RootBase::jacobian
@@ -519,12 +521,11 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id) const
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
     {
       ::pinocchio::visitors::appendCouplingConstraintInertias(
-        *this, model, data, cdata, constraint_inertias, reference_frame, inner_constraint_id);
+        *this, model, data, cdata, constraint_inertia, reference_frame);
     }
   }; // struct ConstraintModelTpl
 

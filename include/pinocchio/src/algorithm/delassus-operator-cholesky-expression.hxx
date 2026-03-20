@@ -13,6 +13,10 @@
 
 namespace pinocchio
 {
+  // Forward declaration of Unsafe specialization.
+  template<typename _ContactCholeskyDecomposition>
+  struct Unsafe<DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition>>;
+
   template<typename ContactCholeskyDecomposition>
   struct traits<DelassusCholeskyExpressionTpl<ContactCholeskyDecomposition>>
   {
@@ -22,7 +26,38 @@ namespace pinocchio
     typedef typename ContactCholeskyDecomposition::Vector Vector;
 
     typedef typename ContactCholeskyDecomposition::EigenStorageVector EigenStorageVector;
-    typedef const typename EigenStorageVector::ConstMapType getDampingReturnType;
+    typedef typename ContactCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;
+    typedef const BlockDiagonalMatrix & getDampingReturnType;
+  };
+
+  /// \brief Unsafe version of DelassusCholeskyExpressionTpl.
+  /// Allows direct access to protected members for expert users.
+  template<typename _ContactCholeskyDecomposition>
+  struct Unsafe<DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition>>
+  {
+    typedef DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition> SafeSelf;
+    typedef typename SafeSelf::BlockDiagonalMatrix BlockDiagonalMatrix;
+
+    explicit Unsafe(SafeSelf & self)
+    : self(self)
+    {
+    }
+
+    /// \brief Signal the delassus that updateDecomposition() should be called.
+    /// This is typically called after damping has been directly modified via damping().
+    void makeDirty()
+    {
+      self.self.updateSumComplianceDamping();
+    }
+
+    /// \brief Direct access to the block diagonal damping.
+    BlockDiagonalMatrix & damping()
+    {
+      return self.self.m_damping;
+    }
+
+  protected:
+    SafeSelf & self;
   };
 
   // TODO(jcarpent): change const_cast usage.
@@ -38,6 +73,7 @@ namespace pinocchio
     typedef DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition> Self;
     typedef DelassusOperatorBase<Self> Base;
     typedef typename ContactCholeskyDecomposition::EigenStorageVector EigenStorageVector;
+    typedef typename ContactCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;
     static constexpr int Options = ContactCholeskyDecomposition::Options;
     typedef DelassusOperatorDenseTpl<Scalar, Options> DelassusOperatorDense;
 
@@ -48,6 +84,13 @@ namespace pinocchio
 
     static constexpr int RowsAtCompileTime =
       traits<DelassusCholeskyExpressionTpl>::RowsAtCompileTime;
+
+    /// \brief Cast this class to its unsafe version.
+    Unsafe<Self> unsafe()
+    {
+      return Unsafe<Self>(*this);
+    }
+    friend struct Unsafe<Self>;
 
     /// \brief Default constructor from a cholesky decomposition.
     explicit DelassusCholeskyExpressionTpl(ContactCholeskyDecomposition & self)
@@ -71,7 +114,8 @@ namespace pinocchio
       res.const_cast_derived().noalias() = self.delassus_block * x;
       if (with_damping)
       {
-        res.const_cast_derived().noalias() += self.sum_compliance_damping.asDiagonal() * x;
+        self.m_sum_compliance_damping.template applyOnTheRight<pinocchio::internal::add_assign_op>(
+          x, res.const_cast_derived());
       }
       else
       {
@@ -184,7 +228,7 @@ namespace pinocchio
       Matrix res = self.getInverseOperationalSpaceInertiaMatrix(enforce_symmetry);
       if (!with_damping)
       {
-        res.diagonal() -= getDamping();
+        getDamping().subTo(res);
       }
       return res;
     }
@@ -199,7 +243,7 @@ namespace pinocchio
       self.getInverseOperationalSpaceInertiaMatrix(mat.const_cast_derived(), enforce_symmetry);
       if (!with_damping)
       {
-        mat.const_cast_derived().diagonal() -= getDamping();
+        getDamping().subTo(mat.const_cast_derived());
       }
     }
 
@@ -229,9 +273,9 @@ namespace pinocchio
     }
 
     ///
-    /// \brief Returns the current damping vector.
+    /// \brief Returns the current damping as a block diagonal matrix.
     ///
-    const typename EigenStorageVector::ConstMapType getDamping() const
+    const BlockDiagonalMatrix & getDamping() const
     {
       return self.getDamping();
     }
@@ -295,6 +339,26 @@ namespace pinocchio
     void updateDamping(const Scalar & mu)
     {
       const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mu);
+    }
+
+    ///
+    /// \brief Update the damping from a block diagonal matrix (copy overload).
+    ///
+    template<int OtherOptions, std::size_t OtherAlignment>
+    void updateDamping(
+      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
+    {
+      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(block_damping);
+    }
+
+    ///
+    /// \brief Update the damping from a block diagonal matrix (move overload).
+    ///
+    template<int OtherOptions, std::size_t OtherAlignment>
+    void
+    updateDamping(BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
+    {
+      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(std::move(block_damping));
     }
 
     /// \brief Returns the number of rows/cols of the Delassus.

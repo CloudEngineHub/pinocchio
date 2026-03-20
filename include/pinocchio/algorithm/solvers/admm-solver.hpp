@@ -98,6 +98,16 @@ namespace pinocchio
     AUTOMATIC = 'A',
   };
 
+  template<typename _Scalar, int _Options>
+  struct traits<ADMMConstraintSolverTpl<_Scalar, _Options>>
+  {
+    typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
+
+    typedef ADMMSolverSettingsTpl<Scalar> SolverSettings;
+    typedef ADMMSolverResultTpl<Scalar, Options> SolverResult;
+  };
+
   ///
   /// \brief ADMM constraint solver.
   ///
@@ -107,11 +117,14 @@ namespace pinocchio
   /// forces acting on the system and `C` are the constraint sets. If the `g` term is augmented with
   /// the DeSaxce term, the problem becomes an NCP.
   template<typename _Scalar, int _Options>
-  struct ADMMConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
+  struct ADMMConstraintSolverTpl : ConstraintSolverBase<ADMMConstraintSolverTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
-    typedef ConstraintSolverBaseTpl<_Scalar> Base;
+
+    typedef ADMMConstraintSolverTpl Self;
+    typedef ConstraintSolverBase<Self> Base;
+
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Ref<VectorXs> RefVectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
@@ -127,6 +140,8 @@ namespace pinocchio
     typedef internal::ADMMOSQPUpdateRuleTpl<Scalar> ADMMOSQPUpdateRule;
     typedef internal::ADMMLinearUpdateRuleTpl<Scalar> ADMMLinearUpdateRule;
     typedef internal::ADMMUpdateRuleContainerTpl<Scalar> ADMMUpdateRuleContainer;
+
+    using Base::reset;
 
     /// \brief Default constructor.
     /// \note The user can give `max_problem_size` to preallocate maximum problem sizes data.
@@ -146,19 +161,14 @@ namespace pinocchio
       reset();
     }
 
-    ///
-    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
-    /// constraint_datas).
-    ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
-    /// \param[in] g Free constraint acceleration or velocity associted with the constraint problem.
-    /// \param[in] constraint_models Vector of constraint models.
-    /// \param[in] constraint_datas Vector of constraint datas.
-    /// \param[in] settings Settings for the ADMM solver.
-    /// \param[in/out] result Solution to the constraint problem. Also contains the warmstart to
-    /// solve the problem.
-    ///
-    /// \returns True if the problem has converged.
+    /// \brief Returns true if solver is in a valid state (it has solved a constraint problem).
+    /// If so, its stats are valid.
+    bool isValid() const
+    {
+      return m_is_valid;
+    }
+
+    /// \brief \copydoc Base::solve
     template<
       typename DelassusDerived,
       typename VectorLike,
@@ -166,7 +176,7 @@ namespace pinocchio
       typename ConstraintModelAllocator,
       typename ConstraintData,
       typename ConstraintDataAllocator>
-    bool solve(
+    bool solveImpl(
       DelassusOperatorBase<DelassusDerived> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -174,19 +184,12 @@ namespace pinocchio
       const ADMMSolverSettings & settings,
       ADMMSolverResult & result);
 
-    /// \brief Reset the constraint solver as if it has never run.
-    void reset()
+    /// \brief \copydoc Base::reset
+    void resetImpl()
     {
       stats.reset();
       m_workspace.reset();
       m_is_valid = false;
-    }
-
-    /// \brief Returns true if solver is in a valid state (it has solved a constraint problem).
-    /// If so, its stats are valid.
-    bool isValid() const
-    {
-      return m_is_valid;
     }
 
 #ifdef PINOCCHIO_WITH_COLLISION
@@ -238,13 +241,20 @@ namespace pinocchio
       ADMMSolverWorkspace & workspace);
   }; // struct ADMMConstraintSolverTpl
 
+  template<typename _Scalar>
+  struct traits<ADMMSolverSettingsTpl<_Scalar>>
+  {
+    typedef _Scalar Scalar;
+  };
+
   ///
   /// \brief Settings for the ADMM constraint solver loop.
   template<typename _Scalar>
-  struct ADMMSolverSettingsTpl : ConstraintSolverSettingsBaseTpl<_Scalar>
+  struct ADMMSolverSettingsTpl : ConstraintSolverSettingsBase<ADMMSolverSettingsTpl<_Scalar>>
   {
     typedef _Scalar Scalar;
-    typedef ConstraintSolverSettingsBaseTpl<Scalar> Base;
+    typedef ADMMSolverSettingsTpl Self; 
+    typedef ConstraintSolverSettingsBase<Self> Base;
 
     /// \brief Default constructor
     ADMMSolverSettingsTpl(
@@ -308,10 +318,9 @@ namespace pinocchio
     {
     }
 
-    /// \brief Throws if settings are not valid.
-    void checkValidity() const
+    /// \brief \copydoc Base::checkValidity
+    void checkValidityImpl() const
     {
-      Base::checkValidity();
       if (rho_init)
       {
         PINOCCHIO_CHECK_INPUT_ARGUMENT(
@@ -443,57 +452,61 @@ namespace pinocchio
 
   }; // struct ADMMSolverSettingsTpl
 
+  template<typename _Scalar, int _Options>
+  struct traits<ADMMSolverResultTpl<_Scalar, _Options>>
+  {
+    typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
+  };
+
   ///
   /// \brief Struct describing the solution of the ADMM constraint solver
   /// after calling the `solve` method.
   /// Also contains the warmstart of the solution to the constraint problem.
   template<typename _Scalar, int _Options>
-  struct ADMMSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar>
+  struct ADMMSolverResultTpl : ConstraintSolverResultBase<ADMMSolverResultTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
-    typedef ConstraintSolverResultBaseTpl<Scalar> Base;
+    typedef ADMMSolverResultTpl Self;
+    typedef ConstraintSolverResultBase<Self> Base;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+    typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
 
-    using Base::isValid;
+    using Base::constraintSize;
 
     /// \brief Default constructor.
     ADMMSolverResultTpl()
     : Base()
     , problem_size(0)
     , delassus_decomposition_update_count(0)
-    , preconditioner(std::nullopt)
-    , primal_guess(std::nullopt)
-    , dual_guess(std::nullopt)
+    , impulse_guess(std::nullopt)
+    , velocity_guess(std::nullopt)
     , rho(std::numeric_limits<Scalar>::quiet_NaN())
     , spectral_rho_power(std::numeric_limits<Scalar>::quiet_NaN())
     , mu_prox(std::numeric_limits<Scalar>::quiet_NaN())
-    , x(x_storage.map())
-    , y(y_storage.map())
-    , z(z_storage.map())
-    , desaxce(desaxce_storage.map())
     {
     }
 
-    /// \brief Reset the results.
-    void reset(std::size_t problem_size_ = 0)
+    /// \brief \copydoc Base::constraintSize
+    int constraintSizeImpl() const
     {
-      Base::reset();
-      problem_size = problem_size_;
+      return static_cast<int>(problem_size);
+    }
+
+    /// \brief Reset the results.
+    void resetImpl()
+    {
       delassus_decomposition_update_count = 0;
 
-      preconditioner.reset();
-      primal_guess.reset();
-      dual_guess.reset();
+      impulse_guess.reset();
+      velocity_guess.reset();
 
       rho = std::numeric_limits<Scalar>::quiet_NaN();
       spectral_rho_power = std::numeric_limits<Scalar>::quiet_NaN();
       mu_prox = std::numeric_limits<Scalar>::quiet_NaN();
-
-      resize(problem_size);
 
       // set solution to nan - solver has not run
       x.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
@@ -548,21 +561,47 @@ namespace pinocchio
       desaxce_term = desaxce;
     }
 
-    /// \brief Retrieve constraint impulses.
+    /// \brief \copydoc Base::setConstraintImpulseGuess
+    template<typename VectorLike>
+    void setConstraintImpulseGuessImpl(const Eigen::MatrixBase<VectorLike> & impulse_guess_)
+    {
+      impulse_guess.emplace(impulse_guess_);
+    }
+
+    /// \brief \copydoc Base::clearConstraintImpulseGuess
+    void clearConstraintImpulseGuessImpl()
+    {
+      impulse_guess.reset();
+    }
+
+    /// \brief \copydoc Base::setConstraintVelocityGuess
+    template<typename VectorLike>
+    void setConstraintVelocityGuessImpl(const Eigen::MatrixBase<VectorLike> & velocity_guess_)
+    {
+      velocity_guess.emplace(velocity_guess_);
+    }
+
+    /// \brief \copydoc Base::clearConstraintVelocityGuess
+    void clearConstraintVelocityGuessImpl()
+    {
+      velocity_guess.reset();
+    }
+
+    /// \brief \copydoc Base::retrieveConstraintImpulses
     template<typename VectorLike>
     void
-    retrieveConstraintImpulses(const Eigen::MatrixBase<VectorLike> & constraint_impulses_) const
+    retrieveConstraintImpulsesImpl(const Eigen::MatrixBase<VectorLike> & constraint_impulses_) const
     {
       auto & constraint_impulses = constraint_impulses_.const_cast_derived();
       constraint_impulses = y;
     }
 
-    /// \brief Retrieve constraint velocities.
-    /// At the optimum we have Gx + g + desaxce - z = 0.
+    /// \brief \copydoc Base::retrieveConstraintImpulses 
+    /// \note At the optimum we have Gx + g + desaxce - z = 0.
     /// We have sigma = Gx + g and z = Gx + g + desaxce, thus sigma = z - desaxce,
     template<typename VectorLike>
     void
-    retrieveConstraintVelocities(const Eigen::MatrixBase<VectorLike> & constraint_velocities_) const
+    retrieveConstraintVelocitiesImpl(const Eigen::MatrixBase<VectorLike> & constraint_velocities_) const
     {
       auto & constraint_velocities = constraint_velocities_.const_cast_derived();
       constraint_velocities = z - desaxce;
@@ -592,14 +631,11 @@ namespace pinocchio
     // ----------------------
     // Solution warmstart
 
-    /// \brief Optional preconditioner. Not used yet.
-    std::optional<RefConstVectorXs> preconditioner;
-
     /// \brief Optional guess for the primal variable (impulses).
-    std::optional<RefConstVectorXs> primal_guess;
+    std::optional<RefConstVectorXs> impulse_guess;
 
     /// \brief Optional guess for the dual variable (velocities).
-    std::optional<RefConstVectorXs> dual_guess;
+    std::optional<RefConstVectorXs> velocity_guess;
 
     // ----------------------
     // Solution - output of the solver
@@ -618,28 +654,37 @@ namespace pinocchio
     /// \note Order of storage/map declaration is important!
     /// First declare the storage, then the map, otherwise map will point to nothing.
     VectorXsStorage x_storage;
-    typename VectorXsStorage::RefMapType x;
+    typename VectorXsStorage::RefMapType x = x_storage.map();
 
     /// \brief Primal solution projected onto constraints.
     VectorXsStorage y_storage;
-    typename VectorXsStorage::RefMapType y;
+    typename VectorXsStorage::RefMapType y = y_storage.map();
 
     /// \brief Dual solution.
     VectorXsStorage z_storage;
-    typename VectorXsStorage::RefMapType z;
+    typename VectorXsStorage::RefMapType z = z_storage.map();
 
     /// \brief Desaxce term of the solution.
     VectorXsStorage desaxce_storage;
-    typename VectorXsStorage::RefMapType desaxce;
+    typename VectorXsStorage::RefMapType desaxce = desaxce_storage.map();
   }; // struct ADMMSolverResultTpl
+
+  template<typename _Scalar>
+  struct traits<ADMMSolverStatsTpl<_Scalar>>
+  {
+    typedef _Scalar Scalar;
+  };
 
   ///
   /// \brief Struct to track per iteration progress of ADMM constraint solver.
   template<typename _Scalar>
-  struct ADMMSolverStatsTpl : ConstraintSolverStatsBaseTpl<_Scalar>
+  struct ADMMSolverStatsTpl : ConstraintSolverStatsBase<ADMMSolverStatsTpl<_Scalar>>
   {
     typedef _Scalar Scalar;
-    typedef ConstraintSolverStatsBaseTpl<Scalar> Base;
+    typedef ADMMSolverStatsTpl Self;
+    typedef ConstraintSolverStatsBase<Self> Base;
+
+    using Base::reserve;
 
     /// \brief Default constructor.
     ADMMSolverStatsTpl()
@@ -656,10 +701,9 @@ namespace pinocchio
       reserve(max_iterations);
     }
 
-    /// \brief Reserve enough storage for max_it iterations.
-    void reserve(std::size_t max_iterations)
+    /// \brief \copydoc Base::reserve
+    void reserveImpl(std::size_t max_iterations)
     {
-      Base::reserve(max_iterations);
       rho.reserve(max_iterations);
       mu_prox.reserve(max_iterations);
       anderson_size.reserve(max_iterations);
@@ -668,9 +712,8 @@ namespace pinocchio
     }
 
     /// \brief Reset stats.
-    void reset()
+    void resetImpl()
     {
-      Base::reset();
       rho.clear();
       mu_prox.clear();
       anderson_size.clear();
@@ -747,34 +790,14 @@ namespace pinocchio
           static_cast<Eigen::Index>(
             math::max(std::size_t(2), math::min(problem_size, lanczos_size))))
       , anderson_history(problem_size, anderson_capacity)
-      , x(x_storage.map())
-      , x_previous(x_previous_storage.map())
-      , x_anderson(x_anderson_storage.map())
-      , y(y_storage.map())
-      , y_previous(y_previous_storage.map())
-      , z(z_storage.map())
-      , z_previous(z_previous_storage.map())
-      , z_anderson(z_anderson_storage.map())
-      , desaxce(desaxce_storage.map())
-      , rhs(rhs_storage.map())
-      , tmp(tmp_storage.map())
-      , primal_feasibility_vector(primal_feasibility_vector_storage.map())
-      , anderson_primal_feasibility_vector(anderson_primal_feasibility_vector_storage.map())
-      , dual_feasibility_vector(dual_feasibility_vector_storage.map())
       {
-        reset(problem_size, lanczos_size, anderson_capacity);
+        resize(problem_size, lanczos_size, anderson_capacity);
+        reset();
       }
 
       /// \brief Reset the workspace.
-      void reset(
-        std::size_t problem_size_ = 0, //
-        std::size_t lanczos_size_ = 2, //
-        std::size_t anderson_capacity_ = 0)
+      void reset()
       {
-        problem_size = problem_size_;
-        lanczos_size = math::max(std::size_t(2), math::min(problem_size, lanczos_size_));
-        anderson_capacity = anderson_capacity_;
-
         delassus_decomposition_update_count = 0;
         delassus_smallest_eigenvalue.reset();
         delassus_largest_eigenvalue.reset();
@@ -782,8 +805,6 @@ namespace pinocchio
         rho = std::numeric_limits<Scalar>::quiet_NaN();
         spectral_rho_power = std::numeric_limits<Scalar>::quiet_NaN();
         mu_prox = std::numeric_limits<Scalar>::quiet_NaN();
-
-        resize(problem_size, lanczos_size, anderson_capacity);
 
 #ifndef NDEBUG
         // for debugging purposes
@@ -885,59 +906,59 @@ namespace pinocchio
 
       /// \brief Primal variable at current iteration.
       VectorXsStorage x_storage;
-      typename VectorXsStorage::RefMapType x;
+      typename VectorXsStorage::RefMapType x = x_storage.map();
 
       /// \brief Primal variable at previous iteration.
       VectorXsStorage x_previous_storage;
-      typename VectorXsStorage::RefMapType x_previous;
+      typename VectorXsStorage::RefMapType x_previous = x_previous_storage.map();
 
       /// \brief Anderson accelerated primal variable at current iteration.
       VectorXsStorage x_anderson_storage;
-      typename VectorXsStorage::RefMapType x_anderson;
+      typename VectorXsStorage::RefMapType x_anderson = x_anderson_storage.map();
 
       /// \brief Projected primal variable at current iteration.
       VectorXsStorage y_storage;
-      typename VectorXsStorage::RefMapType y;
+      typename VectorXsStorage::RefMapType y = y_storage.map();
 
       /// \brief Projected primal variable at previous iteration.
       VectorXsStorage y_previous_storage;
-      typename VectorXsStorage::RefMapType y_previous;
+      typename VectorXsStorage::RefMapType y_previous = y_previous_storage.map();
 
       /// \brief Dual variable at current iteration.
       VectorXsStorage z_storage;
-      typename VectorXsStorage::RefMapType z;
+      typename VectorXsStorage::RefMapType z = z_storage.map();
 
       /// \brief Dual variable at previous iteration.
       VectorXsStorage z_previous_storage;
-      typename VectorXsStorage::RefMapType z_previous;
+      typename VectorXsStorage::RefMapType z_previous = z_previous_storage.map();
 
       /// \brief Anderson accelerated dual variable at current iteration.
       VectorXsStorage z_anderson_storage;
-      typename VectorXsStorage::RefMapType z_anderson;
+      typename VectorXsStorage::RefMapType z_anderson = z_anderson_storage.map();
 
       /// \brief Desaxce correction (always 0 when solving CCP) at current iteration.
       VectorXsStorage desaxce_storage;
-      typename VectorXsStorage::RefMapType desaxce;
+      typename VectorXsStorage::RefMapType desaxce = desaxce_storage.map();
 
       /// \brief Temporary variable for solving linear system.
       VectorXsStorage rhs_storage;
-      typename VectorXsStorage::RefMapType rhs;
+      typename VectorXsStorage::RefMapType rhs = rhs_storage.map();
 
       /// \brief Temporary variable for holding various vectors.
       VectorXsStorage tmp_storage;
-      typename VectorXsStorage::RefMapType tmp;
+      typename VectorXsStorage::RefMapType tmp = tmp_storage.map();
 
       /// \brief Primal feasibility vector at current iteration.
       VectorXsStorage primal_feasibility_vector_storage;
-      typename VectorXsStorage::RefMapType primal_feasibility_vector;
+      typename VectorXsStorage::RefMapType primal_feasibility_vector = primal_feasibility_vector_storage.map();
 
       /// \brief Anderson related primal feasibility vector at current iteration.
       VectorXsStorage anderson_primal_feasibility_vector_storage;
-      typename VectorXsStorage::RefMapType anderson_primal_feasibility_vector;
+      typename VectorXsStorage::RefMapType anderson_primal_feasibility_vector = anderson_primal_feasibility_vector_storage.map();
 
       /// \brief Dual feasibility vector at current iteration.
       VectorXsStorage dual_feasibility_vector_storage;
-      typename VectorXsStorage::RefMapType dual_feasibility_vector;
+      typename VectorXsStorage::RefMapType dual_feasibility_vector = dual_feasibility_vector_storage.map();
     }; // struct ADMMSolverWorkspaceTpl
 
     ///

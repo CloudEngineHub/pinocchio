@@ -21,7 +21,7 @@ namespace pinocchio
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  bool ADMMConstraintSolverTpl<_Scalar, _Options>::solve(
+  bool ADMMConstraintSolverTpl<_Scalar, _Options>::solveImpl(
     DelassusOperatorBase<DelassusDerived> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -47,7 +47,8 @@ namespace pinocchio
     settings.checkValidity();
 
     // -- reset workspace
-    ws.reset(problem_size, settings.lanczos_size, settings.anderson_capacity);
+    ws.resize(problem_size, settings.lanczos_size, settings.anderson_capacity);
+    ws.reset();
     assert(ws.problem_size == problem_size);
     assert(ws.x.size() == np);
 
@@ -70,7 +71,8 @@ namespace pinocchio
       ws.mu_prox = ws.rho;
       break;
     }
-    res.reset(problem_size);
+    res.resize(problem_size);
+    res.reset();
     assert(res.isValid() == false);
     assert(res.problem_size == problem_size);
     assert(res.iterations == 0);
@@ -593,22 +595,24 @@ namespace pinocchio
     ws.delassus_decomposition_update_count++;
 
     // check if primal/dual have been given
-    bool has_primal_guess = res.primal_guess.has_value();
-    if (has_primal_guess)
+    bool has_impulse_guess = res.impulse_guess.has_value();
+    PINOCCHIO_THROW_PRETTY_IF(has_impulse_guess && (res.impulse_guess.value().size() != ws.x.size()), std::runtime_error, "Impulse guess given to ADMM is of incorrect size.");
+    if (has_impulse_guess)
     {
       // primal guess given but we need to check for size
-      if (res.primal_guess.value().size() != ws.x.size())
+      if (res.impulse_guess.value().size() != ws.x.size())
       {
-        has_primal_guess = false;
+        has_impulse_guess = false;
       }
     }
 
-    bool has_dual_guess = res.dual_guess.has_value();
-    if (has_dual_guess)
+    bool has_velocity_guess = res.velocity_guess.has_value();
+    PINOCCHIO_THROW_PRETTY_IF(has_velocity_guess && (res.velocity_guess.value().size() != ws.z.size()), std::runtime_error, "Velocity guess given to ADMM is of incorrect size.");
+    if (has_velocity_guess)
     {
-      if (res.dual_guess.value().size() != ws.z.size())
+      if (res.velocity_guess.value().size() != ws.z.size())
       {
-        has_dual_guess = false;
+        has_velocity_guess = false;
       }
     }
 
@@ -616,24 +620,24 @@ namespace pinocchio
     // If both primal and dual guesses are given, the solver uses both.
     // If one is given but not the other, the solver will compute the missing one using the given
     // one.
-    if (has_primal_guess)
+    if (has_impulse_guess)
     {
-      if (has_dual_guess)
+      if (has_velocity_guess)
       {
-        ws.z = res.dual_guess.value();
+        ws.z = res.velocity_guess.value();
         if (settings.solve_ncp)
         {
           // Add De Saxé shift
           internal::computeDeSaxeCorrection(constraint_models, constraint_datas, ws.z, ws.desaxce);
           ws.z += ws.desaxce;
         }
-        ws.x = res.primal_guess.value();
+        ws.x = res.impulse_guess.value();
         internal::computeConstraintSetProjection(constraint_models, constraint_datas, ws.x, ws.y);
       }
       else
       {
         // Warm-start dual variable using primal guess
-        ws.x = res.primal_guess.value();
+        ws.x = res.impulse_guess.value();
         internal::computeConstraintSetProjection(constraint_models, constraint_datas, ws.x, ws.y);
         G.applyOnTheRight(ws.y, ws.z, false /*no damping*/);
         ws.z.noalias() += g;
@@ -647,10 +651,10 @@ namespace pinocchio
     }
     else
     {
-      if (has_dual_guess)
+      if (has_velocity_guess)
       {
         // Warm-start primal variable using dual guess
-        ws.z = res.dual_guess.value();
+        ws.z = res.velocity_guess.value();
         if (settings.solve_ncp)
         {
           internal::computeDeSaxeCorrection(constraint_models, constraint_datas, ws.z, ws.desaxce);
@@ -763,11 +767,11 @@ namespace pinocchio
     ADMMConstraintSolverTpl<context::Scalar, context::Options>;
 
   // -------------------------------------------------------------------------
-  // solve() with DelassusOperatorDense + default constraint collection
+  // solveImpl() with DelassusOperatorDense + default constraint collection
   // -------------------------------------------------------------------------
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
-  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solve<
+  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
     DelassusOperatorDenseTpl<context::Scalar, context::Options>,
     context::VectorXs,
     ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
@@ -790,11 +794,11 @@ namespace pinocchio
     ADMMSolverResultTpl<context::Scalar, context::Options> &);
 
   // -------------------------------------------------------------------------
-  // solve() with DelassusCholeskyExpression + default constraint collection
+  // solveImpl() with DelassusCholeskyExpression + default constraint collection
   // -------------------------------------------------------------------------
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
-  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solve<
+  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
     DelassusCholeskyExpressionTpl<
       ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>,
     context::VectorXs,
@@ -819,11 +823,11 @@ namespace pinocchio
     ADMMSolverResultTpl<context::Scalar, context::Options> &);
 
   // -------------------------------------------------------------------------
-  // solve() with DelassusOperatorRigidBodySystems + default constraint collection
+  // solveImpl() with DelassusOperatorRigidBodySystems + default constraint collection
   // -------------------------------------------------------------------------
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
-  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solve<
+  ADMMConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
     DelassusOperatorRigidBodySystemsTpl<
       context::Scalar,
       context::Options,

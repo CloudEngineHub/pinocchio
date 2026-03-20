@@ -15,21 +15,32 @@ namespace pinocchio
 {
 
   // fwd declaration for below
-  template<typename Scalar>
-  struct ConstraintSolverBaseTpl;
+  template<typename Derived>
+  struct ConstraintSolverBase;
 
-  template<typename _Scalar>
-  struct ConstraintSolverResultBaseTpl;
+  template<typename Derived>
+  struct ConstraintSolverResultBase;
 
   ///
   /// \brief Base struct for settings to pass to the solve method of a constraint solver.
-  template<typename _Scalar>
-  struct ConstraintSolverSettingsBaseTpl
+  template<typename Derived>
+  struct ConstraintSolverSettingsBase
   {
-    typedef _Scalar Scalar;
+    typedef typename traits<Derived>::Scalar Scalar;
+
+    /// \brief Cast to Derived.
+    Derived& derived()
+    {
+      return static_cast<Derived&>(*this);
+    }
+    /// \brief Const cast to Derived.
+    const Derived& derived() const
+    {
+      return static_cast<const Derived&>(*this);
+    }
 
     /// \brief Default constructor
-    ConstraintSolverSettingsBaseTpl(
+    ConstraintSolverSettingsBase(
       std::size_t max_iterations,
       Scalar absolute_feasibility_tol,
       Scalar relative_feasibility_tol,
@@ -64,6 +75,8 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         check_expression_if_real<Scalar>(relative_complementarity_tol >= Scalar(0)),
         "relative_complementarity_tol should be >= 0.");
+
+      derived().checkValidityImpl();
     }
 
     /// \brief Maximum number of iterations of the solver.
@@ -93,10 +106,10 @@ namespace pinocchio
   }; // struct ConstraintSolverSettingsBaseTpl
 
   /// \brief Unsafe version of ConstraintSolverResultBaseTpl
-  template<typename _Scalar>
-  struct Unsafe<ConstraintSolverResultBaseTpl<_Scalar>>
+  template<typename Derived>
+  struct Unsafe<ConstraintSolverResultBase<Derived>>
   {
-    typedef ConstraintSolverResultBaseTpl<_Scalar> SafeSelf;
+    typedef ConstraintSolverResultBase<Derived> SafeSelf;
 
     explicit Unsafe(SafeSelf & self)
     : self(self)
@@ -117,11 +130,22 @@ namespace pinocchio
 
   ///
   /// \brief Base struct for result of a constraint solver.
-  template<typename _Scalar>
-  struct ConstraintSolverResultBaseTpl
+  template<typename Derived>
+  struct ConstraintSolverResultBase
   {
-    typedef _Scalar Scalar;
-    typedef ConstraintSolverResultBaseTpl Self;
+    typedef typename traits<Derived>::Scalar Scalar;
+    typedef ConstraintSolverResultBase Self;
+
+    /// \brief Cast to Derived.
+    Derived& derived()
+    {
+      return static_cast<Derived&>(*this);
+    }
+    /// \brief Const cast to Derived.
+    const Derived& derived() const
+    {
+      return static_cast<const Derived&>(*this);
+    }
 
     /// \brief Cast this class to its unsafe version.
     Unsafe<Self> unsafe()
@@ -131,7 +155,7 @@ namespace pinocchio
     friend struct Unsafe<Self>;
 
     /// \brief Default constructor.
-    ConstraintSolverResultBaseTpl()
+    ConstraintSolverResultBase()
     : iterations(0)
     , converged(false)
     , primal_feasibility(std::numeric_limits<Scalar>::quiet_NaN())
@@ -151,6 +175,8 @@ namespace pinocchio
       complementarity = std::numeric_limits<Scalar>::quiet_NaN();
 
       m_is_valid = false;
+
+      derived().resetImpl();
     }
 
     /// \brief Returns true if the solution is in a valid state.
@@ -159,6 +185,54 @@ namespace pinocchio
     bool isValid() const
     {
       return m_is_valid;
+    }
+
+    /// \brief Size of quantities related to constraints contained in result (typically constraint impulses or velocities).
+    int constraintSize() const
+    {
+      return derived().constraintSizeImpl();
+    }
+
+    /// \brief Set the constraint impulse guess given to the solver.
+    template<typename VectorLike>
+    void setConstraintImpulseGuess(const Eigen::MatrixBase<VectorLike>& impulse_guess)
+    {
+      derived().setConstraintImpulseGuessImpl(impulse_guess);
+    }
+
+    /// \brief Clears the constraint impulse guess - as if no guess were given to the solver.
+    void clearConstraintImpulseGuess()
+    {
+      derived().clearConstraintImpulseGuessImpl();
+    }
+
+    /// \brief Set the constraint velocity guess given to the solver.
+    template<typename VectorLike>
+    void setConstraintVelocityGuess(const Eigen::MatrixBase<VectorLike>& velocity_guess)
+    {
+      derived().setConstraintVelocityGuessImpl(velocity_guess);
+    }
+
+    /// \brief Clears the constraint velocity guess - as if no guess were given to the solver.
+    void clearConstraintVelocityGuess()
+    {
+      derived().clearConstraintVelocityGuessImpl();
+    }
+
+    /// \brief Retrieve constraint impulses.
+    template<typename VectorLike>
+    void
+    retrieveConstraintImpulses(const Eigen::MatrixBase<VectorLike> & constraint_impulses) const
+    {
+      derived().retrieveConstraintImpulsesImpl(constraint_impulses);
+    }
+
+    /// \brief Retrieve constraint velocities.
+    template<typename VectorLike>
+    void
+    retrieveConstraintVelocities(const Eigen::MatrixBase<VectorLike> & constraint_velocities) const
+    {
+      derived().retrieveConstraintVelocitiesImpl(constraint_velocities);
     }
 
     /// \brief Number of iterations of the solver
@@ -186,19 +260,30 @@ namespace pinocchio
 
   ///
   /// \brief Base struct to track a constraint solver progress per iteration.
-  template<typename _Scalar>
-  struct ConstraintSolverStatsBaseTpl
+  template<typename Derived>
+  struct ConstraintSolverStatsBase
   {
-    typedef _Scalar Scalar;
+    typedef typename traits<Derived>::Scalar Scalar;
+
+    /// \brief Cast to Derived.
+    Derived& derived()
+    {
+      return static_cast<Derived&>(*this);
+    }
+    /// \brief Const cast to Derived.
+    const Derived& derived() const
+    {
+      return static_cast<const Derived&>(*this);
+    }
 
     /// \brief Default constructor.
-    ConstraintSolverStatsBaseTpl()
+    ConstraintSolverStatsBase()
     : iterations(0)
     {
     }
 
     /// \brief Constructor given a maximum iteration of the solver.
-    explicit ConstraintSolverStatsBaseTpl(std::size_t max_iterations)
+    explicit ConstraintSolverStatsBase(std::size_t max_iterations)
     : iterations(0)
     {
       reserve(max_iterations);
@@ -211,6 +296,8 @@ namespace pinocchio
       dual_feasibility.reserve(max_iterations);
       dual_feasibility_ncp.reserve(max_iterations);
       complementarity.reserve(max_iterations);
+
+      derived().reserveImpl(max_iterations);
     }
 
     /// \brief Reset stats.
@@ -221,6 +308,8 @@ namespace pinocchio
       dual_feasibility.clear();
       dual_feasibility_ncp.clear();
       complementarity.clear();
+
+      derived().resetImpl();
     }
 
     /// \brief Returns the size of the stats (number of iterations tracked).
@@ -245,21 +334,75 @@ namespace pinocchio
     std::vector<Scalar> complementarity;
   };
 
-  template<typename _Scalar>
-  struct ConstraintSolverBaseTpl
+  template<typename Derived>
+  struct ConstraintSolverBase
   {
-    typedef _Scalar Scalar;
+    typedef typename traits<Derived>::Scalar Scalar;
+    typedef typename traits<Derived>::SolverSettings SolverSettings;
+    typedef typename traits<Derived>::SolverResult SolverResult;
 
 #ifdef PINOCCHIO_WITH_COLLISION
     typedef coal::CPUTimes CPUTimes;
     typedef coal::Timer Timer;
 #endif // PINOCCHIO_WITH_COLLISION
 
-    ConstraintSolverBaseTpl()
+    /// \brief Cast to Derived.
+    Derived& derived()
+    {
+      return static_cast<Derived&>(*this);
+    }
+    /// \brief Const cast to Derived.
+    const Derived& derived() const
+    {
+      return static_cast<const Derived&>(*this);
+    }
+
+    /// \brief Default constructor
+    ConstraintSolverBase()
 #ifdef PINOCCHIO_WITH_COLLISION
     : timer(false)
 #endif // PINOCCHIO_WITH_COLLISION
     {
+    }
+
+    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
+    /// constraint_datas).
+    ///
+    /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
+    /// \param[in] g Free constraint acceleration or velocity associted with the constraint problem.
+    /// \param[in] constraint_models Vector of constraint models.
+    /// \param[in] constraint_datas Vector of constraint datas.
+    /// \param[in] settings Settings for the solver.
+    /// \param[in/out] result Solution to the constraint problem. Also contains the warmstart to
+    /// solve the problem.
+    ///
+    /// \returns True if the problem has converged.
+    template<
+      typename DelassusDerived,
+      typename VectorLike,
+      typename ConstraintModel,
+      typename ConstraintModelAllocator,
+      typename ConstraintData,
+      typename ConstraintDataAllocator>
+    bool solve(
+      DelassusOperatorBase<DelassusDerived> & delassus,
+      const Eigen::MatrixBase<VectorLike> & g,
+      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
+      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
+      const SolverSettings & settings,
+      SolverResult & result)
+    {
+      return derived().solveImpl(delassus, g, constraint_models, constraint_datas, settings, result);
+    }
+
+    /// \brief Reset the solver as if it never ran.
+    void reset()
+    {
+#ifdef PINOCCHIO_WITH_COLLISION
+      timer.stop();
+#endif
+
+      derived().resetImpl();
     }
 
 #ifdef PINOCCHIO_WITH_COLLISION

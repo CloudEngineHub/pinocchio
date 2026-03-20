@@ -579,14 +579,14 @@ namespace pinocchio
 
   template<typename _Scalar, int _Options>
   template<
-    typename MatrixType,
+    typename DelassusDerived,
     typename VectorLike,
     typename ConstraintModel,
     typename ConstraintModelAllocator,
     typename ConstraintData,
     typename ConstraintDataAllocator>
-  bool PGSConstraintSolverTpl<_Scalar, _Options>::solve(
-    const Eigen::MatrixBase<MatrixType> & delassus,
+  bool PGSConstraintSolverTpl<_Scalar, _Options>::solveImpl(
+    DelassusOperatorBase<DelassusDerived> & delassus,
     const Eigen::MatrixBase<VectorLike> & g,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
@@ -594,26 +594,30 @@ namespace pinocchio
     PGSSolverResult & result)
   {
     // for easier access
-    const MatrixType & G = delassus.derived();
     PGSSolverResult & res = result;
     PGSSolverWorkspace & ws = m_workspace;
 
     // Configure/reset workspace, stats and results.
     // note: the order matters as workspace is initialized using
     // optional warmstarts contained in results.
-    const Eigen::Index np = G.rows();
+    const Eigen::Index np = g.size();
     const std::size_t problem_size = static_cast<std::size_t>(np);
-    assert(G.cols() == np);
-    assert(g.size() == np);
+    assert(delassus.cols() == np);
+    assert(delassus.rows() == np);
     assert(residualSize(constraint_models) == np);
 
     // -- check if settings are valid
     settings.checkValidity();
 
     // -- reset workspace
-    ws.reset(problem_size);
+    ws.resize(problem_size);
+    ws.reset();
+    assert(ws.delassus_matrix.cols() == np);
+    assert(ws.delassus_matrix.rows() == np);
     assert(ws.problem_size == problem_size);
     assert(ws.x.size() == np);
+    delassus.derived().matrix(ws.delassus_matrix, true /*enforce symmetry*/, true /*with damping*/);
+    const auto& G = ws.delassus_matrix;
 
     // -- reset per-iteration statistics
     stats.reset();
@@ -623,18 +627,19 @@ namespace pinocchio
     }
 
     // -- retrieve warmstart from results, then reset results
-    bool has_primal_guess = res.primal_guess.has_value();
-    if (has_primal_guess)
+    bool has_impulse_guess = res.impulse_guess.has_value();
+    PINOCCHIO_THROW_PRETTY_IF(has_impulse_guess && (res.impulse_guess.value().size() != ws.x.size()), std::runtime_error, "Impulse guess given to PGS is of incorrect size.");
+    if (has_impulse_guess)
     {
-      if (res.primal_guess.value().size() != ws.x.size())
+      if (res.impulse_guess.value().size() != ws.x.size())
       {
-        has_primal_guess = false;
+        has_impulse_guess = false;
       }
     }
 
-    if (has_primal_guess)
+    if (has_impulse_guess)
     {
-      ws.x = res.primal_guess.value();
+      ws.x = res.impulse_guess.value();
     }
     else
     {
@@ -642,7 +647,8 @@ namespace pinocchio
     }
     PINOCCHIO_CHECK_ARGUMENT_SIZE(ws.x.size(), np);
     PINOCCHIO_CHECK_ARGUMENT_SIZE(ws.y.size(), np);
-    res.reset(problem_size);
+    res.resize(problem_size);
+    res.reset();
     assert(res.isValid() == false);
     assert(res.problem_size == problem_size);
     assert(res.iterations == 0);
@@ -810,12 +816,13 @@ namespace pinocchio
     PGSConstraintSolverTpl<context::Scalar, context::Options>;
 
   // -------------------------------------------------------------------------
-  // solve() with MatrixXs + default constraint collection
+  // solveImpl() with DelassusCholeskyExpression + default constraint collection
   // -------------------------------------------------------------------------
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
-  PGSConstraintSolverTpl<context::Scalar, context::Options>::solve<
-    context::MatrixXs,
+  PGSConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
+    DelassusCholeskyExpressionTpl<
+      ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>,
     context::VectorXs,
     ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
     std::allocator<
@@ -823,7 +830,8 @@ namespace pinocchio
     ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
     std::allocator<
       ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>>(
-    const Eigen::MatrixBase<context::MatrixXs> &,
+    DelassusOperatorBase<DelassusCholeskyExpressionTpl<
+      ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const std::vector<
       ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,

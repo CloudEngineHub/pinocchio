@@ -306,7 +306,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & vector,
       ConstraintSelectionTag<Sel> sel = CurrentSelection())
     {
-      assert(vector.size() == residualSize(sel));
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(vector.size() == residualSize(sel));
       if constexpr (constraint_size_type <= ConstraintSizeType::CONSTANT)
       {
         // Selection is trivial, do not generate multiple calls
@@ -325,7 +325,7 @@ namespace pinocchio
       const Eigen::MatrixBase<VectorLike> & vector,
       ConstraintSelectionTag<Sel> sel = CurrentSelection()) const
     {
-      assert(vector.size() == residualSize(sel));
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(vector.size() == residualSize(sel));
       if constexpr (constraint_size_type <= ConstraintSizeType::CONSTANT)
       {
         // Selection is trivial, do not generate multiple calls
@@ -392,33 +392,35 @@ namespace pinocchio
       derived().calcImpl(model, data, cdata);
     }
 
-    /// \brief Returns the colwise sparsity associated with a given row of the active set of
+    /// \brief Fills the colwise sparsity associated with a given row of the active set of
     /// the constraints.
     /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
     /// calling the calc method.
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const BooleanVector & getRowSparsityPattern(
+    void getRowSparsityPattern(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      BooleanVector & result) const
     {
       assert(row_id < residualSize());
-      return derived().getRowSparsityPatternImpl(model, data, cdata, row_id);
+      derived().getRowSparsityPatternImpl(model, data, cdata, row_id, result);
     }
 
-    /// \brief Returns the vector of the active indexes associated with a given row
+    /// \brief Fills the vector of the active indexes associated with a given row
     /// \note If constraints are dynamic (e.g. joint limits), this vector is computed when
     /// calling the calc method.
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const EigenIndexVector & getRowIndexes(
+    void getRowIndexes(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      EigenIndexVector & result) const
     {
       assert(row_id < residualSize());
-      return derived().getRowIndexesImpl(model, data, cdata, row_id);
+      derived().getRowIndexesImpl(model, data, cdata, row_id, result);
     }
 
     /// \brief Evaluate the Jacobian associated to the constraint at the given state stored in data
@@ -623,7 +625,9 @@ namespace pinocchio
     }
 
     /// \brief Append to data the apparent inertia due to the constraint.
-    /// Accepts a MatrixBlockElementPlain.
+    /// Accepts a single MatrixBlockElement (atomic constraints receive their block directly;
+    /// pool constraints receive a NestedBlockDiagonal block containing one sub-block per inner
+    /// constraint).
     template<
       int OtherOptions,
       template<typename, int> class JointCollectionTpl,
@@ -634,12 +638,11 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id) const
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const
     {
       derived().appendCouplingConstraintInertiasImpl(
-        model, data, cdata, constraint_inertias, reference_frame, inner_constraint_id);
+        model, data, cdata, constraint_inertia, reference_frame);
     }
 
     // -------------------------------

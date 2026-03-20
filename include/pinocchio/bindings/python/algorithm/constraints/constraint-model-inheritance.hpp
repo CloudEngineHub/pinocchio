@@ -122,18 +122,6 @@ namespace pinocchio
           .PINOCCHIO_ADD_PROPERTY(
             T, desired_constraint_acceleration,
             "Desired constraint velocity at acceleration level.")
-          .PINOCCHIO_ADD_PROPERTY(
-            T, colwise_joint1_sparsity, "Colwise sparsity pattern associated with joint 1.")
-          .PINOCCHIO_ADD_PROPERTY(
-            T, colwise_joint2_sparsity, "Colwise sparsity pattern associated with joint 2.")
-          .PINOCCHIO_ADD_PROPERTY(
-            T, joint1_span_indexes, "Jointwise span indexes associated with joint 1.")
-          .PINOCCHIO_ADD_PROPERTY(
-            T, joint2_span_indexes, "Jointwise span indexes associated with joint 2.")
-          .PINOCCHIO_ADD_PROPERTY(
-            T, colwise_sparsity, "Sparsity pattern associated to the constraint.")
-          .PINOCCHIO_ADD_PROPERTY(
-            T, colwise_span_indexes, "Indexes of the columns spanned by the constraints.")
           .PINOCCHIO_ADD_PROPERTY(T, nv, "Dimension of the model velocity.")
           .PINOCCHIO_ADD_PROPERTY(T, depth_joint1, "Depth of the kinematic tree for joint1.")
           .PINOCCHIO_ADD_PROPERTY(T, depth_joint2, "Depth of the kinematic tree for joint2.");

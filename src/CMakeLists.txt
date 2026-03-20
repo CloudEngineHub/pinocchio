@@ -223,11 +223,6 @@ if(PINOCCHIO_BUILD_WITH_TRACY)
   set(PROFILING_LIB_NAME "${PROJECT_NAME}_tracy")
   # No scalar or sources for this target
   pinocchio_target(${PROFILING_LIB_NAME} INTERFACE)
-  # The main CMakeLists file imports cmake/tracy.cmake, which always generates a pinocchio/tracy.hpp
-  # header file with macros. If PINOCCHIO_TRACY_ENABLE is not defined, the macros do nothing,
-  # otherwise, the tracy macros are activated. Finally, we set INTERFACE here because the definition
-  # is only needed by downstream targets consuming this pinocchio profiling target.
-  target_compile_definitions(${PROFILING_LIB_NAME} INTERFACE PINOCCHIO_TRACY_ENABLE)
   target_link_libraries(${PROFILING_LIB_NAME} INTERFACE Tracy::TracyClient)
 endif(PINOCCHIO_BUILD_WITH_TRACY)
 

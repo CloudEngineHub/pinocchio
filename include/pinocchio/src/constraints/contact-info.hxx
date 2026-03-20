@@ -240,18 +240,12 @@ namespace pinocchio
     EigenIndexVector loop_span_indexes;
 
     /// Members from base
-    using Base::colwise_joint1_sparsity;
-    using Base::colwise_joint2_sparsity;
-    using Base::colwise_span_indexes;
-    using Base::colwise_sparsity;
     using Base::depth_joint1;
     using Base::depth_joint2;
     using Base::joint1_id;
     using Base::joint1_placement;
-    using Base::joint1_span_indexes;
     using Base::joint2_id;
     using Base::joint2_placement;
-    using Base::joint2_span_indexes;
     using Base::m_baumgarte_parameters;
     using Base::m_compliance;
     using Base::nv;
@@ -463,6 +457,9 @@ namespace pinocchio
       typedef typename Data::Vector3 Vector3;
       OutputMatrix & res = _res.const_cast_derived();
 
+      auto & colwise_joint1_sparsity = model.sparsity_pattern_vector[joint1_id];
+      auto & colwise_joint2_sparsity = model.sparsity_pattern_vector[joint2_id];
+
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), model.nv);
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.cols(), res.cols());
       PINOCCHIO_CHECK_ARGUMENT_SIZE(res.rows(), residualSize()); // We know it is constant
@@ -578,36 +575,6 @@ namespace pinocchio
       cdata.c1Mc2 = cdata.oMc1.actInv(cdata.oMc2);
     }
 
-    /// \brief Returns the colwise sparsity associated with a given row
-    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const BooleanVector & getRowSparsityPatternImpl(
-      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
-      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::Index row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return colwise_sparsity;
-    }
-
-    /// \brief Returns the vector of the indexes associated with a given row
-    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const EigenIndexVector & getRowIndexesImpl(
-      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
-      const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
-      const ConstraintData & cdata,
-      const Eigen::Index row_id) const
-    {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
-      PINOCCHIO_UNUSED_VARIABLE(data);
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return colwise_span_indexes;
-    }
-
     ///  \brief Evaluate the Jacobian associated to the constraint at the given state stored in data
     /// and cdata.  The results Jacobian is evaluated in the jacobian input/output matrix.
     /// \remarks This method assumes `calc` has been called on this contraint model.
@@ -629,6 +596,9 @@ namespace pinocchio
       const SE3 & oMc1 = cdata.oMc1;
       const SE3 & oMc2 = cdata.oMc2;
       const SE3 & c1Mc2 = cdata.c1Mc2;
+
+      auto & colwise_joint1_sparsity = model.sparsity_pattern_vector[joint1_id];
+      auto & colwise_joint2_sparsity = model.sparsity_pattern_vector[joint2_id];
 
       for (Eigen::Index jj = 0; jj < model.nv; ++jj)
       {
@@ -942,6 +912,9 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         reference_frame == LOCAL || reference_frame == LOCAL_WORLD_ALIGNED,
         "reference_frame should be LOCAL or LOCAL_WORLD_ALIGNED");
+
+      auto & colwise_joint1_sparsity = model.sparsity_pattern_vector[joint1_id];
+      auto & colwise_joint2_sparsity = model.sparsity_pattern_vector[joint2_id];
 
       loop_span_indexes.reserve((size_t)model.nv);
       for (Eigen::Index col_id = 0; col_id < model.nv; ++col_id)

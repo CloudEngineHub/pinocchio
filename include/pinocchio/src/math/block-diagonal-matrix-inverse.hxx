@@ -54,6 +54,29 @@ namespace pinocchio
             need_rebuild = true;
             break;
           }
+          if (current_type == MatrixBlockType::NestedBlockDiagonal)
+          {
+            const auto & src_subs = m_matrix.blocks()[i].nested_blocks();
+            const auto & res_subs = res.blocks()[i].nested_blocks();
+            if (src_subs.size() != res_subs.size())
+            {
+              need_rebuild = true;
+              break;
+            }
+            for (std::size_t j = 0; j < src_subs.size(); ++j)
+            {
+              auto sub_target = src_subs[j].type();
+              if (sub_target == MatrixBlockType::Zero)
+                sub_target = MatrixBlockType::Plain;
+              if (res_subs[j].type() != sub_target)
+              {
+                need_rebuild = true;
+                break;
+              }
+            }
+            if (need_rebuild)
+              break;
+          }
         }
       }
 
@@ -72,26 +95,92 @@ namespace pinocchio
           "MatrixBlockElement is not of type pinocchio::MatrixBlockElementTpl<Eigen::Map>");
 
         const std::size_t num_blocks = m_matrix.blocks().size();
-        MatrixBlockElement * new_pattern = static_cast<MatrixBlockElement *>(
-          PINOCCHIO_ALLOCA(num_blocks * sizeof(MatrixBlockElement)));
 
-        for (std::size_t i = 0; i < num_blocks; ++i)
+        // Check if any block needs type upgrading (Zero→Plain, including nested sub-blocks).
+        // If no upgrading is needed we can rebuild directly from the original pattern,
+        // avoiding any extra temporary allocation.
+        bool needs_upgrade = false;
+        for (std::size_t i = 0; i < num_blocks && !needs_upgrade; ++i)
         {
           const auto & block = m_matrix.blocks()[i];
-          MatrixBlockType new_type = block.type();
-          if (new_type == MatrixBlockType::Zero)
-            new_type = MatrixBlockType::Plain;
-          new (new_pattern + i) MatrixBlockElement(new_type, block.size());
+          if (block.type() == MatrixBlockType::Zero)
+          {
+            needs_upgrade = true;
+          }
+          else if (block.type() == MatrixBlockType::NestedBlockDiagonal)
+          {
+            for (const auto & sub : block.nested_blocks())
+              if (sub.type() == MatrixBlockType::Zero)
+              {
+                needs_upgrade = true;
+                break;
+              }
+          }
         }
 
-        if (&res == &m_matrix)
+        if (!needs_upgrade)
         {
-          tmp_res.rebuild(new_pattern, num_blocks);
-          res_ptr = &tmp_res;
+          // Pattern is already compatible: rebuild directly from existing blocks.
+          if (&res == &m_matrix)
+          {
+            tmp_res.rebuild(m_matrix.blocks());
+            res_ptr = &tmp_res;
+          }
+          else
+          {
+            res.rebuild(m_matrix.blocks());
+          }
         }
         else
         {
-          res.rebuild(new_pattern, num_blocks);
+          // Need to upgrade some block types. Use alloca for the outer pattern array.
+          // For NestedBlockDiagonal entries, placement-new with a moved sub-vector and
+          // call the destructor explicitly afterwards to avoid a memory leak.
+          MatrixBlockElement * new_pattern = static_cast<MatrixBlockElement *>(
+            PINOCCHIO_ALLOCA(num_blocks * sizeof(MatrixBlockElement)));
+          bool has_nested_in_pattern = false;
+          for (std::size_t i = 0; i < num_blocks; ++i)
+          {
+            const auto & block = m_matrix.blocks()[i];
+            if (block.type() == MatrixBlockType::NestedBlockDiagonal)
+            {
+              has_nested_in_pattern = true;
+              std::vector<MatrixBlockElement> new_subs;
+              new_subs.reserve(block.nested_blocks().size());
+              for (const auto & sub : block.nested_blocks())
+              {
+                MatrixBlockType sub_type = sub.type();
+                if (sub_type == MatrixBlockType::Zero)
+                  sub_type = MatrixBlockType::Plain;
+                new_subs.emplace_back(sub_type, sub.size());
+              }
+              new (new_pattern + i)
+                MatrixBlockElement(MatrixBlockType::NestedBlockDiagonal, std::move(new_subs));
+            }
+            else
+            {
+              MatrixBlockType new_type = block.type();
+              if (new_type == MatrixBlockType::Zero)
+                new_type = MatrixBlockType::Plain;
+              new (new_pattern + i) MatrixBlockElement(new_type, block.size());
+            }
+          }
+
+          if (&res == &m_matrix)
+          {
+            tmp_res.rebuild(new_pattern, num_blocks);
+            res_ptr = &tmp_res;
+          }
+          else
+          {
+            res.rebuild(new_pattern, num_blocks);
+          }
+
+          // Explicitly destroy alloca'd entries to release any heap memory held by nested
+          // sub-block std::vectors.
+          if (has_nested_in_pattern)
+            for (std::size_t i = 0; i < num_blocks; ++i)
+              new_pattern[i].~MatrixBlockElement();
         }
       }
 
@@ -101,7 +190,35 @@ namespace pinocchio
         const auto & input_block = m_matrix.blocks()[block_id];
         auto & res_block = res_ptr->blocks()[block_id];
 
-        if (
+        if (input_block.type() == MatrixBlockType::NestedBlockDiagonal)
+        {
+          const bool inplace_aliasing = (!need_rebuild && &res == &m_matrix);
+          const auto & input_subs = input_block.nested_blocks();
+          auto & res_subs = res_block.nested_blocks();
+          for (std::size_t j = 0; j < input_subs.size(); ++j)
+          {
+            const auto & input_sub = input_subs[j];
+            auto & res_sub = res_subs[j];
+            if (inplace_aliasing && input_sub.type() == MatrixBlockType::Plain)
+            {
+              // Aliasing: copy sub-block before inverting.
+              const auto sub_size = input_sub.size();
+              typedef Eigen::Map<typename ResType::Matrix, to_eigen_alignment(ResAlignment)>
+                ResMatrixMap;
+              typedef MatrixBlockElementTpl<ResMatrixMap> ResMatrixBlockElement;
+              ResMatrixMap tmp_map(PINOCCHIO_EIGEN_MAP_ALLOCA_ALIGNED(
+                Scalar, sub_size, sub_size, static_cast<intptr_t>(ResAlignment)));
+              ResMatrixBlockElement temp_input(input_sub.type(), sub_size, tmp_map);
+              temp_input.container() = input_sub.container();
+              temp_input.inverse(res_sub);
+            }
+            else
+            {
+              input_sub.inverse(res_sub);
+            }
+          }
+        }
+        else if (
           !need_rebuild        //
           && &res == &m_matrix //
           && input_block.type() == MatrixBlockType::Plain)

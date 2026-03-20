@@ -42,6 +42,32 @@ namespace pinocchio
     typedef MatrixBlockElementTpl<Matrix> PlainBlockElement;
   };
 
+  /// @brief Returns the sum of the size of each individual block.
+  template<typename MatrixOrMap, typename Enable>
+  int getSumOfBlockSizes(
+    const std::vector<MatrixBlockElementTpl<MatrixOrMap, Enable>> blocks_vector)
+  {
+    int size = 0;
+    for (const auto & block : blocks_vector)
+    {
+      size += block.size();
+    }
+    return size;
+  }
+
+  namespace internal
+  {
+    /// @brief Computes the sum of sizes of a vector of MatrixBlockElementTpl objects.
+    template<typename MatrixBlockElt>
+    static Eigen::Index getSumOfNestedSizes(const std::vector<MatrixBlockElt> & nested_blocks)
+    {
+      Eigen::Index total = 0;
+      for (const auto & sub : nested_blocks)
+        total += sub.size();
+      return total;
+    }
+  } // namespace internal
+
   /**
    * @ingroup pinocchio_math
    * @brief A descriptor for a non-owning matrix block, implemented as a view using `Eigen::Map`.
@@ -85,10 +111,15 @@ namespace pinocchio
 
     /// @brief An Eigen::Map that provides a non-owning view of the memory corresponding to this
     /// block.
-    /// @note For block types that don't store data (e.g., `Identity`, `Zero`), this map will be
-    /// null.
+    /// @note For block types that don't store data (e.g., `Identity`, `Zero`,
+    /// `NestedBlockDiagonal`), this map will be null.
     MatrixMap map;
 
+  protected:
+    /// @brief Sub-blocks for NestedBlockDiagonal type. Empty for all other types.
+    std::vector<MatrixBlockElementTpl> m_nested_blocks;
+
+  public:
     /// @brief Default constructor. Initializes to an invalid state (Undefined type, size -1, null
     /// map).
     MatrixBlockElementTpl()
@@ -125,9 +156,24 @@ namespace pinocchio
     }
 
     /**
-     * @brief Default copy constructor (shallow copy).
+     * @brief Constructs a NestedBlockDiagonal block from a list of sub-blocks.
+     * @param[in] nested_blocks The sub-block descriptors (type/size populated; maps may be null
+     *            at construction time and get remapped later by BlockDiagonalMatrixTpl::rebuild).
+     */
+    MatrixBlockElementTpl(
+      const MatrixBlockType type, std::vector<MatrixBlockElementTpl> nested_blocks)
+    : Base(type, internal::getSumOfNestedSizes(nested_blocks))
+    , map(nullptr, 0, 0)
+    , m_nested_blocks(std::move(nested_blocks))
+    {
+      assert(type == MatrixBlockType::NestedBlockDiagonal);
+    }
+
+    /**
+     * @brief Default copy constructor (shallow copy of map, deep copy of nested blocks).
      * @details Creates a copy of the block descriptor. The new object's `map` will view the
-     *          **same memory** as the original. No matrix data is duplicated.
+     *          **same memory** as the original. `m_nested_blocks` is deep-copied (each nested
+     *          block's map still points to the same underlying memory as the original).
      */
     MatrixBlockElementTpl(const MatrixBlockElementTpl & other)
     : MatrixBlockElementTpl()
@@ -136,7 +182,7 @@ namespace pinocchio
     }
 
     /**
-     * @brief Default copy-assignment operator (shallow copy).
+     * @brief Default copy-assignment operator (shallow copy of map, deep copy of nested blocks).
      * @details Assigns from another block descriptor. After assignment, this object's `map`
      *          will view the **same memory** as the other object.
      */
@@ -152,8 +198,25 @@ namespace pinocchio
         // as the one we have, we recreate the map in place so that it
         // points to the same data as the other map.
         new (&map) MapType(other.map);
+        m_nested_blocks = other.m_nested_blocks;
       }
       return *this;
+    }
+
+    /// @brief Returns a mutable reference to the nested sub-blocks (only valid for
+    /// NestedBlockDiagonal).
+    std::vector<MatrixBlockElementTpl> & nested_blocks()
+    {
+      assert(type() == MatrixBlockType::NestedBlockDiagonal);
+      return m_nested_blocks;
+    }
+
+    /// @brief Returns a const reference to the nested sub-blocks (only valid for
+    /// NestedBlockDiagonal).
+    const std::vector<MatrixBlockElementTpl> & nested_blocks() const
+    {
+      assert(type() == MatrixBlockType::NestedBlockDiagonal);
+      return m_nested_blocks;
     }
 
     /**
@@ -173,7 +236,11 @@ namespace pinocchio
     {
       if (this == &other)
         return true;
-      return Base::operator==(other) && map == other.map;
+      if (!Base::operator==(other))
+        return false;
+      if (type() == MatrixBlockType::NestedBlockDiagonal)
+        return m_nested_blocks == other.m_nested_blocks;
+      return map == other.map;
     }
 
     /**
@@ -217,8 +284,11 @@ namespace pinocchio
      */
     bool isValid() const
     {
-      bool is_invalid = !Base::isValid() || (isDataBlock(type()) && map.data() == nullptr);
-      return !is_invalid;
+      if (!Base::isValid())
+        return false;
+      if (type() == MatrixBlockType::NestedBlockDiagonal)
+        return !m_nested_blocks.empty();
+      return !(isDataBlock(type()) && map.data() == nullptr);
     }
 
     /// @brief Returns a mutable reference to the underlying Eigen::Map.
@@ -455,6 +525,26 @@ namespace pinocchio
     Scalar * data()
     {
       return m_matrix.data();
+    }
+
+    /// @brief Stub for NestedBlockDiagonal — the owning variant does not support nested blocks.
+    /// This method exists only to allow MatrixBlockElementPlain to compile the NestedBlockDiagonal
+    /// switch case; it must never be called at runtime.
+    std::vector<MatrixBlockElementTpl> & nested_blocks()
+    {
+      assert(
+        false && "NestedBlockDiagonal not supported by the owning MatrixBlockElementTpl variant");
+      static std::vector<MatrixBlockElementTpl> empty;
+      return empty;
+    }
+
+    /// @brief Const overload of nested_blocks() stub.
+    const std::vector<MatrixBlockElementTpl> & nested_blocks() const
+    {
+      assert(
+        false && "NestedBlockDiagonal not supported by the owning MatrixBlockElementTpl variant");
+      static std::vector<MatrixBlockElementTpl> empty;
+      return empty;
     }
 
   }; // struct MatrixBlockElementTpl

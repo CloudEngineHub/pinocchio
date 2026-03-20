@@ -21,13 +21,13 @@ namespace pinocchio
     int _Options,
     template<typename, int> class JointCollectionTpl,
     class _ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   struct traits<DelassusOperatorRigidBodySystemsTpl<
     _Scalar,
     _Options,
     JointCollectionTpl,
     _ConstraintModel,
-    Holder>>
+    StorageHolder>>
   {
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
@@ -46,20 +46,13 @@ namespace pinocchio
     typedef _ConstraintModel ConstraintModel;
     typedef typename helper::remove_holder<ConstraintModel>::type InnerConstraintModel;
     typedef typename helper::remove_holder<ConstraintModel>::ref_type ConstraintModelReference;
-    typedef
-      typename std::remove_reference<ConstraintModelReference>::type ConstraintModelReferenceValue;
-    static constexpr bool ConstraintModelIsConst =
-      std::is_const<ConstraintModelReferenceValue>::value;
+    static constexpr bool ConstraintModelIsConst = helper::remove_holder<ConstraintModel>::is_const;
 
-    typedef
-      typename helper::remove_holder<ConstraintModel>::type::ConstraintData InnerConstraintData;
-    typedef typename std::conditional<
-      helper::is_type_holder<ConstraintModel>::value,
-      typename internal::extract_template_template_parameter<ConstraintModel>::template type<
-        typename std::
-          conditional<ConstraintModelIsConst, const InnerConstraintData, InnerConstraintData>::
-            type>,
-      InnerConstraintData>::type ConstraintData;
+    typedef typename InnerConstraintModel::ConstraintData InnerConstraintData;
+    typedef typename helper::remove_holder<ConstraintModel>::template rebind<
+      typename std::conditional<
+        ConstraintModelIsConst, const InnerConstraintData, InnerConstraintData>::type>
+      ConstraintData;
 
     typedef std::vector<ConstraintModel> ConstraintModelVector;
     typedef std::vector<ConstraintData> ConstraintDataVector;
@@ -75,20 +68,20 @@ namespace pinocchio
     int _Options,
     template<typename, int> class _JointCollectionTpl,
     class _ConstraintModel,
-    template<typename T> class _Holder>
+    template<typename T> class _StorageHolder>
   struct Unsafe<DelassusOperatorRigidBodySystemsTpl<
     _Scalar,
     _Options,
     _JointCollectionTpl,
     _ConstraintModel,
-    _Holder>>
+    _StorageHolder>>
   {
     typedef DelassusOperatorRigidBodySystemsTpl<
       _Scalar,
       _Options,
       _JointCollectionTpl,
       _ConstraintModel,
-      _Holder>
+      _StorageHolder>
       SafeSelf;
     typedef typename SafeSelf::BlockDiagonalMatrix BlockDiagonalMatrix;
 
@@ -121,14 +114,14 @@ namespace pinocchio
     int _Options,
     template<typename, int> class _JointCollectionTpl,
     class _ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   struct DelassusOperatorRigidBodySystemsTpl
   : DelassusOperatorBase<DelassusOperatorRigidBodySystemsTpl<
       _Scalar,
       _Options,
       _JointCollectionTpl,
       _ConstraintModel,
-      Holder>>
+      StorageHolder>>
   {
 
     typedef DelassusOperatorRigidBodySystemsTpl Self;
@@ -143,9 +136,9 @@ namespace pinocchio
     typedef typename traits<Self>::BlockDiagonalMatrix BlockDiagonalMatrix;
 
     typedef typename traits<Self>::Model Model;
-    typedef Holder<const Model> ModelHolder;
+    typedef StorageHolder<const Model> ModelHolder;
     typedef typename traits<Self>::Data Data;
-    typedef Holder<Data> DataHolder;
+    typedef StorageHolder<Data> DataHolder;
 
     typedef typename Data::Force Force;
     typedef typename Data::VectorXs VectorXs;
@@ -154,12 +147,12 @@ namespace pinocchio
     typedef typename traits<Self>::ConstraintModel ConstraintModel;
     typedef typename traits<Self>::InnerConstraintModel InnerConstraintModel;
     typedef typename traits<Self>::ConstraintModelVector ConstraintModelVector;
-    typedef Holder<const ConstraintModelVector> ConstraintModelVectorHolder;
+    typedef StorageHolder<const ConstraintModelVector> ConstraintModelVectorHolder;
 
     typedef typename traits<Self>::ConstraintData ConstraintData;
     typedef typename traits<Self>::InnerConstraintData InnerConstraintData;
     typedef typename traits<Self>::ConstraintDataVector ConstraintDataVector;
-    typedef Holder<const ConstraintDataVector> ConstraintDataVectorHolder;
+    typedef StorageHolder<const ConstraintDataVector> ConstraintDataVectorHolder;
 
     /// \brief Cast this class to its unsafe version.
     Unsafe<Self> unsafe()
@@ -563,13 +556,13 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::
+    StorageHolder>::
     rebuild(
       const ModelHolder & model_ref,
       const DataHolder & data_ref,
@@ -611,13 +604,13 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::compute_or_update_decomposition(bool apply_on_the_right, bool solve_in_place)
+    StorageHolder>::compute_or_update_decomposition(bool apply_on_the_right, bool solve_in_place)
   {
     typedef typename Data::Inertia Inertia;
     using Matrix6 = typename Inertia::Matrix6;
@@ -653,46 +646,65 @@ namespace pinocchio
       data_ref.joint_cross_coupling.apply([](Matrix6 & v) { v.setZero(); });
 
       // Append constraint inertia to oYaba_augmented
-      m_sum_compliance_damping_inverse = m_sum_compliance_damping.inverse();
-      assert(!m_sum_compliance_damping_inverse.hasNaN());
-
-      const auto & blocks = m_sum_compliance_damping_inverse.blocks();
-      if (blocks.size() == 1 && constraint_models_ref.size() > 1) // we assume we have a single
-                                                                  // diagonal block to dispatch on
-                                                                  // all the contraints
       {
-        const auto & diagonal_block = blocks[0];
-        assert(diagonal_block.type() == MatrixBlockType::Diagonal);
-        Eigen::Index row_id = 0;
-        typedef typename BlockDiagonalMatrix::ConstVectorMap ConstVectorMap;
-        const auto & compliance_damping_inverse_vector =
-          remap<ConstVectorMap>(diagonal_block.container());
-        for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
-             ++constraint_id)
-        {
-          const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
-          const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
-
-          const auto constraint_size = cmodel.residualSize();
-          const auto constraint_diagonal_inertia =
-            compliance_damping_inverse_vector.segment(row_id, constraint_size);
-
-          cmodel.appendCouplingConstraintInertias(
-            model_ref, data_ref, cdata, constraint_diagonal_inertia, WorldFrameTag());
-          row_id += constraint_size;
-        }
-        assert(row_id == size());
+        PINOCCHIO_TRACY_ZONE_SCOPED_N("Inverse compliance and damping");
+        m_sum_compliance_damping_inverse = m_sum_compliance_damping.inverse();
+        assert(!m_sum_compliance_damping_inverse.hasNaN());
       }
-      else // we have block diagonal matrix, each block being assigned to a constraint
+
       {
-        std::size_t inner_constraint_id = 0;
-        for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
-             ++constraint_id)
+        PINOCCHIO_TRACY_ZONE_SCOPED_N("appendCouplingConstraintInertias");
+        const auto & blocks = m_sum_compliance_damping_inverse.blocks();
+        PINOCCHIO_THROW_PRETTY_IF(
+          getSumOfBlockSizes(blocks) != residualSize(helper::get_ref(constraint_models_ref)),
+          std::runtime_error,
+          "The sum of sizes of the blocks should be the same as the total residual size of the "
+          "constraints vector.");
+        if (blocks.size() == 1 && blocks[0].type() == MatrixBlockType::Diagonal)
         {
-          const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
-          const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
-          cmodel.appendCouplingConstraintInertias(
-            model_ref, data_ref, cdata, blocks, WorldFrameTag(), inner_constraint_id);
+          // we assume we have a single diagonal block to dispatch on all the contraints
+          typedef typename BlockDiagonalMatrix::ConstVectorMap ConstVectorMap;
+
+          const auto & diagonal_block = blocks[0];
+          const auto & compliance_damping_inverse_vector =
+            remap<ConstVectorMap>(diagonal_block.container());
+
+          assert(residualSize(helper::get_ref(constraint_models_ref)) == m_size);
+          assert(compliance_damping_inverse_vector.size() == m_size);
+
+          Eigen::Index row_id = 0;
+          for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+               ++constraint_id)
+          {
+            const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
+            const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
+
+            const auto constraint_size = cmodel.residualSize();
+            const auto constraint_diagonal_inertia =
+              compliance_damping_inverse_vector.segment(row_id, constraint_size);
+
+            cmodel.appendCouplingConstraintInertias(
+              model_ref, data_ref, cdata, constraint_diagonal_inertia, WorldFrameTag());
+            row_id += constraint_size;
+          }
+          assert(row_id == size());
+        }
+        else
+        {
+          // One block per outer constraint (atomic or pool as NestedBlockDiagonal).
+          PINOCCHIO_THROW_PRETTY_IF(
+            blocks.size() != constraint_models_ref.size(), std::runtime_error,
+            "The number of blocks should equal the number of constraints. "
+            "Pools must be represented as NestedBlockDiagonal blocks.");
+
+          for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
+               ++constraint_id)
+          {
+            const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
+            const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
+            cmodel.appendCouplingConstraintInertias(
+              model_ref, data_ref, cdata, blocks[constraint_id], WorldFrameTag());
+          }
         }
       }
     }
@@ -709,26 +721,29 @@ namespace pinocchio
     }                                                                                              \
   }
 
-    if (apply_on_the_right)
     {
-      if (solve_in_place)
+      PINOCCHIO_TRACY_ZONE_SCOPED_N("Backward pass");
+      if (apply_on_the_right)
       {
-        DO_PASS(true, true);
+        if (solve_in_place)
+        {
+          DO_PASS(true, true);
+        }
+        else
+        {
+          DO_PASS(true, false);
+        }
       }
       else
       {
-        DO_PASS(true, false);
-      }
-    }
-    else
-    {
-      if (solve_in_place)
-      {
-        DO_PASS(false, true);
-      }
-      else
-      {
-        DO_PASS(false, false);
+        if (solve_in_place)
+        {
+          DO_PASS(false, true);
+        }
+        else
+        {
+          DO_PASS(false, false);
+        }
       }
     }
 #undef DO_PASS
@@ -742,14 +757,14 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   template<typename MatrixIn, typename MatrixOut>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::
+    StorageHolder>::
     applyOnTheRight(
       const Eigen::MatrixBase<MatrixIn> & rhs,
       const Eigen::MatrixBase<MatrixOut> & res_,
@@ -871,14 +886,14 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   template<typename MatrixLike>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat_) const
+    StorageHolder>::solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat_) const
   {
     MatrixLike & mat = mat_.const_cast_derived();
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
@@ -970,14 +985,14 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     class ConstraintModel,
-    template<typename T> class Holder>
+    template<typename T> class StorageHolder>
   template<typename MatrixLike>
   void DelassusOperatorRigidBodySystemsTpl<
     Scalar,
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    Holder>::AugmentedMassMatrixOperator::
+    StorageHolder>::AugmentedMassMatrixOperator::
     solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat_, bool reset_joint_force_vector) const
   {
     MatrixLike & mat = mat_.const_cast_derived();

@@ -4,8 +4,10 @@
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/algorithm/solvers/pgs-solver.hpp"
+#include "pinocchio/algorithm/constraint-cholesky.hpp"
 #include "pinocchio/algorithm/delassus-operator.hpp"
 
+#include "pinocchio/bindings/python/algorithm/constraint-solver-base.hpp"
 #include "pinocchio/bindings/python/utils/std-vector.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
 
@@ -22,39 +24,39 @@ namespace pinocchio
     typedef context::Scalar Scalar;
     static constexpr int Options = context::Options;
     typedef context::VectorXs VectorXs;
-    typedef context::MatrixXs MatrixXs;
 
     typedef PGSConstraintSolverTpl<Scalar, Options> PGSSolver;
     typedef typename PGSSolver::PGSSolverSettings PGSSolverSettings;
     typedef typename PGSSolver::PGSSolverResult PGSSolverResult;
     typedef typename PGSSolver::PGSSolverStats PGSSolverStats;
 
-    typedef ConstraintSolverSettingsBaseTpl<Scalar> ConstraintSolverSettingsBase;
-    typedef ConstraintSolverResultBaseTpl<Scalar> ConstraintSolverResultBase;
-    typedef ConstraintSolverStatsBaseTpl<Scalar> ConstraintSolverStatsBase;
-    typedef ConstraintSolverBaseTpl<Scalar> ConstraintSolverBase;
+    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
 
     // ============================================================================
-    // Expose PGSSolverSettings (inheriting from base)
+    // Expose PGSSolverSettings
     // ============================================================================
 
     void exposePGSSolverSettings()
     {
-      bp::class_<PGSSolverSettings, bp::bases<ConstraintSolverSettingsBase>>(
+#ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
+      bp::class_<PGSSolverSettings>(
         "PGSSolverSettings", "Settings for the PGS constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor with default settings."))
 
-        // PGS specific settings (base class properties are inherited)
+        // Base settings
+        .def(ConstraintSolverSettingsBasePythonVisitor<PGSSolverSettings>())
+
+        // PGS specific settings
         .PINOCCHIO_ADD_PROPERTY(
           PGSSolverSettings, over_relaxation,
           "Over-relaxation parameter (should be in ]0,2[, default 1)");
+#endif // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
     }
 
     // ============================================================================
-    // Expose PGSSolverResult (inheriting from base)
+    // Expose PGSSolverResult
     // ============================================================================
 
-    // Wrapper functions for retrieve methods
     static void retrievePrimalSolution_pgs_wrapper(
       const PGSSolverResult & solution, Eigen::Ref<VectorXs> primal_solution)
     {
@@ -69,21 +71,21 @@ namespace pinocchio
 
     void exposePGSSolverResult()
     {
-      bp::class_<PGSSolverResult, bp::bases<ConstraintSolverResultBase>>(
+      bp::class_<PGSSolverResult>(
         "PGSSolverResult", "Solution of the PGS constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
 
-        // PGS specific properties (base class properties are inherited)
+        // Base result
+        .def(ConstraintSolverResultBasePythonVisitor<PGSSolverResult>())
+
+        // PGS specific properties
         .PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolverResult, problem_size, "Problem size")
 
-        .def(
-          "reset", static_cast<void (PGSSolverResult::*)(std::size_t)>(&PGSSolverResult::reset),
-          (bp::arg("self"), bp::arg("problem_size") = 0), "Reset the result")
         .def(
           "resize", &PGSSolverResult::resize, bp::args("self", "problem_size"),
           "Resize solution vectors")
 
-        // Retrieve methods
+        // Raw retrieve methods (in-place, caller provides output vector)
         .def(
           "retrievePrimalSolution", retrievePrimalSolution_pgs_wrapper,
           bp::args("self", "primal_solution"),
@@ -95,22 +97,26 @@ namespace pinocchio
     }
 
     // ============================================================================
-    // Expose PGSSolverStats (inheriting from base)
+    // Expose PGSSolverStats
     // ============================================================================
 
     void exposePGSSolverStats()
     {
-      bp::class_<PGSSolverStats, bp::bases<ConstraintSolverStatsBase>>(
+      bp::class_<PGSSolverStats>(
         "PGSSolverStats", "Per-iteration statistics of the PGS constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor."))
         .def(
           bp::init<std::size_t>(
-            bp::args("self", "max_iterations"), "Constructor with maximum iterations."));
+            bp::args("self", "max_iterations"), "Constructor with maximum iterations."))
+
+        // Base stats
+        .def(ConstraintSolverStatsBasePythonVisitor<PGSSolverStats>());
+
       // Note: No PGS-specific stats beyond base class
     }
 
     // ============================================================================
-    // Expose PGSConstraintSolver (inheriting from base)
+    // Expose PGSConstraintSolver
     // ============================================================================
 
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
@@ -122,7 +128,7 @@ namespace pinocchio
       typename ConstraintDataAllocator>
     static bool solve_pgs_wrapper(
       PGSSolver & solver,
-      const DelassusDerived & delassus,
+      DelassusDerived & delassus,
       const VectorXs & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
@@ -136,7 +142,7 @@ namespace pinocchio
     template<typename Solver>
     struct PGSSolveMethodExposer
     {
-      PGSSolveMethodExposer(bp::class_<Solver, bp::bases<ConstraintSolverBase>> & class_)
+      PGSSolveMethodExposer(bp::class_<Solver> & class_)
       : class_(class_)
       {
       }
@@ -161,8 +167,8 @@ namespace pinocchio
           .def(
             "solve",
             solve_pgs_wrapper<
-              context::MatrixXs, ConstraintModel, ConstraintModelAllocator, ConstraintData,
-              ConstraintDataAllocator>,
+              ContactCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
+              ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
             bp::args(
               "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
               "result"),
@@ -175,15 +181,6 @@ namespace pinocchio
             bp::args(
               "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
               "result"),
-            "Solve the constrained conic problem with given settings and result.")
-          .def(
-            "solve",
-            solve_pgs_wrapper<
-              ContactCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
-              ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
-            bp::args(
-              "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",
-              "result"),
             "Solve the constrained conic problem with given settings and result.");
 #endif // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
       }
@@ -193,29 +190,32 @@ namespace pinocchio
         PINOCCHIO_UNUSED_VARIABLE(ptr);
       }
 
-      bp::class_<Solver, bp::bases<ConstraintSolverBase>> & class_;
+      bp::class_<Solver> & class_;
     };
 
     void exposePGSConstraintSolver()
     {
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
 
-      // Expose Settings, Solution, Stats (they inherit from base)
+      // Expose Settings, Solution, Stats
       exposePGSSolverSettings();
       exposePGSSolverResult();
       exposePGSSolverStats();
 
-      // Expose the solver itself (inherits from base)
-      bp::class_<PGSSolver, bp::bases<ConstraintSolverBase>> cl(
+      // Expose the solver itself
+      bp::class_<PGSSolver> cl(
         "PGSConstraintSolver", "Projected Gauss-Seidel (PGS) solver for contact dynamics.",
         bp::init<std::size_t>(
           bp::args("self", "problem_size"), "Constructor with problem dimension."));
 
-      cl.PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolver, stats, "Access the statistics of the solver")
+      cl
+        // Base solver
+        .def(ConstraintSolverBasePythonVisitor<PGSSolver>())
+        // PGS specifics
+        .PINOCCHIO_ADD_PROPERTY_READONLY(PGSSolver, stats, "Access the statistics of the solver")
         .def(
           "isValid", &PGSSolver::isValid, bp::arg("self"),
-          "Check if the solver is in a valid state (has solved a constraint problem)")
-        .def("reset", &PGSSolver::reset, bp::arg("self"), "Reset the solver to initial state");
+          "Check if the solver is in a valid state (has solved a constraint problem)");
 
       // Expose solve methods for different constraint models
       PGSSolveMethodExposer<PGSSolver> solve_exposer(cl);

@@ -239,8 +239,7 @@ namespace pinocchio
 
       res.m_active_joints = m_active_joints;
       res.m_active_dofs = m_active_dofs;
-      res.m_row_sparsity_pattern = m_row_sparsity_pattern;
-      res.m_row_active_indexes = m_row_active_indexes;
+      res.m_active_joint_ids = m_active_joint_ids;
       res.m_friction_lower_limit = m_friction_lower_limit.template cast<NewScalar>();
       res.m_friction_upper_limit = m_friction_upper_limit.template cast<NewScalar>();
       return res;
@@ -260,8 +259,7 @@ namespace pinocchio
         return true;
       return base() == other.base() && base_common_parameters() == other.base_common_parameters()
              && m_active_joints == other.m_active_joints && m_active_dofs == other.m_active_dofs
-             && m_row_sparsity_pattern == other.m_row_sparsity_pattern
-             && m_row_active_indexes == other.m_row_active_indexes
+             && m_active_joint_ids == other.m_active_joint_ids
              && m_friction_lower_limit == other.m_friction_lower_limit
              && m_friction_upper_limit == other.m_friction_upper_limit;
     }
@@ -405,34 +403,34 @@ namespace pinocchio
 
     /// \copydoc RootBase::getRowSparsityPattern
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const BooleanVector & getRowSparsityPatternImpl(
+    void getRowSparsityPatternImpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      BooleanVector & result) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
 
-      return m_row_sparsity_pattern[size_t(row_id)];
+      result = model.sparsity_pattern_vector[m_active_joint_ids[size_t(row_id)]];
     }
 
     /// \copydoc RootBase::getRowIndexes
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    const EigenIndexVector & getRowIndexesImpl(
+    void getRowIndexesImpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const Eigen::Index row_id) const
+      const Eigen::Index row_id,
+      EigenIndexVector & result) const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(row_id < residualSize());
-      PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
 
-      return m_row_active_indexes[size_t(row_id)];
+      result = model.span_indexes_vector[m_active_joint_ids[size_t(row_id)]];
     }
 
     /// \copydoc RootBase::jacobian
@@ -565,9 +563,8 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-      const ReferenceFrameTag<rf> reference_frame,
-      std::size_t & inner_constraint_id) const;
+      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const ReferenceFrameTag<rf> reference_frame) const;
 
   protected:
     // ------------------------------
@@ -584,8 +581,7 @@ namespace pinocchio
 
     JointIndexVector m_active_joints;
     EigenIndexVector m_active_dofs;
-    VectorOfBooleanVector m_row_sparsity_pattern;
-    VectorOfEigenIndexVector m_row_active_indexes;
+    JointIndexVector m_active_joint_ids;
 
     VectorXs m_friction_lower_limit;
     VectorXs m_friction_upper_limit;
@@ -691,7 +687,6 @@ namespace pinocchio
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         joint_id < model.joints.size(),
         "joint_id is larger than the total number of joints contained in the model.");
-      const auto & jsupport = model.supports[joint_id];
 
       const auto nv = model.nvs[joint_id];
       const auto idx_v = model.idx_vs[joint_id];
@@ -700,45 +695,8 @@ namespace pinocchio
       {
         const int row_id = idx_v + k;
         m_active_dofs.push_back(row_id);
+        m_active_joint_ids.push_back(joint_id);
       }
-
-      EigenIndexVector extended_support;
-      extended_support.reserve(size_t(model.nv));
-      for (size_t j = 1; j < jsupport.size() - 1; ++j)
-      {
-        const JointIndex jsupport_id = jsupport[j];
-
-        const int jsupport_nv = model.nvs[jsupport_id];
-        const int jsupport_idx_v = model.idx_vs[jsupport_id];
-
-        for (int k = 0; k < jsupport_nv; ++k)
-        {
-          const int extended_row_id = jsupport_idx_v + k;
-          extended_support.push_back(extended_row_id);
-        }
-      }
-
-      for (int k = 0; k < nv; ++k)
-      {
-        const int row_id = idx_v + k;
-        extended_support.push_back(row_id);
-        m_row_active_indexes.push_back(extended_support);
-      }
-    }
-
-    const size_t total_size = m_active_dofs.size();
-    assert(
-      m_row_active_indexes.size() == total_size && "The two vectors should be of the same size.");
-
-    // Fill m_row_sparsity_pattern from m_row_active_indexes content
-    m_row_sparsity_pattern.resize(total_size, BooleanVector::Zero(model.nv));
-    for (size_t row_id = 0; row_id < total_size; ++row_id)
-    {
-      auto & sparsity_pattern = m_row_sparsity_pattern[row_id];
-      const auto & extended_support = m_row_active_indexes[row_id];
-
-      for (const auto val : extended_support)
-        sparsity_pattern[val] = true;
     }
 
     {
@@ -967,12 +925,9 @@ namespace pinocchio
     const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
     DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
-    const std::vector<MatrixBlockElementTpl<MatrixOrMap, MapEnable>> & constraint_inertias,
-    const ReferenceFrameTag<rf> reference_frame,
-    std::size_t & inner_constraint_id) const
+    const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+    const ReferenceFrameTag<rf> reference_frame) const
   {
-    const auto & constraint_inertia = constraint_inertias[inner_constraint_id];
-
     assert(constraint_inertia.size() == residualSize());
     switch (constraint_inertia.type())
     {
@@ -1002,11 +957,10 @@ namespace pinocchio
       break;
     }
     default:
-      assert(false && "Should never happened");
+      assert(false && "Invalid MatrixBlockType for JointFrictionConstraintModel.");
+      PINOCCHIO_THROW_PRETTY(
+        std::invalid_argument, "Invalid MatrixBlockType for JointFrictionConstraintModel.");
     }
-
-    // increment inner constraint id counter
-    ++inner_constraint_id;
   }
 
 } // namespace pinocchio

@@ -43,13 +43,24 @@ namespace pinocchio
     struct PGSSolverWorkspaceTpl;
   }
 
-  /// \brief Projected Gauss Siedel solver
   template<typename _Scalar, int _Options>
-  struct PGSConstraintSolverTpl : ConstraintSolverBaseTpl<_Scalar>
+  struct traits<PGSConstraintSolverTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
-    typedef ConstraintSolverBaseTpl<Scalar> Base;
+
+    typedef PGSSolverSettingsTpl<Scalar> SolverSettings;
+    typedef PGSSolverResultTpl<Scalar, Options> SolverResult;
+  };
+
+  /// \brief Projected Gauss Siedel solver
+  template<typename _Scalar, int _Options>
+  struct PGSConstraintSolverTpl : ConstraintSolverBase<PGSConstraintSolverTpl<_Scalar, _Options>>
+  {
+    typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
+    typedef PGSConstraintSolverTpl Self;
+    typedef ConstraintSolverBase<Self> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
 
@@ -57,6 +68,8 @@ namespace pinocchio
     typedef PGSSolverSettingsTpl<Scalar> PGSSolverSettings;
     typedef PGSSolverResultTpl<Scalar, Options> PGSSolverResult;
     typedef PGSSolverStatsTpl<Scalar> PGSSolverStats;
+
+    using Base::reset;
 
     /// \brief Default constructor.
     /// \note The user can give `max_problem_size` to preallocate maximum problem sizes data.
@@ -76,47 +89,14 @@ namespace pinocchio
       reset();
     }
 
-    ///
-    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
-    /// constraint_datas).
-    ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
-    /// \param[in] g Free constraint acceleration or velocity associted with the constraint problem.
-    /// \param[in] constraint_models Vector of constraint models.
-    /// \param[in] constraint_datas Vector of constraint datas.
-    /// \param[in] settings Settings for the PGS solver.
-    /// \param[in/out] result Solution to the constraint problem. Also contains the warmstart to
-    /// solve the problem.
-    ///
-    /// \returns True if the problem has converged.
-    template<
-      typename MatrixType,
-      typename VectorLike,
-      typename ConstraintModel,
-      typename ConstraintModelAllocator,
-      typename ConstraintData,
-      typename ConstraintDataAllocator>
-    bool solve(
-      const Eigen::MatrixBase<MatrixType> & delassus,
-      const Eigen::MatrixBase<VectorLike> & g,
-      const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-      const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
-      const PGSSolverSettings & settings,
-      PGSSolverResult & result);
+    /// \brief Returns true if solver is in a valid state (it has solved a constraint problem).
+    /// If so, its stats are valid.
+    bool isValid() const
+    {
+      return m_is_valid;
+    }
 
-    ///
-    /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
-    /// constraint_datas).
-    ///
-    /// \param[in] G Symmetric PSD matrix representing the Delassus of the constraint problem.
-    /// \param[in] g Free constraint acceleration or velocity associted with the constraint problem.
-    /// \param[in] constraint_models Vector of constraint models.
-    /// \param[in] constraint_datas Vector of constraint datas.
-    /// \param[in] settings Settings for the PGS solver.
-    /// \param[in/out] result Solution to the constraint problem. Also contains the warmstart to
-    /// solve the problem.
-    ///
-    /// \returns True if the problem has converged.
+    /// \brief \copydoc Base::solve
     template<
       typename DelassusDerived,
       typename VectorLike,
@@ -124,31 +104,20 @@ namespace pinocchio
       typename ConstraintModelAllocator,
       typename ConstraintData,
       typename ConstraintDataAllocator>
-    bool solve(
-      const DelassusOperatorBase<DelassusDerived> & delassus,
+    bool solveImpl(
+      DelassusOperatorBase<DelassusDerived> & delassus,
       const Eigen::MatrixBase<VectorLike> & g,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const PGSSolverSettings & settings,
-      PGSSolverResult & result)
-    {
-      return solve(
-        delassus.derived().matrix(), g, constraint_models, constraint_datas, settings, result);
-    }
+      PGSSolverResult & result);
 
-    /// \brief Reset the constraint solver as if it has never run.
-    void reset()
+    /// \brief \copydoc Base::reset
+    void resetImpl()
     {
       stats.reset();
       m_workspace.reset();
       m_is_valid = false;
-    }
-
-    /// \brief Returns true if solver is in a valid state (it has solved a constraint problem).
-    /// If so, its stats are valid.
-    bool isValid() const
-    {
-      return m_is_valid;
     }
 
 #ifdef PINOCCHIO_WITH_COLLISION
@@ -171,13 +140,20 @@ namespace pinocchio
 
   }; // struct PGSConstraintSolverTpl
 
+  template<typename _Scalar>
+  struct traits<PGSSolverSettingsTpl<_Scalar>>
+  {
+    typedef _Scalar Scalar;
+  };
+
   ///
   /// \brief Settings for the PGS constraint solver loop.
   template<typename _Scalar>
-  struct PGSSolverSettingsTpl : ConstraintSolverSettingsBaseTpl<_Scalar>
+  struct PGSSolverSettingsTpl : ConstraintSolverSettingsBase<PGSSolverSettingsTpl<_Scalar>>
   {
     typedef _Scalar Scalar;
-    typedef ConstraintSolverSettingsBaseTpl<Scalar> Base;
+    typedef PGSSolverSettingsTpl Self;
+    typedef ConstraintSolverSettingsBase<Self> Base;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
 
     /// \brief Default constructor
@@ -204,10 +180,9 @@ namespace pinocchio
     {
     }
 
-    /// \brief Throws if settings are not valid.
-    void checkValidity() const
+    /// \brief \copydoc Base::checkValidity
+    void checkValidityImpl() const
     {
-      Base::checkValidity();
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
         over_relaxation < Scalar(2) && over_relaxation > Scalar(0),
         "over_relaxation should lie in ]0,2[.");
@@ -248,43 +223,49 @@ namespace pinocchio
     Scalar over_relaxation;
   }; // struct PGSSolverSettingsTpl
 
+  template<typename _Scalar, int _Options>
+  struct traits<PGSSolverResultTpl<_Scalar, _Options>>
+  {
+    typedef _Scalar Scalar;
+    static constexpr int Options = _Options;
+  };
+
   ///
   /// \brief Struct describing the solution of the PGS constraint solver
   /// after calling the `solve` method.
   /// Also contains the warmstart of the solution to the constraint problem.
   template<typename _Scalar, int _Options>
-  struct PGSSolverResultTpl : ConstraintSolverResultBaseTpl<_Scalar>
+  struct PGSSolverResultTpl : ConstraintSolverResultBase<PGSSolverResultTpl<_Scalar, _Options>>
   {
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
-    typedef ConstraintSolverResultBaseTpl<Scalar> Base;
+    typedef PGSSolverResultTpl Self;
+    typedef ConstraintSolverResultBase<Self> Base;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
     typedef EigenStorageTpl<VectorXs> VectorXsStorage;
 
-    using Base::isValid;
+    using Base::constraintSize;
 
     /// \brief Default constructor.
     PGSSolverResultTpl()
     : Base()
     , problem_size(0)
-    , primal_guess(std::nullopt)
-    , x(x_storage.map())
-    , y(y_storage.map())
+    , impulse_guess(std::nullopt)
     {
     }
 
-    /// \brief Reset the results.
-    /// \note This method does not touch the warmstart fields.
-    void reset(std::size_t problem_size_ = 0)
+    /// \brief \copydoc Base::constraintSize
+    int constraintSizeImpl() const
     {
-      Base::reset();
-      problem_size = problem_size_;
+      return static_cast<int>(problem_size);
+    }
 
-      primal_guess.reset();
-
-      resize(problem_size);
+    /// \brief \copydoc Base::reset
+    void resetImpl()
+    {
+      impulse_guess.reset();
 
       // set solution to nan - solver has not run
       x.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
@@ -317,22 +298,49 @@ namespace pinocchio
       dual_solution = y;
     }
 
-    /// \brief Retrieve constraint impulses.
+    /// \brief \copydoc Base::setConstraintImpulseGuess
+    template<typename VectorLike>
+    void setConstraintImpulseGuessImpl(const Eigen::MatrixBase<VectorLike> & impulse_guess_)
+    {
+      impulse_guess.emplace(impulse_guess_);
+    }
+
+    /// \brief \copydoc Base::clearConstraintImpulseGuess
+    void clearConstraintImpulseGuessImpl()
+    {
+      impulse_guess.reset();
+    }
+
+    /// \brief \copydoc Base::setConstraintVelocityGuess
+    template<typename VectorLike>
+    void setConstraintVelocityGuessImpl(const Eigen::MatrixBase<VectorLike> & /*velocity_guess_*/)
+    {
+      // do nothing, no velocity guess for PGS
+    }
+
+    /// \brief \copydoc Base::clearConstraintVelocityGuess
+    void clearConstraintVelocityGuessImpl()
+    {
+      // do nothing, no velocity guess for PGS
+    }
+
+    /// \brief \copydoc Base::retrieveConstraintImpulses
     template<typename VectorLike>
     void
-    retrieveConstraintImpulses(const Eigen::MatrixBase<VectorLike> & constraint_impulses_) const
+    retrieveConstraintImpulsesImpl(const Eigen::MatrixBase<VectorLike> & constraint_impulses_) const
     {
       auto & constraint_impulses = constraint_impulses_.const_cast_derived();
       constraint_impulses = x;
     }
 
-    /// \brief Retrieve constraint velocities.
+    /// \brief \copydoc Base::retrieveConstraintVelocities
     /// At the optimum we have y = Gx + g.
     /// WARNING: the PGS solver does not take into account desaxce terms for now.
     /// It only solves the CCP (not the NCP).
     template<typename VectorLike>
     void
-    retrieveConstraintVelocities(const Eigen::MatrixBase<VectorLike> & constraint_velocities_) const
+    retrieveConstraintVelocitiesImpl(
+      const Eigen::MatrixBase<VectorLike> & constraint_velocities_) const
     {
       auto & constraint_velocities = constraint_velocities_.const_cast_derived();
       constraint_velocities = y;
@@ -360,7 +368,7 @@ namespace pinocchio
     // Solution warmstart
 
     /// \brief Optional guess for the primal variable (impulses).
-    std::optional<RefConstVectorXs> primal_guess;
+    std::optional<RefConstVectorXs> impulse_guess;
 
     // ----------------------
     // Solution - output of the solver
@@ -369,20 +377,29 @@ namespace pinocchio
     /// \note Order of storage/map declaration is important!
     /// First declare the storage, then the map, otherwise map will point to nothing.
     VectorXsStorage x_storage;
-    typename VectorXsStorage::RefMapType x;
+    typename VectorXsStorage::RefMapType x = x_storage.map();
 
     /// \brief Dual solution.
     VectorXsStorage y_storage;
-    typename VectorXsStorage::RefMapType y;
+    typename VectorXsStorage::RefMapType y = y_storage.map();
   }; // struct PGSSolverResultTpl
+
+  template<typename _Scalar>
+  struct traits<PGSSolverStatsTpl<_Scalar>>
+  {
+    typedef _Scalar Scalar;
+  };
 
   ///
   /// \brief Struct to track per iteration progress of PGS constraint solver.
   template<typename _Scalar>
-  struct PGSSolverStatsTpl : ConstraintSolverStatsBaseTpl<_Scalar>
+  struct PGSSolverStatsTpl : ConstraintSolverStatsBase<PGSSolverStatsTpl<_Scalar>>
   {
     typedef _Scalar Scalar;
-    typedef ConstraintSolverStatsBaseTpl<Scalar> Base;
+    typedef PGSSolverStatsTpl Self;
+    typedef ConstraintSolverStatsBase<Self> Base;
+
+    using Base::reserve;
 
     /// \brief Default constructor.
     PGSSolverStatsTpl()
@@ -394,7 +411,19 @@ namespace pinocchio
     explicit PGSSolverStatsTpl(std::size_t max_iterations)
     : Base(max_iterations)
     {
-      Base::reserve(max_iterations);
+      reserve(max_iterations);
+    }
+
+    /// \brief \copydoc Base::reserve
+    void reserveImpl(std::size_t /*max_iterations*/)
+    {
+      // No extra fields to reserve for PGS stats.
+    }
+
+    /// \brief \copydoc Base::reset
+    void resetImpl()
+    {
+      // No extra fields to reset for PGS stats.
     }
 
     /// \brief How many iterations the solver ran.
@@ -422,29 +451,26 @@ namespace pinocchio
     {
       typedef _Scalar Scalar;
       static constexpr int Options = _Options;
-      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
+      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
       typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+      typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
+      typedef EigenStorageTpl<MatrixXs> MatrixXsStorage;
 
       /// \brief Constructor given problem_size.
       PGSSolverWorkspaceTpl(std::size_t problem_size = 0)
       : problem_size(problem_size)
-      , x(x_storage.map())
-      , x_previous(x_previous_storage.map())
-      , y(y_storage.map())
-      , rhs(rhs_storage.map())
-      , tmp(tmp_storage.map())
       {
-        reset(problem_size);
+        resize(problem_size);
+        reset();
       }
 
       /// \brief Reset the workspace.
-      void reset(std::size_t problem_size_ = 0)
+      void reset()
       {
-        problem_size = problem_size_;
-
         resize(problem_size);
 
 #ifndef NDEBUG
+        delassus_matrix.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
         x.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
         x_previous.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
         y.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
@@ -459,6 +485,7 @@ namespace pinocchio
         problem_size = problem_size_;
 
         Eigen::Index np = static_cast<Eigen::Index>(problem_size);
+        delassus_matrix_storage.resize(np, np);
         x_storage.resize(np);
         x_previous_storage.resize(np);
         y_storage.resize(np);
@@ -469,25 +496,29 @@ namespace pinocchio
       /// \brief Size of problem.
       std::size_t problem_size;
 
+      /// \brief Storage for the delassus matrix.
+      MatrixXsStorage delassus_matrix_storage;
+      typename MatrixXsStorage::RefMapType delassus_matrix = delassus_matrix_storage.map();
+
       /// \brief Primal variable (impulses) at current iteration.
       VectorXsStorage x_storage;
-      typename VectorXsStorage::RefMapType x;
+      typename VectorXsStorage::RefMapType x = x_storage.map();
 
       /// \brief Primal variable (impulses) at previous iteration.
       VectorXsStorage x_previous_storage;
-      typename VectorXsStorage::RefMapType x_previous;
+      typename VectorXsStorage::RefMapType x_previous = x_previous_storage.map();
 
       /// \brief Dual variable (constraint velocities) at current iteration.
       VectorXsStorage y_storage;
-      typename VectorXsStorage::RefMapType y;
+      typename VectorXsStorage::RefMapType y = y_storage.map();
 
       /// \brief Temporary vector for computations.
       VectorXsStorage rhs_storage;
-      typename VectorXsStorage::RefMapType rhs;
+      typename VectorXsStorage::RefMapType rhs = rhs_storage.map();
 
       /// \brief Temporary vector for computations.
       VectorXsStorage tmp_storage;
-      typename VectorXsStorage::RefMapType tmp;
+      typename VectorXsStorage::RefMapType tmp = tmp_storage.map();
     }; // struct PGSSolverWorkspaceTpl
   } // namespace internal
 

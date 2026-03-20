@@ -10,7 +10,6 @@ namespace pinocchio
   {
 
     // Forward declarations
-    void exposeConstraintSolverBases(); // Expose base classes first
     void exposePGSConstraintSolver();
     void exposeADMMConstraintSolver();
 #ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT
@@ -19,7 +18,6 @@ namespace pinocchio
 
     void exposeConstraintSolvers()
     {
-      exposeConstraintSolverBases(); // Must be called first!
       exposePGSConstraintSolver();
       exposeADMMConstraintSolver();
 #ifdef PINOCCHIO_WITH_CLARABEL_SUPPORT

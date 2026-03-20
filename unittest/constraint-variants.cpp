@@ -92,22 +92,24 @@ BOOST_AUTO_TEST_CASE(constraint_visitors)
   {
     ConstraintData constraint_data(rcm.createData());
     rcm.calc(model, data, rcd);
+    PointContactConstraintModel::EigenIndexVector cm_indexes, rcm_indexes;
     for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(); ++row_id)
     {
-      BOOST_CHECK(
-        constraint_model.getRowIndexes(model, data, constraint_data, row_id)
-        == rcm.getRowIndexes(model, data, rcd, row_id));
+      constraint_model.getRowIndexes(model, data, constraint_data, row_id, cm_indexes);
+      rcm.getRowIndexes(model, data, rcd, row_id, rcm_indexes);
+      BOOST_CHECK(cm_indexes == rcm_indexes);
     }
   }
 
   // Test getRowSparsityPattern
   {
     ConstraintData constraint_data(rcm.createData());
+    PointContactConstraintModel::BooleanVector cm_sparsity, rcm_sparsity;
     for (Eigen::Index row_id = 0; row_id < constraint_model.residualSize(); ++row_id)
     {
-      BOOST_CHECK(
-        constraint_model.getRowSparsityPattern(model, data, constraint_data, row_id)
-        == rcm.getRowSparsityPattern(model, data, rcd, row_id));
+      constraint_model.getRowSparsityPattern(model, data, constraint_data, row_id, cm_sparsity);
+      rcm.getRowSparsityPattern(model, data, rcd, row_id, rcm_sparsity);
+      BOOST_CHECK(cm_sparsity == rcm_sparsity);
     }
   }
 

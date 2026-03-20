@@ -96,8 +96,8 @@ BOOST_AUTO_TEST_CASE(test_cholesky_expression_to_dense)
   DelassusOperatorDense delassus_operator_dense = chol.getDelassusCholeskyExpression().dense();
   Eigen::MatrixXd true_delassus_dense = chol.getDelassusCholeskyExpression().matrix();
   Eigen::VectorXd true_compliance = chol.getDelassusCholeskyExpression().getCompliance();
-  Eigen::VectorXd true_damping = chol.getDelassusCholeskyExpression().getDamping();
-  true_delassus_dense -= true_damping.asDiagonal();
+  auto true_damping = chol.getDelassusCholeskyExpression().getDamping();
+  true_damping.subTo(true_delassus_dense);
   true_delassus_dense -= true_compliance.asDiagonal();
   DelassusOperatorDense true_delassus_operator_dense(true_delassus_dense);
   true_delassus_operator_dense.updateCompliance(true_compliance);

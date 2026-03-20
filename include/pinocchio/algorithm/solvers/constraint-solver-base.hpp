@@ -7,10 +7,12 @@
 #include <cstddef>
 #include <limits>
 #include <vector>
+#include <optional>
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/utils/check.hpp"
+#include "pinocchio/algorithm/delassus-operator.hpp"
 
 #ifdef PINOCCHIO_WITH_COLLISION
   #include <coal/timings.h>

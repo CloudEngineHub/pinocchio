@@ -424,12 +424,14 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
       BOOST_CHECK(
-        J_RF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero() != cm_RF.colwise_joint1_sparsity[k]);
+        J_RF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero()
+        != model.sparsity_pattern_vector[cm_RF.joint1_id][k]);
       BOOST_CHECK(
-        J_LF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero() != cm_LF.colwise_joint1_sparsity[k]);
+        J_LF_LOCAL.middleRows<3>(SE3::LINEAR).col(k).isZero()
+        != model.sparsity_pattern_vector[cm_LF.joint1_id][k]);
     }
-    BOOST_CHECK(cm_RF.colwise_joint2_sparsity.isZero());
-    BOOST_CHECK(cm_LF.colwise_joint2_sparsity.isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_RF.joint2_id].isZero());
+    BOOST_CHECK(model.sparsity_pattern_vector[cm_LF.joint2_id].isZero());
 
     const SE3 oMc1 = data.oMi[clm_RF_LF.joint1_id] * clm_RF_LF.joint1_placement;
     const SE3 oMc2 = data.oMi[clm_RF_LF.joint2_id] * clm_RF_LF.joint2_placement;
@@ -439,9 +441,11 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
     J_clm_LOCAL +=
       cross(cld_RF_LF.constraint_position_error, J6_RF_LOCAL.middleRows<3>(SE3::ANGULAR));
 
+    Model::EigenIndexVector colwise_span_indexes;
+    clm_RF_LF.getRowIndexes(model, data, cld_RF_LF, 0, colwise_span_indexes);
     for (Eigen::Index k = 0; k < model.nv; ++k)
     {
-      BOOST_CHECK(J_clm_LOCAL.col(k).isZero(0) != within(k, clm_RF_LF.colwise_span_indexes));
+      BOOST_CHECK(J_clm_LOCAL.col(k).isZero(0) != within(k, colwise_span_indexes));
     }
 
     // Check Jacobian vs sparse Jacobian computation
@@ -813,5 +817,30 @@ BOOST_AUTO_TEST_CASE(check_maps)
 }
 
 */
+
+BOOST_AUTO_TEST_CASE(compliance)
+{
+  pinocchio::Model model;
+  pinocchio::buildModels::humanoidRandom(model, true);
+
+  const std::string RF = "rleg6_joint";
+  PointAnchorConstraintModel cmodel(model, model.getJointId(RF), SE3::Random());
+
+  {
+    // check retrieve compliance
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == Eigen::VectorXd::Zero(cmodel.residualSize()));
+  }
+
+  {
+    // check set compliance
+    Eigen::VectorXd compliance_ref = Eigen::VectorXd::Random(cmodel.residualSize()).cwiseAbs();
+    cmodel.setCompliance(compliance_ref);
+    Eigen::VectorXd compliance(cmodel.residualSize());
+    cmodel.retrieveCompliance(compliance);
+    BOOST_CHECK(compliance == compliance_ref);
+  }
+}
 
 BOOST_AUTO_TEST_SUITE_END()
