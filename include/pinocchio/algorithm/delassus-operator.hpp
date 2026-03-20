@@ -32,7 +32,6 @@
 #include "pinocchio/utils/promote-static-eval.hpp"
 #include "pinocchio/utils/reference.hpp"
 #include "pinocchio/utils/size-in-bytes.hpp"
-#include "pinocchio/utils/template-template-parameter.hpp"
 
 #include "pinocchio/container/eigen-storage.hpp"
 
