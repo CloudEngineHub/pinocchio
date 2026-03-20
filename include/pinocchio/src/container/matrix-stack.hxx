@@ -1060,6 +1060,18 @@ namespace pinocchio
       std::for_each(begin(), end(), func);
     }
 
+    /// \brief Returns the current memory footprint of this object in bytes.
+    /// \details Sums up the sizes of all internal data members.
+    std::size_t sizeInBytes() const
+    {
+      std::size_t size = 0;
+      for (const auto & m : m_matrix_maps)
+      {
+        size += sizeof(Scalar) * std::size_t(m.rows() * m.cols());
+      }
+      return size;
+    }
+
   protected:
     MapVector m_matrix_maps;
   }; // struct MatrixStackTpl
