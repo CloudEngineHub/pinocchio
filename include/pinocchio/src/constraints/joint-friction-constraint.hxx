@@ -44,8 +44,6 @@ namespace pinocchio
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
 
-    static constexpr ConstraintFormulationLevel constraint_formulation_level =
-      ConstraintFormulationLevel::VELOCITY_LEVEL;
     static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::CONSTANT;
 
     static constexpr bool has_baumgarte_corrector = false;

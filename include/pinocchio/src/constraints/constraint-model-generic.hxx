@@ -38,7 +38,6 @@ namespace pinocchio
     typedef _Scalar Scalar;
     static constexpr int Options = _Options;
 
-    // static constexpr ConstraintFormulationLevel constraint_formulation_level NOT USED
     static constexpr ConstraintSizeType constraint_size_type = ConstraintSizeType::GENERAL;
 
     // The generic behave raise an error if the underlying class does not have baumgarte
