@@ -511,7 +511,7 @@ namespace pinocchio
 
   using DiagonalDispatcher =
     BlockDiagonalDispatcherTag<BlockDiagonalDispatcherType::DIAGONAL_DISPATCH>;
-  using IPMBlockDiagonalDispatcher =
+  using BlockDiagonalDispatcher =
     BlockDiagonalDispatcherTag<BlockDiagonalDispatcherType::IPM_DISPATCH>;
 
   ///
@@ -1011,7 +1011,7 @@ namespace pinocchio
         }
 
         if constexpr (std::is_same<
-                        BlockDiagonalDispatcherTag<op>, IPMBlockDiagonalDispatcher>::value)
+                        BlockDiagonalDispatcherTag<op>, BlockDiagonalDispatcher>::value)
         {
           // for ipm, point contact -> 3x3 block
           block_infos.emplace_back(MatrixBlockType::Plain, ConstraintModel::Size);
@@ -1039,7 +1039,7 @@ namespace pinocchio
         }
 
         if constexpr (std::is_same<
-                        BlockDiagonalDispatcherTag<op>, IPMBlockDiagonalDispatcher>::value)
+                        BlockDiagonalDispatcherTag<op>, BlockDiagonalDispatcher>::value)
         {
           block_infos.emplace_back(MatrixBlockType::Diagonal, cmodel.residualSize());
         }
@@ -1066,7 +1066,7 @@ namespace pinocchio
         }
 
         if constexpr (std::is_same<
-                        BlockDiagonalDispatcherTag<op>, IPMBlockDiagonalDispatcher>::value)
+                        BlockDiagonalDispatcherTag<op>, BlockDiagonalDispatcher>::value)
         {
           block_infos.emplace_back(MatrixBlockType::Diagonal, cmodel.residualSize());
         }
@@ -1157,7 +1157,7 @@ namespace pinocchio
     typedef typename BlockDiagonalMatrix::MatrixBlockElement MatrixBlockElement;
     std::vector<MatrixBlockElement> block_diagonal_infos;
     computeBlockDiagonalPattern(
-      constraint_models, block_diagonal_infos, IPMBlockDiagonalDispatcher());
+      constraint_models, block_diagonal_infos, BlockDiagonalDispatcher());
     block_diagonal_matrix.rebuild(block_diagonal_infos);
     for (auto & block : block_diagonal_matrix.blocks())
     {
