@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(ball)
     const Force fext = Force::Zero();
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt, false, true);
+    test(q0, v0, tau0, fext, dt, false);
 
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.velocity_solution.isZero(2e-10));
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(ball)
     BOOST_CHECK(test.v_next.isZero(2e-10));
 
     // Test warmstart
-    test(q0, v0, tau0, fext, dt, true, false);
+    test(q0, v0, tau0, fext, dt, true);
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.velocity_solution.isZero(2e-10));
     f_tot = test.impulse_solution.head(3) / dt;
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(box)
     const Force fext = Force::Zero();
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt, false, true);
+    test(q0, v0, tau0, fext, dt, false);
 
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.velocity_solution.isZero(2e-10));
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(box)
     fext.linear() *= scaling * f_sliding;
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt, false, true);
+    test(q0, v0, tau0, fext, dt, false);
 
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.velocity_solution.isZero(1e-8));
@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE(box)
     fext.linear() *= scaling * f_sliding;
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt, false, true);
+    test(q0, v0, tau0, fext, dt, false);
 
     BOOST_CHECK(test.has_converged == true);
     const Force::Vector3 f_tot_ref = -box_mass * Model::gravity981 - 1 / scaling * fext.linear();
@@ -372,7 +372,7 @@ BOOST_AUTO_TEST_CASE(stack_of_boxes)
     const Force fext = Force::Zero();
 
     TestBox test(model, constraint_models);
-    test(q0, v0, tau0, fext, dt, false, true);
+    test(q0, v0, tau0, fext, dt, false);
 
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(test.velocity_solution.isZero(2e-10));
