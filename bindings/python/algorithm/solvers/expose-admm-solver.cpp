@@ -83,6 +83,7 @@ namespace pinocchio
 
     void exposeADMMSolverSettings()
     {
+#ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
       bp::class_<ADMMSolverSettings>(
         "ADMMSolverSettings", "Settings for the ADMM constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor with default settings."))
@@ -126,6 +127,7 @@ namespace pinocchio
           "Maximum number of Delassus decomposition updates")
         .PINOCCHIO_ADD_PROPERTY(
           ADMMSolverSettings, anderson_capacity, "Anderson acceleration capacity");
+#endif // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
     }
 
     // ============================================================================
@@ -169,8 +171,9 @@ namespace pinocchio
           ADMMSolverResult, spectral_rho_power, "Final spectral rho power")
         .PINOCCHIO_ADD_PROPERTY_READONLY(ADMMSolverResult, mu_prox, "Final proximal parameter")
 
-        .def("resize", &ADMMSolverResult::resize, bp::args("self", "problem_size"),
-             "Resize solution vectors")
+        .def(
+          "resize", &ADMMSolverResult::resize, bp::args("self", "problem_size"),
+          "Resize solution vectors")
 
         // Retrieve methods
         .def(

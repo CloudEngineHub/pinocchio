@@ -38,6 +38,7 @@ namespace pinocchio
 
     void exposePGSSolverSettings()
     {
+#ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
       bp::class_<PGSSolverSettings>(
         "PGSSolverSettings", "Settings for the PGS constraint solver.",
         bp::init<>(bp::arg("self"), "Default constructor with default settings."))
@@ -49,6 +50,7 @@ namespace pinocchio
         .PINOCCHIO_ADD_PROPERTY(
           PGSSolverSettings, over_relaxation,
           "Over-relaxation parameter (should be in ]0,2[, default 1)");
+#endif // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
     }
 
     // ============================================================================
