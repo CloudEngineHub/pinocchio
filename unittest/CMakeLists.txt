@@ -425,4 +425,9 @@ if(BUILD_WITH_RTSAN)
   get_cpp_test_name(dynamic-allocations ${CMAKE_CURRENT_SOURCE_DIR} test_name)
   target_compile_options(${test_name} PRIVATE -fsanitize=realtime)
   target_link_options(${test_name} PRIVATE -fsanitize=realtime)
+  # On osx-arm64 mutex are called to initialize some static variables.
+  # We use a suppression file to make this test pass.
+  if(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+    set_tests_properties(${test_name} PROPERTIES ENVIRONMENT_MODIFICATION "RTSAN_OPTIONS=path_list_append:suppressions=${CMAKE_CURRENT_SOURCE_DIR}/dynamic-allocations-osx-arm64.supp")
+  endif()
 endif()
