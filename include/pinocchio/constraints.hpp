@@ -102,6 +102,7 @@
 
 #include "pinocchio/src/constraints/constraint-ordering.hxx"
 #include "pinocchio/src/constraints/contact-info.hxx"
+#include "pinocchio/src/constraints/rigid-constraint-conversion.hxx"
 
 #include "pinocchio/src/constraints/utils.hxx"
 // IWYU pragma: end_exports
