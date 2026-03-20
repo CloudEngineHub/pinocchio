@@ -406,7 +406,7 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/frame-anchor-constraint.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/joint-friction-constraint.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/contact-info.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/contact-info.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/constraint-model-generic.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/rigid-constraint-conversion.hxx)
 
 set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
