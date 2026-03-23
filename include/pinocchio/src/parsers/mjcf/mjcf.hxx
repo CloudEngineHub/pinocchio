@@ -32,7 +32,7 @@ namespace pinocchio
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
 
@@ -55,7 +55,7 @@ namespace pinocchio
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
@@ -81,7 +81,7 @@ namespace pinocchio
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -108,14 +108,6 @@ namespace pinocchio
       std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
       const bool verbose = false);
 
-    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    void buildModelFromXML(
-      const std::string & xmlStream,
-      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
-      std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
-      const bool verbose = false);
-
     ///
     /// \brief Build the model from a MJCF file with a particular joint as root of the model tree
     /// and with point and frame anchor cosntraints.
@@ -133,15 +125,6 @@ namespace pinocchio
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     void buildModel(
       const std::string & filename,
-      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
-      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
-      std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
-      const bool verbose = false);
-
-    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    void buildModelFromXML(
-      const std::string & xmlStream,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
@@ -166,16 +149,6 @@ namespace pinocchio
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     void buildModel(
       const std::string & filename,
-      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
-      const std::string & rootJointName,
-      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
-      std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
-      const bool verbose = false);
-
-    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    void buildModelFromXML(
-      const std::string & xmlStream,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,

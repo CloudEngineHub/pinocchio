@@ -26,7 +26,7 @@ namespace pinocchio
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose)
     {
@@ -37,11 +37,11 @@ namespace pinocchio
 
       typedef ::pinocchio::mjcf::details::MjcfGraph MjcfGraph;
 
-      MjcfGraph graph(visitor, xmlStream);
+      MjcfGraph graph(visitor, filename);
       if (verbose)
         visitor.log = &std::cout;
 
-      graph.parseGraphFromXML(xmlStream);
+      graph.parseGraphFromXML(filename);
 
       // Use the Mjcf graph to create the model
       graph.parseRootTree();
@@ -52,7 +52,7 @@ namespace pinocchio
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     void buildConstraintModelsFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
       std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
@@ -64,12 +64,12 @@ namespace pinocchio
       ::pinocchio::mjcf::details::MjcfVisitor visitor(mjcf_model);
 
       typedef ::pinocchio::mjcf::details::MjcfGraph MjcfGraph;
-      MjcfGraph graph(visitor, xmlStream);
+      MjcfGraph graph(visitor, filename);
 
       if (verbose)
         visitor.log = &std::cout;
 
-      graph.parseGraphFromXML(xmlStream);
+      graph.parseGraphFromXML(filename);
 
       // Use the Mjcf graph to create the model
       graph.parseContactInformation(
@@ -78,27 +78,27 @@ namespace pinocchio
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     std::vector<PointAnchorConstraintModel> & buildConstraintModelsFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
       const bool verbose)
     {
       std::vector<FrameAnchorConstraintModel> frame_anchor_constraint_models;
       buildConstraintModelsFromXML(
-        xmlStream, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
+        filanem, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
       return point_anchor_constraint_models;
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     std::vector<FrameAnchorConstraintModel> & buildConstraintModelsFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
       const bool verbose)
     {
       std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
       buildConstraintModelsFromXML(
-        xmlStream, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
+        filename, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
       return frame_anchor_constraint_models;
     }
 
@@ -114,12 +114,12 @@ namespace pinocchio
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose)
     {
-      return buildModelFromXML(xmlStream, rootJoint, "root_joint", model, verbose);
+      return buildModelFromXML(filename, rootJoint, "root_joint", model, verbose);
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
@@ -135,7 +135,7 @@ namespace pinocchio
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -154,11 +154,11 @@ namespace pinocchio
 
       typedef ::pinocchio::mjcf::details::MjcfGraph MjcfGraph;
 
-      MjcfGraph graph(visitor, xmlStream);
+      MjcfGraph graph(visitor, filename);
       if (verbose)
         visitor.log = &std::cout;
 
-      graph.parseGraphFromXML(xmlStream);
+      graph.parseGraphFromXML(filename);
 
       // Use the Mjcf graph to create the model
       boost::optional<const JointModel &> root_joint_opt(root_joint);
