@@ -51,6 +51,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - `impulseDynamics`
   - `getKKTContactDynamicMatrixInverse`
 - Replace headers guards by `#pragma once`
+- Change arguments in `initConstraintDynamics`
+- Change arguments in `BaumgarteCorrectorParametersTpl` constructor : scalar are used instead of vectors
+- Deprecate `ContactCholeskyDecompositionTpl::allocate` replaced by `ContactCholeskyDecompositionTpl::rebuild`
+- Change arguments in `ContactCholeskyDecompositionTpl` constructor
 
 ### Removed
 - Remove unused headers `deprecated-macros.hpp` and `deprecated-namespaces.hpp`

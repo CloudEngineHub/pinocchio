@@ -40,11 +40,33 @@ HPP-FCL has been replaced by coal:
 - Deprecate `pinocchio::toFclTransform3f` replaced by `pinocchio::toCoalTransform3s`
 - Replace `PINOCCHIO_WITH_HPP_FCL` by `PINOCCHIO_WITH_COLLISION`
 
+Constraints API changes: 
+  - Add `std::vector<ConstraintData, ConstraintDataAllocator> contact_datas` in `initConstraintDynamics` method
+  - Change `BaumgarteCorrectorParametersTpl` constructor scalar are used instead of vectors
+
+`RigidConstraintModel` internal API has changed:
+  - Remove `colwise_joint1_sparsity`
+  - Remove `colwise_joint2_sparsity`
+  - Remove `joint1_span_indexes`
+  - Remove `joint2_span_indexes`
+
+ContactCholeskyDecompositionTpl changes :
+- Deprecate `ContactCholeskyDecompositionTpl::allocate` replaced by `ContactCholeskyDecompositionTpl::rebuild`
+  - Add `std::vector<ConstraintModel, ConstraintModelAllocator>` 
+  - Add `std::vector<ConstraintData, ConstraintDataAllocator>`
+- ContactCholeskyDecompositionTpl constructor : 
+  - Add `DataTpl<S1, O1, JointCollectionTpl>`
+  - Add `std::vector<ConstraintData, ConstraintDataAllocator>`
+
 \section PortingPy4 Python changes
 
 HPP-FCL has been replaced by coal:
 - Deprecate `pinocchio.WITH_HPP_FCL` and `pinocchio.WITH_HPP_FCL_BINDINGS` replaced by `pinocchio.WITH_COLLISION`
 - Deprecate `pinocchio.hppfcl` replaced by `pinocchio.coal`
+
+Constraints API changes: 
+  - Add `contact_datas` in `initConstraintDynamics` method
+  - Change `BaumgarteCorrectorParameters` constructor scalar are used instead of vectors
 
 # Porting from Pinocchio 2 to 3
 
