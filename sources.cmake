@@ -308,7 +308,6 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/utils/openmp.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/joints-motion.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/serialization/constraints-model.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/utils/template-template-parameter.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/utils/eigen-fix.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint/joint-composite.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/details/matrix-inverse-4x4.hxx

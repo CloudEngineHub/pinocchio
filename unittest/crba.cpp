@@ -12,6 +12,7 @@
 
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/algorithm/crba.hpp"
+#include "pinocchio/algorithm/rnea.hpp"
 #include "pinocchio/algorithm/centroidal.hpp"
 #include "pinocchio/algorithm/jacobian.hpp"
 #include "pinocchio/algorithm/joint-configuration.hpp"
