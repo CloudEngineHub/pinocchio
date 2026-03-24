@@ -151,7 +151,7 @@ namespace pinocchio
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    void buildModel(
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -159,7 +159,7 @@ namespace pinocchio
       std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
       const bool verbose)
     {
-      buildModel(
+      return buildModel(
         filename, rootJoint, "root_joint", model, point_anchor_constraint_models,
         frame_anchor_constraint_models, verbose);
     }
@@ -214,7 +214,7 @@ namespace pinocchio
       std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose)
     {
-      buildModelFromXML(filename, model, rigid_constraint_model, verbose);
+      return buildModelFromXML(filename, model, rigid_constraint_model, verbose);
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
@@ -248,7 +248,7 @@ namespace pinocchio
       std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose)
     {
-      buildModelFromXML(filename, rootJoint, model, rigid_constraint_model, verbose);
+      return buildModelFromXML(filename, rootJoint, model, rigid_constraint_model, verbose);
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
@@ -259,7 +259,8 @@ namespace pinocchio
       std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose)
     {
-      buildModelFromXML(filename, rootJoint, "root_joint", model, rigid_constraint_model, verbose);
+      return buildModelFromXML(
+        filename, rootJoint, "root_joint", model, rigid_constraint_model, verbose);
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
@@ -271,7 +272,8 @@ namespace pinocchio
       std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose)
     {
-      buildModelFromXML(filename, rootJoint, rootJointName, model, rigid_constraint_model, verbose);
+      return buildModelFromXML(
+        filename, rootJoint, rootJointName, model, rigid_constraint_model, verbose);
     }
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
