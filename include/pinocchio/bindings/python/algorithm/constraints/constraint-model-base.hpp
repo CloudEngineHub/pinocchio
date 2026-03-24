@@ -180,6 +180,10 @@ namespace pinocchio
           return self.residualSize(CurrentSelection());
         case ConstraintSelectionType::MAXIMAL:
           return self.residualSize(MaximalSelection());
+        default: {
+          assert(false && "must never happened");
+          break;
+        }
         }
       }
 
@@ -191,6 +195,10 @@ namespace pinocchio
           return self.symmetricConeResidualSize(CurrentSelection());
         case ConstraintSelectionType::MAXIMAL:
           return self.symmetricConeResidualSize(MaximalSelection());
+        default: {
+          assert(false && "must never happened");
+          break;
+        }
         }
       }
 
@@ -202,6 +210,10 @@ namespace pinocchio
           return self.symmetricConeResidualScalingSize(CurrentSelection());
         case ConstraintSelectionType::MAXIMAL:
           return self.symmetricConeResidualScalingSize(MaximalSelection());
+        default: {
+          assert(false && "must never happened");
+          break;
+        }
         }
       }
 
@@ -230,6 +242,10 @@ namespace pinocchio
           ResidualVectorType resms(self.residualSize(MaximalSelection()));
           self.retrieveCompliance(resms, MaximalSelection());
           return resms;
+        }
+        default: {
+          assert(false && "must never happened");
+          break;
         }
         }
       }
