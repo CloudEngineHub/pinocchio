@@ -30,6 +30,9 @@ namespace pinocchio
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
 
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, ModelTpl<Scalar, Options, JointCollectionTpl> &, const
+    /// bool)
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
       const std::string & filename,
@@ -53,6 +56,10 @@ namespace pinocchio
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
 
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, const typename ModelTpl<Scalar, Options,
+    /// JointCollectionTpl>::JointModel &, ModelTpl<Scalar, Options, JointCollectionTpl>
+    /// &, const bool)
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
       const std::string & filename,
@@ -79,6 +86,10 @@ namespace pinocchio
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
 
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, const typename ModelTpl<Scalar, Options,
+    /// JointCollectionTpl>::JointModel &, const std::string& ModelTpl<Scalar, Options,
+    /// JointCollectionTpl> &, const bool)
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
       const std::string & filename,
@@ -174,6 +185,9 @@ namespace pinocchio
       std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose = false);
 
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, ModelTpl<Scalar, Options, JointCollectionTpl> &,
+    /// std::vector<RigidConstraintModel> &, const bool)
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
       const std::string & filename,
@@ -201,6 +215,10 @@ namespace pinocchio
       std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose = false);
 
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, const typename ModelTpl<Scalar, Options,
+    /// JointCollectionTpl>::JointModel &, ModelTpl<Scalar, Options,
+    /// JointCollectionTpl> &, std::vector<RigidConstraintModel> &, const bool)
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
       const std::string & filename,
@@ -231,6 +249,10 @@ namespace pinocchio
       std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose = false);
 
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, const typename ModelTpl<Scalar, Options,
+    /// JointCollectionTpl>::JointModel &, const std::string&, ModelTpl<Scalar, Options,
+    /// JointCollectionTpl> &, std::vector<RigidConstraintModel> &, const bool)
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
       const std::string & filename,
