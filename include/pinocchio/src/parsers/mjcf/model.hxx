@@ -226,7 +226,7 @@ namespace pinocchio
     {
       std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
       std::vector<FrameAnchorConstraintModel> frame_anchor_constraint_models;
-      buildModelFromXML(
+      buildModel(
         filename, model, point_anchor_constraint_models, frame_anchor_constraint_models, verbose);
 
       for (const auto & pacm : point_anchor_constraint_models)
@@ -285,7 +285,7 @@ namespace pinocchio
     {
       std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
       std::vector<FrameAnchorConstraintModel> frame_anchor_constraint_models;
-      buildModelFromXML(
+      buildModel(
         filename, rootJoint, rootJointName, model, point_anchor_constraint_models,
         frame_anchor_constraint_models, verbose);
 
