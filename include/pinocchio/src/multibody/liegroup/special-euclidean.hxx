@@ -406,6 +406,7 @@ namespace pinocchio
         // Angular
         TM(2, 2) += q[3];
         TM(3, 2) -= q[2];
+        break;
       default:
         assert(false && "Wrong Op requesed value");
         break;
@@ -438,6 +439,7 @@ namespace pinocchio
       case RMTO:
         Mout.template topRows<2>() -= R * Min.template topRows<2>();
         Mout.template bottomRows<2>() -= R.template rightCols<1>() * Min.template bottomRows<1>();
+        break;
       default:
         assert(false && "Wrong Op requesed value");
         break;
@@ -470,6 +472,7 @@ namespace pinocchio
       case RMTO:
         Mout.template topRows<2>() -= RT * Min.template topRows<2>();
         Mout.template bottomRows<1>() -= RT.template bottomRows<1>() * Min.template bottomRows<2>();
+        break;
       default:
         assert(false && "Wrong Op requesed value");
         break;
@@ -911,6 +914,7 @@ namespace pinocchio
       case RMTO:
         TM.template topLeftCorner<3, 3>() -= quat.matrix();
         TM.template bottomRightCorner<4, 3>() -= TMq;
+        break;
       default:
         assert(false && "Wrong Op requesed value");
         break;
@@ -944,6 +948,7 @@ namespace pinocchio
       case RMTO:
         Mout.template topRows<3>() -= quat.matrix() * Min.template topRows<3>();
         Mout.template bottomRows<4>() -= TMq * Min.template bottomRows<3>();
+        break;
       default:
         assert(false && "Wrong Op requesed value");
         break;
@@ -977,6 +982,7 @@ namespace pinocchio
       case RMTO:
         Mout.template topRows<3>() -= quat.matrix().transpose() * Min.template topRows<3>();
         Mout.template bottomRows<3>() -= TMq.transpose() * Min.template bottomRows<4>();
+        break;
       default:
         assert(false && "Wrong Op requesed value");
         break;
