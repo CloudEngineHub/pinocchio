@@ -329,7 +329,7 @@ namespace pinocchio
           bool make_parent = true;
           int nParents = 1;
 
-          JointIndex parentOrderId, link_index, currentJointOrderId;
+          JointIndex parentOrderId, link_index;
           // Find is the link has multiple parents
           // If yes, one parent would create chain, while other parents would create constraints
           // If there is guidance, use guidance to choose parent which creates chain
@@ -344,11 +344,6 @@ namespace pinocchio
             parentOrderId = (parentOrderWithGuidance.at(link_index));
             multiple_parents = true;
             const VectorOfStrings & parentsOfChild = parentOfLinks.find(childNameOrig)->second;
-
-            VectorOfStrings::const_iterator currentJointIt =
-              std::find(parentsOfChild.cbegin(), parentsOfChild.cend(), jointName);
-            currentJointOrderId =
-              static_cast<JointIndex>(std::distance(parentsOfChild.cbegin(), currentJointIt));
 
             if (jointName == parentsOfChild.at(parentOrderId))
             {
