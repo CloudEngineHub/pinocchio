@@ -256,6 +256,8 @@ if(BUILD_WITH_COLLISION_SUPPORT)
   pinocchio_config(collision ${COLLISION_LIB_NAME})
 
   target_compile_definitions(${COLLISION_LIB_NAME} PUBLIC PINOCCHIO_WITH_COLLISION)
+  # DEPRECATED: Setup back compatibility define
+  target_compile_definitions(${COLLISION_LIB_NAME} PUBLIC PINOCCHIO_WITH_HPP_FCL)
   target_link_libraries(${COLLISION_LIB_NAME} PUBLIC ${PROJECT_NAME}_default coal::coal)
 
   # Define the collision parallel target
