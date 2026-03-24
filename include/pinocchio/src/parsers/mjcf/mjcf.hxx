@@ -101,7 +101,7 @@ namespace pinocchio
     /// \param[in] verbose Print parsing info.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    void buildModel(
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
@@ -123,7 +123,7 @@ namespace pinocchio
     /// \param[in] verbose Print parsing info.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    void buildModel(
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -147,7 +147,7 @@ namespace pinocchio
     /// \param[in] verbose Print parsing info.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    void buildModel(
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
@@ -168,15 +168,15 @@ namespace pinocchio
     /// \param[in] verbose Print parsing info.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    PINOCCHIO_UNSUPPORTED void buildModel(
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose = false);
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    PINOCCHIO_UNSUPPORTED void buildModelFromXML(
-      const std::string & xmlStream,
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
+      const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose = false);
@@ -194,7 +194,7 @@ namespace pinocchio
     /// \param[in] verbose Print parsing info.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    PINOCCHIO_UNSUPPORTED void buildModel(
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -202,8 +202,8 @@ namespace pinocchio
       const bool verbose = false);
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    PINOCCHIO_UNSUPPORTED void buildModelFromXML(
-      const std::string & xmlStream,
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
+      const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<RigidConstraintModel> & rigid_constraint_model,
@@ -223,7 +223,7 @@ namespace pinocchio
     /// \param[in] verbose Print parsing info.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    PINOCCHIO_UNSUPPORTED void buildModel(
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
       const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
@@ -232,8 +232,8 @@ namespace pinocchio
       const bool verbose = false);
 
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    PINOCCHIO_UNSUPPORTED void buildModelFromXML(
-      const std::string & xmlStream,
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
+      const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
