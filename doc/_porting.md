@@ -63,6 +63,7 @@ ContactCholeskyDecompositionTpl changes :
 HPP-FCL has been replaced by coal:
 - Deprecate `pinocchio.WITH_HPP_FCL` and `pinocchio.WITH_HPP_FCL_BINDINGS` replaced by `pinocchio.WITH_COLLISION`
 - Deprecate `pinocchio.hppfcl` replaced by `pinocchio.coal`
+    - Deprecate `buildModelFromMJCF(filename, root_joint, root_joint_name)` replaced by `buildModelFromMJCFAndRootJoint` and `buildModelAndLegacyConstraintsFromMJCF`
 
 Constraints API changes: 
   - Add `contact_datas` in `initConstraintDynamics` method
