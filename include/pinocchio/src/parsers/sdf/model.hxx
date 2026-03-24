@@ -824,5 +824,118 @@ namespace pinocchio
       model = visitor.model;
       return model;
     }
+
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
+      const std::string & xmlStream,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
+      const std::string & rootJointName,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & constraint_models,
+      const std::string & rootLinkName,
+      const std::vector<std::string> & parentGuidance,
+      const bool verbose)
+    {
+      std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
+      buildModelFromXML(
+        xmlStream, rootJoint, rootJointName, model, point_anchor_constraint_models, rootLinkName,
+        parentGuidance, verbose);
+      for (const auto & pacm : point_anchor_constraint_models)
+      {
+        constraint_models.push_back(convertToRigidConstraintModel(model, pacm));
+      }
+      return model;
+    }
+
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
+      const std::string & xmlStream,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & constraint_models,
+      const std::string & rootLinkName,
+      const std::vector<std::string> & parentGuidance,
+      const bool verbose)
+    {
+      return buildModelFromXML(
+        xmlStream, rootJoint, "root_joint", model, constraint_models, rootLinkName, parentGuidance,
+        verbose);
+    }
+
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
+      const std::string & filename,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
+      const std::string & rootJointName,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & constraint_models,
+      const std::string & rootLinkName,
+      const std::vector<std::string> & parentGuidance,
+      const bool verbose)
+    {
+      std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
+      buildModel(
+        filename, rootJoint, rootJointName, model, point_anchor_constraint_models, rootLinkName,
+        parentGuidance, verbose);
+      for (const auto & pacm : point_anchor_constraint_models)
+      {
+        constraint_models.push_back(convertToRigidConstraintModel(model, pacm));
+      }
+      return model;
+    }
+
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
+      const std::string & filename,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & constraint_models,
+      const std::string & rootLinkName,
+      const std::vector<std::string> & parentGuidance,
+      const bool verbose)
+    {
+      return buildModel(
+        filename, rootJoint, "root_joint", model, constraint_models, rootLinkName, parentGuidance,
+        verbose);
+    }
+
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
+      const std::string & xmlStream,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & constraint_models,
+      const std::string & rootLinkName,
+      const std::vector<std::string> & parentGuidance,
+      const bool verbose)
+    {
+      std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
+      buildModelFromXml(
+        xmlStream, model, point_anchor_constraint_models, rootLinkName, parentGuidance, verbose);
+      for (const auto & pacm : point_anchor_constraint_models)
+      {
+        constraint_models.push_back(convertToRigidConstraintModel(model, pacm));
+      }
+      return model;
+    }
+
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
+      const std::string & filename,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & constraint_models,
+      const std::string & rootLinkName,
+      const std::vector<std::string> & parentGuidance,
+      const bool verbose)
+    {
+      std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
+      buildModel(
+        filename, model, point_anchor_constraint_models, rootLinkName, parentGuidance, verbose);
+      for (const auto & pacm : point_anchor_constraint_models)
+      {
+        constraint_models.push_back(convertToRigidConstraintModel(model, pacm));
+      }
+      return model;
+    }
+
   } // namespace sdf
 } // namespace pinocchio
