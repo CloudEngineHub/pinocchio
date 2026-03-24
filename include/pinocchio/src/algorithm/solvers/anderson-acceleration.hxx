@@ -22,7 +22,6 @@ namespace pinocchio
     AndersonAccelerationTpl(std::size_t problem_size, std::size_t capacity)
     : details(problem_size, capacity)
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(capacity >= 0, "capacity needs to be positive");
       this->reserve(problem_size, capacity);
     }
 
