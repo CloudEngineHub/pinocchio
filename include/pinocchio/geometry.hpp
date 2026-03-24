@@ -16,7 +16,7 @@
 
 #include <Eigen/Core>
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/variant.hpp>
 #include <boost/foreach.hpp>
 
