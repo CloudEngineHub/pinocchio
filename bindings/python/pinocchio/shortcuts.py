@@ -371,7 +371,7 @@ def buildModelsFromMJCF(filename, *args, **kwargs):
         else:
             kwargs[key] = arg
 
-    return _buildModelsAndConstraintsFromMJCF(filename, **kwargs)
+    return _buildModelsFromMJCF(filename, **kwargs)
 
 
 def _buildModelsFromMJCF(

@@ -49,7 +49,7 @@ class TestADMM(TestCase):
 
         # Parsing model, constraint models and geometry model from xml description
         model, constraint_models_dict, geom_model, visual_model = (
-            pin.buildModelsFromMJCF(model_path)
+            pin.buildModelsAndConstraintsFromMJCF(model_path)
         )
 
         # Adding all constraintds would be
