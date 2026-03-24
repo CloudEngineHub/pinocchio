@@ -39,8 +39,8 @@ namespace pinocchio
         RowsAtCompileTime,
         ColsAtCompileTime,
         ((ColsAtCompileTime == 1 && RowsAtCompileTime == 1) || ColsAtCompileTime == 1)
-          ? Eigen::ColMajor
-        : RowsAtCompileTime == 1 ? Eigen::RowMajor
+          ? static_cast<int>(Eigen::ColMajor)
+        : RowsAtCompileTime == 1 ? static_cast<int>(Eigen::RowMajor)
                                  : PlainMatrix::Options,
         MaxRowsAtCompileTime,
         MaxColsAtCompileTime>
@@ -215,19 +215,19 @@ namespace pinocchio
         typename Lhs::Scalar,
         RowsAtCompileTime,
         InnerDimensionAtCompileTime,
-        ColsAtCompileTime == 1 ? Eigen::ColMajor : LhsPlain_::Options>
+        ColsAtCompileTime == 1 ? static_cast<int>(Eigen::ColMajor) : LhsPlain_::Options>
         PlainLhs;
       typedef Eigen::Matrix<
         typename Rhs::Scalar,
         InnerDimensionAtCompileTime,
         ColsAtCompileTime,
-        ColsAtCompileTime == 1 ? Eigen::ColMajor : RhsPlain_::Options>
+        ColsAtCompileTime == 1 ? static_cast<int>(Eigen::ColMajor) : RhsPlain_::Options>
         PlainRhs;
       typedef Eigen::Matrix<
         typename Result::Scalar,
         RowsAtCompileTime,
         ColsAtCompileTime,
-        ColsAtCompileTime == 1 ? Eigen::ColMajor : ResultPlain_::Options>
+        ColsAtCompileTime == 1 ? static_cast<int>(Eigen::ColMajor) : ResultPlain_::Options>
         PlainResult;
     };
 
