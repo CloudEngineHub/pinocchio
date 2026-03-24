@@ -14,10 +14,6 @@
 namespace pinocchio
 {
 
-  // TODO Remove when API is stabilized
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-
   ///
   /// \brief Converts a PointAnchorConstraintModelTpl to a RigidConstraintModelTpl with contact
   ///        type CONTACT_3D.
@@ -102,7 +98,5 @@ namespace pinocchio
 
     return res;
   }
-
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
 } // namespace pinocchio

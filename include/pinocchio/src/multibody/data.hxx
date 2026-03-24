@@ -88,11 +88,7 @@ namespace pinocchio
 
     typedef MatrixStackTpl<MatrixXs> DynamicMatrixStack;
 
-    // TODO Remove when API is stabilized
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     /// \brief Vector of pinocchio::JointData associated to the pinocchio::JointModel stored in
     /// model

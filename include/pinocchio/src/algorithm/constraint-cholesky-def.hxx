@@ -14,10 +14,6 @@
 namespace pinocchio
 {
 
-  // TODO Remove when API is stabilized
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
-
   template<typename Scalar, int Options>
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
   ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
@@ -380,8 +376,7 @@ namespace pinocchio
       DUt_partial.noalias() =
         U.row(j).segment(j + 1, slice_dim).transpose().cwiseProduct(D.segment(j + 1, slice_dim));
 
-      D[j] = -delassus_block(j, j)
-             - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
+      D[j] = -delassus_block(j, j) - U.row(j).segment(j + 1, slice_dim).dot(DUt_partial);
 
       assert(
         check_expression_if_real<Scalar>(D[j] != Scalar(0))
@@ -1021,8 +1016,6 @@ namespace pinocchio
       ;
   }
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
-
 } // namespace pinocchio
 
 #ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
@@ -1030,9 +1023,6 @@ namespace pinocchio
 
 namespace pinocchio
 {
-  // TODO Remove when API is stabilized
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   namespace details
   {
     extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI context::VectorXs &
@@ -1127,7 +1117,6 @@ namespace pinocchio
   ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::inverse<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 } // namespace pinocchio
 
   #endif // PINOCCHIO_SKIP_ALGORITHM_CONTACT_CHOLESKY

@@ -295,8 +295,6 @@ namespace pinocchio
       bool apply_on_the_right = true,
       bool solve_in_place = true);
 
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     ///
     /// \brief Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix
     ///        related to the system mass matrix and the Jacobians of the contact patches contained
@@ -330,7 +328,6 @@ namespace pinocchio
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const S1 mu);
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Computes the Cholesky decompostion of the augmented matrix containing the KKT matrix
@@ -537,9 +534,6 @@ namespace pinocchio
     template<typename MatrixLike, int ColsAtCompileTime>
     friend struct details::UtivAlgo;
 
-    // TODO Remove when API is stabilized
-    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     template<typename Scalar, int Options, typename VectorLike>
     friend VectorLike & details::inverseAlgo(
       const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
@@ -581,8 +575,6 @@ namespace pinocchio
     {
       return !(*this == other);
     }
-
-    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     /// \brief Returns the current memory footprint of this object in bytes.
     /// \details Sums up the sizes of all internal data members.
