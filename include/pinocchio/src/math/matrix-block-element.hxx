@@ -50,7 +50,7 @@ namespace pinocchio
     int size = 0;
     for (const auto & block : blocks_vector)
     {
-      size += block.size();
+      size += static_cast<int>(block.size());
     }
     return size;
   }
