@@ -41,6 +41,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Python:
     - Deprecate `pinocchio.WITH_HPP_FCL` and `pinocchio.WITH_HPP_FCL_BINDINGS` replaced by `pinocchio.WITH_COLLISION`
     - Deprecate `pinocchio.hppfcl` replaced by `pinocchio.coal`
+    - Deprecate `buildModelFromMJCF(filename, root_joint, root_joint_name)` replaced by `buildModelFromMJCFAndRootJoint` and `buildModelAndLegacyConstraintsFromMJCF`
+    - Deprecate `buildModelFromSdf` replaced by `buildModelAndLegacyConstraintsFromSdf`
   - Don't use Eigen::aligned_allocator:
     - Deprecate `PINOCCHIO_ALIGNED_STD_VECTOR` replaced by `std::vector`
     - Deprecate `PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR` replaced by `std::vector`

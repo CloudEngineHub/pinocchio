@@ -10,13 +10,11 @@ mujoco_found = mujoco_spec is not None
 
 class TestMJCFBindings(unittest.TestCase):
     def test_load(self):
-        model = pin.Model()
         current_dir = Path(__file__).parent
         model_dir = current_dir / "../models/"
         model_path = model_dir / "closed_chain.xml"
-        model = pin.buildModelFromMJCF(model_path, model)
-        point_anchor_constraint_models = pin.buildBilateralConstraintModelsFromMJCF(
-            model, model_path
+        model, point_anchor_constraint_models, _ = pin.buildModelAndConstraintsFromMJCF(
+            model_path
         )
         self.assertEqual(len(point_anchor_constraint_models), 4)
 
@@ -27,17 +25,14 @@ class TestMJCFBindingsWithMujoco(unittest.TestCase):
         import mujoco
         import numpy as np
 
-        model_pin = pin.Model()
         current_dir = Path(__file__).parent
         model_dir = current_dir / "../models/"
         model_path = model_dir / "closed_chain.xml"
-        model_pin = pin.buildModelFromMJCF(model_path, model_pin)
-        point_anchor_constraint_models_pin = pin.buildBilateralConstraintModelsFromMJCF(
-            model_pin, model_path
-        )
-        frame_anchor_constraint_models_pin = (
-            pin.buildFrameAnchorConstraintModelsFromMJCF(model_pin, model_path)
-        )
+        (
+            model_pin,
+            point_anchor_constraint_models_pin,
+            frame_anchor_constraint_models_pin,
+        ) = pin.buildModelAndConstraintsFromMJCF(model_path)
         print(point_anchor_constraint_models_pin, frame_anchor_constraint_models_pin)
         data_pin = model_pin.createData()
         q0_pin = model_pin.referenceConfigurations["home"]

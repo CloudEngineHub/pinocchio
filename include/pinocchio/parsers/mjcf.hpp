@@ -25,6 +25,8 @@
 #include <boost/variant.hpp>
 #include <boost/logic/tribool.hpp>
 
+#include "pinocchio/unsupported.hpp"
+
 #include "pinocchio/spatial.hpp"
 
 #include "pinocchio/multibody.hpp"

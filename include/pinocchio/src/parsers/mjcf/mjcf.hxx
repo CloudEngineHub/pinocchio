@@ -30,17 +30,12 @@ namespace pinocchio
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
 
-    ///
-    /// \brief Build the model from a MJCF file with a fixed joint as root of the model tree
-    ///
-    /// \param[in] xmlStream The xml stream containing the MJCF Model.
-    /// \param[in] verbose Print parsing info.
-    /// \param[out] model Reference model where to put the parsed information.
-    /// \return Return the reference on argument model for convenience.
-    ///
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, ModelTpl<Scalar, Options, JointCollectionTpl> &, const
+    /// bool)
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
 
@@ -61,9 +56,13 @@ namespace pinocchio
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
 
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, const typename ModelTpl<Scalar, Options,
+    /// JointCollectionTpl>::JointModel &, ModelTpl<Scalar, Options, JointCollectionTpl>
+    /// &, const bool)
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
@@ -87,68 +86,174 @@ namespace pinocchio
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
 
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, const typename ModelTpl<Scalar, Options,
+    /// JointCollectionTpl>::JointModel &, const std::string& ModelTpl<Scalar, Options,
+    /// JointCollectionTpl> &, const bool)
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
     ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
-      const std::string & xmlStream,
+      const std::string & filename,
       const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       const bool verbose = false);
 
     ///
-    /// \brief Build the constraint models from a MJCF string. The associated model should be built
-    /// beforehand by calling buildModel.
-    ///
-    /// \param[in] xmlStream The MJCF string.
-    /// \param[in] model The assocaited model
-    /// \param[in] verbose Print parsing info.
-    /// \param[out] point_anchor_constraint_models Reference constraint models where to put the
-    /// parsed
-    /// \param[out] frame_anchor_constraint_models Reference constraint models where to put the
+    /// \brief Build the model from a MJCF file with a fixed joint as root of the model tree and
+    /// with point and frame anchor cosntraints.
+    //
+    /// \param[in] filename The MJCF complete file path.
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] point_anchor_constraint_models Reference constraint models where to put the
+    /// parsed information for point anchor model.
+    /// \param[in,out] frame_anchor_constraint_models Reference constraint models where to put the
     /// parsed information for frame anchor constraints.
+    /// \param[in] verbose Print parsing info.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    void buildConstraintModelsFromXML(
-      const std::string & xmlStream,
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
+      const std::string & filename,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
       std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
       const bool verbose = false);
 
     ///
-    /// \brief Build the constraint models from a MJCF string. The associated model should be built
-    /// beforehand by calling buildModel.
-    ///
-    /// \param[in] xmlStream The MJCF string.
-    /// \param[in] model The assocaited model
+    /// \brief Build the model from a MJCF file with a particular joint as root of the model tree
+    /// and with point and frame anchor cosntraints.
+    //
+    /// \param[in] filename The MJCF complete file path.
+    /// \param[in] rootJoint The joint at the root of the model tree.
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] point_anchor_constraint_models Reference constraint models where to put the
+    /// parsed information for point anchor model.
+    /// \param[in,out] frame_anchor_constraint_models Reference constraint models where to put the
+    /// parsed information for frame anchor constraints.
     /// \param[in] verbose Print parsing info.
-    /// \param[out] point_anchor_constraint_models Reference constraint models where to put the
-    /// parsed information for point anchor constraints.
-    /// \return Return the reference on argument billateral constraint models for convenience.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    std::vector<PointAnchorConstraintModel> & buildConstraintModelsFromXML(
-      const std::string & xmlStream,
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
+      const std::string & filename,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
       std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
+      std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
       const bool verbose = false);
 
     ///
-    /// \brief Build the constraint models from a MJCF string. The associated model should be built
-    /// beforehand by calling buildModel.
-    ///
-    /// \param[in] xmlStream The MJCF string.
-    /// \param[in] model The assocaited model
-    /// \param[in] verbose Print parsing info.
-    /// \param[out] frame_anchor_constraint_models Reference constraint models where to put the
+    /// \brief Build the model from a MJCF file with a particular joint as root of the model tree
+    /// and with point and frame anchor cosntraints.
+    //
+    /// \param[in] filename The MJCF complete file path.
+    /// \param[in] rootJoint The joint at the root of the model tree.
+    /// \param[in] rootJointName Name of the rootJoint.
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] point_anchor_constraint_models Reference constraint models where to put the
+    /// parsed information for point anchor model.
+    /// \param[in,out] frame_anchor_constraint_models Reference constraint models where to put the
     /// parsed information for frame anchor constraints.
-    /// \return Return the reference on argument frame anchor constraint models for convenience.
+    /// \param[in] verbose Print parsing info.
     ///
     template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-    std::vector<FrameAnchorConstraintModel> & buildConstraintModelsFromXML(
-      const std::string & xmlStream,
+    ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
+      const std::string & filename,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
+      const std::string & rootJointName,
       ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<PointAnchorConstraintModel> & point_anchor_constraint_models,
       std::vector<FrameAnchorConstraintModel> & frame_anchor_constraint_models,
+      const bool verbose = false);
+
+    ///
+    /// \brief Build the model from a MJCF file with a fixed joint as root of the model tree and
+    /// with point and frame anchor cosntraints.
+    //
+    /// \param[in] filename The MJCF complete file path.
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] rigid_constraint_model Reference constraint models where to put the
+    /// parsed information for constraints.
+    /// \param[in] verbose Print parsing info.
+    ///
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
+      const std::string & filename,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & rigid_constraint_model,
+      const bool verbose = false);
+
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, ModelTpl<Scalar, Options, JointCollectionTpl> &,
+    /// std::vector<RigidConstraintModel> &, const bool)
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
+      const std::string & filename,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & rigid_constraint_model,
+      const bool verbose = false);
+
+    ///
+    /// \brief Build the model from a MJCF file with a particular joint as root of the model tree
+    /// and with point and frame anchor cosntraints.
+    //
+    /// \param[in] filename The MJCF complete file path.
+    /// \param[in] rootJoint The joint at the root of the model tree.
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] rigid_constraint_model Reference constraint models where to put the
+    /// parsed information for constraints.
+    /// \param[in] verbose Print parsing info.
+    ///
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
+      const std::string & filename,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & rigid_constraint_model,
+      const bool verbose = false);
+
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, const typename ModelTpl<Scalar, Options,
+    /// JointCollectionTpl>::JointModel &, ModelTpl<Scalar, Options,
+    /// JointCollectionTpl> &, std::vector<RigidConstraintModel> &, const bool)
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
+      const std::string & filename,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & rigid_constraint_model,
+      const bool verbose = false);
+
+    ///
+    /// \brief Build the model from a MJCF file with a particular joint as root of the model tree
+    /// and with point and frame anchor cosntraints.
+    //
+    /// \param[in] filename The MJCF complete file path.
+    /// \param[in] rootJoint The joint at the root of the model tree.
+    /// \param[in] rootJointName Name of the rootJoint.
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] rigid_constraint_model Reference constraint models where to put the
+    /// parsed information for constraints.
+    /// \param[in] verbose Print parsing info.
+    ///
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModel(
+      const std::string & filename,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
+      const std::string & rootJointName,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & rigid_constraint_model,
+      const bool verbose = false);
+
+    /// This function is badly nammed and have the same behavior than
+    /// \sa buildModel(const std::string &, const typename ModelTpl<Scalar, Options,
+    /// JointCollectionTpl>::JointModel &, const std::string&, ModelTpl<Scalar, Options,
+    /// JointCollectionTpl> &, std::vector<RigidConstraintModel> &, const bool)
+    template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+    PINOCCHIO_UNSUPPORTED ModelTpl<Scalar, Options, JointCollectionTpl> & buildModelFromXML(
+      const std::string & filename,
+      const typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointModel & rootJoint,
+      const std::string & rootJointName,
+      ModelTpl<Scalar, Options, JointCollectionTpl> & model,
+      std::vector<RigidConstraintModel> & rigid_constraint_model,
       const bool verbose = false);
 
     /**

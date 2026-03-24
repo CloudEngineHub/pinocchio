@@ -30,6 +30,8 @@
 #include <sdf/sdf.hh>
 #include <ignition/math.hh>
 
+#include "pinocchio/unsupported.hpp"
+
 #include "pinocchio/spatial.hpp"
 #include "pinocchio/multibody.hpp"
 #include "pinocchio/geometry.hpp"
