@@ -353,7 +353,6 @@ namespace pinocchio
         {
           const Frame & frame = model.frames[fid];
           const SE3 & p = frame.placement * placement;
-          assert(frame.parentJoint >= 0);
           if (!Y.isZero(Scalar(0)))
           {
             model.appendBodyToJoint(frame.parentJoint, Y, p);
@@ -362,7 +361,6 @@ namespace pinocchio
           model.addBodyFrame(body_name, frame.parentJoint, p, (int)fid);
           // Reference to model.frames[fid] can has changed because the vector
           // may have been reallocated.
-          assert(model.frames[fid].parentJoint >= 0);
           {
             assert(
               !hasNaN(model.inertias[model.frames[fid].parentJoint].lever())
