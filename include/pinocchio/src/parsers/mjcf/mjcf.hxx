@@ -103,11 +103,10 @@ namespace pinocchio
     /// with point and frame anchor cosntraints.
     //
     /// \param[in] filename The MJCF complete file path.
-    /// \param[in] model The assocaited model
-    /// \param[out] model Reference model where to put the parsed information.
-    /// \param[out] point_anchor_constraint_models Reference constraint models where to put the
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] point_anchor_constraint_models Reference constraint models where to put the
     /// parsed information for point anchor model.
-    /// \param[out] frame_anchor_constraint_models Reference constraint models where to put the
+    /// \param[in,out] frame_anchor_constraint_models Reference constraint models where to put the
     /// parsed information for frame anchor constraints.
     /// \param[in] verbose Print parsing info.
     ///
@@ -125,11 +124,10 @@ namespace pinocchio
     //
     /// \param[in] filename The MJCF complete file path.
     /// \param[in] rootJoint The joint at the root of the model tree.
-    /// \param[in] model The assocaited model
-    /// \param[out] model Reference model where to put the parsed information.
-    /// \param[out] point_anchor_constraint_models Reference constraint models where to put the
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] point_anchor_constraint_models Reference constraint models where to put the
     /// parsed information for point anchor model.
-    /// \param[out] frame_anchor_constraint_models Reference constraint models where to put the
+    /// \param[in,out] frame_anchor_constraint_models Reference constraint models where to put the
     /// parsed information for frame anchor constraints.
     /// \param[in] verbose Print parsing info.
     ///
@@ -149,11 +147,10 @@ namespace pinocchio
     /// \param[in] filename The MJCF complete file path.
     /// \param[in] rootJoint The joint at the root of the model tree.
     /// \param[in] rootJointName Name of the rootJoint.
-    /// \param[in] model The assocaited model
-    /// \param[out] model Reference model where to put the parsed information.
-    /// \param[out] point_anchor_constraint_models Reference constraint models where to put the
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] point_anchor_constraint_models Reference constraint models where to put the
     /// parsed information for point anchor model.
-    /// \param[out] frame_anchor_constraint_models Reference constraint models where to put the
+    /// \param[in,out] frame_anchor_constraint_models Reference constraint models where to put the
     /// parsed information for frame anchor constraints.
     /// \param[in] verbose Print parsing info.
     ///
@@ -172,9 +169,8 @@ namespace pinocchio
     /// with point and frame anchor cosntraints.
     //
     /// \param[in] filename The MJCF complete file path.
-    /// \param[in] model The assocaited model
-    /// \param[out] model Reference model where to put the parsed information.
-    /// \param[out] rigid_constraint_model Reference constraint models where to put the
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] rigid_constraint_model Reference constraint models where to put the
     /// parsed information for constraints.
     /// \param[in] verbose Print parsing info.
     ///
@@ -201,9 +197,8 @@ namespace pinocchio
     //
     /// \param[in] filename The MJCF complete file path.
     /// \param[in] rootJoint The joint at the root of the model tree.
-    /// \param[in] model The assocaited model
-    /// \param[out] model Reference model where to put the parsed information.
-    /// \param[out] rigid_constraint_model Reference constraint models where to put the
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] rigid_constraint_model Reference constraint models where to put the
     /// parsed information for constraints.
     /// \param[in] verbose Print parsing info.
     ///
@@ -234,9 +229,8 @@ namespace pinocchio
     /// \param[in] filename The MJCF complete file path.
     /// \param[in] rootJoint The joint at the root of the model tree.
     /// \param[in] rootJointName Name of the rootJoint.
-    /// \param[in] model The assocaited model
-    /// \param[out] model Reference model where to put the parsed information.
-    /// \param[out] rigid_constraint_model Reference constraint models where to put the
+    /// \param[in,out] model Reference model where to put the parsed information.
+    /// \param[in,out] rigid_constraint_model Reference constraint models where to put the
     /// parsed information for constraints.
     /// \param[in] verbose Print parsing info.
     ///
