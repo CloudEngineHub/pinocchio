@@ -365,12 +365,15 @@ namespace pinocchio
         case WORLD:
           self.appendCouplingConstraintInertias(
             model, data, constraint_data, diagonal_constraint_inertia, WorldFrameTag());
+          break;
         case LOCAL:
           self.appendCouplingConstraintInertias(
             model, data, constraint_data, diagonal_constraint_inertia, LocalFrameTag());
+          break;
         case LOCAL_WORLD_ALIGNED:
           self.appendCouplingConstraintInertias(
             model, data, constraint_data, diagonal_constraint_inertia, LocalWorldAlignedFrameTag());
+          break;
         }
       }
     };
