@@ -106,7 +106,8 @@ if(BUILD_PYTHON_INTERFACE)
       gepetto-viewer
       build-reduced-model
       robot-wrapper-viewer
-      geometry-models)
+      geometry-models
+      contact-cholesky)
   endif()
 
   if(BUILD_WITH_COLLISION_SUPPORT)
