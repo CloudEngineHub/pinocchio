@@ -215,6 +215,7 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/delassus-operator-rigid-body-visitors.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/matrix-block-element-operation.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/container/aligned-vector.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/container/matrix-stack.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/container/double-entry-container.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/container/eigen-storage.hxx

@@ -5,7 +5,11 @@
 
 #pragma once
 
+/// IWYU pragma: begin_keep
 #include <sstream>
+#include <vector>
+/// IWYU pragma: end_keep
+
 #include <boost/core/demangle.hpp>
 
 #include "pinocchio/deprecated.hpp"
@@ -294,3 +298,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
 PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
 #define PINOCCHIO_DECLTYPE(value) std::decay_t<decltype(value)>
+
+/// IWYU pragma: begin_exports
+#include "pinocchio/src/container/aligned-vector.hxx"
+/// IWYU pragma: end_exports

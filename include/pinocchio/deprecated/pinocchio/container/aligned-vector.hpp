@@ -5,30 +5,11 @@
 
 #pragma once
 
-#include "pinocchio/deprecated.hpp"
-#include "pinocchio/warning.hpp"
-
+/// IWYU pragma: begin_keep
 #include <vector>
+#include "pinocchio/deprecated.hpp"
+/// IWYU pragma: end_keep
 
-#ifndef PINOCCHIO_DISABLE_ALIGNED_VECTOR_WARNINGS
-  #pragma message PINOCCHIO_WARN(                                                                  \
-    "<pinocchio/container/aligned-vector.hpp> is deprecated and will be removed")
-#endif // PINOCCHIO_DISABLE_ALIGNED_VECTOR_WARNINGS
-
-// This macro is deprecated
-#define PINOCCHIO_ALIGNED_STD_VECTOR(Type) ::pinocchio::container::aligned_vector<Type>
-
-#define PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR(T) PINOCCHIO_ALIGNED_STD_VECTOR(T)
-
-namespace pinocchio
-{
-  namespace container
-  {
-
-    template<typename T>
-    using aligned_vector PINOCCHIO_DEPRECATED_MESSAGE(
-      "aligned_vector is deprecated, please use std::vector") = std::vector<T>;
-
-  } // namespace container
-
-} // namespace pinocchio
+/// IWYU pragma: begin_exports
+#include "pinocchio/src/container/aligned-vector.hxx"
+/// IWYU pragma: end_exports
