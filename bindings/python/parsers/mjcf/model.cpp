@@ -41,7 +41,7 @@ namespace pinocchio
       const std::string & root_joint_name)
     {
       Model model;
-      std::vector<context::RigidConstraintModel> contact_models;
+      std::vector<RigidConstraintModel> contact_models;
       ::pinocchio::mjcf::buildModel(
         path(filename), root_joint, root_joint_name, model, contact_models);
       return bp::make_tuple(model, contact_models);
@@ -50,8 +50,8 @@ namespace pinocchio
     bp::tuple buildModelAndConstraintsFromMJCF(const bp::object & filename)
     {
       Model model;
-      context::PointAnchorConstraintModelVector point_anchor_constraint_models;
-      context::FrameAnchorConstraintModelVector frame_anchor_constraint_models;
+      std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
+      std::vector<FrameAnchorConstraintModel> frame_anchor_constraint_models;
       ::pinocchio::mjcf::buildModel(
         path(filename), model, point_anchor_constraint_models, frame_anchor_constraint_models);
       return bp::make_tuple(model, point_anchor_constraint_models, frame_anchor_constraint_models);
@@ -63,8 +63,8 @@ namespace pinocchio
       const std::string & root_joint_name)
     {
       Model model;
-      context::PointAnchorConstraintModelVector point_anchor_constraint_models;
-      context::FrameAnchorConstraintModelVector frame_anchor_constraint_models;
+      std::vector<PointAnchorConstraintModel> point_anchor_constraint_models;
+      std::vector<FrameAnchorConstraintModel> frame_anchor_constraint_models;
       ::pinocchio::mjcf::buildModel(
         path(filename), root_joint, root_joint_name, model, point_anchor_constraint_models,
         frame_anchor_constraint_models);
@@ -74,7 +74,7 @@ namespace pinocchio
     bp::tuple buildModelAndLegacyConstraintsFromMJCF(const bp::object & filename)
     {
       Model model;
-      context::RigidConstraintModelVector constraint_models;
+      std::vector<RigidConstraintModel> constraint_models;
       ::pinocchio::mjcf::buildModel(path(filename), model, constraint_models);
       return bp::make_tuple(model, constraint_models);
     }
@@ -85,7 +85,7 @@ namespace pinocchio
       const std::string & root_joint_name)
     {
       Model model;
-      context::RigidConstraintModelVector constraint_models;
+      std::vector<RigidConstraintModel> constraint_models;
       ::pinocchio::mjcf::buildModel(
         path(filename), root_joint, root_joint_name, model, constraint_models);
       return bp::make_tuple(model, constraint_models);

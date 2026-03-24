@@ -27,7 +27,7 @@ namespace pinocchio
       const std::vector<std::string> & parent_guidance)
     {
       Model model;
-      context::PointAnchorConstraintModelVector constraint_models;
+      std::vector<PointAnchorConstraintModel> constraint_models;
       ::pinocchio::sdf::buildModel(
         path(filename), model, constraint_models, root_link_name, parent_guidance);
       return bp::make_tuple(model, constraint_models);
@@ -40,7 +40,7 @@ namespace pinocchio
       const std::vector<std::string> & parent_guidance)
     {
       Model model;
-      context::PointAnchorConstraintModelVector constraint_models;
+      std::vector<PointAnchorConstraintModel> constraint_models;
       pinocchio::sdf::buildModel(
         path(filename), root_joint, model, constraint_models, root_link_name, parent_guidance);
       return bp::make_tuple(model, constraint_models);
@@ -54,7 +54,7 @@ namespace pinocchio
       const std::vector<std::string> & parent_guidance)
     {
       Model model;
-      context::PointAnchorConstraintModelVector constraint_models;
+      std::vector<PointAnchorConstraintModel> constraint_models;
       pinocchio::sdf::buildModel(
         path(filename), root_joint, root_joint_name, model, constraint_models, root_link_name,
         parent_guidance);
@@ -67,7 +67,7 @@ namespace pinocchio
       const std::vector<std::string> & parent_guidance)
     {
       Model model;
-      context::RigidConstraintModelVector constraint_models;
+      std::vector<RigidConstraintModel> constraint_models;
       ::pinocchio::sdf::buildModel(
         path(filename), model, constraint_models, root_link_name, parent_guidance);
       return bp::make_tuple(model, constraint_models);
@@ -80,7 +80,7 @@ namespace pinocchio
       const std::vector<std::string> & parent_guidance)
     {
       Model model;
-      context::RigidConstraintModelVector constraint_models;
+      std::vector<RigidConstraintModel> constraint_models;
       pinocchio::sdf::buildModel(
         path(filename), root_joint, model, constraint_models, root_link_name, parent_guidance);
       return bp::make_tuple(model, constraint_models);
@@ -94,7 +94,7 @@ namespace pinocchio
       const std::vector<std::string> & parent_guidance)
     {
       Model model;
-      context::RigidConstraintModelVector constraint_models;
+      std::vector<RigidConstraintModel> constraint_models;
       pinocchio::sdf::buildModel(
         path(filename), root_joint, root_joint_name, model, constraint_models, root_link_name,
         parent_guidance);
