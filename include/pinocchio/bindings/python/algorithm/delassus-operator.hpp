@@ -4,7 +4,10 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <eigenpy/memory.hpp>
+
 #include "pinocchio/algorithm/delassus-operator.hpp"
 
 namespace pinocchio
@@ -12,6 +15,18 @@ namespace pinocchio
   namespace python
   {
     namespace bp = boost::python;
+
+    namespace details
+    {
+      /// Check if matrix method take one or two parameters
+      template<typename, typename = void>
+      constexpr bool is_matrix_bool_bool_method = false;
+
+      template<typename T>
+      constexpr bool
+        is_matrix_bool_bool_method<T, std::void_t<decltype(std::declval<T>().matrix(true, true))>> =
+          true;
+    } // namespace details
 
     template<typename DelassusOperator>
     struct DelassusOperatorBasePythonVisitor
@@ -82,11 +97,6 @@ namespace pinocchio
             },
             bp::arg("self"),
             "Returns the value of the damping terms contained in the Delassus operator")
-
-          .def(
-            "matrix", (Matrix (DelassusOperator::*)(bool, bool) const) & DelassusOperator::matrix,
-            (bp::arg("self"), bp::arg("enforce_symmetry") = false, bp::arg("with_damping") = true),
-            "Returns the Delassus expression as a dense matrix.")
           .def(
             "inverse", &DelassusOperator::inverse, bp::arg("self"),
             "Returns the inverse of the Delassus expression as a dense matrix.")
@@ -96,6 +106,14 @@ namespace pinocchio
             "Returns the size of the decomposition.")
           .def("rows", &DelassusOperator::rows, bp::arg("self"), "Returns the number of rows.")
           .def("cols", &DelassusOperator::cols, bp::arg("self"), "Returns the number of columns.");
+        if constexpr (details::is_matrix_bool_bool_method<DelassusOperator>)
+        {
+          cl.def(
+            "matrix",
+            static_cast<Matrix (DelassusOperator::*)(bool, bool) const>(&DelassusOperator::matrix),
+            (bp::arg("self"), bp::arg("enforce_symmetry") = false, bp::arg("with_damping") = true),
+            "Returns the Delassus expression as a dense matrix.");
+        }
       }
     };
 

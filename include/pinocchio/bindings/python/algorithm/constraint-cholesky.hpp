@@ -192,8 +192,7 @@ namespace pinocchio
             "terms should be all positives.")
 
           .def(
-            "getDamping",
-            +[](const Self & self) -> Matrix { return self.getDamping().matrix(); },
+            "getDamping", +[](const Self & self) -> Matrix { return self.getDamping().matrix(); },
             bp::arg("self"), "Returns the current damping as a dense matrix.")
 
           .def(
@@ -296,14 +295,20 @@ namespace pinocchio
 #ifndef PINOCCHIO_PYTHON_SKIP_CASADI_UNSUPPORTED
           typedef DelassusOperatorSparseTpl<context::Scalar, context::Options>
             DelassusOperatorSparse;
+          using SparseMatrix = typename DelassusOperatorSparse::SparseMatrix;
           bp::class_<DelassusOperatorSparse, boost::noncopyable>(
             "DelassusOperatorSparse", "Delassus Cholesky sparse operator from a sparse matrix.",
             bp::no_init)
             .def(
               bp::init<const context::SparseMatrix &>(
                 bp::args("self", "matrix"), "Build from a given sparse matrix"))
-
-            .def(DelassusOperatorBasePythonVisitor<DelassusOperatorSparse>());
+            .def(DelassusOperatorBasePythonVisitor<DelassusOperatorSparse>())
+            .def(
+              "matrix",
+              static_cast<SparseMatrix (DelassusOperatorSparse::*)(bool) const>(
+                &DelassusOperatorSparse::matrix),
+              (bp::arg("self"), bp::arg("enforce_symmetry") = false),
+              "Returns the Delassus expression as a sparse matrix.");
 #endif // PINOCCHIO_PYTHON_SKIP_CASADI_UNSUPPORTED
         }
 #ifdef PINOCCHIO_WITH_ACCELERATE_SUPPORT
