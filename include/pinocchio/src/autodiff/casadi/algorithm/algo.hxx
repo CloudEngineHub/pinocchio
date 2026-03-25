@@ -311,20 +311,20 @@ namespace pinocchio
         const std::string & libname = "libcasadi_cg_abaDerivs",
         const std::string & fun_name = "eval_f")
       : Base(model, filename, libname, fun_name)
-      , cs_q(ADScalar::sym("q", model.nq))
-      , cs_v(ADScalar::sym("v", model.nv))
-      , cs_tau(ADScalar::sym("tau", model.nv))
-      , q_ad(model.nq)
-      , v_ad(model.nv)
-      , tau_ad(model.nv)
-      , cs_ddq(model.nv, 1)
-      , q_vec((size_t)model.nq)
-      , v_vec((size_t)model.nv)
-      , tau_vec((size_t)model.nv)
       , ddq(model.nv)
       , ddq_dq(model.nv, model.nv)
       , ddq_dv(model.nv, model.nv)
       , ddq_dtau(model.nv, model.nv)
+      , cs_q(ADScalar::sym("q", model.nq))
+      , cs_v(ADScalar::sym("v", model.nv))
+      , cs_tau(ADScalar::sym("tau", model.nv))
+      , cs_ddq(model.nv, 1)
+      , q_ad(model.nq)
+      , v_ad(model.nv)
+      , tau_ad(model.nv)
+      , q_vec((size_t)model.nq)
+      , v_vec((size_t)model.nv)
+      , tau_vec((size_t)model.nv)
       {
         q_ad = Eigen::Map<ADConfigVectorType>(
           static_cast<std::vector<ADScalar>>(cs_q).data(), model.nq, 1);
@@ -455,26 +455,26 @@ namespace pinocchio
         const std::string & libname = "libcasadi_cg_contactDyn",
         const std::string & fun_name = "eval_f")
       : Base(model, filename, libname, fun_name)
+      , ddq(model.nv)
+      , ddq_dq(model.nv, model.nv)
+      , ddq_dv(model.nv, model.nv)
+      , ddq_dtau(model.nv, model.nv)
       , nc(constraintDim(contact_models))
       , cs_q(ADScalar::sym("q", model.nq))
       , cs_v(ADScalar::sym("v", model.nv))
       , cs_tau(ADScalar::sym("tau", model.nv))
       , cs_v_int(ADScalar::sym("v_inc", model.nv))
+      , cs_ddq(model.nv, 1)
+      , cs_lambda_c(model.nv, 1)
       , q_ad(model.nq)
       , q_int_ad(model.nq)
       , v_ad(model.nv)
       , v_int_ad(model.nv)
       , tau_ad(model.nv)
-      , cs_ddq(model.nv, 1)
-      , cs_lambda_c(model.nv, 1)
       , q_vec((size_t)model.nq)
       , v_vec((size_t)model.nv)
       , v_int_vec((size_t)model.nv)
       , tau_vec((size_t)model.nv)
-      , ddq(model.nv)
-      , ddq_dq(model.nv, model.nv)
-      , ddq_dv(model.nv, model.nv)
-      , ddq_dtau(model.nv, model.nv)
       {
         lambda_c.resize(nc);
         lambda_c.setZero();
@@ -495,7 +495,7 @@ namespace pinocchio
 
         Eigen::Map<TangentVectorType>(v_int_vec.data(), model.nv, 1).setZero();
 
-        for (int k = 0; k < contact_models.size(); ++k)
+        for (std::size_t k = 0; k < contact_models.size(); ++k)
         {
           ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
           ad_contact_datas.push_back(ADConstraintData(ad_contact_models[k]));
@@ -657,22 +657,22 @@ namespace pinocchio
         const std::string & libname = "libcasadi_cg_contactDynDerivs",
         const std::string & fun_name = "eval_f")
       : Base(model, filename, libname, fun_name)
-      , nc(constraintDim(contact_models))
-      , cs_q(ADScalar::sym("q", model.nq))
-      , cs_v(ADScalar::sym("v", model.nv))
-      , cs_tau(ADScalar::sym("tau", model.nv))
-      , q_ad(model.nq)
-      , v_ad(model.nv)
-      , tau_ad(model.nv)
-      , cs_ddq(model.nv, 1)
-      , cs_lambda_c(model.nv, 1)
-      , q_vec((size_t)model.nq)
-      , v_vec((size_t)model.nv)
-      , tau_vec((size_t)model.nv)
       , ddq(model.nv)
       , ddq_dq(model.nv, model.nv)
       , ddq_dv(model.nv, model.nv)
       , ddq_dtau(model.nv, model.nv)
+      , nc(constraintDim(contact_models))
+      , cs_q(ADScalar::sym("q", model.nq))
+      , cs_v(ADScalar::sym("v", model.nv))
+      , cs_tau(ADScalar::sym("tau", model.nv))
+      , cs_ddq(model.nv, 1)
+      , cs_lambda_c(model.nv, 1)
+      , q_ad(model.nq)
+      , v_ad(model.nv)
+      , tau_ad(model.nv)
+      , q_vec((size_t)model.nq)
+      , v_vec((size_t)model.nv)
+      , tau_vec((size_t)model.nv)
       {
         lambda_c.resize(nc);
         lambda_c.setZero();
@@ -690,7 +690,7 @@ namespace pinocchio
         tau_ad = Eigen::Map<ADTangentVectorType>(
           static_cast<std::vector<ADScalar>>(cs_tau).data(), model.nv, 1);
 
-        for (int k = 0; k < contact_models.size(); ++k)
+        for (std::size_t k = 0; k < contact_models.size(); ++k)
         {
           ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
           ad_contact_datas.push_back(ADConstraintData(ad_contact_models[k]));

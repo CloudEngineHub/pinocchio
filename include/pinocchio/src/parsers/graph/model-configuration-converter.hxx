@@ -566,7 +566,7 @@ namespace pinocchio
         ReturnType
         operator()(const JointModelCompositeTpl<Scalar, Options, JointCollectionTpl> &) const
         {
-          assert(false && "This must never happened");
+          PINOCCHIO_UNREACHABLE();
         }
       };
     } // namespace internal
@@ -792,7 +792,7 @@ namespace pinocchio
         ReturnType
         operator()(const JointModelCompositeTpl<Scalar, Options, JointCollectionTpl> &) const
         {
-          assert(false && "This must never happened");
+          PINOCCHIO_UNREACHABLE();
         }
       };
     } // namespace internal

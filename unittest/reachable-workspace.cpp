@@ -113,8 +113,8 @@ BOOST_AUTO_TEST_SUITE(ReachableWorkspace)
 /// `itertools.combinations`
 BOOST_AUTO_TEST_CASE(test_combination_generation)
 {
-  int ndof = 6;
-  int ncomb = 2;
+  unsigned int ndof = 6;
+  unsigned int ncomb = 2;
 
   Eigen::VectorXi indices = Eigen::VectorXi::Zero(ncomb);
 
@@ -124,7 +124,8 @@ BOOST_AUTO_TEST_CASE(test_combination_generation)
   Eigen::MatrixXi res(size, ncomb);
   for (int k = 0; k < size; k++)
   {
-    pinocchio::internal::generateCombination(ndof, ncomb, indices);
+    pinocchio::internal::generateCombination(
+      static_cast<int>(ndof), static_cast<int>(ncomb), indices);
 
     res.row(k) = indices;
   }
@@ -231,8 +232,8 @@ BOOST_FIXTURE_TEST_CASE(test_compute_vertex, robotCreationFixture)
   Eigen::MatrixXd vertex;
 
   double constraint = 0.2;
-  auto f_ = [this, &constraint](const Model & model, Data & data) -> bool {
-    SE3 pos = data.oMf[frame_name];
+  auto f_ = [this, &constraint](const Model &, Data & data) -> bool {
+    SE3 pos = data.oMf[static_cast<size_t>(frame_name)];
     if (pos.translation()(0) < constraint)
       return false;
     else

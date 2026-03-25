@@ -47,7 +47,7 @@ namespace pinocchio
           break;
         }
         default:
-          assert(false && "Should never happen");
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -68,7 +68,7 @@ namespace pinocchio
           break;
         }
         default:
-          assert(false && "Should never happen");
+          PINOCCHIO_UNREACHABLE();
         }
       }
     }; // struct add_op_tpl
@@ -103,7 +103,7 @@ namespace pinocchio
           break;
         }
         default:
-          assert(false && "Should never happen");
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -124,7 +124,7 @@ namespace pinocchio
           break;
         }
         default:
-          assert(false && "Should never happen");
+          PINOCCHIO_UNREACHABLE();
         }
       }
     }; // struct sub_op_tpl
@@ -228,7 +228,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

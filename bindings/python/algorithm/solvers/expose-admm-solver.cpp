@@ -64,6 +64,7 @@ namespace pinocchio
     // ============================================================================
 
     // Wrapper functions for std::optional<Scalar> <-> boost::optional<Scalar> conversion
+#ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
     static boost::optional<Scalar> getRhoInitWrapper(const ADMMSolverSettings & settings)
     {
       if (settings.rho_init.has_value())
@@ -80,6 +81,7 @@ namespace pinocchio
       else
         settings.rho_init = std::nullopt;
     }
+#endif // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
 
     void exposeADMMSolverSettings()
     {
@@ -259,13 +261,12 @@ namespace pinocchio
       template<typename ConstraintModel>
       void run(ConstraintModelBase<ConstraintModel> * ptr = 0)
       {
-        using ConstraintData = typename traits<ConstraintModel>::ConstraintData;
-        typedef std::allocator<ConstraintModel> ConstraintModelAllocator;
-        typedef std::allocator<ConstraintData> ConstraintDataAllocator;
-
         PINOCCHIO_UNUSED_VARIABLE(ptr);
 
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
+        using ConstraintData = typename traits<ConstraintModel>::ConstraintData;
+        typedef std::allocator<ConstraintModel> ConstraintModelAllocator;
+        typedef std::allocator<ConstraintData> ConstraintDataAllocator;
         class_
           .def(
             "solve",

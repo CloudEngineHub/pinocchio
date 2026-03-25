@@ -20,7 +20,6 @@ BOOST_AUTO_TEST_CASE(test_constraintDynamicsDerivatives_casadi_algo)
 {
   typedef double Scalar;
   typedef pinocchio::ModelTpl<Scalar> Model;
-  typedef pinocchio::DataTpl<Scalar> Data;
   typedef typename Model::ConfigVectorType ConfigVector;
   typedef typename Model::TangentVectorType TangentVector;
 
@@ -52,7 +51,6 @@ BOOST_AUTO_TEST_CASE(test_constraintDynamicsDerivatives_casadi_algo)
   ci_LF.joint1_placement.setRandom();
   contact_models.push_back(ci_LF);
   contact_data.push_back(pinocchio::RigidConstraintData(ci_LF));
-  const double mu0 = 0.;
   ConfigVector q(model.nq);
   q = pinocchio::randomConfiguration(model);
   TangentVector v(TangentVector::Random(model.nv));

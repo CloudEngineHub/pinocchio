@@ -19,9 +19,8 @@ namespace eigenpy
   template<typename Derived>
   struct has_operator_equal<
     Derived,
-    std::enable_if_t<
-      std::is_base_of_v<::pinocchio::NumericalBase<Derived>, Derived>,
-      Derived>> : has_operator_equal<typename ::pinocchio::NumericalBase<Derived>::Scalar>
+    std::enable_if_t<std::is_base_of_v<::pinocchio::NumericalBase<Derived>, Derived>, Derived>>
+  : has_operator_equal<typename ::pinocchio::NumericalBase<Derived>::Scalar>
   {
   };
 
@@ -76,6 +75,8 @@ namespace pinocchio
         cl.def("__getinitargs__", &PickleSuiteType::getinitargs);
         cl.def("__getstate__", &PickleSuiteType::getstate);
         cl.def("__setstate__", &PickleSuiteType::setstate);
+#else
+        PINOCCHIO_UNUSED_VARIABLE(cl);
 #endif
       }
     };

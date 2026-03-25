@@ -39,9 +39,6 @@ namespace pinocchio
     static constexpr int value = 6;
   };
 
-  // TODO Remove when API is stabilized
-  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
-  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   template<typename NewScalar, typename Scalar, int Options>
   struct CastType<NewScalar, RigidConstraintModelTpl<Scalar, Options>>
   {
@@ -694,8 +691,7 @@ namespace pinocchio
           }
 
           default:
-            assert(false && "must never happened");
-            break;
+            PINOCCHIO_UNREACHABLE();
           }
         }
       }
@@ -1120,6 +1116,5 @@ namespace pinocchio
       return !(*this == other);
     }
   };
-  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
 } // namespace pinocchio

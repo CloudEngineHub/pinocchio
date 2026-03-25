@@ -248,6 +248,8 @@ namespace pinocchio
     std::string name;
 
     /// \brief Default constructor. Builds an empty model with no joints.
+    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     ModelTpl()
     : nq(0)
     , nv(0)
@@ -283,12 +285,15 @@ namespace pinocchio
       // Model::addJointFrame and Model::addBodyFrame
       addFrame(Frame("universe", 0, 0, SE3::Identity(), FIXED_JOINT));
     }
+    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Copy constructor by casting
     ///
     /// \param[in] other model to copy to *this
     ///
+    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     template<typename S2, int O2>
     explicit ModelTpl(const ModelTpl<S2, O2> & other)
     : friction(upperDryFrictionLimit)
@@ -297,12 +302,15 @@ namespace pinocchio
     {
       *this = other.template cast<Scalar>();
     }
+    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Copy constructor from another collection
     ///
     /// \param[in] other model to copy to *this
     ///
+    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     template<template<typename, int> class OtherJointCollectionTpl>
     ModelTpl(const ModelTpl<Scalar, Options, OtherJointCollectionTpl> & other)
     : friction(upperDryFrictionLimit)
@@ -311,12 +319,15 @@ namespace pinocchio
     {
       *this = other;
     }
+    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     ///
     /// \brief Copy constructor.
     ///
     /// \param[in] other model to copy to *this
     ///
+    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     ModelTpl(const ModelTpl & other)
     : friction(upperDryFrictionLimit)
     , effortLimit(upperEffortLimit)
@@ -324,6 +335,7 @@ namespace pinocchio
     {
       *this = other;
     }
+    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
     /// \returns A new copy of *this with the Scalar type casted to NewScalar.
     template<typename NewScalar>

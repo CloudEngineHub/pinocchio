@@ -51,7 +51,6 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_derivatives_no_contact)
   computeImpulseDynamicsDerivatives(
     model, data, empty_contact_models, empty_contact_data, r_coeff, prox_settings);
 
-  Motion gravity_bk = model.gravity;
   model.gravity.setZero();
   computeRNEADerivatives(model, data_ref, q, Eigen::VectorXd::Zero(model.nv), dv);
   // Reference values

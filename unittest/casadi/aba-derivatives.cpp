@@ -22,7 +22,6 @@ BOOST_AUTO_TEST_CASE(test_aba_derivatives_casadi_algo)
 {
   typedef double Scalar;
   typedef pinocchio::ModelTpl<Scalar> Model;
-  typedef pinocchio::DataTpl<Scalar> Data;
   typedef typename Model::ConfigVectorType ConfigVector;
   typedef typename Model::TangentVectorType TangentVector;
 

@@ -209,8 +209,7 @@ namespace pinocchio
       case 2:
         return Vector3::UnitZ();
       default:
-        assert(false && "must never happen");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

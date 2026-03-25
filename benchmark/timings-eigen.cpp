@@ -509,8 +509,11 @@ BENCH_GENERAL_MATRIX_MATRIX_PRODUCT_ALL(3, 3)
 
 // BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT(6, 6)
 
-// #define BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(dim, rhs_col)                          \
-//   BENCH_MATRIX_MATRIX_PRODUCT_TPL(dim, rhs_col, (PartialStatic_MatrixMatrixProduct<false,false,false), EvaluationMode::STATIC_OP)
+/*
+ * #define BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(dim, rhs_col) \
+ *   BENCH_MATRIX_MATRIX_PRODUCT_TPL(dim, rhs_col,
+ * (PartialStatic_MatrixMatrixProduct<false,false,false), EvaluationMode::STATIC_OP)
+ */
 
 // BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(3, 1)
 // BENCH_PARTIAL_STATIC_MATRIX_MATRIX_PRODUCT_STATICOP(4, 1)

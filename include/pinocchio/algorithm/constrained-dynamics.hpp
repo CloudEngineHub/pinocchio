@@ -73,14 +73,15 @@ namespace pinocchio
   ///
   /// \note  When using forwardDynamics for the first time, you should call first
   ///        initConstraintDynamics to initialize the internal memory used in the algorithm.
-  ///
-  /// It computes the following problem: \[
-  ///       \f[
-  ///       \begin{eqnarray}
-  ///       \underset{\ddot{q}}{\min} & & \| \ddot{q} - \ddot{q}_{\text{free}} \|_{M(q)} \\
-  ///           \text{s.t.} & & J (q) \ddot{q} + \gamma (q, \dot{q}) = 0
-  ///       \end{eqnarray}
-  ///       \f] where \f$ \ddot{q}_{\text{free}} \f$ is the free acceleration (i.e. without
+  /**
+   * It computes the following problem: \f[
+   *       \begin{eqnarray}
+   *           \underset{\ddot{q}}{\min} & & \| \ddot{q} - \ddot{q}_{\text{free}} \|_{M(q)} \\
+   *           \text{s.t.} & & J (q) \ddot{q} + \gamma (q, \dot{q}) = 0
+   *       \end{eqnarray}
+   *       \f]
+   */
+  ///       where \f$ \ddot{q}_{\text{free}} \f$ is the free acceleration (i.e. without
   ///       constraints), \f$ M \f$ is the mass matrix, \f$ J \f$ the constraint Jacobian and \f$
   ///       \gamma \f$ is the constraint drift.
   ///  By default, the constraint Jacobian is assumed to be full rank, and undamped Cholesky inverse
@@ -130,17 +131,19 @@ namespace pinocchio
 
   ///
   /// \brief Computes the forward dynamics with contact constraints according to a given list of
-  /// Contact information.
+  /// contact information.
   ///
   /// \note  When using forwardDynamics for the first time, you should call first
   ///        initConstraintDynamics to initialize the internal memory used in the algorithm.
-  ///
-  /// It computes the following problem: \f[
-  ///       \begin{eqnarray}
-  ///           \underset{\ddot{q}}{\min} & & \| \ddot{q} - \ddot{q}_{\text{free}} \|_{M(q)} \\
-  ///           \text{s.t.} & & J (q) \ddot{q} + \gamma (q, \dot{q}) = 0
-  ///       \end{eqnarray}
-  ///       \f] where \f$ \ddot{q}_{\text{free}} \f$ is the free acceleration (i.e. without
+  /**
+   * It computes the following problem: \f[
+   *       \begin{eqnarray}
+   *           \underset{\ddot{q}}{\min} & & \| \ddot{q} - \ddot{q}_{\text{free}} \|_{M(q)} \\
+   *           \text{s.t.} & & J (q) \ddot{q} + \gamma (q, \dot{q}) = 0
+   *       \end{eqnarray}
+   *       \f]
+   */
+  ///       where \f$ \ddot{q}_{\text{free}} \f$ is the free acceleration (i.e. without
   ///       constraints), \f$ M \f$ is the mass matrix, \f$ J \f$ the constraint Jacobian and \f$
   ///       \gamma \f$ is the constraint drift.
   ///  By default, the constraint Jacobian is assumed to be full rank, and undamped Cholesky inverse

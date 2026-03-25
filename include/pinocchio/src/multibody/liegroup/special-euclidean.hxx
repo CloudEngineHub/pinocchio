@@ -112,8 +112,7 @@ namespace pinocchio
         Mout(2, 2) -= (Scalar)1;
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -338,7 +337,7 @@ namespace pinocchio
       JacobianOut_t & Jout = PINOCCHIO_EIGEN_CONST_CAST(JacobianOut_t, J);
       // TODO sparse version
       MotionTpl<Scalar, 0> nu;
-      nu.toVector() << v.template head<2>(), 0, 0, 0, v[2];
+      nu.toVector() << v.template head<2>(), Scalar(0), Scalar(0), Scalar(0), v[2];
       PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
       PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
       Eigen::Matrix<Scalar, 6, 6> Jtmp6;
@@ -364,8 +363,7 @@ namespace pinocchio
         Jout.template bottomRightCorner<1, 1>() -= Jtmp6.template bottomRightCorner<1, 1>();
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -406,9 +404,9 @@ namespace pinocchio
         // Angular
         TM(2, 2) += q[3];
         TM(3, 2) -= q[2];
-      default:
-        assert(false && "Wrong Op requesed value");
         break;
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -438,9 +436,9 @@ namespace pinocchio
       case RMTO:
         Mout.template topRows<2>() -= R * Min.template topRows<2>();
         Mout.template bottomRows<2>() -= R.template rightCols<1>() * Min.template bottomRows<1>();
-      default:
-        assert(false && "Wrong Op requesed value");
         break;
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -470,9 +468,9 @@ namespace pinocchio
       case RMTO:
         Mout.template topRows<2>() -= RT * Min.template topRows<2>();
         Mout.template bottomRows<1>() -= RT.template bottomRows<1>() * Min.template bottomRows<2>();
-      default:
-        assert(false && "Wrong Op requesed value");
         break;
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -508,7 +506,7 @@ namespace pinocchio
     {
       JacobianOut_t & Jout = PINOCCHIO_EIGEN_CONST_CAST(JacobianOut_t, J_out);
       MotionTpl<Scalar, 0> nu;
-      nu.toVector() << v.template head<2>(), 0, 0, 0, v[2];
+      nu.toVector() << v.template head<2>(), Scalar(0), Scalar(0), Scalar(0), v[2];
 
       PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
       PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
@@ -556,7 +554,7 @@ namespace pinocchio
     {
       Jacobian_t & Jout = PINOCCHIO_EIGEN_CONST_CAST(Jacobian_t, J);
       MotionTpl<Scalar, 0> nu;
-      nu.toVector() << v.template head<2>(), 0, 0, 0, v[2];
+      nu.toVector() << v.template head<2>(), Scalar(0), Scalar(0), Scalar(0), v[2];
 
       PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
       PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
@@ -854,8 +852,7 @@ namespace pinocchio
         Jout -= exp6(MotionRef<const Tangent_t>(v.derived())).toDualActionMatrix().transpose();
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -878,8 +875,7 @@ namespace pinocchio
         Jexp6<RMTO>(MotionRef<const Tangent_t>(v.derived()), J.derived());
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -911,9 +907,9 @@ namespace pinocchio
       case RMTO:
         TM.template topLeftCorner<3, 3>() -= quat.matrix();
         TM.template bottomRightCorner<4, 3>() -= TMq;
-      default:
-        assert(false && "Wrong Op requesed value");
         break;
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -944,9 +940,9 @@ namespace pinocchio
       case RMTO:
         Mout.template topRows<3>() -= quat.matrix() * Min.template topRows<3>();
         Mout.template bottomRows<4>() -= TMq * Min.template bottomRows<3>();
-      default:
-        assert(false && "Wrong Op requesed value");
         break;
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -977,9 +973,9 @@ namespace pinocchio
       case RMTO:
         Mout.template topRows<3>() -= quat.matrix().transpose() * Min.template topRows<3>();
         Mout.template bottomRows<3>() -= TMq.transpose() * Min.template bottomRows<4>();
-      default:
-        assert(false && "Wrong Op requesed value");
         break;
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

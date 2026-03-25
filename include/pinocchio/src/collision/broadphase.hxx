@@ -53,7 +53,7 @@ namespace pinocchio
       model, data, broadphase_manager.getGeometryModel(), broadphase_manager.getGeometryData(), q);
 
     broadphase_manager.update(false);
-    return computeCollisions(broadphase_manager, &callback);
+    return computeCollisions(broadphase_manager, callback);
   }
 
   template<

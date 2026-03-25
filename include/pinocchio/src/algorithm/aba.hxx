@@ -949,6 +949,8 @@ namespace pinocchio
       return impl::abaLocalConvention(model, data, q, v, tau);
     case Convention::WORLD:
       return impl::abaWorldConvention(model, data, q, v, tau);
+    default:
+      PINOCCHIO_UNREACHABLE();
     }
   }
 
@@ -976,6 +978,8 @@ namespace pinocchio
       return impl::abaLocalConvention(model, data, q, v, tau, fext);
     case Convention::WORLD:
       return impl::abaWorldConvention(model, data, q, v, tau, fext);
+    default:
+      PINOCCHIO_UNREACHABLE();
     }
   }
 

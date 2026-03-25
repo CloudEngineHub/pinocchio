@@ -305,8 +305,10 @@ namespace pinocchio
           ;
 
         typedef std::vector<Vector3> StdVec_Vector3;
+#ifndef PINOCCHIO_PYTHON_NO_SERIALIZATION
         typedef std::vector<Matrix6x> StdVec_Matrix6x;
         typedef std::vector<Matrix6> StdVec_Matrix6;
+#endif
 
         StdVectorPythonVisitor<std::vector<std::vector<int>>>::expose("StdVec_StdVec_Int");
         // Because coal is binding std::vector<Vector3d>, exposeStdVectorEigenSpecificType

@@ -196,6 +196,8 @@ namespace pinocchio
           return self.residualSize(CurrentSelection());
         case ConstraintSelectionType::MAXIMAL:
           return self.residualSize(MaximalSelection());
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -225,6 +227,8 @@ namespace pinocchio
           self.retrieveCompliance(res, MaximalSelection());
           return res;
         }
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 

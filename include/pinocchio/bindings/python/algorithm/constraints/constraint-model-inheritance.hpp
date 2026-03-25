@@ -135,10 +135,13 @@ namespace pinocchio
         {
         case WORLD:
           res = self.getA1(constraint_data, WorldFrameTag());
+          break;
         case LOCAL:
           res = self.getA1(constraint_data, LocalFrameTag());
+          break;
         case LOCAL_WORLD_ALIGNED:
           res = self.getA1(constraint_data, LocalWorldAlignedFrameTag());
+          break;
         }
         return res;
       }
@@ -151,10 +154,13 @@ namespace pinocchio
         {
         case WORLD:
           res = self.getA2(constraint_data, WorldFrameTag());
+          break;
         case LOCAL:
           res = self.getA2(constraint_data, LocalFrameTag());
+          break;
         case LOCAL_WORLD_ALIGNED:
           res = self.getA2(constraint_data, LocalWorldAlignedFrameTag());
+          break;
         }
         return res;
       }

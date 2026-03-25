@@ -286,10 +286,8 @@ namespace pinocchio
               }
               break;
             }
-            default: {
-              assert(false && "must never happen");
-              break;
-            }
+            default:
+              PINOCCHIO_UNREACHABLE();
             }
             break;
           }
@@ -322,16 +320,13 @@ namespace pinocchio
               }
               break;
             }
-            default: {
-              assert(false && "must never happen");
-              break;
-            }
+            default:
+              PINOCCHIO_UNREACHABLE();
             }
             break;
           }
           default:
-            assert(false && "Should never happen");
-            break;
+            PINOCCHIO_UNREACHABLE();
           }
         }
       }
@@ -592,8 +587,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "must never happen");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
 
       assert(
@@ -623,10 +617,8 @@ namespace pinocchio
               cdata.oMc1.translation().cross(cdata.contact_force.linear());
             break;
           }
-          default: {
-            assert(false && "must never happen");
-            break;
-          }
+          default:
+            PINOCCHIO_UNREACHABLE();
           }
 
           // d./dq
@@ -678,10 +670,8 @@ namespace pinocchio
             of_tmp.linear() = cdata.contact_force.linear();
             break;
           }
-          default: {
-            assert(false && "must never happen");
-            break;
-          }
+          default:
+            PINOCCHIO_UNREACHABLE();
           }
 
           // d./dq
@@ -711,10 +701,8 @@ namespace pinocchio
               // Do nothing
               break;
             }
-            default: {
-              assert(false && "must never happen");
-              break;
-            }
+            default:
+              PINOCCHIO_UNREACHABLE();
             }
 
             of_tmp2.linear().noalias() = of_tmp.linear().cross(J_col.angular());
@@ -737,10 +725,8 @@ namespace pinocchio
           }
           break;
         }
-        default: {
-          assert(false && "must never happen");
-          break;
-        }
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -826,8 +812,7 @@ namespace pinocchio
           break;
         }
         default:
-          assert(false && "must never happen");
-          break;
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -979,8 +964,7 @@ namespace pinocchio
       }
 
       default:
-        assert(false && "must never happen");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
       current_row_sol_id += cmodel.residualSize();
     }
@@ -1034,14 +1018,12 @@ namespace pinocchio
           break;
         }
         default:
-          assert(false && "must never happen");
-          break;
+          PINOCCHIO_UNREACHABLE();
         }
         break;
       }
       default:
-        assert(false && "must never happen");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
       current_row_sol_id += cmodel.residualSize();
     }

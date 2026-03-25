@@ -291,3 +291,15 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_VARIADIC_MACROS
 PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
 #define PINOCCHIO_DECLTYPE(value) std::decay_t<decltype(value)>
+
+#if defined(NDEBUG)
+  #if defined(_MSC_VER)
+    #define PINOCCHIO_UNREACHABLE() __assume(0)
+  #elif defined(__GNUC__) || defined(__clang__)
+    #define PINOCCHIO_UNREACHABLE() __builtin_unreachable()
+  #else
+    #define PINOCCHIO_UNREACHABLE()
+  #endif
+#else
+  #define PINOCCHIO_UNREACHABLE() assert(false && "must never happened")
+#endif

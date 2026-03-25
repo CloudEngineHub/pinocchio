@@ -66,6 +66,7 @@ namespace pinocchio
       const Eigen::MatrixBase<ConfigVectorOut> &)
     {
       assert(false && "Joint cannot be used with JointMimic.");
+      PINOCCHIO_UNREACHABLE();
     }
   };
 

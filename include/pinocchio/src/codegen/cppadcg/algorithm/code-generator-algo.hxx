@@ -754,12 +754,12 @@ namespace pinocchio
 
       x = VectorXs::Zero(Base::getInputDimension());
 
-      for (int k = 0; k < contact_models.size(); ++k)
+      for (std::size_t k = 0; k < contact_models.size(); ++k)
       {
         ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
       }
 
-      for (int k = 0; k < ad_contact_models.size(); ++k)
+      for (std::size_t k = 0; k < ad_contact_models.size(); ++k)
       {
         ad_contact_datas.push_back(ADContactData(ad_contact_models[k]));
       }
@@ -913,11 +913,11 @@ namespace pinocchio
         model.nv + constraintDim(contact_models),
         function_name,
         library_name)
-    , nc(constraintDim(contact_models))
+    , ddq(model.nv)
     , da_dq(MatrixXs::Zero(model.nv, model.nq))
     , da_dv(MatrixXs::Zero(model.nv, model.nv))
     , da_dtau(MatrixXs::Zero(model.nv, model.nv))
-    , ddq(model.nv)
+    , nc(constraintDim(contact_models))
     {
       lambda_c.resize(nc);
       lambda_c.setZero();
@@ -937,12 +937,12 @@ namespace pinocchio
 
       x = VectorXs::Zero(Base::getInputDimension());
 
-      for (int k = 0; k < contact_models.size(); ++k)
+      for (std::size_t k = 0; k < contact_models.size(); ++k)
       {
         ad_contact_models.push_back(contact_models[k].template cast<ADScalar>());
       }
 
-      for (int k = 0; k < ad_contact_models.size(); ++k)
+      for (std::size_t k = 0; k < ad_contact_models.size(); ++k)
       {
         ad_contact_datas.push_back(ADContactData(ad_contact_models[k]));
       }
@@ -1262,7 +1262,7 @@ namespace pinocchio
             .bottomRows(ad_model.nv);
         break;
       default:
-        assert(false && "Wrong argument");
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

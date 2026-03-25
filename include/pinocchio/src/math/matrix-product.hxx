@@ -134,7 +134,7 @@ namespace pinocchio
           return j * rows + i;
       };
 
-#pragma omp simd
+      // TODO @jcarpent check why you write this: #pragma omp simd
       for (Eigen::Index j = 0; j < cols; ++j) // loop over columns of result
       {
         for (Eigen::Index i = 0; i < rows; ++i) // loop over rows of result

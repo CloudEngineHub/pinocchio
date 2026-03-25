@@ -561,7 +561,7 @@ namespace pinocchio
         }
         else
         {
-          assert(false && "Must never happen");
+          PINOCCHIO_UNREACHABLE();
         }
       }
     };

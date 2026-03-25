@@ -55,6 +55,11 @@ cxx_flags_by_compiler_frontend(
   MSVC "/bigobj"
   OUTPUT PUBLIC_OPTIONS
   FILTER)
+# Deactivate -Warray-bounds and -Wmaybe-uninitialized on GCC
+# because it give too much false positive.
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  list(APPEND PUBLIC_OPTIONS $<BUILD_INTERFACE:-Wno-array-bounds -Wno-maybe-uninitialized>)
+endif()
 target_compile_options(${PROJECT_NAME}_headers INTERFACE ${PUBLIC_OPTIONS})
 
 cxx_flags_by_compiler_frontend(MSVC "NOMINMAX" OUTPUT PUBLIC_DEFINITIONS)

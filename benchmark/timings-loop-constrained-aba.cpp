@@ -147,8 +147,6 @@ int main(int argc, const char ** argv)
     aba(model, data, qs[_smooth], qdots[_smooth], taus[_smooth]);
   }
 
-  double total_time = 0;
-
   RigidConstraintModel ci_CL(CONTACT_3D, model, TF_id, cube_joint, LOCAL_WORLD_ALIGNED);
   // ci_CL.joint1_placement.setRandom();
   ci_CL.joint2_placement.setRandom();
@@ -205,7 +203,6 @@ int main(int argc, const char ** argv)
     contact_data_CL.push_back(RigidConstraintData(ci_CL4_r));
   }
 
-  JointIndex Foot_id;
   // FEET constraints
   if (case_num >= 3)
   {
@@ -213,7 +210,6 @@ int main(int argc, const char ** argv)
     const JointIndex RFoot_id = model.frames[model.getFrameId(RFoot)].parentJoint;
     const std::string LFoot = "LLEG_LINK6";
     const JointIndex LFoot_id = model.frames[model.getFrameId(LFoot)].parentJoint;
-    Foot_id = RFoot_id;
     RigidConstraintModel ci_LFoot(CONTACT_6D, model, LFoot_id, LOCAL_WORLD_ALIGNED);
     RigidConstraintModel ci_RFoot(CONTACT_6D, model, RFoot_id, LOCAL_WORLD_ALIGNED);
     contact_model_CL.push_back(ci_LFoot);
@@ -291,12 +287,12 @@ int main(int argc, const char ** argv)
         / data_caba_ref.ddq.template lpNorm<Eigen::Infinity>();
     }
 
-    double lcaba_residual_sum = std::accumulate(lcaba_residual.begin(), lcaba_residual.end(), 0.0);
-    double lcaba_residual_mean = lcaba_residual_sum / NBT;
+    // double lcaba_residual_sum = std::accumulate(lcaba_residual.begin(), lcaba_residual.end(),
+    // 0.0); double lcaba_residual_mean = lcaba_residual_sum / NBT;
     double lcaba_sq_sum =
       std::inner_product(lcaba_residual.begin(), lcaba_residual.end(), lcaba_residual.begin(), 0.0);
-    double lcaba_residual_stddev =
-      std::sqrt(lcaba_sq_sum / NBT - lcaba_residual_mean * lcaba_residual_mean);
+    // double lcaba_residual_stddev =
+    //   std::sqrt(lcaba_sq_sum / NBT - lcaba_residual_mean * lcaba_residual_mean);
 
     // std::cout << "LCABA residual mean = " << lcaba_residual_mean << ", and std = " <<
     // lcaba_residual_stddev << ", max = " << *std::max_element(lcaba_residual.begin(),
@@ -307,13 +303,13 @@ int main(int argc, const char ** argv)
     // lcaba_residual.end()) << ", " << *std::min_element(lcaba_residual.begin(),
     // lcaba_residual.end());
 
-    double proxLTL_residual_sum =
-      std::accumulate(proxLTL_residual.begin(), proxLTL_residual.end(), 0.0);
-    double proxLTL_residual_mean = proxLTL_residual_sum / NBT;
+    // double proxLTL_residual_sum =
+    //   std::accumulate(proxLTL_residual.begin(), proxLTL_residual.end(), 0.0);
+    // double proxLTL_residual_mean = proxLTL_residual_sum / NBT;
     double proxLTL_sq_sum = std::inner_product(
       proxLTL_residual.begin(), proxLTL_residual.end(), proxLTL_residual.begin(), 0.0);
-    double proxLTL_residual_stddev =
-      std::sqrt(proxLTL_sq_sum / NBT - proxLTL_residual_mean * proxLTL_residual_mean);
+    // double proxLTL_residual_stddev =
+    //   std::sqrt(proxLTL_sq_sum / NBT - proxLTL_residual_mean * proxLTL_residual_mean);
 
     // std::cout << ", " << proxLTL_residual_mean << ", " << proxLTL_residual_stddev << ", " <<
     // *std::max_element(proxLTL_residual.begin(), proxLTL_residual.end()) << ", " <<

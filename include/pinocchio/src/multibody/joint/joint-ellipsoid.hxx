@@ -75,7 +75,7 @@ namespace pinocchio
     typedef SpatialAxis<5> AxisRotZ;
 
     typedef Eigen::Matrix<Scalar, 6, 3, Options> Matrix63;
-    Matrix63 S;
+    Matrix63 S = Matrix63::Zero();
 
     template<typename Vector3Like>
     JointMotion __mult__(const Eigen::MatrixBase<Vector3Like> & v) const

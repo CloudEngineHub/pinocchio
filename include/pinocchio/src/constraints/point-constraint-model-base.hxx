@@ -893,7 +893,7 @@ namespace pinocchio
       }
       else
       {
-        assert(false && "Should never happened");
+        PINOCCHIO_UNREACHABLE();
       }
 
 #undef INTERNAL_LOOP
@@ -943,7 +943,7 @@ namespace pinocchio
       }
       else
       {
-        assert(false && "Should never happened");
+        PINOCCHIO_UNREACHABLE();
       }
 
       return res;

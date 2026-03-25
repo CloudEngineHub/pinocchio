@@ -78,7 +78,7 @@ namespace pinocchio
       return;
     }
 
-    assert(false && "This must never happened.");
+    PINOCCHIO_UNREACHABLE();
   }
 
   ///

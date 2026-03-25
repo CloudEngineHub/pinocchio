@@ -180,6 +180,8 @@ namespace pinocchio
           return self.residualSize(CurrentSelection());
         case ConstraintSelectionType::MAXIMAL:
           return self.residualSize(MaximalSelection());
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -191,6 +193,8 @@ namespace pinocchio
           return self.symmetricConeResidualSize(CurrentSelection());
         case ConstraintSelectionType::MAXIMAL:
           return self.symmetricConeResidualSize(MaximalSelection());
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -202,6 +206,8 @@ namespace pinocchio
           return self.symmetricConeResidualScalingSize(CurrentSelection());
         case ConstraintSelectionType::MAXIMAL:
           return self.symmetricConeResidualScalingSize(MaximalSelection());
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -231,6 +237,8 @@ namespace pinocchio
           self.retrieveCompliance(resms, MaximalSelection());
           return resms;
         }
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -349,12 +357,15 @@ namespace pinocchio
         case WORLD:
           self.appendCouplingConstraintInertias(
             model, data, constraint_data, diagonal_constraint_inertia, WorldFrameTag());
+          break;
         case LOCAL:
           self.appendCouplingConstraintInertias(
             model, data, constraint_data, diagonal_constraint_inertia, LocalFrameTag());
+          break;
         case LOCAL_WORLD_ALIGNED:
           self.appendCouplingConstraintInertias(
             model, data, constraint_data, diagonal_constraint_inertia, LocalWorldAlignedFrameTag());
+          break;
         }
       }
     };

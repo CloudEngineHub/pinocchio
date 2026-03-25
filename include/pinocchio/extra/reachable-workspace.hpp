@@ -206,7 +206,7 @@ namespace pinocchio
     /// result \param[in] comb Vector of active joints in this configuration
 
     /// \param[out] qv Joint Velocity result
-    void computeJointVel(
+    inline void computeJointVel(
       const Eigen::VectorXd & res1,
       const Eigen::VectorXd & res2,
       const Eigen::VectorXi & comb,
@@ -217,7 +217,7 @@ namespace pinocchio
     /// hold the results \param[in] n Max range of element \param[in] k length of subsequences
 
     /// \param[out] indices results of the combination
-    void generateCombination(const int n, const int k, Eigen::VectorXi & indices);
+    inline void generateCombination(const int n, const int k, Eigen::VectorXi & indices);
 
     /// \brief Cartesian product of input element with itself. Number of repetition is specified
     /// with repeat argument. Inspired by
@@ -227,7 +227,7 @@ namespace pinocchio
     /// call)
 
     /// \param[out] combination Cartesian Product associated with the indices
-    void productCombination(
+    inline void productCombination(
       const Eigen::VectorXd & element,
       const int repeat,
       Eigen::VectorXi & indices,

@@ -18,16 +18,9 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 BOOST_AUTO_TEST_CASE(test_constraint_dynamics_code_generation)
 {
   typedef double Scalar;
-  typedef CppAD::cg::CG<Scalar> CGScalar;
-  typedef CppAD::AD<CGScalar> ADScalar;
-
-  typedef Eigen::Matrix<ADScalar, Eigen::Dynamic, 1> ADVector;
 
   typedef pinocchio::ModelTpl<Scalar> Model;
   typedef Model::Data Data;
-
-  typedef pinocchio::ModelTpl<ADScalar> ADModel;
-  typedef ADModel::Data ADData;
 
   Model model;
   pinocchio::buildModels::humanoidRandom(model);

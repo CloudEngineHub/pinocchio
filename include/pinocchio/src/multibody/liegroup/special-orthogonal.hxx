@@ -206,8 +206,7 @@ namespace pinocchio
         Jout(0, 0) -= Scalar(1);
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -231,8 +230,7 @@ namespace pinocchio
         Jout(0, 0) -= Scalar(1);
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -258,8 +256,7 @@ namespace pinocchio
         TM(1, 0) -= q[0];
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
     // We use default tangentMapProduct_impl and tangentMapTransposeProduct_impl
@@ -559,8 +556,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_POP
         Jout -= exp3(-v);
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -583,8 +579,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_POP
         Jexp3<RMTO>(v, J.derived());
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -609,8 +604,7 @@ PINOCCHIO_COMPILER_DIAGNOSTIC_POP
         TM -= _TM;
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
     // We use default tangentMapProduct_impl and tangentMapTransposeProduct_impl

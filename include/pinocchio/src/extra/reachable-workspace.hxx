@@ -30,8 +30,8 @@ namespace pinocchio
       q0.size(), model.nq, "The configuration vector is not of the right size");
 
     auto f = [](
-               const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-               DataTpl<Scalar, Options, JointCollectionTpl> & data) -> bool { return true; };
+               const ModelTpl<Scalar, Options, JointCollectionTpl> &,
+               DataTpl<Scalar, Options, JointCollectionTpl> &) -> bool { return true; };
 
     internal::computeVertex(model, q0, time_horizon, frame_id, f, vertex, params);
   }
@@ -228,7 +228,7 @@ namespace pinocchio
             // Store operational position as a point for hull computation
             if (config_filter(model, data))
             {
-              vertex.col(c_vertex) = data.oMf[frame_id].translation();
+              vertex.col(c_vertex) = data.oMf[static_cast<std::size_t>(frame_id)].translation();
               c_vertex++;
             }
           }

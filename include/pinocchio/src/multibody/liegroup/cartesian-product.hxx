@@ -150,8 +150,7 @@ namespace pinocchio
         lg2.dIntegrate_dq(Q2(q), V2(v), J22(J), op);
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -174,8 +173,7 @@ namespace pinocchio
         lg2.dIntegrate_dv(Q2(q), V2(v), J22(J), op);
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -197,8 +195,7 @@ namespace pinocchio
         lg2.tangentMap(Q2(q), TM22(TM), op);
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

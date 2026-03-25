@@ -305,7 +305,7 @@ namespace pinocchio
           motionSet::se3ActionInverse(oMlast, Jcols, v_partial_dv_cols);
           break;
         default:
-          assert(false && "This must never happened");
+          PINOCCHIO_UNREACHABLE();
         }
 
         // dvec/dq
@@ -335,7 +335,7 @@ namespace pinocchio
           }
           break;
         default:
-          assert(false && "This must never happened");
+          PINOCCHIO_UNREACHABLE();
         }
       }
     };
@@ -1400,8 +1400,7 @@ namespace pinocchio
       break;
     }
     default:
-      assert(false && "must never happened");
-      break;
+      PINOCCHIO_UNREACHABLE();
     }
   }
 

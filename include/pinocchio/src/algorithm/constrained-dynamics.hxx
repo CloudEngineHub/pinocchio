@@ -417,8 +417,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "must never happened");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
 
       contact_data.contact_acceleration = coriolis_centrifugal_acc2;
@@ -435,8 +434,7 @@ namespace pinocchio
           + contact_acceleration_error.toVector() + contact_acceleration_desired.toVector();
         break;
       default:
-        assert(false && "must never happened");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
 
       current_row_id += contact_dim;
@@ -508,8 +506,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "must never happened");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
 
       current_row_sol_id += contact_dim;

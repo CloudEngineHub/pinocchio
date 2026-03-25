@@ -96,8 +96,6 @@ namespace pinocchio
     {
 #ifndef PINOCCHIO_PYTHON_SKIP_REACHABLE_WORKSPACE
       using namespace Eigen;
-      typedef context::Scalar Scalar;
-      typedef context::VectorXs VectorXs;
       using context::Options;
 
       bp::def(
