@@ -18,10 +18,10 @@ namespace pinocchio
     namespace details
     {
 
-      static SE3 convertFromPose3d(const ignition::math::Pose3d & posePlacement)
+      static SE3 convertFromPose3d(const gz::math::Pose3d & posePlacement)
       {
-        const ignition::math::Quaterniond & q = posePlacement.Rot();
-        const ignition::math::Vector3d & p = posePlacement.Pos();
+        const gz::math::Quaterniond & q = posePlacement.Rot();
+        const gz::math::Vector3d & p = posePlacement.Pos();
         return SE3(
           SE3::Quaternion(q.W(), q.X(), q.Y(), q.Z()).matrix(), SE3::Vector3(p.X(), p.Y(), p.Z()));
       }
@@ -36,8 +36,7 @@ namespace pinocchio
       static Inertia convertInertiaFromSdf(const ::sdf::ElementPtr inertial)
       {
 
-        const ignition::math::Pose3d & pose =
-          inertial->template Get<ignition::math::Pose3d>("pose");
+        const gz::math::Pose3d & pose = inertial->template Get<gz::math::Pose3d>("pose");
         const double & mass = inertial->template Get<double>("mass");
 
         const ::sdf::ElementPtr inertiaElem = inertial->GetElement("inertia");
@@ -368,14 +367,14 @@ namespace pinocchio
           const ::sdf::ElementPtr childLinkPoseElem = childElement->GetElement("pose");
           const ::sdf::ElementPtr jointPoseElem = jointElement->GetElement("pose");
 
-          const ignition::math::Pose3d parentLinkPlacement_ig =
-            parentElement->template Get<ignition::math::Pose3d>("pose");
+          const gz::math::Pose3d parentLinkPlacement_ig =
+            parentElement->template Get<gz::math::Pose3d>("pose");
 
-          const ignition::math::Pose3d childLinkPlacement_ig =
-            childElement->template Get<ignition::math::Pose3d>("pose");
+          const gz::math::Pose3d childLinkPlacement_ig =
+            childElement->template Get<gz::math::Pose3d>("pose");
 
-          const ignition::math::Pose3d curJointPlacement_ig =
-            jointElement->template Get<ignition::math::Pose3d>("pose");
+          const gz::math::Pose3d curJointPlacement_ig =
+            jointElement->template Get<gz::math::Pose3d>("pose");
 
           const SE3 parentLinkPlacement =
             ::pinocchio::sdf::details::convertFromPose3d(parentLinkPlacement_ig);
@@ -424,7 +423,7 @@ namespace pinocchio
             min_config(Vector::Constant(1, -infty)), max_config(Vector::Constant(1, infty));
           Vector spring_stiffness(1), spring_reference(1);
           Vector friction(Vector::Constant(1, 0.)), damping(Vector::Constant(1, 0.));
-          ignition::math::Vector3d axis_ignition;
+          gz::math::Vector3d axis_gz;
           Vector3 axis;
           bool axis_found = false;
 
@@ -433,8 +432,8 @@ namespace pinocchio
             axis_found = true;
             const ::sdf::ElementPtr axisElem = jointElement->GetElement("axis");
             const ::sdf::ElementPtr xyzElem = axisElem->GetElement("xyz");
-            axis_ignition = axisElem->Get<ignition::math::Vector3d>("xyz");
-            axis << axis_ignition.X(), axis_ignition.Y(), axis_ignition.Z();
+            axis_gz = axisElem->Get<gz::math::Vector3d>("xyz");
+            axis << axis_gz.X(), axis_gz.Y(), axis_gz.Z();
 
             // if use_parent_model_frame has been set to true
             if (xyzElem->HasAttribute("expressed_in"))

@@ -28,7 +28,7 @@
 #include <boost/optional.hpp>
 
 #include <sdf/sdf.hh>
-#include <ignition/math.hh>
+#include <gz/math.hh>
 
 #include "pinocchio/unsupported.hpp"
 

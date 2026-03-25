@@ -91,7 +91,7 @@ namespace pinocchio
 
       static Eigen::Vector3d retrieveMeshScale(const ::sdf::ElementPtr sdf_mesh)
       {
-        const ignition::math::Vector3d ign_scale = sdf_mesh->Get<ignition::math::Vector3d>("scale");
+        const gz::math::Vector3d ign_scale = sdf_mesh->Get<gz::math::Vector3d>("scale");
         return Eigen::Vector3d(ign_scale.X(), ign_scale.Y(), ign_scale.Z());
       }
 
@@ -234,8 +234,7 @@ namespace pinocchio
             const auto geometry = std::make_shared<coal::CollisionGeometry>();
 #endif // PINOCCHIO_WITH_COLLISION
 
-            const ignition::math::Pose3d & pose =
-              (*i)->template Get<ignition::math::Pose3d>("pose");
+            const gz::math::Pose3d & pose = (*i)->template Get<gz::math::Pose3d>("pose");
 
             Eigen::Vector4d meshColor(Eigen::Vector4d::Zero());
             std::string meshTexturePath;
@@ -243,8 +242,7 @@ namespace pinocchio
             const ::sdf::ElementPtr sdf_material = (*i)->GetElement("material");
             if (sdf_material)
             {
-              const ignition::math::Color ign_meshColor =
-                sdf_material->Get<ignition::math::Color>("ambient");
+              const gz::math::Color ign_meshColor = sdf_material->Get<gz::math::Color>("ambient");
 
               meshColor << ign_meshColor.R(), ign_meshColor.G(), ign_meshColor.B(),
                 ign_meshColor.A();

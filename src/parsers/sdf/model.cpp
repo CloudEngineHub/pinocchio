@@ -9,7 +9,7 @@
 #include "pinocchio/constraints.hpp"
 
 #include <sdf/sdf.hh>
-#include <ignition/math.hh>
+#include <gz/math.hh>
 #include <sstream>
 #include <boost/foreach.hpp>
 #include <limits>
