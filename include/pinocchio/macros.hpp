@@ -19,6 +19,7 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
+#include "pinocchio/src/macros.hxx"
 #include "pinocchio/src/eigen-macros.hxx"
 #include "pinocchio/src/container/aligned-vector.hxx"
 // IWYU pragma: end_exports
