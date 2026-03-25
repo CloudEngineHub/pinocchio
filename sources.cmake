@@ -151,6 +151,7 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/assign-operators.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/lanczos-decomposition.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/eigen-ref.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/macros.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/regressor.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/frames.hxx
