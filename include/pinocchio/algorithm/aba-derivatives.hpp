@@ -162,7 +162,7 @@ namespace pinocchio
     typename ConfigVectorType,
     typename TangentVectorType1,
     typename TangentVectorType2>
-    std::enable_if_t<
+  std::enable_if_t<
     ConfigVectorType::IsVectorAtCompileTime || TangentVectorType1::IsVectorAtCompileTime
       || TangentVectorType2::IsVectorAtCompileTime,
     void>

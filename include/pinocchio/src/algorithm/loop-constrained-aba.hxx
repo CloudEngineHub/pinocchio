@@ -448,9 +448,10 @@ namespace pinocchio
           data.oYaba_augmented[joint1_id].noalias() += mu * A1tA1;
 
           // Baumgarte
-          if (check_expression_if_real<Scalar, false>(
-                (corrector.Kp == static_cast<Scalar>(0.))
-                && (corrector.Kd == static_cast<Scalar>(0.))))
+          if (
+            check_expression_if_real<Scalar, false>(
+              (corrector.Kp == static_cast<Scalar>(0.))
+              && (corrector.Kd == static_cast<Scalar>(0.))))
           {
             cdata.contact_acceleration_desired.setZero();
           }
@@ -503,9 +504,10 @@ namespace pinocchio
           const Matrix36 & A1 = oMc1.toActionMatrixInverse().template topRows<3>();
           data.oYaba_augmented[joint1_id].noalias() += mu * A1.transpose() * A1;
 
-          if (check_expression_if_real<Scalar, false>(
-                (corrector.Kp == static_cast<Scalar>(0.))
-                && (corrector.Kd == static_cast<Scalar>(0.))))
+          if (
+            check_expression_if_real<Scalar, false>(
+              (corrector.Kp == static_cast<Scalar>(0.))
+              && (corrector.Kd == static_cast<Scalar>(0.))))
           {
             cdata.contact_acceleration_desired.setZero();
           }

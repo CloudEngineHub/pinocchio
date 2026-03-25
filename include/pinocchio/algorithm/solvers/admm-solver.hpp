@@ -253,7 +253,7 @@ namespace pinocchio
   struct ADMMSolverSettingsTpl : ConstraintSolverSettingsBase<ADMMSolverSettingsTpl<_Scalar>>
   {
     typedef _Scalar Scalar;
-    typedef ADMMSolverSettingsTpl Self; 
+    typedef ADMMSolverSettingsTpl Self;
     typedef ConstraintSolverSettingsBase<Self> Base;
 
     /// \brief Default constructor
@@ -596,12 +596,12 @@ namespace pinocchio
       constraint_impulses = y;
     }
 
-    /// \brief \copydoc Base::retrieveConstraintImpulses 
+    /// \brief \copydoc Base::retrieveConstraintImpulses
     /// \note At the optimum we have Gx + g + desaxce - z = 0.
     /// We have sigma = Gx + g and z = Gx + g + desaxce, thus sigma = z - desaxce,
     template<typename VectorLike>
-    void
-    retrieveConstraintVelocitiesImpl(const Eigen::MatrixBase<VectorLike> & constraint_velocities_) const
+    void retrieveConstraintVelocitiesImpl(
+      const Eigen::MatrixBase<VectorLike> & constraint_velocities_) const
     {
       auto & constraint_velocities = constraint_velocities_.const_cast_derived();
       constraint_velocities = z - desaxce;
@@ -950,15 +950,18 @@ namespace pinocchio
 
       /// \brief Primal feasibility vector at current iteration.
       VectorXsStorage primal_feasibility_vector_storage;
-      typename VectorXsStorage::RefMapType primal_feasibility_vector = primal_feasibility_vector_storage.map();
+      typename VectorXsStorage::RefMapType primal_feasibility_vector =
+        primal_feasibility_vector_storage.map();
 
       /// \brief Anderson related primal feasibility vector at current iteration.
       VectorXsStorage anderson_primal_feasibility_vector_storage;
-      typename VectorXsStorage::RefMapType anderson_primal_feasibility_vector = anderson_primal_feasibility_vector_storage.map();
+      typename VectorXsStorage::RefMapType anderson_primal_feasibility_vector =
+        anderson_primal_feasibility_vector_storage.map();
 
       /// \brief Dual feasibility vector at current iteration.
       VectorXsStorage dual_feasibility_vector_storage;
-      typename VectorXsStorage::RefMapType dual_feasibility_vector = dual_feasibility_vector_storage.map();
+      typename VectorXsStorage::RefMapType dual_feasibility_vector =
+        dual_feasibility_vector_storage.map();
     }; // struct ADMMSolverWorkspaceTpl
 
     ///

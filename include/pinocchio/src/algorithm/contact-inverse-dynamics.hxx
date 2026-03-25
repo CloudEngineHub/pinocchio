@@ -117,13 +117,15 @@ namespace pinocchio
 
       const Scalar lambda_c_norm_inf = lambda.template lpNorm<Eigen::Infinity>();
 
-      if (check_expression_if_real<Scalar, false>(
-            settings.absolute_residual <= settings.absolute_accuracy))
+      if (
+        check_expression_if_real<Scalar, false>(
+          settings.absolute_residual <= settings.absolute_accuracy))
         abs_prec_reached = true;
 
-      if (check_expression_if_real<Scalar, false>(
-            settings.relative_residual
-            <= settings.relative_accuracy * math::max(lambda_c_norm_inf, lambda_c_prev_norm_inf)))
+      if (
+        check_expression_if_real<Scalar, false>(
+          settings.relative_residual
+          <= settings.relative_accuracy * math::max(lambda_c_norm_inf, lambda_c_prev_norm_inf)))
         rel_prec_reached = true;
 
       if (abs_prec_reached || rel_prec_reached)

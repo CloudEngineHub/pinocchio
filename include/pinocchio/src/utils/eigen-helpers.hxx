@@ -27,8 +27,7 @@ namespace pinocchio
     };
 
     template<class T>
-    inline constexpr bool is_eigen_noalias_v =
-      is_eigen_noalias<std::decay_t<T>>::value;
+    inline constexpr bool is_eigen_noalias_v = is_eigen_noalias<std::decay_t<T>>::value;
 
     template<class T>
     struct is_eigen_product : std::false_type
@@ -41,8 +40,7 @@ namespace pinocchio
     };
 
     template<class T>
-    inline constexpr bool is_eigen_product_v =
-      is_eigen_product<std::decay_t<T>>::value;
+    inline constexpr bool is_eigen_product_v = is_eigen_product<std::decay_t<T>>::value;
 
     template<typename T>
     struct remove_eigen_noalias

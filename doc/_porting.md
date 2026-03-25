@@ -40,7 +40,7 @@ HPP-FCL has been replaced by coal:
 - Deprecate `pinocchio::toFclTransform3f` replaced by `pinocchio::toCoalTransform3s`
 - Deprecate `PINOCCHIO_WITH_HPP_FCL` replaced by `PINOCCHIO_WITH_COLLISION`
 
-Constraints API changes: 
+Constraints API changes:
   - Add `std::vector<ConstraintData, ConstraintDataAllocator> contact_datas` in `initConstraintDynamics` method
   - Change `BaumgarteCorrectorParametersTpl` constructor scalar are used instead of vectors
 
@@ -52,9 +52,9 @@ Constraints API changes:
 
 ContactCholeskyDecompositionTpl changes :
 - Deprecate `ContactCholeskyDecompositionTpl::allocate` replaced by `ContactCholeskyDecompositionTpl::rebuild`
-  - Add `std::vector<ConstraintModel, ConstraintModelAllocator>` 
+  - Add `std::vector<ConstraintModel, ConstraintModelAllocator>`
   - Add `std::vector<ConstraintData, ConstraintDataAllocator>`
-- ContactCholeskyDecompositionTpl constructor : 
+- ContactCholeskyDecompositionTpl constructor :
   - Add `DataTpl<S1, O1, JointCollectionTpl>`
   - Add `std::vector<ConstraintData, ConstraintDataAllocator>`
 
@@ -66,7 +66,7 @@ HPP-FCL has been replaced by coal:
 - Deprecate `buildModelFromMJCF(filename, root_joint, root_joint_name)` replaced by `buildModelFromMJCFAndRootJoint` and `buildModelAndLegacyConstraintsFromMJCF`
 - Deprecate `buildModelFromSdf` replaced by `buildModelAndLegacyConstraintsFromSdf`
 
-Constraints API changes: 
+Constraints API changes:
   - Add `contact_datas` in `initConstraintDynamics` method
   - Change `BaumgarteCorrectorParameters` constructor scalar are used instead of vectors
 

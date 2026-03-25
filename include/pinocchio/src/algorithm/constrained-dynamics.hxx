@@ -341,8 +341,9 @@ namespace pinocchio
         contact_data.contact_velocity_error.angular().setZero();
       }
 
-      if (check_expression_if_real<Scalar, false>(
-            (corrector.Kp == static_cast<Scalar>(0.)) && (corrector.Kd == static_cast<Scalar>(0.))))
+      if (
+        check_expression_if_real<Scalar, false>(
+          (corrector.Kp == static_cast<Scalar>(0.)) && (corrector.Kd == static_cast<Scalar>(0.))))
       {
         contact_acceleration_error.setZero();
       }
@@ -898,8 +899,8 @@ namespace pinocchio
         }
       }
 
-      if (check_expression_if_real<Scalar, false>(
-            primal_infeasibility < settings.absolute_accuracy))
+      if (
+        check_expression_if_real<Scalar, false>(primal_infeasibility < settings.absolute_accuracy))
       {
         optimal_solution_found = true;
         break;

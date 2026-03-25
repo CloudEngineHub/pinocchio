@@ -415,14 +415,15 @@ namespace pinocchio
     /// \brief Update the damping from a block diagonal matrix (copy overload).
     ///
     template<int OtherOptions, std::size_t OtherAlignment>
-    void
-    updateDamping(const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping);
+    void updateDamping(
+      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping);
 
     ///
     /// \brief Update the damping from a block diagonal matrix (move overload).
     ///
     template<int OtherOptions, std::size_t OtherAlignment>
-    void updateDamping(BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping);
+    void
+    updateDamping(BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping);
 
     ///
     /// \brief Returns the current damping as a block diagonal matrix.

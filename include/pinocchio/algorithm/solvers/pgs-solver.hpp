@@ -338,8 +338,7 @@ namespace pinocchio
     /// WARNING: the PGS solver does not take into account desaxce terms for now.
     /// It only solves the CCP (not the NCP).
     template<typename VectorLike>
-    void
-    retrieveConstraintVelocitiesImpl(
+    void retrieveConstraintVelocitiesImpl(
       const Eigen::MatrixBase<VectorLike> & constraint_velocities_) const
     {
       auto & constraint_velocities = constraint_velocities_.const_cast_derived();

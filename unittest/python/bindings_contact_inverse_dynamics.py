@@ -63,7 +63,7 @@ class TestContactInverseDynamics(TestCase):
             cm.calc(model, data, cd)
 
         # test 1 with vector of contact models, contact datas and cones
-        has_converged1, tau_sol1, lambda_sol1 = pin.contactInverseDynamics(
+        has_converged1, tau_sol1, _lambda_sol1 = pin.contactInverseDynamics(
             model,
             data,
             q,
@@ -79,7 +79,7 @@ class TestContactInverseDynamics(TestCase):
         self.assertEqual(has_converged1, True)
 
         # test 2 with list of contact models, cones
-        has_converged2, tau_sol2, lambda_sol2 = pin.contactInverseDynamics(
+        has_converged2, tau_sol2, _lambda_sol2 = pin.contactInverseDynamics(
             model,
             data,
             q,
@@ -95,7 +95,7 @@ class TestContactInverseDynamics(TestCase):
         self.assertEqual(has_converged2, True)
 
         # test 3 with list of contact models, contact datas and cones
-        has_converged3, tau_sol3, lambda_sol3 = pin.contactInverseDynamics(
+        has_converged3, tau_sol3, _lambda_sol3 = pin.contactInverseDynamics(
             model,
             data,
             q,

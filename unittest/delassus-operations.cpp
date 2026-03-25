@@ -662,8 +662,8 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_diag_operations)
   {
     // Test getDamping() after scalar update
     delassus.updateDamping(damping_val);
-    BOOST_CHECK(delassus.getDamping().matrix().isApprox(
-      damping_val * Eigen::MatrixXd::Identity(size, size)));
+    BOOST_CHECK(
+      delassus.getDamping().matrix().isApprox(damping_val * Eigen::MatrixXd::Identity(size, size)));
   }
 }
 

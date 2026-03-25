@@ -56,7 +56,7 @@
   { "include": ["<cppad/cg/variable.hpp>", "private", "<cppad/cg.hpp>", "public"] },
   { "include": ["<cppad/cg/variable_name_generator.hpp>", "private", "<cppad/cg.hpp>", "public"] },
   { "include": ["@<cppad/cg/dae_index_reduction/.*>", "private", "<cppad/cg.hpp>", "public"] },
-  
+
   { "include": ["@<cppad/cg/evaluator/.*>", "private", "<cppad/cg.hpp>", "public"] },
   { "include": ["@<cppad/cg/extra/.*>", "private", "<cppad/cg.hpp>", "public"] },
   { "include": ["@<cppad/cg/lang/.*>", "private", "<cppad/cg.hpp>", "public"] },

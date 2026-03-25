@@ -108,7 +108,8 @@ namespace pinocchio
             "Return True if the result represents a valid (post-solve) state.")
           .def(
             "constraintSize", &Result::constraintSize, bp::arg("self"),
-            "Size of quantities related to constraints contained in result (typically constraint impulses or velocities).")
+            "Size of quantities related to constraints contained in result (typically constraint "
+            "impulses or velocities).")
           .def(
             "reset", &Result::reset, bp::arg("self"),
             "Reset the result to an invalid (pre-solve) state.")
@@ -184,8 +185,7 @@ namespace pinocchio
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(
-          "reset", &Solver::reset, bp::arg("self"), "Reset the solver to its initial state.");
+        cl.def("reset", &Solver::reset, bp::arg("self"), "Reset the solver to its initial state.");
 
 #ifdef PINOCCHIO_WITH_COLLISION
         cl.def(

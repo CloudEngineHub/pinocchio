@@ -38,7 +38,7 @@ def distance_points_segment(p, a, b):
 def pca_approximation(vertices):
     mean = vertices.mean(axis=0)
     vertices -= mean
-    u, s, vh = np.linalg.svd(vertices, full_matrices=True)
+    _u, _s, vh = np.linalg.svd(vertices, full_matrices=True)
     components = vh
     pca_proj = vertices.dot(components.T)
     vertices += mean
