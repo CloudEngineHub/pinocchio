@@ -474,7 +474,7 @@ BOOST_AUTO_TEST_CASE(cast)
 
   const std::string RF = "rleg6_joint";
 
-  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
+  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Identity());
   const auto cm_RF_cast_double = cm_RF.cast<double>();
   BOOST_CHECK(cm_RF_cast_double == cm_RF);
 

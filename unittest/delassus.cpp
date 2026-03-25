@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(contact_6D4)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);

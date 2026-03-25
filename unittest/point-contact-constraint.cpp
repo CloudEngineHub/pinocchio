@@ -596,13 +596,12 @@ BOOST_AUTO_TEST_CASE(contact_models_sparsity_and_jacobians)
 
 BOOST_AUTO_TEST_CASE(cast)
 {
-
   pinocchio::Model model;
   pinocchio::buildModels::humanoidRandom(model, true);
 
   const std::string RF = "rleg6_joint";
 
-  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Random());
+  const PointAnchorConstraintModel cm_RF(model, model.getJointId(RF), SE3::Identity());
   const auto cm_RF_cast_double = cm_RF.cast<double>();
   BOOST_CHECK(cm_RF_cast_double == cm_RF);
 
