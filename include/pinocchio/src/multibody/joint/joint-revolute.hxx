@@ -144,10 +144,8 @@ namespace pinocchio
         res.rotation().col(1).noalias() = res.rotation().col(2).cross(res.rotation().col(0));
         break;
       }
-      default: {
-        assert(false && "must never happened");
-        break;
-      }
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
       res.translation() = m.translation();
       assert(res.isApprox(m * plain()));
@@ -223,10 +221,8 @@ namespace pinocchio
         rot.coeffRef(1, 1) = m_cos;
         break;
       }
-      default: {
-        assert(false && "must never happened");
-        break;
-      }
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
     }
   };
@@ -831,8 +827,7 @@ namespace pinocchio
       case 2:
         return Vector3::UnitZ();
       default:
-        assert(false && "must never happen");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

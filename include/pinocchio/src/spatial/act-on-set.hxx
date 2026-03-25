@@ -208,8 +208,7 @@ namespace pinocchio
           fout -= m.act(fin);
           break;
         default:
-          assert(false && "Wrong Op requesed value");
-          break;
+          PINOCCHIO_UNREACHABLE();
         }
       }
     };
@@ -260,8 +259,7 @@ namespace pinocchio
           fout -= v.cross(fin);
           break;
         default:
-          assert(false && "Wrong Op requesed value");
-          break;
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -340,8 +338,7 @@ namespace pinocchio
           fout -= m.actInv(fin);
           break;
         default:
-          assert(false && "Wrong Op requesed value");
-          break;
+          PINOCCHIO_UNREACHABLE();
         }
       }
     };
@@ -473,8 +470,7 @@ namespace pinocchio
           mout -= m.act(min);
           break;
         default:
-          assert(false && "Wrong Op requesed value");
-          break;
+          PINOCCHIO_UNREACHABLE();
         }
       }
     };
@@ -548,8 +544,7 @@ namespace pinocchio
           mout -= v.cross(min);
           break;
         default:
-          assert(false && "Wrong Op requesed value");
-          break;
+          PINOCCHIO_UNREACHABLE();
         }
       }
     };
@@ -598,8 +593,7 @@ namespace pinocchio
           mout -= m.actInv(min);
           break;
         default:
-          assert(false && "Wrong Op requesed value");
-          break;
+          PINOCCHIO_UNREACHABLE();
         }
       }
     };
@@ -672,8 +666,7 @@ namespace pinocchio
           fout -= I * min;
           break;
         default:
-          assert(false && "Wrong Op requesed value");
-          break;
+          PINOCCHIO_UNREACHABLE();
         }
       }
     };

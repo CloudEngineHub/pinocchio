@@ -1122,14 +1122,14 @@ namespace pinocchio
             AssignOp::run(sub.map * sub_rhs, sub_res.noalias());
             break;
           default:
-            assert(false && "Should never happen");
+            PINOCCHIO_UNREACHABLE();
           }
           sub_offset += sub_size;
         }
         break;
       }
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
 
       row_id += block_size;
@@ -1216,14 +1216,14 @@ namespace pinocchio
             AssignOp::run(sub_lhs * sub.map, sub_res.noalias());
             break;
           default:
-            assert(false && "Should never happen");
+            PINOCCHIO_UNREACHABLE();
           }
           sub_offset += sub_size;
         }
         break;
       }
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
 
       col_id += block_size;

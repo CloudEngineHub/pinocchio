@@ -196,10 +196,8 @@ namespace pinocchio
           return self.residualSize(CurrentSelection());
         case ConstraintSelectionType::MAXIMAL:
           return self.residualSize(MaximalSelection());
-        default: {
-          assert(false && "must never happened");
-          break;
-        }
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -229,10 +227,8 @@ namespace pinocchio
           self.retrieveCompliance(res, MaximalSelection());
           return res;
         }
-        default: {
-          assert(false && "must never happened");
-          break;
-        }
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 

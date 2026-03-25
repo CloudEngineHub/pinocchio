@@ -172,8 +172,7 @@ namespace pinocchio
         Jout.diagonal().array() -= Scalar(1);
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -197,8 +196,7 @@ namespace pinocchio
         Jout.diagonal().array() -= Scalar(1);
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -224,8 +222,7 @@ namespace pinocchio
         Jout -= Jin;
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -287,8 +284,7 @@ namespace pinocchio
         TM.diagonal().array() -= Scalar(1);
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -311,8 +307,7 @@ namespace pinocchio
         Mout -= Min;
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -335,8 +330,7 @@ namespace pinocchio
         Mout -= Min;
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

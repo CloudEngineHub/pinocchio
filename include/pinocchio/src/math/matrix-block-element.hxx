@@ -411,7 +411,7 @@ namespace pinocchio
         m_matrix.resize(size, size);
         break;
       default:
-        assert(false && "Should never happened");
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

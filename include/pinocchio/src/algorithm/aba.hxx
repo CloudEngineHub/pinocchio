@@ -949,10 +949,8 @@ namespace pinocchio
       return impl::abaLocalConvention(model, data, q, v, tau);
     case Convention::WORLD:
       return impl::abaWorldConvention(model, data, q, v, tau);
-    default: {
-      assert(false && "must never happened");
-      break;
-    }
+    default:
+      PINOCCHIO_UNREACHABLE();
     }
   }
 
@@ -980,10 +978,8 @@ namespace pinocchio
       return impl::abaLocalConvention(model, data, q, v, tau, fext);
     case Convention::WORLD:
       return impl::abaWorldConvention(model, data, q, v, tau, fext);
-    default: {
-      assert(false && "must never happened");
-      break;
-    }
+    default:
+      PINOCCHIO_UNREACHABLE();
     }
   }
 

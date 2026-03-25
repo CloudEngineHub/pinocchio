@@ -124,8 +124,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "must never happened");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
 
       switch (contact_model.type)
@@ -139,8 +138,7 @@ namespace pinocchio
           -(1 + r_coeff) * pre_impact_velocity.toVector();
         break;
       default:
-        assert(false && "must never happened");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
 
       current_row_id += contact_dim;
@@ -178,8 +176,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "must never happened");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
 
       current_row_sol_id += contact_dim;

@@ -112,8 +112,7 @@ namespace pinocchio
         Mout(2, 2) -= (Scalar)1;
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -364,8 +363,7 @@ namespace pinocchio
         Jout.template bottomRightCorner<1, 1>() -= Jtmp6.template bottomRightCorner<1, 1>();
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -408,8 +406,7 @@ namespace pinocchio
         TM(3, 2) -= q[2];
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -441,8 +438,7 @@ namespace pinocchio
         Mout.template bottomRows<2>() -= R.template rightCols<1>() * Min.template bottomRows<1>();
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -474,8 +470,7 @@ namespace pinocchio
         Mout.template bottomRows<1>() -= RT.template bottomRows<1>() * Min.template bottomRows<2>();
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -857,8 +852,7 @@ namespace pinocchio
         Jout -= exp6(MotionRef<const Tangent_t>(v.derived())).toDualActionMatrix().transpose();
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -881,8 +875,7 @@ namespace pinocchio
         Jexp6<RMTO>(MotionRef<const Tangent_t>(v.derived()), J.derived());
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -916,8 +909,7 @@ namespace pinocchio
         TM.template bottomRightCorner<4, 3>() -= TMq;
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -950,8 +942,7 @@ namespace pinocchio
         Mout.template bottomRows<4>() -= TMq * Min.template bottomRows<3>();
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -984,8 +975,7 @@ namespace pinocchio
         Mout.template bottomRows<3>() -= TMq.transpose() * Min.template bottomRows<4>();
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

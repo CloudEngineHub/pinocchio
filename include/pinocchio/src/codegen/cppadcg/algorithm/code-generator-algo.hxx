@@ -1262,7 +1262,7 @@ namespace pinocchio
             .bottomRows(ad_model.nv);
         break;
       default:
-        assert(false && "Wrong argument");
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

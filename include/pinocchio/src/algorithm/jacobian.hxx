@@ -280,8 +280,7 @@ namespace pinocchio
         break;
       }
       default:
-        PINOCCHIO_CHECK_INPUT_ARGUMENT(false, "must never happened");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

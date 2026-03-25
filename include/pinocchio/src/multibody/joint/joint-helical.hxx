@@ -139,10 +139,8 @@ namespace pinocchio
         res.rotation().col(1).noalias() = res.rotation().col(2).cross(res.rotation().col(0));
         break;
       }
-      default: {
-        assert(false && "must never happen");
-        break;
-      }
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
       res.translation().noalias() = m.translation() + m.rotation().col(axis) * m_displacement;
       assert(res.isApprox(m * plain()));
@@ -229,10 +227,8 @@ namespace pinocchio
         rot.coeffRef(1, 1) = m_cos;
         break;
       }
-      default: {
-        assert(false && "must never happen");
-        break;
-      }
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
     }
   }; // struct TransformHelicalTpl
@@ -904,8 +900,7 @@ namespace pinocchio
       case 2:
         return Vector3::UnitZ();
       default:
-        assert(false && "must never happen");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

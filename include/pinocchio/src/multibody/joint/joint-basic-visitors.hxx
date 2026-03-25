@@ -1624,8 +1624,7 @@ namespace pinocchio
         const_cast<ExpressionType &>(R) -= jdata.S().transpose() * F;
         break;
       default:
-        assert(false && "Wrong Op requesed value");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
     }
 

@@ -27,10 +27,7 @@ namespace pinocchio
       {
         static T run()
         {
-          assert(false && "Should never happened.");
-          // Hacky way to not have to return something real. The system should throw before.
-          const typename std::remove_reference_t<T> * null_ptr = NULL;
-          return *null_ptr;
+          PINOCCHIO_UNREACHABLE();
         }
       };
 
@@ -40,10 +37,7 @@ namespace pinocchio
       {
         static T & run()
         {
-          assert(false && "Should never happen.");
-          // Hacky way to not have to return something real. The system should throw before.
-          T * null_ptr = nullptr;
-          return *null_ptr;
+          PINOCCHIO_UNREACHABLE();
         }
       };
 

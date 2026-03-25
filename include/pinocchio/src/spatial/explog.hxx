@@ -168,8 +168,7 @@ namespace pinocchio
       Jout.noalias() -= c * r * r.transpose();
       break;
     default:
-      assert(false && "Wrong Op requesed value");
-      break;
+      PINOCCHIO_UNREACHABLE();
     }
   }
 
@@ -561,8 +560,7 @@ namespace pinocchio
       break;
     }
     default:
-      assert(false && "Wrong Op requesed value");
-      break;
+      PINOCCHIO_UNREACHABLE();
     }
   }
 

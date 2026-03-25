@@ -236,10 +236,8 @@ namespace pinocchio
           }
           break;
         }
-        default: {
-          assert(false && "must never happened");
-          break;
-        }
+        default:
+          PINOCCHIO_UNREACHABLE();
         }
       }
 
@@ -307,17 +305,18 @@ namespace pinocchio
         else if (contact_model.type == CONTACT_3D)
           data.constraints_supported_dim[joint_id] += 3;
         else
-          assert(false && "Must never happen");
+          PINOCCHIO_UNREACHABLE();
         break;
       case WORLD:
         assert(false && "WORLD not implemented");
+        PINOCCHIO_UNREACHABLE();
         break;
       case LOCAL_WORLD_ALIGNED:
         assert(false && "LOCAL_WORLD_ALIGNED not implemented");
+        PINOCCHIO_UNREACHABLE();
         break;
       default:
-        assert(false && "Must never happen");
-        break;
+        PINOCCHIO_UNREACHABLE();
       }
       data.accumulation_descendant[joint_id] = joint_id;
 
@@ -552,11 +551,8 @@ namespace pinocchio
         oMc.toActionMatrixInverse(propagators[0]);
         break;
       }
-
-      default: {
-        assert(false && "must never happen");
-        break;
-      }
+      default:
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -630,7 +626,7 @@ namespace pinocchio
         }
         else
         {
-          assert(false && "must never happen");
+          PINOCCHIO_UNREACHABLE();
         }
         // propagate the EMP
         const JointIndex parent = model.parents[i];

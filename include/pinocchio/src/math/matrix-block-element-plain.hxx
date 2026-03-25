@@ -239,7 +239,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -447,7 +447,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -490,7 +490,7 @@ namespace pinocchio
           sub_block.setRandom();
         break;
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -542,7 +542,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -565,7 +565,7 @@ namespace pinocchio
             return true;
         return false;
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
       return true;
     }
@@ -644,7 +644,7 @@ namespace pinocchio
           break;
         }
         default:
-          assert(false && "Should never happen");
+          PINOCCHIO_UNREACHABLE();
         }
         break;
       }
@@ -668,7 +668,7 @@ namespace pinocchio
           break;
         }
         default:
-          assert(false && "Should never happen");
+          PINOCCHIO_UNREACHABLE();
         }
 
         break;
@@ -699,7 +699,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
     }
 
@@ -763,7 +763,7 @@ namespace pinocchio
         break;
       }
       default:
-        assert(false && "Should never happen");
+        PINOCCHIO_UNREACHABLE();
       }
 
       PlainBlockElement res(res_type, size());

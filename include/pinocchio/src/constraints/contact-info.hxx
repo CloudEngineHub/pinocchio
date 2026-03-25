@@ -691,8 +691,7 @@ namespace pinocchio
           }
 
           default:
-            assert(false && "must never happened");
-            break;
+            PINOCCHIO_UNREACHABLE();
           }
         }
       }
