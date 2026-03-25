@@ -337,7 +337,7 @@ namespace pinocchio
       JacobianOut_t & Jout = PINOCCHIO_EIGEN_CONST_CAST(JacobianOut_t, J);
       // TODO sparse version
       MotionTpl<Scalar, 0> nu;
-      nu.toVector() << v.template head<2>(), 0, 0, 0, v[2];
+      nu.toVector() << v.template head<2>(), Scalar(0), Scalar(0), Scalar(0), v[2];
       PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
       PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
       Eigen::Matrix<Scalar, 6, 6> Jtmp6;
@@ -506,7 +506,7 @@ namespace pinocchio
     {
       JacobianOut_t & Jout = PINOCCHIO_EIGEN_CONST_CAST(JacobianOut_t, J_out);
       MotionTpl<Scalar, 0> nu;
-      nu.toVector() << v.template head<2>(), 0, 0, 0, v[2];
+      nu.toVector() << v.template head<2>(), Scalar(0), Scalar(0), Scalar(0), v[2];
 
       PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
       PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED
@@ -554,7 +554,7 @@ namespace pinocchio
     {
       Jacobian_t & Jout = PINOCCHIO_EIGEN_CONST_CAST(Jacobian_t, J);
       MotionTpl<Scalar, 0> nu;
-      nu.toVector() << v.template head<2>(), 0, 0, 0, v[2];
+      nu.toVector() << v.template head<2>(), Scalar(0), Scalar(0), Scalar(0), v[2];
 
       PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
       PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_MAYBE_UNINITIALIZED

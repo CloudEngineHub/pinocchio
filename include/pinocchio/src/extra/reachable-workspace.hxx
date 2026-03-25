@@ -228,7 +228,7 @@ namespace pinocchio
             // Store operational position as a point for hull computation
             if (config_filter(model, data))
             {
-              vertex.col(c_vertex) = data.oMf[frame_id].translation();
+              vertex.col(c_vertex) = data.oMf[static_cast<std::size_t>(frame_id)].translation();
               c_vertex++;
             }
           }

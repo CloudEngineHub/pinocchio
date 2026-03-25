@@ -261,11 +261,10 @@ namespace pinocchio
       template<typename ConstraintModel>
       void run(ConstraintModelBase<ConstraintModel> * ptr = 0)
       {
-        using ConstraintData = typename traits<ConstraintModel>::ConstraintData;
-
         PINOCCHIO_UNUSED_VARIABLE(ptr);
 
 #ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
+        using ConstraintData = typename traits<ConstraintModel>::ConstraintData;
         typedef std::allocator<ConstraintModel> ConstraintModelAllocator;
         typedef std::allocator<ConstraintData> ConstraintDataAllocator;
         class_

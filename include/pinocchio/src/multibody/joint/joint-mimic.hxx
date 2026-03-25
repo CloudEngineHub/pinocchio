@@ -768,8 +768,10 @@ namespace pinocchio
   protected:
     // data
     JointModel m_jmodel_mimicking;
-    Scalar m_scaling, m_offset;
-    int m_nqExtended, m_nvExtended;
+    Scalar m_scaling = Scalar(1);
+    Scalar m_offset = Scalar(0);
+    int m_nqExtended = -1;
+    int m_nvExtended = -1;
 
   public:
     /* Acces to dedicated segment in robot config space.  */
