@@ -105,7 +105,8 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/string.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/timer.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/timer2.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/version.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/utils/version.hpp
+)
 
 set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/visualizers/base-visualizer.hxx
@@ -406,7 +407,8 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/joint-friction-constraint.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/contact-info.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/constraint-model-generic.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/rigid-constraint-conversion.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/constraints/rigid-constraint-conversion.hxx
+)
 
 set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/math/gram-schmidt-orthonormalisation.hpp
@@ -527,12 +529,14 @@ set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/joint/joint-generic.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/joint/joint-revolute-unbounded-unaligned.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/joint/joint-collection.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/joint/joint-helical.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/multibody/joint/joint-helical.hpp
+)
 
 # Casadi
 set(${PROJECT_NAME}_CASADI_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi-algo.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/casadi.hpp
+)
 
 set(${PROJECT_NAME}_CASADI_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/algorithm/algo.hxx
@@ -542,11 +546,13 @@ set(${PROJECT_NAME}_CASADI_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/math/taylor-series-expansion.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/math/triangular-matrix.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/spatial/se3-tpl.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/utils/static-if.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/casadi/utils/static-if.hxx
+)
 
 # CPPAD
 set(${PROJECT_NAME}_CPPAD_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/autodiff/cppad.hpp
+)
 
 set(${PROJECT_NAME}_CPPAD_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/algorithm/aba.hxx
@@ -554,38 +560,46 @@ set(${PROJECT_NAME}_CPPAD_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/math/taylor-series-expansion.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/spatial/log.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/spatial/se3-tpl.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/utils/static-if.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/autodiff/cppad/utils/static-if.hxx
+)
 
 # CPPADCG
 set(${PROJECT_NAME}_CPPADCG_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg-algo.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/codegen/cppadcg.hpp
+)
 
 set(${PROJECT_NAME}_CPPADCG_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/codegen/cppadcg/algorithm/code-generator-algo.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/codegen/cppadcg/algorithm/code-generator-base.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/codegen/cppadcg/math/cast.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/codegen/cppadcg/math/taylor-series-expansion.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/codegen/cppadcg/math/taylor-series-expansion.hxx
+)
 
 set(${PROJECT_NAME}_CPPADCG_DEPRECATED_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/codegen/code-generator-algo.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/codegen/code-generator-algo.hpp
+)
 
 # OpenMP dependent algorithm
 set(${PROJECT_NAME}_PARALLEL_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/parallel/aba.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/parallel/rnea.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/algorithm/parallel/rnea.hpp
+)
 
 set(${PROJECT_NAME}_PARALLEL_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/parallel/aba.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/parallel/rnea.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/parallel/rnea.hxx
+)
 
 set(${PROJECT_NAME}_PARALLEL_DEPRECATED_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/algorithm/parallel/omp.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/algorithm/parallel/omp.hpp
+)
 
 # Collision
 set(${PROJECT_NAME}_COLLISION_TEMPLATE_INSTANTIATION_SOURCES
     ${PROJECT_SOURCE_DIR}/src/collision/collision.cpp
-    ${PROJECT_SOURCE_DIR}/src/collision/distance.cpp)
+    ${PROJECT_SOURCE_DIR}/src/collision/distance.cpp
+)
 
 set(${PROJECT_NAME}_COLLISION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/broadphase-callbacks.hpp
@@ -597,7 +611,8 @@ set(${PROJECT_NAME}_COLLISION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/distance.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/pool/broadphase-manager.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/pool/fwd.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/tree-broadphase-manager.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/tree-broadphase-manager.hpp
+)
 
 set(${PROJECT_NAME}_COLLISION_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/broadphase-callbacks.hxx
@@ -607,19 +622,23 @@ set(${PROJECT_NAME}_COLLISION_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/distance.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/pool/broadphase-manager.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/pool/fwd.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/tree-broadphase-manager.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/tree-broadphase-manager.hxx
+)
 
 set(${PROJECT_NAME}_COLLISION_DEPRECATED_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/collision/fcl-pinocchio-conversions.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/collision/fcl-pinocchio-conversions.hpp
+)
 
 # Collision + OpenMP
 set(${PROJECT_NAME}_COLLISION_PARALLEL_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/parallel/broadphase.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/parallel/geometry.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/collision/parallel/geometry.hpp
+)
 
 set(${PROJECT_NAME}_COLLISION_PARALLEL_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/parallel/broadphase.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/parallel/geometry.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/collision/parallel/geometry.hxx
+)
 
 # Dependencies free parsers
 set(${PROJECT_NAME}_PARSERS_SOURCES
@@ -627,14 +646,16 @@ set(${PROJECT_NAME}_PARSERS_SOURCES
     ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/mjcf/mjcf-graph-geom.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph.cpp
-    ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph-algo.cpp)
+    ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph-algo.cpp
+)
 
 set(${PROJECT_NAME}_PARSERS_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/graph.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/mjcf.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/srdf.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/utils.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/utils.hpp
+)
 
 set(${PROJECT_NAME}_PARSERS_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/graph/frames.hxx
@@ -654,7 +675,8 @@ set(${PROJECT_NAME}_PARSERS_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/scalar-model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/srdf/srdf.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/utils/utils.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/utils/file-explorer.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/utils/file-explorer.hxx
+)
 
 set(${PROJECT_NAME}_PARSERS_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/parsers/graph/joints.hpp
@@ -665,71 +687,94 @@ set(${PROJECT_NAME}_PARSERS_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/parsers/graph/model-graph-algo.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/parsers/graph/frames.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/parsers/graph/geometries.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/parsers/mjcf/mjcf-graph.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/parsers/mjcf/mjcf-graph.hpp
+)
 
 # Coal dependent parser
 set(${PROJECT_NAME}_GEOMETRY_SOURCES
-    ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph-algo-geometry.cpp)
+    ${PROJECT_SOURCE_DIR}/src/parsers/graph/model-graph-algo-geometry.cpp
+)
 
 # URDF dependent parser
 set(${PROJECT_NAME}_URDF_SOURCES
     ${PROJECT_SOURCE_DIR}/src/parsers/urdf/model.cpp
     ${PROJECT_SOURCE_DIR}/src/parsers/urdf/geometry.cpp
-    ${PROJECT_SOURCE_DIR}/src/parsers/urdf/utils.cpp)
+    ${PROJECT_SOURCE_DIR}/src/parsers/urdf/utils.cpp
+)
 
 set(${PROJECT_NAME}_URDF_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/urdf.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/urdf.hpp
+)
 
 set(${PROJECT_NAME}_URDF_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/urdf/geometry.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/urdf/model.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/urdf/urdf.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/urdf/utils.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/urdf/utils.hxx
+)
 
 set(${PROJECT_NAME}_URDF_DEPRECATED_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/parsers/urdf/utils.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/parsers/urdf/utils.hpp
+)
 
 # SDF dependent parser
-set(${PROJECT_NAME}_SDF_SOURCES ${PROJECT_SOURCE_DIR}/src/parsers/sdf/model.cpp
-                                ${PROJECT_SOURCE_DIR}/src/parsers/sdf/geometry.cpp)
+set(${PROJECT_NAME}_SDF_SOURCES
+    ${PROJECT_SOURCE_DIR}/src/parsers/sdf/model.cpp
+    ${PROJECT_SOURCE_DIR}/src/parsers/sdf/geometry.cpp
+)
 
 set(${PROJECT_NAME}_SDF_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/sdf.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/sdf.hpp
+)
 
 set(${PROJECT_NAME}_SDF_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/sdf/geometry.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/sdf/model.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/sdf/sdf.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/parsers/sdf/sdf.hxx
+)
 
 # Python dependent parser
 set(${PROJECT_NAME}_PYTHON_PARSER_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/python.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/parsers/python.hpp
+)
 
-set(${PROJECT_NAME}_PYTHON_PARSER_SOURCES ${PROJECT_SOURCE_DIR}/src/parsers/python/model.cpp)
+set(${PROJECT_NAME}_PYTHON_PARSER_SOURCES
+    ${PROJECT_SOURCE_DIR}/src/parsers/python/model.cpp
+)
 
 # Extra algorithms
-set(${PROJECT_NAME}_EXTRA_SOURCES ${PROJECT_SOURCE_DIR}/src/extra/reachable-workspace.cpp)
+set(${PROJECT_NAME}_EXTRA_SOURCES
+    ${PROJECT_SOURCE_DIR}/src/extra/reachable-workspace.cpp
+)
 
 set(${PROJECT_NAME}_EXTRA_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/extra/reachable-workspace.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/extra/reachable-workspace.hpp
+)
 
 set(${PROJECT_NAME}_EXTRA_PRIVATE_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/extra/reachable-workspace.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/extra/reachable-workspace.hxx
+)
 
 # Visualizer
-set(${PROJECT_NAME}_VISUALIZERS_SOURCES ${PROJECT_SOURCE_DIR}/src/visualizers/base-visualizer.cpp)
+set(${PROJECT_NAME}_VISUALIZERS_SOURCES
+    ${PROJECT_SOURCE_DIR}/src/visualizers/base-visualizer.cpp
+)
 
 set(${PROJECT_NAME}_VISUALIZERS_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/visualizers/base-visualizer.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/visualizers/base-visualizer.hpp
+)
 
 set(${PROJECT_NAME}_VISUALIZERS_PRIVATE_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/visualizers/base-visualizer.hxx)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/visualizers/base-visualizer.hxx
+)
 
 # Generated headers
 set(_binary_headers_root ${${PROJECT_NAME}_BINARY_DIR}/include/pinocchio)
 set(${PROJECT_NAME}_CORE_GENERATED_PUBLIC_HEADERS
-    ${_binary_headers_root}/config.hpp ${_binary_headers_root}/deprecated.hpp
-    ${_binary_headers_root}/warning.hpp)
+    ${_binary_headers_root}/config.hpp
+    ${_binary_headers_root}/deprecated.hpp
+    ${_binary_headers_root}/warning.hpp
+)
 
 # Template instantiation sources
 set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
@@ -764,7 +809,8 @@ set(${PROJECT_NAME}_TEMPLATE_INSTANTIATION_SOURCES
     ${PROJECT_SOURCE_DIR}/src/algorithm/constraints/utils.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/model.cpp
     ${PROJECT_SOURCE_DIR}/src/multibody/data.cpp
-    ${PROJECT_SOURCE_DIR}/src/multibody/sample-models.cpp)
+    ${PROJECT_SOURCE_DIR}/src/multibody/sample-models.cpp
+)
 
 # Define Pinocchio Python binding sources and headers
 
@@ -859,7 +905,8 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/parsers/model-graph.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/parsers/graph/model-configuration-converter.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/extra/extras.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/visualizers/visualizer-visitor.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/visualizers/visualizer-visitor.hpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/spatial/expose-symmetric3.cpp
@@ -938,47 +985,58 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/parsers/graph/expose-model-graph-algo.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/parsers/graph/expose-model-graph.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/parsers/graph/expose-model-configuration-converter.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/extra/expose-extras.cpp)
+    ${PROJECT_SOURCE_DIR}/bindings/python/extra/expose-extras.cpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_GRAPH_GEOMETRY_SOURCES
-    ${PROJECT_SOURCE_DIR}/bindings/python/parsers/graph/expose-model-graph-algo-geometry.cpp)
+    ${PROJECT_SOURCE_DIR}/bindings/python/parsers/graph/expose-model-graph-algo-geometry.cpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_COLLISION_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/collision/expose-broadphase.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/collision/expose-broadphase-callbacks.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/collision/expose-collision.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/collision/expose-coal.cpp)
+    ${PROJECT_SOURCE_DIR}/bindings/python/collision/expose-coal.cpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_COLLISION_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/coal/transform.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/fcl/transform.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/broadphase-manager.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/collision.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/collision.hpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_PARALLEL_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/multibody/pool/expose-pool.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/parallel/aba.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/parallel/expose-parallel.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/parallel/rnea.cpp)
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/parallel/rnea.cpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_PARALLEL_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/multibody/pool/model.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/multibody/pool/model.hpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_COLLISION_PARALLEL_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/collision/parallel/expose-parallel.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/collision/parallel/geometry.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/collision/parallel/broadphase.cpp
-    ${PROJECT_SOURCE_DIR}/bindings/python/collision/pool/expose-pool.cpp)
+    ${PROJECT_SOURCE_DIR}/bindings/python/collision/pool/expose-pool.cpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_COLLISION_PARALLEL_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/pool/geometry.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/pool/broadphase-manager.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/collision/pool/broadphase-manager.hpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_EXTRA_SOURCES
-    ${PROJECT_SOURCE_DIR}/bindings/python/extra/expose-reachable-workspace.cpp)
+    ${PROJECT_SOURCE_DIR}/bindings/python/extra/expose-reachable-workspace.cpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_EXTRA_MPFR_PUBLIC_HEADERS
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/math/multiprecision/boost/number.hpp)
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/math/multiprecision/boost/number.hpp
+)
 
 set(${PROJECT_NAME}_BINDINGS_PYTHON_EXTRA_MPFR_SOURCES
-    ${PROJECT_SOURCE_DIR}/bindings/python/extra/mpfr/boost_number.cpp)
+    ${PROJECT_SOURCE_DIR}/bindings/python/extra/mpfr/boost_number.cpp
+)
