@@ -50,8 +50,8 @@ namespace pinocchio
 
     typedef typename InnerConstraintModel::ConstraintData InnerConstraintData;
     typedef typename helper::remove_holder<ConstraintModel>::template rebind<
-      typename std::conditional<
-        ConstraintModelIsConst, const InnerConstraintData, InnerConstraintData>::type>
+      typename std::
+        conditional<ConstraintModelIsConst, const InnerConstraintData, InnerConstraintData>::type>
       ConstraintData;
 
     typedef std::vector<ConstraintModel> ConstraintModelVector;

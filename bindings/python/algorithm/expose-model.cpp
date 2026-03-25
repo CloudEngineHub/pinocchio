@@ -107,7 +107,7 @@ namespace pinocchio
 
       bp::def(
         "appendModel",
-        (Model(*)(
+        (Model (*)(
           const Model &, const Model &, const FrameIndex,
           const SE3 &))&appendModel<double, 0, JointCollectionDefaultTpl>,
         bp::args("modelA", "modelB", "frame_in_modelA", "aMb"),
@@ -133,7 +133,7 @@ namespace pinocchio
 
       bp::def(
         "buildReducedModel",
-        (Model(*)(
+        (Model (*)(
           const Model &, const std::vector<JointIndex> &,
           const Eigen::MatrixBase<VectorXd> &))&pinocchio::
           buildReducedModel<double, 0, JointCollectionDefaultTpl, VectorXd>,
@@ -147,7 +147,7 @@ namespace pinocchio
 
       bp::def(
         "buildReducedModel",
-        (bp::tuple(*)(
+        (bp::tuple (*)(
           const Model &, const GeometryModel &, const std::vector<JointIndex> &,
           const Eigen::MatrixBase<
             VectorXd> &))&buildReducedModel<double, 0, JointCollectionDefaultTpl, VectorXd>,
@@ -163,7 +163,7 @@ namespace pinocchio
 
       bp::def(
         "buildReducedModel",
-        (bp::tuple(*)(
+        (bp::tuple (*)(
           const Model &, const std::vector<GeometryModel> &, const std::vector<JointIndex> &,
           const Eigen::MatrixBase<VectorXd> &))
           buildReducedModel<double, 0, JointCollectionDefaultTpl, VectorXd>,

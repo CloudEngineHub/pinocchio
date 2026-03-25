@@ -100,8 +100,7 @@ namespace pinocchio
     // Same explanation as converting constructor from MotionBase
     template<
       typename M2,
-      std::enable_if_t<!std::is_convertible_v<MotionDense<M2>, MotionTpl>, bool> =
-        true>
+      std::enable_if_t<!std::is_convertible_v<MotionDense<M2>, MotionTpl>, bool> = true>
     explicit MotionTpl(const MotionDense<M2> & clone)
     {
       linear() = clone.linear();
@@ -114,8 +113,7 @@ namespace pinocchio
     // create a warning with -Wconversion
     template<
       typename M2,
-      std::enable_if_t<!std::is_convertible_v<MotionBase<M2>, MotionTpl>, bool> =
-        true>
+      std::enable_if_t<!std::is_convertible_v<MotionBase<M2>, MotionTpl>, bool> = true>
     explicit MotionTpl(const MotionBase<M2> & clone)
     {
       *this = clone;

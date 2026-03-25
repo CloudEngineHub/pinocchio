@@ -569,7 +569,8 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
     TestBox test(model, constraint_models);
     test(q0, v0, tau0 + 2 * Force::Vector6::Unit(i) / dt, Force::Zero(), dt);
 
-    //    std::cout << "test.velocity_solution: " << test.velocity_solution.transpose() << std::endl;
+    //    std::cout << "test.velocity_solution: " << test.velocity_solution.transpose() <<
+    //    std::endl;
     BOOST_CHECK(test.has_converged == true);
     BOOST_CHECK(!test.impulse_solution.isZero(2e-10));
     BOOST_CHECK(!test.v_next.isZero(2e-10));
@@ -1110,8 +1111,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
 
     BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
-    BOOST_CHECK(
-      (velocity_solution - (G_plain * impulse_solution + g_tilde_against_lower_bound)).isZero(1e-6));
+    BOOST_CHECK((velocity_solution - (G_plain * impulse_solution + g_tilde_against_lower_bound))
+                  .isZero(1e-6));
 
     BOOST_CHECK(
       (-tau_gravity + constraint_jacobian.transpose() * impulse_solution / dt).isZero(1e-6));
@@ -1244,8 +1245,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
 
     BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
     BOOST_CHECK(constraint_velocity.isZero(1e-6));
-    BOOST_CHECK(
-      (velocity_solution - (G_plain * impulse_solution + g_tilde_against_lower_bound)).isZero(1e-6));
+    BOOST_CHECK((velocity_solution - (G_plain * impulse_solution + g_tilde_against_lower_bound))
+                  .isZero(1e-6));
 
     BOOST_CHECK(
       (-tau_gravity + constraint_jacobian.transpose() * impulse_solution / dt).isZero(1e-6));
@@ -1382,8 +1383,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
 
     BOOST_CHECK(std::fabs(impulse_solution.dot(velocity_solution)) <= 1e-8);
     BOOST_CHECK(std::abs(constraint_velocity[0]) < 1e-6);
-    BOOST_CHECK(
-      (velocity_solution - (G_plain * impulse_solution + g_tilde_against_lower_bound)).isZero(1e-6));
+    BOOST_CHECK((velocity_solution - (G_plain * impulse_solution + g_tilde_against_lower_bound))
+                  .isZero(1e-6));
 
     BOOST_CHECK(
       std::abs(

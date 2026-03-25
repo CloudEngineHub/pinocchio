@@ -29,14 +29,14 @@ namespace pinocchio
     typedef typename traits<Derived>::Scalar Scalar;
 
     /// \brief Cast to Derived.
-    Derived& derived()
+    Derived & derived()
     {
-      return static_cast<Derived&>(*this);
+      return static_cast<Derived &>(*this);
     }
     /// \brief Const cast to Derived.
-    const Derived& derived() const
+    const Derived & derived() const
     {
-      return static_cast<const Derived&>(*this);
+      return static_cast<const Derived &>(*this);
     }
 
     /// \brief Default constructor
@@ -137,14 +137,14 @@ namespace pinocchio
     typedef ConstraintSolverResultBase Self;
 
     /// \brief Cast to Derived.
-    Derived& derived()
+    Derived & derived()
     {
-      return static_cast<Derived&>(*this);
+      return static_cast<Derived &>(*this);
     }
     /// \brief Const cast to Derived.
-    const Derived& derived() const
+    const Derived & derived() const
     {
-      return static_cast<const Derived&>(*this);
+      return static_cast<const Derived &>(*this);
     }
 
     /// \brief Cast this class to its unsafe version.
@@ -187,7 +187,8 @@ namespace pinocchio
       return m_is_valid;
     }
 
-    /// \brief Size of quantities related to constraints contained in result (typically constraint impulses or velocities).
+    /// \brief Size of quantities related to constraints contained in result (typically constraint
+    /// impulses or velocities).
     int constraintSize() const
     {
       return derived().constraintSizeImpl();
@@ -195,7 +196,7 @@ namespace pinocchio
 
     /// \brief Set the constraint impulse guess given to the solver.
     template<typename VectorLike>
-    void setConstraintImpulseGuess(const Eigen::MatrixBase<VectorLike>& impulse_guess)
+    void setConstraintImpulseGuess(const Eigen::MatrixBase<VectorLike> & impulse_guess)
     {
       derived().setConstraintImpulseGuessImpl(impulse_guess);
     }
@@ -208,7 +209,7 @@ namespace pinocchio
 
     /// \brief Set the constraint velocity guess given to the solver.
     template<typename VectorLike>
-    void setConstraintVelocityGuess(const Eigen::MatrixBase<VectorLike>& velocity_guess)
+    void setConstraintVelocityGuess(const Eigen::MatrixBase<VectorLike> & velocity_guess)
     {
       derived().setConstraintVelocityGuessImpl(velocity_guess);
     }
@@ -221,8 +222,7 @@ namespace pinocchio
 
     /// \brief Retrieve constraint impulses.
     template<typename VectorLike>
-    void
-    retrieveConstraintImpulses(const Eigen::MatrixBase<VectorLike> & constraint_impulses) const
+    void retrieveConstraintImpulses(const Eigen::MatrixBase<VectorLike> & constraint_impulses) const
     {
       derived().retrieveConstraintImpulsesImpl(constraint_impulses);
     }
@@ -266,14 +266,14 @@ namespace pinocchio
     typedef typename traits<Derived>::Scalar Scalar;
 
     /// \brief Cast to Derived.
-    Derived& derived()
+    Derived & derived()
     {
-      return static_cast<Derived&>(*this);
+      return static_cast<Derived &>(*this);
     }
     /// \brief Const cast to Derived.
-    const Derived& derived() const
+    const Derived & derived() const
     {
-      return static_cast<const Derived&>(*this);
+      return static_cast<const Derived &>(*this);
     }
 
     /// \brief Default constructor.
@@ -347,14 +347,14 @@ namespace pinocchio
 #endif // PINOCCHIO_WITH_COLLISION
 
     /// \brief Cast to Derived.
-    Derived& derived()
+    Derived & derived()
     {
-      return static_cast<Derived&>(*this);
+      return static_cast<Derived &>(*this);
     }
     /// \brief Const cast to Derived.
-    const Derived& derived() const
+    const Derived & derived() const
     {
-      return static_cast<const Derived&>(*this);
+      return static_cast<const Derived &>(*this);
     }
 
     /// \brief Default constructor
@@ -392,7 +392,8 @@ namespace pinocchio
       const SolverSettings & settings,
       SolverResult & result)
     {
-      return derived().solveImpl(delassus, g, constraint_models, constraint_datas, settings, result);
+      return derived().solveImpl(
+        delassus, g, constraint_models, constraint_datas, settings, result);
     }
 
     /// \brief Reset the solver as if it never ran.

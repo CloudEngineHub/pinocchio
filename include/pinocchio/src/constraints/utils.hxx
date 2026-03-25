@@ -1010,8 +1010,7 @@ namespace pinocchio
           block_infos.emplace_back(MatrixBlockType::ScalarIdentity, ConstraintModel::Size);
         }
 
-        if constexpr (std::is_same<
-                        BlockDiagonalDispatcherTag<op>, BlockDiagonalDispatcher>::value)
+        if constexpr (std::is_same<BlockDiagonalDispatcherTag<op>, BlockDiagonalDispatcher>::value)
         {
           // for ipm, point contact -> 3x3 block
           block_infos.emplace_back(MatrixBlockType::Plain, ConstraintModel::Size);
@@ -1038,8 +1037,7 @@ namespace pinocchio
           block_infos.emplace_back(MatrixBlockType::ScalarIdentity, cmodel.residualSize());
         }
 
-        if constexpr (std::is_same<
-                        BlockDiagonalDispatcherTag<op>, BlockDiagonalDispatcher>::value)
+        if constexpr (std::is_same<BlockDiagonalDispatcherTag<op>, BlockDiagonalDispatcher>::value)
         {
           block_infos.emplace_back(MatrixBlockType::Diagonal, cmodel.residualSize());
         }
@@ -1065,8 +1063,7 @@ namespace pinocchio
           block_infos.emplace_back(MatrixBlockType::ScalarIdentity, cmodel.residualSize());
         }
 
-        if constexpr (std::is_same<
-                        BlockDiagonalDispatcherTag<op>, BlockDiagonalDispatcher>::value)
+        if constexpr (std::is_same<BlockDiagonalDispatcherTag<op>, BlockDiagonalDispatcher>::value)
         {
           block_infos.emplace_back(MatrixBlockType::Diagonal, cmodel.residualSize());
         }
@@ -1156,8 +1153,7 @@ namespace pinocchio
     typedef BlockDiagonalMatrixTpl<Scalar, Options, Alignment> BlockDiagonalMatrix;
     typedef typename BlockDiagonalMatrix::MatrixBlockElement MatrixBlockElement;
     std::vector<MatrixBlockElement> block_diagonal_infos;
-    computeBlockDiagonalPattern(
-      constraint_models, block_diagonal_infos, BlockDiagonalDispatcher());
+    computeBlockDiagonalPattern(constraint_models, block_diagonal_infos, BlockDiagonalDispatcher());
     block_diagonal_matrix.rebuild(block_diagonal_infos);
     for (auto & block : block_diagonal_matrix.blocks())
     {

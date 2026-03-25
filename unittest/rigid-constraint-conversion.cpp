@@ -63,8 +63,7 @@ BOOST_AUTO_TEST_CASE(convert_point_anchor_structure)
   {
     const PointAnchorConstraintModel cm(model, rf_id, placement1);
 
-    const RigidConstraintModel rcm_local =
-      convertToRigidConstraintModel(model, cm, LOCAL);
+    const RigidConstraintModel rcm_local = convertToRigidConstraintModel(model, cm, LOCAL);
     BOOST_CHECK(rcm_local.reference_frame == LOCAL);
 
     const RigidConstraintModel rcm_lwa =
@@ -118,8 +117,7 @@ BOOST_AUTO_TEST_CASE(convert_frame_anchor_structure)
   {
     const FrameAnchorConstraintModel cm(model, rf_id, placement1);
 
-    const RigidConstraintModel rcm_local =
-      convertToRigidConstraintModel(model, cm, LOCAL);
+    const RigidConstraintModel rcm_local = convertToRigidConstraintModel(model, cm, LOCAL);
     BOOST_CHECK(rcm_local.reference_frame == LOCAL);
 
     const RigidConstraintModel rcm_lwa =

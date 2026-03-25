@@ -238,7 +238,7 @@ namespace pinocchio
 
       bp::def(
         "getJointKinematicHessian",
-        (Tensor3(*)(
+        (Tensor3 (*)(
           const context::Model &, const context::Data &, const JointIndex,
           const ReferenceFrame))&getJointKinematicHessian<Scalar, Options, JointCollectionDefaultTpl>,
         bp::args("model", "data", "joint_id", "reference_frame"),
@@ -252,7 +252,7 @@ namespace pinocchio
 
       bp::def(
         "getFrameKinematicHessian",
-        (Tensor3(*)(
+        (Tensor3 (*)(
           const context::Model &, const context::Data &, const FrameIndex,
           const ReferenceFrame))&getFrameKinematicHessian<Scalar, Options, JointCollectionDefaultTpl>,
         bp::args("model", "data", "frame_id", "reference_frame"),
@@ -266,7 +266,7 @@ namespace pinocchio
 
       bp::def(
         "getFrameKinematicHessian",
-        (Tensor3(*)(
+        (Tensor3 (*)(
           const context::Model &, const context::Data &, const JointIndex, const context::SE3 &,
           const ReferenceFrame))&getFrameKinematicHessian<Scalar, Options, JointCollectionDefaultTpl>,
         bp::args("model", "data", "joint_id", "frame_placement", "reference_frame"),

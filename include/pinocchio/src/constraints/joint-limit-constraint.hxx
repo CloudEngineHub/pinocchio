@@ -1278,8 +1278,9 @@ namespace pinocchio
     {
       const Eigen::Index idx_ = static_cast<Eigen::Index>(idx);
       const Eigen::Index idx_q = m_activable_idx_qs[idx];
-      if (check_expression_if_real<Scalar>(
-            q[idx_q] - m_activable_position_limit[idx_] <= m_activable_position_margin[idx_]))
+      if (
+        check_expression_if_real<Scalar>(
+          q[idx_q] - m_activable_position_limit[idx_] <= m_activable_position_margin[idx_]))
       {
         // Selection definer
         m_cursel_active_idx_in_activable.push_back(idx);
@@ -1295,8 +1296,9 @@ namespace pinocchio
     {
       const Eigen::Index idx_ = static_cast<Eigen::Index>(idx);
       const Eigen::Index idx_q = m_activable_idx_qs[idx];
-      if (check_expression_if_real<Scalar>(
-            m_activable_position_limit[idx_] - q[idx_q] <= m_activable_position_margin[idx_]))
+      if (
+        check_expression_if_real<Scalar>(
+          m_activable_position_limit[idx_] - q[idx_q] <= m_activable_position_margin[idx_]))
       {
         // Selection definer
         m_cursel_active_idx_in_activable.push_back(idx);

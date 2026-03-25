@@ -617,7 +617,7 @@ namespace pinocchio
     assert(ws.problem_size == problem_size);
     assert(ws.x.size() == np);
     delassus.derived().matrix(ws.delassus_matrix, true /*enforce symmetry*/, true /*with damping*/);
-    const auto& G = ws.delassus_matrix;
+    const auto & G = ws.delassus_matrix;
 
     // -- reset per-iteration statistics
     stats.reset();
@@ -628,7 +628,9 @@ namespace pinocchio
 
     // -- retrieve warmstart from results, then reset results
     bool has_impulse_guess = res.impulse_guess.has_value();
-    PINOCCHIO_THROW_PRETTY_IF(has_impulse_guess && (res.impulse_guess.value().size() != ws.x.size()), std::runtime_error, "Impulse guess given to PGS is of incorrect size.");
+    PINOCCHIO_THROW_PRETTY_IF(
+      has_impulse_guess && (res.impulse_guess.value().size() != ws.x.size()), std::runtime_error,
+      "Impulse guess given to PGS is of incorrect size.");
     if (has_impulse_guess)
     {
       if (res.impulse_guess.value().size() != ws.x.size())
@@ -726,9 +728,10 @@ namespace pinocchio
       // -- relative
       const Scalar proximal_metric = (ws.x - ws.x_previous).template lpNorm<Eigen::Infinity>();
       const Scalar x_norm_inf = ws.x.template lpNorm<Eigen::Infinity>();
-      if (check_expression_if_real<Scalar, false>(
-            proximal_metric
-            <= settings.relative_feasibility_tol * math::max(x_norm_inf, x_previous_norm_inf)))
+      if (
+        check_expression_if_real<Scalar, false>(
+          proximal_metric
+          <= settings.relative_feasibility_tol * math::max(x_norm_inf, x_previous_norm_inf)))
       {
         rel_prec_reached = true;
       }

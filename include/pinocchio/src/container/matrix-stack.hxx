@@ -25,8 +25,8 @@ namespace pinocchio
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike) PlainMatrixType;
 
     typedef typename PlainMatrixType::template CastXpr<NewScalar>::Type NewPlainMatrixExpression;
-    typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(
-      std::decay_t<NewPlainMatrixExpression>) NewPlainMatrixType;
+    typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(std::decay_t<NewPlainMatrixExpression>)
+      NewPlainMatrixType;
     typedef MatrixStackTpl<NewPlainMatrixType, Alignment> type;
   };
 
