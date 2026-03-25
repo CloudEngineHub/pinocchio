@@ -231,8 +231,8 @@ BOOST_FIXTURE_TEST_CASE(test_compute_vertex, robotCreationFixture)
   Eigen::MatrixXd vertex;
 
   double constraint = 0.2;
-  auto f_ = [this, &constraint](const Model & model, Data & data) -> bool {
-    SE3 pos = data.oMf[frame_name];
+  auto f_ = [this, &constraint](const Model &, Data & data) -> bool {
+    SE3 pos = data.oMf[static_cast<size_t>(frame_name)];
     if (pos.translation()(0) < constraint)
       return false;
     else
