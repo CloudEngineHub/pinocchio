@@ -261,13 +261,16 @@ if(PINOCCHIO_BUILD_WITH_TRACY)
 endif(PINOCCHIO_BUILD_WITH_TRACY)
 
 # Some core library algorithms have different behavior if PINOCCHIO_WITH_COLLISION is defined. Since
-# some are template instantiated, or some user can link only on pinocchio_default, we muste define
+# some are template instantiated, or some user can link only on pinocchio_default, we must define
 # PINOCCHIO_WITH_COLLISION in pinocchio_default.
+# Since PINOCCHIO_WITH_COLLISION is setup we need to add coal include directory
+# and compile definition to make the project build.
 if(BUILD_WITH_COLLISION_SUPPORT)
     target_compile_definitions(
         pinocchio_default
         ${DEFAULT_SCOPE}
         PINOCCHIO_WITH_COLLISION
+        $<TARGET_PROPERTY:coal::coal,INTERFACE_COMPILE_DEFINITIONS>
     )
     target_include_directories(
         pinocchio_default
