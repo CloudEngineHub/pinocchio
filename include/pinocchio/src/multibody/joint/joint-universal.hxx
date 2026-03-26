@@ -284,7 +284,7 @@ namespace pinocchio
 
       static inline ReturnType run(const Eigen::MatrixBase<M6Like> & Y, const Constraint & cru)
       {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6Like, context::Matrix6xs);
+        EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6Like, context::Matrix6xs);
         return Y.derived().template middleCols<3>(Constraint::ANGULAR) * cru.angularSubspace();
       }
     };

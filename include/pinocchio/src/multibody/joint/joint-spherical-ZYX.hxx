@@ -236,7 +236,7 @@ namespace pinocchio
   operator*(
     const Eigen::MatrixBase<Matrix6Like> & Y, const JointMotionSubspaceSphericalZYXTpl<S2, O2> & S)
   {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6Like, context::Matrix6xs);
+    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6Like, context::Matrix6xs);
     return Y.derived().template middleCols<3>(Inertia::ANGULAR) * S.angularSubspace();
   }
 
