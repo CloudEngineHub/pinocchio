@@ -31,8 +31,11 @@ namespace pinocchio
             },
             bp::args("self", "f"), "Resize the constraint given active limits.")
           .def(
-            "project", &Set::template project<VectorLike>, bp::args("self", "f"),
-            "Normal projection of a vector f onto the cone.")
+            "project",
+            +[](const Set & self, const Eigen::MatrixBase<VectorLike> & f) -> auto {
+              return self.template project<VectorLike>(f);
+            },
+            bp::args("self", "f"), "Normal projection of a vector f onto the cone.")
 #ifndef PINOCCHIO_PYTHON_SKIP_COMPARISON_OPERATIONS
           .def(bp::self == bp::self)
           .def(bp::self != bp::self)
