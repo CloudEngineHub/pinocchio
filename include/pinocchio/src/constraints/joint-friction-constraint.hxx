@@ -321,18 +321,18 @@ namespace pinocchio
       m_friction_upper_limit = ub;
     }
 
-    /// \brief Returns a const reference to `lower_friction_impulse_limit`.
-    /// \note see \copydoc getFrictionLowerLimit.
-    const VectorXs & getFrictionImpulseLowerLimit() const
+    /// \brief Returns a const reference to the friction impulse lower limit (from cdata).
+    /// \note This value is populated by calling calc and equals getFrictionLowerLimit() * dt.
+    const VectorXs & getFrictionImpulseLowerLimit(const ConstraintData & cdata) const
     {
-      return m_friction_impulse_lower_limit;
+      return cdata.friction_impulse_lower_limit;
     }
 
-    /// \brief Returns a const reference to `upper_friction_impulse_limit`.
-    /// \note see \copydoc getFrictionLowerLimit.
-    const VectorXs & getFrictionImpulseUpperLimit() const
+    /// \brief Returns a const reference to the friction impulse upper limit (from cdata).
+    /// \note This value is populated by calling calc and equals getFrictionUpperLimit() * dt.
+    const VectorXs & getFrictionImpulseUpperLimit(const ConstraintData & cdata) const
     {
-      return m_friction_impulse_upper_limit;
+      return cdata.friction_impulse_upper_limit;
     }
 
     /// \brief Store dt so that the constraint can be scaled to impulses in the solvers.
@@ -423,8 +423,7 @@ namespace pinocchio
     /// \copydoc RootBase::set
     ConstraintSet setImpl(const ConstraintData & cdata) const
     {
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return ConstraintSet(m_friction_impulse_lower_limit, m_friction_impulse_upper_limit);
+      return ConstraintSet(cdata.friction_impulse_lower_limit, cdata.friction_impulse_upper_limit);
     }
 
     /// \copydoc RootBase::calc
@@ -437,8 +436,8 @@ namespace pinocchio
       PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
-      m_friction_impulse_lower_limit = m_friction_lower_limit * m_dt;
-      m_friction_impulse_upper_limit = m_friction_upper_limit * m_dt;
+      cdata.friction_impulse_lower_limit = m_friction_lower_limit * m_dt;
+      cdata.friction_impulse_upper_limit = m_friction_upper_limit * m_dt;
     }
 
     /// \copydoc RootBase::getRowSparsityPattern
@@ -626,9 +625,6 @@ namespace pinocchio
     VectorXs m_friction_lower_limit; // Newtons
     VectorXs m_friction_upper_limit; // Newtons
 
-    VectorXs m_friction_impulse_lower_limit; // Impulses
-    VectorXs m_friction_impulse_upper_limit; // Impulses
-
     Scalar m_dt = Scalar(1);
 
     using BaseCommonParameters::m_compliance;
@@ -651,6 +647,8 @@ namespace pinocchio
 
     typedef typename traits<Self>::Scalar Scalar;
     static constexpr int Options = traits<Self>::Options;
+
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
 
     // Base usage ---------------------------------------------------
     using Base::classname;
@@ -684,8 +682,10 @@ namespace pinocchio
     }
 
     /// \brief Constructor from a constraint model
-    explicit JointFrictionConstraintDataTpl(const ConstraintModel & /*cmodel*/)
+    explicit JointFrictionConstraintDataTpl(const ConstraintModel & cmodel)
     {
+      friction_impulse_lower_limit.resize(cmodel.residualSize());
+      friction_impulse_upper_limit.resize(cmodel.residualSize());
     }
 
     // Operators ---------------------
@@ -719,6 +719,13 @@ namespace pinocchio
     {
       return classname();
     }
+
+    // ------------------------------
+    // MEMBERS
+    // ------------------------------
+
+    VectorXs friction_impulse_lower_limit; // Impulses
+    VectorXs friction_impulse_upper_limit; // Impulses
   }; // struct JointFrictionConstraintDataTpl
 
   template<typename Scalar, int Options>
