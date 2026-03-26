@@ -820,7 +820,7 @@ namespace pinocchio
       const InertiaTpl & I,
       const Eigen::MatrixBase<M6> & Iout)
     {
-      EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(M6, 6, 6);
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6, Matrix6);
       M6 & Iout_ = PINOCCHIO_EIGEN_CONST_CAST(M6, Iout);
 
       // Block 1,1
@@ -854,7 +854,7 @@ namespace pinocchio
       const InertiaTpl & I,
       const Eigen::MatrixBase<M6> & Iout)
     {
-      EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(M6, 6, 6);
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6, Matrix6);
       M6 & Iout_ = PINOCCHIO_EIGEN_CONST_CAST(M6, Iout);
 
       // Block 1,1

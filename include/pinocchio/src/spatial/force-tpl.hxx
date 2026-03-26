@@ -76,8 +76,8 @@ namespace pinocchio
       const Eigen::MatrixBase<ForceVectorLike> & force,
       const Eigen::MatrixBase<TorqueVectorLike> & torque)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(ForceVectorLike, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(TorqueVectorLike, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(ForceVectorLike, Vector3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(TorqueVectorLike, Vector3);
       linear() = force;
       angular() = torque;
     }
@@ -93,7 +93,7 @@ namespace pinocchio
     explicit ForceTpl(const Eigen::MatrixBase<Vector6Like> & f)
     : m_data(f)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector6Like, 6);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector6Like, Vector6);
     }
 
     ///
@@ -200,13 +200,13 @@ namespace pinocchio
     template<typename V3>
     void angular_impl(const Eigen::MatrixBase<V3> & w)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(V3, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3, Vector3);
       angular_impl() = w;
     }
     template<typename V3>
     void linear_impl(const Eigen::MatrixBase<V3> & v)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(V3, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3, Vector3);
       linear_impl() = v;
     }
 

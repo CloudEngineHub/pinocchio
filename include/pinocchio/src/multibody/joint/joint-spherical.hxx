@@ -232,7 +232,7 @@ namespace pinocchio
     template<typename Vector3Like>
     JointMotion __mult__(const Eigen::MatrixBase<Vector3Like> & w) const
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, context::Vector3);
       return JointMotion(w);
     }
 

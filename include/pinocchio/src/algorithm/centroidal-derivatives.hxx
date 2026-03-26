@@ -209,9 +209,9 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3Like> & v3,
       const Eigen::MatrixBase<Matrix6xLikeOut> & Fout)
     {
-      EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix6xLikeIn, 6, Eigen::Dynamic)
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3)
-      EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix6xLikeOut, 6, Eigen::Dynamic)
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6xLikeIn, context::Matrix6xs)
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, context::Vector3)
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6xLikeOut, context::Matrix6xs)
 
       PINOCCHIO_CHECK_ARGUMENT_SIZE(
         Fin.cols(), Fout.cols(), "Fin and Fout do not have the same number of columns");
@@ -231,8 +231,8 @@ namespace pinocchio
     void translateForceSet(
       const Eigen::MatrixBase<Matrix6xLike> & F, const Eigen::MatrixBase<Vector3Like> & v3)
     {
-      EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix6xLike, 6, Eigen::Dynamic)
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3)
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6xLike, context::Matrix6xs)
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, context::Vector3)
 
       for (Eigen::Index k = 0; k < F.cols(); ++k)
       {
