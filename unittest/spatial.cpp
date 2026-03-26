@@ -636,7 +636,9 @@ BOOST_AUTO_TEST_CASE(test_Inertia)
   BOOST_CHECK(aI == aI);
   BOOST_CHECK(aI.isApprox(aI));
   Inertia aI_approx(aI);
-  aI_approx.mass() += eps / 2.;
+  // isApprox use relative comparison we must
+  // offset mass by a relative value
+  aI_approx.mass() += aI_approx.mass() * (eps / 2.);
   BOOST_CHECK(aI_approx.isApprox(aI, eps));
 
   // Test Variation

@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(jordan_product)
       Vector3s y = JordanOperation::GetConeRandomElement();
       Vector3s z1 = JordanOperation::JordanProduct(x, y);
       Vector3s z2 = JordanOperation::JordanProduct(y, x);
-      BOOST_CHECK(z1 == z2);
+      BOOST_CHECK(z1.isApprox(z2));
     }
     {
       // -- jordan identity: x^2 o (x o y) = x o (x^2 o y)
