@@ -414,7 +414,7 @@ namespace pinocchio
       const SE3Tpl<Scalar, Options> & placement,
       const Eigen::MatrixBase<Vector3Like> & diagonal_constraint_inertia) const
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3Like, 3);
       Matrix6 res;
 
       const auto & R = placement.rotation();
@@ -785,7 +785,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3Like> & diagonal_constraint_inertia,
       std::vector<Matrix6Like, Matrix6LikeAllocator> & inertias) const
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3Like, 3);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
       PINOCCHIO_CHECK_ARGUMENT_SIZE(inertias.size(), size_t(model.njoints));

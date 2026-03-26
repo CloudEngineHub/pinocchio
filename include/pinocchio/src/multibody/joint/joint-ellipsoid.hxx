@@ -80,7 +80,7 @@ namespace pinocchio
     template<typename Vector3Like>
     JointMotion __mult__(const Eigen::MatrixBase<Vector3Like> & v) const
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, context::Vector3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3Like, 3);
       // Compute first 6 rows from first 2 columns
       Eigen::Matrix<Scalar, 6, 1> result = S.template leftCols<2>() * v.template head<2>();
 
@@ -253,7 +253,7 @@ namespace pinocchio
   operator*(
     const Eigen::MatrixBase<Matrix6Like> & Y, const JointMotionSubspaceEllipsoidTpl<S2, O2> & S)
   {
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6Like, context::Matrix6xs);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix6Like, 6, 6);
     return Y * S.S;
   }
 

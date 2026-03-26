@@ -87,10 +87,7 @@ namespace pinocchio
       Matrix<typename Vector6Like::Scalar, 7, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector6Like)::Options>
       exp6_proxy_quatvec(const Vector6Like & vec6)
     {
-      typedef typename Vector6Like::Scalar Scalar;
-      typedef Eigen::Matrix<Scalar, 6, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector6Like)::Options> Vector6;
-
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector6Like, Vector6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector6Like, 6);
       return quaternion::exp6(vec6); // use quaternion-exp6 overload
     }
 
@@ -165,10 +162,7 @@ namespace pinocchio
       Matrix<typename Vector4Like::Scalar, 3, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector4Like)::Options>
       log3_proxy_quatvec(const Vector4Like & v)
     {
-      typedef typename Vector4Like::Scalar Scalar;
-      typedef Eigen::Matrix<Scalar, 4, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector4Like)::Options> Vector4;
-
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4Like, Vector4);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector4Like, 4);
       typedef typename Vector4Like::Scalar Scalar;
       typedef Eigen::Quaternion<Scalar, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector4Like)::Options>
         Quaternion_t;
@@ -185,9 +179,7 @@ namespace pinocchio
       log3_proxy_quatvec(const Vector4Like & v, Eigen::Ref<Matrix1Like> theta)
     {
       typedef typename Vector4Like::Scalar Scalar;
-      typedef Eigen::Matrix<Scalar, 4, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector4Like)::Options> Vector4;
-
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4Like, Vector4);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector4Like, 4);
 
       typedef Eigen::Quaternion<Scalar, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector4Like)::Options>
         Quaternion_t;
@@ -205,9 +197,8 @@ namespace pinocchio
       log3_proxy_quatvec_fix(const Vector4Like & v, _Scalar & theta)
     {
       typedef typename Vector4Like::Scalar Scalar;
-      typedef Eigen::Matrix<Scalar, 4, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector4Like)::Options> Vector4;
 
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4Like, Vector4);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector4Like, 4);
       typedef Eigen::Quaternion<Scalar, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector4Like)::Options>
         Quaternion_t;
       typedef Eigen::Map<const Quaternion_t> ConstQuaternionMap_t;
@@ -230,9 +221,8 @@ namespace pinocchio
     log6_proxy_quatvec(const Vector7Like & q)
     {
       typedef typename Vector7Like::Scalar Scalar;
-      typedef Eigen::Matrix<Scalar, 7, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector7Like)::Options> Vector7;
 
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector7Like, Vector7);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector7Like, 7);
       static constexpr int Options = PINOCCHIO_EIGEN_PLAIN_TYPE(Vector7Like)::Options;
       typedef Eigen::Quaternion<Scalar, Options> Quaternion;
       typedef Eigen::Map<const Quaternion, Options> ConstQuaternionMap;

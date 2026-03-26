@@ -170,7 +170,7 @@ namespace pinocchio
     static void
     vxi(const MotionDense<MotionDerived> & v, const Derived & I, const Eigen::MatrixBase<M6> & Iout)
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6, Matrix6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(M6, 6, 6);
       Derived::vxi_impl(v, I, Iout);
     }
 
@@ -194,7 +194,7 @@ namespace pinocchio
     static void
     ivx(const MotionDense<MotionDerived> & v, const Derived & I, const Eigen::MatrixBase<M6> & Iout)
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6, Matrix6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(M6, 6, 6);
       Derived::ivx_impl(v, I, Iout);
     }
 
@@ -820,7 +820,7 @@ namespace pinocchio
       const InertiaTpl & I,
       const Eigen::MatrixBase<M6> & Iout)
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6, Matrix6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(M6, 6, 6);
       M6 & Iout_ = PINOCCHIO_EIGEN_CONST_CAST(M6, Iout);
 
       // Block 1,1
@@ -854,7 +854,7 @@ namespace pinocchio
       const InertiaTpl & I,
       const Eigen::MatrixBase<M6> & Iout)
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6, Matrix6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(M6, 6, 6);
       M6 & Iout_ = PINOCCHIO_EIGEN_CONST_CAST(M6, Iout);
 
       // Block 1,1

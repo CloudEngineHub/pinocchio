@@ -304,10 +304,10 @@ namespace pinocchio
       const Eigen::MatrixBase<Matrix6LikeOut3> & I22,
       const ReferenceFrameTag<rf> reference_frame) const
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeIn, Matrix6);
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeOut1, Matrix6);
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeOut2, Matrix6);
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeOut3, Matrix6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix6LikeIn, 6, 6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix6LikeOut1, 6, 6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix6LikeOut2, 6, 6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix6LikeOut3, 6, 6);
 
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
       //      assert((check_expression_if_real<Scalar,
@@ -736,7 +736,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector6Like> & diagonal_constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector6Like, Vector6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector6Like, 6);
       appendFrameContactConstraintInertias(
         model, data, cdata, diagonal_constraint_inertia.asDiagonal(), reference_frame);
     }

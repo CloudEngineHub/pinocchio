@@ -53,8 +53,8 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector2Like> & t)
     {
       EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(TangentVector_t, TangentVector);
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix2Like, Matrix2);
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector2Like, Vector2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix2Like, 2, 2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector2Like, 2);
 
       typedef typename Matrix2Like::Scalar Scalar;
       const Scalar omega = v(2);
@@ -85,8 +85,8 @@ namespace pinocchio
       const Eigen::MatrixBase<Matrix3Like> & M,
       const AssignmentOperatorType op)
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix2Like, Matrix2);
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector2Like, Vector2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix2Like, 2, 2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector2Like, 2);
       PINOCCHIO_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix3Like, M, 3, 3);
       Matrix3Like & Mout = PINOCCHIO_EIGEN_CONST_CAST(Matrix3Like, M);
       typedef typename Matrix3Like::Scalar Scalar;
@@ -122,8 +122,8 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector2Like> & p,
       const Eigen::MatrixBase<TangentVector> & v)
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix2Like, Matrix2);
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector2Like, Vector2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix2Like, 2, 2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector2Like, 2);
       EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(TangentVector_t, TangentVector);
 
       TangentVector & vout = PINOCCHIO_EIGEN_CONST_CAST(TangentVector, v);
@@ -153,8 +153,8 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector2Like> & p,
       const Eigen::MatrixBase<JacobianOutLike> & J)
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix2Like, Matrix2);
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector2Like, Vector2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix2Like, 2, 2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector2Like, 2);
       EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(JacobianOutLike, JacobianMatrix_t);
 
       JacobianOutLike & Jout = PINOCCHIO_EIGEN_CONST_CAST(JacobianOutLike, J);
@@ -617,8 +617,8 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector2Like> & t,
       const Eigen::MatrixBase<Vector4Like> & q)
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix2Like, Matrix2);
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector2Like, Vector2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix2Like, 2, 2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector2Like, 2);
       EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(ConfigVector_t, Vector4Like);
 
       PINOCCHIO_EIGEN_CONST_CAST(Vector2Like, t) = q.template head<2>();

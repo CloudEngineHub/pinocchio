@@ -281,7 +281,7 @@ namespace pinocchio
       const SE3Tpl<Scalar, Options> & placement,
       const Eigen::EigenBase<Matrix3Like> & constraint_inertia) const
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3Like, Matrix3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3Like, 3, 3);
       Matrix6 res;
 
       const auto & R = placement.rotation();
@@ -337,10 +337,10 @@ namespace pinocchio
       const Eigen::MatrixBase<Matrix6LikeOut3> & I22,
       const ReferenceFrameTag<rf> reference_frame) const
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3Like, Matrix3);
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeOut1, Matrix6);
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeOut2, Matrix6);
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6LikeOut3, Matrix6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3Like, 3, 3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix6LikeOut1, 6, 6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix6LikeOut2, 6, 6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix6LikeOut3, 6, 6);
       PINOCCHIO_UNUSED_VARIABLE(reference_frame);
       //      assert((check_expression_if_real<Scalar,
       //      true>(diagonal_constraint_inertia.isZero(Scalar(0)))));
@@ -788,7 +788,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3Like> & diagonal_constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3Like, 3);
       appendPointContactConstraintInertias(
         model, data, cdata, diagonal_constraint_inertia.asDiagonal(), reference_frame);
     }

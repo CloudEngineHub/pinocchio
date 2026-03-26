@@ -55,3 +55,15 @@
 #define PINOCCHIO_EIGEN_MALLOC_RESTORE_STATUS()                                                    \
   PINOCCHIO_PRAGMA(                                                                                \
     "WARNING: \"PINOCCHIO_EIGEN_MALLOC_RESTORE_STATUSE is deprecated and will be removed\"")
+
+/// Check if a vector have a compile time size or is dynamic
+#define PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(TYPE, SIZE)                  \
+  static_assert(                                                                                   \
+    TYPE::IsVectorAtCompileTime                                                                    \
+    && (TYPE::SizeAtCompileTime == Eigen::Dynamic || TYPE::SizeAtCompileTime == SIZE))
+
+/// Check if a matrix have a compile time size or is dynamic
+#define PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(TYPE, ROWS, COLS)            \
+  static_assert(                                                                                   \
+    (TYPE::RowsAtCompileTime == Eigen::Dynamic || TYPE::RowsAtCompileTime == ROWS)                 \
+    && (TYPE::ColsAtCompileTime == Eigen::Dynamic || TYPE::ColsAtCompileTime == COLS))

@@ -95,8 +95,8 @@ namespace pinocchio
   inline void CartesianAxis<0>::cross(
     const Eigen::MatrixBase<V3_in> & vin, const Eigen::MatrixBase<V3_out> & vout)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_in, context::Vector3)
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_out, context::Vector3)
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_in, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_out, 3);
     V3_out & vout_ = PINOCCHIO_EIGEN_CONST_CAST(V3_out, vout);
     vout_[0] = 0.;
     vout_[1] = -vin[2];
@@ -108,8 +108,8 @@ namespace pinocchio
   inline void CartesianAxis<1>::cross(
     const Eigen::MatrixBase<V3_in> & vin, const Eigen::MatrixBase<V3_out> & vout)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_in, context::Vector3)
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_out, context::Vector3)
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_in, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_out, 3);
     V3_out & vout_ = PINOCCHIO_EIGEN_CONST_CAST(V3_out, vout);
     vout_[0] = vin[2];
     vout_[1] = 0.;
@@ -121,8 +121,8 @@ namespace pinocchio
   inline void CartesianAxis<2>::cross(
     const Eigen::MatrixBase<V3_in> & vin, const Eigen::MatrixBase<V3_out> & vout)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_in, context::Vector3)
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_out, context::Vector3)
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_in, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_out, 3);
     V3_out & vout_ = PINOCCHIO_EIGEN_CONST_CAST(V3_out, vout);
     vout_[0] = -vin[1];
     vout_[1] = vin[0];
@@ -134,8 +134,8 @@ namespace pinocchio
   inline void CartesianAxis<0>::alphaCross(
     const Scalar & s, const Eigen::MatrixBase<V3_in> & vin, const Eigen::MatrixBase<V3_out> & vout)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_in, context::Vector3)
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_out, context::Vector3)
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_in, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_out, 3);
     V3_out & vout_ = PINOCCHIO_EIGEN_CONST_CAST(V3_out, vout);
     vout_[0] = 0.;
     vout_[1] = -s * vin[2];
@@ -147,8 +147,8 @@ namespace pinocchio
   inline void CartesianAxis<1>::alphaCross(
     const Scalar & s, const Eigen::MatrixBase<V3_in> & vin, const Eigen::MatrixBase<V3_out> & vout)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_in, context::Vector3)
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_out, context::Vector3)
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_in, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_out, 3);
     V3_out & vout_ = PINOCCHIO_EIGEN_CONST_CAST(V3_out, vout);
     vout_[0] = s * vin[2];
     vout_[1] = 0.;
@@ -160,8 +160,8 @@ namespace pinocchio
   inline void CartesianAxis<2>::alphaCross(
     const Scalar & s, const Eigen::MatrixBase<V3_in> & vin, const Eigen::MatrixBase<V3_out> & vout)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_in, Vector3)
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3_out, Vector3)
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_in, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3_out, 3);
     V3_out & vout_ = PINOCCHIO_EIGEN_CONST_CAST(V3_out, vout);
     vout_[0] = -s * vin[1];
     vout_[1] = s * vin[0];

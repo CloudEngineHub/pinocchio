@@ -47,10 +47,7 @@ namespace pinocchio
     template<typename Vector6Like>
     JointMotion __mult__(const Eigen::MatrixBase<Vector6Like> & vj) const
     {
-      typedef typename Vector6Like::Scalar Scalar;
-      typedef Eigen::Matrix<Scalar, 6, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector6Like)::Options> Vector6;
-
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector6Like, Vector6);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector6Like, 6);
       return JointMotion(vj);
     }
 
@@ -116,9 +113,7 @@ namespace pinocchio
     const JointMotionSubspaceIdentityTpl<Scalar, Options> &,
     const Eigen::MatrixBase<Vector6Like> & v)
   {
-    typedef Eigen::Matrix<Scalar, 6, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector6Like)::Options> Vector6;
-
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector6Like, Vector6);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector6Like, 6);
     //    typedef typename JointMotionSubspaceIdentityTpl<Scalar,Options>::Motion Motion;
     typedef MotionRef<const Vector6Like> Motion;
     return Motion(v.derived());
