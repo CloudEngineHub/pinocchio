@@ -132,14 +132,14 @@ namespace pinocchio
     template<typename V3>
     void angular_impl(const Eigen::MatrixBase<V3> & w)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(V3, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3, Vector3);
       angular_impl() = w;
     }
 
     template<typename V3>
     void linear_impl(const Eigen::MatrixBase<V3> & v)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(V3, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3, Vector3);
       linear_impl() = v;
     }
 

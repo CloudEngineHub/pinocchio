@@ -66,14 +66,17 @@ namespace pinocchio
     : rot(quat.matrix())
     , trans(trans)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3)
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3)
     }
 
     template<typename Matrix3Like, typename Vector3Like>
     SE3Tpl(const Eigen::MatrixBase<Matrix3Like> & R, const Eigen::MatrixBase<Vector3Like> & trans)
     : rot(R)
-    , trans(trans){EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3)
-                     EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix3Like, 3, 3)}
+    , trans(trans)
+    {
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3)
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3Like, Matrix3);
+    }
 
     SE3Tpl(const SE3Tpl & other)
     {
@@ -91,7 +94,7 @@ namespace pinocchio
     : rot(m.template block<3, 3>(LINEAR, LINEAR))
     , trans(m.template block<3, 1>(LINEAR, ANGULAR))
     {
-      EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix4Like, 4, 4);
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix4Like, Matrix4);
     }
 
     explicit SE3Tpl(int)

@@ -64,7 +64,7 @@ namespace pinocchio
     template<typename Vector3In>
     static bool IsInSymmetricCone(const Eigen::MatrixBase<Vector3In> & x)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In, Vector3s);
       if (x[2] - x.template head<2>().norm() >= -Eigen::NumTraits<Scalar>::dummy_precision())
       {
         return true;
@@ -76,7 +76,7 @@ namespace pinocchio
     template<typename Vector3In>
     static bool IsInSymmetricConeInterior(const Eigen::MatrixBase<Vector3In> & x)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In, Vector3s);
       if (x[2] - x.template head<2>().norm() > -Eigen::NumTraits<Scalar>::dummy_precision())
       {
         return true;
@@ -88,7 +88,7 @@ namespace pinocchio
     template<typename Vector3In>
     static void MakeConeIdentityElement(const Eigen::MatrixBase<Vector3In> & x)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In, Vector3s);
 
       Vector3In & x_ = x.const_cast_derived();
       x_ << Scalar(0), Scalar(0), Scalar(1);
@@ -106,7 +106,7 @@ namespace pinocchio
     template<typename Vector3In>
     static void MakeConeRandomElement(const Eigen::MatrixBase<Vector3In> & x)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In, Vector3s);
 
       Vector3In & x_ = x.const_cast_derived();
       x_.setRandom();
@@ -169,8 +169,8 @@ namespace pinocchio
     static Scalar JordanDotProduct(
       const Eigen::MatrixBase<Vector3In1> & x, const Eigen::MatrixBase<Vector3In2> & y)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
 
       const Scalar xn = x.coeff(2);
       const Scalar yn = y.coeff(2);
@@ -185,7 +185,7 @@ namespace pinocchio
     template<typename Vector3In>
     static Scalar JordanNorm2(const Eigen::MatrixBase<Vector3In> & x)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In, Vector3s);
       assert(IsInSymmetricCone(x) && "x is not in the SOC.");
 
       const Scalar xn = x.coeff(2);
@@ -217,8 +217,8 @@ namespace pinocchio
     static Vector3s
     JordanProduct(const Eigen::MatrixBase<Vector3In1> & x, const Eigen::MatrixBase<Vector3In2> & y)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
 
       Vector3s res;
       res.template head<2>() = y[2] * x.template head<2>() + x[2] * y.template head<2>();
@@ -239,9 +239,9 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3In2> & y,
       const Eigen::MatrixBase<Vector3Out> & res)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Out, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Out, Vector3s);
 
       res.const_cast_derived() = JordanProduct(x, y);
     }
@@ -257,8 +257,8 @@ namespace pinocchio
     static Vector3s JordanInverseProduct(
       const Eigen::MatrixBase<Vector3In1> & x, const Eigen::MatrixBase<Vector3In2> & y)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
       assert(IsInSymmetricConeInterior(x) && "x is not in the interior of the SOC.");
 
       // see ecos implementation paper
@@ -288,9 +288,9 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3In2> & y,
       const Eigen::MatrixBase<Vector3Out> & res)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Out, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Out, Vector3s);
       assert(IsInSymmetricConeInterior(x) && "x is not in the interior of the SOC.");
 
       res.const_cast_derived() = JordanInverseProduct(x, y);
@@ -306,8 +306,8 @@ namespace pinocchio
     static Vector3s ApplyQuadraticForm(
       const Eigen::MatrixBase<Vector3In1> & x, const Eigen::MatrixBase<Vector3In2> & y)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
       assert(IsInSymmetricConeInterior(x) && "x is not in the interior of the SOC.");
 
       const Scalar a = JordanNorm(x);
@@ -338,9 +338,9 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3In2> & y,
       const Eigen::MatrixBase<Vector3Out> & res)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Out, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Out, Vector3s);
       assert(IsInSymmetricConeInterior(x) && "x is not in the interior of the SOC.");
 
       res.const_cast_derived() = ApplyQuadraticForm(x, y);
@@ -356,8 +356,8 @@ namespace pinocchio
     static Vector3s ApplyInverseQuadraticForm(
       const Eigen::MatrixBase<Vector3In1> & x, const Eigen::MatrixBase<Vector3In2> & y)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
       assert(IsInSymmetricConeInterior(x) && "x is not in the interior of the SOC.");
 
       const Scalar a = JordanNorm(x);
@@ -388,9 +388,9 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3In2> & y,
       const Eigen::MatrixBase<Vector3Out> & res)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Out, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Out, Vector3s);
       assert(IsInSymmetricConeInterior(x) && "x is not in the interior of the SOC.");
 
       res.const_cast_derived() = ApplyInverseQuadraticForm(x, y);
@@ -415,9 +415,9 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3In2> & x,
       const Eigen::MatrixBase<Vector3Out> & v)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Out, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Out, Vector3s);
       assert(IsInSymmetricConeInterior(lambda) && "lambda is not in the interior of the SOC.");
 
       Vector3Out & v_ = v.const_cast_derived();
@@ -462,10 +462,10 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3Out> & lambda,
       const Eigen::MatrixBase<Vector4Out> & w)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In1, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In2, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Out, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector4Out, 4);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In1, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In2, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Out, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4Out, Vector4s);
       assert(IsInSymmetricConeInterior(x) && "x is not in the interior of the SOC.");
       assert(IsInSymmetricConeInterior(y) && "y is not in the interior of the SOC.");
 
@@ -504,8 +504,8 @@ namespace pinocchio
     static Vector3s
     ApplyScaling(const Eigen::MatrixBase<Vector4In> & w, const Eigen::MatrixBase<Vector3In> & x)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector4In, 4);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4In, Vector4s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In, Vector3s);
 
       const auto v = w.template head<3>();
       const Scalar beta = w[3];
@@ -526,9 +526,9 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3In> & x,
       const Eigen::MatrixBase<Vector3Out> & res)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector4In, 4);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Out, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4In, Vector4s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Out, Vector3s);
 
       res.const_cast_derived() = ApplyScaling(w, x);
     }
@@ -542,8 +542,8 @@ namespace pinocchio
     static Vector3s ApplyInverseScaling(
       const Eigen::MatrixBase<Vector4In> & w, const Eigen::MatrixBase<Vector3In> & x)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector4In, 4);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4In, Vector4s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In, Vector3s);
 
       const auto v = w.template head<3>();
       const Scalar beta = w[3];
@@ -563,9 +563,9 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector3In> & x,
       const Eigen::MatrixBase<Vector3Out> & res)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector4In, 4);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3In, 3);
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Out, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4In, Vector4s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3In, Vector3s);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Out, Vector3s);
 
       res.const_cast_derived() = ApplyInverseScaling(w, x);
     }
@@ -578,9 +578,8 @@ namespace pinocchio
     static void RetrieveScalingMatrix(
       const Eigen::MatrixBase<Vector4In> & w, const Eigen::MatrixBase<Matrix3Out> & W)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector4In, 4);
-      EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix3Out, 3, 3);
-
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4In, Vector4s);
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3Out, Matrix3s)
       const auto v = w.template head<3>();
       const Scalar beta = w[3];
 
@@ -599,8 +598,8 @@ namespace pinocchio
     static void RetrieveSquaredScalingMatrix(
       const Eigen::MatrixBase<Vector4In> & w, const Eigen::MatrixBase<Matrix3Out> & W2)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector4In, 4);
-      EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix3Out, 3, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4In, Vector4s);
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3Out, Matrix3s);
 
       const auto v = w.template head<3>();
       const Scalar beta = w[3];
@@ -625,8 +624,8 @@ namespace pinocchio
     static void RetrieveInverseScalingMatrix(
       const Eigen::MatrixBase<Vector4In> & w, const Eigen::MatrixBase<Matrix3Out> & Winv)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector4In, 4);
-      EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix3Out, 3, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector4In, Vector4s);
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3Out, Matrix3s);
 
       const auto v = w.template head<3>();
       const Scalar beta = w[3];

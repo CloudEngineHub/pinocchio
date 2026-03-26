@@ -68,7 +68,7 @@ namespace pinocchio
     : m_axis(axis)
     , m_v(v)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
     }
 
     inline PlainReturnType plain() const
@@ -270,13 +270,16 @@ namespace pinocchio
     JointMotionSubspacePrismaticUnalignedTpl(const Eigen::MatrixBase<Vector3Like> & axis)
     : m_axis(axis)
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3Like, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
     }
 
     template<typename Vector1Like>
     JointMotion __mult__(const Eigen::MatrixBase<Vector1Like> & v) const
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector1Like, 1);
+      typedef typename Vector1Like::Scalar Scalar;
+      typedef Eigen::Matrix<Scalar, 1, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector1Like)::Options> Vector1;
+
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector1Like, Vector1);
       return JointMotion(m_axis, v[0]);
     }
 
@@ -445,7 +448,7 @@ namespace pinocchio
         typename MultiplicationOp<Eigen::MatrixBase<M6Like>, Constraint>::ReturnType ReturnType;
       static inline ReturnType run(const Eigen::MatrixBase<M6Like> & Y, const Constraint & cru)
       {
-        EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(M6Like, 6, 6);
+        EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6Like, context::Matrix6xs);
         return Y.derived().template middleCols<3>(Constraint::LINEAR) * cru.axis();
       }
     };

@@ -457,7 +457,10 @@ namespace pinocchio
     template<typename Vector1Like>
     JointMotion __mult__(const Eigen::MatrixBase<Vector1Like> & v) const
     {
-      EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector1Like, 1);
+      typedef typename Vector1Like::Scalar Scalar;
+      typedef Eigen::Matrix<Scalar, 1, 1, PINOCCHIO_EIGEN_PLAIN_TYPE(Vector1Like)::Options> Vector1;
+
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector1Like, Vector1);
       assert(v.size() == 1);
       return JointMotion(v[0], v[0] * m_pitch);
     }
@@ -691,7 +694,7 @@ namespace pinocchio
       static inline ReturnType
       run(const Eigen::MatrixBase<M6Like> & Y, const Constraint & constraint)
       {
-        EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(M6Like, 6, 6);
+        EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6Like, context::Matrix6xs);
         return (Y.col(Inertia::ANGULAR + axis) + Y.col(Inertia::LINEAR + axis) * constraint.h());
       }
     };
