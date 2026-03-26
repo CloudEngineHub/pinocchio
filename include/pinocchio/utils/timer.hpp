@@ -4,12 +4,7 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#ifdef WIN32
-  #include <Windows.h>
-  #include <stdint.h> // portable: uint64_t   MSVC: __int64
-#else
-  #include <sys/time.h>
-#endif
+#include <chrono>
 #include <iostream>
 #include <stack>
 // IWYU pragma: end_keep
