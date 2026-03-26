@@ -6,9 +6,6 @@ import numpy as np
 import pinocchio as pin
 from test_case import ContactSolverTestCase as TestCase
 
-coal_spec = importlib.util.find_spec("coal")
-coal_found = coal_spec is not None
-
 matplotlib_spec = importlib.util.find_spec("matplotlib")
 matplotlib_found = matplotlib_spec is not None
 
