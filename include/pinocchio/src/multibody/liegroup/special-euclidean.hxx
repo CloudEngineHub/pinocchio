@@ -617,8 +617,8 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector2Like> & t,
       const Eigen::MatrixBase<Vector4Like> & q)
     {
-      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix2Like, 2, 2);
-      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector2Like, 2);
+      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix2Like, Matrix2);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector2Like, Vector2);
       EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(ConfigVector_t, Vector4Like);
 
       PINOCCHIO_EIGEN_CONST_CAST(Vector2Like, t) = q.template head<2>();

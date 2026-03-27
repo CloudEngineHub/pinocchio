@@ -489,8 +489,8 @@ namespace pinocchio
       const Eigen::MatrixBase<V3in> & vin,
       const Eigen::MatrixBase<V3out> & vout)
     {
-      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3in, 3);
-      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V3out, 3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3in, Vector3);
+      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V3out, Vector3);
 
       V3out & vout_ = PINOCCHIO_EIGEN_CONST_CAST(V3out, vout);
 

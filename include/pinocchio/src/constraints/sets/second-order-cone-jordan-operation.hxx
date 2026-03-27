@@ -542,7 +542,7 @@ namespace pinocchio
     static Vector3s ApplyInverseScaling(
       const Eigen::MatrixBase<Vector4In> & w, const Eigen::MatrixBase<Vector3In> & x)
     {
-      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector4In, 3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector4In, 4);
       PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3In, 3);
 
       const auto v = w.template head<3>();
@@ -579,7 +579,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector4In> & w, const Eigen::MatrixBase<Matrix3Out> & W)
     {
       PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector4In, 4);
-      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3Out, 3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3Out, 3, 3);
       const auto v = w.template head<3>();
       const Scalar beta = w[3];
 
@@ -599,7 +599,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector4In> & w, const Eigen::MatrixBase<Matrix3Out> & W2)
     {
       PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector4In, 4);
-      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3Out, 3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3Out, 3, 3);
 
       const auto v = w.template head<3>();
       const Scalar beta = w[3];
@@ -625,7 +625,7 @@ namespace pinocchio
       const Eigen::MatrixBase<Vector4In> & w, const Eigen::MatrixBase<Matrix3Out> & Winv)
     {
       PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector4In, 4);
-      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3Out, 3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3Out, 3, 3);
 
       const auto v = w.template head<3>();
       const Scalar beta = w[3];
