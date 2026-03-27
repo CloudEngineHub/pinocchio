@@ -14,6 +14,8 @@
 namespace pinocchio
 {
 
+  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   inline bool checkData(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -165,5 +167,6 @@ namespace pinocchio
 #undef CHECK_DATA
     return true;
   }
+  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
 } // namespace pinocchio

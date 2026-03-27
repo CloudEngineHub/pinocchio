@@ -624,8 +624,7 @@ namespace pinocchio
     }
 
   private:
-    PINOCCHIO_DEPRECATED void computeLastChild(const Model & model);
-    PINOCCHIO_DEPRECATED void computeLastChildImpl(const Model & model);
+    void computeLastChild(const Model & model); // TODO Remove when lastChild is removed
     void computeNvSubtree(const Model & model);
     void computeParents_fromRow(const Model & model);
     void computeSupports_fromRow(const Model & model);
@@ -642,6 +641,8 @@ namespace pinocchio
 namespace pinocchio
 {
 
+  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   DataTpl<Scalar, Options, JointCollectionTpl>::DataTpl(const Model & model)
   : q_in(neutral(model))
@@ -795,7 +796,7 @@ namespace pinocchio
     M.setZero();
     Minv.setZero();
 
-    computeLastChildImpl(model);
+    computeLastChild(model);
 
     computeNvSubtree(model);
 
@@ -812,7 +813,10 @@ namespace pinocchio
     d2tau_dqdv.setZero();
     d2tau_dadq.setZero();
   }
+  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
+  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   inline void DataTpl<Scalar, Options, JointCollectionTpl>::computeLastChild(const Model & model)
   {
@@ -826,47 +830,9 @@ namespace pinocchio
       const Index & parent = model.parents[(Index)i];
 
       lastChild[parent] = std::max<int>(lastChild[(Index)i], lastChild[parent]);
-
-      nvSubtree[(Index)i] += model.joints[(Index)i].nv();
-      nvSubtree[parent] += nvSubtree[(Index)i];
-    }
-    // fill mimic data
-    for (const JointIndex mimicking_id : model.mimicking_joints)
-    {
-      const auto & mimicking_sub = model.subtrees[mimicking_id];
-      size_t j = 1;
-      bool found = false;
-      for (; j < mimicking_sub.size(); j++)
-      {
-        if (model.nvs[mimicking_sub[j]] != 0)
-        {
-          found = true;
-          break;
-        }
-      }
-      if (mimicking_sub.size() == 1 || !found)
-        mimic_subtree_joint.push_back(0);
-      else
-        mimic_subtree_joint.push_back(mimicking_sub[j]);
     }
   }
-
-  template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
-  inline void
-  DataTpl<Scalar, Options, JointCollectionTpl>::computeLastChildImpl(const Model & model)
-  {
-    typedef typename Model::Index Index;
-
-    std::fill(lastChild.begin(), lastChild.end(), -1);
-    for (int i = model.njoints - 1; i >= 0; --i)
-    {
-      if (lastChild[(Index)i] == -1)
-        lastChild[(Index)i] = i;
-      const Index & parent = model.parents[(Index)i];
-
-      lastChild[parent] = std::max<int>(lastChild[(Index)i], lastChild[parent]);
-    }
-  }
+  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   inline void DataTpl<Scalar, Options, JointCollectionTpl>::computeNvSubtree(const Model & model)
@@ -999,6 +965,8 @@ namespace pinocchio
     }
   }
 
+  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   bool operator==(
     const DataTpl<Scalar, Options, JointCollectionTpl> & data1,
@@ -1081,6 +1049,7 @@ namespace pinocchio
 
     return value;
   }
+  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   bool operator!=(
