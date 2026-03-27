@@ -11,42 +11,13 @@
   #include "pinocchio/utils/timer.hpp"
 #endif // PINOCCHIO_LSP
 
-#ifdef WIN32
-
-int gettimeofday(struct timeval * tp, struct timezone * tzp)
-{
-  // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
-  // This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
-  // until 00:00:00 January 1, 1970
-  static const uint64_t EPOCH = ((uint64_t)116444736000000000ULL);
-
-  SYSTEMTIME system_time;
-  FILETIME file_time;
-  uint64_t time;
-
-  GetSystemTime(&system_time);
-  SystemTimeToFileTime(&system_time, &file_time);
-  time = ((uint64_t)file_time.dwLowDateTime);
-  time += ((uint64_t)file_time.dwHighDateTime) << 32;
-
-  tp->tv_sec = (long)((time - EPOCH) / 10000000L);
-  tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
-  return 0;
-}
-
-#endif
-
 #define SMOOTH(s) for (size_t _smooth = 0; _smooth < s; ++_smooth)
-
-/* Return the time spent in secs. */
-inline double operator-(const struct timeval & t1, const struct timeval & t0)
-{
-  /* TODO: double check the double conversion from long (on 64x). */
-  return double(t1.tv_sec - t0.tv_sec) + 1e-6 * double(t1.tv_usec - t0.tv_usec);
-}
 
 struct PinocchioTicToc
 {
+  using clock = std::chrono::steady_clock;
+  using time_point = clock::time_point;
+
   enum Unit
   {
     S = 1,
@@ -72,8 +43,7 @@ struct PinocchioTicToc
     return "";
   }
 
-  std::stack<struct timeval> stack;
-  mutable struct timeval t0;
+  std::stack<time_point> stack;
 
   PinocchioTicToc(Unit def = MS)
   : DEFAULT_UNIT(def)
@@ -82,21 +52,19 @@ struct PinocchioTicToc
 
   inline void tic()
   {
-    stack.push(t0);
-    gettimeofday(&(stack.top()), NULL);
+    stack.push(clock::now());
   }
 
   inline double toc()
   {
     return toc(DEFAULT_UNIT);
-  };
+  }
 
   inline double toc(const Unit factor)
   {
-    gettimeofday(&t0, NULL);
-    double dt = (t0 - stack.top()) * (double)factor;
+    std::chrono::duration<double> duration = (clock::now() - stack.top());
     stack.pop();
-    return dt;
+    return duration.count() * static_cast<double>(factor);
   }
 
   inline void toc(std::ostream & os, double SMOOTH = 1)

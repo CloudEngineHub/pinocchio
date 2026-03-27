@@ -601,8 +601,7 @@ namespace pinocchio
     typename TangentMapMatrixType>
   void compactTangentMap(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
-      joint_ids,
+    const std::vector<JointIndex> & joint_ids,
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentMapMatrixType> & TMc);
 
@@ -626,8 +625,7 @@ namespace pinocchio
     typename TangentMapMatrixType>
   void compactTangentMap(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
-      joint_ids,
+    const std::vector<JointIndex> & joint_ids,
     const Eigen::MatrixBase<ConfigVectorType> & q,
     const Eigen::MatrixBase<TangentMapMatrixType> & TMc)
   {
@@ -1365,8 +1363,7 @@ namespace pinocchio
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   void getTangentToConfigurationSparsitySegment(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
-      joint_ids,
+    const std::vector<JointIndex> & joint_ids,
     std::vector<int> & nvs,
     std::vector<int> & idx_vs);
 

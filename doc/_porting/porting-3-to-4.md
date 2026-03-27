@@ -56,6 +56,10 @@ ContactCholeskyDecompositionTpl changes :
   - Add `DataTpl<S1, O1, JointCollectionTpl>`
   - Add `std::vector<ConstraintData, ConstraintDataAllocator>`
 
+Utility API changes:
+- Remove `gettimeofday` definition on Windows
+- Remove `operator-(timeval, timeval)` definition
+
 ## Python changes
 
 HPP-FCL has been replaced by coal:

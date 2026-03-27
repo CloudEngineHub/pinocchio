@@ -87,6 +87,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Remove `CHECK_RUNTIME_MALLOC` CMake option
   - Remove `PINOCCHIO_EIGEN_CHECK_MALLOC` C++ definition
   - Deprecate `PINOCCHIO_EIGEN_MALLOC*` macros
+- Remove `gettimeofday` definition on Windows
+- Remove `operator-(timeval, timeval)` definition
 
 ## [3.9.0] - 2026-01-05
 

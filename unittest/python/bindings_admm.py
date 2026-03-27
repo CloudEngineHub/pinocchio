@@ -6,9 +6,6 @@ import numpy as np
 import pinocchio as pin
 from test_case import ContactSolverTestCase as TestCase
 
-coal_spec = importlib.util.find_spec("coal")
-coal_found = coal_spec is not None
-
 matplotlib_spec = importlib.util.find_spec("matplotlib")
 matplotlib_found = matplotlib_spec is not None
 
@@ -40,7 +37,7 @@ class TestADMM(TestCase):
         result = pin.ADMMSolverResult()
         solver.solve(delassus, g, constraint_models, constraint_datas, settings, result)
 
-    @unittest.skipUnless(coal_found, "Needs Coal.")
+    @unittest.skipUnless(pin.WITH_COLLISION, "Needs collision support")
     def test_cassie(self, display=False, stat_record=True):
         current_dir = Path(__file__).parent
         model_dir = current_dir / "../models/"

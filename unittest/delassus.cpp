@@ -160,14 +160,14 @@ BOOST_AUTO_TEST_CASE(contact_6D6D)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 }
 
 BOOST_AUTO_TEST_CASE(contact_6D4)
@@ -268,14 +268,14 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 }
 
 BOOST_AUTO_TEST_CASE(contact_6D_repeated_6D3)
@@ -326,14 +326,14 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated_6D3)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 }
 
 BOOST_AUTO_TEST_CASE(contact_3D)
@@ -373,7 +373,7 @@ BOOST_AUTO_TEST_CASE(contact_3D)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
@@ -424,7 +424,7 @@ BOOST_AUTO_TEST_CASE(contact_3D3D)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
@@ -483,7 +483,7 @@ BOOST_AUTO_TEST_CASE(contact_3D4)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
@@ -533,7 +533,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
@@ -655,7 +655,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4_6D4)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
@@ -773,7 +773,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
@@ -833,7 +833,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor_6D4)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-11));
+    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);

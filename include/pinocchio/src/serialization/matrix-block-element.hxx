@@ -19,22 +19,22 @@ namespace boost
     namespace internal
     {
       /// Accessor for the owning variant (Eigen::Matrix).
-      template<typename Matrix, typename = void>
-      struct MatrixBlockElementTplAccessor : public ::pinocchio::MatrixBlockElementTpl<Matrix>
+      template<typename MatrixType, typename = void>
+      struct MatrixBlockElementTplAccessor : public ::pinocchio::MatrixBlockElementTpl<MatrixType>
       {
-        typedef ::pinocchio::MatrixBlockElementTpl<Matrix> Base;
+        typedef ::pinocchio::MatrixBlockElementTpl<MatrixType> Base;
         using Base::m_size;
         using Base::m_type;
       };
 
       /// Accessor for the non-owning Map variant — also exposes m_nested_blocks.
-      template<typename Matrix>
+      template<typename MapType>
       struct MatrixBlockElementTplAccessor<
-        Matrix,
-        std::enable_if_t<!pinocchio::helper::is_eigen_matrix_v<Matrix>>>
-      : public ::pinocchio::MatrixBlockElementTpl<Matrix>
+        MapType,
+        std::enable_if_t<!pinocchio::helper::is_eigen_matrix_v<MapType>>>
+      : public ::pinocchio::MatrixBlockElementTpl<MapType>
       {
-        typedef ::pinocchio::MatrixBlockElementTpl<Matrix> Base;
+        typedef ::pinocchio::MatrixBlockElementTpl<MapType> Base;
         using Base::m_nested_blocks;
         using Base::m_size;
         using Base::m_type;

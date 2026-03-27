@@ -37,8 +37,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       qout.size(), model.nq, "The output argument is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
     ReturnType & res = PINOCCHIO_EIGEN_CONST_CAST(ReturnType, qout);
 
     typedef IntegrateStep<LieGroup_t, ConfigVectorType, TangentVectorType, ReturnType> Algo;
@@ -71,8 +69,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       qout.size(), model.nq, "The output argument is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
     ReturnType & res = PINOCCHIO_EIGEN_CONST_CAST(ReturnType, qout);
 
     typedef InterpolateStep<LieGroup_t, ConfigVectorIn1, ConfigVectorIn2, Scalar, ReturnType> Algo;
@@ -104,8 +100,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       dvout.size(), model.nv, "The output argument is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
     ReturnType & res = PINOCCHIO_EIGEN_CONST_CAST(ReturnType, dvout);
 
     typedef DifferenceStep<LieGroup_t, ConfigVectorIn1, ConfigVectorIn2, ReturnType> Algo;
@@ -137,8 +131,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       out.size(), (model.njoints - 1), "The output argument is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
     ReturnType & distances = PINOCCHIO_EIGEN_CONST_CAST(ReturnType, out);
 
     typedef SquaredDistanceStep<LieGroup_t, ConfigVectorIn1, ConfigVectorIn2, ReturnType> Algo;
@@ -170,8 +162,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       qout.size(), model.nq, "The output argument is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
     ReturnType & q = PINOCCHIO_EIGEN_CONST_CAST(ReturnType, qout);
 
     typedef RandomConfigurationStep<LieGroup_t, ReturnType, ConfigVectorIn1, ConfigVectorIn2> Algo;
@@ -196,8 +186,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       qout.size(), model.nq, "The output argument is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
     ReturnType & neutral_elt = PINOCCHIO_EIGEN_CONST_CAST(ReturnType, qout);
 
     typename NeutralStep<LieGroup_t, ReturnType>::ArgsType args(neutral_elt.derived());
@@ -232,9 +220,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       J.cols(), model.nv, "The output argument is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
-
     typedef dIntegrateStep<LieGroup_t, ConfigVectorType, TangentVectorType, JacobianMatrixType>
       Algo;
     typename Algo::ArgsType args(
@@ -264,9 +249,6 @@ namespace pinocchio
       TM.rows(), model.nq, "The output argument is not of the right size");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       TM.cols(), model.nv, "The output argument is not of the right size");
-
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
 
     typedef TangentMapStep<LieGroup_t, ConfigVectorType, TangentMapMatrixType> Algo;
     typename Algo::ArgsType args(q.derived(), TM.const_cast_derived(), op);
@@ -330,9 +312,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       mat_in.cols(), mat_out.cols(), "The input/output matrix sized do not match");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
-
     typedef TangentMapProductStep<LieGroup_t, ConfigVectorType, MatrixInType, MatrixOutType> Algo;
     typename Algo::ArgsType args(
       q.derived(), mat_in.derived(), PINOCCHIO_EIGEN_CONST_CAST(MatrixOutType, mat_out), op);
@@ -365,9 +344,6 @@ namespace pinocchio
       mat_out.rows(), model.nv, "The output matrix is not of the right size");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       mat_in.cols(), mat_out.cols(), "The input/output matrix sized do not match");
-
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
 
     typedef TangentMapTransposeProductStep<
       LieGroup_t, ConfigVectorType, MatrixInType, MatrixOutType>
@@ -408,9 +384,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       Jout.cols(), Jin.cols(), "The output argument should be the same size as input matrix");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
-
     typedef dIntegrateTransportStep<
       LieGroup_t, ConfigVectorType, TangentVectorType, JacobianMatrixType1, JacobianMatrixType2>
       Algo;
@@ -443,9 +416,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       v.size(), model.nv, "The joint velocity vector is not of the right size");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J.rows(), model.nv, "The input matrix is not of the right size");
-
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
 
     typedef dIntegrateTransportInPlaceStep<
       LieGroup_t, ConfigVectorType, TangentVectorType, JacobianMatrixType>
@@ -482,9 +452,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       J.cols(), model.nv, "The output argument is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
-
     typedef dDifferenceStep<LieGroup_t, ConfigVector1, ConfigVector2, JacobianMatrix> Algo;
     typename Algo::ArgsType args(
       q0.derived(), q1.derived(), PINOCCHIO_EIGEN_CONST_CAST(JacobianMatrix, J), arg);
@@ -511,8 +478,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       q1.size(), model.nq, "The second configuration vector is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
     typename ConfigVectorIn1::Scalar squaredDistance = Scalar(0.0);
 
     typedef SquaredDistanceSumStep<LieGroup_t, ConfigVectorIn1, ConfigVectorIn2, Scalar> Algo;
@@ -556,9 +521,6 @@ namespace pinocchio
     PINOCCHIO_CHECK_ARGUMENT_SIZE(
       qout.size(), model.nq, "The output argument is not of the right size");
 
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
-
     typedef NormalizeStep<LieGroup_t, ConfigVectorType> Algo;
     for (JointIndex i = 1; i < (JointIndex)model.njoints; ++i)
     {
@@ -583,9 +545,6 @@ namespace pinocchio
       q.size(), model.nq, "The configuration vector is not of the right size");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       (check_expression_if_real<Scalar, true>(prec >= 0)), "The precision should be positive");
-
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
 
     bool result = true;
     typedef IsNormalizedStep<LieGroup_t, ConfigVectorIn, Scalar> Algo;
@@ -619,9 +578,6 @@ namespace pinocchio
       q2.size(), model.nq, "The second configuration vector is not of the right size");
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       (check_expression_if_real<Scalar, true>(prec >= 0)), "The precision should be positive");
-
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
-    typedef typename Model::JointIndex JointIndex;
 
     bool result = true;
     typedef IsSameConfigurationStep<LieGroup_t, ConfigVectorIn1, ConfigVectorIn2, Scalar> Algo;
@@ -671,10 +627,7 @@ namespace pinocchio
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     typename LieGroup_t::template operationProduct<Scalar, Options>::type & lgo)
   {
-
-    typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef LieGroupInstanceStep<LieGroup_t, Scalar, Options> Algo;
-    typedef typename Model::JointIndex JointIndex;
 
     typename Algo::ArgsType args(lgo);
     for (JointIndex i = 1; i < (JointIndex)model.njoints; ++i)
@@ -686,8 +639,7 @@ namespace pinocchio
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   void getTangentToConfigurationSparsitySegment(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-    const std::vector<typename ModelTpl<Scalar, Options, JointCollectionTpl>::JointIndex> &
-      joint_ids,
+    const std::vector<JointIndex> & joint_ids,
     std::vector<int> & nvs,
     std::vector<int> & idx_vs)
   {
