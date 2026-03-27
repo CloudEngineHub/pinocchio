@@ -27,8 +27,8 @@ namespace pinocchio
     const Scalar & sin_value,
     const Eigen::MatrixBase<Matrix3> & res)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3, context::Vector3);
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3, context::Matrix3x);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3, 3, 3);
 
     assert(isUnitary(axis) && "The axis is not unitary.");
 
@@ -77,7 +77,7 @@ namespace pinocchio
   template<typename Matrix3>
   void normalizeRotation(const Eigen::MatrixBase<Matrix3> & rot)
   {
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3, context::Matrix3x);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3, 3, 3);
     Matrix3 & rot_ = PINOCCHIO_EIGEN_CONST_CAST(Matrix3, rot);
 
     typedef typename Matrix3::Scalar Scalar;
@@ -99,7 +99,7 @@ namespace pinocchio
   typename PINOCCHIO_EIGEN_PLAIN_TYPE(Matrix3)
     orthogonalProjection(const Eigen::MatrixBase<Matrix3> & mat)
   {
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3, context::Matrix3x);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3, 3, 3);
     typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(Matrix3) ReturnType;
 
     typedef Eigen::JacobiSVD<Matrix3> SVD;

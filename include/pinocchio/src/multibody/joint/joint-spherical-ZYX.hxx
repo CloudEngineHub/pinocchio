@@ -54,13 +54,13 @@ namespace pinocchio
     JointMotionSubspaceSphericalZYXTpl(const Eigen::MatrixBase<Matrix3Like> & subspace)
     : m_S(subspace)
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3Like, context::Matrix3x);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3Like, 3, 3);
     }
 
     template<typename Vector3Like>
     JointMotion __mult__(const Eigen::MatrixBase<Vector3Like> & v) const
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, context::Vector3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3Like, 3);
       return JointMotion(m_S * v);
     }
 
@@ -236,7 +236,7 @@ namespace pinocchio
   operator*(
     const Eigen::MatrixBase<Matrix6Like> & Y, const JointMotionSubspaceSphericalZYXTpl<S2, O2> & S)
   {
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix6Like, context::Matrix6xs);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix6Like, 6, 6);
     return Y.derived().template middleCols<3>(Inertia::ANGULAR) * S.angularSubspace();
   }
 

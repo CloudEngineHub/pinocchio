@@ -522,7 +522,7 @@ namespace pinocchio
       static inline ReturnType
       run(const Eigen::MatrixBase<M6Like> & Y, const Constraint & /*constraint*/)
       {
-        EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6Like, context::Matrix6xs);
+        PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(M6Like, 6, 6);
         return Y.derived().col(Inertia::LINEAR + axis);
       }
     };

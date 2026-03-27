@@ -25,8 +25,8 @@ namespace pinocchio
   template<typename Vector3, typename Matrix3>
   inline void skew(const Eigen::MatrixBase<Vector3> & v, const Eigen::MatrixBase<Matrix3> & M)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3, context::Vector3);
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3, context::Matrix3x);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3, 3, 3);
 
     Matrix3 & M_ = PINOCCHIO_EIGEN_CONST_CAST(Matrix3, M);
     typedef typename Matrix3::RealScalar Scalar;
@@ -71,7 +71,7 @@ namespace pinocchio
   inline void
   addSkew(const Eigen::MatrixBase<Vector3Like> & v, const Eigen::MatrixBase<Matrix3Like> & M)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, context::Vector3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3Like, 3);
     PINOCCHIO_ASSERT_MATRIX_SPECIFIC_SIZE(Matrix3Like, M, 3, 3);
 
     Matrix3Like & M_ = PINOCCHIO_EIGEN_CONST_CAST(Matrix3Like, M);
@@ -97,8 +97,8 @@ namespace pinocchio
   inline void unSkew(const Eigen::MatrixBase<Matrix3> & M, const Eigen::MatrixBase<Vector3> & v)
   {
     typedef typename Vector3::RealScalar Scalar;
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3, context::Vector3);
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3, context::Matrix3x);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3, 3, 3);
 
     Vector3 & v_ = PINOCCHIO_EIGEN_CONST_CAST(Vector3, v);
 
@@ -138,8 +138,8 @@ namespace pinocchio
   void alphaSkew(
     const Scalar alpha, const Eigen::MatrixBase<Vector3> & v, const Eigen::MatrixBase<Matrix3> & M)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3, context::Vector3);
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3, context::Matrix3x);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3, 3, 3);
 
     Matrix3 & M_ = PINOCCHIO_EIGEN_CONST_CAST(Matrix3, M);
     typedef typename Matrix3::RealScalar RealScalar;
@@ -188,9 +188,9 @@ namespace pinocchio
     const Eigen::MatrixBase<V2> & v,
     const Eigen::MatrixBase<Matrix3> & C)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V1, context::Vector3);
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(V2, context::Vector3);
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3, context::Matrix3x);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V1, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(V2, 3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3, 3, 3);
 
     Matrix3 & C_ = PINOCCHIO_EIGEN_CONST_CAST(Matrix3, C);
     typedef typename Matrix3::RealScalar Scalar;
@@ -234,7 +234,7 @@ namespace pinocchio
     const Eigen::MatrixBase<Matrix3xIn> & Min,
     const Eigen::MatrixBase<Matrix3xOut> & Mout)
   {
-    EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3, context::Vector3);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3, 3);
     EIGEN_STATIC_ASSERT(
       Matrix3xIn::RowsAtCompileTime == 3, THIS_METHOD_IS_ONLY_FOR_MATRICES_OF_A_SPECIFIC_SIZE);
     EIGEN_STATIC_ASSERT(

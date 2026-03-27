@@ -74,7 +74,7 @@ namespace pinocchio
     MotionPlanarTpl(const Eigen::MatrixBase<Vector3Like> & vj)
     : m_data(vj)
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3Like, 3);
     }
 
     inline PlainReturnType plain() const
@@ -256,7 +256,7 @@ namespace pinocchio
     template<typename Vector3Like>
     JointMotion __mult__(const Eigen::MatrixBase<Vector3Like> & vj) const
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, context::Vector3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3Like, 3);
       return JointMotion(vj);
     }
 
@@ -422,7 +422,7 @@ namespace pinocchio
   inline Eigen::Matrix<S2, 6, 3, O2>
   operator*(const Eigen::MatrixBase<M6Like> & Y, const JointMotionSubspacePlanarTpl<S2, O2> &)
   {
-    EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(M6Like, context::Matrix6xs);
+    PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(M6Like, 6, 6);
     typedef Eigen::Matrix<S2, 6, 3, O2> Matrix63;
 
     Matrix63 IS;

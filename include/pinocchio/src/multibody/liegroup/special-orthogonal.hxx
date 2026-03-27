@@ -53,7 +53,7 @@ namespace pinocchio
     static typename Matrix2Like::Scalar log(const Eigen::MatrixBase<Matrix2Like> & R)
     {
       typedef typename Matrix2Like::Scalar Scalar;
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix2Like, Matrix2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix2Like, 2, 2);
 
       const Scalar tr = R.trace();
 
@@ -94,7 +94,7 @@ namespace pinocchio
     static typename Matrix2Like::Scalar Jlog(const Eigen::MatrixBase<Matrix2Like> &)
     {
       typedef typename Matrix2Like::Scalar Scalar;
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix2Like, Matrix2);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix2Like, 2, 2);
       return Scalar(1);
     }
 

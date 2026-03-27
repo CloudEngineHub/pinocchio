@@ -123,7 +123,7 @@ namespace pinocchio
     template<typename Vector3Like>
     void setDiagonal(const Eigen::MatrixBase<Vector3Like> & diag)
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3Like, Vector3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3Like, 3);
       m_data[0] = diag[0];
       m_data[2] = diag[1];
       m_data[5] = diag[2];
@@ -350,8 +350,8 @@ namespace pinocchio
       const Symmetric3Tpl & S3,
       const Eigen::MatrixBase<Matrix3> & M)
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3, context::Vector3);
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3, context::Matrix3x);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3, 3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3, 3, 3);
 
       const Scalar & a = S3.data()[0];
       const Scalar & b = S3.data()[1];
@@ -411,8 +411,8 @@ namespace pinocchio
       const Symmetric3Tpl & S3,
       const Eigen::MatrixBase<Matrix3> & M)
     {
-      EIGEN_STATIC_ASSERT_SAME_VECTOR_SIZE(Vector3, context::Vector3);
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Matrix3, context::Matrix3x);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE_OR_DYNAMIC(Vector3, 3);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(Matrix3, 3, 3);
 
       const Scalar & a = S3.data()[0];
       const Scalar & b = S3.data()[1];
@@ -558,7 +558,7 @@ namespace pinocchio
     template<typename D>
     Symmetric3Tpl rotate(const Eigen::MatrixBase<D> & R) const
     {
-      EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(D, context::Matrix3x);
+      PINOCCHIO_EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE_OR_DYNAMIC(D, 3, 3);
       assert(
         check_expression_if_real<Scalar>(isUnitary(R.transpose() * R))
         && "R is not a Unitary matrix");
