@@ -17,6 +17,8 @@ namespace boost
 {
   namespace serialization
   {
+    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     template<
       class Archive,
       typename Scalar,
@@ -83,6 +85,7 @@ namespace boost
       PINOCCHIO_MAKE_DATA_NVP(ar, data, dhg);
       PINOCCHIO_MAKE_DATA_NVP(ar, data, Ig);
       PINOCCHIO_MAKE_DATA_NVP(ar, data, Fcrb);
+      PINOCCHIO_MAKE_DATA_NVP(ar, data, lastChild);
       PINOCCHIO_MAKE_DATA_NVP(ar, data, nvSubtree);
       PINOCCHIO_MAKE_DATA_NVP(ar, data, start_idx_v_fromRow);
       PINOCCHIO_MAKE_DATA_NVP(ar, data, end_idx_v_fromRow);
@@ -160,6 +163,7 @@ namespace boost
       PINOCCHIO_MAKE_DATA_NVP(ar, data, projected_joint_cross_coupling);
       PINOCCHIO_MAKE_DATA_NVP(ar, data, joint_apparent_inertia);
     }
+    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   } // namespace serialization
 } // namespace boost

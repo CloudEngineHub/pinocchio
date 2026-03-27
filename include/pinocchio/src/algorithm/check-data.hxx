@@ -14,6 +14,8 @@
 namespace pinocchio
 {
 
+  PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+  PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
   inline bool checkData(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
@@ -76,6 +78,7 @@ namespace pinocchio
 
     CHECK_DATA((int)data.oMf.size() == model.nframes);
 
+    CHECK_DATA((int)data.lastChild.size() == model.njoints);
     CHECK_DATA((int)data.nvSubtree.size() == model.njoints);
     CHECK_DATA((int)data.parents_fromRow.size() == model.nvExtended);
     CHECK_DATA((int)data.mimic_parents_fromRow.size() == model.nvExtended);
@@ -164,5 +167,6 @@ namespace pinocchio
 #undef CHECK_DATA
     return true;
   }
+  PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
 } // namespace pinocchio

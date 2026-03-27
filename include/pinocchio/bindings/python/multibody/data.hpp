@@ -85,6 +85,8 @@ namespace pinocchio
   PINOCCHIO_ADD_PROPERTY_READONLY_BYVALUE(Data, NAME, DOC)
 
       /* --- Exposing C++ API to python through the handler ----------------- */
+      PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+      PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
       template<class PyClass>
       void visit(PyClass & cl) const
       {
@@ -149,6 +151,7 @@ namespace pinocchio
                "C(q,v)v")
           .ADD_DATA_PROPERTY(g, "Vector of generalized gravity (dim model.nv).")
           .ADD_DATA_PROPERTY(Fcrb, "Spatial forces set, used in CRBA")
+          .ADD_DATA_PROPERTY(lastChild, "Index of the last child (for CRBA)")
           .ADD_DATA_PROPERTY(nvSubtree, "Dimension of the subtree motion space (for CRBA)")
           .ADD_DATA_PROPERTY(U, "Joint Inertia square root (upper triangle)")
           .ADD_DATA_PROPERTY(D, "Diagonal of UDUT inertia decomposition")
@@ -287,6 +290,7 @@ namespace pinocchio
 
         bp::register_ptr_to_python<std::shared_ptr<Data>>();
       }
+      PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
       /* --- Expose --------------------------------------------------------- */
       static void expose()
