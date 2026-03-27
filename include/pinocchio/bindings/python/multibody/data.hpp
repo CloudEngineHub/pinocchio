@@ -321,8 +321,9 @@ namespace pinocchio
         // to std::vector<Vector3d> binding.
         // Because current eigenpy API doesn't support adding attribute to already
         // registered type, we must add them in the __init__.py
-        if (eigenpy::register_symbolic_link_to_registered_type<StdVec_Vector3>(
-              DefPickleStdVectorVisitor<StdVec_Vector3>()))
+        if (
+          eigenpy::register_symbolic_link_to_registered_type<StdVec_Vector3>(
+            DefPickleStdVectorVisitor<StdVec_Vector3>()))
         {
           bp::scope().attr("StdVec_Vector3") = bp::scope().attr("StdVec_Vec3s"); // alias
         }
