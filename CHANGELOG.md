@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add Python example showcasing the candlewick visualizer
 - Add `PINOCCHIO_DISABLE_UNSUPPORTED_WARNINGS` C++ definition to disable unsupported algorithm warnings
 - Add `PINOCCHIO_BUILD_MPFR_TESTING` CMake option to build MPFR tests
+- Add `pinocchio/utils/alloca.hpp`: Helpers for mapping stack allocation for Eigen::Map
+- Add `pinochio/container/eigen-storage.hpp`: Introduce `EigenStorageTpl`
 
 ### Changed
 - bindings/python : Add missing arg names in `visualizer-visitor.hpp`
@@ -57,6 +59,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Change arguments in `BaumgarteCorrectorParametersTpl` constructor : scalar are used instead of vectors
 - Deprecate `ContactCholeskyDecompositionTpl::allocate` replaced by `ContactCholeskyDecompositionTpl::rebuild`
 - Change arguments in `ContactCholeskyDecompositionTpl` constructor
+- Major refactorization of ContactCholeskyDecompositionTpl to ease online resizing
 
 ### Removed
 - Remove unused headers `deprecated-macros.hpp` and `deprecated-namespaces.hpp`
@@ -220,15 +223,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [3.4.0] - 2025-02-12
 
 ### Added
-- Helpers for mapping heap allocation for Eigen::Map via alloca
-- Introduce EigenStorageTpl
 - Add parsing meshes with vertices for MJCF format ([#2537](https://github.com/stack-of-tasks/pinocchio/pull/2537))
-
-### Changed
-- Major refactorization of ContactCholeskyDecompositionTpl to ease online resizing
-
-### Removed
-- Remove DataTpl::lastChild field and associated methods
 
 ### Fixed
 - Fix mjcf Euler angle parsing: use xyz as a default value for eulerseq compiler option ([#2526](https://github.com/stack-of-tasks/pinocchio/pull/2526))
