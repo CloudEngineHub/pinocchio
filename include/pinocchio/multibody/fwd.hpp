@@ -10,6 +10,8 @@
 #include <Eigen/Core>
 
 #include "pinocchio/context.hpp"
+// TODO This is done for pinocchio 3 back compatibility
+#include "pinocchio/geometry/fwd.hpp"
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
