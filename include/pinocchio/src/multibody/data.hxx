@@ -307,6 +307,9 @@ namespace pinocchio
     /// \brief Spatial forces set, used in CRBA and CCRBA
     std::vector<Matrix6x> Fcrb;
 
+    /// \brief Index of the last child (for CRBA)
+    PINOCCHIO_DEPRECATED std::vector<int> lastChild;
+
     /// \brief Dimension of the subtree motion space (for CRBA)
     std::vector<int> nvSubtree;
 
@@ -621,6 +624,8 @@ namespace pinocchio
     }
 
   private:
+    PINOCCHIO_DEPRECATED void computeLastChild(const Model & model);
+    PINOCCHIO_DEPRECATED void computeLastChildImpl(const Model & model);
     void computeNvSubtree(const Model & model);
     void computeParents_fromRow(const Model & model);
     void computeSupports_fromRow(const Model & model);
@@ -693,6 +698,7 @@ namespace pinocchio
   , dhg(Force::Zero())
   , Ig(Inertia::Zero())
   , Fcrb((std::size_t)model.njoints, Matrix6x::Zero(6, model.nv))
+  , lastChild((std::size_t)model.njoints, -1)
   , nvSubtree((std::size_t)model.njoints, 0)
   , start_idx_v_fromRow((std::size_t)model.nvExtended, -1)
   , end_idx_v_fromRow((std::size_t)model.nvExtended, -1)
@@ -789,6 +795,8 @@ namespace pinocchio
     M.setZero();
     Minv.setZero();
 
+    computeLastChildImpl(model);
+
     computeNvSubtree(model);
 
     /* Init for Cholesky */
@@ -803,6 +811,61 @@ namespace pinocchio
     d2tau_dvdv.setZero();
     d2tau_dqdv.setZero();
     d2tau_dadq.setZero();
+  }
+
+  template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+  inline void DataTpl<Scalar, Options, JointCollectionTpl>::computeLastChild(const Model & model)
+  {
+    typedef typename Model::Index Index;
+
+    std::fill(lastChild.begin(), lastChild.end(), -1);
+    for (int i = model.njoints - 1; i >= 0; --i)
+    {
+      if (lastChild[(Index)i] == -1)
+        lastChild[(Index)i] = i;
+      const Index & parent = model.parents[(Index)i];
+
+      lastChild[parent] = std::max<int>(lastChild[(Index)i], lastChild[parent]);
+
+      nvSubtree[(Index)i] += model.joints[(Index)i].nv();
+      nvSubtree[parent] += nvSubtree[(Index)i];
+    }
+    // fill mimic data
+    for (const JointIndex mimicking_id : model.mimicking_joints)
+    {
+      const auto & mimicking_sub = model.subtrees[mimicking_id];
+      size_t j = 1;
+      bool found = false;
+      for (; j < mimicking_sub.size(); j++)
+      {
+        if (model.nvs[mimicking_sub[j]] != 0)
+        {
+          found = true;
+          break;
+        }
+      }
+      if (mimicking_sub.size() == 1 || !found)
+        mimic_subtree_joint.push_back(0);
+      else
+        mimic_subtree_joint.push_back(mimicking_sub[j]);
+    }
+  }
+
+  template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
+  inline void
+  DataTpl<Scalar, Options, JointCollectionTpl>::computeLastChildImpl(const Model & model)
+  {
+    typedef typename Model::Index Index;
+
+    std::fill(lastChild.begin(), lastChild.end(), -1);
+    for (int i = model.njoints - 1; i >= 0; --i)
+    {
+      if (lastChild[(Index)i] == -1)
+        lastChild[(Index)i] = i;
+      const Index & parent = model.parents[(Index)i];
+
+      lastChild[parent] = std::max<int>(lastChild[(Index)i], lastChild[parent]);
+    }
   }
 
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
@@ -961,7 +1024,8 @@ namespace pinocchio
       && data1.oYaba_augmented == data2.oYaba_augmented && data1.oL == data2.oL
       && data1.oK == data2.oK && data1.u == data2.u && data1.Ag == data2.Ag
       && data1.dAg == data2.dAg && data1.hg == data2.hg && data1.dhg == data2.dhg
-      && data1.Ig == data2.Ig && data1.Fcrb == data2.Fcrb && data1.nvSubtree == data2.nvSubtree
+      && data1.Ig == data2.Ig && data1.Fcrb == data2.Fcrb && data1.lastChild == data2.lastChild
+      && data1.nvSubtree == data2.nvSubtree
       && data1.start_idx_v_fromRow == data2.start_idx_v_fromRow
       && data1.end_idx_v_fromRow == data2.end_idx_v_fromRow && data1.U == data2.U
       && data1.D == data2.D && data1.Dinv == data2.Dinv

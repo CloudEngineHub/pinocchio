@@ -149,6 +149,7 @@ namespace pinocchio
                "C(q,v)v")
           .ADD_DATA_PROPERTY(g, "Vector of generalized gravity (dim model.nv).")
           .ADD_DATA_PROPERTY(Fcrb, "Spatial forces set, used in CRBA")
+          .ADD_DATA_PROPERTY(lastChild, "Index of the last child (for CRBA)")
           .ADD_DATA_PROPERTY(nvSubtree, "Dimension of the subtree motion space (for CRBA)")
           .ADD_DATA_PROPERTY(U, "Joint Inertia square root (upper triangle)")
           .ADD_DATA_PROPERTY(D, "Diagonal of UDUT inertia decomposition")
@@ -317,9 +318,8 @@ namespace pinocchio
         // to std::vector<Vector3d> binding.
         // Because current eigenpy API doesn't support adding attribute to already
         // registered type, we must add them in the __init__.py
-        if (
-          eigenpy::register_symbolic_link_to_registered_type<StdVec_Vector3>(
-            DefPickleStdVectorVisitor<StdVec_Vector3>()))
+        if (eigenpy::register_symbolic_link_to_registered_type<StdVec_Vector3>(
+              DefPickleStdVectorVisitor<StdVec_Vector3>()))
         {
           bp::scope().attr("StdVec_Vector3") = bp::scope().attr("StdVec_Vec3s"); // alias
         }

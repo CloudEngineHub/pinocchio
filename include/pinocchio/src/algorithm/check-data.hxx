@@ -76,6 +76,7 @@ namespace pinocchio
 
     CHECK_DATA((int)data.oMf.size() == model.nframes);
 
+    CHECK_DATA((int)data.lastChild.size() == model.njoints);
     CHECK_DATA((int)data.nvSubtree.size() == model.njoints);
     CHECK_DATA((int)data.parents_fromRow.size() == model.nvExtended);
     CHECK_DATA((int)data.mimic_parents_fromRow.size() == model.nvExtended);
