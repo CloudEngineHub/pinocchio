@@ -204,24 +204,45 @@ namespace pinocchio
     JointFrictionConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
     {
-      size_t n_joints = model.joints.size();
-      m_active_joints.reserve(n_joints);
-      for (size_t i = 0; i < n_joints; ++i)
+      std::size_t njoints = static_cast<std::size_t>(model.njoints);
+      JointIndexVector active_joints;
+      active_joints.reserve(njoints);
+      for (JointIndex i = 0; i < njoints; ++i)
       {
-        m_active_joints.push_back(static_cast<JointIndex>(i));
+        active_joints.push_back(i);
       }
-      init(model);
+      init(model, active_joints, model.lowerDryFrictionLimit, model.upperDryFrictionLimit);
     }
 
-    /// \brief Constructor from model and active_joints.
+    /// \brief Full constructor from model, active_joints, upper and lower bound friction limits.
+    /// \note Joints which have 0 lower & upper bound friction are discarded from the constraint.
+    /// Active joint
+    ///
+    /// \param[in] model
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename VectorLBLike,
+      typename VectorUBLike>
+    JointFrictionConstraintModelTpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndexVector & active_joints,
+      const Eigen::MatrixBase<VectorLBLike> & lb,
+      const Eigen::MatrixBase<VectorUBLike> & ub)
+    : Base(model)
+    {
+      init(model, active_joints, lb, ub);
+    }
+
+    /// \brief Constructor from model and active_joints. Lower and upper friction bounds are taken
+    /// from model.
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     JointFrictionConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndexVector & active_joints)
-    : Base(model)
-    , m_active_joints(active_joints)
+    : JointFrictionConstraintModelTpl(
+        model, active_joints, model.lowerDryFrictionLimit, model.upperDryFrictionLimit)
     {
-      init(model);
     }
 
     // Operators ---------------------
@@ -611,8 +632,16 @@ namespace pinocchio
     // ------------------------------
 
     /// \brief Initialization of the model.
-    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    void init(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model);
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename VectorLBLike,
+      typename VectorUBLike>
+    void init(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndexVector & active_joints,
+      const Eigen::MatrixBase<VectorLBLike> & lb,
+      const Eigen::MatrixBase<VectorUBLike> & ub);
 
     // ------------------------------
     // MEMBERS
@@ -729,11 +758,23 @@ namespace pinocchio
   }; // struct JointFrictionConstraintDataTpl
 
   template<typename Scalar, int Options>
-  template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+  template<
+    int OtherOptions,
+    template<typename, int> class JointCollectionTpl,
+    typename VectorLBLike,
+    typename VectorUBLike>
   void JointFrictionConstraintModelTpl<Scalar, Options>::init(
-    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const JointIndexVector & active_joints,
+    const Eigen::MatrixBase<VectorLBLike> & lb,
+    const Eigen::MatrixBase<VectorUBLike> & ub)
   {
-    m_active_dofs.reserve(size_t(model.nv));
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(active_joints.size() <= static_cast<std::size_t>(model.njoints));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(lb.size(), model.nv);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(ub.size(), model.nv);
+
+    m_active_joints = active_joints;
+    m_active_dofs.reserve(static_cast<std::size_t>(model.nv));
     for (const JointIndex joint_id : m_active_joints)
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
@@ -759,8 +800,8 @@ namespace pinocchio
       Eigen::Index idx = 0;
       for (const auto dof : m_active_dofs)
       {
-        m_friction_lower_limit.coeffRef(idx) = model.lowerDryFrictionLimit.coeff(dof);
-        m_friction_upper_limit.coeffRef(idx) = model.upperDryFrictionLimit.coeff(dof);
+        m_friction_lower_limit.coeffRef(idx) = lb.coeff(dof);
+        m_friction_upper_limit.coeffRef(idx) = ub.coeff(dof);
         ++idx;
       }
     }
