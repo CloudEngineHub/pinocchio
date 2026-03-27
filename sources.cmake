@@ -66,6 +66,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/eigen-common.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/geometry.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/geometry/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/macros.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/fwd.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/math/multiprecision-mpfr.hpp
@@ -119,11 +120,7 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/context/cppad.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/context/default.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/context/cppadcg.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/geometry-object-filter.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/geometry-fwd.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/data.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/coal.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/geometry-object.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/model-item.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint-motion-subspace-base.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/force-set.hxx
@@ -136,7 +133,12 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/joint-motion-subspace-generic.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/frame.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/sample-models.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/geometry.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/geometry/fwd.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/geometry/coal.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/geometry/instance-filter.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/geometry/geometry-object.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/geometry/geometry.hxx
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/geometry/geometry-object-filter.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/delassus-operator-preconditioned.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/crba.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/algorithm/kinematics.hxx
@@ -211,7 +213,6 @@ set(${PROJECT_NAME}_CORE_PRIVATE_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/eigen-helpers.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/math/matrix-product.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/motion-ref.hxx
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/src/multibody/instance-filter.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/context.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/eigen-align.hxx
     ${PROJECT_SOURCE_DIR}/include/pinocchio/src/spatial/fwd.hxx
