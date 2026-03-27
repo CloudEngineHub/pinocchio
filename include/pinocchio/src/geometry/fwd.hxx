@@ -8,7 +8,7 @@
 
 #ifdef PINOCCHIO_LSP
   #undef PINOCCHIO_LSP
-  #include "pinocchio/geometry.hpp"
+  #include "pinocchio/geometry/fwd.hpp"
 #endif // PINOCCHIO_LSP
 
 namespace pinocchio

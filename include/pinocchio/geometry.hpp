@@ -32,11 +32,11 @@
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
-#include "pinocchio/src/multibody/geometry-fwd.hxx"
-#include "pinocchio/src/multibody/coal.hxx"
+#include "pinocchio/src/geometry/fwd.hxx"
+#include "pinocchio/src/geometry/coal.hxx"
 #include "pinocchio/src/multibody/model-item.hxx"
-#include "pinocchio/src/multibody/instance-filter.hxx"
-#include "pinocchio/src/multibody/geometry-object.hxx"
-#include "pinocchio/src/multibody/geometry.hxx"
-#include "pinocchio/src/multibody/geometry-object-filter.hxx"
+#include "pinocchio/src/geometry/instance-filter.hxx"
+#include "pinocchio/src/geometry/geometry-object.hxx"
+#include "pinocchio/src/geometry/geometry.hxx"
+#include "pinocchio/src/geometry/geometry-object-filter.hxx"
 // IWYU pragma: end_exports
