@@ -658,12 +658,10 @@ namespace pinocchio
     // the solver can now be marked as reset
     m_is_valid = false;
 
-#ifdef PINOCCHIO_WITH_COLLISION
     if (settings.measure_timings)
     {
-      timer.start();
+      timerStart();
     }
-#endif // PINOCCHIO_WITH_COLLISION
 
     bool abs_prec_reached = false;
     bool rel_prec_reached = false;
@@ -767,9 +765,10 @@ namespace pinocchio
       x_previous_norm_inf = x_norm_inf;
     }
 
-#ifdef PINOCCHIO_WITH_COLLISION
-    timer.stop();
-#endif // PINOCCHIO_WITH_COLLISION
+    if (settings.measure_timings)
+    {
+      timerStop();
+    }
 
     // Retrieve solution
     res.x = ws.x;

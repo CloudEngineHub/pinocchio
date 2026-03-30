@@ -187,11 +187,9 @@ namespace pinocchio
       {
         cl.def("reset", &Solver::reset, bp::arg("self"), "Reset the solver to its initial state.");
 
-#ifdef PINOCCHIO_WITH_COLLISION
         cl.def(
-          "getCPUTimes", &Solver::getCPUTimes, bp::arg("self"),
-          "Return the CPU time breakdown of the last solve call.");
-#endif // PINOCCHIO_WITH_COLLISION
+          "getElapsedTime", &Solver::getElapsedTime, bp::arg("self"),
+          "Return last solve call elapsed time in microseconds.");
       }
     }; // struct ConstraintSolverBasePythonVisitor
 

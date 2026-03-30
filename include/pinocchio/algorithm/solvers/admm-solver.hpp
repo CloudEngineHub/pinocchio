@@ -142,6 +142,8 @@ namespace pinocchio
     typedef internal::ADMMUpdateRuleContainerTpl<Scalar> ADMMUpdateRuleContainer;
 
     using Base::reset;
+    using Base::timerStart;
+    using Base::timerStop;
 
     /// \brief Default constructor.
     /// \note The user can give `max_problem_size` to preallocate maximum problem sizes data.
@@ -191,11 +193,6 @@ namespace pinocchio
       m_workspace.reset();
       m_is_valid = false;
     }
-
-#ifdef PINOCCHIO_WITH_COLLISION
-    /// \brief Timer for the `solve` method
-    using Base::timer;
-#endif // PINOCCHIO_WITH_COLLISION
 
     /// \brief Per-iteration stats of the ADMM solver.
     ADMMSolverStats stats;
