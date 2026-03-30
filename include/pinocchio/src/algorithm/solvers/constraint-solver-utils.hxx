@@ -353,7 +353,7 @@ namespace pinocchio
       typename ConstraintDataAllocator,
       typename VectorLikeIn,
       typename VectorLikeOut>
-    void computeDualConeProjection(
+    void computeDualConstraintSetProjection(
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
       const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
       const Eigen::DenseBase<VectorLikeIn> & x,
