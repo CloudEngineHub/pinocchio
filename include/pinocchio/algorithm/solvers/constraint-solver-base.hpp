@@ -8,15 +8,13 @@
 #include <limits>
 #include <vector>
 #include <optional>
+#include <chrono>
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/utils/check.hpp"
 #include "pinocchio/algorithm/delassus-operator.hpp"
 
-#ifdef PINOCCHIO_WITH_COLLISION
-  #include <coal/timings.h>
-#endif // PINOCCHIO_WITH_COLLISION
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports

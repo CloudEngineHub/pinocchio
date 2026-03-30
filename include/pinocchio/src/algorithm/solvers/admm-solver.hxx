@@ -80,12 +80,10 @@ namespace pinocchio
     // -- init of internals done - the solver is now marked as reset
     m_is_valid = false;
 
-#ifdef PINOCCHIO_WITH_COLLISION
     if (settings.measure_timings)
     {
-      timer.start();
+      timerStart();
     }
-#endif // PINOCCHIO_WITH_COLLISION
 
     // Check NCP/CCP conditions. If they are satisfied, don't run the solver.
     // -- always primaly feasible as y is projected onto the constraints
@@ -479,12 +477,10 @@ namespace pinocchio
       }
     }
 
-#ifdef PINOCCHIO_WITH_COLLISION
     if (settings.measure_timings)
     {
-      timer.stop();
+      timerStop();
     }
-#endif // PINOCCHIO_WITH_COLLISION
 
     if (settings.stat_record)
     {

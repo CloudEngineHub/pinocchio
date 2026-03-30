@@ -341,10 +341,9 @@ namespace pinocchio
     typedef typename traits<Derived>::SolverSettings SolverSettings;
     typedef typename traits<Derived>::SolverResult SolverResult;
 
-#ifdef PINOCCHIO_WITH_COLLISION
-    typedef coal::CPUTimes CPUTimes;
-    typedef coal::Timer Timer;
-#endif // PINOCCHIO_WITH_COLLISION
+    using clock = std::chrono::steady_clock;
+    using time_point = clock::time_point;
+    using duration = std::chrono::duration<double, std::micro>;
 
     /// \brief Cast to Derived.
     Derived & derived()
@@ -355,14 +354,6 @@ namespace pinocchio
     const Derived & derived() const
     {
       return static_cast<const Derived &>(*this);
-    }
-
-    /// \brief Default constructor
-    ConstraintSolverBase()
-#ifdef PINOCCHIO_WITH_COLLISION
-    : timer(false)
-#endif // PINOCCHIO_WITH_COLLISION
-    {
     }
 
     /// \brief Solve the constrained problem composed of problem data (G,g,constraint_models,
@@ -399,24 +390,28 @@ namespace pinocchio
     /// \brief Reset the solver as if it never ran.
     void reset()
     {
-#ifdef PINOCCHIO_WITH_COLLISION
-      timer.stop();
-#endif
-
       derived().resetImpl();
     }
 
-#ifdef PINOCCHIO_WITH_COLLISION
-    CPUTimes getCPUTimes() const
+    /// \brief Last solve call elapsed time in microseconds.
+    double getElapsedTime() const
     {
-      return timer.elapsed();
+      return timer_duration.count();
     }
-#endif // PINOCCHIO_WITH_COLLISION
 
   protected:
-#ifdef PINOCCHIO_WITH_COLLISION
-    Timer timer;
-#endif // PINOCCHIO_WITH_COLLISION
+    void timerStart()
+    {
+      timer_start = clock::now();
+    }
+
+    void timerStop()
+    {
+      timer_duration = clock::now() - timer_start;
+    }
+
+    time_point timer_start;
+    duration timer_duration;
 
   }; // struct ConstraintSolverBaseTpl
 
