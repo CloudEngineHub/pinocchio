@@ -75,6 +75,8 @@
 #endif // PINOCCHIO_WITH_COLLISION
 
 #include "pinocchio/macros.hpp"
+// TODO This is done for pinocchio 3 back compatibility
+#include <pinocchio/config.hpp>
 
 #include "pinocchio/container/double-entry-container.hpp"
 #include "pinocchio/container/matrix-stack.hpp"

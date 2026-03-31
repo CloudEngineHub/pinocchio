@@ -21,6 +21,8 @@
 
 #include "pinocchio/context.hpp"
 #include "pinocchio/multibody/fwd.hpp"
+// TODO This is done for pinocchio 3 back compatibility
+#include <pinocchio/config.hpp>
 
 #include "pinocchio/macros.hpp"
 #include "pinocchio/eigen-common.hpp"

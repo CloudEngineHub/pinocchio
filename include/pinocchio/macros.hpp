@@ -16,6 +16,8 @@
 
 #include "pinocchio/deprecated.hpp"
 #include "pinocchio/warning.hpp"
+// TODO This is done for pinocchio 3 back compatibility
+#include <pinocchio/config.hpp>
 // IWYU pragma: end_keep
 
 // IWYU pragma: begin_exports
