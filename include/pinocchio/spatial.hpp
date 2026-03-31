@@ -9,6 +9,8 @@
 #include "pinocchio/fwd.hpp"
 #include "pinocchio/eigen-common.hpp"
 #include "pinocchio/context.hpp"
+// TODO This is done for pinocchio 3 back compatibility
+#include <pinocchio/config.hpp>
 
 #include "pinocchio/utils/cast.hpp"
 #include "pinocchio/utils/static-if.hpp"
