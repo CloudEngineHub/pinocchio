@@ -280,12 +280,6 @@ namespace pinocchio
 
     primal_dual_contact_solution.tail(model.nv) = tau - data.nle;
 
-    // Temporary variables
-    //    Motion coriolis_centrifugal_acc1, coriolis_centrifugal_acc2; // Coriolis/centrifugal
-    //    acceleration of the contact frame.
-    typename Motion::Vector3 coriolis_centrifugal_acc1_local;
-    typename Motion::Vector3 coriolis_centrifugal_acc2_local;
-
     Eigen::Index current_row_id = 0;
     for (size_t contact_id = 0; contact_id < constraint_models.size(); ++contact_id)
     {
