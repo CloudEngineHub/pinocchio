@@ -883,6 +883,7 @@ namespace pinocchio
     }
 
     MatrixStackTpl & operator=(const MatrixStackTpl & other) = default;
+    MatrixStackTpl & operator=(MatrixStackTpl && other) = default;
 
     void rebuild(const std::vector<MatrixInfo> & matrix_infos)
     {
@@ -928,14 +929,14 @@ namespace pinocchio
     MapType back()
     {
       auto & m = m_matrix_maps.back();
-      return MapType(m.data(), m.cols(), m.rows());
+      return MapType(m.data(), m.rows(), m.cols());
     }
 
     /// \brief Returns a reference to the last element in the container.
     ConstMapType back() const
     {
       const auto & m = m_matrix_maps.back();
-      return ConstMapType(m.data(), m.cols(), m.rows());
+      return ConstMapType(m.data(), m.rows(), m.cols());
     }
 
     ///  \brief Checks if the container has no elements.
@@ -961,13 +962,13 @@ namespace pinocchio
     MapType operator[](const std::size_t pos)
     {
       auto & m = m_matrix_maps[pos];
-      return MapType(m.data(), m.cols(), m.rows());
+      return MapType(m.data(), m.rows(), m.cols());
     }
     /// \brief Returns a reference to the element at specified location pos.
     ConstMapType operator[](const std::size_t pos) const
     {
       const auto & m = m_matrix_maps[pos];
-      return ConstMapType(m.data(), m.cols(), m.rows());
+      return ConstMapType(m.data(), m.rows(), m.cols());
     }
 
     /// \brief Returns the number of elements in the container.
