@@ -51,6 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Deprecate `pinocchio::container::aligned_vector` replaced by `std::allocator`
     - Deprecate `pinocchio/container/aligned-vector.hpp`
     - Deprecate `pinocchio::python::StdAlignedVectorPythonVisitor`
+- Deprecate `pinocchio/bindings/python/multibody/joint/joint.hpp` replaced by `pinocchio/bindings/python/multibody/joint/joint-model.hpp`
 - Following algorithms are now unsupported algorithms (no more deprecated):
   - `forwardDynamics`
   - `impulseDynamics`
