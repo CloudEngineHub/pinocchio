@@ -85,6 +85,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/archive.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/serializable.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/fwd.hpp
@@ -441,6 +442,7 @@ set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/utils/file-explorer.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/se3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/serialization/se3.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/serialization/aligned-vector.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/inertia.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/serialization/inertia.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/force.hpp
@@ -456,7 +458,6 @@ set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/symmetric3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/serialization/joints-data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/classic-acceleration.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/serialization/eigen.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/spatial-axis.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/explog.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/algorithm/contact-cholesky.hpp
@@ -869,6 +870,7 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/keep-alive.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/model-checker.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/namespace.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/utils/std-aligned-vector.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/context/cppadcg.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/context/cppad.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/context/casadi.hpp

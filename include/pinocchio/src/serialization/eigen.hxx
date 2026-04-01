@@ -42,7 +42,6 @@ namespace Eigen
 } // namespace Eigen
   #endif
 #endif
-// #endif // !PINOCCHIO_WITH_COLLISION
 
 // Similar workaround but for MSVC when C++17 is enabled.
 // TODO Find _MSC_VER range.
@@ -229,10 +228,10 @@ namespace boost
     template<class Archive, typename _Scalar, int _NumIndices, int _Options, typename _IndexType>
     void save(
       Archive & ar,
-      const ::pinocchio::Tensor<_Scalar, _NumIndices, _Options, _IndexType> & t,
+      const ::Eigen::Tensor<_Scalar, _NumIndices, _Options, _IndexType> & t,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::Tensor<_Scalar, _NumIndices, _Options, _IndexType> Tensor;
+      typedef ::Eigen::Tensor<_Scalar, _NumIndices, _Options, _IndexType> Tensor;
       const typename Tensor::Dimensions & dimensions = t.dimensions();
 
       ar & BOOST_SERIALIZATION_NVP(dimensions);
@@ -242,10 +241,10 @@ namespace boost
     template<class Archive, typename _Scalar, int _NumIndices, int _Options, typename _IndexType>
     void load(
       Archive & ar,
-      ::pinocchio::Tensor<_Scalar, _NumIndices, _Options, _IndexType> & t,
+      ::Eigen::Tensor<_Scalar, _NumIndices, _Options, _IndexType> & t,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::Tensor<_Scalar, _NumIndices, _Options, _IndexType> Tensor;
+      typedef ::Eigen::Tensor<_Scalar, _NumIndices, _Options, _IndexType> Tensor;
       typename Tensor::Dimensions dimensions;
 
       ar >> BOOST_SERIALIZATION_NVP(dimensions);
@@ -257,7 +256,7 @@ namespace boost
     template<class Archive, typename _Scalar, int _NumIndices, int _Options, typename _IndexType>
     void serialize(
       Archive & ar,
-      ::pinocchio::Tensor<_Scalar, _NumIndices, _Options, _IndexType> & t,
+      ::Eigen::Tensor<_Scalar, _NumIndices, _Options, _IndexType> & t,
       const unsigned int version)
     {
       split_free(ar, t, version);

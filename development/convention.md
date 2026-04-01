@@ -63,6 +63,7 @@ pinocchio
 │   └── utils.hpp
 ├── serialization
 │   ├── archive.hpp
+│   ├── eigen.hpp
 │   └── serializable.hpp
 ├── serialization.hpp
 └── spatial.hpp
