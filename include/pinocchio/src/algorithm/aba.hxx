@@ -12,8 +12,6 @@
   #include "pinocchio/algorithm/aba.hpp"
 #endif // PINOCCHIO_LSP
 
-/// @cond DEV
-
 namespace pinocchio
 {
   namespace impl
@@ -1038,5 +1036,3 @@ namespace pinocchio
     const Model &, Data &);
 } // namespace pinocchio
 #endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-/// @endcond

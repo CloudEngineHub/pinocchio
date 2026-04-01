@@ -19,7 +19,7 @@ namespace pinocchio
   /// \tparam JointCollection Collection of Joint types.
   ///
   /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] orig  Data from which the values are copied.
+  /// \param[in] origin  Data from which the values are copied.
   /// \param[out] dest  Data to which the values are copied
   /// \param[in] kinematic_level if =0, copy oMi. If =1, also copy v. If =2, also copy a, a_gf and
   /// f.

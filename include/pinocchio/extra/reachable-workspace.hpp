@@ -57,14 +57,12 @@ namespace pinocchio
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam ConfigVectorType Type of the joint configuration vector.
-
   /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] q The initial joint configuration vector (dim model.nq).
-  /// \param[in] frame_id Index of the frame for which the workspace should be computed.
+  /// \param[in] q0 The initial joint configuration vector (dim model.nq).
   /// \param[in] time_horizon: time horizon for which the polytope will be computed (in seconds)
+  /// \param[in] frame_id Index of the frame for which the workspace should be computed.
   /// \param[in] params parameters of the algorithm
-
-  /// \param[out] points inside of the reachable workspace
+  /// \param[out] vertex inside of the reachable workspace
   template<
     typename Scalar,
     int Options,
@@ -85,7 +83,7 @@ namespace pinocchio
   /// \tparam ConfigVectorType Type of the joint configuration vector.
 
   /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] q The initial joint configuration vector (dim model.nq).
+  /// \param[in] q0 The initial joint configuration vector (dim model.nq).
   /// \param[in] frame_id Index of the frame for which the workspace should be computed.
   /// \param[in] time_horizon: time horizon for which the polytope will be computed (in seconds)
   /// \param[in] params parameters of the algorithm
@@ -111,14 +109,13 @@ namespace pinocchio
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam ConfigVectorType Type of the joint configuration vector.
-
   /// \param[in] model The model structure of the rigid body system.
-  /// \param[in] q The initial joint configuration vector (dim model.nq).
+  /// \param[in] geom_model: Geometry model, to take into accout collision with the environment
+  /// \param[in] q0 The initial joint configuration vector (dim model.nq).
   /// \param[in] frame_id Index of the frame for which the workspace should be computed.
   /// \param[in] time_horizon: time horizon for which the polytope will be computed (in seconds)
   /// \param[in] params parameters of the algorithm
-
-  /// \param[out] points inside of the reachable workspace
+  /// \param[out] vertex inside of the reachable workspace
   template<
     typename Scalar,
     int Options,
@@ -140,14 +137,12 @@ namespace pinocchio
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam ConfigVectorType Type of the joint configuration vector.
-
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] geom_model: Geometry model, to take into accout collision with the environment
-  /// \param[in] q The initial joint configuration vector (dim model.nq).
+  /// \param[in] q0 The initial joint configuration vector (dim model.nq).
   /// \param[in] frame_id Index of the frame for which the workspace should be computed.
   /// \param[in] time_horizon: time horizon for which the polytope will be computed (in seconds)
   /// \param[in] params parameters of the algorithm
-
   /// \param[out] res Results of algorithm
   template<
     typename Scalar,

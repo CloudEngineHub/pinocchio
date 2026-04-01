@@ -528,7 +528,6 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------------- */
 namespace pinocchio
 {
-  /// @cond DEV
 
   /**
    * @brief      CreateJointData visitor
@@ -1650,7 +1649,5 @@ namespace pinocchio
   {
     return ApplyConstraintOnForceVisitor<Op, ForceType, ExpressionType>::run(jdata, F, R);
   }
-
-  /// @endcond
 
 } // namespace pinocchio

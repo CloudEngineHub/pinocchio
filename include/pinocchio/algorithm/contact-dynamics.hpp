@@ -120,7 +120,6 @@ namespace pinocchio
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
-  /// \param[in] v The joint velocity (vector dim model.nv).
   /// \param[in] tau The joint torque vector (dim model.nv).
   /// \param[in] J The Jacobian of the constraints (dim nb_constraints*model.nv).
   /// \param[in] gamma The drift of the constraints (dim nb_constraints).
@@ -160,6 +159,7 @@ namespace pinocchio
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
+  /// \param[in] q The joint configuration (vector dim model.nq).
   /// \param[in] J Jacobian of the constraints.
   /// \param[out] KKTMatrix_inv inverse of the MJtJ matrix.
   /// \param[in] inv_damping regularization coefficient.

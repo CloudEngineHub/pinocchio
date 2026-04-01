@@ -127,7 +127,7 @@ namespace pinocchio
   /// \param[in] v The joint velocity vector (dim model.nv).
   /// \param[in] a The joint acceleration vector (dim model.nv).
   ///
-  /// \returns The results are stored in data.d2tau_dqdq, data.d2tau_dvdv,
+  /// \note The results are stored in data.d2tau_dqdq, data.d2tau_dvdv,
   /// data.d2tau_dqdv, and data.d2tau_dadq which respectively correspond to the
   /// Second-Order partial derivatives of the joint torque vector with respect to
   /// the joint configuration, velocity and cross Second-Order partial derivatives

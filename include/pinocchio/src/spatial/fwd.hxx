@@ -36,11 +36,6 @@ namespace pinocchio
   } // namespace internal
   /// \endinternal
 
-  /**
-   * \addtogroup pinocchio_spatial
-   * @{
-   */
-
   template<typename Derived>
   class MotionBase;
   template<typename Derived>

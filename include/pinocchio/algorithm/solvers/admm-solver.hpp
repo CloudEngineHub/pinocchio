@@ -170,7 +170,6 @@ namespace pinocchio
       return m_is_valid;
     }
 
-    /// \brief \copydoc Base::solve
     template<
       typename DelassusDerived,
       typename VectorLike,
@@ -186,7 +185,6 @@ namespace pinocchio
       const ADMMSolverSettings & settings,
       ADMMSolverResult & result);
 
-    /// \brief \copydoc Base::reset
     void resetImpl()
     {
       stats.reset();
@@ -315,7 +313,6 @@ namespace pinocchio
     {
     }
 
-    /// \brief \copydoc Base::checkValidity
     void checkValidityImpl() const
     {
       if (rho_init)
@@ -487,7 +484,6 @@ namespace pinocchio
     {
     }
 
-    /// \brief \copydoc Base::constraintSize
     int constraintSizeImpl() const
     {
       return static_cast<int>(problem_size);
@@ -558,33 +554,28 @@ namespace pinocchio
       desaxce_term = desaxce;
     }
 
-    /// \brief \copydoc Base::setConstraintImpulseGuess
     template<typename VectorLike>
     void setConstraintImpulseGuessImpl(const Eigen::MatrixBase<VectorLike> & impulse_guess_)
     {
       impulse_guess.emplace(impulse_guess_);
     }
 
-    /// \brief \copydoc Base::clearConstraintImpulseGuess
     void clearConstraintImpulseGuessImpl()
     {
       impulse_guess.reset();
     }
 
-    /// \brief \copydoc Base::setConstraintVelocityGuess
     template<typename VectorLike>
     void setConstraintVelocityGuessImpl(const Eigen::MatrixBase<VectorLike> & velocity_guess_)
     {
       velocity_guess.emplace(velocity_guess_);
     }
 
-    /// \brief \copydoc Base::clearConstraintVelocityGuess
     void clearConstraintVelocityGuessImpl()
     {
       velocity_guess.reset();
     }
 
-    /// \brief \copydoc Base::retrieveConstraintImpulses
     template<typename VectorLike>
     void
     retrieveConstraintImpulsesImpl(const Eigen::MatrixBase<VectorLike> & constraint_impulses_) const
@@ -593,7 +584,6 @@ namespace pinocchio
       constraint_impulses = y;
     }
 
-    /// \brief \copydoc Base::retrieveConstraintImpulses
     /// \note At the optimum we have Gx + g + desaxce - z = 0.
     /// We have sigma = Gx + g and z = Gx + g + desaxce, thus sigma = z - desaxce,
     template<typename VectorLike>
@@ -698,7 +688,6 @@ namespace pinocchio
       reserve(max_iterations);
     }
 
-    /// \brief \copydoc Base::reserve
     void reserveImpl(std::size_t max_iterations)
     {
       rho.reserve(max_iterations);

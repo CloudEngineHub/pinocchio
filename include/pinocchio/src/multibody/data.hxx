@@ -636,8 +636,6 @@ namespace pinocchio
 /* --- Details -------------------------------------------------------------- */
 /* --- Details -------------------------------------------------------------- */
 
-/// @cond DEV
-
 namespace pinocchio
 {
 
@@ -1082,5 +1080,3 @@ namespace pinocchio
 } // namespace pinocchio
 
 #endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-
-/// @endcond

@@ -937,4 +937,3 @@ namespace pinocchio
     const Model &, Data &);
 } // namespace pinocchio
 #endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-/// @endcond

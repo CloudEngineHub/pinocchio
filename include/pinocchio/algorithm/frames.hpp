@@ -275,6 +275,7 @@ namespace pinocchio
    * @param[in]  model                        The kinematic model
    * @param[in]  data                           Data associated to model
    * @param[in]  joint_id                  Index of the joint.
+   * @param[in]  placement        Frame placement with respect to the parent joint
    * @param[in]  reference_frame  Reference frame in which the Jacobian is expressed.
    * @param[out] J                                  The Jacobian of the Frame expressed in the
    * reference_frame coordinate system.
@@ -314,6 +315,7 @@ namespace pinocchio
    * @param[in] model The kinematic model
    * @param[in] data Data associated to model
    * @param[in] joint_id Index of the joint.
+   * @param[in] placement Frame placement with respect to the parent joint
    * @param[in] reference_frame Reference frame in which the Jacobian is expressed.
    *
    * @warning    The function pinocchio::computeJointJacobians should have been called first.
@@ -440,9 +442,6 @@ namespace pinocchio
   /// \param[out] J A reference on the Jacobian matrix where the results will be stored in (dim 6 x
   /// model.nv). You must fill J with zero elements, e.g. J.setZero().
   ///
-  /// \return The Jacobian of the specific Frame expressed in the desired reference frame (matrix 6
-  /// x model.nv).
-  ///
   /// \remarks The result of this function is equivalent to call first
   /// computeJointJacobians(model,data,q), then updateFramePlacements(model,data) and then call
   /// getJointJacobian(model,data,jointId,rf,J),
@@ -477,9 +476,6 @@ namespace pinocchio
   ///
   /// \param[out] J A reference on the Jacobian matrix where the results will be stored in (dim 6 x
   /// model.nv). You must fill J with zero elements, e.g. J.setZero().
-  ///
-  /// \return The Jacobian of the specific Frame expressed in the LOCAL frame coordinate system
-  /// (matrix 6 x model.nv).
   ///
   /// \remarks The result of this function is equivalent to call first
   /// computeJointJacobians(model,data,q), then updateFramePlacements(model,data) and then call
@@ -517,6 +513,7 @@ namespace pinocchio
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] frame_id The index of the frame.
+  /// \param[in] rf Reference frame in which the velocity is expressed.
   ///
   /// \param[out] dJ A reference on the Jacobian matrix where the results will be stored in (dim 6 x
   /// model.nv). You must fill dJ with zero elements, e.g. dJ.fill(0.).

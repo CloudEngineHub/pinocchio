@@ -408,6 +408,7 @@ namespace pinocchio
    * model.nv x model.nv).
    * @param[in]  arg     Argument (either q or v) with respect to which the differentiation is
    * performed.
+   * @param[in] op       Operation to apply.
    *
    */
   template<
@@ -493,6 +494,7 @@ namespace pinocchio
    * (size model.nv x model.nv).
    * @param[in]  arg        Argument (either q or v) with respect to which the differentiation is
    * performed.
+   * @param[in] op          Operation to apply.
    *
    */
   template<
@@ -531,6 +533,7 @@ namespace pinocchio
    * @param[in]  q            Initial configuration (size model.nq)
    * @param[out] TM           Tangent map in q mapping the Lie algebra with the parametric tangent
    * space.
+   * @param[in]  op           Operation to apply.
    *
    */
   template<
@@ -561,6 +564,7 @@ namespace pinocchio
    * @param[in]  q            Initial configuration (size model.nq)
    * @param[out] TM           Tangent map in q mapping the Lie algebra with the parametric tangent
    * space.
+   * @param[in]  op           Operation to apply.
    *
    */
   template<
@@ -645,6 +649,7 @@ namespace pinocchio
    * @param[in]  q            Initial configuration (size model.nq)
    * @param[in]  mat_in       A matrix with range in the Lie algebra (size model.nv, n_cols)
    * @param[out] mat_out      A matrix with range in the parametric space (size model.nq, n_cols)
+   * @param[in]  op           Operation to apply.
    *
    */
   template<
@@ -673,6 +678,7 @@ namespace pinocchio
    * @param[in]  q            Initial configuration (size model.nq)
    * @param[in]  mat_in       A matrix with range in the Lie algebra (size model.nv, n_cols)
    * @param[out] mat_out      A matrix with range in the parametric space (size model.nq, n_cols)
+   * @param[in]  op           Operation to apply.
    *
    */
   template<
@@ -706,6 +712,7 @@ namespace pinocchio
    * @param[in]  q            Initial configuration (size model.nq)
    * @param[in]  mat_in       A matrix with range in the parametric space (size model.nq, n_cols)
    * @param[out] mat_out      A matrix with range in the Lie algebra (size model.nv, n_cols)
+   * @param[in]  op           Operation to apply.
    *
    */
   template<
@@ -734,6 +741,7 @@ namespace pinocchio
    * @param[in]  q            Initial configuration (size model.nq)
    * @param[in]  mat_in       A matrix with range in the parametric space (size model.nq, n_cols)
    * @param[out] mat_out      A matrix with range in the Lie algebra (size model.nv, n_cols)
+   * @param[in]  op           Operation to apply.
    *
    */
   template<
@@ -1116,7 +1124,7 @@ namespace pinocchio
    * @brief         Normalize a configuration vector.
    *
    * @param[in]     model      Model of the kinematic tree.
-   * @param[in,out] q               Configuration to normalize (size model.nq).
+   * @param[in,out] qout               Configuration to normalize (size model.nq).
    *
    */
   template<
@@ -1134,7 +1142,7 @@ namespace pinocchio
    * @brief         Normalize a configuration vector.
    *
    * @param[in]     model      Model of the kinematic tree.
-   * @param[in,out] q               Configuration to normalize (size model.nq).
+   * @param[in,out] qout               Configuration to normalize (size model.nq).
    *
    */
   template<
@@ -1265,6 +1273,7 @@ namespace pinocchio
    * vector.
    *
    * @param[in]     model          Model of the kinematic tree.
+   * @param[in]     q          The joint configuration (vector dim model.nq)
    * @param[out]    jacobian   The Jacobian of the integrate operation.
    *
    * @details       This function is often required for the numerical solvers that are working on
@@ -1289,6 +1298,7 @@ namespace pinocchio
    * vector.
    *
    * @param[in]     model          Model of the kinematic tree.
+   * @param[in]     q          The joint configuration (vector dim model.nq)
    * @param[out]    jacobian   The Jacobian of the integrate operation.
    *
    * @details       This function is often required for the numerical solvers that are working on
@@ -1748,7 +1758,7 @@ namespace pinocchio
    * the lie groups of all its joints.
    *
    * @param[in]     model          Model of the kinematic tree.
-   * @param[out]    lgo            The cartesian Lie group object.
+   * @returns The cartesian Lie group object.
    *
    */
   template<
@@ -1765,7 +1775,7 @@ namespace pinocchio
    * the lie groups of all its joints.
    *
    * @param[in]     model          Model of the kinematic tree.
-   * @param[out]    lgo            The cartesian Lie group object.
+   * @returns The cartesian Lie group object.
    *
    */
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>

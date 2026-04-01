@@ -173,9 +173,6 @@ namespace pinocchio
   /// \param[out] J A reference on the Jacobian matrix where the results will be stored in (dim 6 x
   /// model.nv). You must fill J with zero elements, e.g. J.setZero().
   ///
-  /// \return The Jacobian of the specific joint frame expressed in the local frame of the joint
-  /// (matrix 6 x model.nv).
-  ///
   /// \remarks The result of this function is equivalent to call first
   /// computeJointJacobians(model,data,q) and then call
   /// getJointJacobian(model,data,jointId,LOCAL,J),

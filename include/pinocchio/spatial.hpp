@@ -56,4 +56,5 @@
 #include "pinocchio/src/spatial/classic-acceleration.hxx"
 
 #include "pinocchio/src/spatial/act-on-set.hxx"
+
 // IWYU pragma: end_exports

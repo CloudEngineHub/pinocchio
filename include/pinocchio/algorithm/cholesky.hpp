@@ -244,30 +244,6 @@ namespace pinocchio
       const Eigen::MatrixBase<Mat> & v);
 
     ///
-    /// \brief Perform the sparse inversion \f$ M^{-1}v \f$ using the Cholesky decomposition stored
-    /// in data and acting in place.
-    ///
-    /// \tparam JointCollection Collection of Joint types.
-    ///
-    /// \param[in] model The model structure of the rigid body system.
-    /// \param[in] data The data structure of the rigid body system.
-    /// \param[inout] v The input matrix to multiply with data.M^{-1} and also storing the result.
-    ///
-    /// \return A reference to the result of \f$ M^{-1}v \f$ stored in v.
-    ///
-
-    // TODO Clearify, it seems it is exactly the same as solve in l. 54
-    template<
-      typename Scalar,
-      int Options,
-      template<typename, int> class JointCollectionTpl,
-      typename Mat>
-    Mat & solve(
-      const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
-      const DataTpl<Scalar, Options, JointCollectionTpl> & data,
-      const Eigen::MatrixBase<Mat> & v);
-
-    ///
     /// \brief Computes the inverse of the joint space inertia matrix M from its Cholesky
     /// factorization.
     ///

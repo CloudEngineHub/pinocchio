@@ -1,6 +1,6 @@
 #pragma once
 
-/// \mainpage Pinocchio PyBind11 helpers
+/// \page pybind11_helper Pinocchio PyBind11 helpers
 ///
 /// This package provides utilities to ease the use of Pinocchio objects when
 /// using PyBind11.

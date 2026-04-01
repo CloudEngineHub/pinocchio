@@ -56,11 +56,9 @@ namespace pinocchio
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] q The joint configuration (size model.nq).
   /// \param[in] contact_models Vector of contact models.
-  /// \param[in] contact_datas Vector of contact data.
+  /// \param[in] contact_data Vector of contact data.
   /// \param[out] delassus The resulting Delassus matrix.
   /// \param[in] mu Optional damping factor used when computing the inverse of the Delassus matrix.
-  ///
-  /// \return The (damped) Delassus matrix.
   ///
   template<
     typename Scalar,
@@ -92,7 +90,7 @@ namespace pinocchio
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] q The joint configuration (size model.nq).
   /// \param[in] contact_models Vector of contact models.
-  /// \param[in] contact_datas Vector of contact data.
+  /// \param[in] contact_data Vector of contact data.
   /// \param[out] damped_delassus_inverse The resulting damped Delassus matrix.
   /// \param[in] mu Damping factor well-posdnessed of the problem.
   /// \param[in] scaled If set to true, the solution is scaled my a factor \f$ \mu \f$ to avoid
@@ -100,8 +98,6 @@ namespace pinocchio
   ///
   /// \note A hint: a typical value for mu is 1e-4 when two contact constraints or more are
   /// redundant.
-  ///
-  /// \return The damped inverse Delassus matrix.
   ///
   template<
     typename Scalar,

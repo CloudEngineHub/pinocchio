@@ -102,7 +102,7 @@ namespace pinocchio
     const Eigen::MatrixBase<TangentVectorType1> & v,
     const Eigen::MatrixBase<TangentVectorType2> & tau,
     const std::vector<SpatialForce, SpatialForceAllocator> & fext,
-    const Convention rf = Convention::LOCAL);
+    const Convention convention = Convention::LOCAL);
 
   ///
   /// \brief Computes the inverse of the joint space inertia matrix using Articulated Body

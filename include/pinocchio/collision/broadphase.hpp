@@ -25,8 +25,6 @@ namespace pinocchio
   ///
   /// \param[in] broadphase_manager broadphase instance for collision detection.
   /// \param[in] callback callback pointer used for collision detection.
-  /// \param[in] stopAtFirstCollision if true, stop the loop over the collision pairs when the first
-  /// collision is detected.
   ///
   /// \warning if stopAtFirstcollision = true, then the collisions vector will
   /// not be entirely fulfilled (of course).
@@ -65,8 +63,6 @@ namespace pinocchio
   /// \param[in] broadphase_manager broadphase manager for collision detection.
   /// \param[in] callback callback pointer used for collision detection.///
   /// \param[in] q robot configuration.
-  /// \param[in] stopAtFirstCollision if true, stop the loop over the collision pairs when the first
-  /// collision is detected.
   ///
   /// \warning if stopAtFirstcollision = true, then the collisions vector will
   /// not be entirely fulfilled (of course).

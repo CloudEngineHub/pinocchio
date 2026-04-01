@@ -30,8 +30,9 @@ namespace pinocchio
   /// \brief Compute the contact forces given a target velocity of contact points.
   ///
   /// \param[in] constraint_models The vector of constraint models.
+  /// \param[in] constraint_datas Vector of constraint datas.
   /// \param[in] c_ref The desired constraint velocity.
-  /// \param[in,out] lambda Vector of solution. Should be initialized with zeros or from an initial
+  /// \param[in,out] _lambda Vector of solution. Should be initialized with zeros or from an initial
   /// estimate.
   /// \param[in,out] settings The settings for the proximal algorithm
   /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false).
@@ -69,7 +70,7 @@ namespace pinocchio
   /// \param[in] constraint_models The list of contact models.
   /// \param[in] constraint_datas The list of constraint_datas.
   /// \param[in] constraint_correction vector representing the constraint correction.
-  /// \param[in] lambda_sol initial guess for the contact forces
+  /// \param[in] _lambda_sol initial guess for the contact forces
   /// \param[in] settings The settings for the proximal algorithm
   /// \param[in] solve_ncp whether to solve the NCP (true) or CCP (false).
   ///

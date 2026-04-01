@@ -54,7 +54,7 @@ namespace pinocchio
   /// \param[in] q The joint configuration vector (dim model.nq).
   /// \param[in] v The joint velocity vector (dim model.nv).
   ///
-  /// \return All the results are stored in data. Please refer to the specific algorithm for further
+  /// \note All the results are stored in data. Please refer to the specific algorithm for further
   /// details.
   ///
   template<

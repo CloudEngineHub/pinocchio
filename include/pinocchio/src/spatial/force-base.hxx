@@ -18,7 +18,6 @@ namespace pinocchio
   /**
    * @brief      Base interface for forces representation.
    * @details    The Class implements all
-   * \ingroup pinocchio_spatial
    *
    *  This class hierarchy represents a spatial force, e.g. a spatial impulse or force associated to
    * a body. The spatial force is the mathematical representation of \f$ se^{*}(3) \f$, the dual of

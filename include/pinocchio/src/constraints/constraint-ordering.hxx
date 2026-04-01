@@ -318,5 +318,3 @@ namespace pinocchio
   }
 
 } // namespace pinocchio
-
-/// @endcond
