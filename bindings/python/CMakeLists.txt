@@ -299,7 +299,7 @@ if(BUILD_PYTHON_INTERFACE)
         pinocchio_python_bindings_specific_type(casadi)
         target_link_libraries(
             ${PYWRAP}_casadi
-            PUBLIC casadi::casadi pinocchio_casadi
+            PUBLIC casadi::casadi
         )
         list(APPEND STUBGEN_DEPENDENCIES "${PYWRAP}_casadi")
 
