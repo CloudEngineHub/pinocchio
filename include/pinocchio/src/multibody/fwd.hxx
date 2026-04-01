@@ -14,10 +14,6 @@
 namespace pinocchio
 {
 
-  /**
-   * \addtogroup pinocchio_multibody
-   * @{
-   */
   template<typename _Scalar, int _Options>
   struct JointCollectionDefaultTpl;
   template<
@@ -104,11 +100,6 @@ namespace pinocchio
     ///  instead of DataTpl::ov).
     LOCAL = 1,
   };
-
-  /**
-   * @}
-   */
-  // end of group multibody
 
   // Forward declaration needed for Model::check
   template<class D>

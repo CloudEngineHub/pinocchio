@@ -52,6 +52,7 @@ namespace pinocchio
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] contact_models Vector of contact information related to the problem.
+  /// \param[in] contact_datas Vector of contact data.
   ///
   template<
     typename Scalar,

@@ -11,8 +11,6 @@
   #include "pinocchio/algorithm/cholesky.hpp"
 #endif // PINOCCHIO_LSP
 
-/// @cond DEV
-
 namespace pinocchio
 {
   namespace cholesky
@@ -663,4 +661,3 @@ namespace pinocchio
 
   #endif // PINOCCHIO_SKIP_ALGORITHM_CHOLESKY
 #endif   // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-/// @endcond

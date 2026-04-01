@@ -206,7 +206,7 @@ namespace pinocchio
    * collision_model). \param[in] list_of_joints_to_lock list of joints to lock in the input model.
    *  \param[in] reference_configuration reference configuration.
    *  \param[out] reduced_model the reduced model.
-   *  \param[out] list_of_reduced_geom_model the list of reduced geometry models.
+   *  \param[out] list_of_reduced_geom_models the list of reduced geometry models.
    *
    *  \remarks All the joints that have been set to be fixed in the new reduced_model now appear in
    * the kinematic tree as a Frame as FIXED_JOINT.
@@ -230,7 +230,7 @@ namespace pinocchio
    *  \brief Transform of a joint of the model into a mimic joint. Keep the type of the joint as it
    * was previously.
    *
-   *  \param[in] model the input model to take joints from.
+   *  \param[in] input_model the input model to take joints from.
    *  \param[in] index_mimicked index of the joint to mimic
    *  \param[in] index_mimicking index of the joint that will mimic
    *  \param[in] scaling Scaling of joint velocity and configuration
@@ -251,7 +251,7 @@ namespace pinocchio
    *
    *  \brief Transform joints of a model into mimic joints
    *
-   *  \param[in] model the input model to take joints from.
+   *  \param[in] input_model the input model to take joints from.
    *  \param[in] index_mimicked indexes of the joint to mimic
    *  \param[in] index_mimicking indexes of the joint that will mimic
    *  \param[in] scaling Scalings of joint velocity and configuration

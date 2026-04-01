@@ -189,7 +189,7 @@ namespace pinocchio
   /// \param[in] fext External forces expressed in the local frame of the joints (dim
   /// model.njoints).
   ///
-  /// \returns The results are stored in data.ddq_dq, data.ddq_dv and data.Minv which respectively
+  /// \note The results are stored in data.ddq_dq, data.ddq_dv and data.Minv which respectively
   /// correspond
   ///          to the partial derivatives of the joint acceleration vector with respect to the joint
   ///          configuration, velocity and torque. And as for pinocchio::computeMinverse, only the

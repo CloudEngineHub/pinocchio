@@ -107,11 +107,13 @@ namespace pinocchio
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam Matrix6xOut1 Matrix6x containing the partial derivatives with respect to the joint
-  /// configuration vector. \tparam Matrix6xOut2 Matrix6x containing the partial derivatives with
-  /// respect to the joint velocity vector.
+  /// configuration vector.
+  /// \tparam Matrix6xOut2 Matrix6x containing the partial derivatives with respect to the joint
+  /// velocity vector.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
+  /// \param[in] jointId Index of the joint in model.
   /// \param[in] rf Reference frame in which the Jacobian is expressed.
   /// \param[out] v_partial_dq Partial derivative of the joint velociy w.r.t. \f$ q \f$.
   /// \param[out] v_partial_dv Partial derivative of the joint velociy w.r.t. \f$ v \f$.
@@ -139,10 +141,13 @@ namespace pinocchio
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam Matrix6xOut1 Matrix6x containing the partial derivatives of the spatial velocity with
-  /// respect to the joint configuration vector. \tparam Matrix6xOut2 Matrix6x containing the
+  /// respect to the joint configuration vector.
+  /// \tparam Matrix6xOut2 Matrix6x containing the
   /// partial derivatives of the spatial acceleration with respect to the joint configuration
-  /// vector. \tparam Matrix6xOut3 Matrix6x containing the partial derivatives of the spatial
-  /// acceleration with respect to the joint velocity vector. \tparam Matrix6xOut4 Matrix6x
+  /// vector.
+  /// \tparam Matrix6xOut3 Matrix6x containing the partial derivatives of the spatial
+  /// acceleration with respect to the joint velocity vector.
+  /// \tparam Matrix6xOut4 Matrix6x
   /// containing the partial derivatives of the spatial acceleration with respect to the joint
   /// acceleration vector.
   ///
@@ -152,8 +157,10 @@ namespace pinocchio
   /// \param[in] rf Reference frame in which the Jacobian is expressed.
   /// \param[out] v_partial_dq Partial derivative of the joint spatial velocity w.r.t. \f$ q \f$.
   /// \param[out] a_partial_dq Partial derivative of the joint spatial acceleration w.r.t. \f$ q
-  /// \f$. \param[out] a_partial_dq Partial derivative of the joint spatial acceleration w.r.t. \f$
-  /// v \f$. \param[out] a_partial_dq Partial derivative of the joint spatial acceleration w.r.t.
+  /// \f$.
+  /// \param[out] a_partial_dv Partial derivative of the joint spatial acceleration w.r.t. \f$
+  /// v \f$.
+  /// \param[out] a_partial_da Partial derivative of the joint spatial acceleration w.r.t.
   /// \f$ \dot{v} \f$.
   ///
   template<
@@ -183,10 +190,12 @@ namespace pinocchio
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam Matrix6xOut1 Matrix6x containing the partial derivatives of the spatial velocity with
-  /// respect to the joint configuration vector. \tparam Matrix6xOut2 Matrix6x containing the
-  /// partial derivatives of the spatial velocity with respect to the joint velocity vector. \tparam
-  /// Matrix6xOut3 Matrix6x containing the partial derivatives of the spatial acceleration with
-  /// respect to the joint configuration vector. \tparam Matrix6xOut4 Matrix6x containing the
+  /// respect to the joint configuration vector.
+  /// \tparam Matrix6xOut2 Matrix6x containing the
+  /// partial derivatives of the spatial velocity with respect to the joint velocity vector.
+  /// \tparam Matrix6xOut3 Matrix6x containing the partial derivatives of the spatial acceleration
+  /// with respect to the joint configuration vector.
+  /// \tparam Matrix6xOut4 Matrix6x containing the
   /// partial derivatives of the spatial acceleration with respect to the joint velocity vector.
   /// \tparam Matrix6xOut5 Matrix6x containing the partial derivatives of the spatial acceleration
   /// with respect to the joint acceleration vector.
@@ -198,8 +207,10 @@ namespace pinocchio
   /// \param[out] v_partial_dq Partial derivative of the joint spatial velocity w.r.t. \f$ q \f$.
   /// \param[out] v_partial_dv Partial derivative of the joint spatial velociy w.r.t. \f$ v \f$.
   /// \param[out] a_partial_dq Partial derivative of the joint spatial acceleration w.r.t. \f$ q
-  /// \f$. \param[out] a_partial_dq Partial derivative of the joint spatial acceleration w.r.t. \f$
-  /// v \f$. \param[out] a_partial_dq Partial derivative of the joint spatial acceleration w.r.t.
+  /// \f$.
+  /// \param[out] a_partial_dv Partial derivative of the joint spatial acceleration w.r.t. \f$
+  /// v \f$.
+  /// \param[out] a_partial_da Partial derivative of the joint spatial acceleration w.r.t.
   /// \f$ \dot{v} \f$.
   ///
   template<
@@ -229,16 +240,19 @@ namespace pinocchio
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam Matrix3xOut1 Matrix3x containing the partial derivatives of the spatial velocity with
-  /// respect to the joint configuration vector. \tparam Matrix3xOut2 Matrix3x containing the
-  /// partial derivatives of the spatial velocity with respect to the joint velocity vector.
+  /// respect to the joint configuration vector.
+  /// \tparam Matrix3xOut2 Matrix3x containing the partial derivatives of the spatial velocity with
+  /// respect to the joint velocity vector.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] joint_id Index of the joint in model.
   /// \param[in] placement Relative placement of the point w.r.t. the joint frame.
   /// \param[in] rf Reference frame in which the Jacobian is expressed (either LOCAL or
-  /// LOCAL_WORLD_ALIGNED). \param[out] v_point_partial_dq Partial derivative of the point velocity
-  /// w.r.t. \f$ q \f$. \param[out] v_point_partial_dv Partial derivative of the point velociy
+  /// LOCAL_WORLD_ALIGNED).
+  /// \param[out] v_point_partial_dq Partial derivative of the point velocity
+  /// w.r.t. \f$ q \f$.
+  /// \param[out] v_point_partial_dv Partial derivative of the point velociy
   /// w.r.t. \f$ v \f$.
   ///
   template<
@@ -266,23 +280,28 @@ namespace pinocchio
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam Matrix3xOut1 Matrix3x containing the partial derivatives of the spatial velocity with
-  /// respect to the joint configuration vector. \tparam Matrix3xOut2 Matrix3x containing the
+  /// respect to the joint configuration vector.
+  /// \tparam Matrix3xOut2 Matrix3x containing the
   /// partial derivatives of the spatial acceleration with respect to the joint configuration
-  /// vector. \tparam Matrix3xOut3 Matrix3x containing the partial derivatives of the spatial
-  /// acceleration with respect to the joint velocity vector. \tparam Matrix3xOut4 Matrix3x
-  /// containing the partial derivatives of the spatial acceleration with respect to the joint
-  /// acceleration vector.
+  /// vector.
+  /// \tparam Matrix3xOut3 Matrix3x containing the partial derivatives of the spatial
+  /// acceleration with respect to the joint velocity vector.
+  /// \tparam Matrix3xOut4 Matrix3x containing the partial derivatives of the spatial acceleration
+  /// with respect to the joint acceleration vector.
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] joint_id Index of the joint in model.
   /// \param[in] placement Relative placement of the point w.r.t. the joint frame.
   /// \param[in] rf Reference frame in which the Jacobian is expressed (either LOCAL or
-  /// LOCAL_WORLD_ALIGNED). \param[out] v_point_partial_dq Partial derivative of the point velocity
-  /// w.r.t. \f$ q \f$. \param[out] a_point_partial_dq Partial derivative of the point classic
-  /// acceleration w.r.t. \f$ q \f$. \param[out] a_point_partial_dv Partial derivative of the point
-  /// classic acceleration w.r.t. \f$ v \f$. \param[out] a_point_partial_da Partial derivative of
-  /// the point classic acceleration w.r.t. \f$ \dot{v} \f$.
+  /// LOCAL_WORLD_ALIGNED).
+  /// \param[out] v_point_partial_dq Partial derivative of the point velocity w.r.t. \f$ q \f$.
+  /// \param[out] a_point_partial_dq Partial derivative of the point classic acceleration w.r.t. \f$
+  /// q \f$.
+  /// \param[out] a_point_partial_dv Partial derivative of the point classic acceleration w.r.t. \f$
+  /// v \f$.
+  /// \param[out] a_point_partial_da Partial derivative of the point classic acceleration w.r.t. \f$
+  /// \dot{v} \f$.
   ///
   template<
     typename Scalar,
@@ -312,11 +331,13 @@ namespace pinocchio
   ///
   /// \tparam JointCollection Collection of Joint types.
   /// \tparam Matrix3xOut1 Matrix3x containing the partial derivatives of the spatial velocity with
-  /// respect to the joint configuration vector. \tparam Matrix3xOut2 Matrix3x containing the
-  /// partial derivatives of the spatial velocity with respect to the joint velocity vector. \tparam
-  /// Matrix3xOut3 Matrix3x containing the partial derivatives of the spatial acceleration with
-  /// respect to the joint configuration vector. \tparam Matrix3xOut4 Matrix3x containing the
-  /// partial derivatives of the spatial acceleration with respect to the joint velocity vector.
+  /// respect to the joint configuration vector.
+  /// \tparam Matrix3xOut2 Matrix3x containing the
+  /// partial derivatives of the spatial velocity with respect to the joint velocity vector.
+  /// \tparam Matrix3xOut3 Matrix3x containing the partial derivatives of the spatial acceleration
+  /// with respect to the joint configuration vector.
+  /// \tparam Matrix3xOut4 Matrix3x containing the partial derivatives of the spatial acceleration
+  /// with respect to the joint velocity vector.
   /// \tparam Matrix3xOut5 Matrix3x containing the partial derivatives of the spatial acceleration
   /// with respect to the joint acceleration vector.
   ///
@@ -325,12 +346,15 @@ namespace pinocchio
   /// \param[in] joint_id Index of the joint in model.
   /// \param[in] placement Relative placement of the point w.r.t. the joint frame.
   /// \param[in] rf Reference frame in which the Jacobian is expressed (either LOCAL or
-  /// LOCAL_WORLD_ALIGNED). \param[out] v_point_partial_dq Partial derivative of the point velocity
-  /// w.r.t. \f$ q \f$. \param[out] v_point_partial_dv Partial derivative of the point velociy
-  /// w.r.t. \f$ v \f$. \param[out] a_point_partial_dq Partial derivative of the point classic
-  /// acceleration w.r.t. \f$ q \f$. \param[out] a_point_partial_dv Partial derivative of the point
-  /// classic acceleration w.r.t. \f$ v \f$. \param[out] a_point_partial_da Partial derivative of
-  /// the point classic acceleration w.r.t. \f$ \dot{v} \f$.
+  /// LOCAL_WORLD_ALIGNED).
+  /// \param[out] v_point_partial_dq Partial derivative of the point velocity w.r.t. \f$ q \f$.
+  /// \param[out] v_point_partial_dv Partial derivative of the point velociy w.r.t. \f$ v \f$.
+  /// \param[out] a_point_partial_dq Partial derivative of the point classic acceleration w.r.t. \f$
+  /// q \f$.
+  /// \param[out] a_point_partial_dv Partial derivative of the point classic acceleration w.r.t. \f$
+  /// v \f$.
+  /// \param[out] a_point_partial_da Partial derivative of the point classic acceleration w.r.t. \f$
+  /// \dot{v} \f$.
   ///
   template<
     typename Scalar,
@@ -421,7 +445,8 @@ namespace pinocchio
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] joint_id Index of the joint in model.
   /// \param[in] rf Reference frame with respect to which the derivative of the Jacobian is
-  /// expressed \param[out] kinematic_hessian Second order derivative of the joint placement w.r.t.
+  /// expressed
+  /// \param[out] kinematic_hessian Second order derivative of the joint placement w.r.t.
   /// \f$ q \f$ expressed in the frame given by rf.
   ///
   /// \remarks This function is also related to \see computeJointKinematicHessians.
@@ -455,7 +480,8 @@ namespace pinocchio
   /// \param[in] joint_id Index of the joint in model.
   /// \param[in] frame_placement   frame placement with respect to the parent joint
   /// \param[in] rf Reference frame with respect to which the derivative of the Jacobian is
-  /// expressed \param[out] kinematic_hessian Second order derivative of the joint placement w.r.t.
+  /// expressed
+  /// \param[out] kinematic_hessian Second order derivative of the joint placement w.r.t.
   /// \f$ q \f$ expressed in the frame given by rf.
   ///
   /// \remarks This function is also related to \see computeJointKinematicHessians.
@@ -489,7 +515,8 @@ namespace pinocchio
   /// \param[in] data The data structure of the rigid body system.
   /// \param[in] frame_id Index of the frame in model.
   /// \param[in] rf Reference frame with respect to which the derivative of the Jacobian is
-  /// expressed \param[out] kinematic_hessian Second order derivative of the joint placement w.r.t.
+  /// expressed
+  /// \param[out] kinematic_hessian Second order derivative of the joint placement w.r.t.
   /// \f$ q \f$ expressed in the frame given by rf.
   ///
   /// \remarks This function is also related to \see computeJointKinematicHessians.
@@ -573,7 +600,8 @@ namespace pinocchio
   /// \param[in] joint_id Index of the joint in model.
   /// \param[in] frame_placement   frame placement with respect to the parent joint
   /// \param[in] rf Reference frame with respect to which the derivative of the Jacobian is
-  /// expressed \param[out] kinematic_hessian Second order derivative of the joint placement w.r.t.
+  /// expressed
+  /// \returns kinematic_hessian Second order derivative of the joint placement w.r.t.
   /// \f$ q \f$ expressed in the frame given by rf.
   ///
   /// \remarks This function is also related to \see computeJointKinematicHessians. This function
@@ -612,10 +640,10 @@ namespace pinocchio
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
-  /// \param[in] joint_id Index of the joint in model.
-  /// \param[in] frame_placement   frame placement with respect to the parent joint
+  /// \param[in] frame_id Index of the frame in model.
   /// \param[in] rf Reference frame with respect to which the derivative of the Jacobian is
-  /// expressed \param[out] kinematic_hessian Second order derivative of the joint placement w.r.t.
+  /// expressed
+  /// \returns Second order derivative of the joint placement w.r.t.
   /// \f$ q \f$ expressed in the frame given by rf.
   ///
   /// \remarks This function is also related to \see computeJointKinematicHessians. This function

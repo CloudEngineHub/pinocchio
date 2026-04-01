@@ -31,7 +31,6 @@ namespace pinocchio
    *
    * \cheatsheet \f$ {}^aM_c = {}^aM_b {}^bM_c \f$
    *
-   * \ingroup pinocchio_spatial
    */
   template<class Derived>
   struct SE3Base : NumericalBase<Derived>

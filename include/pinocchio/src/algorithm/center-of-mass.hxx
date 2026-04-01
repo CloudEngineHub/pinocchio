@@ -11,8 +11,6 @@
   #include "pinocchio/algorithm/center-of-mass.hpp"
 #endif // PINOCCHIO_LSP
 
-/// @cond DEV
-
 namespace pinocchio
 {
   template<typename Scalar, int Options, template<typename, int> class JointCollectionTpl>
@@ -786,4 +784,3 @@ namespace pinocchio
 
 } // namespace pinocchio
 #endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-/// @endcond

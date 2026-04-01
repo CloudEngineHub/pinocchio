@@ -40,7 +40,7 @@ namespace pinocchio
   ///
   /// \param[in] model The model structure of the rigid body system.
   /// \param[in] data The data structure of the rigid body system.
-  /// \param[out] v_partial_dq Partial derivative of the CoM velocity w.r.t. \f$ q \f$.
+  /// \param[out] vcom_partial_dq Partial derivative of the CoM velocity w.r.t. \f$ q \f$.
   ///
   template<
     typename Scalar,

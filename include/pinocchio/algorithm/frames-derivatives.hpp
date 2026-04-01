@@ -138,9 +138,9 @@ namespace pinocchio
    * @param[out] v_partial_dq    Partial derivative of the frame spatial velocity w.r.t. \f$ q \f$.
    * @param[out] a_partial_dq    Partial derivative of the frame spatial acceleration w.r.t. \f$ q
    * \f$.
-   * @param[out] a_partial_dq    Partial derivative of the frame spatial acceleration w.r.t. \f$ v
+   * @param[out] a_partial_dv    Partial derivative of the frame spatial acceleration w.r.t. \f$ v
    * \f$.
-   * @param[out] a_partial_dq    Partial derivative of the frame spatial acceleration w.r.t. \f$
+   * @param[out] a_partial_da    Partial derivative of the frame spatial acceleration w.r.t. \f$
    * \dot{v} \f$.
    *
    */
@@ -185,8 +185,8 @@ namespace pinocchio
    * @param[in]  rf          Reference frame in which the velocity is expressed.
    * @param[out] v_partial_dq Partial derivative of the frame spatial velocity w.r.t. \f$ q \f$.
    * @param[out] a_partial_dq Partial derivative of the frame spatial acceleration w.r.t. \f$ q \f$.
-   * @param[out] a_partial_dq Partial derivative of the frame spatial acceleration w.r.t. \f$ v \f$.
-   * @param[out] a_partial_dq Partial derivative of the frame spatial acceleration w.r.t. \f$
+   * @param[out] a_partial_dv Partial derivative of the frame spatial acceleration w.r.t. \f$ v \f$.
+   * @param[out] a_partial_da Partial derivative of the frame spatial acceleration w.r.t. \f$
    * \dot{v} \f$.
    *
    */
@@ -251,9 +251,9 @@ namespace pinocchio
    * @param[out] v_partial_dv   Partial derivative of the frame spatial velociy w.r.t. \f$ v \f$.
    * @param[out] a_partial_dq   Partial derivative of the frame spatial acceleration w.r.t. \f$ q
    * \f$.
-   * @param[out] a_partial_dq   Partial derivative of the frame spatial acceleration w.r.t. \f$ v
+   * @param[out] a_partial_dv   Partial derivative of the frame spatial acceleration w.r.t. \f$ v
    * \f$.
-   * @param[out] a_partial_dq   Partial derivative of the frame spatial acceleration w.r.t. \f$
+   * @param[out] a_partial_da   Partial derivative of the frame spatial acceleration w.r.t. \f$
    * \dot{v} \f$.
    *
    */
@@ -312,8 +312,8 @@ namespace pinocchio
    * @param[out] v_partial_dq Partial derivative of the frame spatial velocity w.r.t. \f$ q \f$.
    * @param[out] v_partial_dv Partial derivative of the frame spatial velociy w.r.t. \f$ v \f$.
    * @param[out] a_partial_dq Partial derivative of the frame spatial acceleration w.r.t. \f$ q \f$.
-   * @param[out] a_partial_dq Partial derivative of the frame spatial acceleration w.r.t. \f$ v \f$.
-   * @param[out] a_partial_dq Partial derivative of the frame spatial acceleration w.r.t. \f$
+   * @param[out] a_partial_dv Partial derivative of the frame spatial acceleration w.r.t. \f$ v \f$.
+   * @param[out] a_partial_da Partial derivative of the frame spatial acceleration w.r.t. \f$
    * \dot{v} \f$.
    *
    */

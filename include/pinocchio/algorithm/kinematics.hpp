@@ -123,10 +123,10 @@ namespace pinocchio
    * structure. LOCAL convention should only be used when aba and crba algorithms are called in
    * LOCAL convention as well.
    *
-   * @param[in] model      The kinematic model
-   * @param[in] data       Data associated to model
-   * @param[in] jointId    Id of the reference joint
-   * @param[in] jointId    Id of the target joint
+   * @param[in] model         The kinematic model
+   * @param[in] data          Data associated to model
+   * @param[in] jointIdRef    Id of the reference joint
+   * @param[in] jointIdTarget Id of the target joint
    * @param[in] convention Convention to use (computation is done using data.liMi if LOCAL, and
    * data.oMi if WORLD).
    *

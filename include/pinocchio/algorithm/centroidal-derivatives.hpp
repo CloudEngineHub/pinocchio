@@ -60,8 +60,8 @@ namespace pinocchio
   /// (dim 6 x model.nv). \param[out] dhdot_da The partial derivative of the centroidal dynamics
   /// with respect to the acceleration vector (dim 6 x model.nv).
   ///
-  /// \result It also computes the current centroidal dynamics and its time derivative.
-  ///         For information, the centroidal momentum matrix is equivalent to dhdot_da.
+  /// \note It also computes the current centroidal dynamics and its time derivative.
+  ///       For information, the centroidal momentum matrix is equivalent to dhdot_da.
   ///
   template<
     typename Scalar,
@@ -106,8 +106,8 @@ namespace pinocchio
   /// velocity vector (dim 6 x model.nv). \param[out] dhdot_da The partial derivative of the
   /// centroidal dynamics with respect to the acceleration vector (dim 6 x model.nv).
   ///
-  /// \result It also computes the current centroidal dynamics and its time derivative.
-  ///         For information, the centroidal momentum matrix is equivalent to dhdot_da.
+  /// \note It also computes the current centroidal dynamics and its time derivative.
+  ///       For information, the centroidal momentum matrix is equivalent to dhdot_da.
   ///
   template<
     typename Scalar,

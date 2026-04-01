@@ -58,9 +58,8 @@ namespace pinocchio
   /// \param[in] v_before The joint velocity (size model.nv).
   /// \param[in] contact_models Vector of contact information related to the problem.
   /// \param[in] contact_datas Vector of contact datas related to the contact models.
-  /// \param[in] r_coeff coefficient of restitution: must be in [0.,1.]
-  /// \param[in] mu Damping factor for cholesky decomposition. Set to zero if constraints are full
-  /// rank.
+  /// \param[in] r_coeff coefficient of restitution: must be in [0.,1.].
+  /// \param[in] settings Proximal solver settings.
   ///
   /// \note A hint: a typical value for mu is 1e-12 when two contact constraints are redundant.
   ///

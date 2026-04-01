@@ -98,7 +98,6 @@ namespace pinocchio
       return m_is_valid;
     }
 
-    /// \brief \copydoc Base::solve
     template<
       typename DelassusDerived,
       typename VectorLike,
@@ -114,7 +113,6 @@ namespace pinocchio
       const PGSSolverSettings & settings,
       PGSSolverResult & result);
 
-    /// \brief \copydoc Base::reset
     void resetImpl()
     {
       stats.reset();
@@ -177,7 +175,6 @@ namespace pinocchio
     {
     }
 
-    /// \brief \copydoc Base::checkValidity
     void checkValidityImpl() const
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
@@ -253,13 +250,11 @@ namespace pinocchio
     {
     }
 
-    /// \brief \copydoc Base::constraintSize
     int constraintSizeImpl() const
     {
       return static_cast<int>(problem_size);
     }
 
-    /// \brief \copydoc Base::reset
     void resetImpl()
     {
       impulse_guess.reset();
@@ -295,33 +290,28 @@ namespace pinocchio
       dual_solution = y;
     }
 
-    /// \brief \copydoc Base::setConstraintImpulseGuess
     template<typename VectorLike>
     void setConstraintImpulseGuessImpl(const Eigen::MatrixBase<VectorLike> & impulse_guess_)
     {
       impulse_guess.emplace(impulse_guess_);
     }
 
-    /// \brief \copydoc Base::clearConstraintImpulseGuess
     void clearConstraintImpulseGuessImpl()
     {
       impulse_guess.reset();
     }
 
-    /// \brief \copydoc Base::setConstraintVelocityGuess
     template<typename VectorLike>
     void setConstraintVelocityGuessImpl(const Eigen::MatrixBase<VectorLike> & /*velocity_guess_*/)
     {
       // do nothing, no velocity guess for PGS
     }
 
-    /// \brief \copydoc Base::clearConstraintVelocityGuess
     void clearConstraintVelocityGuessImpl()
     {
       // do nothing, no velocity guess for PGS
     }
 
-    /// \brief \copydoc Base::retrieveConstraintImpulses
     template<typename VectorLike>
     void
     retrieveConstraintImpulsesImpl(const Eigen::MatrixBase<VectorLike> & constraint_impulses_) const
@@ -330,7 +320,6 @@ namespace pinocchio
       constraint_impulses = x;
     }
 
-    /// \brief \copydoc Base::retrieveConstraintVelocities
     /// At the optimum we have y = Gx + g.
     /// WARNING: the PGS solver does not take into account desaxce terms for now.
     /// It only solves the CCP (not the NCP).
@@ -410,13 +399,11 @@ namespace pinocchio
       reserve(max_iterations);
     }
 
-    /// \brief \copydoc Base::reserve
     void reserveImpl(std::size_t /*max_iterations*/)
     {
       // No extra fields to reserve for PGS stats.
     }
 
-    /// \brief \copydoc Base::reset
     void resetImpl()
     {
       // No extra fields to reset for PGS stats.

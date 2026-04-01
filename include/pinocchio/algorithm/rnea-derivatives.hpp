@@ -213,7 +213,7 @@ namespace pinocchio
   /// \param[in] v The joint velocity vector (dim model.nv).
   /// \param[in] a The joint acceleration vector (dim model.nv).
   ///
-  /// \returns The results are stored in data.dtau_dq, data.dtau_dv and data.M which respectively
+  /// \note The results are stored in data.dtau_dq, data.dtau_dv and data.M which respectively
   /// correspond
   ///          to the partial derivatives of the joint torque vector with respect to the joint
   ///          configuration, velocity and acceleration. As for pinocchio::crba, only the upper
@@ -252,7 +252,7 @@ namespace pinocchio
   /// \param[in] fext External forces expressed in the local frame of the joints (dim
   /// model.njoints).
   ///
-  /// \returns The results are stored in data.dtau_dq, data.dtau_dv and data.M which respectively
+  /// \note The results are stored in data.dtau_dq, data.dtau_dv and data.M which respectively
   /// correspond
   ///          to the partial derivatives of the joint torque vector with respect to the joint
   ///          configuration, velocity and acceleration. As for pinocchio::crba, only the upper

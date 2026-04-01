@@ -17,11 +17,6 @@ namespace pinocchio
   inline constexpr int MAX_JOINT_NV = 6;
   /// \endinternal
 
-  /**
-   * \addtogroup pinocchio_joint
-   * @{
-   */
-
   ///
   /// \brief Generate the label (X, Y or Z) of the axis relative to its index.
   ///
@@ -210,8 +205,4 @@ namespace pinocchio
   struct JointDataTpl;
   typedef JointDataTpl<context::Scalar> JointData;
 
-  /**
-   * @}
-   */
-  // end of group joint
 } // namespace pinocchio

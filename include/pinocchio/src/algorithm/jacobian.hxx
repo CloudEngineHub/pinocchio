@@ -11,8 +11,6 @@
   #include "pinocchio/algorithm/jacobian.hpp"
 #endif // PINOCCHIO_LSP
 
-/// @cond DEV
-
 namespace pinocchio
 {
   namespace impl
@@ -1007,4 +1005,3 @@ namespace pinocchio
   } // namespace impl
 } // namespace pinocchio
 #endif // ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
-/// @endcond

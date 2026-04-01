@@ -84,8 +84,8 @@ namespace pinocchio
   ///
   /// \brief Compute the minimal distance between collision objects of a *SINGLE* collison pair
   ///
-  /// \param[in] GeomModel the geometry model (const)
-  /// \param[out] GeomData the corresponding geometry data, where computations are done.
+  /// \param[in] geom_model the geometry model (const)
+  /// \param[out] geom_data the corresponding geometry data, where computations are done.
   /// \param[in] pair_id The index of the collision pair in geom model.
   ///
   /// \return A reference on coal struct containing the distance result, referring an element
@@ -98,8 +98,8 @@ namespace pinocchio
   ///
   /// \brief Compute the minimal distance between collision objects of a *ALL* collison pair
   ///
-  /// \param[in] GeomModel the geometry model (const)
-  /// \param[out] GeomData the corresponding geometry data, where computations are done.
+  /// \param[in] geom_model the geometry model (const)
+  /// \param[out] geom_data the corresponding geometry data, where computations are done.
   /// \return Index of the minimal pair distance in geom_data.DistanceResult
   ///
   /// \note The complete distance result is available by pair in geom_data.distanceResults

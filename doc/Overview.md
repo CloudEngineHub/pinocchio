@@ -1,4 +1,4 @@
-# Overview {#index}
+# Overview {#mainpage}
 <!--
 //
 // Copyright (c) 2016, 2018 CNRS
