@@ -458,7 +458,6 @@ set(${PROJECT_NAME}_CORE_DEPRECATED_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/symmetric3.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/serialization/joints-data.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/classic-acceleration.hpp
-    ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/serialization/eigen.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/spatial-axis.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/spatial/explog.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/deprecated/pinocchio/algorithm/contact-cholesky.hpp
