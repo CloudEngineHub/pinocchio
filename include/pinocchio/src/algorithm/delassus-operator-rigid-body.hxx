@@ -193,6 +193,33 @@ namespace pinocchio
       rebuild(model_ref, data_ref, constraint_models_ref, constraint_datas_ref);
     }
 
+    DelassusOperatorRigidBodySystemsTpl(const DelassusOperatorRigidBodySystemsTpl & other)
+    : DelassusOperatorRigidBodySystemsTpl(
+        other.m_model_ref,
+        other.m_data_ref,
+        other.m_constraint_models_ref,
+        other.m_constraint_datas_ref,
+        other.m_min_damping_value)
+    {
+      m_internal_data = other.m_internal_data;
+      m_solve_in_place_dirty = other.m_solve_in_place_dirty;
+      m_damping = other.m_damping;
+      m_compliance_storage = other.m_compliance_storage;
+      m_sum_compliance_damping = other.m_sum_compliance_damping;
+      m_sum_compliance_damping_inverse = other.m_sum_compliance_damping_inverse;
+    }
+
+    DelassusOperatorRigidBodySystemsTpl &
+    operator=(const DelassusOperatorRigidBodySystemsTpl & other)
+    {
+      if (this != &other)
+      {
+        this->~DelassusOperatorRigidBodySystemsTpl();
+        new (this) DelassusOperatorRigidBodySystemsTpl(other);
+      }
+      return *this;
+    }
+
     /// \brief Update the constraint model and data vectors, and resize the internal quantities.
     ///
     /// \param[in] constraint_models_ref Vector of constraint models
@@ -450,6 +477,32 @@ namespace pinocchio
       , f(std::size_t(model.njoints))
       , of_augmented(std::size_t(model.njoints))
       {
+      }
+
+      InternalData(const InternalData & other)
+      : a(other.a)
+      , oa_augmented(other.oa_augmented)
+      , u_storage(other.u_storage)
+      , u(u_storage.map())
+      , ddq_storage(other.ddq_storage)
+      , ddq(ddq_storage.map())
+      , f(other.f)
+      , of_augmented(other.of_augmented)
+      {
+      }
+
+      InternalData & operator=(const InternalData & other)
+      {
+        if (this != &other)
+        {
+          a = other.a;
+          oa_augmented = other.oa_augmented;
+          u_storage = other.u_storage;
+          ddq_storage = other.ddq_storage;
+          f = other.f;
+          of_augmented = other.of_augmented;
+        }
+        return *this;
       }
 
       /// \brief Rebuild from a given model.

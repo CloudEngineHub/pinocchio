@@ -104,6 +104,28 @@ namespace pinocchio
     {
     }
 
+    DelassusOperatorDenseTpl(const DelassusOperatorDenseTpl & other)
+    : DelassusOperatorDenseTpl()
+    {
+      *this = other;
+    }
+
+    DelassusOperatorDenseTpl & operator=(const DelassusOperatorDenseTpl & other)
+    {
+      if (this != &other)
+      {
+        Base::operator=(other);
+        m_delassus_matrix_storage = other.m_delassus_matrix_storage;
+        m_cholesky_decomposition_data_storage = other.m_cholesky_decomposition_data_storage;
+        m_cholesky_decomposition.~CholeskyDecomposition();
+        new (&m_cholesky_decomposition) CholeskyDecomposition(m_cholesky_decomposition_data);
+        m_cholesky_decomposition_dirty = other.m_cholesky_decomposition_dirty;
+        m_damping = other.m_damping;
+        m_compliance_storage = other.m_compliance_storage;
+      }
+      return *this;
+    }
+
     /// \brief Constructor from a given matrix.
     /// \note The constructor does not compute the cholesky decomposition of the delassus.
     template<typename MatrixDerived>

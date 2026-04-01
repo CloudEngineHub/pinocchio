@@ -193,4 +193,40 @@ BOOST_AUTO_TEST_CASE(delassus_unsafe)
   BOOST_CHECK(delassus.getDamping().diagonal() == damping);
 }
 
+BOOST_AUTO_TEST_CASE(test_copy)
+{
+  const Eigen::Index mat_size = 10;
+  const Eigen::MatrixXd mat_ = Eigen::MatrixXd::Random(mat_size, mat_size);
+  const Eigen::MatrixXd symmetric_mat = mat_.transpose() * mat_;
+  const Eigen::VectorXd compliance = Eigen::VectorXd::LinSpaced(mat_size, 1e-4, 1e-3);
+
+  DelassusOperatorDense delassus(symmetric_mat);
+  delassus.updateCompliance(compliance);
+  const Eigen::MatrixXd expected_matrix = delassus.matrix();
+  const Eigen::VectorXd expected_compliance = delassus.getCompliance();
+
+  // copy constructor: values match
+  DelassusOperatorDense delassus_copy(delassus);
+  BOOST_CHECK(delassus_copy.matrix().isApprox(expected_matrix));
+  BOOST_CHECK(delassus_copy.getCompliance().isApprox(expected_compliance));
+
+  // copy constructor: independence — modifying original does not affect copy
+  const Eigen::MatrixXd new_mat_ = Eigen::MatrixXd::Random(mat_size, mat_size);
+  const Eigen::MatrixXd new_symmetric_mat = new_mat_.transpose() * new_mat_;
+  delassus.rebuild(new_symmetric_mat);
+  delassus.updateCompliance(Eigen::VectorXd::Zero(mat_size));
+  BOOST_CHECK(delassus_copy.matrix().isApprox(expected_matrix));
+  BOOST_CHECK(delassus_copy.getCompliance().isApprox(expected_compliance));
+
+  // copy assignment: values match
+  DelassusOperatorDense delassus_assigned;
+  delassus_assigned = delassus;
+  BOOST_CHECK(delassus_assigned.matrix().isApprox(delassus.matrix()));
+  BOOST_CHECK(delassus_assigned.getCompliance().isApprox(delassus.getCompliance()));
+
+  // copy assignment: independence
+  delassus.updateCompliance(compliance);
+  BOOST_CHECK(!delassus_assigned.getCompliance().isApprox(compliance));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
