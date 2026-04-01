@@ -85,6 +85,7 @@ set(${PROJECT_NAME}_CORE_PUBLIC_HEADERS
     ${PROJECT_SOURCE_DIR}/include/pinocchio/multibody.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/archive.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/fwd.hpp
+    ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/eigen.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization/serializable.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/serialization.hpp
     ${PROJECT_SOURCE_DIR}/include/pinocchio/spatial/fwd.hpp
