@@ -98,7 +98,9 @@ def check_joint(model, nj):
 q = q0.copy()
 
 pinocchio.computeAllTerms(robot.model, robot.data, q, np.zeros(robot.model.nv))
-kkt_constraint = pinocchio.ContactCholeskyDecomposition(robot.model, constraint_models)
+kkt_constraint = pinocchio.ConstraintCholeskyDecomposition(
+    robot.model, constraint_models
+)
 constraint_size = sum([cm.size() for cm in constraint_models])
 N = 1000
 eps = 1e-6

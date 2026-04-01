@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(test_delassus_cube)
   auto constraint_datas = createData(constraint_models);
   calc(model, data, constraint_models, constraint_datas);
 
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix(true);
@@ -237,7 +237,7 @@ BOOST_AUTO_TEST_CASE(test_delassus_cube)
   typedef DiagonalPreconditionerTpl<Eigen::VectorXd> Preconditionner;
   Preconditionner diag_preconditioner(mean_inertia);
   DelassusOperatorPreconditionedTpl<
-    DelassusCholeskyExpressionTpl<ContactCholeskyDecomposition>, Preconditionner>
+    DelassusCholeskyExpressionTpl<ConstraintCholeskyDecomposition>, Preconditionner>
     delassus_preconditioned(G_expression, diag_preconditioner);
 
   const Eigen::MatrixXd delassus_preconditioned_matrix_plain = delassus_preconditioned.matrix(true);
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE(test_delassus_light_cube)
   auto constraint_datas = createData(constraint_models);
 
   calc(model, data, constraint_models, constraint_datas);
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix(true);

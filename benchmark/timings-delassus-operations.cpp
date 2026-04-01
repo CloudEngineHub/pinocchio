@@ -37,7 +37,7 @@ struct DelassusFixture : ModelFixture
     contact_data_6D6D.push_back(pinocchio::RigidConstraintData(*ci_RF_6D));
     contact_data_6D6D.push_back(pinocchio::RigidConstraintData(*ci_LF_6D));
 
-    contact_chol_6D6D = pinocchio::ContactCholeskyDecomposition(model, data);
+    contact_chol_6D6D = pinocchio::ConstraintCholeskyDecomposition(model, data);
 
     prox_settings.max_iter = 10;
     prox_settings.mu = 1e8;
@@ -59,7 +59,7 @@ struct DelassusFixture : ModelFixture
   std::vector<pinocchio::RigidConstraintModel> contact_models_6D6D;
   std::vector<pinocchio::RigidConstraintData> contact_data_6D6D;
 
-  pinocchio::ContactCholeskyDecomposition contact_chol_6D6D;
+  pinocchio::ConstraintCholeskyDecomposition contact_chol_6D6D;
 
   pinocchio::ProximalSettings prox_settings;
 
@@ -76,7 +76,7 @@ static void CustomArguments(benchmark::internal::Benchmark * b)
 // CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE
 
 PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionComputeCall(
-  pinocchio::ContactCholeskyDecomposition & contact,
+  pinocchio::ConstraintCholeskyDecomposition & contact,
   const pinocchio::Model & model,
   pinocchio::Data & data,
   const std::vector<pinocchio::RigidConstraintModel> & contact_models_6D6D,
@@ -101,7 +101,7 @@ BENCHMARK_REGISTER_F(DelassusFixture, CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE)
 // CONTACT_CHOLESKY_DECOMPOSITION_INVERSE
 
 PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionInverseCall(
-  pinocchio::ContactCholeskyDecomposition & contact, Eigen::MatrixXd & H_inverse)
+  pinocchio::ConstraintCholeskyDecomposition & contact, Eigen::MatrixXd & H_inverse)
 {
   contact.inverse(H_inverse);
 }
@@ -123,7 +123,7 @@ BENCHMARK_REGISTER_F(DelassusFixture, CONTACT_CHOLESKY_DECOMPOSITION_INVERSE)
 // CONTACT_CHOLESKY_DECOMPOSITION_UPDATE_DAMPING
 
 PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionUpdateDampingCall(
-  pinocchio::ContactCholeskyDecomposition & contact, double damping)
+  pinocchio::ConstraintCholeskyDecomposition & contact, double damping)
 {
   contact.getDelassusCholeskyExpression().updateDamping(damping);
 }
@@ -145,7 +145,7 @@ BENCHMARK_REGISTER_F(DelassusFixture, CONTACT_CHOLESKY_DECOMPOSITION_UPDATE_DAMP
 // CONTACT_CHOLESKY_DECOMPOSITION_SOLVE_IN_PLACE
 
 PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionSolveInPlaceCall(
-  pinocchio::ContactCholeskyDecomposition & contact, const Eigen::VectorXd & rhs_vector)
+  pinocchio::ConstraintCholeskyDecomposition & contact, const Eigen::VectorXd & rhs_vector)
 {
   contact.getDelassusCholeskyExpression().solveInPlace(rhs_vector);
 }

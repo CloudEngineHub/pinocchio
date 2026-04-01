@@ -32,7 +32,7 @@ struct ContactFixture : ModelFixture
     pinocchio::FrameAnchorConstraintModel fa_RF_6D(model, RF_id, pinocchio::SE3::Random());
     pinocchio::FrameAnchorConstraintModel fa_LF_6D(model, LF_id, pinocchio::SE3::Random());
 
-    contact_chol_empty = pinocchio::ContactCholeskyDecomposition(model, data);
+    contact_chol_empty = pinocchio::ConstraintCholeskyDecomposition(model, data);
 
     contact_models_6D.clear();
     contact_models_6D.push_back(*ci_RF_6D);
@@ -41,7 +41,7 @@ struct ContactFixture : ModelFixture
     contact_datas_6D.push_back(pinocchio::RigidConstraintData(*ci_RF_6D));
 
     contact_chol_6D =
-      pinocchio::ContactCholeskyDecomposition(model, data, contact_models_6D, contact_datas_6D);
+      pinocchio::ConstraintCholeskyDecomposition(model, data, contact_models_6D, contact_datas_6D);
 
     contact_models_6D6D.clear();
     contact_models_6D6D.push_back(*ci_RF_6D);
@@ -51,8 +51,8 @@ struct ContactFixture : ModelFixture
     contact_datas_6D6D.push_back(pinocchio::RigidConstraintData(*ci_RF_6D));
     contact_datas_6D6D.push_back(pinocchio::RigidConstraintData(*ci_LF_6D));
 
-    contact_chol_6D6D =
-      pinocchio::ContactCholeskyDecomposition(model, data, contact_models_6D6D, contact_datas_6D6D);
+    contact_chol_6D6D = pinocchio::ConstraintCholeskyDecomposition(
+      model, data, contact_models_6D6D, contact_datas_6D6D);
 
     frame_anchor_models_6D.clear();
     frame_anchor_models_6D.push_back(fa_RF_6D);
@@ -99,9 +99,9 @@ struct ContactFixture : ModelFixture
   std::vector<pinocchio::FrameAnchorConstraintModel> frame_anchor_models_6D6D;
   std::vector<pinocchio::FrameAnchorConstraintData> frame_anchor_datas_6D6D;
 
-  pinocchio::ContactCholeskyDecomposition contact_chol_empty;
-  pinocchio::ContactCholeskyDecomposition contact_chol_6D;
-  pinocchio::ContactCholeskyDecomposition contact_chol_6D6D;
+  pinocchio::ConstraintCholeskyDecomposition contact_chol_empty;
+  pinocchio::ConstraintCholeskyDecomposition contact_chol_6D;
+  pinocchio::ConstraintCholeskyDecomposition contact_chol_6D6D;
 
   pinocchio::ProximalSettings prox_settings;
 
@@ -227,7 +227,7 @@ BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINED_ABA_EMPTY)->Apply(CustomArgumen
 // CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_EMPTY
 
 PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionComputeCall(
-  pinocchio::ContactCholeskyDecomposition & contact,
+  pinocchio::ConstraintCholeskyDecomposition & contact,
   const pinocchio::Model & model,
   pinocchio::Data & data,
   const std::vector<pinocchio::RigidConstraintModel> & contact_models,
@@ -252,7 +252,7 @@ BENCHMARK_REGISTER_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_EMPT
 // CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_EMPTY
 
 PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionInverseCall(
-  pinocchio::ContactCholeskyDecomposition & contact, Eigen::MatrixXd & H_inverse)
+  pinocchio::ConstraintCholeskyDecomposition & contact, Eigen::MatrixXd & H_inverse)
 {
   contact.inverse(H_inverse);
 }

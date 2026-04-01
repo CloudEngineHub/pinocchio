@@ -110,7 +110,7 @@ q = q0.copy()
 
 y = np.ones(constraint_size)
 data.M = np.eye(model.nv) * rho
-kkt_constraint = pin.ContactCholeskyDecomposition(
+kkt_constraint = pin.ConstraintCholeskyDecomposition(
     model, data, [constraint_model], [constraint_data]
 )
 eps = 1e-10

@@ -54,7 +54,7 @@ namespace pinocchio
     typedef RigidConstraintDataTpl<Scalar, Options> RigidConstraintData;
 
     typename Data::TangentVectorType & dq_after = data.dq_after;
-    typename Data::ContactCholeskyDecomposition & contact_chol = data.contact_chol;
+    typename Data::ConstraintCholeskyDecomposition & contact_chol = data.contact_chol;
     typename Data::VectorXs & primal_dual_contact_solution = data.primal_dual_contact_solution;
 
     data.oYcrb[0].setZero();

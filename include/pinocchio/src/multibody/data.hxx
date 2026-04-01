@@ -88,7 +88,7 @@ namespace pinocchio
 
     typedef MatrixStackTpl<MatrixXs> DynamicMatrixStack;
 
-    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
+    typedef ConstraintCholeskyDecompositionTpl<Scalar, Options> ConstraintCholeskyDecomposition;
 
     /// \brief Vector of pinocchio::JointData associated to the pinocchio::JointModel stored in
     /// model
@@ -538,7 +538,7 @@ namespace pinocchio
 #endif
 
     /// \brief Cholesky decomposition of the KKT contact matrix
-    ContactCholeskyDecomposition contact_chol;
+    ConstraintCholeskyDecomposition contact_chol;
 
     /// \brief RHS vector when solving the contact dynamics KKT problem
     VectorXs primal_dual_contact_solution;

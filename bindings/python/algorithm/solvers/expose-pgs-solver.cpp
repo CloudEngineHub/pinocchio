@@ -30,7 +30,7 @@ namespace pinocchio
     typedef typename PGSSolver::PGSSolverResult PGSSolverResult;
     typedef typename PGSSolver::PGSSolverStats PGSSolverStats;
 
-    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
+    typedef ConstraintCholeskyDecompositionTpl<Scalar, Options> ConstraintCholeskyDecomposition;
 
     // ============================================================================
     // Expose PGSSolverSettings
@@ -168,7 +168,7 @@ namespace pinocchio
           .def(
             "solve",
             solve_pgs_wrapper<
-              ContactCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
+              ConstraintCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
               ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
             bp::args(
               "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",

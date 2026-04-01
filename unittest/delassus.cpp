@@ -19,9 +19,9 @@ namespace pinocchio
 {
   template<typename Scalar, int Options>
   struct ContactCholeskyDecompositionAccessorTpl
-  : public ContactCholeskyDecompositionTpl<Scalar, Options>
+  : public ConstraintCholeskyDecompositionTpl<Scalar, Options>
   {
-    typedef ContactCholeskyDecompositionTpl<Scalar, Options> Base;
+    typedef ConstraintCholeskyDecompositionTpl<Scalar, Options> Base;
     using typename Base::BooleanVector;
     using typename Base::EigenIndexVector;
 
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(contact_6D)
   pinocchio::computeJointJacobians(model, data, q);
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(contact_6D6D)
   pinocchio::computeJointJacobians(model, data, q);
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(contact_6D4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated_6D3)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -356,7 +356,7 @@ BOOST_AUTO_TEST_CASE(contact_3D)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -407,7 +407,7 @@ BOOST_AUTO_TEST_CASE(contact_3D3D)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -466,7 +466,7 @@ BOOST_AUTO_TEST_CASE(contact_3D4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -569,7 +569,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -638,7 +638,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4_6D4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -690,7 +690,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_ancestors)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -756,7 +756,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 
@@ -816,7 +816,7 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor_6D4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ContactCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
     model, data, contact_models, contact_data);
   MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
 

@@ -234,7 +234,7 @@ namespace pinocchio
     }
 
     typename Data::TangentVectorType & a = data.ddq;
-    typename Data::ContactCholeskyDecomposition & contact_chol = data.contact_chol;
+    typename Data::ConstraintCholeskyDecomposition & contact_chol = data.contact_chol;
     typename Data::VectorXs & primal_dual_contact_solution = data.primal_dual_contact_solution;
     typename Data::VectorXs & primal_rhs_contact = data.primal_rhs_contact;
 

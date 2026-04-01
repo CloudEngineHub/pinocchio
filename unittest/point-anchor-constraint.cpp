@@ -519,7 +519,7 @@ BOOST_AUTO_TEST_CASE(cholesky)
 
   const double mu = 1e-10;
   calc(model, data, constraint_models, constraint_datas);
-  ContactCholeskyDecomposition cholesky(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition cholesky(model, data, constraint_models, constraint_datas);
   cholesky.compute(model, data, constraint_models, constraint_datas, mu);
 
   crba(model, data_ref, q, Convention::WORLD);

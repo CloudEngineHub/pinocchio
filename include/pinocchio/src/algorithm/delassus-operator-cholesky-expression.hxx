@@ -17,16 +17,16 @@ namespace pinocchio
   template<typename _ContactCholeskyDecomposition>
   struct Unsafe<DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition>>;
 
-  template<typename ContactCholeskyDecomposition>
-  struct traits<DelassusCholeskyExpressionTpl<ContactCholeskyDecomposition>>
+  template<typename ConstraintCholeskyDecomposition>
+  struct traits<DelassusCholeskyExpressionTpl<ConstraintCholeskyDecomposition>>
   {
     static constexpr int RowsAtCompileTime = Eigen::Dynamic;
-    typedef typename ContactCholeskyDecomposition::Scalar Scalar;
-    typedef typename ContactCholeskyDecomposition::Matrix Matrix;
-    typedef typename ContactCholeskyDecomposition::Vector Vector;
+    typedef typename ConstraintCholeskyDecomposition::Scalar Scalar;
+    typedef typename ConstraintCholeskyDecomposition::Matrix Matrix;
+    typedef typename ConstraintCholeskyDecomposition::Vector Vector;
 
-    typedef typename ContactCholeskyDecomposition::EigenStorageVector EigenStorageVector;
-    typedef typename ContactCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;
+    typedef typename ConstraintCholeskyDecomposition::EigenStorageVector EigenStorageVector;
+    typedef typename ConstraintCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;
     typedef const BlockDiagonalMatrix & getDampingReturnType;
   };
 
@@ -65,16 +65,16 @@ namespace pinocchio
   struct DelassusCholeskyExpressionTpl
   : DelassusOperatorBase<DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition>>
   {
-    typedef _ContactCholeskyDecomposition ContactCholeskyDecomposition;
-    typedef typename ContactCholeskyDecomposition::Scalar Scalar;
-    typedef typename ContactCholeskyDecomposition::Vector Vector;
-    typedef typename ContactCholeskyDecomposition::Matrix Matrix;
-    typedef typename ContactCholeskyDecomposition::RowMatrix RowMatrix;
+    typedef _ContactCholeskyDecomposition ConstraintCholeskyDecomposition;
+    typedef typename ConstraintCholeskyDecomposition::Scalar Scalar;
+    typedef typename ConstraintCholeskyDecomposition::Vector Vector;
+    typedef typename ConstraintCholeskyDecomposition::Matrix Matrix;
+    typedef typename ConstraintCholeskyDecomposition::RowMatrix RowMatrix;
     typedef DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition> Self;
     typedef DelassusOperatorBase<Self> Base;
-    typedef typename ContactCholeskyDecomposition::EigenStorageVector EigenStorageVector;
-    typedef typename ContactCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;
-    static constexpr int Options = ContactCholeskyDecomposition::Options;
+    typedef typename ConstraintCholeskyDecomposition::EigenStorageVector EigenStorageVector;
+    typedef typename ConstraintCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;
+    static constexpr int Options = ConstraintCholeskyDecomposition::Options;
     typedef DelassusOperatorDenseTpl<Scalar, Options> DelassusOperatorDense;
 
     typedef
@@ -93,7 +93,7 @@ namespace pinocchio
     friend struct Unsafe<Self>;
 
     /// \brief Default constructor from a cholesky decomposition.
-    explicit DelassusCholeskyExpressionTpl(ContactCholeskyDecomposition & self)
+    explicit DelassusCholeskyExpressionTpl(ConstraintCholeskyDecomposition & self)
     : Base()
     , self(self)
     {
@@ -206,14 +206,14 @@ namespace pinocchio
 
     /// \brief Returns the Constraint Cholesky decomposition associated to this
     /// DelassusCholeskyExpression.
-    const ContactCholeskyDecomposition & cholesky() const
+    const ConstraintCholeskyDecomposition & cholesky() const
     {
       return self;
     }
 
     /// \brief Returns the Constraint Cholesky decomposition associated to this
     /// DelassusCholeskyExpression.
-    ContactCholeskyDecomposition & cholesky()
+    ConstraintCholeskyDecomposition & cholesky()
     {
       return self;
     }
@@ -298,7 +298,7 @@ namespace pinocchio
     template<typename VectorLike>
     void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliances)
     {
-      const_cast<ContactCholeskyDecomposition &>(self).updateCompliance(compliances);
+      const_cast<ConstraintCholeskyDecomposition &>(self).updateCompliance(compliances);
     }
 
     ///
@@ -309,7 +309,7 @@ namespace pinocchio
     ///
     void updateCompliance(const Scalar & compliance)
     {
-      const_cast<ContactCholeskyDecomposition &>(self).updateCompliance(compliance);
+      const_cast<ConstraintCholeskyDecomposition &>(self).updateCompliance(compliance);
     }
 
     ///
@@ -322,7 +322,7 @@ namespace pinocchio
     template<typename VectorLike>
     void updateDamping(const Eigen::MatrixBase<VectorLike> & mus)
     {
-      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mus);
+      const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(mus);
     }
 
     ///
@@ -334,7 +334,7 @@ namespace pinocchio
     ///
     void updateDamping(const Scalar & mu)
     {
-      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(mu);
+      const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(mu);
     }
 
     ///
@@ -344,7 +344,7 @@ namespace pinocchio
     void updateDamping(
       const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
     {
-      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(block_damping);
+      const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(block_damping);
     }
 
     ///
@@ -354,7 +354,7 @@ namespace pinocchio
     void
     updateDamping(BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
     {
-      const_cast<ContactCholeskyDecomposition &>(self).updateDamping(std::move(block_damping));
+      const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(std::move(block_damping));
     }
 
     /// \brief Returns the number of rows/cols of the Delassus.
@@ -384,7 +384,7 @@ namespace pinocchio
     }
 
   protected:
-    ContactCholeskyDecomposition & self;
+    ConstraintCholeskyDecomposition & self;
   }; // DelassusCholeskyExpression
 
 } // namespace pinocchio

@@ -11,6 +11,7 @@
 #include <Eigen/SparseCholesky>
 
 #include "pinocchio/context.hpp"
+#include "pinocchio/deprecated.hpp"
 #include "pinocchio/multibody/fwd.hpp"
 // IWYU pragma: end_keep
 

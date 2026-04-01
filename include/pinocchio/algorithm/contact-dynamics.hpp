@@ -183,7 +183,7 @@ namespace pinocchio
   /// \brief Computes the inverse of the KKT matrix for dynamics with contact constraints.
   /// \warning forwardDynamics/impuseDynamics are unsupported algorithm, and this function signature
   /// needs forwardDynamics to be called before. Please use the inverse() function in
-  /// ContactCholeskyDecomposition class instead. It computes the following matrix: <BR>
+  /// ConstraintCholeskyDecomposition class instead. It computes the following matrix: <BR>
   ///       <CENTER> \f$
   ///       \left[\begin{matrix}\mathbf{M}^{-1}-\mathbf{M}^{-1}\mathbf{J}^{\top}_c\widehat{\mathbf{M}}^{-1}\mathbf{J}_c\mathbf{M}^{-1}
   ///       & \mathbf{M}^{-1}\mathbf{J}^{\top}_c\widehat{\mathbf{M}}^{-1}

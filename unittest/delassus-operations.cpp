@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(delassus_dense_rebuild)
     // Test rebuild from cholesky delassus
     // we need to compute the mass matrix for the cholesky
     crba(scene.model, scene.data, scene.q, Convention::WORLD);
-    ContactCholeskyDecomposition chol(
+    ConstraintCholeskyDecomposition chol(
       scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
     BOOST_CHECK(chol.getCompliance().isApprox(compliance));
     chol.updateDamping(damping_val);
@@ -574,9 +574,9 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_diag_operations)
   BOOST_CHECK(compliance.minCoeff() >= 0);
   const double damping_val = 1e-4;
 
-  // Build a ContactCholeskyDecomposition and compute
+  // Build a ConstraintCholeskyDecomposition and compute
   crba(scene.model, scene.data, scene.q, Convention::WORLD);
-  ContactCholeskyDecomposition chol(
+  ConstraintCholeskyDecomposition chol(
     scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
   chol.updateDamping(damping_val);
   chol.compute(scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
@@ -677,9 +677,9 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_block_operations)
   BlockDiagonalMatrix block_damping;
   constructPositiveDefiniteBlockDiagonalMatrix(scene.constraint_models, block_damping);
 
-  // Build a ContactCholeskyDecomposition and compute
+  // Build a ConstraintCholeskyDecomposition and compute
   crba(scene.model, scene.data, scene.q, Convention::WORLD);
-  ContactCholeskyDecomposition chol(
+  ConstraintCholeskyDecomposition chol(
     scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
   chol.compute(scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
 
@@ -802,7 +802,7 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_unsafe)
   const double damping_val = 1e-4;
 
   crba(scene.model, scene.data, scene.q, Convention::WORLD);
-  ContactCholeskyDecomposition chol(
+  ConstraintCholeskyDecomposition chol(
     scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
   chol.compute(scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
 

@@ -406,7 +406,7 @@ void runContactDynamicsTest(const Model & model, Data & data)
     }();
 
     // Contact Cholesky
-    ContactCholeskyDecomposition contact_chol;
+    ConstraintCholeskyDecomposition contact_chol;
     contact_chol.rebuild(model, data, contact_models, contact_data);
 
     [&]() noexcept [[clang::nonblocking]] {

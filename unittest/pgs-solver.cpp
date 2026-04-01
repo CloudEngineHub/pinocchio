@@ -58,7 +58,7 @@ struct TestBoxTpl
 
     // cholesky of the Delassus matrix
     crba(model, data, q0, Convention::WORLD);
-    ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+    ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
     chol.rebuild(model, data, constraint_models, constraint_datas);
     chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
@@ -503,7 +503,7 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   crba(model, data, q0, Convention::WORLD);
   data.q_in = q0;
   calc(model, data, constraint_models, constraint_datas);
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
@@ -627,7 +627,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
@@ -770,7 +770,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
@@ -918,7 +918,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
@@ -1057,7 +1057,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
@@ -1192,7 +1192,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
@@ -1329,7 +1329,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
   auto & cmodel = constraint_models[0];
   auto & cdata = constraint_datas[0];
   cmodel.calc(model, data, cdata);
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 

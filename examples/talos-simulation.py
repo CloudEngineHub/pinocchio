@@ -76,7 +76,7 @@ constraint_datas = [cm.createData() for cm in constraint_models]
 q = robot.q0.copy()
 
 pinocchio.computeAllTerms(model, data, q, np.zeros(model.nv))
-kkt_constraint = pinocchio.ContactCholeskyDecomposition(model, constraint_models)
+kkt_constraint = pinocchio.ConstraintCholeskyDecomposition(model, constraint_models)
 constraint_size = sum([cm.size() for cm in constraint_models])
 N = 100000
 eps = 1e-10
