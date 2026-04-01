@@ -50,6 +50,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     - Deprecate `PINOCCHIO_STD_VECTOR_WITH_EIGEN_ALLOCATOR` replaced by `std::vector`
     - Deprecate `pinocchio::container::aligned_vector` replaced by `std::allocator`
     - Deprecate `pinocchio/container/aligned-vector.hpp`
+    - Deprecate `pinocchio::python::StdAlignedVectorPythonVisitor`
 - Following algorithms are now unsupported algorithms (no more deprecated):
   - `forwardDynamics`
   - `impulseDynamics`
@@ -72,10 +73,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Remove support to Eigen < 3.4
 - Remove support to coal < 3
 - Remove support to eigenpy < 3
-- Don't use Eigen::aligned_allocator:
-  - Remove header `pinocchio/serialization/aligned-vector.hpp`
-  - Remove header `pinocchio/bindings/python/utils/std-aligned-vector.hpp`
-  - Remove `pinocchio::python::StdAlignedVectorPythonVisitor`
 - Eigen 3.4 is the minimal Eigen supported version:
   - Remove Eigen < 3.4 workaround
   - Remove PINOCCHIO_WITH_EIGEN_TENSOR_MODULE define
