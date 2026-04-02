@@ -67,7 +67,9 @@ namespace pinocchio
    *
    * @return     The Lie group neutral element
    */
-  template<typename LieGroupCollection>
+  template<
+    typename LieGroupCollection,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline Eigen::
     Matrix<typename LieGroupCollection::Scalar, Eigen::Dynamic, 1, LieGroupCollection::Options>
     neutral(const LieGroupGenericTpl<LieGroupCollection> & lg);
@@ -80,7 +82,12 @@ namespace pinocchio
    * @param[in]  v   the tangent velocity.
    *
    */
-  template<typename LieGroupCollection, class ConfigIn_t, class Tangent_t, class ConfigOut_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigIn_t,
+    class Tangent_t,
+    class ConfigOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline void integrate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigIn_t> & q,
@@ -91,11 +98,17 @@ namespace pinocchio
   inline void random(
     const LieGroupGenericTpl<LieGroupCollection> & lg, const Eigen::MatrixBase<Config_t> & qout);
 
-  template<typename LieGroupCollection, class Config_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline void normalize(
     const LieGroupGenericTpl<LieGroupCollection> & lg, const Eigen::MatrixBase<Config_t> & qout);
 
-  template<typename LieGroupCollection, class Config_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline bool isNormalized(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & qin,
@@ -113,13 +126,21 @@ namespace pinocchio
     const Eigen::MatrixBase<ConfigR_t> & q1,
     const typename ConfigL_t::Scalar & prec);
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline typename ConfigL_t::Scalar squaredDistance(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
     const Eigen::MatrixBase<ConfigR_t> & q1);
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline typename ConfigL_t::Scalar distance(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -128,21 +149,36 @@ namespace pinocchio
     return std::sqrt(squaredDistance(lg, q0, q1));
   }
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t, class Tangent_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    class Tangent_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline void difference(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
     const Eigen::MatrixBase<ConfigR_t> & q1,
     const Eigen::MatrixBase<Tangent_t> & v);
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t, class ConfigOut_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    class ConfigOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline void randomConfiguration(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
     const Eigen::MatrixBase<ConfigR_t> & q1,
     const Eigen::MatrixBase<ConfigOut_t> & qout);
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t, class ConfigOut_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    class ConfigOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline void interpolate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -150,7 +186,12 @@ namespace pinocchio
     const typename ConfigL_t::Scalar & u,
     const Eigen::MatrixBase<ConfigOut_t> & qout);
 
-  template<typename LieGroupCollection, class Config_t, class Tangent_t, class JacobianOut_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    class Tangent_t,
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void dIntegrate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -164,7 +205,8 @@ namespace pinocchio
     class Config_t,
     class Tangent_t,
     class JacobianIn_t,
-    class JacobianOut_t>
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void dIntegrate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -180,7 +222,8 @@ namespace pinocchio
     class Config_t,
     class Tangent_t,
     class JacobianIn_t,
-    class JacobianOut_t>
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void dIntegrate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -191,7 +234,12 @@ namespace pinocchio
     const ArgumentPosition arg,
     const AssignmentOperatorType op = SETTO);
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t, class JacobianOut_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void dDifference(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -204,7 +252,8 @@ namespace pinocchio
     class ConfigL_t,
     class ConfigR_t,
     class JacobianIn_t,
-    class JacobianOut_t>
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void dDifference(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -219,7 +268,8 @@ namespace pinocchio
     class ConfigL_t,
     class ConfigR_t,
     class JacobianIn_t,
-    class JacobianOut_t>
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void dDifference(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -229,14 +279,23 @@ namespace pinocchio
     const Eigen::MatrixBase<JacobianOut_t> & Jout,
     const ArgumentPosition arg);
 
-  template<typename LieGroupCollection, class Config_t, class TangentMap_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    class TangentMap_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void tangentMap(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
     const Eigen::MatrixBase<TangentMap_t> & TM,
     const AssignmentOperatorType op);
 
-  template<typename LieGroupCollection, class Config_t, class MatrixIn_t, class MatrixOut_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    class MatrixIn_t,
+    class MatrixOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void tangentMapProduct(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -244,7 +303,12 @@ namespace pinocchio
     const Eigen::MatrixBase<MatrixOut_t> & Mout,
     const AssignmentOperatorType op);
 
-  template<typename LieGroupCollection, class Config_t, class MatrixIn_t, class MatrixOut_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    class MatrixIn_t,
+    class MatrixOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void tangentMapTransposeProduct(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -257,7 +321,8 @@ namespace pinocchio
     class Config_t,
     class Tangent_t,
     class JacobianIn_t,
-    class JacobianOut_t>
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void dIntegrateTransport(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -266,7 +331,12 @@ namespace pinocchio
     const Eigen::MatrixBase<JacobianOut_t> & J_out,
     const ArgumentPosition arg);
 
-  template<typename LieGroupCollection, class Config_t, class Tangent_t, class JacobianOut_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    class Tangent_t,
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   void dIntegrateTransport(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -430,7 +500,9 @@ namespace pinocchio
     }
   };
 
-  template<typename LieGroupCollection>
+  template<
+    typename LieGroupCollection,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   inline Eigen::
     Matrix<typename LieGroupCollection::Scalar, Eigen::Dynamic, 1, LieGroupCollection::Options>
     neutral(const LieGroupGenericTpl<LieGroupCollection> & lg)
@@ -468,7 +540,10 @@ namespace pinocchio
     Operation::run(lg, typename Operation::ArgsType(qout));
   }
 
-  template<typename LieGroupCollection, class Config_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   inline void normalize(
     const LieGroupGenericTpl<LieGroupCollection> & lg, const Eigen::MatrixBase<Config_t> & qout)
   {
@@ -500,7 +575,10 @@ namespace pinocchio
     }
   };
 
-  template<typename LieGroupCollection, class Config_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   inline bool isNormalized(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & qin,
@@ -584,7 +662,11 @@ namespace pinocchio
   // PINOCCHIO_LG_VISITOR(Distance, distance);
   PINOCCHIO_LG_VISITOR(SquaredDistance, squaredDistance);
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   inline typename ConfigL_t::Scalar squaredDistance(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -628,7 +710,12 @@ namespace pinocchio
   PINOCCHIO_LG_VISITOR(Difference, difference);
   PINOCCHIO_LG_VISITOR(RandomConfiguration, randomConfiguration);
 
-  template<typename LieGroupCollection, class ConfigIn_t, class Tangent_t, class ConfigOut_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigIn_t,
+    class Tangent_t,
+    class ConfigOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   inline void integrate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigIn_t> & q,
@@ -643,7 +730,12 @@ namespace pinocchio
     Operation::run(lg, typename Operation::ArgsType(q, v, qout));
   }
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t, class Tangent_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    class Tangent_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   inline void difference(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -658,7 +750,12 @@ namespace pinocchio
     Operation::run(lg, typename Operation::ArgsType(q0, q1, v));
   }
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t, class ConfigOut_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    class ConfigOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   inline void randomConfiguration(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -699,7 +796,12 @@ namespace pinocchio
     }
   };
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t, class ConfigOut_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    class ConfigOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   inline void interpolate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -745,7 +847,12 @@ namespace pinocchio
   PINOCCHIO_LG_VISITOR(DIntegrate, dIntegrate, 1);
   PINOCCHIO_LG_VISITOR(DDifference, dDifference, 0);
 
-  template<typename LieGroupCollection, class Config_t, class Tangent_t, class JacobianOut_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    class Tangent_t,
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   void dIntegrate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -762,7 +869,12 @@ namespace pinocchio
     Operation::run(lg, typename Operation::ArgsType(q, v, J, arg, op));
   }
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t, class JacobianOut_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   void dDifference(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -833,7 +945,8 @@ namespace pinocchio
     class Config_t,
     class Tangent_t,
     class JacobianIn_t,
-    class JacobianOut_t>
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   void dIntegrate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -862,7 +975,8 @@ namespace pinocchio
     class Config_t,
     class Tangent_t,
     class JacobianIn_t,
-    class JacobianOut_t>
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   void dIntegrate(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -1032,7 +1146,8 @@ namespace pinocchio
     class Config_t,
     class Tangent_t,
     class JacobianIn_t,
-    class JacobianOut_t>
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   void dIntegrateTransport(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -1051,7 +1166,12 @@ namespace pinocchio
     Operation::run(lg, typename Operation::ArgsType(q, v, J_in, J_out, arg));
   }
 
-  template<typename LieGroupCollection, class Config_t, class Tangent_t, class JacobianOut_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    class Tangent_t,
+    class JacobianOut_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   void dIntegrateTransport(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -1094,7 +1214,11 @@ namespace pinocchio
     }
   };
 
-  template<typename LieGroupCollection, class Config_t, class TangentMap_t>
+  template<
+    typename LieGroupCollection,
+    class Config_t,
+    class TangentMap_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   void tangentMap(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<Config_t> & q,
@@ -1132,7 +1256,9 @@ namespace pinocchio
       lg._method(q, Min, Mout, op);                                                                \
     }                                                                                              \
   };                                                                                               \
-  template<typename LieGroupCollection, class Config_t, class MatrixIn_t, class MatrixOut_t>       \
+  template<                                                                                        \
+    typename LieGroupCollection, class Config_t, class MatrixIn_t, class MatrixOut_t,              \
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>                          \
   void _method(                                                                                    \
     const LieGroupGenericTpl<LieGroupCollection> & lg, const Eigen::MatrixBase<Config_t> & q,      \
     const Eigen::MatrixBase<MatrixIn_t> & Min, const Eigen::MatrixBase<MatrixOut_t> & Mout,        \
