@@ -172,7 +172,7 @@ namespace pinocchio
       // const auto U1 = self.U.topLeftCorner(self.constraintDim(), self.constraintDim());
       // {
       //   typedef Eigen::Map<RowMatrix> MapType;
-      //   MapType tmp_mat = MapType(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, x.rows(), x.cols()));
+      //   MapType tmp_mat = MapType(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, x.rows(), x.cols()));
       //   //            tmp_mat.noalias() = U1.adjoint() * x;
       //   triangularMatrixMatrixProduct<Eigen::UnitLower>(U1.adjoint(), x.derived(), tmp_mat);
 

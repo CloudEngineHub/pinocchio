@@ -787,7 +787,7 @@ namespace pinocchio
     // TODO(jcarpent): extend the code to operator on matrices
 
     //    typedef Eigen::Map<VectorXs,EIGEN_DEFAULT_ALIGN_BYTES> MapVectorXs;
-    //    MapVectorXs u = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, model_ref.nv, 1));
+    //    MapVectorXs u = MapVectorXs(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, model_ref.nv, 1));
     //    {
     //      auto & u = internal_data.u;
     //      u.setZero();
@@ -909,7 +909,7 @@ namespace pinocchio
     auto & internal_data = this->m_internal_data;
 
     typedef Eigen::Map<VectorXs, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorXs;
-    MapVectorXs mat_tmp = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, size(), 1));
+    MapVectorXs mat_tmp = MapVectorXs(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, size(), 1));
 
     // mat.array() *= m_sum_compliance_damping_inverse.array();
     m_sum_compliance_damping_inverse.template applyOnTheRight<::pinocchio::internal::assign_op>(
@@ -919,7 +919,7 @@ namespace pinocchio
     // Make a pass over the whole set of constraints to add the contributions of constraint
 
     typedef Eigen::Map<VectorXs, EIGEN_DEFAULT_ALIGN_BYTES> MapVectorXs;
-    MapVectorXs u = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, model_ref.nv, 1));
+    MapVectorXs u = MapVectorXs(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, model_ref.nv, 1));
     // u and internal_data.of_augmented are reset by mapConstraintForcesToJointSpace
     mapConstraintForcesToJointSpace(
       model_ref, data_ref, constraint_models_ref, constraint_datas_ref, mat,

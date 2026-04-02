@@ -166,7 +166,7 @@ namespace pinocchio
             // For NestedBlockDiagonal entries, placement-new with a moved sub-vector and
             // call the destructor explicitly afterwards to avoid a memory leak.
             MatrixBlockElement * new_pattern = static_cast<MatrixBlockElement *>(
-              PINOCCHIO_ALLOCA(num_blocks * sizeof(MatrixBlockElement)));
+              _PINOCCHIO_ALLOCA(num_blocks * sizeof(MatrixBlockElement)));
             bool has_nested_in_pattern = false;
             for (std::size_t i = 0; i < num_blocks; ++i)
             {

@@ -338,7 +338,7 @@ namespace pinocchio
     //   {
     //     const Eigen::Index slice_dim = nv;
     //     typedef Eigen::Map<Vector,EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
-    //     MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar,slice_dim,1));
+    //     MapVector DUt_partial = MapVector(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar,slice_dim,1));
 
     //     DUt_partial.noalias() =
     //       UtopRight.row(j).transpose().cwiseProduct(Dtail);
@@ -349,8 +349,9 @@ namespace pinocchio
     //   }
 
     // typedef Eigen::Map<RowMatrix> MapRowMatrix;
-    // MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraint_size,
-    // nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal(); delassus_block.noalias() = OSIMinv
+    // MapRowMatrix OSIMinv = MapRowMatrix(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar,
+    // total_constraint_size, nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal();
+    // delassus_block.noalias() = OSIMinv
     // * UtopRight.transpose();
 
     delassus_block.noalias() = (UtopRight * Dtail.asDiagonal()) * UtopRight.transpose();

@@ -681,8 +681,8 @@ namespace pinocchio
           if (isSymmetric(container()))
           {
             typedef Eigen::Map<Matrix, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix;
-            MapMatrix tmp =
-              MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, container().rows(), container().cols()));
+            MapMatrix tmp = MapMatrix(
+              _PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, container().rows(), container().cols()));
             tmp = container();
             matrix_inversion(tmp, res.container());
           }

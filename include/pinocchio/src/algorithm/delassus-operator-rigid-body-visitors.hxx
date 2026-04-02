@@ -99,8 +99,8 @@ namespace pinocchio
 
         using Matrix6xNV = std::remove_reference_t<typename JointData::UDTypeRef>;
         typedef Eigen::Map<Matrix6xNV, EIGEN_DEFAULT_ALIGN_BYTES> MapMatrix6xNV;
-        MapMatrix6xNV mat1_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
-        MapMatrix6xNV mat2_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
+        MapMatrix6xNV mat1_tmp = MapMatrix6xNV(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
+        MapMatrix6xNV mat2_tmp = MapMatrix6xNV(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
 
         auto & JDinv = mat1_tmp;
         DO_NOT_PROMOTE_STATIC_EVAL(JDinv.noalias()) = Jcols * jdata_augmented.Dinv();
@@ -308,7 +308,7 @@ namespace pinocchio
       {
         using VectorNV = std::remove_reference_t<typename JointData::TangentVector_t>;
         using MapVectorNV = Eigen::Map<VectorNV, EIGEN_DEFAULT_ALIGN_BYTES>;
-        MapVectorNV res = MapVectorNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, jmodel.nv(), 1));
+        MapVectorNV res = MapVectorNV(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, jmodel.nv(), 1));
         DO_NOT_PROMOTE_STATIC_EVAL(res.noalias()) =
           (jdata.Dinv() * jmodel.jointVelocitySelector(internal_data.u));
 
@@ -373,7 +373,7 @@ namespace pinocchio
         using VectorNV = std::remove_reference_t<typename JointData::TangentVector_t>;
         using MapVectorNV = Eigen::Map<VectorNV, EIGEN_DEFAULT_ALIGN_BYTES>;
         MapVectorNV projected_coupling_forces =
-          MapVectorNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, jmodel.nv(), 1));
+          MapVectorNV(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, jmodel.nv(), 1));
         projected_coupling_forces.setZero();
 
         for (const JointIndex joint_j : joint_neighbours)

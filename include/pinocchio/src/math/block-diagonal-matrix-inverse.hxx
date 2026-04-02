@@ -142,7 +142,7 @@ namespace pinocchio
             // For NestedBlockDiagonal entries, placement-new with a moved sub-vector and
             // call the destructor explicitly afterwards to avoid a memory leak.
             MatrixBlockElement * new_pattern = static_cast<MatrixBlockElement *>(
-              PINOCCHIO_ALLOCA(num_blocks * sizeof(MatrixBlockElement)));
+              _PINOCCHIO_ALLOCA(num_blocks * sizeof(MatrixBlockElement)));
             bool has_nested_in_pattern = false;
             for (std::size_t i = 0; i < num_blocks; ++i)
             {
@@ -211,7 +211,7 @@ namespace pinocchio
                 typedef Eigen::Map<typename ResType::Matrix, to_eigen_alignment(ResAlignment)>
                   ResMatrixMap;
                 typedef MatrixBlockElementTpl<ResMatrixMap> ResMatrixBlockElement;
-                ResMatrixMap tmp_map(PINOCCHIO_EIGEN_MAP_ALLOCA_ALIGNED(
+                ResMatrixMap tmp_map(_PINOCCHIO_EIGEN_MAP_ALLOCA_ALIGNED(
                   Scalar, sub_size, sub_size, static_cast<intptr_t>(ResAlignment)));
                 ResMatrixBlockElement temp_input(input_sub.type(), sub_size, tmp_map);
                 temp_input.container() = input_sub.container();
@@ -235,7 +235,7 @@ namespace pinocchio
               ResMatrixMap;
             typedef MatrixBlockElementTpl<ResMatrixMap> ResMatrixBlockElement;
 
-            ResMatrixMap tmp_map(PINOCCHIO_EIGEN_MAP_ALLOCA_ALIGNED(
+            ResMatrixMap tmp_map(_PINOCCHIO_EIGEN_MAP_ALLOCA_ALIGNED(
               Scalar, block_size, block_size, static_cast<intptr_t>(ResAlignment)));
             ResMatrixBlockElement temp_input(input_block.type(), block_size, tmp_map);
 

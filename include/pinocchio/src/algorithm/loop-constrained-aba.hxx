@@ -137,8 +137,8 @@ namespace pinocchio
 
       using Matrix6xNV = std::remove_reference_t<typename JointData::UDTypeRef>;
       using MapMatrix6xNV = Eigen::Map<Matrix6xNV>;
-      MapMatrix6xNV mat1_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
-      MapMatrix6xNV mat2_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
+      MapMatrix6xNV mat1_tmp = MapMatrix6xNV(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
+      MapMatrix6xNV mat2_tmp = MapMatrix6xNV(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
 
       auto & JDinv = mat1_tmp;
       JDinv.noalias() = Jcols * jdata.Dinv();

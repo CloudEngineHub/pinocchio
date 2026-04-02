@@ -43,7 +43,8 @@ namespace pinocchio
         typedef typename PlainMatrix::Scalar Scalar;
 
         typedef Eigen::Map<PlainMatrix, EIGEN_DEFAULT_ALIGN_BYTES> MapPlainMatrix;
-        MapPlainMatrix tmp = MapPlainMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, b.rows(), b.cols()));
+        MapPlainMatrix tmp =
+          MapPlainMatrix(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, b.rows(), b.cols()));
         if (m_P.size() > 0)
           tmp.noalias() = m_P * b;
         else

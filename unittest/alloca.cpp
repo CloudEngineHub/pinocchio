@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(macro)
 {
   const Eigen::Index rows = 10, cols = 20;
   typedef Eigen::Map<Eigen::MatrixXd> MapType;
-  MapType map = MapType(PINOCCHIO_EIGEN_MAP_ALLOCA(Eigen::MatrixXd::Scalar, rows, cols));
+  MapType map = MapType(_PINOCCHIO_EIGEN_MAP_ALLOCA(Eigen::MatrixXd::Scalar, rows, cols));
   map.setZero();
   BOOST_CHECK(map.rows() == rows);
   BOOST_CHECK(map.cols() == cols);

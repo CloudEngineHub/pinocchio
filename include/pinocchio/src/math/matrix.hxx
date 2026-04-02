@@ -670,7 +670,7 @@ namespace pinocchio
     typedef Eigen::Map<PlainMatrix> MapMatrix;
 
     auto & mat = mat_.const_cast_derived();
-    MapMatrix tmp = MapMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, mat.rows(), mat.rows()));
+    MapMatrix tmp = MapMatrix(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, mat.rows(), mat.rows()));
 
     tmp = 0.5 * (mat + mat.transpose());
     mat = tmp;

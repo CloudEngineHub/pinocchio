@@ -873,7 +873,7 @@ namespace pinocchio
       // analysis block pattern and extract memory/size info
       const std::size_t num_blocks = size;
       MatrixInfo * memory_block_sizes =
-        static_cast<MatrixInfo *>(PINOCCHIO_ALLOCA(total_memory_entries * sizeof(MatrixInfo)));
+        static_cast<MatrixInfo *>(_PINOCCHIO_ALLOCA(total_memory_entries * sizeof(MatrixInfo)));
       std::size_t memory_block_id = 0;
 
       m_matrix_block_elements.reserve(size);
