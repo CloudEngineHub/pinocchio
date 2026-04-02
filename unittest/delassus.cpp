@@ -18,14 +18,14 @@
 namespace pinocchio
 {
   template<typename Scalar, int Options>
-  struct ContactCholeskyDecompositionAccessorTpl
+  struct ConstraintCholeskyDecompositionAccessorTpl
   : public ConstraintCholeskyDecompositionTpl<Scalar, Options>
   {
     typedef ConstraintCholeskyDecompositionTpl<Scalar, Options> Base;
     using typename Base::BooleanVector;
     using typename Base::EigenIndexVector;
 
-    ContactCholeskyDecompositionAccessorTpl(const Base & other)
+    ConstraintCholeskyDecompositionAccessorTpl(const Base & other)
     : Base(other)
     {
     }
@@ -48,7 +48,8 @@ namespace pinocchio
     }
   };
 
-  typedef ContactCholeskyDecompositionAccessorTpl<double, 0> ContactCholeskyDecompositionAccessor;
+  typedef ConstraintCholeskyDecompositionAccessorTpl<double, 0>
+    ConstraintCholeskyDecompositionAccessor;
 } // namespace pinocchio
 
 using namespace pinocchio;
@@ -77,9 +78,9 @@ BOOST_AUTO_TEST_CASE(contact_6D)
   pinocchio::computeJointJacobians(model, data, q);
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
 
@@ -89,17 +90,17 @@ BOOST_AUTO_TEST_CASE(contact_6D)
     data.q_in = q;
     data.v_in = v;
     pinocchio::calc(model, data, contact_models, contact_data);
-    contact_chol.compute(model, data, contact_models, contact_data, mu);
-    contact_chol.inverse(H_inverse);
+    constraint_chol.compute(model, data, contact_models, contact_data, mu);
+    constraint_chol.inverse(H_inverse);
 
     Eigen::MatrixXd dampedDelassusInverse;
-    dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+    dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
     Eigen::MatrixXd dampedDelassusInverse2;
-    dampedDelassusInverse2.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+    dampedDelassusInverse2.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
     dampedDelassusInverse2 =
-      -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim());
+      -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim());
     computeDampedDelassusMatrixInverse(
       model, data, q, contact_models, contact_data, dampedDelassusInverse, mu);
     dampedDelassusInverse.triangularView<StrictlyLower>() =
@@ -111,7 +112,8 @@ BOOST_AUTO_TEST_CASE(contact_6D)
     dampedDelassusInverse.triangularView<StrictlyLower>() =
       dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
     BOOST_CHECK(dampedDelassusInverse.isApprox(
-      -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+      -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+      1e-10));
 
     q = randomConfiguration(model);
     v = Eigen::VectorXd::Random(model.nv);
@@ -143,16 +145,16 @@ BOOST_AUTO_TEST_CASE(contact_6D6D)
   pinocchio::computeJointJacobians(model, data, q);
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -160,14 +162,16 @@ BOOST_AUTO_TEST_CASE(contact_6D6D)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 }
 
 BOOST_AUTO_TEST_CASE(contact_6D4)
@@ -202,16 +206,16 @@ BOOST_AUTO_TEST_CASE(contact_6D4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -219,14 +223,16 @@ BOOST_AUTO_TEST_CASE(contact_6D4)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 }
 
 BOOST_AUTO_TEST_CASE(contact_6D_repeated)
@@ -251,16 +257,16 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -268,14 +274,16 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 }
 
 BOOST_AUTO_TEST_CASE(contact_6D_repeated_6D3)
@@ -309,16 +317,16 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated_6D3)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -326,14 +334,16 @@ BOOST_AUTO_TEST_CASE(contact_6D_repeated_6D3)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 }
 
 BOOST_AUTO_TEST_CASE(contact_3D)
@@ -356,16 +366,16 @@ BOOST_AUTO_TEST_CASE(contact_3D)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -373,14 +383,16 @@ BOOST_AUTO_TEST_CASE(contact_3D)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-7));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-7));
 }
 
 BOOST_AUTO_TEST_CASE(contact_3D3D)
@@ -407,16 +419,16 @@ BOOST_AUTO_TEST_CASE(contact_3D3D)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -424,14 +436,16 @@ BOOST_AUTO_TEST_CASE(contact_3D3D)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-7));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-7));
 }
 
 BOOST_AUTO_TEST_CASE(contact_3D4)
@@ -466,16 +480,16 @@ BOOST_AUTO_TEST_CASE(contact_3D4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -483,14 +497,16 @@ BOOST_AUTO_TEST_CASE(contact_3D4)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-7));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-7));
 }
 
 BOOST_AUTO_TEST_CASE(contact_3D_repeated)
@@ -516,16 +532,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -533,14 +549,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-7));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-7));
 }
 
 BOOST_AUTO_TEST_CASE(contact_3D_repeated4)
@@ -569,16 +587,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -586,14 +604,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 }
 
 BOOST_AUTO_TEST_CASE(contact_3D_repeated4_6D4)
@@ -638,16 +658,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4_6D4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -655,14 +675,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_repeated4_6D4)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-7));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-7));
 }
 
 BOOST_AUTO_TEST_CASE(contact_3D_ancestors)
@@ -690,42 +712,44 @@ BOOST_AUTO_TEST_CASE(contact_3D_ancestors)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   initPvDelassus(model, data, contact_models); // Allocate memory
 
   for (int i = 0; i < 2; i++)
   {
     Eigen::MatrixXd dampedDelassusInverse;
-    dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+    dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
     dampedDelassusInverse.setZero();
 
     computeAllTerms(model, data, q, v);
     data.q_in = q;
     data.v_in = v;
     pinocchio::calc(model, data, contact_models, contact_data);
-    contact_chol.compute(model, data, contact_models, contact_data, mu);
-    contact_chol.inverse(H_inverse);
+    constraint_chol.compute(model, data, contact_models, contact_data, mu);
+    constraint_chol.inverse(H_inverse);
 
     computeDampedDelassusMatrixInverse(
       model, data, q, contact_models, contact_data, dampedDelassusInverse, mu);
     dampedDelassusInverse.triangularView<StrictlyLower>() =
       dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
     BOOST_CHECK(dampedDelassusInverse.isApprox(
-      -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+      -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+      1e-10));
 
     computeDampedDelassusMatrixInverse(
       model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
     dampedDelassusInverse.triangularView<StrictlyLower>() =
       dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
     BOOST_CHECK(dampedDelassusInverse.isApprox(
-      -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+      -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+      1e-10));
 
     q = randomConfiguration(model);
     v = Eigen::VectorXd::Random(model.nv);
@@ -756,16 +780,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -773,14 +797,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-7));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-7));
 }
 
 BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor_6D4)
@@ -816,16 +842,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor_6D4)
   data.q_in = q;
   pinocchio::calc(model, data, contact_models, contact_data);
 
-  pinocchio::Data::ConstraintCholeskyDecomposition contact_chol(
+  pinocchio::Data::ConstraintCholeskyDecomposition constraint_chol(
     model, data, contact_models, contact_data);
-  MatrixXd H_inverse(contact_chol.size(), contact_chol.size());
+  MatrixXd H_inverse(constraint_chol.size(), constraint_chol.size());
 
   computeAllTerms(model, data, q, v);
-  contact_chol.compute(model, data, contact_models, contact_data, mu);
-  contact_chol.inverse(H_inverse);
+  constraint_chol.compute(model, data, contact_models, contact_data, mu);
+  constraint_chol.inverse(H_inverse);
 
   Data::MatrixXs dampedDelassusInverse;
-  dampedDelassusInverse.resize(contact_chol.constraintDim(), contact_chol.constraintDim());
+  dampedDelassusInverse.resize(constraint_chol.constraintDim(), constraint_chol.constraintDim());
 
   initPvDelassus(model, data, contact_models); // Allocate memory
   computeDampedDelassusMatrixInverse(
@@ -833,14 +859,16 @@ BOOST_AUTO_TEST_CASE(contact_3D_6D_ancestor_6D4)
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-10));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-10));
 
   computeDampedDelassusMatrixInverse(
     model, data, q, contact_models, contact_data, dampedDelassusInverse, mu, false, false);
   dampedDelassusInverse.triangularView<StrictlyLower>() =
     dampedDelassusInverse.triangularView<StrictlyUpper>().transpose();
   BOOST_CHECK(dampedDelassusInverse.isApprox(
-    -H_inverse.topLeftCorner(contact_chol.constraintDim(), contact_chol.constraintDim()), 1e-7));
+    -H_inverse.topLeftCorner(constraint_chol.constraintDim(), constraint_chol.constraintDim()),
+    1e-7));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

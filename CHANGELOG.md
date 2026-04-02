@@ -59,9 +59,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Replace headers guards by `#pragma once`
 - Change arguments in `initConstraintDynamics`
 - Change arguments in `BaumgarteCorrectorParametersTpl` constructor : scalar are used instead of vectors
+- Major refactorization of ContactCholeskyDecompositionTpl to ease online resizing
 - Deprecate `ContactCholeskyDecompositionTpl::allocate` replaced by `ContactCholeskyDecompositionTpl::rebuild`
 - Change arguments in `ContactCholeskyDecompositionTpl` constructor
-- Major refactorization of ContactCholeskyDecompositionTpl to ease online resizing
+- Deprecate `ContactCholeskyDecompositionTpl`, replaced by  `ConstraintCholeskyDecompositionTpl`
 
 ### Removed
 - Remove unused headers `deprecated-macros.hpp` and `deprecated-namespaces.hpp`

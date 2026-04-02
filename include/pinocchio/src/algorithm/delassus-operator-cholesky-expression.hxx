@@ -14,8 +14,8 @@
 namespace pinocchio
 {
   // Forward declaration of Unsafe specialization.
-  template<typename _ContactCholeskyDecomposition>
-  struct Unsafe<DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition>>;
+  template<typename _ConstraintCholeskyDecomposition>
+  struct Unsafe<DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>;
 
   template<typename ConstraintCholeskyDecomposition>
   struct traits<DelassusCholeskyExpressionTpl<ConstraintCholeskyDecomposition>>
@@ -32,10 +32,10 @@ namespace pinocchio
 
   /// \brief Unsafe version of DelassusCholeskyExpressionTpl.
   /// Allows direct access to protected members for expert users.
-  template<typename _ContactCholeskyDecomposition>
-  struct Unsafe<DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition>>
+  template<typename _ConstraintCholeskyDecomposition>
+  struct Unsafe<DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>
   {
-    typedef DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition> SafeSelf;
+    typedef DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> SafeSelf;
     typedef typename SafeSelf::BlockDiagonalMatrix BlockDiagonalMatrix;
 
     explicit Unsafe(SafeSelf & self)
@@ -61,16 +61,16 @@ namespace pinocchio
   };
 
   // TODO(jcarpent): change const_cast usage.
-  template<typename _ContactCholeskyDecomposition>
+  template<typename _ConstraintCholeskyDecomposition>
   struct DelassusCholeskyExpressionTpl
-  : DelassusOperatorBase<DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition>>
+  : DelassusOperatorBase<DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>
   {
-    typedef _ContactCholeskyDecomposition ConstraintCholeskyDecomposition;
+    typedef _ConstraintCholeskyDecomposition ConstraintCholeskyDecomposition;
     typedef typename ConstraintCholeskyDecomposition::Scalar Scalar;
     typedef typename ConstraintCholeskyDecomposition::Vector Vector;
     typedef typename ConstraintCholeskyDecomposition::Matrix Matrix;
     typedef typename ConstraintCholeskyDecomposition::RowMatrix RowMatrix;
-    typedef DelassusCholeskyExpressionTpl<_ContactCholeskyDecomposition> Self;
+    typedef DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> Self;
     typedef DelassusOperatorBase<Self> Base;
     typedef typename ConstraintCholeskyDecomposition::EigenStorageVector EigenStorageVector;
     typedef typename ConstraintCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;

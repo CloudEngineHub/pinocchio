@@ -53,6 +53,7 @@ ContactCholeskyDecompositionTpl changes :
 - ContactCholeskyDecompositionTpl constructor :
   - Add `DataTpl<S1, O1, JointCollectionTpl>`
   - Add `std::vector<ConstraintData, ConstraintDataAllocator>`
+- Deprecate `ContactCholeskyDecompositionTpl`, replaced by  `ConstraintCholeskyDecompositionTpl`
 
 Utility API changes:
 - Remove `gettimeofday` definition on Windows
@@ -69,3 +70,5 @@ HPP-FCL has been replaced by coal:
 Constraints API changes:
   - Add `contact_datas` in `initConstraintDynamics` method
   - Change `BaumgarteCorrectorParameters` constructor scalar are used instead of vectors
+
+- Deprecate `ContactCholeskyDecomposition`, replaced by  `ConstraintCholeskyDecomposition`

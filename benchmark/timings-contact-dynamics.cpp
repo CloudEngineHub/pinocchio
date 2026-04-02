@@ -32,7 +32,7 @@ struct ContactFixture : ModelFixture
     pinocchio::FrameAnchorConstraintModel fa_RF_6D(model, RF_id, pinocchio::SE3::Random());
     pinocchio::FrameAnchorConstraintModel fa_LF_6D(model, LF_id, pinocchio::SE3::Random());
 
-    contact_chol_empty = pinocchio::ConstraintCholeskyDecomposition(model, data);
+    constraint_chol_empty = pinocchio::ConstraintCholeskyDecomposition(model, data);
 
     contact_models_6D.clear();
     contact_models_6D.push_back(*ci_RF_6D);
@@ -40,7 +40,7 @@ struct ContactFixture : ModelFixture
     contact_datas_6D.clear();
     contact_datas_6D.push_back(pinocchio::RigidConstraintData(*ci_RF_6D));
 
-    contact_chol_6D =
+    constraint_chol_6D =
       pinocchio::ConstraintCholeskyDecomposition(model, data, contact_models_6D, contact_datas_6D);
 
     contact_models_6D6D.clear();
@@ -51,7 +51,7 @@ struct ContactFixture : ModelFixture
     contact_datas_6D6D.push_back(pinocchio::RigidConstraintData(*ci_RF_6D));
     contact_datas_6D6D.push_back(pinocchio::RigidConstraintData(*ci_LF_6D));
 
-    contact_chol_6D6D = pinocchio::ConstraintCholeskyDecomposition(
+    constraint_chol_6D6D = pinocchio::ConstraintCholeskyDecomposition(
       model, data, contact_models_6D6D, contact_datas_6D6D);
 
     frame_anchor_models_6D.clear();
@@ -99,9 +99,9 @@ struct ContactFixture : ModelFixture
   std::vector<pinocchio::FrameAnchorConstraintModel> frame_anchor_models_6D6D;
   std::vector<pinocchio::FrameAnchorConstraintData> frame_anchor_datas_6D6D;
 
-  pinocchio::ConstraintCholeskyDecomposition contact_chol_empty;
-  pinocchio::ConstraintCholeskyDecomposition contact_chol_6D;
-  pinocchio::ConstraintCholeskyDecomposition contact_chol_6D6D;
+  pinocchio::ConstraintCholeskyDecomposition constraint_chol_empty;
+  pinocchio::ConstraintCholeskyDecomposition constraint_chol_6D;
+  pinocchio::ConstraintCholeskyDecomposition constraint_chol_6D6D;
 
   pinocchio::ProximalSettings prox_settings;
 
@@ -224,9 +224,9 @@ BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINED_ABA_EMPTY)(benchmark::State & st)
 }
 BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINED_ABA_EMPTY)->Apply(CustomArguments);
 
-// CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_EMPTY
+// CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE_EMPTY
 
-PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionComputeCall(
+PINOCCHIO_DONT_INLINE static void constraintCholeskyDecompositionComputeCall(
   pinocchio::ConstraintCholeskyDecomposition & contact,
   const pinocchio::Model & model,
   pinocchio::Data & data,
@@ -236,39 +236,39 @@ PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionComputeCall(
   contact.compute(model, data, contact_models, contact_data);
 }
 
-BENCHMARK_DEFINE_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_EMPTY)(
+BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE_EMPTY)(
   benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
   for (auto _ : st)
   {
-    contactCholeskyDecompositionComputeCall(
-      contact_chol_empty, model, data, contact_models_empty, contact_datas_empty);
+    constraintCholeskyDecompositionComputeCall(
+      constraint_chol_empty, model, data, contact_models_empty, contact_datas_empty);
   }
 }
-BENCHMARK_REGISTER_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_EMPTY)
+BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE_EMPTY)
   ->Apply(CustomArguments);
 
-// CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_EMPTY
+// CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE_EMPTY
 
-PINOCCHIO_DONT_INLINE static void contactCholeskyDecompositionInverseCall(
+PINOCCHIO_DONT_INLINE static void constraintCholeskyDecompositionInverseCall(
   pinocchio::ConstraintCholeskyDecomposition & contact, Eigen::MatrixXd & H_inverse)
 {
   contact.inverse(H_inverse);
 }
 
-BENCHMARK_DEFINE_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_EMPTY)(
+BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE_EMPTY)(
   benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
-  contact_chol_empty.compute(model, data, contact_models_empty, contact_datas_empty);
-  Eigen::MatrixXd H_inverse(contact_chol_empty.size(), contact_chol_empty.size());
+  constraint_chol_empty.compute(model, data, contact_models_empty, contact_datas_empty);
+  Eigen::MatrixXd H_inverse(constraint_chol_empty.size(), constraint_chol_empty.size());
   for (auto _ : st)
   {
-    contactCholeskyDecompositionInverseCall(contact_chol_empty, H_inverse);
+    constraintCholeskyDecompositionInverseCall(constraint_chol_empty, H_inverse);
   }
 }
-BENCHMARK_REGISTER_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_EMPTY)
+BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE_EMPTY)
   ->Apply(CustomArguments);
 
 // CONSTRAINT_DYNAMICS_EMPTY
@@ -330,33 +330,33 @@ BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINED_ABA_6D)(benchmark::State & st)
 }
 BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINED_ABA_6D)->Apply(CustomArguments);
 
-// CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_6D
+// CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE_6D
 
-BENCHMARK_DEFINE_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_6D)(benchmark::State & st)
+BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE_6D)(benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
   for (auto _ : st)
   {
-    contactCholeskyDecompositionComputeCall(
-      contact_chol_6D, model, data, contact_models_6D, contact_datas_6D);
+    constraintCholeskyDecompositionComputeCall(
+      constraint_chol_6D, model, data, contact_models_6D, contact_datas_6D);
   }
 }
-BENCHMARK_REGISTER_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_6D)
+BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE_6D)
   ->Apply(CustomArguments);
 
-// CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_6D
+// CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE_6D
 
-BENCHMARK_DEFINE_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_6D)(benchmark::State & st)
+BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE_6D)(benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
-  contact_chol_6D.compute(model, data, contact_models_6D, contact_datas_6D);
-  Eigen::MatrixXd H_inverse(contact_chol_6D.size(), contact_chol_6D.size());
+  constraint_chol_6D.compute(model, data, contact_models_6D, contact_datas_6D);
+  Eigen::MatrixXd H_inverse(constraint_chol_6D.size(), constraint_chol_6D.size());
   for (auto _ : st)
   {
-    contactCholeskyDecompositionInverseCall(contact_chol_6D, H_inverse);
+    constraintCholeskyDecompositionInverseCall(constraint_chol_6D, H_inverse);
   }
 }
-BENCHMARK_REGISTER_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_6D)
+BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE_6D)
   ->Apply(CustomArguments);
 
 // CONSTRAINT_DYNAMICS_6D
@@ -385,14 +385,14 @@ PINOCCHIO_DONT_INLINE static void getKKTContactDynamicMatrixInverseCall(
 
 BENCHMARK_DEFINE_F(ContactFixture, GET_KKT_CONTACT_DYNAMIC_MATRIX_INVERSE_6D)(benchmark::State & st)
 {
-  Eigen::MatrixXd J(contact_chol_6D.constraintDim(), model.nv);
+  Eigen::MatrixXd J(constraint_chol_6D.constraintDim(), model.nv);
   J.setZero();
 
   Eigen::MatrixXd MJtJ_inv(
-    model.nv + contact_chol_6D.constraintDim(), model.nv + contact_chol_6D.constraintDim());
+    model.nv + constraint_chol_6D.constraintDim(), model.nv + constraint_chol_6D.constraintDim());
   MJtJ_inv.setZero();
 
-  Eigen::VectorXd gamma(contact_chol_6D.constraintDim());
+  Eigen::VectorXd gamma(constraint_chol_6D.constraintDim());
   gamma.setZero();
 
   pinocchio::computeAllTerms(model, data, q, v);
@@ -445,35 +445,35 @@ BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINED_ABA_6D6D)(benchmark::State & st)
 }
 BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINED_ABA_6D6D)->Apply(CustomArguments);
 
-// CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_6D6D
+// CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE_6D6D
 
-BENCHMARK_DEFINE_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_6D6D)(
+BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE_6D6D)(
   benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
   for (auto _ : st)
   {
-    contactCholeskyDecompositionComputeCall(
-      contact_chol_6D6D, model, data, contact_models_6D6D, contact_datas_6D6D);
+    constraintCholeskyDecompositionComputeCall(
+      constraint_chol_6D6D, model, data, contact_models_6D6D, contact_datas_6D6D);
   }
 }
-BENCHMARK_REGISTER_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_COMPUTE_6D6D)
+BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE_6D6D)
   ->Apply(CustomArguments);
 
-// CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_6D6D
+// CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE_6D6D
 
-BENCHMARK_DEFINE_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_6D6D)(
+BENCHMARK_DEFINE_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE_6D6D)(
   benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
-  contact_chol_6D6D.compute(model, data, contact_models_6D6D, contact_datas_6D6D);
-  Eigen::MatrixXd H_inverse(contact_chol_6D6D.size(), contact_chol_6D6D.size());
+  constraint_chol_6D6D.compute(model, data, contact_models_6D6D, contact_datas_6D6D);
+  Eigen::MatrixXd H_inverse(constraint_chol_6D6D.size(), constraint_chol_6D6D.size());
   for (auto _ : st)
   {
-    contactCholeskyDecompositionInverseCall(contact_chol_6D6D, H_inverse);
+    constraintCholeskyDecompositionInverseCall(constraint_chol_6D6D, H_inverse);
   }
 }
-BENCHMARK_REGISTER_F(ContactFixture, CONTACT_CHOLESKY_DECOMPOSITION_INVERSE_6D6D)
+BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE_6D6D)
   ->Apply(CustomArguments);
 
 // CONSTRAINT_DYNAMICS_6D6D
@@ -493,14 +493,14 @@ BENCHMARK_REGISTER_F(ContactFixture, CONSTRAINT_DYNAMICS_6D6D)->Apply(CustomArgu
 BENCHMARK_DEFINE_F(ContactFixture, GET_KKT_CONTACT_DYNAMIC_MATRIX_INVERSE_6D6D)(
   benchmark::State & st)
 {
-  Eigen::MatrixXd J(contact_chol_6D6D.constraintDim(), model.nv);
+  Eigen::MatrixXd J(constraint_chol_6D6D.constraintDim(), model.nv);
   J.setZero();
 
   Eigen::MatrixXd MJtJ_inv(
-    model.nv + contact_chol_6D6D.constraintDim(), model.nv + contact_chol_6D6D.constraintDim());
+    model.nv + constraint_chol_6D6D.constraintDim(), model.nv + constraint_chol_6D6D.constraintDim());
   MJtJ_inv.setZero();
 
-  Eigen::VectorXd gamma(contact_chol_6D6D.constraintDim());
+  Eigen::VectorXd gamma(constraint_chol_6D6D.constraintDim());
   gamma.setZero();
 
   computeAllTerms(model, data, q, v);
@@ -537,10 +537,10 @@ PINOCCHIO_DONT_INLINE static void forwardDynamisCall(
 
 BENCHMARK_DEFINE_F(ContactFixture, FORWARD_DYNAMICS_6D6D)(benchmark::State & st)
 {
-  Eigen::MatrixXd J(contact_chol_6D6D.constraintDim(), model.nv);
+  Eigen::MatrixXd J(constraint_chol_6D6D.constraintDim(), model.nv);
   J.setZero();
 
-  Eigen::VectorXd gamma(contact_chol_6D6D.constraintDim());
+  Eigen::VectorXd gamma(constraint_chol_6D6D.constraintDim());
   gamma.setZero();
 
   initConstraintDynamics(model, data, contact_models_6D6D, contact_datas_6D6D);

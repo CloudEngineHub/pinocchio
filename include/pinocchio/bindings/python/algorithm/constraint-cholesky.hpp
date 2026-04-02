@@ -25,9 +25,9 @@ namespace pinocchio
     namespace bp = boost::python;
 
     template<typename ConstraintCholeskyDecomposition>
-    struct ContactCholeskyDecompositionPythonVisitor
+    struct ConstraintCholeskyDecompositionPythonVisitor
     : public boost::python::def_visitor<
-        ContactCholeskyDecompositionPythonVisitor<ConstraintCholeskyDecomposition>>
+        ConstraintCholeskyDecompositionPythonVisitor<ConstraintCholeskyDecomposition>>
     {
       typedef ConstraintCholeskyDecomposition Self;
       typedef typename Self::Scalar Scalar;
@@ -248,9 +248,11 @@ namespace pinocchio
         bp::class_<ConstraintCholeskyDecomposition>(
           "ConstraintCholeskyDecomposition",
           "Contact information container for contact dynamic algorithms.", bp::no_init)
-          .def(ContactCholeskyDecompositionPythonVisitor<ConstraintCholeskyDecomposition>())
+          .def(ConstraintCholeskyDecompositionPythonVisitor<ConstraintCholeskyDecomposition>())
           .def(::eigenpy::CopyableVisitor<ConstraintCholeskyDecomposition>());
 
+        bp::scope().attr("ContactCholeskyDecomposition") =
+          bp::scope().attr("ConstraintCholeskyDecomposition"); // alias
         {
           typedef typename ConstraintCholeskyDecomposition::DelassusCholeskyExpression
             DelassusCholeskyExpression;
