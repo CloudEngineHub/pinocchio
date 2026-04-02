@@ -109,8 +109,8 @@ namespace pinocchio
 
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+        const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
 
         const auto csize = cmodel.residualSize();
         SegmentType1 force_segment = x.derived().segment(index, csize);
@@ -222,8 +222,8 @@ namespace pinocchio
 
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+        const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
         const auto csize = cmodel.residualSize();
 
         SegmentType1 force_segment = x.derived().segment(index, csize);
@@ -368,8 +368,8 @@ namespace pinocchio
 
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+        const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
         const auto csize = cmodel.residualSize();
 
         SegmentType1 velocity_segment = x.segment(index, csize);
@@ -536,8 +536,8 @@ namespace pinocchio
 
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+        const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
         const auto csize = cmodel.residualSize();
 
         SegmentType1 velocity_segment = velocities.segment(index, csize);
@@ -658,8 +658,8 @@ namespace pinocchio
       Eigen::Index index = 0;
       for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
       {
-        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+        const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
         const auto csize = cmodel.residualSize();
 
         SegmentType1 velocity_segment = velocities.segment(index, csize);

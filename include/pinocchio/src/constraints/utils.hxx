@@ -86,7 +86,7 @@ namespace pinocchio
     Eigen::Index active_size = 0;
     for (std::size_t i = 0; i < constraint_models.size(); ++i)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[i]);
       active_size += cmodel.residualSize(sel);
     }
 
@@ -124,7 +124,7 @@ namespace pinocchio
     Eigen::Index active_size = 0;
     for (std::size_t i = 0; i < constraint_models.size(); ++i)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[i]);
       active_size += cmodel.symmetricConeResidualSize(sel);
     }
 
@@ -162,7 +162,7 @@ namespace pinocchio
     Eigen::Index active_size = 0;
     for (std::size_t i = 0; i < constraint_models.size(); ++i)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[i]);
       active_size += cmodel.symmetricConeResidualScalingSize(sel);
     }
 
@@ -187,7 +187,7 @@ namespace pinocchio
 
     for (std::size_t i = 0; i < constraint_models.size(); i++)
     {
-      auto & cmodel = helper::get_ref(constraint_models[i]);
+      auto & cmodel = internal::helper::get_ref(constraint_models[i]);
       const auto csize = cmodel.residualSize(sel);
       cmodel.setCompliance(compliance.segment(constraint_index, csize), sel);
       constraint_index += csize;
@@ -213,7 +213,7 @@ namespace pinocchio
 
     for (std::size_t i = 0; i < constraint_models.size(); i++)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[i]);
       const auto csize = cmodel.residualSize(sel);
       cmodel.retrieveCompliance(compliance.segment(constraint_index, csize), sel);
       constraint_index += csize;
@@ -268,8 +268,8 @@ namespace pinocchio
   {
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[k]);
-      auto & cdata = helper::get_ref(constraint_datas[k]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[k]);
+      auto & cdata = internal::helper::get_ref(constraint_datas[k]);
 
       cmodel.calc(model, data, cdata);
     }
@@ -578,8 +578,8 @@ namespace pinocchio
     Eigen::Index row_id = 0;
     for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize();
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
@@ -631,8 +631,8 @@ namespace pinocchio
     Eigen::Index row_id = 0;
     for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize();
 
       const auto constraint_force = constraint_forces.segment(row_id, constraint_size);
@@ -674,8 +674,8 @@ namespace pinocchio
     Eigen::Index row_id = 0;
     for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize();
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);
@@ -720,8 +720,8 @@ namespace pinocchio
     Eigen::Index row_id = 0;
     for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize();
 
       auto constraint_motion = constraint_motions.segment(row_id, constraint_size);
@@ -748,8 +748,8 @@ namespace pinocchio
     const Eigen::MatrixBase<JacobianMatrixLike> & J_)
   {
     JacobianMatrixLike & J = J_.const_cast_derived();
-    const auto & constraint_model = helper::get_ref(constraint_model_.derived());
-    const auto & constraint_data = helper::get_ref(constraint_data_.derived());
+    const auto & constraint_model = internal::helper::get_ref(constraint_model_.derived());
+    const auto & constraint_data = internal::helper::get_ref(constraint_data_.derived());
 
     assert(model.check(data) && "data is not consistent with model.");
     PINOCCHIO_CHECK_ARGUMENT_SIZE(J_.rows(), constraint_model.residualSize());
@@ -786,8 +786,8 @@ namespace pinocchio
     Eigen::Index row_id = 0;
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[k]);
-      const auto & cdata = helper::get_ref(constraint_datas[k]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[k]);
+      const auto & cdata = internal::helper::get_ref(constraint_datas[k]);
 
       const auto csize = cmodel.residualSize();
       getConstraintJacobian(model, data, cmodel, cdata, J.middleRows(row_id, csize));
@@ -859,8 +859,8 @@ namespace pinocchio
     Eigen::Index row_id = 0;
     for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize();
 
       auto res_block = res.middleRows(row_id, constraint_size);
@@ -909,8 +909,8 @@ namespace pinocchio
 
     for (size_t constraint_id = 0; constraint_id < constraint_models.size(); ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
       const auto constraint_size = cmodel.residualSize();
 
       const auto rhs_block = rhs.middleRows(row_id, constraint_size);
@@ -1138,7 +1138,7 @@ namespace pinocchio
 
     for (std::size_t i = 0; i < constraint_models.size(); ++i)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[i]);
 
       typedef internal::ComputeBlockDiagonalPatternVisitor<decltype(block_diagonal_infos), op> Algo;
       Algo::run(cmodel, block_diagonal_infos, dispatcher);

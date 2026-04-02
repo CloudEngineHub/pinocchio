@@ -15,23 +15,23 @@ BOOST_AUTO_TEST_CASE(test_helpers)
 {
   Eigen::MatrixXd A = Eigen::MatrixXd::Random(2, 2);
 
-  BOOST_CHECK(!helper::is_eigen_noalias_v<decltype(A)>);
-  BOOST_CHECK(helper::is_eigen_noalias_v<decltype(A.noalias())>);
+  BOOST_CHECK(!internal::helper::is_eigen_noalias_v<decltype(A)>);
+  BOOST_CHECK(internal::helper::is_eigen_noalias_v<decltype(A.noalias())>);
 
   typedef Eigen::Matrix<double, 3, Eigen::Dynamic> Matrix3d;
-  BOOST_CHECK(helper::has_fixed_rows_v<Matrix3d>);
-  BOOST_CHECK(!helper::has_fixed_cols_v<Matrix3d>);
-  BOOST_CHECK(!helper::has_fixed_size_v<Matrix3d>);
+  BOOST_CHECK(internal::helper::has_fixed_rows_v<Matrix3d>);
+  BOOST_CHECK(!internal::helper::has_fixed_cols_v<Matrix3d>);
+  BOOST_CHECK(!internal::helper::has_fixed_size_v<Matrix3d>);
 
   typedef Eigen::Matrix<double, Eigen::Dynamic, 3> Matrixd3;
-  BOOST_CHECK(!helper::has_fixed_rows_v<Matrixd3>);
-  BOOST_CHECK(helper::has_fixed_cols_v<Matrixd3>);
-  BOOST_CHECK(!helper::has_fixed_size_v<Matrixd3>);
+  BOOST_CHECK(!internal::helper::has_fixed_rows_v<Matrixd3>);
+  BOOST_CHECK(internal::helper::has_fixed_cols_v<Matrixd3>);
+  BOOST_CHECK(!internal::helper::has_fixed_size_v<Matrixd3>);
 
   typedef Eigen::Matrix<double, 3, 3> Matrix33;
-  BOOST_CHECK(helper::has_fixed_rows_v<Matrix33>);
-  BOOST_CHECK(helper::has_fixed_cols_v<Matrix33>);
-  BOOST_CHECK(helper::has_fixed_size_v<Matrix33>);
+  BOOST_CHECK(internal::helper::has_fixed_rows_v<Matrix33>);
+  BOOST_CHECK(internal::helper::has_fixed_cols_v<Matrix33>);
+  BOOST_CHECK(internal::helper::has_fixed_size_v<Matrix33>);
 }
 
 BOOST_AUTO_TEST_CASE(test_make_map)
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   BOOST_CHECK(C_expression.rows() == A.rows());
   BOOST_CHECK(C_expression.cols() == B.cols());
 
-  auto C_op = promote_static_eval<10>(C);
+  auto C_op = internal::promote_static_eval<10>(C);
   BOOST_CHECK(&C_op.expression() == &C);
 
   BOOST_CHECK(
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
 
   // Specific case where MaxUnfolding == 0
   {
-    auto C_op = promote_static_eval(C);
+    auto C_op = internal::promote_static_eval(C);
     BOOST_CHECK(&C_op.expression() == &C);
 
     C_op = A * B;
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
   A.setConstant(3);
   B.setConstant(4);
 
-  auto C_noalias_op = promote_static_eval<10>(C.noalias());
+  auto C_noalias_op = internal::promote_static_eval<10>(C.noalias());
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
   BOOST_CHECK(
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(test_dynamic_matrix)
 
   // Specific case where MaxUnfolding == 0
   {
-    auto C_noalias_op = promote_static_eval(C.noalias());
+    auto C_noalias_op = internal::promote_static_eval(C.noalias());
     BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
     C_noalias_op = A * B;
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   BOOST_CHECK(C_expression.rows() == A.rows());
   BOOST_CHECK(C_expression.cols() == B.cols());
 
-  auto C_op = promote_static_eval<10>(C);
+  auto C_op = internal::promote_static_eval<10>(C);
   BOOST_CHECK(&C_op.expression() == &C);
 
   BOOST_CHECK(
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
 
   // Specific case where MaxUnfolding == 0
   {
-    auto C_op = promote_static_eval(C);
+    auto C_op = internal::promote_static_eval(C);
     BOOST_CHECK(&C_op.expression() == &C);
 
     C_op = A * B;
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
   A.setConstant(3);
   B.setConstant(4);
 
-  auto C_noalias_op = promote_static_eval<10>(C.noalias());
+  auto C_noalias_op = internal::promote_static_eval<10>(C.noalias());
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
   BOOST_CHECK(
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(test_static_matrix)
 
   // Specific case where MaxUnfolding == 0
   {
-    auto C_noalias_op = promote_static_eval(C.noalias());
+    auto C_noalias_op = internal::promote_static_eval(C.noalias());
     BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
     C_noalias_op = A * B;
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   BOOST_CHECK(C_expression.rows() == A.rows());
   BOOST_CHECK(C_expression.cols() == B.cols());
 
-  auto C_op = promote_static_eval<10>(C);
+  auto C_op = internal::promote_static_eval<10>(C);
   BOOST_CHECK(&C_op.expression() == &C);
 
   BOOST_CHECK(
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
 
   // Specific case where MaxUnfolding == 0
   {
-    auto C_op = promote_static_eval(C);
+    auto C_op = internal::promote_static_eval(C);
     BOOST_CHECK(&C_op.expression() == &C);
 
     C_op = A * B;
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
   A.setConstant(3);
   B.setConstant(4);
 
-  auto C_noalias_op = promote_static_eval<10>(C.noalias());
+  auto C_noalias_op = internal::promote_static_eval<10>(C.noalias());
   BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
   BOOST_CHECK(
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE(test_partial_static_matrix)
 
   // Specific case where MaxUnfolding == 0
   {
-    auto C_noalias_op = promote_static_eval(C.noalias());
+    auto C_noalias_op = internal::promote_static_eval(C.noalias());
     BOOST_CHECK(&C_noalias_op.expression().expression() == &C);
 
     C_noalias_op = A * B;
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(test_specitic_6x6_case)
 
   const auto matrix_product = A * B;
   BOOST_CHECK(
-    promote_static_eval(res.noalias()).dispatch_type(matrix_product)
+    internal::promote_static_eval(res.noalias()).dispatch_type(matrix_product)
     == pinocchio::internal::DispatchType::STATIC);
 }
 

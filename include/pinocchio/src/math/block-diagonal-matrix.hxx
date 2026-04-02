@@ -712,7 +712,7 @@ namespace pinocchio
       /// \details Sums up the sizes of all internal data members.
       std::size_t sizeInBytes() const
       {
-        return 2 * ::pinocchio::sizeInBytes<Eigen::Index>()
+        return 2 * ::pinocchio::internal::sizeInBytes<Eigen::Index>()
                + m_matrix_stack.sizeInBytes(); // TODO(jcarpent) complete +
                                                // sizeInBytes(m_matrix_block_elements);
       }

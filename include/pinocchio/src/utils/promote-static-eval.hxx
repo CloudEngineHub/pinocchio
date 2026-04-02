@@ -13,10 +13,8 @@
 
 namespace pinocchio
 {
-
   namespace internal
   {
-
     template<int MinRowsAtCompileTime, int MinColsAtCompileTime, typename PlainMatrix>
     struct make_static_matrix
     {
@@ -434,36 +432,39 @@ namespace pinocchio
 
     }; // struct PromoteStaticEval
 
+    template<int MaxStaticUnfolding, typename MatrixExpression>
+    PromoteStaticEval<MaxStaticUnfolding, MatrixExpression, Eigen::MatrixBase>
+    promote_static_eval(const Eigen::MatrixBase<MatrixExpression> & matrix_expression)
+    {
+      return {matrix_expression.const_cast_derived()};
+    }
+
+    template<typename MatrixExpression>
+    PromoteStaticEval<0, MatrixExpression, Eigen::MatrixBase>
+    promote_static_eval(const Eigen::MatrixBase<MatrixExpression> & matrix_expression)
+    {
+      return {matrix_expression.const_cast_derived()};
+    }
+
+    template<
+      int MaxStaticUnfolding,
+      typename MatrixExpression,
+      template<typename> class StorageBase>
+    PromoteStaticEval<
+      MaxStaticUnfolding,
+      Eigen::NoAlias<MatrixExpression, StorageBase>,
+      Eigen::MatrixBase>
+    promote_static_eval(Eigen::NoAlias<MatrixExpression, StorageBase> && matrix_expression)
+    {
+      return {std::forward<Eigen::NoAlias<MatrixExpression, StorageBase>>(matrix_expression)};
+    }
+
+    template<typename MatrixExpression, template<typename> class StorageBase>
+    PromoteStaticEval<0, Eigen::NoAlias<MatrixExpression, StorageBase>, Eigen::MatrixBase>
+    promote_static_eval(Eigen::NoAlias<MatrixExpression, StorageBase> && matrix_expression)
+    {
+      return {std::forward<Eigen::NoAlias<MatrixExpression, StorageBase>>(matrix_expression)};
+    }
+
   } // namespace internal
-
-  template<int MaxStaticUnfolding, typename MatrixExpression>
-  internal::PromoteStaticEval<MaxStaticUnfolding, MatrixExpression, Eigen::MatrixBase>
-  promote_static_eval(const Eigen::MatrixBase<MatrixExpression> & matrix_expression)
-  {
-    return {matrix_expression.const_cast_derived()};
-  }
-
-  template<typename MatrixExpression>
-  internal::PromoteStaticEval<0, MatrixExpression, Eigen::MatrixBase>
-  promote_static_eval(const Eigen::MatrixBase<MatrixExpression> & matrix_expression)
-  {
-    return {matrix_expression.const_cast_derived()};
-  }
-
-  template<int MaxStaticUnfolding, typename MatrixExpression, template<typename> class StorageBase>
-  internal::PromoteStaticEval<
-    MaxStaticUnfolding,
-    Eigen::NoAlias<MatrixExpression, StorageBase>,
-    Eigen::MatrixBase>
-  promote_static_eval(Eigen::NoAlias<MatrixExpression, StorageBase> && matrix_expression)
-  {
-    return {std::forward<Eigen::NoAlias<MatrixExpression, StorageBase>>(matrix_expression)};
-  }
-
-  template<typename MatrixExpression, template<typename> class StorageBase>
-  internal::PromoteStaticEval<0, Eigen::NoAlias<MatrixExpression, StorageBase>, Eigen::MatrixBase>
-  promote_static_eval(Eigen::NoAlias<MatrixExpression, StorageBase> && matrix_expression)
-  {
-    return {std::forward<Eigen::NoAlias<MatrixExpression, StorageBase>>(matrix_expression)};
-  }
 } // namespace pinocchio

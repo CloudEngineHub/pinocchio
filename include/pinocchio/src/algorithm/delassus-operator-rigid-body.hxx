@@ -44,12 +44,14 @@ namespace pinocchio
     typedef typename Model::Data Data;
 
     typedef _ConstraintModel ConstraintModel;
-    typedef typename helper::remove_holder<ConstraintModel>::type InnerConstraintModel;
-    typedef typename helper::remove_holder<ConstraintModel>::ref_type ConstraintModelReference;
-    static constexpr bool ConstraintModelIsConst = helper::remove_holder<ConstraintModel>::is_const;
+    typedef typename internal::helper::remove_holder<ConstraintModel>::type InnerConstraintModel;
+    typedef
+      typename internal::helper::remove_holder<ConstraintModel>::ref_type ConstraintModelReference;
+    static constexpr bool ConstraintModelIsConst =
+      internal::helper::remove_holder<ConstraintModel>::is_const;
 
     typedef typename InnerConstraintModel::ConstraintData InnerConstraintData;
-    typedef typename helper::remove_holder<ConstraintModel>::template rebind<
+    typedef typename internal::helper::remove_holder<ConstraintModel>::template rebind<
       typename std::
         conditional<ConstraintModelIsConst, const InnerConstraintData, InnerConstraintData>::type>
       ConstraintData;
@@ -171,13 +173,13 @@ namespace pinocchio
       const ConstraintDataVectorHolder & constraint_datas_ref,
       const Scalar min_damping_value = 0)
     : Base()
-    , m_size(residualSize(helper::get_ref(constraint_models_ref)))
+    , m_size(residualSize(internal::helper::get_ref(constraint_models_ref)))
     , m_min_damping_value(min_damping_value)
     , m_model_ref(model_ref)
     , m_data_ref(data_ref)
     , m_constraint_models_ref(constraint_models_ref)
     , m_constraint_datas_ref(constraint_datas_ref)
-    , m_internal_data(helper::get_ref(model_ref))
+    , m_internal_data(internal::helper::get_ref(model_ref))
     , m_solve_in_place_dirty(true)
     , m_damping(VectorXs::Constant(m_size, min_damping_value).asDiagonal())
     , m_compliance_storage(m_size)
@@ -262,31 +264,31 @@ namespace pinocchio
     /// \brief Const getter for model.
     const Model & model() const
     {
-      return helper::get_ref(m_model_ref);
+      return internal::helper::get_ref(m_model_ref);
     }
 
     /// \brief Getter for data.
     Data & data()
     {
-      return helper::get_ref(m_data_ref);
+      return internal::helper::get_ref(m_data_ref);
     }
     ///
     /// \brief Const getter for data.
     const Data & data() const
     {
-      return helper::get_ref(m_data_ref);
+      return internal::helper::get_ref(m_data_ref);
     }
 
     /// \brief Const getter of constraint models.
     const ConstraintModelVector & constraint_models() const
     {
-      return helper::get_ref(m_constraint_models_ref);
+      return internal::helper::get_ref(m_constraint_models_ref);
     }
 
     /// \brief Const getter of constraint datas.
     const ConstraintDataVector & constraint_datas() const
     {
-      return helper::get_ref(m_constraint_datas_ref);
+      return internal::helper::get_ref(m_constraint_datas_ref);
     }
 
     // -------------------------------
@@ -476,9 +478,10 @@ namespace pinocchio
       /// \details Sums up the sizes of all internal data members.
       std::size_t sizeInBytes() const
       {
-        return pinocchio::sizeInBytes(a) + pinocchio::sizeInBytes(oa_augmented)
-               + pinocchio::sizeInBytes(u) + pinocchio::sizeInBytes(ddq) + pinocchio::sizeInBytes(f)
-               + pinocchio::sizeInBytes(of_augmented);
+        return pinocchio::internal::sizeInBytes(a) + pinocchio::internal::sizeInBytes(oa_augmented)
+               + pinocchio::internal::sizeInBytes(u) + pinocchio::internal::sizeInBytes(ddq)
+               + pinocchio::internal::sizeInBytes(f)
+               + pinocchio::internal::sizeInBytes(of_augmented);
       }
     };
 
@@ -577,7 +580,7 @@ namespace pinocchio
     m_constraint_models_ref = constraint_models_ref;
     m_constraint_datas_ref = constraint_datas_ref;
 
-    m_size = residualSize(helper::get_ref(constraint_models_ref));
+    m_size = residualSize(internal::helper::get_ref(constraint_models_ref));
 
     // resize quantities
     m_damping = VectorXs::Constant(m_size, m_min_damping_value).asDiagonal();
@@ -592,9 +595,9 @@ namespace pinocchio
     assert(m_sum_compliance_damping.rows() == m_size);
     assert(m_sum_compliance_damping_inverse.rows() == m_size);
 
-    retrieveConstraintCompliance(helper::get_ref(constraint_models_ref), m_compliance);
+    retrieveConstraintCompliance(internal::helper::get_ref(constraint_models_ref), m_compliance);
 
-    computeJointMinimalOrdering(model(), data(), helper::get_ref(constraint_models_ref));
+    computeJointMinimalOrdering(model(), data(), internal::helper::get_ref(constraint_models_ref));
     updateSumComplianceDamping();
   }
 
@@ -655,7 +658,8 @@ namespace pinocchio
         PINOCCHIO_TRACY_ZONE_SCOPED_N("appendCouplingConstraintInertias");
         const auto & blocks = m_sum_compliance_damping_inverse.blocks();
         PINOCCHIO_THROW_PRETTY_IF(
-          getSumOfBlockSizes(blocks) != residualSize(helper::get_ref(constraint_models_ref)),
+          getSumOfBlockSizes(blocks)
+            != residualSize(internal::helper::get_ref(constraint_models_ref)),
           std::runtime_error,
           "The sum of sizes of the blocks should be the same as the total residual size of the "
           "constraints vector.");
@@ -668,15 +672,15 @@ namespace pinocchio
           const auto & compliance_damping_inverse_vector =
             remap<ConstVectorMap>(diagonal_block.container());
 
-          assert(residualSize(helper::get_ref(constraint_models_ref)) == m_size);
+          assert(residualSize(internal::helper::get_ref(constraint_models_ref)) == m_size);
           assert(compliance_damping_inverse_vector.size() == m_size);
 
           Eigen::Index row_id = 0;
           for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
                ++constraint_id)
           {
-            const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
-            const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
+            const auto & cmodel = internal::helper::get_ref(constraint_models_ref[constraint_id]);
+            const auto & cdata = internal::helper::get_ref(constraint_datas_ref[constraint_id]);
 
             const auto constraint_size = cmodel.residualSize();
             const auto constraint_diagonal_inertia =
@@ -699,8 +703,8 @@ namespace pinocchio
           for (std::size_t constraint_id = 0; constraint_id < constraint_models_ref.size();
                ++constraint_id)
           {
-            const auto & cmodel = helper::get_ref(constraint_models_ref[constraint_id]);
-            const auto & cdata = helper::get_ref(constraint_datas_ref[constraint_id]);
+            const auto & cmodel = internal::helper::get_ref(constraint_models_ref[constraint_id]);
+            const auto & cdata = internal::helper::get_ref(constraint_datas_ref[constraint_id]);
             cmodel.appendCouplingConstraintInertias(
               model_ref, data_ref, cdata, blocks[constraint_id], WorldFrameTag());
           }
@@ -796,9 +800,9 @@ namespace pinocchio
     //      ++constraint_id)
     //      {
     //        const auto & cmodel =
-    //          helper::get_ref(constraint_models_ref[constraint_id]);
+    //          internal::helper::get_ref(constraint_models_ref[constraint_id]);
     //        const auto & cdata =
-    //          helper::get_ref(constraint_datas_ref[constraint_id]);
+    //          internal::helper::get_ref(constraint_datas_ref[constraint_id]);
     //        const auto csize = cmodel.size();
     //        const auto rhs_rows = rhs.middleRows(row_id, csize);
     //
@@ -854,9 +858,9 @@ namespace pinocchio
     //      ++constraint_id)
     //      {
     //        const auto & cmodel =
-    //          helper::get_ref(constraint_models_ref[constraint_id]);
+    //          internal::helper::get_ref(constraint_models_ref[constraint_id]);
     //        const auto & cdata =
-    //          helper::get_ref(constraint_datas_ref[constraint_id]);
+    //          internal::helper::get_ref(constraint_datas_ref[constraint_id]);
     //        const auto csize = cmodel.size();
     //
     //        cmodel.jacobianMatrixProduct(
@@ -932,9 +936,9 @@ namespace pinocchio
     //      ++constraint_id)
     //      {
     //        const auto & cmodel =
-    //          helper::get_ref(constraint_models_ref[constraint_id]);
+    //          internal::helper::get_ref(constraint_models_ref[constraint_id]);
     //        const auto & cdata =
-    //          helper::get_ref(constraint_datas_ref[constraint_id]);
+    //          internal::helper::get_ref(constraint_datas_ref[constraint_id]);
     //        const auto csize = cmodel.size();
     //        const auto mat_rows = mat.middleRows(row_id, csize);
     //
@@ -954,9 +958,9 @@ namespace pinocchio
     //      ++constraint_id)
     //      {
     //        const auto & cmodel =
-    //          helper::get_ref(constraint_models_ref[constraint_id]);
+    //          internal::helper::get_ref(constraint_models_ref[constraint_id]);
     //        const auto & cdata =
-    //          helper::get_ref(constraint_datas_ref[constraint_id]);
+    //          internal::helper::get_ref(constraint_datas_ref[constraint_id]);
     //        const auto csize = cmodel.size();
     //
     //        cmodel.jacobianMatrixProduct(

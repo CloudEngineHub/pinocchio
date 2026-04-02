@@ -98,12 +98,12 @@ BOOST_AUTO_TEST_CASE(default_constructor_reference_wrapper)
   ConstraintModelVector constraint_models;
   std::reference_wrapper<ConstraintModelVector> constraint_models_ref = constraint_models;
   ConstraintDataVector constraint_datas;
-  auto constraint_datas_ref = helper::make_ref(constraint_datas);
+  auto constraint_datas_ref = pinocchio::internal::helper::make_ref(constraint_datas);
 
   DelassusOperatorRigidBodyReferenceWrapper delassus_operator(
     model_ref, data_ref, constraint_models_ref, constraint_datas_ref);
 
-  const auto csize = residualSize(helper::get_ref(constraint_models_ref));
+  const auto csize = residualSize(pinocchio::internal::helper::get_ref(constraint_models_ref));
   BOOST_CHECK(delassus_operator.size() == csize);
 
   BOOST_CHECK(delassus_operator.size() == 0);
@@ -155,12 +155,12 @@ BOOST_AUTO_TEST_CASE(default_constructor_const_reference_wrapper)
   cmodel.calc(model, data, cdata); // make constraint data up to date with system state
 
   WrappedDelassusOperatorRigidBody delassus_operator(
-    helper::make_ref(model),             //
-    helper::make_ref(data),              //
-    helper::make_ref(constraint_models), //
-    helper::make_ref(constraint_datas));
+    pinocchio::internal::helper::make_ref(model),             //
+    pinocchio::internal::helper::make_ref(data),              //
+    pinocchio::internal::helper::make_ref(constraint_models), //
+    pinocchio::internal::helper::make_ref(constraint_datas));
 
-  const auto csize = residualSize(helper::get_ref(constraint_models));
+  const auto csize = residualSize(pinocchio::internal::helper::get_ref(constraint_models));
 
   BOOST_CHECK(delassus_operator.size() == csize);
   BOOST_CHECK(&delassus_operator.model() == &model);
@@ -1194,10 +1194,12 @@ void test_solve_in_place(
     double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
     DelassusOperatorRigidBodyReferenceWrapper;
 
-  const Model & model = helper::get_ref(model_ref);
-  Data & data = helper::get_ref(data_ref);
-  const ConstraintModelVector & constraint_models = helper::get_ref(constraint_models_ref);
-  ConstraintDataVector & constraint_datas = helper::get_ref(constraint_datas_ref);
+  const Model & model = pinocchio::internal::helper::get_ref(model_ref);
+  Data & data = pinocchio::internal::helper::get_ref(data_ref);
+  const ConstraintModelVector & constraint_models =
+    pinocchio::internal::helper::get_ref(constraint_models_ref);
+  ConstraintDataVector & constraint_datas =
+    pinocchio::internal::helper::get_ref(constraint_datas_ref);
 
   // Necessary to update data oMi, lMi and J for internal rigid body computations
   computeJointJacobians(model, data, q_neutral);

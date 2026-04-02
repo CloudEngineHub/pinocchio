@@ -32,7 +32,7 @@ namespace boost
       template<typename MapType>
       struct MatrixBlockElementTplAccessor<
         MapType,
-        std::enable_if_t<!pinocchio::helper::is_eigen_matrix_v<MapType>>>
+        std::enable_if_t<!pinocchio::internal::helper::is_eigen_matrix_v<MapType>>>
       : public ::pinocchio::internal::MatrixBlockElementTpl<MapType>
       {
         typedef ::pinocchio::internal::MatrixBlockElementTpl<MapType> Base;
@@ -54,7 +54,7 @@ namespace boost
       ar & make_nvp("type", matrix_block_element.m_type);
       ar & make_nvp("size", matrix_block_element.m_size);
 
-      if constexpr (pinocchio::helper::is_eigen_matrix_v<Matrix>)
+      if constexpr (pinocchio::internal::helper::is_eigen_matrix_v<Matrix>)
       {
         auto & container = matrix_block_element.container();
         ar & make_nvp("container", container);

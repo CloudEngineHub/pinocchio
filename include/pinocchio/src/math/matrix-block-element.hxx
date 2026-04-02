@@ -21,7 +21,9 @@ namespace pinocchio
     struct MatrixBlockElementTpl;
 
     template<typename MapType>
-    struct traits<MatrixBlockElementTpl<MapType>, std::enable_if_t<helper::is_eigen_map_v<MapType>>>
+    struct traits<
+      MatrixBlockElementTpl<MapType>,
+      std::enable_if_t<internal::helper::is_eigen_map_v<MapType>>>
     {
       typedef typename MapType::PlainObject Matrix;
       typedef typename Matrix::Scalar Scalar;
@@ -34,7 +36,7 @@ namespace pinocchio
     template<typename MatrixType>
     struct traits<
       MatrixBlockElementTpl<MatrixType>,
-      std::enable_if_t<helper::is_eigen_matrix_v<MatrixType>>>
+      std::enable_if_t<internal::helper::is_eigen_matrix_v<MatrixType>>>
     {
       typedef MatrixType Matrix;
       typedef typename Matrix::Scalar Scalar;
@@ -88,7 +90,9 @@ namespace pinocchio
      * the **exact same underlying memory buffer**.
      */
     template<typename MapType>
-    struct MatrixBlockElementTpl<MapType, std::enable_if_t<helper::is_eigen_map_v<MapType>>>
+    struct MatrixBlockElementTpl<
+      MapType,
+      std::enable_if_t<internal::helper::is_eigen_map_v<MapType>>>
     : MatrixBlockElementPlain<MatrixBlockElementTpl<MapType>>
     {
       /// @brief The type of this specialized class.
@@ -356,7 +360,7 @@ namespace pinocchio
     template<typename MatrixType>
     struct MatrixBlockElementTpl<
       MatrixType,
-      std::enable_if_t<helper::is_eigen_matrix_v<MatrixType>>>
+      std::enable_if_t<internal::helper::is_eigen_matrix_v<MatrixType>>>
     : MatrixBlockElementPlain<MatrixBlockElementTpl<MatrixType>>
     {
       /// @brief The type of this specialized class.

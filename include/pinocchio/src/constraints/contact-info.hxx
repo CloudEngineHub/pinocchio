@@ -935,7 +935,7 @@ namespace pinocchio
     Eigen::Index total_size = 0;
     for (size_t k = 0; k < constraint_models.size(); ++k)
     {
-      const auto & constraint_model = helper::get_ref(constraint_models[k]);
+      const auto & constraint_model = internal::helper::get_ref(constraint_models[k]);
       total_size += constraint_model.residualSize(sel);
     }
 

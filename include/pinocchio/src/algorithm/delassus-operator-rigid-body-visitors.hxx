@@ -11,7 +11,7 @@
   #include "pinocchio/algorithm/delassus-operator.hpp"
 #endif // PINOCCHIO_LSP
 
-#define PROMOTE_STATIC_EVAL(expression) promote_static_eval<0>(expression)
+#define PROMOTE_STATIC_EVAL(expression) internal::promote_static_eval<0>(expression)
 // #define PROMOTE_STATIC_EVAL(expression) expression
 #define DO_NOT_PROMOTE_STATIC_EVAL(expression) expression
 
