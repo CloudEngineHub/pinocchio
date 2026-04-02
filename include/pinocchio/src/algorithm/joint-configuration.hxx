@@ -565,7 +565,8 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
-    typename ConfigVectorIn2>
+    typename ConfigVectorIn2,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int>>
   bool isSameConfiguration(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q1,

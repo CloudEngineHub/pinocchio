@@ -102,7 +102,11 @@ namespace pinocchio
     const typename Config_t::Scalar & prec =
       Eigen::NumTraits<typename Config_t::Scalar>::dummy_precision());
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
   inline bool isSameConfiguration(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,
@@ -534,7 +538,11 @@ namespace pinocchio
     }
   };
 
-  template<typename LieGroupCollection, class ConfigL_t, class ConfigR_t>
+  template<
+    typename LieGroupCollection,
+    class ConfigL_t,
+    class ConfigR_t,
+    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int>>
   inline bool isSameConfiguration(
     const LieGroupGenericTpl<LieGroupCollection> & lg,
     const Eigen::MatrixBase<ConfigL_t> & q0,

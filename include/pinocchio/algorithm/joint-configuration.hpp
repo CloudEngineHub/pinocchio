@@ -1237,13 +1237,15 @@ namespace pinocchio
    * @return     Whether the configurations are equivalent or not, within the given precision.
    *
    */
+
   template<
     typename LieGroup_t,
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
-    typename ConfigVectorIn2>
+    typename ConfigVectorIn2,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   bool isSameConfiguration(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q1,
