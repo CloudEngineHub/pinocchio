@@ -114,7 +114,8 @@ namespace pinocchio
 
       StdVectorPythonVisitor<RigidConstraintDataVector>::expose("StdVec_RigidConstraintData");
 
-      ConstraintCholeskyDecompositionPythonVisitor<context::ConstraintCholeskyDecomposition>::expose();
+      ConstraintCholeskyDecompositionPythonVisitor<
+        context::ConstraintCholeskyDecomposition>::expose();
 
       exposeConstraintDynamicsFor<context::RigidConstraintModel>();
       // exposeConstraintDynamicsFor<FrameAnchorConstraintModel>();

@@ -85,7 +85,8 @@ PINOCCHIO_DONT_INLINE static void constraintCholeskyDecompositionComputeCall(
   contact.compute(model, data, contact_models_6D6D, contact_data_6D6D);
 }
 
-BENCHMARK_DEFINE_F(DelassusFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE)(benchmark::State & st)
+BENCHMARK_DEFINE_F(DelassusFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_COMPUTE)(
+  benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
   constraint_chol_6D6D.allocate(model, data, contact_models_6D6D, contact_data_6D6D);
@@ -106,7 +107,8 @@ PINOCCHIO_DONT_INLINE static void constraintCholeskyDecompositionInverseCall(
   contact.inverse(H_inverse);
 }
 
-BENCHMARK_DEFINE_F(DelassusFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE)(benchmark::State & st)
+BENCHMARK_DEFINE_F(DelassusFixture, CONSTRAINT_CHOLESKY_DECOMPOSITION_INVERSE)(
+  benchmark::State & st)
 {
   pinocchio::computeAllTerms(model, data, q, v);
   constraint_chol_6D6D.allocate(model, data, contact_models_6D6D, contact_data_6D6D);
@@ -223,7 +225,8 @@ BENCHMARK_DEFINE_F(DelassusFixture, GET_KKT_CONTACT_DYNAMIC_MATRIX_INVERSE)(benc
   J.setZero();
 
   Eigen::MatrixXd MJtJ_inv(
-    model.nv + constraint_chol_6D6D.constraintDim(), model.nv + constraint_chol_6D6D.constraintDim());
+    model.nv + constraint_chol_6D6D.constraintDim(),
+    model.nv + constraint_chol_6D6D.constraintDim());
   MJtJ_inv.setZero();
 
   Eigen::VectorXd gamma(constraint_chol_6D6D.constraintDim());

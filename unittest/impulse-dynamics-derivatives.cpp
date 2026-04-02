@@ -207,7 +207,8 @@ BOOST_AUTO_TEST_CASE(test_impulse_dynamics_derivatives_LOCAL_fd)
   VectorXd q_plus(model.nq);
   VectorXd dqafter_plus(model.nv);
 
-  const Eigen::MatrixXd Jc = data.constraint_chol.matrix().topRightCorner(constraint_size, model.nv);
+  const Eigen::MatrixXd Jc =
+    data.constraint_chol.matrix().topRightCorner(constraint_size, model.nv);
   const Eigen::VectorXd vel_jump = Jc * (dqafter0 + r_coeff * v);
 
   Data data_plus(model);

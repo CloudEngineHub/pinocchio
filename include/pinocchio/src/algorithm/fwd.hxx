@@ -26,7 +26,8 @@ namespace pinocchio
   using ContactCholeskyDecompositionTpl PINOCCHIO_DEPRECATED_MESSAGE(
     "ContactCholeskyDecompositionTpl is deprecated, please use "
     "ConstraintCholeskyDecompositionTpl") = ConstraintCholeskyDecompositionTpl<Scalar, Options>;
-     typedef ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options> ContactCholeskyDecomposition;  
+  typedef ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>
+    ContactCholeskyDecomposition;
 
   template<typename Scalar, int Options>
   struct RigidConstraintModelTpl;
