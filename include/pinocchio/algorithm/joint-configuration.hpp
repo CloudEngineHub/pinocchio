@@ -29,6 +29,22 @@
 namespace pinocchio
 {
 
+  /// Helpers to use SFINAE for safe candidate selection compare to liegroup-variant-visitors.hxx
+  template<typename T, typename = void>
+  struct is_lie_group_map : std::false_type
+  {
+  };
+
+  // Pointer avoids instantiating operation<void>'s body (no complete type needed),
+  // while still detecting the nested template via SFINAE
+  template<typename T>
+  struct is_lie_group_map<T, std::void_t<typename T::template operation<void> *>> : std::true_type
+  {
+  };
+
+  template<typename T>
+  inline constexpr bool is_lie_group_map_v = is_lie_group_map<T>::value;
+
   /// \name API with return value as argument
   /// \{
 

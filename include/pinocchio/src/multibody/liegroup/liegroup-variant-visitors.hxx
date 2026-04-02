@@ -14,6 +14,20 @@
 namespace pinocchio
 {
 
+  /// Helpers to use SFINAE for safe candidate selection compare to joint-configuration.hpp
+  template<typename T, typename = void>
+  struct is_lie_group_collection : std::false_type
+  {
+  };
+
+  template<typename T>
+  struct is_lie_group_collection<T, std::void_t<typename T::LieGroupVariant>> : std::true_type
+  {
+  };
+
+  template<typename T>
+  inline constexpr bool is_lie_group_collection_v = is_lie_group_collection<T>::value;
+
   /**
    * @brief      Visit a LieGroupVariant to get the dimension of
    *             the Lie group configuration space
