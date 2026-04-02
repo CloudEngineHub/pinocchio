@@ -250,11 +250,13 @@ namespace pinocchio
     {
     }
 
+    /// \brief Copy constructor.
     PGSSolverResultTpl(const PGSSolverResultTpl & other)
     {
       *this = other;
     }
 
+    /// \brief Assignment operator.
     PGSSolverResultTpl & operator=(const PGSSolverResultTpl & other)
     {
       if (this != &other)
@@ -466,12 +468,14 @@ namespace pinocchio
         reset();
       }
 
+      /// \brief Copy constructor.
       PGSSolverWorkspaceTpl(const PGSSolverWorkspaceTpl & other)
       : PGSSolverWorkspaceTpl(0)
       {
         *this = other;
       }
 
+      /// \brief Assignment operator.
       PGSSolverWorkspaceTpl & operator=(const PGSSolverWorkspaceTpl & other)
       {
         if (this != &other)

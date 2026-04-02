@@ -484,11 +484,13 @@ namespace pinocchio
     {
     }
 
+    /// \brief Copy constructor.
     ADMMSolverResultTpl(const ADMMSolverResultTpl & other)
     {
       *this = other;
     }
 
+    /// \brief Assignment operator.
     ADMMSolverResultTpl & operator=(const ADMMSolverResultTpl & other)
     {
       if (this != &other)
@@ -807,12 +809,14 @@ namespace pinocchio
         reset();
       }
 
+      /// \brief Copy constructor.
       ADMMSolverWorkspaceTpl(const ADMMSolverWorkspaceTpl & other)
       : ADMMSolverWorkspaceTpl(0, 2, 0)
       {
         *this = other;
       }
 
+      /// \brief Assignment operator.
       ADMMSolverWorkspaceTpl & operator=(const ADMMSolverWorkspaceTpl & other)
       {
         if (this != &other)
