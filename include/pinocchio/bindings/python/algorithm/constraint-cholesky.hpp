@@ -235,9 +235,14 @@ namespace pinocchio
             "decomposition.")
 
           .def(
-            "getDelassusCholeskyExpression", &Self::getDelassusCholeskyExpression, bp::arg("self"),
+            "getDelassusOperatorCholeskyExpression", &Self::getDelassusOperatorCholeskyExpression,
+            bp::arg("self"),
             "Returns the Cholesky decomposition expression associated to the underlying Delassus "
             "matrix.",
+            bp::with_custodian_and_ward_postcall<0, 1>())
+          .def(
+            "getDelassusCholeskyExpression", &Self::getDelassusOperatorCholeskyExpression,
+            bp::arg("self"), "Deprecated. Use getDelassusOperatorCholeskyExpression instead.",
             bp::with_custodian_and_ward_postcall<0, 1>())
 
           .def(ComparableVisitor<Self, pinocchio::is_floating_point<Scalar>::value>());
@@ -254,11 +259,11 @@ namespace pinocchio
         bp::scope().attr("ContactCholeskyDecomposition") =
           bp::scope().attr("ConstraintCholeskyDecomposition"); // alias
         {
-          typedef typename ConstraintCholeskyDecomposition::DelassusCholeskyExpression
-            DelassusCholeskyExpression;
+          typedef typename ConstraintCholeskyDecomposition::DelassusOperatorCholeskyExpression
+            DelassusOperatorCholeskyExpression;
 
-          bp::class_<DelassusCholeskyExpression>(
-            "DelassusCholeskyExpression",
+          bp::class_<DelassusOperatorCholeskyExpression>(
+            "DelassusOperatorCholeskyExpression",
             "Delassus Cholesky expression associated to a given ConstraintCholeskyDecomposition "
             "object.",
             bp::no_init)
@@ -269,14 +274,17 @@ namespace pinocchio
                 [bp::with_custodian_and_ward<1, 2>()])
             .def(
               "cholesky",
-              +[](DelassusCholeskyExpression & self) -> ConstraintCholeskyDecomposition & {
+              +[](DelassusOperatorCholeskyExpression & self) -> ConstraintCholeskyDecomposition & {
                 return self.cholesky();
               },
               bp::arg("self"),
               "Returns the Constraint Cholesky decomposition associated to this "
-              "DelassusCholeskyExpression.",
+              "DelassusOperatorCholeskyExpression.",
               bp::return_internal_reference<>())
-            .def(DelassusOperatorBasePythonVisitor<DelassusCholeskyExpression>());
+            .def(DelassusOperatorBasePythonVisitor<DelassusOperatorCholeskyExpression>());
+
+          bp::scope().attr("DelassusCholeskyExpression") =
+            bp::scope().attr("DelassusOperatorCholeskyExpression"); // alias
         }
 
         {

@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(test_delassus_operator_dense_serialization)
   chol.compute(model, data, constraint_models, constraint_datas);
 
   // check dense method
-  DelassusOperatorDense delassus_operator_dense(chol.getDelassusCholeskyExpression());
+  DelassusOperatorDense delassus_operator_dense(chol.getDelassusOperatorCholeskyExpression());
   Eigen::MatrixXd damping_mat =
     damping_val
     * Eigen::MatrixXd::Identity(delassus_operator_dense.size(), delassus_operator_dense.size());

@@ -437,16 +437,18 @@ BOOST_AUTO_TEST_CASE(constraint_cholesky_contact6D_LOCAL)
     BOOST_CHECK(osim.isApprox(JMinvJt.inverse()));
 
     const MatrixXd rhs = MatrixXd::Random(12, 12);
-    BOOST_CHECK(
-      constraint_chol_decomposition.getDelassusCholeskyExpression().getDamping().matrix().isZero());
+    BOOST_CHECK(constraint_chol_decomposition.getDelassusOperatorCholeskyExpression()
+                  .getDamping()
+                  .matrix()
+                  .isZero());
     const MatrixXd res_delassus =
-      constraint_chol_decomposition.getDelassusCholeskyExpression() * rhs;
+      constraint_chol_decomposition.getDelassusOperatorCholeskyExpression() * rhs;
     const MatrixXd res_delassus_ref = iosim * rhs;
 
     BOOST_CHECK(res_delassus_ref.isApprox(res_delassus));
 
     const MatrixXd res_delassus_inverse =
-      constraint_chol_decomposition.getDelassusCholeskyExpression().solve(rhs);
+      constraint_chol_decomposition.getDelassusOperatorCholeskyExpression().solve(rhs);
     const MatrixXd res_delassus_inverse_ref = osim * rhs;
 
     BOOST_CHECK(res_delassus_inverse_ref.isApprox(res_delassus_inverse));
@@ -485,15 +487,16 @@ BOOST_AUTO_TEST_CASE(constraint_cholesky_contact6D_LOCAL)
     BOOST_CHECK(osim_mu.isApprox(JMinvJt_mu.inverse()));
 
     const MatrixXd rhs = MatrixXd::Random(12, 1);
-    const MatrixXd res = constraint_chol_decomposition_mu.getDelassusCholeskyExpression() * rhs;
+    const MatrixXd res =
+      constraint_chol_decomposition_mu.getDelassusOperatorCholeskyExpression() * rhs;
     const MatrixXd res_ref = iosim_mu * rhs;
 
     BOOST_CHECK(res_ref.isApprox(res));
 
     const MatrixXd res_no_mu =
-      constraint_chol_decomposition_mu.getDelassusCholeskyExpression() * rhs - mu * rhs;
+      constraint_chol_decomposition_mu.getDelassusOperatorCholeskyExpression() * rhs - mu * rhs;
     const MatrixXd res_no_mu_ref =
-      constraint_chol_decomposition.getDelassusCholeskyExpression() * rhs;
+      constraint_chol_decomposition.getDelassusOperatorCholeskyExpression() * rhs;
 
     BOOST_CHECK(res_no_mu.isApprox(res_no_mu_ref));
   }
@@ -608,7 +611,8 @@ BOOST_AUTO_TEST_CASE(constraint_cholesky_contact6D_LOCAL)
 
   // Check memory allocation
   {
-    const auto delassus_chol = constraint_chol_decomposition.getDelassusCholeskyExpression();
+    const auto delassus_chol =
+      constraint_chol_decomposition.getDelassusOperatorCholeskyExpression();
     PowerIterationAlgoTpl<Eigen::VectorXd> power_iteration(delassus_chol.rows());
     const Eigen::VectorXd rhs = Eigen::VectorXd::Random(delassus_chol.rows());
     Eigen::VectorXd res = Eigen::VectorXd::Random(delassus_chol.rows());
@@ -1643,8 +1647,8 @@ BOOST_AUTO_TEST_CASE(constraint_cholesky_updateDamping)
     ConstraintCholeskyDecomposition constraint_chol_decomposition;
     constraint_chol_decomposition.rebuild(model, data, contact_models, contact_datas);
     constraint_chol_decomposition.compute(model, data, contact_models, contact_datas, mu1);
-    constraint_chol_decomposition.getDelassusCholeskyExpression().updateDamping(mu2);
-    constraint_chol_decomposition.getDelassusCholeskyExpression().updateDecomposition();
+    constraint_chol_decomposition.getDelassusOperatorCholeskyExpression().updateDamping(mu2);
+    constraint_chol_decomposition.getDelassusOperatorCholeskyExpression().updateDecomposition();
 
     ConstraintCholeskyDecomposition constraint_chol_decomposition_ref;
     constraint_chol_decomposition_ref.rebuild(model, data, contact_models, contact_datas);
@@ -2028,7 +2032,7 @@ BOOST_AUTO_TEST_CASE(constraint_cholesky_model_with_compliance)
   const double mu = 1e-10;
   constraint_chol_decomposition.compute(model, data, constraint_models, constraint_datas, mu);
 
-  auto delassus_chol = constraint_chol_decomposition.getDelassusCholeskyExpression();
+  auto delassus_chol = constraint_chol_decomposition.getDelassusOperatorCholeskyExpression();
 
   Eigen::VectorXd compliance_vec(6);
   compliance_vec.head(3) = Eigen::VectorXd::Constant(3, 6e-4);

@@ -271,7 +271,7 @@ namespace pinocchio
           .def(
             "solve",
             solve_admm_wrapper<
-              ConstraintCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
+              ConstraintCholeskyDecomposition::DelassusOperatorCholeskyExpression, ConstraintModel,
               ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
             bp::args(
               "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",

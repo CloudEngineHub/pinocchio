@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(delassus_dense_rebuild)
     chol.compute(scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
 
     DelassusOperatorDense delassus_from_chol;
-    delassus_from_chol.rebuild(chol.getDelassusCholeskyExpression());
+    delassus_from_chol.rebuild(chol.getDelassusOperatorCholeskyExpression());
 
     // -- test compliance and damping
     BOOST_CHECK(delassus_from_chol.getCompliance().isApprox(compliance));
@@ -581,7 +581,7 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_diag_operations)
   chol.updateDamping(damping_val);
   chol.compute(scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
 
-  auto delassus = chol.getDelassusCholeskyExpression();
+  auto delassus = chol.getDelassusOperatorCholeskyExpression();
 
   Eigen::VectorXd res(size);
   const Eigen::VectorXd rhs = Eigen::VectorXd::Random(size);
@@ -683,7 +683,7 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_block_operations)
     scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
   chol.compute(scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
 
-  auto delassus = chol.getDelassusCholeskyExpression();
+  auto delassus = chol.getDelassusOperatorCholeskyExpression();
 
   Eigen::VectorXd res(size);
   const Eigen::VectorXd rhs = Eigen::VectorXd::Random(size);
@@ -806,7 +806,7 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_unsafe)
     scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
   chol.compute(scene.model, scene.data, scene.constraint_models, scene.constraint_datas);
 
-  auto delassus = chol.getDelassusCholeskyExpression();
+  auto delassus = chol.getDelassusOperatorCholeskyExpression();
   delassus.updateDamping(damping_val);
 
   // Test unsafe().damping() gives direct write access to the block diagonal damping

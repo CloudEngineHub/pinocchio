@@ -94,7 +94,7 @@ class ContactSolverTestCase(PinocchioTestCase):
             model, data, constraint_models, constraint_datas
         )
         chol.compute(model, data, constraint_models, constraint_datas, 1e-10)
-        delassus_matrix = chol.getDelassusCholeskyExpression().matrix()
+        delassus_matrix = chol.getDelassusOperatorCholeskyExpression().matrix()
         Jc = pin.getConstraintsJacobian(
             model, data, constraint_models, constraint_datas
         )

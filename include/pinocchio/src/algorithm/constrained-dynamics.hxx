@@ -449,7 +449,7 @@ namespace pinocchio
       constraint_chol.solveInPlace(primal_dual_contact_solution);
 
       // Use data.lambda_c as tmp variable for computing the constraint residual
-      constraint_chol.getDelassusCholeskyExpression().applyOnTheRight(
+      constraint_chol.getDelassusOperatorCholeskyExpression().applyOnTheRight(
         primal_dual_contact_solution.head(constraint_size), data.lambda_c);
       data.lambda_c -= mu * primal_dual_contact_solution.head(constraint_size)
                        + primal_rhs_contact.head(constraint_size);

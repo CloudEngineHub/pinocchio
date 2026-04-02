@@ -88,10 +88,11 @@ BOOST_AUTO_TEST_CASE(test_cholesky_expression_to_dense)
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
   // check dense method
-  DelassusOperatorDense delassus_operator_dense = chol.getDelassusCholeskyExpression().dense();
-  Eigen::MatrixXd true_delassus_dense = chol.getDelassusCholeskyExpression().matrix();
-  Eigen::VectorXd true_compliance = chol.getDelassusCholeskyExpression().getCompliance();
-  auto true_damping = chol.getDelassusCholeskyExpression().getDamping();
+  DelassusOperatorDense delassus_operator_dense =
+    chol.getDelassusOperatorCholeskyExpression().dense();
+  Eigen::MatrixXd true_delassus_dense = chol.getDelassusOperatorCholeskyExpression().matrix();
+  Eigen::VectorXd true_compliance = chol.getDelassusOperatorCholeskyExpression().getCompliance();
+  auto true_damping = chol.getDelassusOperatorCholeskyExpression().getDamping();
   true_damping.subTo(true_delassus_dense);
   true_delassus_dense -= true_compliance.asDiagonal();
   DelassusOperatorDense true_delassus_operator_dense(true_delassus_dense);
@@ -101,7 +102,7 @@ BOOST_AUTO_TEST_CASE(test_cholesky_expression_to_dense)
   BOOST_CHECK(delassus_operator_dense == true_delassus_operator_dense);
 
   // check dense constructor from expression
-  DelassusOperatorDense delassus_operator_dense2(chol.getDelassusCholeskyExpression());
+  DelassusOperatorDense delassus_operator_dense2(chol.getDelassusOperatorCholeskyExpression());
 
   BOOST_CHECK(delassus_operator_dense2 == true_delassus_operator_dense);
 }

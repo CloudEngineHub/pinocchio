@@ -896,10 +896,11 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::DelassusCholeskyExpression
-  ConstraintCholeskyDecompositionTpl<Scalar, Options>::getDelassusCholeskyExpression() const
+  typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::DelassusOperatorCholeskyExpression
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::getDelassusOperatorCholeskyExpression() const
   {
-    return DelassusCholeskyExpression(const_cast<ConstraintCholeskyDecompositionTpl &>(*this));
+    return DelassusOperatorCholeskyExpression(
+      const_cast<ConstraintCholeskyDecompositionTpl &>(*this));
   }
 
   template<typename Scalar, int Options>
