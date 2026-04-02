@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(test_all_std_vector)
   typedef Eigen::Matrix<double, 6, 6> Matrix6;
 
   typedef std::vector<Matrix6> Vector;
-  typedef container::DoubleEntryContainer<Vector> Container;
+  typedef internal::DoubleEntryContainer<Vector> Container;
 
   const Eigen::Index nrows = 20, ncols = 20;
 
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(test_all_matrix_stack)
   typedef Eigen::Matrix<double, 6, 6> Matrix6;
 
   typedef internal::MatrixStackTpl<Matrix6> Vector;
-  typedef container::DoubleEntryContainer<Vector> Container;
+  typedef internal::DoubleEntryContainer<Vector> Container;
 
   const Eigen::Index nrows = 20, ncols = 20;
 

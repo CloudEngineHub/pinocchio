@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(eigen_storage)
 BOOST_AUTO_TEST_CASE(double_entry_container)
 {
   typedef pinocchio::Inertia::Matrix6 Matrix6;
-  typedef pinocchio::container::DoubleEntryContainer<std::vector<Matrix6>> DoubleEntryContainer;
+  typedef pinocchio::internal::DoubleEntryContainer<std::vector<Matrix6>> DoubleEntryContainer;
 
   DoubleEntryContainer container(10, 20);
   for (Eigen::Index k = 0; k < 10; ++k)

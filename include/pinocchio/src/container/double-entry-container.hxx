@@ -13,7 +13,7 @@
 
 namespace pinocchio
 {
-  namespace container
+  namespace internal
   {
     template<typename Vector>
     struct DoubleEntryContainer;
@@ -305,6 +305,6 @@ namespace pinocchio
       Vector m_values;
     };
 
-  } // namespace container
+  } // namespace internal
 
 } // namespace pinocchio
