@@ -34,37 +34,37 @@ namespace pinocchio
     {
       typedef DelassusOperator Self;
       typedef typename DelassusOperator::Scalar Scalar;
-      typedef context::MatrixXs Matrix;
-      typedef typename DelassusOperator::Vector Vector;
+      typedef context::MatrixXs MatrixXs;
+      typedef context::VectorXs VectorXs;
       typedef typename traits<DelassusOperator>::getDampingReturnType getDampingReturnType;
 
       template<class PyClass>
       void visit(PyClass & cl) const
       {
-        cl.def(bp::self * bp::other<Matrix>())
+        cl.def(bp::self * bp::other<MatrixXs>())
           .def(
             "__matmul__",
-            +[](const DelassusOperator & self, const Matrix & other) -> Matrix {
-              return Matrix(self * other);
+            +[](const DelassusOperator & self, const MatrixXs & other) -> MatrixXs {
+              return MatrixXs(self * other);
             },
             bp::args("self", "other"),
             "Matrix multiplication between self and another matrix. Returns the result of Delassus "
             "* matrix.")
 
           .def(
-            "solve", &DelassusOperator::template solve<Matrix>, bp::args("self", "mat"),
+            "solve", &DelassusOperator::template solve<MatrixXs>, bp::args("self", "mat"),
             "Returns the solution x of Delassus * x = mat using the current decomposition of the "
             "Delassus matrix.")
 
           .def(
             "updateCompliance",
-            (void (DelassusOperator::*)(const Scalar &))&DelassusOperator::updateCompliance,
+            (void (DelassusOperator::*)(const Scalar))&DelassusOperator::updateCompliance,
             bp::args("self", "mu"),
             "Add a compliance term to the diagonal of the Delassus matrix. The compliance term "
             "should be "
             "positive.")
           .def(
-            "updateCompliance", &DelassusOperator::template updateCompliance<Vector>,
+            "updateCompliance", &DelassusOperator::template updateCompliance<VectorXs>,
             bp::args("self", "mus"),
             "Add a compliance term to the diagonal of the Delassus matrix. The compliance terms "
             "should "
@@ -72,20 +72,18 @@ namespace pinocchio
 
           .def(
             "getCompliance",
-            +[](const DelassusOperator & self) -> context::VectorXs {
-              return self.getCompliance();
-            },
+            +[](const DelassusOperator & self) -> VectorXs { return self.getCompliance(); },
             bp::arg("self"),
             "Returns the value of the compliance terms contained in the Delassus operator")
 
           .def(
             "updateDamping",
-            (void (DelassusOperator::*)(const Scalar &))&DelassusOperator::updateDamping,
+            (void (DelassusOperator::*)(const Scalar))&DelassusOperator::updateDamping,
             bp::args("self", "mu"),
             "Add a damping term to the diagonal of the Delassus matrix. The damping term should be "
             "positive.")
           .def(
-            "updateDamping", &DelassusOperator::template updateDamping<Vector>,
+            "updateDamping", &DelassusOperator::template updateDamping<VectorXs>,
             bp::args("self", "mus"),
             "Add a damping term to the diagonal of the Delassus matrix. The damping terms should "
             "be all positive.")
@@ -110,7 +108,8 @@ namespace pinocchio
         {
           cl.def(
             "matrix",
-            static_cast<Matrix (DelassusOperator::*)(bool, bool) const>(&DelassusOperator::matrix),
+            static_cast<MatrixXs (DelassusOperator::*)(bool, bool) const>(
+              &DelassusOperator::matrix),
             (bp::arg("self"), bp::arg("enforce_symmetry") = false, bp::arg("with_damping") = true),
             "Returns the Delassus expression as a dense matrix.");
         }

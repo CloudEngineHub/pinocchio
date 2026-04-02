@@ -319,8 +319,8 @@ namespace pinocchio
             .def(
               "matrix",
               static_cast<SparseMatrix (DelassusOperatorSparse::*)(bool) const>(
-                &DelassusOperatorSparse::matrix),
-              (bp::arg("self"), bp::arg("enforce_symmetry") = false),
+                &DelassusOperatorSparse::sparseMatrix),
+              (bp::arg("self"), bp::arg("with_damping") = true),
               "Returns the Delassus expression as a sparse matrix.");
 #endif // PINOCCHIO_PYTHON_SKIP_CASADI_UNSUPPORTED
         }
