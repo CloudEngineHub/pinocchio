@@ -752,35 +752,35 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const internal::MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const
     {
       assert(constraint_inertia.size() == 6);
       switch (constraint_inertia.type())
       {
-      case MatrixBlockType::Zero: {
+      case internal::MatrixBlockType::Zero: {
         break;
       }
-      case MatrixBlockType::Identity: {
+      case internal::MatrixBlockType::Identity: {
         appendFrameContactConstraintInertias(
           model, data, cdata, Matrix6::Identity(), reference_frame);
         break;
       }
-      case MatrixBlockType::ScalarIdentity: {
+      case internal::MatrixBlockType::ScalarIdentity: {
         const Scalar inertia_val = constraint_inertia.container()(0, 0);
         const auto cinertia = Vector6::Constant(inertia_val);
         appendFrameContactConstraintInertias(
           model, data, cdata, cinertia.asDiagonal(), reference_frame);
         break;
       }
-      case MatrixBlockType::Diagonal: {
+      case internal::MatrixBlockType::Diagonal: {
         Vector6 cinertia;
         constraint_inertia.diagonal(cinertia);
         appendFrameContactConstraintInertias(
           model, data, cdata, cinertia.asDiagonal(), reference_frame);
         break;
       }
-      case MatrixBlockType::Plain: {
+      case internal::MatrixBlockType::Plain: {
         Matrix6 cinertia;
         constraint_inertia.matrix(cinertia);
         appendFrameContactConstraintInertias(model, data, cdata, cinertia, reference_frame);

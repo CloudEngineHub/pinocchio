@@ -68,7 +68,7 @@ namespace pinocchio
     typedef internal::EigenStorageTpl<Vector> EigenStorageVector;
     typedef internal::EigenStorageTpl<Matrix> EigenStorageMatrix;
     typedef internal::EigenStorageTpl<RowMatrix> EigenStorageRowMatrix;
-    typedef BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
+    typedef internal::BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
     typedef BlockDiagonalMatrix DampingType;
 
     typedef Eigen::Matrix<Eigen::Index, Eigen::Dynamic, 1, Options> EigenIndexVector;
@@ -427,14 +427,14 @@ namespace pinocchio
     ///
     template<int OtherOptions, std::size_t OtherAlignment>
     void updateDamping(
-      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping);
+      const internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping);
 
     ///
     /// \brief Update the damping from a block diagonal matrix (move overload).
     ///
     template<int OtherOptions, std::size_t OtherAlignment>
-    void
-    updateDamping(BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping);
+    void updateDamping(
+      internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping);
 
     ///
     /// \brief Returns the current damping as a block diagonal matrix.

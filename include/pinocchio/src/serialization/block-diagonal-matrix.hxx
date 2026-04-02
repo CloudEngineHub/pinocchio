@@ -20,9 +20,9 @@ namespace boost
     {
       template<typename Scalar, int Options, std::size_t Alignment>
       struct BlockDiagonalMatrixAccessor
-      : public ::pinocchio::BlockDiagonalMatrixTpl<Scalar, Options, Alignment>
+      : public ::pinocchio::internal::BlockDiagonalMatrixTpl<Scalar, Options, Alignment>
       {
-        typedef ::pinocchio::BlockDiagonalMatrixTpl<Scalar, Options, Alignment> Base;
+        typedef ::pinocchio::internal::BlockDiagonalMatrixTpl<Scalar, Options, Alignment> Base;
         using Base::m_cols;
         using Base::m_matrix_block_elements;
         using Base::m_matrix_stack;
@@ -33,7 +33,7 @@ namespace boost
     template<typename Archive, typename Scalar, int Options, std::size_t Alignment>
     void serialize(
       Archive & ar,
-      ::pinocchio::BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & matrix,
+      ::pinocchio::internal::BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & matrix,
       const unsigned int /*version*/)
     {
       typedef internal::BlockDiagonalMatrixAccessor<Scalar, Options, Alignment> Accessor;
@@ -52,7 +52,7 @@ namespace boost
         std::size_t idx = 0;
         for (auto & block : m_matrix_block_elements)
         {
-          if (block.type() == ::pinocchio::MatrixBlockType::NestedBlockDiagonal)
+          if (block.type() == ::pinocchio::internal::MatrixBlockType::NestedBlockDiagonal)
           {
             // Remap each sub-block; the outer NestedBlockDiagonal block itself has no data.
             for (auto & sub : block.nested_blocks())
@@ -89,7 +89,7 @@ namespace boost
 
         for (const auto & block : m_matrix_block_elements)
         {
-          if (block.type() == ::pinocchio::MatrixBlockType::NestedBlockDiagonal)
+          if (block.type() == ::pinocchio::internal::MatrixBlockType::NestedBlockDiagonal)
           {
             // The outer block has no data; push one entry per sub-block.
             for (const auto & sub : block.nested_blocks())

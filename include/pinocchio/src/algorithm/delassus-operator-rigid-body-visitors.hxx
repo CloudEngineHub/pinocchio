@@ -76,7 +76,7 @@ namespace pinocchio
         jdata_augmented.StU() += data.joint_apparent_inertia[joint_i];
 
         enforceSymmetry(jdata_augmented.StU());
-        ::pinocchio::matrix_inversion(jdata_augmented.StU(), jdata_augmented.Dinv());
+        ::pinocchio::internal::matrix_inversion(jdata_augmented.StU(), jdata_augmented.Dinv());
 
         DO_NOT_PROMOTE_STATIC_EVAL(jdata_augmented.UDinv().noalias()) =
           jdata_augmented.U() * jdata_augmented.Dinv();

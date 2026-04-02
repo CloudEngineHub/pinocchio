@@ -543,7 +543,7 @@ namespace pinocchio
     std::size_t Alignment>
   void constructPositiveDefiniteBlockDiagonalMatrix(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & block_diagonal_matrix);
+    internal::BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & block_diagonal_matrix);
 
   template<
     typename Scalar,
@@ -1153,9 +1153,9 @@ namespace pinocchio
     std::size_t Alignment>
   void constructPositiveDefiniteBlockDiagonalMatrix(
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
-    BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & block_diagonal_matrix)
+    internal::BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & block_diagonal_matrix)
   {
-    typedef BlockDiagonalMatrixTpl<Scalar, Options, Alignment> BlockDiagonalMatrix;
+    typedef internal::BlockDiagonalMatrixTpl<Scalar, Options, Alignment> BlockDiagonalMatrix;
     typedef typename BlockDiagonalMatrix::MatrixBlockElement MatrixBlockElement;
     std::vector<MatrixBlockElement> block_diagonal_infos;
     computeBlockDiagonalPattern(constraint_models, block_diagonal_infos, BlockDiagonalDispatcher());

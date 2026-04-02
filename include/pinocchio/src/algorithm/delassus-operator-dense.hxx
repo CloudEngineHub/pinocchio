@@ -28,11 +28,11 @@ namespace pinocchio
     typedef MatrixXs Matrix; // for eigen lazy evaluation
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
 
-    typedef BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
+    typedef internal::BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
     typedef BlockDiagonalMatrix DampingType;
     typedef const DampingType & getDampingReturnType;
 
-    typedef EigenStorageTpl<VectorXs> VectorStorage;
+    typedef internal::EigenStorageTpl<VectorXs> VectorStorage;
     typedef const typename VectorStorage::ConstMapType getComplianceReturnType;
   };
 
@@ -329,7 +329,7 @@ namespace pinocchio
 
     template<int OtherOptions, std::size_t OtherAlignment>
     void updateDampingImpl(
-      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
+      const internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
         block_diagonal_damping_matrix)
     {
       if (&block_diagonal_damping_matrix == &m_damping)
@@ -341,7 +341,8 @@ namespace pinocchio
 
     template<int OtherOptions, std::size_t OtherAlignment>
     void updateDampingImpl(
-      BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_diagonal_damping_matrix)
+      internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &&
+        block_diagonal_damping_matrix)
     {
       if (&block_diagonal_damping_matrix == &m_damping)
         return;

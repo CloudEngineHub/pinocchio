@@ -38,7 +38,7 @@ namespace pinocchio
     typedef MatrixXs Matrix;
 
     typedef internal::EigenStorageTpl<VectorXs> EigenStorageVector;
-    typedef BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
+    typedef internal::BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
     typedef typename Model::Data Data;
@@ -659,7 +659,7 @@ namespace pinocchio
           std::runtime_error,
           "The sum of sizes of the blocks should be the same as the total residual size of the "
           "constraints vector.");
-        if (blocks.size() == 1 && blocks[0].type() == MatrixBlockType::Diagonal)
+        if (blocks.size() == 1 && blocks[0].type() == internal::MatrixBlockType::Diagonal)
         {
           // we assume we have a single diagonal block to dispatch on all the contraints
           typedef typename BlockDiagonalMatrix::ConstVectorMap ConstVectorMap;

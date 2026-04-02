@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(delassus_dense_block_operations)
   const Eigen::Index size = scene.delassus_matrix_gt.rows();
   Eigen::VectorXd compliance = scene.compliance;
   BOOST_CHECK(compliance.minCoeff() >= 0);
-  BlockDiagonalMatrix block_damping;
+  internal::BlockDiagonalMatrix block_damping;
   constructPositiveDefiniteBlockDiagonalMatrix(scene.constraint_models, block_damping);
 
   // Use the dense matrix from scene
@@ -458,7 +458,7 @@ BOOST_AUTO_TEST_CASE(delassus_rigid_body_block_operations)
   const Eigen::Index size = scene.delassus_matrix_gt.rows();
   Eigen::VectorXd compliance = scene.compliance;
   BOOST_CHECK(compliance.minCoeff() >= 0);
-  BlockDiagonalMatrix block_damping;
+  internal::BlockDiagonalMatrix block_damping;
   constructPositiveDefiniteBlockDiagonalMatrix(scene.constraint_models, block_damping);
 
   typedef ConstrainedHumanoidScene<double>::ConstraintModel ConstraintModel;
@@ -674,7 +674,7 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_block_operations)
   const Eigen::Index size = scene.delassus_matrix_gt.rows();
   Eigen::VectorXd compliance = scene.compliance;
   BOOST_CHECK(compliance.minCoeff() >= 0);
-  BlockDiagonalMatrix block_damping;
+  internal::BlockDiagonalMatrix block_damping;
   constructPositiveDefiniteBlockDiagonalMatrix(scene.constraint_models, block_damping);
 
   // Build a ConstraintCholeskyDecomposition and compute
@@ -810,7 +810,7 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_unsafe)
   delassus.updateDamping(damping_val);
 
   // Test unsafe().damping() gives direct write access to the block diagonal damping
-  BlockDiagonalMatrix block_damping;
+  internal::BlockDiagonalMatrix block_damping;
   constructPositiveDefiniteBlockDiagonalMatrix(scene.constraint_models, block_damping);
 
   delassus.unsafe().damping() = block_damping;

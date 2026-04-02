@@ -112,7 +112,7 @@ void matrix_mult_matrix_call(
   if constexpr (evaluation_mode == EvaluationMode::STATIC_OP)
     pinocchio::promote_static_eval<10>(lhs.const_cast_derived().noalias()) = m * rhs;
   else if constexpr (evaluation_mode == EvaluationMode::MANUAL)
-    pinocchio::matrix_product<Eigen::internal::assign_op>(
+    pinocchio::internal::matrix_product<Eigen::internal::assign_op>(
       m.derived(), rhs.derived(), lhs.const_cast_derived());
   else
     lhs.const_cast_derived().noalias() = m * rhs;

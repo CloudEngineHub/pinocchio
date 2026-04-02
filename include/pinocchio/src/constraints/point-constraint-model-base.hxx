@@ -804,35 +804,35 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const internal::MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const
     {
       assert(constraint_inertia.size() == 3);
       switch (constraint_inertia.type())
       {
-      case MatrixBlockType::Zero: {
+      case internal::MatrixBlockType::Zero: {
         break;
       }
-      case MatrixBlockType::Identity: {
+      case internal::MatrixBlockType::Identity: {
         appendPointContactConstraintInertias(
           model, data, cdata, Matrix3::Identity(), reference_frame);
         break;
       }
-      case MatrixBlockType::ScalarIdentity: {
+      case internal::MatrixBlockType::ScalarIdentity: {
         const Scalar inertia_val = constraint_inertia.container()(0, 0);
         const auto cinertia = Vector3::Constant(inertia_val);
         appendPointContactConstraintInertias(
           model, data, cdata, cinertia.asDiagonal(), reference_frame);
         break;
       }
-      case MatrixBlockType::Diagonal: {
+      case internal::MatrixBlockType::Diagonal: {
         Vector3 cinertia;
         constraint_inertia.diagonal(cinertia);
         appendPointContactConstraintInertias(
           model, data, cdata, cinertia.asDiagonal(), reference_frame);
         break;
       }
-      case MatrixBlockType::Plain: {
+      case internal::MatrixBlockType::Plain: {
         Matrix3 cinertia;
         constraint_inertia.matrix(cinertia);
         appendPointContactConstraintInertias(model, data, cdata, cinertia, reference_frame);

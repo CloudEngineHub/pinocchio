@@ -12,30 +12,8 @@
 
 namespace pinocchio
 {
-
   template<typename T>
   struct EigenMatrixExpression;
-
-  template<typename Op, typename Type>
-  struct UnaryOperator;
-
-  template<typename Op, typename LhsType, typename RhsType>
-  struct BinaryOperator;
-
-  template<typename T>
-  struct Inverse;
-
-  template<typename Lhs, typename Rhs>
-  struct Sum;
-
-  template<typename Scalar, int Options, std::size_t Alignment = alignof(std::max_align_t)>
-  struct BlockDiagonalMatrixTpl;
-
-  template<typename MatrixOrMap, typename Enable = void>
-  struct MatrixBlockElementTpl;
-
-  template<typename Derived>
-  struct MatrixBlockElementPlain;
 
   template<typename T>
   struct is_floating_point : ::std::is_floating_point<T>
@@ -46,11 +24,32 @@ namespace pinocchio
   template<typename Scalar>
   struct TaylorSeriesExpansion;
 
-  template<typename Derived>
-  struct MatrixBlockElementBase;
-  template<typename Derived>
-  struct MatrixBlockElementPlain;
-  template<typename Derived>
-  struct MatrixBlockElementOperation;
+  namespace internal
+  {
+    template<typename Op, typename Type>
+    struct UnaryOperator;
+
+    template<typename Op, typename LhsType, typename RhsType>
+    struct BinaryOperator;
+
+    template<typename T>
+    struct Inverse;
+    template<typename Lhs, typename Rhs>
+    struct Sum;
+
+    template<typename Derived>
+    struct MatrixBlockElementBase;
+    template<typename Derived>
+    struct MatrixBlockElementPlain;
+    template<typename Derived>
+    struct MatrixBlockElementOperation;
+    template<typename MatrixOrMap, typename Enable = void>
+    struct MatrixBlockElementTpl;
+    template<typename Derived>
+    struct MatrixBlockElementPlain;
+
+    template<typename Scalar, int Options, std::size_t Alignment = alignof(std::max_align_t)>
+    struct BlockDiagonalMatrixTpl;
+  } // namespace internal
 
 } // namespace pinocchio

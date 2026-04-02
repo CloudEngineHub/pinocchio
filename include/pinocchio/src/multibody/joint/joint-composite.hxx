@@ -372,7 +372,7 @@ namespace pinocchio
       data.StU.noalias() = data.S.matrix().transpose() * data.U;
       data.StU.diagonal() += armature;
 
-      matrix_inversion(data.StU, data.Dinv);
+      internal::matrix_inversion(data.StU, data.Dinv);
       data.UDinv.noalias() = data.U * data.Dinv;
 
       if (update_I)

@@ -44,7 +44,7 @@ void test_generated_inverse_impl()
     }
 
     Matrix res = Matrix::Zero();
-    matrix_inversion_code_generated(mat, res);
+    internal::matrix_inversion_code_generated(mat, res);
     BOOST_CHECK((res * mat).isIdentity(1e-14 * res.norm()));
 
     BOOST_CHECK(mat.inverse().isApprox(res, 1e-14 * res.norm()));
@@ -85,7 +85,7 @@ void test_matrix_inverse_on_dynamic_matrix_impl()
     }
 
     Matrix res = Matrix::Zero(size, size);
-    matrix_inversion(mat, res);
+    internal::matrix_inversion(mat, res);
 
     const double max_mat_value = mat.array().abs().maxCoeff();
     const double max_res_value = res.array().abs().maxCoeff();

@@ -20,9 +20,10 @@ namespace boost
     {
       /// Accessor for the owning variant (Eigen::Matrix).
       template<typename MatrixType, typename = void>
-      struct MatrixBlockElementTplAccessor : public ::pinocchio::MatrixBlockElementTpl<MatrixType>
+      struct MatrixBlockElementTplAccessor
+      : public ::pinocchio::internal::MatrixBlockElementTpl<MatrixType>
       {
-        typedef ::pinocchio::MatrixBlockElementTpl<MatrixType> Base;
+        typedef ::pinocchio::internal::MatrixBlockElementTpl<MatrixType> Base;
         using Base::m_size;
         using Base::m_type;
       };
@@ -32,9 +33,9 @@ namespace boost
       struct MatrixBlockElementTplAccessor<
         MapType,
         std::enable_if_t<!pinocchio::helper::is_eigen_matrix_v<MapType>>>
-      : public ::pinocchio::MatrixBlockElementTpl<MapType>
+      : public ::pinocchio::internal::MatrixBlockElementTpl<MapType>
       {
-        typedef ::pinocchio::MatrixBlockElementTpl<MapType> Base;
+        typedef ::pinocchio::internal::MatrixBlockElementTpl<MapType> Base;
         using Base::m_nested_blocks;
         using Base::m_size;
         using Base::m_type;
@@ -44,7 +45,7 @@ namespace boost
     template<typename Archive, typename Matrix>
     void serialize(
       Archive & ar,
-      ::pinocchio::MatrixBlockElementTpl<Matrix> & _matrix_block_element,
+      ::pinocchio::internal::MatrixBlockElementTpl<Matrix> & _matrix_block_element,
       const unsigned int /*version*/)
     {
       typedef internal::MatrixBlockElementTplAccessor<Matrix> Accessor;
@@ -61,7 +62,8 @@ namespace boost
       else
       {
         // Map variant: serialize nested block structure for NestedBlockDiagonal.
-        if (matrix_block_element.m_type == pinocchio::MatrixBlockType::NestedBlockDiagonal)
+        if (
+          matrix_block_element.m_type == pinocchio::internal::MatrixBlockType::NestedBlockDiagonal)
         {
           ar & make_nvp("nested_blocks", matrix_block_element.m_nested_blocks);
         }

@@ -90,7 +90,7 @@ namespace pinocchio
       // Account for the rotor inertia contribution
       jdata.StU().diagonal() += jmodel.jointVelocitySelector(model.armature);
 
-      matrix_inversion(jdata.StU(), jdata.Dinv());
+      internal::matrix_inversion(jdata.StU(), jdata.Dinv());
 
       jdata.UDinv().noalias() =
         Jcols
@@ -448,7 +448,7 @@ namespace pinocchio
       // Account for the rotor inertia contribution
       jdata.StU().diagonal() += jmodel.jointVelocitySelector(model.armature);
 
-      matrix_inversion(jdata.StU(), jdata.Dinv());
+      internal::matrix_inversion(jdata.StU(), jdata.Dinv());
 
       jdata.UDinv().noalias() = Jcols * jdata.Dinv().transpose();
       data.oL[i].setIdentity();

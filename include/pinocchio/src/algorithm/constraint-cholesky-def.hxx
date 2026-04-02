@@ -425,7 +425,7 @@ namespace pinocchio
   template<typename Scalar, int Options>
   template<int OtherOptions, std::size_t OtherAlignment>
   void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
-    const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
+    const internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
   {
     if (&block_damping == &m_damping)
       return;
@@ -436,7 +436,7 @@ namespace pinocchio
   template<typename Scalar, int Options>
   template<int OtherOptions, std::size_t OtherAlignment>
   void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
-    BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
+    internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
   {
     if (&block_damping == &m_damping)
       return;

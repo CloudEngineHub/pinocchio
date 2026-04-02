@@ -33,25 +33,20 @@ namespace pinocchio
       const Eigen::MatrixBase<RhsType> & rhs,
       const Eigen::MatrixBase<ResType> & res);
 
-  } // namespace internal
-
-  template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, typename Res>
-  void matrix_product(
-    const Eigen::MatrixBase<Lhs> & lhs,
-    const Eigen::MatrixBase<Rhs> & rhs,
-    const Eigen::MatrixBase<Res> & res)
-  {
-    const auto max_size = std::max(lhs.rows(), std::max(lhs.cols(), rhs.cols()));
-    if (max_size <= 0)
-      internal::matrix_product_small_size<EigenOp>(
-        lhs.derived(), rhs.derived(), res.const_cast_derived());
-    else
-      internal::matrix_product_generic<EigenOp>(
-        lhs.derived(), rhs.derived(), res.const_cast_derived());
-  };
-
-  namespace internal
-  {
+    template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, typename Res>
+    void matrix_product(
+      const Eigen::MatrixBase<Lhs> & lhs,
+      const Eigen::MatrixBase<Rhs> & rhs,
+      const Eigen::MatrixBase<Res> & res)
+    {
+      const auto max_size = std::max(lhs.rows(), std::max(lhs.cols(), rhs.cols()));
+      if (max_size <= 0)
+        internal::matrix_product_small_size<EigenOp>(
+          lhs.derived(), rhs.derived(), res.const_cast_derived());
+      else
+        internal::matrix_product_generic<EigenOp>(
+          lhs.derived(), rhs.derived(), res.const_cast_derived());
+    };
 
     template<
       template<typename, typename> class EigenOp,

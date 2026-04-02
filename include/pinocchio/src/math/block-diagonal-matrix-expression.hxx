@@ -13,18 +13,22 @@
 
 namespace pinocchio
 {
-  template<typename Derived>
-  struct BlockDiagonalMatrixExpression : BlockDiagonalMatrixBase<Derived>
+  namespace internal
   {
-    typedef BlockDiagonalMatrixBase<Derived> Base;
-    using Base::derived;
 
-    /// @brief Evaluates this expression and stores it in res.
-    template<typename Scalar, int Options, std::size_t Alignment>
-    void evalTo(BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & res) const
+    template<typename Derived>
+    struct BlockDiagonalMatrixExpression : BlockDiagonalMatrixBase<Derived>
     {
-      derived().evalTo(res.derived());
-    }
-  }; // struct BlockDiagonalMatrixExpression
+      typedef BlockDiagonalMatrixBase<Derived> Base;
+      using Base::derived;
 
+      /// @brief Evaluates this expression and stores it in res.
+      template<typename Scalar, int Options, std::size_t Alignment>
+      void evalTo(BlockDiagonalMatrixTpl<Scalar, Options, Alignment> & res) const
+      {
+        derived().evalTo(res.derived());
+      }
+    }; // struct BlockDiagonalMatrixExpression
+
+  } // namespace internal
 } // namespace pinocchio

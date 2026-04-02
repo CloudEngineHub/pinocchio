@@ -623,7 +623,7 @@ namespace pinocchio
       // Account for the rotor inertia contribution
       jdata.StU().diagonal() += jmodel.jointVelocitySelector(model.armature);
 
-      matrix_inversion(jdata.StU(), jdata.Dinv());
+      internal::matrix_inversion(jdata.StU(), jdata.Dinv());
       jdata.UDinv().noalias() = jdata.U() * jdata.Dinv();
 
       if (parent > 0)
