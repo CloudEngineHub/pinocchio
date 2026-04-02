@@ -1337,6 +1337,12 @@ namespace pinocchio
     auto & constraint_residual = cdata.constraint_residual;
     auto & rowise_tangent_map = cdata.rowise_tangent_map;
 
+    // Set to zero the rowise tangent map, as only some rows will be filled in the following
+    for (std::size_t i = 0; i < rowise_tangent_map.size(); ++i)
+    {
+      rowise_tangent_map[i].setZero();
+    }
+
     // For each selected constraint, calculate the residual and store the rowise tangent map
     std::size_t constraint_id = 0;
     // Lower bounds
