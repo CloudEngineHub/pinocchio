@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_from_matrix_info)
 {
   // Zero block allocation
   {
-    const std::vector<MatrixInfo> matrix_infos;
+    const std::vector<internal::MatrixInfo> matrix_infos;
     const MatrixXsStack matrix_stack(matrix_infos);
 
     BOOST_CHECK(matrix_stack.empty());
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_from_matrix_info)
   // Single block allocation
   {
     const Eigen::Index rows = 10, cols = 20;
-    const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
+    const std::vector<internal::MatrixInfo> matrix_infos = {{rows, cols}};
 
     const MatrixXsStack matrix_stack(matrix_infos);
 
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_from_matrix_info)
   {
     const size_t num_blocks = 10;
     const Eigen::Index rows = 10, cols = 20;
-    std::vector<MatrixInfo> matrix_infos(num_blocks);
+    std::vector<internal::MatrixInfo> matrix_infos(num_blocks);
 
     for (const auto & block_info : matrix_infos)
     {
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_from_matrix_info)
 BOOST_AUTO_TEST_CASE(matrix_stack_move_constructor)
 {
   const Eigen::Index rows = 10, cols = 20;
-  const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
+  const std::vector<internal::MatrixInfo> matrix_infos = {{rows, cols}};
 
   MatrixXsStack matrix_stack(matrix_infos);
   matrix_stack.back().setZero();
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_move_constructor)
 BOOST_AUTO_TEST_CASE(matrix_stack_move_assignment_operator)
 {
   const Eigen::Index rows = 10, cols = 20;
-  const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
+  const std::vector<internal::MatrixInfo> matrix_infos = {{rows, cols}};
 
   MatrixXsStack matrix_stack(matrix_infos);
   matrix_stack.back().setIdentity();
@@ -241,14 +241,14 @@ BOOST_AUTO_TEST_CASE(matrix_stack_move_assignment_operator)
 BOOST_AUTO_TEST_CASE(matrix_stack_rebuild)
 {
   const Eigen::Index rows1 = 10, cols1 = 20;
-  const std::vector<MatrixInfo> matrix_infos1 = {{rows1, cols1}};
+  const std::vector<internal::MatrixInfo> matrix_infos1 = {{rows1, cols1}};
 
   MatrixXsStack matrix_stack1(matrix_infos1);
   const void * matrix_stack1_data_ptr = matrix_stack1.data();
   matrix_stack1.back().setIdentity();
 
   const Eigen::Index rows2 = 20, cols2 = 40;
-  const std::vector<MatrixInfo> matrix_infos2 = {{rows2, cols2}};
+  const std::vector<internal::MatrixInfo> matrix_infos2 = {{rows2, cols2}};
 
   MatrixXsStack matrix_stack2(matrix_infos2);
   const void * matrix_stack2_data_ptr = matrix_stack2.data();
