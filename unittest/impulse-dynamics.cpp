@@ -147,8 +147,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL)
   }
 
   // Check that the decomposition is correct
-  const Data::ContactCholeskyDecomposition & contact_chol = data.contact_chol;
-  Eigen::MatrixXd KKT_matrix = contact_chol.matrix();
+  const Data::ConstraintCholeskyDecomposition & constraint_chol = data.constraint_chol;
+  Eigen::MatrixXd KKT_matrix = constraint_chol.matrix();
 
   BOOST_CHECK(KKT_matrix.bottomRightCorner(model.nv, model.nv)
                 .isApprox(KKT_matrix_ref.bottomRightCorner(model.nv, model.nv)));
@@ -283,8 +283,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_LOCAL_WORLD_ALIG
   }
 
   // Check that the decomposition is correct
-  const Data::ContactCholeskyDecomposition & contact_chol = data.contact_chol;
-  Eigen::MatrixXd KKT_matrix = contact_chol.matrix();
+  const Data::ConstraintCholeskyDecomposition & constraint_chol = data.constraint_chol;
+  Eigen::MatrixXd KKT_matrix = constraint_chol.matrix();
 
   BOOST_CHECK(KKT_matrix.bottomRightCorner(model.nv, model.nv)
                 .isApprox(KKT_matrix_ref.bottomRightCorner(model.nv, model.nv)));
@@ -417,8 +417,8 @@ BOOST_AUTO_TEST_CASE(test_sparse_impulse_dynamics_in_contact_6D_3D)
   }
 
   // Check that the decomposition is correct
-  const Data::ContactCholeskyDecomposition & contact_chol = data.contact_chol;
-  Eigen::MatrixXd KKT_matrix = contact_chol.matrix();
+  const Data::ConstraintCholeskyDecomposition & constraint_chol = data.constraint_chol;
+  Eigen::MatrixXd KKT_matrix = constraint_chol.matrix();
 
   BOOST_CHECK(KKT_matrix.bottomRightCorner(model.nv, model.nv)
                 .isApprox(KKT_matrix_ref.bottomRightCorner(model.nv, model.nv)));

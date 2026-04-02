@@ -132,7 +132,7 @@ if(BUILD_PYTHON_INTERFACE)
             build-reduced-model
             robot-wrapper-viewer
             geometry-models
-            contact-cholesky
+            constraint-cholesky
         )
     endif()
 

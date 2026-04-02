@@ -796,7 +796,7 @@ namespace pinocchio
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
   ADMMConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
     DelassusCholeskyExpressionTpl<
-      ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>,
+      ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>>,
     context::VectorXs,
     ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
     std::allocator<
@@ -805,7 +805,7 @@ namespace pinocchio
     std::allocator<
       ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>>(
     DelassusOperatorBase<DelassusCholeskyExpressionTpl<
-      ContactCholeskyDecompositionTpl<context::Scalar, context::Options>>> &,
+      ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>>> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const std::vector<
       ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,

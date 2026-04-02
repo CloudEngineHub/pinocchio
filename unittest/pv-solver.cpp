@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
 
   // Warning: the test below is not guaranteed to work for different constraints since the order of
   // constraints in PV and ProxLTL can vary.
-  data_ref.osim = data_ref.contact_chol.getInverseOperationalSpaceInertiaMatrix();
+  data_ref.osim = data_ref.constraint_chol.getInverseOperationalSpaceInertiaMatrix();
   data.LA[0].template triangularView<Eigen::StrictlyUpper>() =
     data.LA[0].template triangularView<Eigen::StrictlyLower>().transpose();
   // std::cout << "OSIM from PV = " << data.LA[0] << std::endl;
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_3D_humanoid)
   pv(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
 
-  data_ref.osim = data_ref.contact_chol.getInverseOperationalSpaceInertiaMatrix();
+  data_ref.osim = data_ref.constraint_chol.getInverseOperationalSpaceInertiaMatrix();
   data.LA[0].template triangularView<Eigen::StrictlyUpper>() =
     data.LA[0].template triangularView<Eigen::StrictlyLower>().transpose();
   BOOST_CHECK(data_ref.osim.isApprox(data.LA[0]));

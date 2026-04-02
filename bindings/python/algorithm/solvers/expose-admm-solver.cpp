@@ -32,7 +32,7 @@ namespace pinocchio
     typedef typename ADMMSolver::ADMMSolverResult ADMMSolverResult;
     typedef typename ADMMSolver::ADMMSolverStats ADMMSolverStats;
 
-    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
+    typedef ConstraintCholeskyDecompositionTpl<Scalar, Options> ConstraintCholeskyDecomposition;
 
     // ============================================================================
     // Expose ADMM Enums
@@ -271,7 +271,7 @@ namespace pinocchio
           .def(
             "solve",
             solve_admm_wrapper<
-              ContactCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
+              ConstraintCholeskyDecomposition::DelassusCholeskyExpression, ConstraintModel,
               ConstraintModelAllocator, ConstraintData, ConstraintDataAllocator>,
             bp::args(
               "self", "delassus", "g", "constraint_models", "constraint_datas", "settings",

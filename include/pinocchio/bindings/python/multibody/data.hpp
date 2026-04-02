@@ -12,6 +12,7 @@
 #include <eigenpy/eigen-to-python.hpp>
 #include <eigenpy/exception.hpp>
 #include <eigenpy/copyable.hpp>
+#include <eigenpy/deprecation-policy.hpp>
 
 #include "pinocchio/bindings/python/fwd.hpp"
 #include "pinocchio/bindings/python/utils/macros.hpp"
@@ -267,7 +268,20 @@ namespace pinocchio
 
           .ADD_DATA_PROPERTY(lambda_c, "Lagrange Multipliers linked to contact forces")
           .ADD_DATA_PROPERTY(impulse_c, "Lagrange Multipliers linked to contact impulses")
-          .ADD_DATA_PROPERTY(contact_chol, "Contact Cholesky decomposition.")
+          .ADD_DATA_PROPERTY(constraint_chol, "Contact Cholesky decomposition.")
+          .add_property(
+            "contact_chol",
+            bp::make_function(
+              +[](const Data & self) { return self.contact_chol; },
+              eigenpy::deprecated_member<>("Deprecated member. Use constraint_chol instead.")),
+            bp::make_function(
+              +[](
+                 Data & self,
+                 const typename Data::ConstraintCholeskyDecomposition & constraint_chol) {
+                self.contact_chol = constraint_chol;
+              },
+              eigenpy::deprecated_member<>("Deprecated member. Use constraint_chol instead.")),
+            "Deprecated member. Use constraint_chol instead.")
           .ADD_DATA_PROPERTY(
             primal_dual_contact_solution,
             "Right hand side vector when solving the contact dynamics KKT problem.")

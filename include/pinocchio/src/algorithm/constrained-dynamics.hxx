@@ -28,25 +28,25 @@ namespace pinocchio
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas)
   {
-    data.contact_chol.rebuild(model, data, constraint_models, constraint_datas);
-    data.primal_dual_contact_solution.resize(data.contact_chol.size());
-    data.primal_rhs_contact.resize(data.contact_chol.constraintDim());
+    data.constraint_chol.rebuild(model, data, constraint_models, constraint_datas);
+    data.primal_dual_contact_solution.resize(data.constraint_chol.size());
+    data.primal_rhs_contact.resize(data.constraint_chol.constraintDim());
 
-    data.lambda_c.resize(data.contact_chol.constraintDim());
-    data.lambda_c_prox.resize(data.contact_chol.constraintDim());
-    data.impulse_c.resize(data.contact_chol.constraintDim());
+    data.lambda_c.resize(data.constraint_chol.constraintDim());
+    data.lambda_c_prox.resize(data.constraint_chol.constraintDim());
+    data.impulse_c.resize(data.constraint_chol.constraintDim());
 
     // TODO: should be moved elsewhere
-    data.dlambda_dq.resize(data.contact_chol.constraintDim(), model.nv);
-    data.dlambda_dx_prox.resize(data.contact_chol.constraintDim(), model.nv);
-    data.drhs_prox.resize(data.contact_chol.constraintDim(), model.nv);
-    data.dlambda_dv.resize(data.contact_chol.constraintDim(), model.nv);
-    data.dlambda_dtau.resize(data.contact_chol.constraintDim(), model.nv);
-    data.dvc_dq.resize(data.contact_chol.constraintDim(), model.nv);
-    data.dac_dq.resize(data.contact_chol.constraintDim(), model.nv);
-    data.dac_dv.resize(data.contact_chol.constraintDim(), model.nv);
-    data.dac_da.resize(data.contact_chol.constraintDim(), model.nv);
-    data.osim.resize(data.contact_chol.constraintDim(), data.contact_chol.constraintDim());
+    data.dlambda_dq.resize(data.constraint_chol.constraintDim(), model.nv);
+    data.dlambda_dx_prox.resize(data.constraint_chol.constraintDim(), model.nv);
+    data.drhs_prox.resize(data.constraint_chol.constraintDim(), model.nv);
+    data.dlambda_dv.resize(data.constraint_chol.constraintDim(), model.nv);
+    data.dlambda_dtau.resize(data.constraint_chol.constraintDim(), model.nv);
+    data.dvc_dq.resize(data.constraint_chol.constraintDim(), model.nv);
+    data.dac_dq.resize(data.constraint_chol.constraintDim(), model.nv);
+    data.dac_dv.resize(data.constraint_chol.constraintDim(), model.nv);
+    data.dac_da.resize(data.constraint_chol.constraintDim(), model.nv);
+    data.osim.resize(data.constraint_chol.constraintDim(), data.constraint_chol.constraintDim());
 
     data.lambda_c.setZero();
     data.lambda_c_prox.setZero();
@@ -234,7 +234,7 @@ namespace pinocchio
     }
 
     typename Data::TangentVectorType & a = data.ddq;
-    typename Data::ContactCholeskyDecomposition & contact_chol = data.contact_chol;
+    typename Data::ConstraintCholeskyDecomposition & constraint_chol = data.constraint_chol;
     typename Data::VectorXs & primal_dual_contact_solution = data.primal_dual_contact_solution;
     typename Data::VectorXs & primal_rhs_contact = data.primal_rhs_contact;
 
@@ -276,7 +276,7 @@ namespace pinocchio
     // Computes the Cholesky decomposition
     const Scalar mu = settings.mu;
     calc(model, data, constraint_models, contact_datas);
-    contact_chol.compute(model, data, constraint_models, contact_datas, mu);
+    constraint_chol.compute(model, data, constraint_models, contact_datas, mu);
 
     primal_dual_contact_solution.tail(model.nv) = tau - data.nle;
 
@@ -439,17 +439,17 @@ namespace pinocchio
     //    Scalar primal_infeasibility = Scalar(0);
     int it = 0;
     data.lambda_c_prox.setZero();
-    const Eigen::Index constraint_size = contact_chol.constraintDim();
+    const Eigen::Index constraint_size = constraint_chol.constraintDim();
     for (; it < settings.max_iter;)
     {
       it++;
       primal_dual_contact_solution.head(constraint_size) =
         primal_rhs_contact + data.lambda_c_prox * settings.mu;
       primal_dual_contact_solution.tail(model.nv) = tau - data.nle;
-      contact_chol.solveInPlace(primal_dual_contact_solution);
+      constraint_chol.solveInPlace(primal_dual_contact_solution);
 
       // Use data.lambda_c as tmp variable for computing the constraint residual
-      contact_chol.getDelassusCholeskyExpression().applyOnTheRight(
+      constraint_chol.getDelassusCholeskyExpression().applyOnTheRight(
         primal_dual_contact_solution.head(constraint_size), data.lambda_c);
       data.lambda_c -= mu * primal_dual_contact_solution.head(constraint_size)
                        + primal_rhs_contact.head(constraint_size);

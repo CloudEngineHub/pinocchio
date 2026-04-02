@@ -90,7 +90,7 @@ class ContactSolverTestCase(PinocchioTestCase):
             cdata = constraint_datas[-1]
             cmodel.calc(model, data, cdata)
 
-        chol = pin.ContactCholeskyDecomposition(
+        chol = pin.ConstraintCholeskyDecomposition(
             model, data, constraint_models, constraint_datas
         )
         chol.compute(model, data, constraint_models, constraint_datas, 1e-10)

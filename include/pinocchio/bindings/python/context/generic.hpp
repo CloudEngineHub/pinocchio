@@ -146,7 +146,7 @@ namespace pinocchio
 
       // Algorithm
       typedef ProximalSettingsTpl<Scalar> ProximalSettings;
-      typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
+      typedef ConstraintCholeskyDecompositionTpl<Scalar, Options> ConstraintCholeskyDecomposition;
 
       typedef RigidConstraintModelTpl<Scalar, Options> RigidConstraintModel;
       typedef std::vector<RigidConstraintModel> RigidConstraintModelVector;

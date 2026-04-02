@@ -16,11 +16,11 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
-  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::ConstraintCholeskyDecompositionTpl(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     const DataTpl<S1, O1, JointCollectionTpl> & data,
     const Scalar min_damping_value)
-  : ContactCholeskyDecompositionTpl(min_damping_value)
+  : ConstraintCholeskyDecompositionTpl(min_damping_value)
   {
     typedef ConstraintModelTpl<Scalar, Options> ConstraintModel;
     typedef ConstraintDataTpl<Scalar, Options> ConstraintData;
@@ -39,13 +39,13 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  ContactCholeskyDecompositionTpl<Scalar, Options>::ContactCholeskyDecompositionTpl(
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::ConstraintCholeskyDecompositionTpl(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     const DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
     const std::vector<ConstraintData, ConstraintDataAllocator> & constraint_datas,
     const Scalar min_damping_value)
-  : ContactCholeskyDecompositionTpl(min_damping_value)
+  : ConstraintCholeskyDecompositionTpl(min_damping_value)
   {
     PINOCCHIO_UNUSED_VARIABLE(data);
     rebuild(model, data, constraint_models, constraint_datas);
@@ -60,7 +60,7 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::allocate(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::allocate(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     const DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -78,7 +78,7 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::rebuild(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::rebuild(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     const DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -204,7 +204,7 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::compute(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::compute(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -310,7 +310,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename VectorLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(
     const Eigen::MatrixBase<VectorLike> & compliance_vector)
   {
     EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
@@ -319,14 +319,15 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(const Scalar & compliance)
+  void
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateCompliance(const Scalar & compliance)
   {
     const Eigen::Index total_constraint_size = constraintDim();
     updateCompliance(Vector::Constant(total_constraint_size, compliance));
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusMatrix()
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::computeDelassusMatrix()
   {
     const auto total_constraint_size = constraintDim();
     const auto UtopRight = U.topRightCorner(total_constraint_size, nv);
@@ -356,7 +357,7 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::computeDelassusCholeskyDecomposition()
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::computeDelassusCholeskyDecomposition()
   {
     const auto constraint_size = constraintDim();
 
@@ -397,7 +398,7 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateSumComplianceDamping()
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateSumComplianceDamping()
   {
     m_sum_compliance_damping = m_damping + compliance.asDiagonal();
     decomposition_dirty = true;
@@ -405,7 +406,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename VectorLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
     const Eigen::MatrixBase<VectorLike> & damping_vector)
   {
     m_damping = damping_vector.asDiagonal();
@@ -413,7 +414,7 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(const Scalar & mu)
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateDamping(const Scalar & mu)
   {
     //      PINOCCHIO_CHECK_INPUT_ARGUMENT(check_expression_if_real<Scalar>(mu >= 0), "mu should be
     //      positive.");
@@ -423,7 +424,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<int OtherOptions, std::size_t OtherAlignment>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
     const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
   {
     if (&block_damping == &m_damping)
@@ -434,7 +435,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<int OtherOptions, std::size_t OtherAlignment>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
     BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
   {
     if (&block_damping == &m_damping)
@@ -445,12 +446,12 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::solveInPlace(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::solveInPlace(
     const Eigen::MatrixBase<MatrixLike> & mat_) const
   {
     PINOCCHIO_THROW_IF(
       decomposition_dirty, std::logic_error,
-      "The ContactCholeskyDecompositionTpl has dirty quantities. Please call the "
+      "The ConstraintCholeskyDecompositionTpl has dirty quantities. Please call the "
       "computeDelassusCholeskyDecomposition() method first.");
     auto & mat = mat_.const_cast_derived();
 
@@ -461,8 +462,8 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixLike>
-  typename ContactCholeskyDecompositionTpl<Scalar, Options>::Matrix
-  ContactCholeskyDecompositionTpl<Scalar, Options>::solve(
+  typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::Matrix
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::solve(
     const Eigen::MatrixBase<MatrixLike> & mat) const
   {
     Matrix res(mat);
@@ -472,12 +473,12 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
-  ContactCholeskyDecompositionTpl<Scalar, Options>
-  ContactCholeskyDecompositionTpl<Scalar, Options>::getMassMatrixChoeslkyDecomposition(
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::getMassMatrixChoeslkyDecomposition(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     const DataTpl<S1, O1, JointCollectionTpl> & data) const
   {
-    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ReturnType;
+    typedef ConstraintCholeskyDecompositionTpl<Scalar, Options> ReturnType;
     ReturnType res(model, data);
 
     res.D = D.tail(nv);
@@ -494,7 +495,7 @@ namespace pinocchio
     {
       template<typename Scalar, int Options>
       static void run(
-        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
         const Eigen::MatrixBase<MatrixLike> & mat_)
       {
         auto & mat = mat_.const_cast_derived();
@@ -511,7 +512,7 @@ namespace pinocchio
     {
       template<typename Scalar, int Options>
       static void run(
-        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
         const Eigen::MatrixBase<VectorLike> & vec_)
       {
         EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
@@ -539,7 +540,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::Uv(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::Uv(
     const Eigen::MatrixBase<MatrixLike> & mat) const
   {
     details::UvAlgo<MatrixLike>::run(*this, mat.const_cast_derived());
@@ -552,7 +553,7 @@ namespace pinocchio
     {
       template<typename Scalar, int Options>
       static void run(
-        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
         const Eigen::MatrixBase<MatrixLike> & mat)
       {
         MatrixLike & mat_ = mat.const_cast_derived();
@@ -570,7 +571,7 @@ namespace pinocchio
     {
       template<typename Scalar, int Options>
       static void run(
-        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
         const Eigen::MatrixBase<VectorLike> & vec)
       {
         EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
@@ -599,7 +600,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::Utv(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::Utv(
     const Eigen::MatrixBase<MatrixLike> & mat) const
   {
     details::UtvAlgo<MatrixLike>::run(*this, mat.const_cast_derived());
@@ -612,7 +613,7 @@ namespace pinocchio
     {
       template<typename Scalar, int Options>
       static void run(
-        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
         const Eigen::MatrixBase<MatrixLike> & mat)
       {
         MatrixLike & mat_ = mat.const_cast_derived();
@@ -630,7 +631,7 @@ namespace pinocchio
     {
       template<typename Scalar, int Options>
       static void run(
-        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
         const Eigen::MatrixBase<VectorLike> & vec)
       {
         EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
@@ -657,7 +658,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::Uiv(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::Uiv(
     const Eigen::MatrixBase<MatrixLike> & mat) const
   {
     details::UivAlgo<MatrixLike>::run(*this, mat.const_cast_derived());
@@ -670,7 +671,7 @@ namespace pinocchio
     {
       template<typename Scalar, int Options>
       static void run(
-        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
         const Eigen::MatrixBase<MatrixLike> & mat)
       {
         MatrixLike & mat_ = mat.const_cast_derived();
@@ -688,7 +689,7 @@ namespace pinocchio
     {
       template<typename Scalar, int Options>
       static void run(
-        const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+        const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
         const Eigen::MatrixBase<VectorLike> & vec)
       {
         EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorLike)
@@ -717,15 +718,15 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::Utiv(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::Utiv(
     const Eigen::MatrixBase<MatrixLike> & mat) const
   {
     details::UtivAlgo<MatrixLike>::run(*this, mat.const_cast_derived());
   }
 
   template<typename Scalar, int Options>
-  typename ContactCholeskyDecompositionTpl<Scalar, Options>::Matrix
-  ContactCholeskyDecompositionTpl<Scalar, Options>::matrix() const
+  typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::Matrix
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::matrix() const
   {
     Matrix res(size(), size());
     matrix(res);
@@ -734,7 +735,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixType>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::matrix(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::matrix(
     const Eigen::MatrixBase<MatrixType> & res_) const
   {
     auto & res = res_.const_cast_derived();
@@ -742,8 +743,8 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  typename ContactCholeskyDecompositionTpl<Scalar, Options>::Matrix
-  ContactCholeskyDecompositionTpl<Scalar, Options>::inverse() const
+  typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::Matrix
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::inverse() const
   {
     Matrix res(size(), size());
     inverse(res);
@@ -755,7 +756,7 @@ namespace pinocchio
 
     template<typename Scalar, int Options, typename VectorLike>
     PINOCCHIO_DONT_INLINE VectorLike & inverseAlgo(
-      const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+      const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
       const Eigen::Index col,
       const Eigen::MatrixBase<VectorLike> & vec_)
     {
@@ -785,10 +786,11 @@ namespace pinocchio
         //  }
         //  else
         //  {
-        //    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
-        //    typedef typename ContactCholeskyDecomposition::SliceVector SliceVector;
-        //    typedef typename ContactCholeskyDecomposition::Slice Slice;
-        //    const SliceVector & slice_vector = chol.rowise_sparsity_pattern[(size_t)k];
+        //    typedef ConstraintCholeskyDecompositionTpl<Scalar, Options>
+        //    ConstraintCholeskyDecomposition; typedef typename
+        //    ConstraintCholeskyDecomposition::SliceVector SliceVector; typedef typename
+        //    ConstraintCholeskyDecomposition::Slice Slice; const SliceVector & slice_vector =
+        //    chol.rowise_sparsity_pattern[(size_t)k];
 
         //    const Slice & slice_0 = slice_vector[0];
         //    assert(slice_0.first_index == k);
@@ -826,7 +828,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixType>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::inverse(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::inverse(
     const Eigen::MatrixBase<MatrixType> & res_) const
   {
     auto & res = res_.const_cast_derived();
@@ -841,34 +843,35 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::EigenStorageVector::ConstMapType
-  ContactCholeskyDecompositionTpl<Scalar, Options>::getCompliance() const
+  const typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::EigenStorageVector::
+    ConstMapType
+    ConstraintCholeskyDecompositionTpl<Scalar, Options>::getCompliance() const
   {
     return compliance_storage.const_map();
   }
 
   template<typename Scalar, int Options>
-  const typename ContactCholeskyDecompositionTpl<Scalar, Options>::BlockDiagonalMatrix &
-  ContactCholeskyDecompositionTpl<Scalar, Options>::getDamping() const
+  const typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::BlockDiagonalMatrix &
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::getDamping() const
   {
     return m_damping;
   }
 
   template<typename Scalar, int Options>
-  Eigen::Index ContactCholeskyDecompositionTpl<Scalar, Options>::size() const
+  Eigen::Index ConstraintCholeskyDecompositionTpl<Scalar, Options>::size() const
   {
     return D.size();
   }
 
   template<typename Scalar, int Options>
-  Eigen::Index ContactCholeskyDecompositionTpl<Scalar, Options>::constraintDim() const
+  Eigen::Index ConstraintCholeskyDecompositionTpl<Scalar, Options>::constraintDim() const
   {
     return size() - nv;
   }
 
   template<typename Scalar, int Options>
-  typename ContactCholeskyDecompositionTpl<Scalar, Options>::Matrix
-  ContactCholeskyDecompositionTpl<Scalar, Options>::getInverseOperationalSpaceInertiaMatrix(
+  typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::Matrix
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::getInverseOperationalSpaceInertiaMatrix(
     bool enforce_symmetry) const
   {
     Matrix res(constraintDim(), constraintDim());
@@ -878,7 +881,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixType>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::getInverseOperationalSpaceInertiaMatrix(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::getInverseOperationalSpaceInertiaMatrix(
     const Eigen::MatrixBase<MatrixType> & res, bool enforce_symmetry) const
   {
     const auto U1 = U.topLeftCorner(constraintDim(), constraintDim());
@@ -893,15 +896,15 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  typename ContactCholeskyDecompositionTpl<Scalar, Options>::DelassusCholeskyExpression
-  ContactCholeskyDecompositionTpl<Scalar, Options>::getDelassusCholeskyExpression() const
+  typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::DelassusCholeskyExpression
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::getDelassusCholeskyExpression() const
   {
-    return DelassusCholeskyExpression(const_cast<ContactCholeskyDecompositionTpl &>(*this));
+    return DelassusCholeskyExpression(const_cast<ConstraintCholeskyDecompositionTpl &>(*this));
   }
 
   template<typename Scalar, int Options>
-  typename ContactCholeskyDecompositionTpl<Scalar, Options>::Matrix
-  ContactCholeskyDecompositionTpl<Scalar, Options>::getOperationalSpaceInertiaMatrix() const
+  typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::Matrix
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::getOperationalSpaceInertiaMatrix() const
   {
     Matrix res(constraintDim(), constraintDim());
     getOperationalSpaceInertiaMatrix(res);
@@ -910,7 +913,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixType>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::getOperationalSpaceInertiaMatrix(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::getOperationalSpaceInertiaMatrix(
     const Eigen::MatrixBase<MatrixType> & res_) const
   {
     auto & res = res_.const_cast_derived();
@@ -927,8 +930,8 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  typename ContactCholeskyDecompositionTpl<Scalar, Options>::Matrix
-  ContactCholeskyDecompositionTpl<Scalar, Options>::getInverseMassMatrix() const
+  typename ConstraintCholeskyDecompositionTpl<Scalar, Options>::Matrix
+  ConstraintCholeskyDecompositionTpl<Scalar, Options>::getInverseMassMatrix() const
   {
     Matrix res(nv, nv);
     getInverseMassMatrix(res);
@@ -937,7 +940,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixType>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::getInverseMassMatrix(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::getInverseMassMatrix(
     const Eigen::MatrixBase<MatrixType> & res_) const
   {
     auto & res = res_.const_cast_derived();
@@ -952,7 +955,7 @@ namespace pinocchio
 
   template<typename Scalar, int Options>
   template<typename MatrixType>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::getJMinv(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::getJMinv(
     const Eigen::MatrixBase<MatrixType> & res_) const
   {
     auto & res = res_.const_cast_derived();
@@ -974,7 +977,7 @@ namespace pinocchio
     class ConstraintData,
     class ConstraintDataAllocator,
     typename VectorLike>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::compute(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::compute(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -994,7 +997,7 @@ namespace pinocchio
     class ConstraintModelAllocator,
     class ConstraintData,
     class ConstraintDataAllocator>
-  void ContactCholeskyDecompositionTpl<Scalar, Options>::compute(
+  void ConstraintCholeskyDecompositionTpl<Scalar, Options>::compute(
     const ModelTpl<S1, O1, JointCollectionTpl> & model,
     DataTpl<S1, O1, JointCollectionTpl> & data,
     const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -1006,7 +1009,7 @@ namespace pinocchio
   }
 
   template<typename Scalar, int Options>
-  std::size_t ContactCholeskyDecompositionTpl<Scalar, Options>::sizeInBytes() const
+  std::size_t ConstraintCholeskyDecompositionTpl<Scalar, Options>::sizeInBytes() const
   {
     return U_storage.sizeInBytes() + D_storage.sizeInBytes() + Dinv_storage.sizeInBytes()
            + compliance_storage.sizeInBytes() + m_damping.sizeInBytes()
@@ -1027,13 +1030,13 @@ namespace pinocchio
   {
     extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI context::VectorXs &
     inverseAlgo<context::Scalar, context::Options, context::VectorXs>(
-      const ContactCholeskyDecompositionTpl<context::Scalar, context::Options> &,
+      const ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options> &,
       const Eigen::Index,
       const Eigen::MatrixBase<context::VectorXs> &);
   }
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::rebuild<
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::rebuild<
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,
@@ -1047,21 +1050,21 @@ namespace pinocchio
     const RigidConstraintDataVector &);
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::
     getInverseOperationalSpaceInertiaMatrix<context::MatrixXs>(
       const Eigen::MatrixBase<context::MatrixXs> &, bool) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::
     getOperationalSpaceInertiaMatrix<context::MatrixXs>(
       const Eigen::MatrixBase<context::MatrixXs> &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::getInverseMassMatrix<
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::getInverseMassMatrix<
     context::MatrixXs>(const Eigen::MatrixBase<context::MatrixXs> &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::compute<
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::compute<
     context::Scalar,
     context::Options,
     JointCollectionDefaultTpl,
@@ -1076,45 +1079,45 @@ namespace pinocchio
     const context::Scalar);
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::solveInPlace<
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::solveInPlace<
     context::MatrixXs>(const Eigen::MatrixBase<context::MatrixXs> &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
-    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Matrix
-    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::solve<context::MatrixXs>(
+    ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::Matrix
+    ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::solve<context::MatrixXs>(
       const Eigen::MatrixBase<
-        ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Matrix> &) const;
+        ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::Matrix> &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
-    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>
-    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::
+    ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>
+    ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::
       getMassMatrixChoeslkyDecomposition<
         context::Scalar,
         context::Options,
         JointCollectionDefaultTpl>(const Model &, const Data &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Uv<context::MatrixXs>(
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::Uv<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Utv<context::MatrixXs>(
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::Utv<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Uiv<context::MatrixXs>(
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::Uiv<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::Utiv<context::MatrixXs>(
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::Utiv<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::matrix<context::MatrixXs>(
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::matrix<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI void
-  ContactCholeskyDecompositionTpl<context::Scalar, context::Options>::inverse<context::MatrixXs>(
+  ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>::inverse<context::MatrixXs>(
     const Eigen::MatrixBase<context::MatrixXs> &) const;
 
 } // namespace pinocchio

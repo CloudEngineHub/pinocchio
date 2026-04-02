@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_delassus_operator_dense_serialization)
   }
 
   // compute delassus
-  ContactCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
+  ConstraintCholeskyDecomposition chol(model, data, constraint_models, constraint_datas);
   const double damping_val = 0.1234;
   chol.updateDamping(damping_val);
   chol.compute(model, data, constraint_models, constraint_datas);

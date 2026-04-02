@@ -24,12 +24,12 @@ namespace pinocchio
   {
     namespace bp = boost::python;
 
-    template<typename ContactCholeskyDecomposition>
-    struct ContactCholeskyDecompositionPythonVisitor
+    template<typename ConstraintCholeskyDecomposition>
+    struct ConstraintCholeskyDecompositionPythonVisitor
     : public boost::python::def_visitor<
-        ContactCholeskyDecompositionPythonVisitor<ContactCholeskyDecomposition>>
+        ConstraintCholeskyDecompositionPythonVisitor<ConstraintCholeskyDecomposition>>
     {
-      typedef ContactCholeskyDecomposition Self;
+      typedef ConstraintCholeskyDecomposition Self;
       typedef typename Self::Scalar Scalar;
       typedef context::RigidConstraintModel RigidConstraintModel;
       typedef context::RigidConstraintData RigidConstraintData;
@@ -245,29 +245,31 @@ namespace pinocchio
 
       static void expose()
       {
-        bp::class_<ContactCholeskyDecomposition>(
-          "ContactCholeskyDecomposition",
+        bp::class_<ConstraintCholeskyDecomposition>(
+          "ConstraintCholeskyDecomposition",
           "Contact information container for contact dynamic algorithms.", bp::no_init)
-          .def(ContactCholeskyDecompositionPythonVisitor<ContactCholeskyDecomposition>())
-          .def(::eigenpy::CopyableVisitor<ContactCholeskyDecomposition>());
+          .def(ConstraintCholeskyDecompositionPythonVisitor<ConstraintCholeskyDecomposition>())
+          .def(::eigenpy::CopyableVisitor<ConstraintCholeskyDecomposition>());
 
+        bp::scope().attr("ContactCholeskyDecomposition") =
+          bp::scope().attr("ConstraintCholeskyDecomposition"); // alias
         {
-          typedef typename ContactCholeskyDecomposition::DelassusCholeskyExpression
+          typedef typename ConstraintCholeskyDecomposition::DelassusCholeskyExpression
             DelassusCholeskyExpression;
 
           bp::class_<DelassusCholeskyExpression>(
             "DelassusCholeskyExpression",
-            "Delassus Cholesky expression associated to a given ContactCholeskyDecomposition "
+            "Delassus Cholesky expression associated to a given ConstraintCholeskyDecomposition "
             "object.",
             bp::no_init)
             .def(
-              bp::init<ContactCholeskyDecomposition &>(
+              bp::init<ConstraintCholeskyDecomposition &>(
                 bp::args("self", "cholesky_decomposition"),
-                "Build from a given ContactCholeskyDecomposition object.")
+                "Build from a given ConstraintCholeskyDecomposition object.")
                 [bp::with_custodian_and_ward<1, 2>()])
             .def(
               "cholesky",
-              +[](DelassusCholeskyExpression & self) -> ContactCholeskyDecomposition & {
+              +[](DelassusCholeskyExpression & self) -> ConstraintCholeskyDecomposition & {
                 return self.cholesky();
               },
               bp::arg("self"),

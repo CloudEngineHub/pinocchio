@@ -88,7 +88,7 @@ namespace pinocchio
 
     typedef MatrixStackTpl<MatrixXs> DynamicMatrixStack;
 
-    typedef ContactCholeskyDecompositionTpl<Scalar, Options> ContactCholeskyDecomposition;
+    typedef ConstraintCholeskyDecompositionTpl<Scalar, Options> ConstraintCholeskyDecomposition;
 
     /// \brief Vector of pinocchio::JointData associated to the pinocchio::JointModel stored in
     /// model
@@ -538,7 +538,11 @@ namespace pinocchio
 #endif
 
     /// \brief Cholesky decomposition of the KKT contact matrix
-    ContactCholeskyDecomposition contact_chol;
+    ConstraintCholeskyDecomposition constraint_chol;
+
+    /// \brief Cholesky decomposition of the KKT contact matrix
+    /// Deprecated in favor of lowerDryFrictionLimit and upperDryFrictionLimit
+    ConstraintCholeskyDecomposition contact_chol;
 
     /// \brief RHS vector when solving the contact dynamics KKT problem
     VectorXs primal_dual_contact_solution;
@@ -764,6 +768,8 @@ namespace pinocchio
   , a_bias((std::size_t)model.njoints, Motion::Zero())
   , KAS((std::size_t)model.njoints, MatrixXs::Zero(0, 0))
   , kinematic_hessians(6, model.nv, model.nv)
+  , constraint_chol()
+  , contact_chol(constraint_chol)
   , d2tau_dqdq(model.nv, model.nv, model.nv)
   , d2tau_dvdv(model.nv, model.nv, model.nv)
   , d2tau_dqdv(model.nv, model.nv, model.nv)
@@ -1031,7 +1037,7 @@ namespace pinocchio
       && data1.impulse_c == data2.impulse_c && data1.staticRegressor == data2.staticRegressor
       && data1.bodyRegressor == data2.bodyRegressor
       && data1.jointTorqueRegressor == data2.jointTorqueRegressor
-      // && data1.contact_chol == data2.contact_chol
+      // && data1.constraint_chol == data2.constraint_chol
       && data1.primal_dual_contact_solution == data2.primal_dual_contact_solution
       && data1.extended_motion_propagator == data2.extended_motion_propagator
       && data1.extended_motion_propagator2 == data2.extended_motion_propagator2

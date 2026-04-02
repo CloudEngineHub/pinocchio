@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(closed_loop_constraint_6D_LOCAL)
 
   BOOST_CHECK(data_ref.ddq.isApprox(data.ddq));
 
-  const Eigen::MatrixXd KKT_matrix = data.contact_chol.matrix();
+  const Eigen::MatrixXd KKT_matrix = data.constraint_chol.matrix();
   BOOST_CHECK(KKT_matrix.isApprox(KKT_matrix_ref));
 
   // Check with finite differences the error computations

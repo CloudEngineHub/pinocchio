@@ -18,9 +18,18 @@ namespace pinocchio
   typedef ProximalSettingsTpl<context::Scalar> ProximalSettings;
 
   template<typename Scalar, int Options>
-  struct ContactCholeskyDecompositionTpl;
-  typedef ContactCholeskyDecompositionTpl<context::Scalar, context::Options>
-    ContactCholeskyDecomposition;
+  struct ConstraintCholeskyDecompositionTpl;
+  typedef ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>
+    ConstraintCholeskyDecomposition;
+
+  template<typename Scalar, int Options>
+  using ContactCholeskyDecompositionTpl PINOCCHIO_DEPRECATED_MESSAGE(
+    "ContactCholeskyDecompositionTpl is deprecated, please use "
+    "ConstraintCholeskyDecompositionTpl") = ConstraintCholeskyDecompositionTpl<Scalar, Options>;
+  using ContactCholeskyDecomposition PINOCCHIO_DEPRECATED_MESSAGE(
+    "ContactCholeskyDecomposition is deprecated, please use "
+    "ConstraintCholeskyDecomposition") =
+    ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>;
 
   template<typename Scalar, int Options>
   struct RigidConstraintModelTpl;
@@ -68,9 +77,9 @@ namespace pinocchio
   template<typename DelassusOperator, typename PreconditionerType>
   struct DelassusOperatorPreconditionedTpl;
 
-  template<typename ContactCholeskyDecomposition>
+  template<typename ConstraintCholeskyDecomposition>
   struct DelassusCholeskyExpressionTpl;
-  typedef DelassusCholeskyExpressionTpl<ContactCholeskyDecomposition> DelassusCholeskyExpression;
+  typedef DelassusCholeskyExpressionTpl<ConstraintCholeskyDecomposition> DelassusCholeskyExpression;
 
   template<class... D>
   struct AlgorithmCheckerList;

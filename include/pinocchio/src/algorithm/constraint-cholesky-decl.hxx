@@ -31,7 +31,7 @@ namespace pinocchio
 
     template<typename Scalar, int Options, typename VectorLike>
     VectorLike & inverseAlgo(
-      const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+      const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
       const Eigen::Index col,
       const Eigen::MatrixBase<VectorLike> & vec);
   } // namespace details
@@ -47,12 +47,12 @@ namespace pinocchio
   /// \tparam _Scalar Scalar type.
   ///  \tparam _Options Alignment Options of the Eigen objects contained in the data structure.
   ///
-  // Forward declaration of Unsafe so ContactCholeskyDecompositionTpl can friend it.
+  // Forward declaration of Unsafe so ConstraintCholeskyDecompositionTpl can friend it.
   template<typename>
   struct Unsafe;
 
   template<typename _Scalar, int _Options>
-  struct ContactCholeskyDecompositionTpl
+  struct ConstraintCholeskyDecompositionTpl
   {
 
     typedef pinocchio::Index Index;
@@ -88,10 +88,10 @@ namespace pinocchio
       Eigen::Index size;
     };
 
-    typedef DelassusCholeskyExpressionTpl<ContactCholeskyDecompositionTpl>
+    typedef DelassusCholeskyExpressionTpl<ConstraintCholeskyDecompositionTpl>
       DelassusCholeskyExpression;
-    friend struct DelassusCholeskyExpressionTpl<ContactCholeskyDecompositionTpl>;
-    friend struct Unsafe<DelassusCholeskyExpressionTpl<ContactCholeskyDecompositionTpl>>;
+    friend struct DelassusCholeskyExpressionTpl<ConstraintCholeskyDecompositionTpl>;
+    friend struct Unsafe<DelassusCholeskyExpressionTpl<ConstraintCholeskyDecompositionTpl>>;
 
     typedef std::vector<Slice> SliceVector;
     typedef std::vector<SliceVector> VectorOfSliceVector;
@@ -100,7 +100,7 @@ namespace pinocchio
     ///
     /// \brief Default constructor
     ///
-    explicit ContactCholeskyDecompositionTpl(const Scalar min_damping_value = Scalar(0))
+    explicit ConstraintCholeskyDecompositionTpl(const Scalar min_damping_value = Scalar(0))
     : D(D_storage.map())
     , Dinv(Dinv_storage.map())
     , U(U_storage.map())
@@ -118,7 +118,7 @@ namespace pinocchio
     /// \param[in] data Data associated with the kinematic tree
     ///
     template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
-    explicit ContactCholeskyDecompositionTpl(
+    explicit ConstraintCholeskyDecompositionTpl(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       const DataTpl<S1, O1, JointCollectionTpl> & data,
       const Scalar min_damping_value = Scalar(0));
@@ -140,7 +140,7 @@ namespace pinocchio
       class ConstraintModelAllocator,
       class ConstraintData,
       class ConstraintDataAllocator>
-    ContactCholeskyDecompositionTpl(
+    ConstraintCholeskyDecompositionTpl(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       const DataTpl<S1, O1, JointCollectionTpl> & data,
       const std::vector<ConstraintModel, ConstraintModelAllocator> & constraint_models,
@@ -150,10 +150,10 @@ namespace pinocchio
     ///
     /// \brief Copy constructor
     ///
-    /// \param[in] other ContactCholeskyDecompositionTpl to copy
+    /// \param[in] other ConstraintCholeskyDecompositionTpl to copy
     ///
-    ContactCholeskyDecompositionTpl(const ContactCholeskyDecompositionTpl & other)
-    : ContactCholeskyDecompositionTpl(other.min_damping_value)
+    ConstraintCholeskyDecompositionTpl(const ConstraintCholeskyDecompositionTpl & other)
+    : ConstraintCholeskyDecompositionTpl(other.min_damping_value)
     {
       *this = other;
     }
@@ -161,9 +161,9 @@ namespace pinocchio
     ///
     /// \brief Copy operator
     ///
-    /// \param[in] other ContactCholeskyDecompositionTpl to copy
+    /// \param[in] other ConstraintCholeskyDecompositionTpl to copy
     ///
-    ContactCholeskyDecompositionTpl & operator=(const ContactCholeskyDecompositionTpl & other)
+    ConstraintCholeskyDecompositionTpl & operator=(const ConstraintCholeskyDecompositionTpl & other)
 
     {
       parents_fromRow = other.parents_fromRow;
@@ -439,7 +439,7 @@ namespace pinocchio
 
     ///
     ///  \brief Computes the solution of \f$ A x = b \f$ where *this is the Cholesky decomposition
-    /// of A.         "in-place" version of ContactCholeskyDecompositionTpl::solve(b) where the
+    /// of A.         "in-place" version of ConstraintCholeskyDecompositionTpl::solve(b) where the
     /// result is written in b.
     ///        This functions takes as input the vector b, and returns the solution \f$ x = A^-1 b
     ///        \f$.
@@ -447,7 +447,7 @@ namespace pinocchio
     /// \param[inout] mat The right-and-side term which also contains the solution of the linear
     /// system.
     ///
-    /// \sa ContactCholeskyDecompositionTpl::solve
+    /// \sa ConstraintCholeskyDecompositionTpl::solve
     template<typename MatrixLike>
     void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const;
 
@@ -459,7 +459,7 @@ namespace pinocchio
     ///
     /// \param[inout] mat The right-and-side term.
     ///
-    /// \sa ContactCholeskyDecompositionTpl::solveInPlace
+    /// \sa ConstraintCholeskyDecompositionTpl::solveInPlace
     template<typename MatrixLike>
     Matrix solve(const Eigen::MatrixBase<MatrixLike> & mat) const;
 
@@ -469,7 +469,7 @@ namespace pinocchio
     /// \param[in] model Model of the dynamical system.
     ///
     template<typename S1, int O1, template<typename, int> class JointCollectionTpl>
-    ContactCholeskyDecompositionTpl getMassMatrixChoeslkyDecomposition(
+    ConstraintCholeskyDecompositionTpl getMassMatrixChoeslkyDecomposition(
       const ModelTpl<S1, O1, JointCollectionTpl> & model,
       const DataTpl<S1, O1, JointCollectionTpl> & data) const;
 
@@ -537,13 +537,13 @@ namespace pinocchio
 
     template<typename Scalar, int Options, typename VectorLike>
     friend VectorLike & details::inverseAlgo(
-      const ContactCholeskyDecompositionTpl<Scalar, Options> & chol,
+      const ConstraintCholeskyDecompositionTpl<Scalar, Options> & chol,
       const Eigen::Index col,
       const Eigen::MatrixBase<VectorLike> & vec);
     ///@}
 
     template<typename S1, int O1>
-    bool operator==(const ContactCholeskyDecompositionTpl<S1, O1> & other) const
+    bool operator==(const ConstraintCholeskyDecompositionTpl<S1, O1> & other) const
     {
       bool is_same = true;
 
@@ -572,7 +572,7 @@ namespace pinocchio
     }
 
     template<typename S1, int O1>
-    bool operator!=(const ContactCholeskyDecompositionTpl<S1, O1> & other) const
+    bool operator!=(const ConstraintCholeskyDecompositionTpl<S1, O1> & other) const
     {
       return !(*this == other);
     }
@@ -636,17 +636,17 @@ namespace pinocchio
 #ifdef PINOCCHIO_ENABLE_TEMPLATE_INSTANTIATION
   #ifndef PINOCCHIO_SKIP_ALGORITHM_CONTACT_CHOLESKY
 
-// Because of a GCC bug we should NEVER define a function that use ContactCholeskyDecompositionTpl
-// before doing the explicit template instantiation.
-// If we don't take care, GCC will not accept any visibility attribute when declaring the
-// explicit template instantiation of the ContactCholeskyDecompositionTpl class.
-// The warning message will look like this: type attributes ignored after type is already defined
+// Because of a GCC bug we should NEVER define a function that use
+// ConstraintCholeskyDecompositionTpl before doing the explicit template instantiation. If we don't
+// take care, GCC will not accept any visibility attribute when declaring the explicit template
+// instantiation of the ConstraintCholeskyDecompositionTpl class. The warning message will look like
+// this: type attributes ignored after type is already defined
 // [-Wattributes] A minimal code example is added on the PR
 // (https://github.com/stack-of-tasks/pinocchio/pull/2469)
 namespace pinocchio
 {
   extern template struct PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI
-    ContactCholeskyDecompositionTpl<context::Scalar, context::Options>;
+    ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>;
 }
 
   #endif // PINOCCHIO_SKIP_ALGORITHM_CONTACT_CHOLESKY
