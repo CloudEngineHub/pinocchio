@@ -900,7 +900,7 @@ namespace pinocchio
     using Base::classname;
 
     // Useful types ------------------------------------------------
-    typedef MatrixStackTpl<RowVectorXs> RowVectorStack;
+    typedef internal::MatrixStackTpl<RowVectorXs> RowVectorStack;
 
     // -------------------------------
     // METHODS SPECIFIC TO CLASS

@@ -12,9 +12,9 @@
 #include "serialization.hpp"
 
 template<typename MatrixLike, std::size_t Alignment>
-struct empty_contructor_algo<pinocchio::MatrixStackTpl<MatrixLike, Alignment>>
+struct empty_contructor_algo<pinocchio::internal::MatrixStackTpl<MatrixLike, Alignment>>
 {
-  typedef pinocchio::MatrixStackTpl<MatrixLike, Alignment> Self;
+  typedef pinocchio::internal::MatrixStackTpl<MatrixLike, Alignment> Self;
   static Self * run()
   {
     return new Self(0);
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 BOOST_AUTO_TEST_CASE(matrix_stack)
 {
-  typedef pinocchio::MatrixStackTpl<Eigen::MatrixXd> MatrixStack;
+  typedef pinocchio::internal::MatrixStackTpl<Eigen::MatrixXd> MatrixStack;
 
   {
     MatrixStack matrix_stack(20);

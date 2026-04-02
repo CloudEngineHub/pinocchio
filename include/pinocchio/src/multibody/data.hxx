@@ -86,7 +86,7 @@ namespace pinocchio
     ///  \brief The type of Tensor for Kinematics and Dynamics second order derivatives
     typedef Tensor<Scalar, 3, Options> Tensor3x;
 
-    typedef MatrixStackTpl<MatrixXs> DynamicMatrixStack;
+    typedef internal::MatrixStackTpl<MatrixXs> DynamicMatrixStack;
 
     typedef ConstraintCholeskyDecompositionTpl<Scalar, Options> ConstraintCholeskyDecomposition;
 
@@ -604,7 +604,8 @@ namespace pinocchio
 
     /// \brief Stores the projected cross-coupling between links as
     /// `projected_joint_cross_coupling(j,i) = cross_coupling(j,i) * J_i`.
-    container::DoubleEntryContainer<MatrixStackTpl<Matrix6x>> projected_joint_cross_coupling;
+    container::DoubleEntryContainer<internal::MatrixStackTpl<Matrix6x>>
+      projected_joint_cross_coupling;
 
     /// \brief Stores the elimination ordering of LC-ABA
     std::vector<JointIndex> joint_elimination_order;

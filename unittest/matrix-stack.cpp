@@ -14,8 +14,8 @@
 using namespace pinocchio;
 typedef Eigen::MatrixXf MatrixXs;
 typedef MatrixXs::Scalar Scalar;
-typedef MatrixStackTpl<MatrixXs, ALIGNMENT_VALUE> MatrixXsStack;
-typedef MatrixStackTpl<PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs), ALIGNMENT_VALUE>
+typedef internal::MatrixStackTpl<MatrixXs, ALIGNMENT_VALUE> MatrixXsStack;
+typedef internal::MatrixStackTpl<PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs), ALIGNMENT_VALUE>
   RowMatrixXsStack;
 
 // typedef EigenStorageTpl<Eigen::VectorXd> EigenStorageVector;
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_product)
   using VectorXd = Eigen::Matrix<double, Eigen::Dynamic, 1>;
   using Matrix3d = Eigen::Matrix<double, 3, 3>;
   using Vector3d = Eigen::Matrix<double, 3, 1>;
-  using MatrixStack = pinocchio::MatrixStackTpl<MatrixXd>;
+  using MatrixStack = pinocchio::internal::MatrixStackTpl<MatrixXd>;
 
   const std::size_t N = static_cast<std::size_t>(std::rand() % 10);
 

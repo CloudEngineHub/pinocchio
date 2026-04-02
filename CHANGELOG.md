@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `PINOCCHIO_BUILD_MPFR_TESTING` CMake option to build MPFR tests
 - Add `pinocchio/utils/alloca.hpp`: Helpers for mapping stack allocation for Eigen::Map
 - Add `pinochio/container/eigen-storage.hpp`: Introduce `EigenStorageTpl`
+- Add `pinochio/container/matrix-stack.hpp`: Introduce `internal::MatrixStackTpl`
 
 ### Changed
 - Clean delassus API: DelassusOperatorBase define the main delassus API and each method calls `derived().[name-of-method]Impl`

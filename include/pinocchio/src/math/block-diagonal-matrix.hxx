@@ -46,7 +46,7 @@ namespace pinocchio
     typedef Eigen::Map<Vector, to_eigen_alignment(Alignment)> VectorMap;
     typedef Eigen::Map<const Vector, to_eigen_alignment(Alignment)> ConstVectorMap;
 
-    typedef MatrixStackTpl<Matrix, Alignment> MatrixStack;
+    typedef internal::MatrixStackTpl<Matrix, Alignment> MatrixStack;
     typedef MatrixBlockElementTpl<MatrixMap> MatrixBlockElement;
     typedef MatrixBlockElementTpl<ConstMatrixMap> ConstMatrixBlockElement;
     /**

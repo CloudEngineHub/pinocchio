@@ -30,9 +30,9 @@
 // };
 
 template<typename MatrixLike, std::size_t Alignment>
-struct empty_contructor_algo<pinocchio::MatrixStackTpl<MatrixLike, Alignment>>
+struct empty_contructor_algo<pinocchio::internal::MatrixStackTpl<MatrixLike, Alignment>>
 {
-  typedef pinocchio::MatrixStackTpl<MatrixLike, Alignment> Self;
+  typedef pinocchio::internal::MatrixStackTpl<MatrixLike, Alignment> Self;
   static Self * run()
   {
     return new Self(0);
