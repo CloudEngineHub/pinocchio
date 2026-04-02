@@ -267,7 +267,8 @@ namespace pinocchio
 
           .ADD_DATA_PROPERTY(lambda_c, "Lagrange Multipliers linked to contact forces")
           .ADD_DATA_PROPERTY(impulse_c, "Lagrange Multipliers linked to contact impulses")
-          .ADD_DATA_PROPERTY(contact_chol, "Contact Cholesky decomposition.")
+          .ADD_DATA_PROPERTY(constraint_chol, "Contact Cholesky decomposition.")
+          .ADD_DATA_PROPERTY(contact_chol, "Deprecated. Use constraint_chol instead")
           .ADD_DATA_PROPERTY(
             primal_dual_contact_solution,
             "Right hand side vector when solving the contact dynamics KKT problem.")

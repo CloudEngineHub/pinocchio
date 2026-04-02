@@ -54,7 +54,7 @@ namespace pinocchio
     typedef RigidConstraintDataTpl<Scalar, Options> RigidConstraintData;
 
     typename Data::TangentVectorType & dq_after = data.dq_after;
-    typename Data::ConstraintCholeskyDecomposition & contact_chol = data.contact_chol;
+    typename Data::ConstraintCholeskyDecomposition & constraint_chol = data.constraint_chol;
     typename Data::VectorXs & primal_dual_contact_solution = data.primal_dual_contact_solution;
 
     data.oYcrb[0].setZero();
@@ -76,7 +76,7 @@ namespace pinocchio
 
     data.M.diagonal() += model.armature;
     calc(model, data, contact_models, contact_datas);
-    contact_chol.compute(model, data, contact_models, contact_datas, settings.mu);
+    constraint_chol.compute(model, data, contact_models, contact_datas, settings.mu);
 
     // Centroidal computations
     typedef typename Data::Force Force;
@@ -145,12 +145,12 @@ namespace pinocchio
     }
 
     // Solve the system
-    contact_chol.solveInPlace(primal_dual_contact_solution);
+    constraint_chol.solveInPlace(primal_dual_contact_solution);
 
     // Retrieve the joint space delta v
     data.ddq = primal_dual_contact_solution.tail(model.nv);
     dq_after = data.ddq + v_before;
-    data.impulse_c = -primal_dual_contact_solution.head(contact_chol.constraintDim());
+    data.impulse_c = -primal_dual_contact_solution.head(constraint_chol.constraintDim());
 
     // Retrieve the impulses
     Eigen::Index current_row_sol_id = 0;

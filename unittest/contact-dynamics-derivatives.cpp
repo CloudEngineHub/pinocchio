@@ -503,7 +503,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
     dacc_corrector_RF_dq -= ci_RF.m_baumgarte_parameters.Kd * dv_RF_dq_L;
 
     dacc_corrector_RF_dv = -(ci_RF.m_baumgarte_parameters.Kd * dv_RF_dv_L);
-    BOOST_CHECK(dv_RF_dv_L.isApprox(data.contact_chol.matrix().topRightCorner(6, model.nv)));
+    BOOST_CHECK(dv_RF_dv_L.isApprox(data.constraint_chol.matrix().topRightCorner(6, model.nv)));
   }
 
   {
@@ -518,7 +518,7 @@ BOOST_AUTO_TEST_CASE(test_correction_6D)
 
     dacc_corrector_LF_dv = -(ci_LF.m_baumgarte_parameters.Kd * dv_LF_dv_L.topRows<3>());
     BOOST_CHECK(dv_LF_dv_L.topRows<3>().isApprox(
-      data.contact_chol.matrix().topRightCorner(9, model.nv).bottomRows<3>()));
+      data.constraint_chol.matrix().topRightCorner(9, model.nv).bottomRows<3>()));
   }
 
   std::vector<RigidConstraintData> constraint_datas_fd = createData(constraint_models);
@@ -2227,7 +2227,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_mix_fd)
 
   const Eigen::MatrixXd Jc = data.dac_da;
   const Eigen::MatrixXd Jc_ref =
-    data.contact_chol.matrix().topRightCorner(constraint_size, model.nv);
+    data.constraint_chol.matrix().topRightCorner(constraint_size, model.nv);
 
   BOOST_CHECK(Jc.isApprox(Jc_ref));
 
@@ -2392,7 +2392,7 @@ BOOST_AUTO_TEST_CASE(test_constraint_dynamics_derivatives_loop_closure_kinematic
 
   const Eigen::MatrixXd Jc = data.dac_da;
   const Eigen::MatrixXd Jc_ref =
-    data.contact_chol.matrix().topRightCorner(constraint_size, model.nv);
+    data.constraint_chol.matrix().topRightCorner(constraint_size, model.nv);
 
   BOOST_CHECK(Jc.isApprox(Jc_ref));
 

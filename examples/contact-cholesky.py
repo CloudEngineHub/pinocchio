@@ -36,7 +36,7 @@ pin.crba(model, data, q0, pin.Convention.WORLD)
 
 pin.initConstraintDynamics(model, data, contact_models, contact_datas)
 
-data.contact_chol.compute(model, data, contact_models, contact_datas, 1e-8)
+data.constraint_chol.compute(model, data, contact_models, contact_datas, 1e-8)
 
-delassus_matrix = data.contact_chol.getInverseOperationalSpaceInertiaMatrix()
-delassus_matrix_inv = data.contact_chol.getOperationalSpaceInertiaMatrix()
+delassus_matrix = data.constraint_chol.getInverseOperationalSpaceInertiaMatrix()
+delassus_matrix_inv = data.constraint_chol.getOperationalSpaceInertiaMatrix()

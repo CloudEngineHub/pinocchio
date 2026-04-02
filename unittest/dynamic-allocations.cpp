@@ -406,12 +406,12 @@ void runContactDynamicsTest(const Model & model, Data & data)
     }();
 
     // Contact Cholesky
-    ConstraintCholeskyDecomposition contact_chol;
-    contact_chol.rebuild(model, data, contact_models, contact_data);
+    ConstraintCholeskyDecomposition constraint_chol;
+    constraint_chol.rebuild(model, data, contact_models, contact_data);
 
     [&]() noexcept [[clang::nonblocking]] {
       crba(model, data, q, Convention::WORLD);
-      contact_chol.compute(model, data, contact_models, contact_data);
+      constraint_chol.compute(model, data, contact_models, contact_data);
     }();
 
     // Constrained dynamics derivatives

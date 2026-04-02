@@ -253,7 +253,7 @@ namespace pinocchio
     const Eigen::MatrixBase<MatrixType3> & impulse_partial_dq,
     const Eigen::MatrixBase<MatrixType4> & impulse_partial_dv)
   {
-    const Eigen::Index nc = data.contact_chol.constraintDim();
+    const Eigen::Index nc = data.constraint_chol.constraintDim();
     assert(model.check(MimicChecker()) && "Function does not support mimic joints");
 
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
@@ -365,8 +365,8 @@ namespace pinocchio
       current_row_sol_id += cmodel.residualSize();
     }
 
-    data.contact_chol.getOperationalSpaceInertiaMatrix(data.osim);
-    data.contact_chol.getInverseMassMatrix(data.Minv);
+    data.constraint_chol.getOperationalSpaceInertiaMatrix(data.osim);
+    data.constraint_chol.getInverseMassMatrix(data.Minv);
     // Temporary: dlambda_dtau stores J*Minv
     typename Data::MatrixXs & JMinv = data.dlambda_dtau;
     typename Data::MatrixXs & Jc = data.dac_da;

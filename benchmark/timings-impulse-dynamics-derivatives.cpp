@@ -25,7 +25,7 @@ struct ContactFixture : ModelFixture
     ci_LF_6D = std::make_unique<pinocchio::RigidConstraintModel>(
       pinocchio::CONTACT_6D, model, LF_id, pinocchio::LOCAL);
 
-    contact_chol_empty = pinocchio::ConstraintCholeskyDecomposition(
+    constraint_chol_empty = pinocchio::ConstraintCholeskyDecomposition(
       model, data, contact_models_empty, contact_data_empty);
 
     contact_models_6D.clear();
@@ -34,7 +34,7 @@ struct ContactFixture : ModelFixture
     contact_data_6D.clear();
     contact_data_6D.push_back(pinocchio::RigidConstraintData(*ci_RF_6D));
 
-    contact_chol_6D =
+    constraint_chol_6D =
       pinocchio::ConstraintCholeskyDecomposition(model, data, contact_models_6D, contact_data_6D);
 
     contact_models_6D6D.clear();
@@ -45,7 +45,7 @@ struct ContactFixture : ModelFixture
     contact_data_6D6D.push_back(pinocchio::RigidConstraintData(*ci_RF_6D));
     contact_data_6D6D.push_back(pinocchio::RigidConstraintData(*ci_LF_6D));
 
-    contact_chol_6D6D = pinocchio::ConstraintCholeskyDecomposition(
+    constraint_chol_6D6D = pinocchio::ConstraintCholeskyDecomposition(
       model, data, contact_models_6D6D, contact_data_6D6D);
 
     r_coeff = (Eigen::ArrayXd::Random(1)[0] + 1.) / 2.;
@@ -69,9 +69,9 @@ struct ContactFixture : ModelFixture
   std::vector<pinocchio::RigidConstraintModel> contact_models_6D6D;
   std::vector<pinocchio::RigidConstraintData> contact_data_6D6D;
 
-  pinocchio::ConstraintCholeskyDecomposition contact_chol_empty;
-  pinocchio::ConstraintCholeskyDecomposition contact_chol_6D;
-  pinocchio::ConstraintCholeskyDecomposition contact_chol_6D6D;
+  pinocchio::ConstraintCholeskyDecomposition constraint_chol_empty;
+  pinocchio::ConstraintCholeskyDecomposition constraint_chol_6D;
+  pinocchio::ConstraintCholeskyDecomposition constraint_chol_6D6D;
 
   double r_coeff;
 

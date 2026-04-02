@@ -265,7 +265,7 @@ int main(int argc, const char ** argv)
 
       long constraint_size = data.lambda_c_prox.rows();
       const Eigen::MatrixXd & J_ref =
-        data.contact_chol.matrix().topRightCorner(constraint_size, model.nv);
+        data.constraint_chol.matrix().topRightCorner(constraint_size, model.nv);
       const Eigen::MatrixXd & rhs = data.primal_rhs_contact.topRows(constraint_size);
       Eigen::MatrixXd constraint_error = J_ref * data.ddq - rhs;
 
@@ -382,7 +382,7 @@ int main(int argc, const char ** argv)
 
     long constraint_size = data.lambda_c_prox.rows();
     const Eigen::MatrixXd & J_ref =
-      data.contact_chol.matrix().topRightCorner(constraint_size, model.nv);
+      data.constraint_chol.matrix().topRightCorner(constraint_size, model.nv);
     const Eigen::MatrixXd & rhs = data.primal_rhs_contact.topRows(constraint_size);
     Eigen::VectorXd constraint_error = J_ref * data.ddq - rhs;
     std::cout << "Constraint residual LTL = " << constraint_error.template lpNorm<Eigen::Infinity>()

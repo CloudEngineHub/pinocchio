@@ -359,7 +359,7 @@ namespace pinocchio
     const Eigen::MatrixBase<MatrixType5> & lambda_partial_dv,
     const Eigen::MatrixBase<MatrixType6> & lambda_partial_dtau)
   {
-    const Eigen::Index & nc = data.contact_chol.constraintDim();
+    const Eigen::Index & nc = data.constraint_chol.constraintDim();
 
     PINOCCHIO_CHECK_INPUT_ARGUMENT(
       contact_data.size() == contact_models.size(),
@@ -819,8 +819,8 @@ namespace pinocchio
       current_row_sol_id += cmodel.residualSize();
     }
 
-    data.contact_chol.getOperationalSpaceInertiaMatrix(data.osim);
-    data.contact_chol.getInverseMassMatrix(data.Minv);
+    data.constraint_chol.getOperationalSpaceInertiaMatrix(data.osim);
+    data.constraint_chol.getInverseMassMatrix(data.Minv);
 
     // Temporary: dlambda_dv stores J*Minv
     typename Data::MatrixXs & JMinv = data.dlambda_dv;
