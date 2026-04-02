@@ -90,4 +90,3 @@ The following functions have been removed:
 - Remove `pinocchio.utils.cross`
 - Remove `pinocchio.robot_wrapper.RobotWrapper.initMeshcatDisplay`
 - Remove `pinocchio.deprecated.setGeometryMeshScales` by `pinocchio`
-

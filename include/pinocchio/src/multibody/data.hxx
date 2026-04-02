@@ -609,6 +609,8 @@ namespace pinocchio
     /// etc.)
     DynamicMatrixStack joint_apparent_inertia;
 
+    PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH
+    PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS
     ///
     /// \brief Default constructor of pinocchio::Data from a pinocchio::Model.
     ///
@@ -622,6 +624,13 @@ namespace pinocchio
     DataTpl()
     {
     }
+
+    // Avoid deprecation warning
+    DataTpl(const DataTpl &) = default;
+    ~DataTpl() = default;
+    DataTpl & operator=(const DataTpl &) = default;
+
+    PINOCCHIO_COMPILER_DIAGNOSTIC_POP
 
   private:
     void computeLastChild(const Model & model); // TODO Remove when lastChild is removed

@@ -956,7 +956,9 @@ namespace pinocchio
         const int joint_nq = cmodel.m_selected_joint_nqs[sel_id];
         const int joint_nv = cmodel.m_selected_joint_nvs[sel_id];
         for (int i = 0; i < joint_nq; ++i)
-          rowise_tangent_map.push_back(1, joint_nv);
+        {
+          rowise_tangent_map.push_back(1, joint_nv, [](auto m) { m.setZero(); });
+        }
       }
 
       assert(rowise_tangent_map.size() == static_cast<size_t>(cmodel.m_nq_reduce));
