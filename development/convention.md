@@ -295,3 +295,32 @@ CompileFlags:
    Add:
       - -DPINOCCHIO_LSP
 ```
+
+## API
+
+Pinocchio have a public and private API.
+Public API evolve follwing the [SemVer semantic](https://semver.org/).
+Private API doesn't have any constraints and can change in any version.
+
+Struct/Class/Union/Alias/Enum/Function inside the following namespace are part of the private API:
+- `pinocchio::internal`
+- `pinocchio::detail`
+- `pinocchio::details`
+- `pinocchio::impl`
+- `pinocchio::fix`
+- `pinocchio::optimized`
+
+Macro beginning by a `_` are part of the private API.
+
+Struct/Class/Union member (public/protected/private) beginning by a `_` are part of the private API.
+
+### Deprecation
+
+Before making an API break we mark it as deprecated.
+
+We do that by (when possible):
+- Adding an entry in the changelog
+- Use `PINOCCHIO_DEPRECATED` macro for struct/class/union/alias/enum/function
+- Use `PINOCCHIO_DEPRECATED_HEADER` macro for headers
+
+In the next major release after the deprecation we can then remove the deprecated API.
