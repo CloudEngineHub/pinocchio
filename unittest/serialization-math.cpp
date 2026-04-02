@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack)
 
 BOOST_AUTO_TEST_CASE(eigen_storage)
 {
-  typedef pinocchio::EigenStorageTpl<Eigen::MatrixXd> EigenStorage;
+  typedef pinocchio::internal::EigenStorageTpl<Eigen::MatrixXd> EigenStorage;
 
   {
     EigenStorage storage(15, 8, 15, 8);

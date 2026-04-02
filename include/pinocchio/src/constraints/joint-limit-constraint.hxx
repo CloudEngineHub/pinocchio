@@ -189,7 +189,7 @@ namespace pinocchio
 
     // Useful types ------------------------------------------------
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef EigenStorageTpl<VectorXs> EigenStorageVector;
+    typedef internal::EigenStorageTpl<VectorXs> EigenStorageVector;
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
       CompactTangentMap;
     typedef std::vector<size_t> VectorOfSize;

@@ -65,9 +65,9 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> Matrix;
     typedef typename PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(Matrix) RowMatrix;
 
-    typedef EigenStorageTpl<Vector> EigenStorageVector;
-    typedef EigenStorageTpl<Matrix> EigenStorageMatrix;
-    typedef EigenStorageTpl<RowMatrix> EigenStorageRowMatrix;
+    typedef internal::EigenStorageTpl<Vector> EigenStorageVector;
+    typedef internal::EigenStorageTpl<Matrix> EigenStorageMatrix;
+    typedef internal::EigenStorageTpl<RowMatrix> EigenStorageRowMatrix;
     typedef BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
     typedef BlockDiagonalMatrix DampingType;
 

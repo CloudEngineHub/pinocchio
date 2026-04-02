@@ -8,10 +8,10 @@
 #include <boost/utility/binary.hpp>
 
 using namespace pinocchio;
-typedef EigenStorageTpl<Eigen::MatrixXd> EigenStorageMatrix;
-typedef EigenStorageTpl<PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(Eigen::MatrixXd)>
+typedef internal::EigenStorageTpl<Eigen::MatrixXd> EigenStorageMatrix;
+typedef internal::EigenStorageTpl<PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(Eigen::MatrixXd)>
   EigenStorageRowMatrix;
-typedef EigenStorageTpl<Eigen::VectorXd> EigenStorageVector;
+typedef internal::EigenStorageTpl<Eigen::VectorXd> EigenStorageVector;
 
 BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 

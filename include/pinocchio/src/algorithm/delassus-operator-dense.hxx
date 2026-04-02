@@ -87,8 +87,8 @@ namespace pinocchio
     typedef typename traits<Self>::VectorXs VectorXs;
     typedef typename traits<Self>::getDampingReturnType getDampingReturnType;
     typedef typename traits<Self>::getComplianceReturnType getComplianceReturnType;
-    typedef EigenStorageTpl<MatrixXs> MatrixStorage;
-    typedef EigenStorageTpl<VectorXs> VectorStorage;
+    typedef internal::EigenStorageTpl<MatrixXs> MatrixStorage;
+    typedef internal::EigenStorageTpl<VectorXs> VectorStorage;
     typedef typename MatrixStorage::RefMapType MatrixStorageRefMapType;
     typedef typename VectorStorage::RefMapType VectorStorageRefMapType;
     typedef typename traits<Self>::DampingType DampingType;

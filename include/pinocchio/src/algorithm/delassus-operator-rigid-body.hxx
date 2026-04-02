@@ -37,7 +37,7 @@ namespace pinocchio
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
     typedef MatrixXs Matrix;
 
-    typedef EigenStorageTpl<VectorXs> EigenStorageVector;
+    typedef internal::EigenStorageTpl<VectorXs> EigenStorageVector;
     typedef BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;

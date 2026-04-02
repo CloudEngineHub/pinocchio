@@ -18,8 +18,6 @@ typedef internal::MatrixStackTpl<MatrixXs, ALIGNMENT_VALUE> MatrixXsStack;
 typedef internal::MatrixStackTpl<PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs), ALIGNMENT_VALUE>
   RowMatrixXsStack;
 
-// typedef EigenStorageTpl<Eigen::VectorXd> EigenStorageVector;
-
 bool is_aligned(const void * ptr, const std::size_t alignment)
 {
   assert(

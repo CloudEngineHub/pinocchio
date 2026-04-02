@@ -16,6 +16,8 @@
 #include "pinocchio/eigen-common.hpp"
 #include "pinocchio/context.hpp"
 
+#include "pinocchio/math.hpp"
+
 #include "pinocchio/container/eigen-storage.hpp"
 
 #include "pinocchio/multibody/fwd.hpp"
