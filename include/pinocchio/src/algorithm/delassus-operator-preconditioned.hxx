@@ -26,9 +26,10 @@ namespace pinocchio
 
     typedef DelassusOperatorPreconditionedTpl Self;
     typedef DelassusOperatorBase<Self> Base;
+    friend Base;
 
-    typedef typename traits<Self>::Matrix Matrix;
-    typedef typename traits<Self>::Vector Vector;
+    typedef typename traits<Self>::MatrixXs MatrixXs;
+    typedef typename traits<Self>::VectorXs VectorXs;
     typedef typename traits<Self>::Scalar Scalar;
 
     DelassusOperatorPreconditionedTpl(
@@ -50,44 +51,37 @@ namespace pinocchio
       return m_delassus;
     }
 
+  protected:
+    // implementation of the DelassusOperator concept
+
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & vec)
+    void updateDampingImpl(const Eigen::MatrixBase<VectorLike> & vec)
     {
       // G_bar + mu * Id = P * (G + mu * P^{-2}) * P
       m_preconditioner.scaleSquare(vec, m_tmp_vec);
       ref().updateDamping(m_tmp_vec);
     }
 
-    void updateDamping(const Scalar mu)
-    {
-      this->updateDamping(Vector::Constant(ref().size(), mu));
-    }
-
     template<typename VectorLike>
-    void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliance_vector)
+    void updateComplianceImpl(const Eigen::MatrixBase<VectorLike> & compliance_vector)
     {
       // G_bar + mu * Id = P * (G + mu * P^{-2}) * P
       m_preconditioner.scaleSquare(compliance_vector, m_tmp_vec);
       ref().updateCompliance(m_tmp_vec);
     }
 
-    void updateCompliance(const Scalar mu)
-    {
-      this->updateCompliance(Vector::Constant(ref().size(), mu));
-    }
-
-    bool isDirty() const
+    bool isDirtyImpl() const
     {
       return ref().isDirty();
     }
 
-    void updateDecomposition()
+    void updateDecompositionImpl()
     {
       ref().updateDecomposition();
     }
 
     template<typename MatrixLike>
-    void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
+    void solveInPlaceImpl(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       auto & mat_ = mat.const_cast_derived();
       m_preconditioner.scaleInPlace(mat_);
@@ -95,26 +89,8 @@ namespace pinocchio
       m_preconditioner.scaleInPlace(mat_);
     }
 
-    template<typename MatrixLike>
-    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike)
-      solve(const Eigen::MatrixBase<MatrixLike> & mat) const
-    {
-      typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike) res(mat);
-      solveInPlace(res);
-      return res;
-    }
-
-    template<typename MatrixDerivedIn, typename MatrixDerivedOut>
-    void solve(
-      const Eigen::MatrixBase<MatrixDerivedIn> & x,
-      const Eigen::MatrixBase<MatrixDerivedOut> & res) const
-    {
-      res.const_cast_derived() = x;
-      solveInPlace(res.const_cast_derived());
-    }
-
     template<typename MatrixIn, typename MatrixOut>
-    void applyOnTheRight(
+    void applyOnTheRightImpl(
       const Eigen::MatrixBase<MatrixIn> & x,
       const Eigen::MatrixBase<MatrixOut> & res,
       bool with_damping = true) const
@@ -125,41 +101,46 @@ namespace pinocchio
       m_preconditioner.unscale(m_tmp_vec, res_);
     }
 
-    Eigen::Index size() const
+    Eigen::Index sizeImpl() const
     {
       return ref().size();
     }
-    Eigen::Index rows() const
+    Eigen::Index rowsImpl() const
     {
       return ref().rows();
     }
-    Eigen::Index cols() const
+    Eigen::Index colsImpl() const
     {
       return ref().cols();
     }
 
-    Matrix matrix(bool enforce_symmetry = false) const
+    template<typename MatrixType>
+    void matrixImpl(
+      const Eigen::MatrixBase<MatrixType> & res,
+      bool enforce_symmetry = false,
+      bool with_damping = true) const
     {
-      return m_preconditioner.getDiagonal().asDiagonal() * m_delassus.matrix(enforce_symmetry)
-             * m_preconditioner.getDiagonal().asDiagonal();
+      MatrixType & res_ = res.const_cast_derived();
+      m_delassus.matrix(res_, enforce_symmetry, with_damping);
+      res_.noalias() = m_preconditioner.getDiagonal().asDiagonal() * res_;
+      res_.noalias() = res_ * m_preconditioner.getDiagonal().asDiagonal();
     }
 
-    Vector getDamping() const
+    VectorXs getDampingImpl() const
     {
       m_preconditioner.unscaleSquare(ref().getDamping(), m_tmp_vec);
       return m_tmp_vec;
     }
 
-    Vector getCompliance() const
+    VectorXs getComplianceImpl() const
     {
       m_preconditioner.unscaleSquare(ref().getCompliance(), m_tmp_vec);
       return m_tmp_vec;
     }
 
-  protected:
     DelassusOperator & m_delassus;
     const PreconditionerType & m_preconditioner;
-    Vector m_tmp_vec;
+    VectorXs m_tmp_vec;
 
   }; // struct DelassusOperatorPreconditioned
 
