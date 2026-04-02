@@ -299,7 +299,7 @@ CompileFlags:
 ## API
 
 Pinocchio have a public and private API.
-Public API evolve follwing the [SemVer semantic](https://semver.org/).
+Public API evolve following the [SemVer semantic](https://semver.org/).
 Private API doesn't have any constraints and can change in any version.
 
 Struct/Class/Union/Alias/Enum/Function inside the following namespace are part of the private API:
