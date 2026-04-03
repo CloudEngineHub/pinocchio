@@ -287,16 +287,15 @@ namespace pinocchio
     /// If an algo works with forces, limits should be expressed in Newtons.
     /// If an algo works with impulses, limits should be expressed in Newtons * Time.
     /// Typically, constraint solvers work on impulses.
+    /// \note If you want to model joint friction in forces but use impulses in constraint
+    /// solvers, you can use `setTimeStep` which allows to convert between forces/impulses.
     const VectorXs & getFrictionLowerLimit() const
     {
       return m_friction_lower_limit;
     }
 
     /// \brief Set the lower friction limit.
-    /// \note The upper/lower friction limits units should be coherent with the algos.
-    /// If an algo works with forces, limits should be expressed in Newtons.
-    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
-    /// Typically, constraint solvers work on impulses.
+    /// \note see \copydoc getFrictionLowerLimit.
     template<typename VectorLike>
     void setFrictionLowerLimit(const Eigen::MatrixBase<VectorLike> & lb)
     {
@@ -306,26 +305,67 @@ namespace pinocchio
     }
 
     /// \brief Returns a const reference to `upper_friction_limit`
-    /// \note The upper/lower friction limits units should be coherent with the algos.
-    /// If an algo works with forces, limits should be expressed in Newtons.
-    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
-    /// Typically, constraint solvers work on impulses.
+    /// \note see \copydoc getFrictionLowerLimit.
     const VectorXs & getFrictionUpperLimit() const
     {
       return m_friction_upper_limit;
     }
 
     /// \brief Set the upper friction limit.
-    /// \note The upper/lower friction limits units should be coherent with the algos.
-    /// If an algo works with forces, limits should be expressed in Newtons.
-    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
-    /// Typically, constraint solvers work on impulses.
+    /// \note see \copydoc getFrictionLowerLimit.
     template<typename VectorLike>
     void setFrictionUpperLimit(const Eigen::MatrixBase<VectorLike> & ub)
     {
       PINOCCHIO_THROW_IF(
         ub.size() != residualSize(), std::runtime_error, "ub should be the same as size()");
       m_friction_upper_limit = ub;
+    }
+
+    /// \brief Returns a const reference to `lower_friction_impulse_limit`.
+    /// \note see \copydoc getFrictionLowerLimit.
+    const VectorXs & getFrictionImpulseLowerLimit() const
+    {
+      return m_friction_impulse_lower_limit;
+    }
+
+    /// \brief Returns a const reference to `upper_friction_impulse_limit`.
+    /// \note see \copydoc getFrictionLowerLimit.
+    const VectorXs & getFrictionImpulseUpperLimit() const
+    {
+      return m_friction_impulse_upper_limit;
+    }
+
+    /// \brief Store dt so that the constraint can be scaled to impulses in the solvers.
+    /// \note Keep this value to default 1 to work with Newtons, otherwise use the simulation's
+    /// timestep to convert this constraint to impulses.
+    /// TODO(louis): For now, each constraint models stuff in its own unit but the constraint
+    /// solvers all work in velocity/impulse.
+    /// The problem that is solved is min_x 1/2 x^T G x + g^T x, s.t. x \in K, where x are
+    /// constraint impulses, Gx + g are constraint velocities, K is a product of cones.
+    /// There are two kind of constraints for the solver: impulse or velocity constraints, nothing
+    /// else, because it has no notion of dt nor does it know how to translate a constraint to a
+    /// different unit. The fact that the solver has no knowledge of all of that and it simply
+    /// solves an optimization problem is good and we want to keep that. That being said, for now,
+    /// before calling the solver, the user has to externally express everything in
+    /// impulse/velocity, although Pinocchio's constraint models are clearly designed to reflect
+    /// physical meaning. This is also something nice and it should be kept that way: joint limits
+    /// express stuff in position, so do point contact and anchors. Fortunately, all dual cones
+    /// (primal cones for the solver, which primal variable is impulse x) of these constraints are
+    /// either the positive orthant or the friction cone. These cones **happen** to be
+    /// scale-invariant. The Joint friction express stuff in Newton. This force cone, however, is
+    /// **not** scale-invariant. In fact, we have to manually scale it by dt and unscale it by dt in
+    /// Simple, so that the solvers work on the correct cone.
+    /// **What is missing is a layer between the constraints and the solver.**
+    void setTimeStep(const Scalar dt)
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(dt >= 0, "dt must be positive.");
+      m_dt = dt;
+    }
+
+    /// \brief Get dt that allows this constraint to be converted to impulse.
+    Scalar getTimeStep() const
+    {
+      return m_dt;
     }
 
     // -------------------------------
@@ -384,7 +424,7 @@ namespace pinocchio
     ConstraintSet setImpl(const ConstraintData & cdata) const
     {
       PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return ConstraintSet(m_friction_lower_limit, m_friction_upper_limit);
+      return ConstraintSet(m_friction_impulse_lower_limit, m_friction_impulse_upper_limit);
     }
 
     /// \copydoc RootBase::calc
@@ -397,6 +437,8 @@ namespace pinocchio
       PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
+      m_friction_impulse_lower_limit = m_friction_lower_limit * m_dt;
+      m_friction_impulse_upper_limit = m_friction_upper_limit * m_dt;
     }
 
     /// \copydoc RootBase::getRowSparsityPattern
@@ -581,8 +623,13 @@ namespace pinocchio
     EigenIndexVector m_active_dofs;
     JointIndexVector m_active_joint_ids;
 
-    VectorXs m_friction_lower_limit;
-    VectorXs m_friction_upper_limit;
+    VectorXs m_friction_lower_limit; // Newtons
+    VectorXs m_friction_upper_limit; // Newtons
+
+    VectorXs m_friction_impulse_lower_limit; // Impulses
+    VectorXs m_friction_impulse_upper_limit; // Impulses
+
+    Scalar m_dt = Scalar(1);
 
     using BaseCommonParameters::m_compliance;
   }; // struct JointFrictionConstraintModelTpl
