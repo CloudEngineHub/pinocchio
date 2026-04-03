@@ -102,13 +102,6 @@ namespace pinocchio
     using Base::size;
     using Base::solveInPlace;
 
-    /// \brief Cast this class to its unsafe version.
-    Unsafe<Self> unsafeImpl()
-    {
-      return Unsafe<Self>(*this);
-    }
-    friend struct Unsafe<Self>;
-
     /// \brief Default constructor.
     DelassusOperatorDenseTpl()
     : Base()
@@ -301,6 +294,12 @@ namespace pinocchio
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
+
+    Unsafe<Self> unsafeImpl()
+    {
+      return Unsafe<Self>(*this);
+    }
+    friend struct Unsafe<Self>;
 
     template<typename MatrixIn, typename MatrixOut>
     void applyOnTheRightImpl(

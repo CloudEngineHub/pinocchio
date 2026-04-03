@@ -166,13 +166,6 @@ namespace pinocchio
 
     using Base::size;
 
-    /// \brief Cast this class to its unsafe version.
-    Unsafe<Self> unsafeImpl()
-    {
-      return Unsafe<Self>(*this);
-    }
-    friend struct Unsafe<Self>;
-
     /// \brief Default constructor from model, data, constraint_models and constraint_datas.
     DelassusOperatorRigidBodySystemsTpl(
       const ModelHolder & model_ref,
@@ -303,6 +296,12 @@ namespace pinocchio
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
+
+    Unsafe<Self> unsafeImpl()
+    {
+      return Unsafe<Self>(*this);
+    }
+    friend struct Unsafe<Self>;
 
     template<typename MatrixIn, typename MatrixOut>
     void applyOnTheRightImpl(
