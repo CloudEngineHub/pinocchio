@@ -29,7 +29,7 @@ namespace pinocchio
     typedef typename ConstraintCholeskyDecomposition::DampingType DampingType;
     typedef const DampingType & getDampingReturnType;
 
-    typedef typename ContactCholeskyDecomposition::EigenStorageVector EigenStorageVector;
+    typedef typename ConstraintCholeskyDecomposition::EigenStorageVector EigenStorageVector;
     typedef const typename EigenStorageVector::ConstMapType getComplianceReturnType;
   };
 
