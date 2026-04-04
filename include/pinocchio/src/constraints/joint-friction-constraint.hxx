@@ -379,7 +379,8 @@ namespace pinocchio
     /// **What is missing is a layer between the constraints and the solver.**
     void setTimeStep(const Scalar dt)
     {
-      PINOCCHIO_CHECK_INPUT_ARGUMENT(dt >= 0, "dt must be positive.");
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(
+        check_expression_if_real<Scalar>(dt >= 0), "dt must be positive.");
       m_dt = dt;
     }
 

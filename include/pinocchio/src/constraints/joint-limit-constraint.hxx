@@ -1122,7 +1122,7 @@ namespace pinocchio
         const int q_reduce_index = m_nq_reduce + j_qi;
 
         PINOCCHIO_THROW_PRETTY_IF(
-          !(lb[q_index] <= ub[q_index]), std::runtime_error,
+          !check_expression_if_real<Scalar>(lb[q_index] <= ub[q_index]), std::runtime_error,
           "joint limit lower bound is bigger than upper bound. Should not happen.");
         if (!(check_expression_if_real<Scalar>(lb[q_index] == -std::numeric_limits<Scalar>::max())
               || check_expression_if_real<Scalar>(
