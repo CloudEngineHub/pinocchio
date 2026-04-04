@@ -484,6 +484,32 @@ namespace pinocchio
     {
     }
 
+    ADMMSolverResultTpl(const ADMMSolverResultTpl & other)
+    {
+      *this = other;
+    }
+
+    ADMMSolverResultTpl & operator=(const ADMMSolverResultTpl & other)
+    {
+      if (this != &other)
+      {
+        Base::operator=(other);
+        problem_size = other.problem_size;
+        delassus_decomposition_update_count = other.delassus_decomposition_update_count;
+        // impulse_guess = other.impulse_guess;
+        // velocity_guess = other.velocity_guess;
+        rho = other.rho;
+        spectral_rho_power = other.spectral_rho_power;
+        mu_prox = other.mu_prox;
+        x_storage = other.x_storage;
+        y_storage = other.y_storage;
+        z_storage = other.z_storage;
+        desaxce_storage = other.desaxce_storage;
+      }
+      return *this;
+    }
+
+    /// \brief \copydoc Base::constraintSize
     int constraintSizeImpl() const
     {
       return static_cast<int>(problem_size);
@@ -779,6 +805,46 @@ namespace pinocchio
       {
         resize(problem_size, lanczos_size, anderson_capacity);
         reset();
+      }
+
+      ADMMSolverWorkspaceTpl(const ADMMSolverWorkspaceTpl & other)
+      : ADMMSolverWorkspaceTpl(0, 2, 0)
+      {
+        *this = other;
+      }
+
+      ADMMSolverWorkspaceTpl & operator=(const ADMMSolverWorkspaceTpl & other)
+      {
+        if (this != &other)
+        {
+          problem_size = other.problem_size;
+          lanczos_size = other.lanczos_size;
+          anderson_capacity = other.anderson_capacity;
+          delassus_decomposition_update_count = other.delassus_decomposition_update_count;
+          delassus_smallest_eigenvalue = other.delassus_smallest_eigenvalue;
+          delassus_largest_eigenvalue = other.delassus_largest_eigenvalue;
+          rho = other.rho;
+          spectral_rho_power = other.spectral_rho_power;
+          mu_prox = other.mu_prox;
+          lanczos_decomposition = other.lanczos_decomposition;
+          anderson_history = other.anderson_history;
+          x_storage = other.x_storage;
+          x_previous_storage = other.x_previous_storage;
+          x_anderson_storage = other.x_anderson_storage;
+          y_storage = other.y_storage;
+          y_previous_storage = other.y_previous_storage;
+          z_storage = other.z_storage;
+          z_previous_storage = other.z_previous_storage;
+          z_anderson_storage = other.z_anderson_storage;
+          desaxce_storage = other.desaxce_storage;
+          rhs_storage = other.rhs_storage;
+          tmp_storage = other.tmp_storage;
+          primal_feasibility_vector_storage = other.primal_feasibility_vector_storage;
+          anderson_primal_feasibility_vector_storage =
+            other.anderson_primal_feasibility_vector_storage;
+          dual_feasibility_vector_storage = other.dual_feasibility_vector_storage;
+        }
+        return *this;
       }
 
       /// \brief Reset the workspace.

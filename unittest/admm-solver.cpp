@@ -1430,4 +1430,34 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
   }
 }
 
+BOOST_AUTO_TEST_CASE(test_copy_result)
+{
+  const Eigen::Index n = 6;
+  ADMMSolverResult result;
+  result.resize(n);
+  result.x.setRandom();
+
+  // copy constructor: maps must point to the copy's own storage
+  ADMMSolverResult result_copy(result);
+  BOOST_CHECK(result_copy.x.data() != result.x.data());
+  BOOST_CHECK(result_copy.x.data() == result_copy.x_storage.map().data());
+  BOOST_CHECK(result_copy.x.isApprox(result.x));
+
+  // copy constructor: independence — modify original, copy unchanged
+  const Eigen::VectorXd expected_x = result.x;
+  result.x.setZero();
+  BOOST_CHECK(result_copy.x.isApprox(expected_x));
+
+  // copy assignment: maps must point to the assigned object's own storage
+  ADMMSolverResult result_assigned;
+  result_assigned = result_copy;
+  BOOST_CHECK(result_assigned.x.data() != result_copy.x.data());
+  BOOST_CHECK(result_assigned.x.data() == result_assigned.x_storage.map().data());
+  BOOST_CHECK(result_assigned.x.isApprox(result_copy.x));
+
+  // copy assignment: independence
+  result_copy.x.setZero();
+  BOOST_CHECK(result_assigned.x.isApprox(expected_x));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

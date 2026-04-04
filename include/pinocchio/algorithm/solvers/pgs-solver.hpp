@@ -250,6 +250,25 @@ namespace pinocchio
     {
     }
 
+    PGSSolverResultTpl(const PGSSolverResultTpl & other)
+    {
+      *this = other;
+    }
+
+    PGSSolverResultTpl & operator=(const PGSSolverResultTpl & other)
+    {
+      if (this != &other)
+      {
+        Base::operator=(other);
+        problem_size = other.problem_size;
+        // impulse_guess = other.impulse_guess;
+        x_storage = other.x_storage;
+        y_storage = other.y_storage;
+      }
+      return *this;
+    }
+
+    /// \brief \copydoc Base::constraintSize
     int constraintSizeImpl() const
     {
       return static_cast<int>(problem_size);
@@ -445,6 +464,27 @@ namespace pinocchio
       {
         resize(problem_size);
         reset();
+      }
+
+      PGSSolverWorkspaceTpl(const PGSSolverWorkspaceTpl & other)
+      : PGSSolverWorkspaceTpl(0)
+      {
+        *this = other;
+      }
+
+      PGSSolverWorkspaceTpl & operator=(const PGSSolverWorkspaceTpl & other)
+      {
+        if (this != &other)
+        {
+          problem_size = other.problem_size;
+          delassus_matrix_storage = other.delassus_matrix_storage;
+          x_storage = other.x_storage;
+          x_previous_storage = other.x_previous_storage;
+          y_storage = other.y_storage;
+          rhs_storage = other.rhs_storage;
+          tmp_storage = other.tmp_storage;
+        }
+        return *this;
       }
 
       /// \brief Reset the workspace.
