@@ -26,15 +26,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `pinochio/container/eigen-storage.hpp`: Introduce `EigenStorageTpl`
 
 ### Changed
-- fix potential bug in joint limit due to uninitialized field
-- add missing constructor for joint friction
-- bindings/python : Add missing arg names in `visualizer-visitor.hpp`
-- use deprecation, warning macros already provided by jrl-cmakemodules
-- renamed `PINOCCHIO_PRAGMA_DEPRECATED_HEADER` to `PINOCCHIO_MOVED_HEADER`
-- docs : update documentation stylesheet, fix some Doxygen config options
-- change multiple compile-time definitions from anonymous enum values to `constexpr` variables
-  - change instances of `Options`, `Flags`, joint space dimensions `NV`, Lie group `NQ` and `NV`
-- bindings/python : employ using-declarations (`using context::Options`) in the binding code for the `Options` constant
+- Fix potential bug in joint limit due to uninitialized field
+- Add missing constructor for joint friction
+- Solvers can be safely copied (result and workspace copy constructor/operator are now safely handled)
+- Bindings/python : Add missing arg names in `visualizer-visitor.hpp`
+- Use deprecation, warning macros already provided by jrl-cmakemodules
+- Renamed `PINOCCHIO_PRAGMA_DEPRECATED_HEADER` to `PINOCCHIO_MOVED_HEADER`
+- Docs : update documentation stylesheet, fix some Doxygen config options
+- Change multiple compile-time definitions from anonymous enum values to `constexpr` variables
+  - Change instances of `Options`, `Flags`, joint space dimensions `NV`, Lie group `NQ` and `NV`
+- Bindings/python : employ using-declarations (`using context::Options`) in the binding code for the `Options` constant
 - Replace `hpp-fcl` by `coal` (see `doc/_porting.md`):
   - C++:
     - Deprecate `include/pinocchio/multibody/fcl.hpp` moved at `include/pinocchio/multibody/coal.hpp`
