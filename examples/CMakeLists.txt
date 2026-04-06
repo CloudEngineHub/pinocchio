@@ -155,6 +155,7 @@ if(BUILD_PYTHON_INTERFACE)
                 collision-with-point-clouds
                 append-urdf-model-with-another-model
                 simulation-contact-dynamics
+                simulation-lcaba
                 # talos-simulation
                 static-contact-dynamics
             )
