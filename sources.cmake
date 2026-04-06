@@ -937,6 +937,7 @@ set(${PROJECT_NAME}_BINDINGS_PYTHON_SOURCES
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-contact-inverse-dynamics.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-joints.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-constrained-dynamics.cpp
+    ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-loop-constrained-aba.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-rnea.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/expose-contact-jacobian.cpp
     ${PROJECT_SOURCE_DIR}/bindings/python/algorithm/constraints/expose-cones.cpp
