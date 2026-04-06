@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Added Python bindings for loop-constrained-aba.
 - Added Lie group method `tangentMap` which gives, in the form of a `nq x nv` matrix, the linear mapping that transforms a configuration variation expressed in the Lie algebra (size `nv`) into a small variation expressed in the parametric space (size `nq`). Composed with Jacobian of other methods of Pinocchio that use the Lie group structure, it allows obtaining standard Jacobians in order to, for example, insert Pinocchio derivatives into standard Euclidean differentiation pipelines.
 - Added Lie group methods `tangentMapProduct` and `tangentMapTransport` that apply `tangentMap` while exploiting sparsity.
 - Added model methods `tangentMap`, `tangentMapProduct` and `tangentMapTransport` that perform tangent map for the whole configuration space of the model.
