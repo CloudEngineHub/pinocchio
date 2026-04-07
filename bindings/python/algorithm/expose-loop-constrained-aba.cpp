@@ -7,13 +7,13 @@
 
 #include "pinocchio/algorithm/loop-constrained-aba.hpp"
 
-namespace bp = boost::python;
-
 namespace pinocchio
 {
   namespace python
   {
+    namespace bp = boost::python;
 
+#ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
     template<typename ConstraintModel, typename ConstraintData>
     static const context::VectorXs lcaba_proxy(
       const context::Model & model,
@@ -27,10 +27,12 @@ namespace pinocchio
     {
       return lcaba(model, data, q, v, tau, constraint_models, constraint_datas, prox_settings);
     }
+#endif // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
 
     template<typename ConstraintModel>
     void exposeLcabaFor()
     {
+#ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
       typedef typename ConstraintModel::ConstraintData ConstraintData;
       typedef std::allocator<ConstraintModel> ConstraintModelAllocator;
 
@@ -70,11 +72,14 @@ namespace pinocchio
         "This function returns joint acceleration stored in data.ddq.\n"
         "The constraint forces are stored in data.lambdaA[0].",
         mimic_not_supported_function<>(0));
+#endif // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
     }
 
     void exposeLcaba()
     {
+#ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
       exposeLcabaFor<context::RigidConstraintModel>();
+#endif // ifdef PINOCCHIO_PYTHON_PLAIN_SCALAR_TYPE
     }
 
   } // namespace python
