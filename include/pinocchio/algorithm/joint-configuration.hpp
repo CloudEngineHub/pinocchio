@@ -29,6 +29,22 @@
 namespace pinocchio
 {
 
+  /// Helpers to use SFINAE for safe candidate selection compare to liegroup-variant-visitors.hxx
+  template<typename T, typename = void>
+  struct is_lie_group_map : std::false_type
+  {
+  };
+
+  // Pointer avoids instantiating operation<void>'s body (no complete type needed),
+  // while still detecting the nested template via SFINAE
+  template<typename T>
+  struct is_lie_group_map<T, std::void_t<typename T::template operation<void> *>> : std::true_type
+  {
+  };
+
+  template<typename T>
+  inline constexpr bool is_lie_group_map_v = is_lie_group_map<T>::value;
+
   /// \name API with return value as argument
   /// \{
 
@@ -55,7 +71,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
     typename TangentVectorType,
-    typename ReturnType>
+    typename ReturnType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void integrate(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & q,
@@ -115,7 +132,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
     typename ConfigVectorIn2,
-    typename ReturnType>
+    typename ReturnType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void interpolate(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q0,
@@ -178,7 +196,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
     typename ConfigVectorIn2,
-    typename ReturnType>
+    typename ReturnType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void difference(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q0,
@@ -238,7 +257,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
     typename ConfigVectorIn2,
-    typename ReturnType>
+    typename ReturnType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void squaredDistance(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q0,
@@ -299,7 +319,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
     typename ConfigVectorIn2,
-    typename ReturnType>
+    typename ReturnType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void randomConfiguration(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & lowerLimits,
@@ -358,7 +379,8 @@ namespace pinocchio
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
-    typename ReturnType>
+    typename ReturnType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void neutral(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ReturnType> & qout);
@@ -418,7 +440,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
     typename TangentVectorType,
-    typename JacobianMatrixType>
+    typename JacobianMatrixType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void dIntegrate(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & q,
@@ -542,7 +565,8 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
-    typename TangentMapMatrixType>
+    typename TangentMapMatrixType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void tangentMap(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & q,
@@ -659,7 +683,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
     typename MatrixInType,
-    typename MatrixOutType>
+    typename MatrixOutType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void tangentMapProduct(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & q,
@@ -722,7 +747,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
     typename MatrixInType,
-    typename MatrixOutType>
+    typename MatrixOutType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void tangentMapTransposeProduct(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & q,
@@ -797,7 +823,8 @@ namespace pinocchio
     typename ConfigVectorType,
     typename TangentVectorType,
     typename JacobianMatrixType1,
-    typename JacobianMatrixType2>
+    typename JacobianMatrixType2,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void dIntegrateTransport(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & q,
@@ -885,7 +912,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
     typename TangentVectorType,
-    typename JacobianMatrixType>
+    typename JacobianMatrixType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void dIntegrateTransport(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & q,
@@ -967,7 +995,8 @@ namespace pinocchio
     template<typename, int> class JointCollectionTpl,
     typename ConfigVector1,
     typename ConfigVector2,
-    typename JacobianMatrix>
+    typename JacobianMatrix,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void dDifference(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVector1> & q0,
@@ -1086,7 +1115,8 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
-    typename ConfigVectorIn2>
+    typename ConfigVectorIn2,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   Scalar distance(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q0,
@@ -1132,7 +1162,8 @@ namespace pinocchio
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
-    typename ConfigVectorType>
+    typename ConfigVectorType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   void normalize(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & qout);
@@ -1174,7 +1205,8 @@ namespace pinocchio
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
-    typename ConfigVectorType>
+    typename ConfigVectorType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   bool isNormalized(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & q,
@@ -1221,13 +1253,15 @@ namespace pinocchio
    * @return     Whether the configurations are equivalent or not, within the given precision.
    *
    */
+
   template<
     typename LieGroup_t,
     typename Scalar,
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
-    typename ConfigVectorIn2>
+    typename ConfigVectorIn2,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   bool isSameConfiguration(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q1,
@@ -1401,7 +1435,8 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorType,
-    typename TangentVectorType>
+    typename TangentVectorType,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   typename PINOCCHIO_EIGEN_PLAIN_TYPE(ConfigVectorType) integrate(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorType> & q,
@@ -1455,7 +1490,8 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
-    typename ConfigVectorIn2>
+    typename ConfigVectorIn2,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   typename PINOCCHIO_EIGEN_PLAIN_TYPE(ConfigVectorIn1) interpolate(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q0,
@@ -1510,7 +1546,8 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
-    typename ConfigVectorIn2>
+    typename ConfigVectorIn2,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   typename PINOCCHIO_EIGEN_PLAIN_TYPE(ConfigVectorIn1) difference(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q0,
@@ -1563,7 +1600,8 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
-    typename ConfigVectorIn2>
+    typename ConfigVectorIn2,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   typename PINOCCHIO_EIGEN_PLAIN_TYPE(ConfigVectorIn1) squaredDistance(
     const ModelTpl<Scalar, Options, JointCollectionTpl> & model,
     const Eigen::MatrixBase<ConfigVectorIn1> & q0,
@@ -1622,7 +1660,8 @@ namespace pinocchio
     int Options,
     template<typename, int> class JointCollectionTpl,
     typename ConfigVectorIn1,
-    typename ConfigVectorIn2>
+    typename ConfigVectorIn2,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   typename PINOCCHIO_EIGEN_PLAIN_TYPE_NO_PARENS(
     (typename ModelTpl<Scalar, Options, JointCollectionTpl>::ConfigVectorType))
     randomConfiguration(
@@ -1688,7 +1727,8 @@ namespace pinocchio
     typename LieGroup_t,
     typename Scalar,
     int Options,
-    template<typename, int> class JointCollectionTpl>
+    template<typename, int> class JointCollectionTpl,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   typename PINOCCHIO_EIGEN_PLAIN_TYPE_NO_PARENS(
     (typename ModelTpl<Scalar, Options, JointCollectionTpl>::ConfigVectorType))
     randomConfiguration(const ModelTpl<Scalar, Options, JointCollectionTpl> & model);
@@ -1733,7 +1773,8 @@ namespace pinocchio
     typename LieGroup_t,
     typename Scalar,
     int Options,
-    template<typename, int> class JointCollectionTpl>
+    template<typename, int> class JointCollectionTpl,
+    std::enable_if_t<is_lie_group_map_v<LieGroup_t>, int> = 0>
   Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options>
   neutral(const ModelTpl<Scalar, Options, JointCollectionTpl> & model);
 
