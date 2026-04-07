@@ -814,12 +814,12 @@ namespace pinocchio
     PGSConstraintSolverTpl<context::Scalar, context::Options>;
 
   // -------------------------------------------------------------------------
-  // solveImpl() with DelassusCholeskyExpression + default constraint collection
+  // solveImpl() with DelassusOperatorCholeskyExpression + default constraint collection
   // -------------------------------------------------------------------------
 
   extern template PINOCCHIO_EXPLICIT_INSTANTIATION_DECLARATION_DLLAPI bool
   PGSConstraintSolverTpl<context::Scalar, context::Options>::solveImpl<
-    DelassusCholeskyExpressionTpl<
+    DelassusOperatorCholeskyExpressionTpl<
       ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>>,
     context::VectorXs,
     ConstraintModelTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
@@ -828,7 +828,7 @@ namespace pinocchio
     ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>,
     std::allocator<
       ConstraintDataTpl<context::Scalar, context::Options, ConstraintCollectionDefaultTpl>>>(
-    DelassusOperatorBase<DelassusCholeskyExpressionTpl<
+    DelassusOperatorBase<DelassusOperatorCholeskyExpressionTpl<
       ConstraintCholeskyDecompositionTpl<context::Scalar, context::Options>>> &,
     const Eigen::MatrixBase<context::VectorXs> &,
     const std::vector<

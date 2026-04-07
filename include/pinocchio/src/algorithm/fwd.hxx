@@ -78,8 +78,19 @@ namespace pinocchio
   struct DelassusOperatorPreconditionedTpl;
 
   template<typename ConstraintCholeskyDecomposition>
-  struct DelassusCholeskyExpressionTpl;
-  typedef DelassusCholeskyExpressionTpl<ConstraintCholeskyDecomposition> DelassusCholeskyExpression;
+  struct DelassusOperatorCholeskyExpressionTpl;
+  typedef DelassusOperatorCholeskyExpressionTpl<ConstraintCholeskyDecomposition>
+    DelassusOperatorCholeskyExpression;
+
+  template<typename ConstraintCholeskyDecomposition>
+  using DelassusCholeskyExpressionTpl PINOCCHIO_DEPRECATED_MESSAGE(
+    "DelassusCholeskyExpressionTpl is deprecated, please use "
+    "DelassusOperatorCholeskyExpressionTpl") =
+    DelassusOperatorCholeskyExpressionTpl<ConstraintCholeskyDecomposition>;
+
+  using DelassusCholeskyExpression PINOCCHIO_DEPRECATED_MESSAGE(
+    "DelassusCholeskyExpression is deprecated, please use DelassusOperatorCholeskyExpression") =
+    DelassusOperatorCholeskyExpression;
 
   template<class... D>
   struct AlgorithmCheckerList;

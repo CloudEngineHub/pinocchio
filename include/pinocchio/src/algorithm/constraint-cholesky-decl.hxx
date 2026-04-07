@@ -88,10 +88,11 @@ namespace pinocchio
       Eigen::Index size;
     };
 
-    typedef DelassusCholeskyExpressionTpl<ConstraintCholeskyDecompositionTpl>
-      DelassusCholeskyExpression;
-    friend struct DelassusCholeskyExpressionTpl<ConstraintCholeskyDecompositionTpl>;
-    friend struct Unsafe<DelassusCholeskyExpressionTpl<ConstraintCholeskyDecompositionTpl>>;
+    typedef DelassusOperatorCholeskyExpressionTpl<ConstraintCholeskyDecompositionTpl>
+      DelassusOperatorCholeskyExpression;
+
+    friend struct DelassusOperatorCholeskyExpressionTpl<ConstraintCholeskyDecompositionTpl>;
+    friend struct Unsafe<DelassusOperatorCholeskyExpressionTpl<ConstraintCholeskyDecompositionTpl>>;
 
     typedef std::vector<Slice> SliceVector;
     typedef std::vector<SliceVector> VectorOfSliceVector;
@@ -242,7 +243,16 @@ namespace pinocchio
 
     /// \brief Returns the Cholesky decomposition expression associated to the underlying
     /// delassus_block matrix.
-    DelassusCholeskyExpression getDelassusCholeskyExpression() const;
+    DelassusOperatorCholeskyExpression getDelassusOperatorCholeskyExpression() const;
+
+    /// \deprecated Use getDelassusOperatorCholeskyExpression() instead.
+    PINOCCHIO_DEPRECATED_MESSAGE(
+      "getDelassusCholeskyExpression() is deprecated, please use "
+      "getDelassusOperatorCholeskyExpression()")
+    DelassusOperatorCholeskyExpression getDelassusCholeskyExpression() const
+    {
+      return getDelassusOperatorCholeskyExpression();
+    }
 
     ///
     /// \brief Returns the Operational Space Inertia Matrix resulting from the decomposition.

@@ -15,10 +15,10 @@ namespace pinocchio
 {
   // Forward declaration of Unsafe specialization.
   template<typename _ConstraintCholeskyDecomposition>
-  struct Unsafe<DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>;
+  struct Unsafe<DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>;
 
   template<typename ConstraintCholeskyDecomposition>
-  struct traits<DelassusCholeskyExpressionTpl<ConstraintCholeskyDecomposition>>
+  struct traits<DelassusOperatorCholeskyExpressionTpl<ConstraintCholeskyDecomposition>>
   {
     static constexpr int RowsAtCompileTime = Eigen::Dynamic;
     typedef typename ConstraintCholeskyDecomposition::Scalar Scalar;
@@ -30,12 +30,12 @@ namespace pinocchio
     typedef const BlockDiagonalMatrix & getDampingReturnType;
   };
 
-  /// \brief Unsafe version of DelassusCholeskyExpressionTpl.
+  /// \brief Unsafe version of DelassusOperatorCholeskyExpressionTpl.
   /// Allows direct access to protected members for expert users.
   template<typename _ConstraintCholeskyDecomposition>
-  struct Unsafe<DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>
+  struct Unsafe<DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>
   {
-    typedef DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> SafeSelf;
+    typedef DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> SafeSelf;
     typedef typename SafeSelf::BlockDiagonalMatrix BlockDiagonalMatrix;
 
     explicit Unsafe(SafeSelf & self)
@@ -62,15 +62,15 @@ namespace pinocchio
 
   // TODO(jcarpent): change const_cast usage.
   template<typename _ConstraintCholeskyDecomposition>
-  struct DelassusCholeskyExpressionTpl
-  : DelassusOperatorBase<DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>
+  struct DelassusOperatorCholeskyExpressionTpl
+  : DelassusOperatorBase<DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>
   {
     typedef _ConstraintCholeskyDecomposition ConstraintCholeskyDecomposition;
     typedef typename ConstraintCholeskyDecomposition::Scalar Scalar;
     typedef typename ConstraintCholeskyDecomposition::Vector Vector;
     typedef typename ConstraintCholeskyDecomposition::Matrix Matrix;
     typedef typename ConstraintCholeskyDecomposition::RowMatrix RowMatrix;
-    typedef DelassusCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> Self;
+    typedef DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> Self;
     typedef DelassusOperatorBase<Self> Base;
     typedef typename ConstraintCholeskyDecomposition::EigenStorageVector EigenStorageVector;
     typedef typename ConstraintCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;
@@ -83,7 +83,7 @@ namespace pinocchio
       RowMatrixConstBlockXpr;
 
     static constexpr int RowsAtCompileTime =
-      traits<DelassusCholeskyExpressionTpl>::RowsAtCompileTime;
+      traits<DelassusOperatorCholeskyExpressionTpl>::RowsAtCompileTime;
 
     /// \brief Cast this class to its unsafe version.
     Unsafe<Self> unsafe()
@@ -93,7 +93,7 @@ namespace pinocchio
     friend struct Unsafe<Self>;
 
     /// \brief Default constructor from a cholesky decomposition.
-    explicit DelassusCholeskyExpressionTpl(ConstraintCholeskyDecomposition & self)
+    explicit DelassusOperatorCholeskyExpressionTpl(ConstraintCholeskyDecomposition & self)
     : Base()
     , self(self)
     {
@@ -205,14 +205,14 @@ namespace pinocchio
     }
 
     /// \brief Returns the Constraint Cholesky decomposition associated to this
-    /// DelassusCholeskyExpression.
+    /// DelassusOperatorCholeskyExpression.
     const ConstraintCholeskyDecomposition & cholesky() const
     {
       return self;
     }
 
     /// \brief Returns the Constraint Cholesky decomposition associated to this
-    /// DelassusCholeskyExpression.
+    /// DelassusOperatorCholeskyExpression.
     ConstraintCholeskyDecomposition & cholesky()
     {
       return self;
@@ -385,6 +385,6 @@ namespace pinocchio
 
   protected:
     ConstraintCholeskyDecomposition & self;
-  }; // DelassusCholeskyExpression
+  }; // DelassusOperatorCholeskyExpression
 
 } // namespace pinocchio

@@ -113,11 +113,12 @@ namespace pinocchio
       rebuild(mat);
     }
 
-    /// \brief Constructor from a DelassusCholeskyExpressionTpl.
+    /// \brief Constructor from a DelassusOperatorCholeskyExpressionTpl.
     /// \note The constructor does not compute the cholesky decomposition of the delassus.
     template<typename ConstraintCholeskyDecomposition>
     explicit DelassusOperatorDenseTpl(
-      const DelassusCholeskyExpressionTpl<ConstraintCholeskyDecomposition> & delassus_expression,
+      const DelassusOperatorCholeskyExpressionTpl<ConstraintCholeskyDecomposition> &
+        delassus_expression,
       const bool enforce_symmetry = false)
     : DelassusOperatorDenseTpl()
     {
@@ -167,10 +168,11 @@ namespace pinocchio
       m_cholesky_decomposition_dirty = true;
     }
 
-    /// \brief Rebuild the internal data structure from a DelassusCholeskyExpressionTpl.
+    /// \brief Rebuild the internal data structure from a DelassusOperatorCholeskyExpressionTpl.
     template<typename ConstraintCholeskyDecomposition>
     void rebuild(
-      const DelassusCholeskyExpressionTpl<ConstraintCholeskyDecomposition> & delassus_expression,
+      const DelassusOperatorCholeskyExpressionTpl<ConstraintCholeskyDecomposition> &
+        delassus_expression,
       const bool enforce_symmetry = false)
     {
       assert(delassus_expression.rows() == delassus_expression.size());

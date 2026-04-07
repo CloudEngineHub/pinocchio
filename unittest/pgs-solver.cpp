@@ -62,8 +62,9 @@ struct TestBoxTpl
     chol.rebuild(model, data, constraint_models, constraint_datas);
     chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
-    const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix();
-    auto G_expression = chol.getDelassusCholeskyExpression();
+    const Eigen::MatrixXd delassus_matrix_plain =
+      chol.getDelassusOperatorCholeskyExpression().matrix();
+    auto G_expression = chol.getDelassusOperatorCholeskyExpression();
 
     // construct constraint drift g
     Eigen::MatrixXd constraint_jacobian(delassus_matrix_plain.rows(), model.nv);
@@ -507,8 +508,9 @@ BOOST_AUTO_TEST_CASE(dry_friction_box)
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
-  auto G_expression = chol.getDelassusCholeskyExpression();
-  const Eigen::MatrixXd delassus_matrix_plain = chol.getDelassusCholeskyExpression().matrix();
+  auto G_expression = chol.getDelassusOperatorCholeskyExpression();
+  const Eigen::MatrixXd delassus_matrix_plain =
+    chol.getDelassusOperatorCholeskyExpression().matrix();
   const auto & G = delassus_matrix_plain;
   //    std::cout << "G:\n" << delassus_matrix_plain << std::endl;
 
@@ -631,7 +633,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider)
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
-  auto G_expression = chol.getDelassusCholeskyExpression();
+  auto G_expression = chol.getDelassusOperatorCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
@@ -774,7 +776,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_revolute_xyz)
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
-  auto G_expression = chol.getDelassusCholeskyExpression();
+  auto G_expression = chol.getDelassusOperatorCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
@@ -922,7 +924,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_slider_xyz)
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
-  auto G_expression = chol.getDelassusCholeskyExpression();
+  auto G_expression = chol.getDelassusOperatorCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
@@ -1061,7 +1063,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_translation)
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
-  auto G_expression = chol.getDelassusCholeskyExpression();
+  auto G_expression = chol.getDelassusOperatorCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
@@ -1196,7 +1198,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_freeflyer)
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
-  auto G_expression = chol.getDelassusCholeskyExpression();
+  auto G_expression = chol.getDelassusOperatorCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 
@@ -1333,7 +1335,7 @@ BOOST_AUTO_TEST_CASE(joint_limit_composite)
   chol.rebuild(model, data, constraint_models, constraint_datas);
   chol.compute(model, data, constraint_models, constraint_datas, 1e-10);
 
-  auto G_expression = chol.getDelassusCholeskyExpression();
+  auto G_expression = chol.getDelassusOperatorCholeskyExpression();
   const auto G_plain = G_expression.matrix();
   const Eigen::MatrixXd delassus_matrix_plain = G_expression.matrix();
 

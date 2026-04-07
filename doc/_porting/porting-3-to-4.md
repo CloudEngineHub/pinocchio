@@ -54,6 +54,8 @@ ContactCholeskyDecompositionTpl changes :
   - Add `DataTpl<S1, O1, JointCollectionTpl>`
   - Add `std::vector<ConstraintData, ConstraintDataAllocator>`
 - Deprecate `ContactCholeskyDecompositionTpl`, replaced by  `ConstraintCholeskyDecompositionTpl`
+- Deprecate `DelassusCholeskyExpressionTpl`, replaced by  `DelassusOperatorCholeskyExpressionTpl`
+
 
 Utility API changes:
 - Remove `gettimeofday` definition on Windows
@@ -72,3 +74,6 @@ Constraints API changes:
   - Change `BaumgarteCorrectorParameters` constructor scalar are used instead of vectors
 
 - Deprecate `ContactCholeskyDecomposition`, replaced by  `ConstraintCholeskyDecomposition`
+- Deprecate `DelassusCholeskyExpressionTpl`, replaced by  `DelassusOperatorCholeskyExpressionTpl`
+
+
