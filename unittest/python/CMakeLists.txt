@@ -144,6 +144,10 @@ if(BUILD_WITH_COLLISION_SUPPORT)
         ${${PROJECT_NAME}_PYTHON_TESTS}
         bindings_constraints
     )
+    set(${PROJECT_NAME}_PYTHON_TESTS
+        ${${PROJECT_NAME}_PYTHON_TESTS}
+        bindings_lcaba
+    )
 endif()
 
 if(urdfdom_FOUND)
