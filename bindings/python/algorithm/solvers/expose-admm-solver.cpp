@@ -339,8 +339,13 @@ namespace pinocchio
       bp::class_<ADMMSolver> cl(
         "ADMMConstraintSolver",
         "Alternating Direction Method of Multipliers (ADMM) solver for contact dynamics.",
+        bp::init<>(bp::arg("self"), "Default constructor."));
+      cl.def(
         bp::init<std::size_t>(
-          bp::args("self", "problem_size"), "Constructor with problem dimension."));
+          bp::args("self", "problem_size"),
+          "Constructor with problem dimension. Allows to pre-allocate data if problem_size is "
+          "known in advance. The solver will automatically resize its workspace and the result in "
+          "any case."));
 
       cl
         // Base solver
