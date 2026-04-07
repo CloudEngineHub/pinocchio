@@ -246,7 +246,7 @@ namespace pinocchio
             bp::arg("self"), "Deprecated. Use getDelassusOperatorCholeskyExpression instead.",
             ::eigenpy::deprecated_member<
               eigenpy::DeprecationType::DEPRECATION, bp::with_custodian_and_ward_postcall<0, 1>>(
-              "Deprecated member. Use Frame.parentJoint instead."))
+              "Deprecated member. Use getDelassusOperatorCholeskyExpression instead."))
 
           .def(ComparableVisitor<Self, pinocchio::is_floating_point<Scalar>::value>());
       }
