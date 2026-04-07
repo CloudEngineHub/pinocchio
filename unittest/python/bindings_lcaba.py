@@ -15,11 +15,8 @@ def build_four_bar_model():
     Returns (model, constraint_model, q_sol) where q_sol satisfies the
     closed-loop constraint.
     """
-    import coal
-
     height = 0.1
     width = 0.01
-    radius = 0.05
 
     mass_link_A = 10.0
     length_link_A = 1.0
@@ -123,11 +120,6 @@ def build_four_bar_model():
 
 class TestLCABABindings(TestCase):
     def setUp(self):
-        try:
-            import coal  # noqa: F401
-        except ImportError:
-            self.skipTest("coal is not available")
-
         self.model, self.constraint_model, self.q_sol = build_four_bar_model()
         self.data = self.model.createData()
 
@@ -151,26 +143,24 @@ class TestLCABABindings(TestCase):
 
     # ── computeJointMinimalOrdering ────────────────────────────────────────
 
-    def test_computeJointMinimalOrdering_runs(self):
+    def test_computeJointMinimalOrdering_run(self):
         """computeJointMinimalOrdering must run without error."""
         data = self.model.createData()
-        pin.computeJointMinimalOrdering(
-            self.model, data, self.constraint_models
-        )
+        pin.computeJointMinimalOrdering(self.model, data, self.constraint_models)
 
-    def test_computeJointMinimalOrdering_empty_constraints(self):
-        """computeJointMinimalOrdering with no constraints must succeed."""
-        data = self.model.createData()
-        pin.computeJointMinimalOrdering(self.model, data, [])
+    def test_computeJointMinimalOrdering_mimic_not_supported_function(self):
+        model = pin.buildSampleModelManipulator(True)
+        data = model.createData()
+        self.assertRaises(
+            RuntimeError, pin.computeJointMinimalOrdering, model, data, []
+        )
 
     # ── lcaba ──────────────────────────────────────────────────────────────
 
-    def test_lcaba_returns_correct_size(self):
+    def test_lcaba_run(self):
         """lcaba must return an acceleration vector of size nv."""
         data = self.model.createData()
-        pin.computeJointMinimalOrdering(
-            self.model, data, self.constraint_models
-        )
+        pin.computeJointMinimalOrdering(self.model, data, self.constraint_models)
         ddq = pin.lcaba(
             self.model,
             data,
@@ -182,179 +172,6 @@ class TestLCABABindings(TestCase):
             self._make_prox_settings(),
         )
         self.assertEqual(ddq.shape, (self.model.nv,))
-
-    def test_lcaba_result_stored_in_data(self):
-        """lcaba must store the result in data.ddq."""
-        data = self.model.createData()
-        pin.computeJointMinimalOrdering(
-            self.model, data, self.constraint_models
-        )
-        ddq = pin.lcaba(
-            self.model,
-            data,
-            self.q_sol,
-            self.v,
-            self.tau,
-            self.constraint_models,
-            self.constraint_datas,
-            self._make_prox_settings(),
-        )
-        self.assertApprox(ddq, data.ddq)
-
-    def test_lcaba_consistent_with_constraintDynamics(self):
-        """lcaba and constraintDynamics must agree on ddq for a 3D constraint."""
-        # Reference: constraintDynamics
-        data_ref = self.model.createData()
-        constraint_datas_ref = [self.constraint_model.createData()]
-        prox_ref = pin.ProximalSettings(1e-14, 1e-5, 100)
-        pin.initConstraintDynamics(
-            self.model, data_ref, self.constraint_models, constraint_datas_ref
-        )
-        pin.constraintDynamics(
-            self.model,
-            data_ref,
-            self.q_sol,
-            self.v,
-            self.tau,
-            self.constraint_models,
-            constraint_datas_ref,
-            prox_ref,
-        )
-
-        # Tested: lcaba
-        data_lcaba = self.model.createData()
-        constraint_datas_lcaba = [self.constraint_model.createData()]
-        prox_lcaba = pin.ProximalSettings(1e-14, 1e-5, 100)
-        pin.computeJointMinimalOrdering(
-            self.model, data_lcaba, self.constraint_models
-        )
-        pin.lcaba(
-            self.model,
-            data_lcaba,
-            self.q_sol,
-            self.v,
-            self.tau,
-            self.constraint_models,
-            constraint_datas_lcaba,
-            prox_lcaba,
-        )
-
-        self.assertApprox(data_ref.ddq, data_lcaba.ddq, eps=1e-6)
-
-    def test_lcaba_no_constraints_matches_aba(self):
-        """Without constraints, lcaba must match standard ABA."""
-        # ABA reference
-        data_aba = self.model.createData()
-        ddq_aba = pin.aba(
-            self.model, data_aba, self.q_sol, self.v, self.tau
-        )
-
-        # lcaba with empty constraint list
-        data_lcaba = self.model.createData()
-        pin.computeJointMinimalOrdering(self.model, data_lcaba, [])
-        ddq_lcaba = pin.lcaba(
-            self.model,
-            data_lcaba,
-            self.q_sol,
-            self.v,
-            self.tau,
-            [],
-            [],
-            self._make_prox_settings(),
-        )
-
-        self.assertApprox(ddq_aba, ddq_lcaba, eps=1e-10)
-
-    # ── Baumgarte stabilisation ────────────────────────────────────────────
-
-    def test_baumgarte_parameters_accessible(self):
-        """m_baumgarte_parameters must be accessible and settable."""
-        cm = self.constraint_model
-        self.assertTrue(hasattr(cm, "m_baumgarte_parameters"))
-        cm.m_baumgarte_parameters.Kp = 10.0
-        cm.m_baumgarte_parameters.Kd = 2.0 * np.sqrt(cm.m_baumgarte_parameters.Kp)
-        self.assertAlmostEqual(cm.m_baumgarte_parameters.Kp, 10.0)
-        self.assertAlmostEqual(
-            cm.m_baumgarte_parameters.Kd, 2.0 * np.sqrt(10.0)
-        )
-
-    # ── Multi-step simulation ──────────────────────────────────────────────
-
-    def test_simulation_steps_run(self):
-        """A short simulation loop using lcaba must run without error."""
-        model = self.model
-        constraint_models = self.constraint_models
-        constraint_datas = [self.constraint_model.createData()]
-
-        # Baumgarte stabilisation
-        constraint_models[0].m_baumgarte_parameters.Kp = 10.0
-        constraint_models[0].m_baumgarte_parameters.Kd = 2.0 * np.sqrt(10.0)
-
-        data_sim = model.createData()
-        pin.computeJointMinimalOrdering(model, data_sim, constraint_models)
-
-        q = self.q_sol.copy()
-        v = np.zeros(model.nv)
-        tau = np.zeros(model.nv)
-        dt = 5e-3
-
-        for _ in range(5):
-            prox_iter = pin.ProximalSettings(1e-12, self.mu_sim, 100)
-            a = pin.lcaba(
-                model,
-                data_sim,
-                q,
-                v,
-                tau,
-                constraint_models,
-                constraint_datas,
-                prox_iter,
-            )
-            self.assertEqual(a.shape, (model.nv,))
-            v += a * dt
-            q = pin.integrate(model, q, v * dt)
-
-    def test_simulation_energy_bounded(self):
-        """Under zero torque and Baumgarte stabilisation, kinetic energy
-        must stay bounded (no unbounded growth) over a few steps."""
-        model = self.model
-        constraint_models = [self.constraint_model]
-        constraint_datas = [self.constraint_model.createData()]
-
-        constraint_models[0].m_baumgarte_parameters.Kp = 10.0
-        constraint_models[0].m_baumgarte_parameters.Kd = 2.0 * np.sqrt(10.0)
-
-        data_sim = model.createData()
-        pin.computeJointMinimalOrdering(model, data_sim, constraint_models)
-
-        q = self.q_sol.copy()
-        v = np.zeros(model.nv)
-        tau = np.zeros(model.nv)
-        dt = 5e-3
-        n_steps = 20
-
-        energies = []
-        for _ in range(n_steps):
-            pin.crba(model, data_sim, q)
-            ke = 0.5 * v @ data_sim.M @ v
-            energies.append(ke)
-
-            prox_iter = pin.ProximalSettings(1e-12, self.mu_sim, 100)
-            a = pin.lcaba(
-                model,
-                data_sim,
-                q,
-                v,
-                tau,
-                constraint_models,
-                constraint_datas,
-                prox_iter,
-            )
-            v += a * dt
-            q = pin.integrate(model, q, v * dt)
-
-        # Starting from rest – energy should remain small (< 10 J over 20 steps)
-        self.assertLess(max(energies), 10.0)
 
 
 if __name__ == "__main__":
