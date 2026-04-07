@@ -249,38 +249,6 @@ namespace pinocchio
 
   template<
     typename LieGroupCollection,
-    class ConfigL_t,
-    class ConfigR_t,
-    class JacobianIn_t,
-    class JacobianOut_t,
-    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
-  void dDifference(
-    const LieGroupGenericTpl<LieGroupCollection> & lg,
-    const Eigen::MatrixBase<ConfigL_t> & q0,
-    const Eigen::MatrixBase<ConfigR_t> & q1,
-    const Eigen::MatrixBase<JacobianIn_t> & Jin,
-    int self,
-    const Eigen::MatrixBase<JacobianOut_t> & Jout,
-    const ArgumentPosition arg);
-
-  template<
-    typename LieGroupCollection,
-    class ConfigL_t,
-    class ConfigR_t,
-    class JacobianIn_t,
-    class JacobianOut_t,
-    std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
-  void dDifference(
-    const LieGroupGenericTpl<LieGroupCollection> & lg,
-    const Eigen::MatrixBase<ConfigL_t> & q0,
-    const Eigen::MatrixBase<ConfigR_t> & q1,
-    int self,
-    const Eigen::MatrixBase<JacobianIn_t> & Jin,
-    const Eigen::MatrixBase<JacobianOut_t> & Jout,
-    const ArgumentPosition arg);
-
-  template<
-    typename LieGroupCollection,
     class Config_t,
     class TangentMap_t,
     std::enable_if_t<is_lie_group_collection_v<LieGroupCollection>, int> = 0>
