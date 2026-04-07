@@ -6,6 +6,7 @@
 
 #include <eigenpy/memory.hpp>
 #include <eigenpy/copyable.hpp>
+#include <eigenpy/deprecation-policy.hpp>
 
 #include "pinocchio/algorithm/constraint-cholesky.hpp"
 
@@ -243,7 +244,9 @@ namespace pinocchio
           .def(
             "getDelassusCholeskyExpression", &Self::getDelassusOperatorCholeskyExpression,
             bp::arg("self"), "Deprecated. Use getDelassusOperatorCholeskyExpression instead.",
-            bp::with_custodian_and_ward_postcall<0, 1>())
+            ::eigenpy::deprecated_member<
+              eigenpy::DeprecationType::DEPRECATION, bp::with_custodian_and_ward_postcall<0, 1>>(
+              "Deprecated member. Use Frame.parentJoint instead."))
 
           .def(ComparableVisitor<Self, pinocchio::is_floating_point<Scalar>::value>());
       }
