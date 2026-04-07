@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `internal::matrix_product` in `math.hpp`
 - Add `internal::matrix_inversion` in `math.hpp`
 - Add `internal::matrix_inversion_code_generated` in `math.hpp`
+- Add `examples/admm-constraint-solver.py`: how to use the constraints API to model a stack of cubes, how to use the Delassus operator, how to use the ADMM solver to solve the constraint problem.
 
 ### Changed
 - Clean delassus API: DelassusOperatorBase define the main delassus API and each method calls `derived().[name-of-method]Impl`
