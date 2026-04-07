@@ -154,7 +154,7 @@ tau = np.zeros(model.nv)
 dt = 5e-3
 
 T_sim = 10
-t = 0
+t = 0.0
 mu_sim = 1e-10
 constraint_model.m_baumgarte_parameters.Kp = 10
 constraint_model.m_baumgarte_parameters.Kd = 2.0 * np.sqrt(

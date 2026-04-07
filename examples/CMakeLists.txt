@@ -143,6 +143,7 @@ if(BUILD_PYTHON_INTERFACE)
             display-shapes
             simulation-pendulum
             simulation-closed-kinematic-chains
+            simulation-lcaba
             model-graph-geometry
         )
         if(BUILD_WITH_URDF_SUPPORT)
@@ -155,7 +156,6 @@ if(BUILD_PYTHON_INTERFACE)
                 collision-with-point-clouds
                 append-urdf-model-with-another-model
                 simulation-contact-dynamics
-                simulation-lcaba
                 # talos-simulation
                 static-contact-dynamics
             )

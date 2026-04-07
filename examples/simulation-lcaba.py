@@ -1,6 +1,5 @@
 import sys
 import time
-from pathlib import Path
 
 import coal
 import numpy as np
@@ -51,9 +50,7 @@ base_joint_id = 0
 geom_obj0 = pin.GeometryObject(
     "link_A1",
     base_joint_id,
-    pin.SE3(
-        pin.Quaternion.FromTwoVectors(pin.ZAxis, pin.XAxis).matrix(), np.zeros(3)
-    ),
+    pin.SE3(pin.Quaternion.FromTwoVectors(pin.ZAxis, pin.XAxis).matrix(), np.zeros(3)),
     shape_link_A,
 )
 geom_obj0.meshColor = WHITE_COLOR
@@ -165,7 +162,7 @@ tau = np.zeros(model.nv)
 dt = 5e-3
 
 T_sim = 10
-t = 0
+t = 0.0
 
 # Proximal settings for LCABA – mu must be positive
 mu_sim = 1e-6
