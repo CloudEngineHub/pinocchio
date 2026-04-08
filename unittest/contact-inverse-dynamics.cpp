@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
 
     BOOST_CHECK(sigma.isZero(1e-8));
     Eigen::VectorXd sigma_projected(sigma);
-    internal::computeDualConeProjection(
+    internal::computeDualConstraintSetProjection(
       constraint_models, constraint_datas, sigma, sigma_projected);
     BOOST_CHECK((sigma_projected - sigma).lpNorm<Eigen::Infinity>() <= 1e-10);
   }
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(test_contact_inverse_dynamics_3D)
 
     const Eigen::VectorXd constraint_velocity = Eigen::VectorXd::Random(constraint_size);
     Eigen::VectorXd constraint_velocity_projected(constraint_velocity);
-    internal::computeDualConeProjection(
+    internal::computeDualConstraintSetProjection(
       constraint_models, constraint_datas, constraint_velocity, constraint_velocity_projected);
 
     Eigen::VectorXd x_sol = Eigen::VectorXd::Zero(constraint_size);

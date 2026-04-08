@@ -470,6 +470,8 @@ namespace pinocchio
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
 
     using Base::constraintSize;
+    using Base::setConstraintImpulseGuess;
+    using Base::setConstraintVelocityGuess;
 
     /// \brief Default constructor.
     ADMMSolverResultTpl()
@@ -484,6 +486,54 @@ namespace pinocchio
     {
     }
 
+    /// \brief Copy constructor.
+    ADMMSolverResultTpl(const ADMMSolverResultTpl & other)
+    {
+      *this = other;
+    }
+
+    /// \brief Assignment operator.
+    ADMMSolverResultTpl & operator=(const ADMMSolverResultTpl & other)
+    {
+      if (this != &other)
+      {
+        Base::operator=(other);
+        problem_size = other.problem_size;
+        delassus_decomposition_update_count = other.delassus_decomposition_update_count;
+        rho = other.rho;
+        spectral_rho_power = other.spectral_rho_power;
+        mu_prox = other.mu_prox;
+
+        // Since some members are maps reference on EigenStorage, we cannot simply copy them.
+        // Thus we need to explicitly say we copy the storage, and the maps will automatically point
+        // to the new storage.
+        x_storage = other.x_storage;
+        y_storage = other.y_storage;
+        z_storage = other.z_storage;
+        desaxce_storage = other.desaxce_storage;
+
+        // special care must be taken for the optional guesses
+        if (other.impulse_guess)
+        {
+          setConstraintImpulseGuess(other.impulse_guess.value());
+        }
+        else
+        {
+          clearConstraintImpulseGuessImpl();
+        }
+        if (other.velocity_guess)
+        {
+          setConstraintVelocityGuess(other.velocity_guess.value());
+        }
+        else
+        {
+          clearConstraintVelocityGuessImpl();
+        }
+      }
+      return *this;
+    }
+
+    /// \brief \copydoc Base::constraintSize
     int constraintSizeImpl() const
     {
       return static_cast<int>(problem_size);
@@ -555,24 +605,30 @@ namespace pinocchio
     }
 
     template<typename VectorLike>
-    void setConstraintImpulseGuessImpl(const Eigen::MatrixBase<VectorLike> & impulse_guess_)
+    void setConstraintImpulseGuessImpl(const Eigen::MatrixBase<VectorLike> & impulse_guess_in)
     {
-      impulse_guess.emplace(impulse_guess_);
+      m_impulse_guess_storage.resize(impulse_guess_in.size());
+      m_impulse_guess = impulse_guess_in;
+      impulse_guess.emplace(m_impulse_guess);
     }
 
     void clearConstraintImpulseGuessImpl()
     {
+      m_impulse_guess_storage.resize(0);
       impulse_guess.reset();
     }
 
     template<typename VectorLike>
-    void setConstraintVelocityGuessImpl(const Eigen::MatrixBase<VectorLike> & velocity_guess_)
+    void setConstraintVelocityGuessImpl(const Eigen::MatrixBase<VectorLike> & velocity_guess_in)
     {
-      velocity_guess.emplace(velocity_guess_);
+      m_velocity_guess_storage.resize(velocity_guess_in.size());
+      m_velocity_guess = velocity_guess_in;
+      velocity_guess.emplace(m_velocity_guess);
     }
 
     void clearConstraintVelocityGuessImpl()
     {
+      m_velocity_guess_storage.resize(0);
       velocity_guess.reset();
     }
 
@@ -654,6 +710,15 @@ namespace pinocchio
     /// \brief Desaxce term of the solution.
     VectorXsStorage desaxce_storage;
     typename VectorXsStorage::RefMapType desaxce = desaxce_storage.map();
+
+  protected:
+    /// \brief Storage for the optional impulse guess.
+    VectorXsStorage m_impulse_guess_storage;
+    typename VectorXsStorage::RefMapType m_impulse_guess = m_impulse_guess_storage.map();
+
+    /// \brief Storage for the optional velocity guess.
+    VectorXsStorage m_velocity_guess_storage;
+    typename VectorXsStorage::RefMapType m_velocity_guess = m_velocity_guess_storage.map();
   }; // struct ADMMSolverResultTpl
 
   template<typename _Scalar>
@@ -779,6 +844,52 @@ namespace pinocchio
       {
         resize(problem_size, lanczos_size, anderson_capacity);
         reset();
+      }
+
+      /// \brief Copy constructor.
+      ADMMSolverWorkspaceTpl(const ADMMSolverWorkspaceTpl & other)
+      : ADMMSolverWorkspaceTpl(0, 2, 0)
+      {
+        *this = other;
+      }
+
+      /// \brief Assignment operator.
+      ADMMSolverWorkspaceTpl & operator=(const ADMMSolverWorkspaceTpl & other)
+      {
+        if (this != &other)
+        {
+          problem_size = other.problem_size;
+          lanczos_size = other.lanczos_size;
+          anderson_capacity = other.anderson_capacity;
+          delassus_decomposition_update_count = other.delassus_decomposition_update_count;
+          delassus_smallest_eigenvalue = other.delassus_smallest_eigenvalue;
+          delassus_largest_eigenvalue = other.delassus_largest_eigenvalue;
+          rho = other.rho;
+          spectral_rho_power = other.spectral_rho_power;
+          mu_prox = other.mu_prox;
+          lanczos_decomposition = other.lanczos_decomposition;
+          anderson_history = other.anderson_history;
+
+          // Since we some members are maps on EigenStorage, we cannot simply copy them.
+          // Thus we need to explicitly say we copy the storage, and the maps will automatically
+          // point to the new storage.
+          x_storage = other.x_storage;
+          x_previous_storage = other.x_previous_storage;
+          x_anderson_storage = other.x_anderson_storage;
+          y_storage = other.y_storage;
+          y_previous_storage = other.y_previous_storage;
+          z_storage = other.z_storage;
+          z_previous_storage = other.z_previous_storage;
+          z_anderson_storage = other.z_anderson_storage;
+          desaxce_storage = other.desaxce_storage;
+          rhs_storage = other.rhs_storage;
+          tmp_storage = other.tmp_storage;
+          primal_feasibility_vector_storage = other.primal_feasibility_vector_storage;
+          anderson_primal_feasibility_vector_storage =
+            other.anderson_primal_feasibility_vector_storage;
+          dual_feasibility_vector_storage = other.dual_feasibility_vector_storage;
+        }
+        return *this;
       }
 
       /// \brief Reset the workspace.

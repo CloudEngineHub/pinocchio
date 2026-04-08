@@ -749,7 +749,8 @@ namespace pinocchio
           ws.tmp += ws.rhs;
         }
         ws.rhs = ws.tmp;
-        internal::computeDualConeProjection(constraint_models, constraint_datas, ws.rhs, ws.rhs);
+        internal::computeDualConstraintSetProjection(
+          constraint_models, constraint_datas, ws.rhs, ws.rhs);
         ws.tmp -= ws.rhs;
         const Scalar dual_feasibility_ncp = ws.tmp.template lpNorm<Eigen::Infinity>();
 
