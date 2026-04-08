@@ -251,7 +251,7 @@ namespace pinocchio
     /// \brief Update numerical damping by copying an input block diagonal matrix.
     template<int OtherOptions, std::size_t OtherAlignment>
     void updateDamping(
-      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
+      const internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
         block_diagonal_damping_matrix)
     {
       derived().updateDampingImpl(block_diagonal_damping_matrix);
@@ -260,7 +260,8 @@ namespace pinocchio
     /// \brief Update numerical damping by moving an input block diagonal matrix.
     template<int OtherOptions, std::size_t OtherAlignment>
     void updateDamping(
-      BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_diagonal_damping_matrix)
+      internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &&
+        block_diagonal_damping_matrix)
     {
       derived().updateDampingImpl(std::move(block_diagonal_damping_matrix));
     }

@@ -316,7 +316,7 @@ namespace pinocchio
 
     template<int OtherOptions, std::size_t OtherAlignment>
     void updateDampingImpl(
-      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
+      const internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
         block_diagonal_damping_matrix)
     {
       if (&block_diagonal_damping_matrix == &m_damping)
@@ -328,7 +328,8 @@ namespace pinocchio
 
     template<int OtherOptions, std::size_t OtherAlignment>
     void updateDampingImpl(
-      BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_diagonal_damping_matrix)
+      internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &&
+        block_diagonal_damping_matrix)
     {
       if (&block_diagonal_damping_matrix == &m_damping)
         return;
@@ -362,7 +363,7 @@ namespace pinocchio
     {
       MatrixType & res_ = res.const_cast_derived();
       typedef Eigen::Map<VectorXs> MapVectorXs;
-      MapVectorXs x = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, this->size(), 1));
+      MapVectorXs x = MapVectorXs(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, this->size(), 1));
 
       for (Eigen::Index i = 0; i < this->size(); ++i)
       {
