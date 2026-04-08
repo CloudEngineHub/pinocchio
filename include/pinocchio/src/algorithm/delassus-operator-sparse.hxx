@@ -118,12 +118,16 @@ namespace pinocchio
     static constexpr int Options = _Options;
     static constexpr int RowsAtCompileTime = Eigen::Dynamic;
 
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> Matrix;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
+    typedef MatrixXs Matrix; // for eigen lazy expression
 
-    typedef const Vector & getDampingReturnType;
+    typedef const VectorXs & getDampingReturnType;
+    typedef const VectorXs & getComplianceReturnType;
   };
 
+  /// \brief Operator for a delassus' sparse representation.
+  /// \copydoc DelassusOperatorBase.
   template<typename _Scalar, int _Options, class SparseCholeskyDecomposition>
   struct DelassusOperatorSparseTpl
   : DelassusOperatorBase<DelassusOperatorSparseTpl<_Scalar, _Options, SparseCholeskyDecomposition>>
@@ -135,11 +139,18 @@ namespace pinocchio
     static constexpr int RowsAtCompileTime = traits<Self>::RowsAtCompileTime;
 
     typedef typename traits<Self>::SparseMatrix SparseMatrix;
-    typedef typename traits<Self>::Vector Vector;
-    typedef typename traits<Self>::Matrix Matrix;
+    typedef typename traits<Self>::VectorXs VectorXs;
+    typedef typename traits<Self>::MatrixXs MatrixXs;
     typedef SparseCholeskyDecomposition CholeskyDecomposition;
     typedef DelassusOperatorBase<Self> Base;
 
+    typedef typename traits<Self>::getDampingReturnType getDampingReturnType;
+    typedef typename traits<Self>::getComplianceReturnType getComplianceReturnType;
+
+    using Base::isDirty;
+    using Base::size;
+
+    /// \brief Default constructor from a given sparse matrix.
     template<typename MatrixDerived>
     explicit DelassusOperatorSparseTpl(const Eigen::SparseMatrixBase<MatrixDerived> & mat)
     : Base()
@@ -147,14 +158,40 @@ namespace pinocchio
     , m_damped_delassus_matrix(mat)
     , m_cholsky_decomposition(mat)
     , m_cholesky_decomposition_dirty(true)
-    , m_damping(Vector::Zero(mat.rows()))
-    , m_compliance(Vector::Zero(mat.rows()))
+    , m_damping(VectorXs::Zero(mat.rows()))
+    , m_compliance(VectorXs::Zero(mat.rows()))
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(mat.rows(), mat.cols());
     }
 
+    /// \brief Returns the sparse matrix representation of the delassus operator, including the
+    /// compliance and damping.
+    ///
+    /// \param with_damping Whether to include the damping in the returned matrix. Default is true.
+    SparseMatrix sparseMatrix(bool with_damping = true) const
+    {
+      m_damped_delassus_matrix = m_delassus_matrix;
+      m_damped_delassus_matrix += m_compliance.asDiagonal();
+      if (with_damping)
+        m_damped_delassus_matrix += m_damping.asDiagonal();
+      return m_damped_delassus_matrix;
+    }
+
+    /// \brief Returns the sparse inverse of the damped delassus matrix.
+    SparseMatrix inverse() const
+    {
+      SparseMatrix identity_matrix(size(), size());
+      identity_matrix.setIdentity();
+      SparseMatrix res = m_cholsky_decomposition.solve(identity_matrix);
+      return res;
+    }
+
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
     template<typename VectorLike>
-    void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliance_vector)
+    void updateComplianceImpl(const Eigen::MatrixBase<VectorLike> & compliance_vector)
     {
       for (Eigen::Index k = 0; k < size(); ++k)
       {
@@ -164,13 +201,8 @@ namespace pinocchio
       m_cholesky_decomposition_dirty = true;
     }
 
-    void updateCompliance(const Scalar & m_compliance)
-    {
-      updateCompliance(Vector::Constant(size(), m_compliance));
-    }
-
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & damping_vector)
+    void updateDampingImpl(const Eigen::MatrixBase<VectorLike> & damping_vector)
     {
       for (Eigen::Index k = 0; k < size(); ++k)
       {
@@ -180,24 +212,34 @@ namespace pinocchio
       m_cholesky_decomposition_dirty = true;
     }
 
-    void updateDamping(const Scalar & mu)
-    {
-      updateDamping(Vector::Constant(size(), mu));
-    }
-
-    void updateDecomposition()
+    void updateDecompositionImpl()
     {
       m_cholsky_decomposition.factorize(m_damped_delassus_matrix);
       m_cholesky_decomposition_dirty = false;
     }
 
-    bool isDirty() const
+    bool isDirtyImpl() const
     {
       return m_cholesky_decomposition_dirty;
     }
 
+    template<typename MatrixType>
+    void matrixImpl(
+      const Eigen::MatrixBase<MatrixType> & mat,
+      bool enforce_symmetry = false,
+      bool with_damping = true) const
+    {
+      MatrixType & mat_ = mat.const_cast_derived();
+      mat_ = m_delassus_matrix;
+      mat_ += m_compliance.asDiagonal();
+      if (with_damping)
+        mat_ += m_damping.asDiagonal();
+      if (enforce_symmetry)
+        enforceSymmetry(mat_);
+    }
+
     template<typename MatrixLike>
-    void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
+    void solveInPlaceImpl(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       PINOCCHIO_THROW_IF(
         isDirty(), std::logic_error,
@@ -206,26 +248,8 @@ namespace pinocchio
         m_cholsky_decomposition, mat.derived(), mat.const_cast_derived());
     }
 
-    template<typename MatrixLike>
-    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike)
-      solve(const Eigen::MatrixBase<MatrixLike> & mat) const
-    {
-      typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike) res(mat);
-      solveInPlace(res);
-      return res;
-    }
-
-    template<typename MatrixDerivedIn, typename MatrixDerivedOut>
-    void solve(
-      const Eigen::MatrixBase<MatrixDerivedIn> & x,
-      const Eigen::MatrixBase<MatrixDerivedOut> & res) const
-    {
-      res.const_cast_derived() = x;
-      m_cholsky_decomposition._solve_impl(x, res.const_cast_derived());
-    }
-
     template<typename MatrixIn, typename MatrixOut>
-    void applyOnTheRight(
+    void applyOnTheRightImpl(
       const Eigen::MatrixBase<MatrixIn> & x,
       const Eigen::MatrixBase<MatrixOut> & res_,
       bool with_damping = true) const
@@ -240,49 +264,27 @@ namespace pinocchio
       }
     }
 
-    Eigen::Index size() const
+    Eigen::Index sizeImpl() const
     {
       return m_delassus_matrix.rows();
     }
-    Eigen::Index rows() const
+    Eigen::Index rowsImpl() const
     {
       return m_delassus_matrix.rows();
     }
-    Eigen::Index cols() const
+    Eigen::Index colsImpl() const
     {
       return m_delassus_matrix.cols();
     }
 
-    SparseMatrix matrix(bool enforce_symmetry = false) const
-    {
-      m_damped_delassus_matrix = m_delassus_matrix;
-      m_damped_delassus_matrix += m_compliance.asDiagonal();
-      m_damped_delassus_matrix += m_damping.asDiagonal();
-      if (enforce_symmetry)
-      {
-        // TODO: enforce symmetry for sparse matrices
-        PINOCCHIO_THROW(
-          std::invalid_argument, "enforceSymmetry not implemented for sparse matrices");
-      }
-      return m_damped_delassus_matrix;
-    }
-
-    const Vector & getCompliance() const
+    getComplianceReturnType getComplianceImpl() const
     {
       return m_compliance;
     }
 
-    const Vector & getDamping() const
+    getDampingReturnType getDampingImpl() const
     {
       return m_damping;
-    }
-
-    SparseMatrix inverse() const
-    {
-      SparseMatrix identity_matrix(size(), size());
-      identity_matrix.setIdentity();
-      SparseMatrix res = m_cholsky_decomposition.solve(identity_matrix);
-      return res;
     }
 
   protected:
@@ -290,8 +292,8 @@ namespace pinocchio
     mutable SparseMatrix m_damped_delassus_matrix;
     CholeskyDecomposition m_cholsky_decomposition;
     bool m_cholesky_decomposition_dirty;
-    Vector m_damping;
-    Vector m_compliance;
+    VectorXs m_damping;
+    VectorXs m_compliance;
 
   }; // struct DelassusOperatorSparseTpl
 

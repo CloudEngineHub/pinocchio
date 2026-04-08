@@ -69,6 +69,7 @@ namespace pinocchio
     typedef EigenStorageTpl<Matrix> EigenStorageMatrix;
     typedef EigenStorageTpl<RowMatrix> EigenStorageRowMatrix;
     typedef BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
+    typedef BlockDiagonalMatrix DampingType;
 
     typedef Eigen::Matrix<Eigen::Index, Eigen::Dynamic, 1, Options> EigenIndexVector;
     typedef typename std::vector<EigenIndexVector> VectorOfEigenIndexVector;

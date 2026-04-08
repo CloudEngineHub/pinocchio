@@ -33,11 +33,11 @@ namespace pinocchio
     static constexpr int Options = _Options;
     static constexpr int RowsAtCompileTime = Eigen::Dynamic;
 
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> DenseMatrix;
-    typedef DenseMatrix Matrix;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
+    typedef MatrixXs Matrix;
 
-    typedef EigenStorageTpl<Vector> EigenStorageVector;
+    typedef EigenStorageTpl<VectorXs> EigenStorageVector;
     typedef BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;
@@ -57,7 +57,9 @@ namespace pinocchio
     typedef std::vector<ConstraintModel> ConstraintModelVector;
     typedef std::vector<ConstraintData> ConstraintDataVector;
 
-    typedef const BlockDiagonalMatrix & getDampingReturnType;
+    typedef BlockDiagonalMatrix DampingType;
+    typedef const DampingType & getDampingReturnType;
+    typedef typename EigenStorageVector::ConstMapType getComplianceReturnType;
   };
 
   /// \brief Unsafe version of DelassusOperatorRigidBodySystemsTpl.
@@ -75,6 +77,12 @@ namespace pinocchio
     _JointCollectionTpl,
     _ConstraintModel,
     _StorageHolder>>
+  : Unsafe<DelassusOperatorBase<DelassusOperatorRigidBodySystemsTpl<
+      _Scalar,
+      _Options,
+      _JointCollectionTpl,
+      _ConstraintModel,
+      _StorageHolder>>>
   {
     typedef DelassusOperatorRigidBodySystemsTpl<
       _Scalar,
@@ -83,32 +91,30 @@ namespace pinocchio
       _ConstraintModel,
       _StorageHolder>
       SafeSelf;
-    typedef typename SafeSelf::BlockDiagonalMatrix BlockDiagonalMatrix;
+    typedef Unsafe<DelassusOperatorBase<SafeSelf>> Base;
+    typedef typename traits<SafeSelf>::DampingType DampingType;
+
+    using Base::self;
 
     explicit Unsafe(SafeSelf & self)
-    : self(self)
+    : Base(self)
     {
     }
 
-    /// \brief Signal the delassus that updateDecomposition() should be called.
-    /// This is typically called after damping or compliance has been updated
-    /// so updateSumComplianceDamping is called internally.
-    void makeDirty()
+    void makeDirtyImpl()
     {
       self.updateSumComplianceDamping();
       self.m_solve_in_place_dirty = true;
     }
 
-    /// \brief Getter to the block diagonal damping.
-    BlockDiagonalMatrix & damping()
+    DampingType & dampingImpl()
     {
       return self.m_damping;
     }
-
-  protected:
-    SafeSelf & self;
   };
 
+  /// \brief Operator for a delassus' low-complexity representation.
+  /// \copydoc DelassusOperatorBase.
   template<
     typename _Scalar,
     int _Options,
@@ -130,10 +136,12 @@ namespace pinocchio
     typedef typename traits<Self>::Scalar Scalar;
     static constexpr int Options = traits<Self>::Options;
 
-    typedef typename traits<Self>::Vector Vector;
-    typedef typename traits<Self>::DenseMatrix DenseMatrix;
+    typedef typename traits<Self>::VectorXs VectorXs;
+    typedef typename traits<Self>::MatrixXs MatrixXs;
     typedef typename traits<Self>::EigenStorageVector EigenStorageVector;
     typedef typename traits<Self>::BlockDiagonalMatrix BlockDiagonalMatrix;
+    typedef typename traits<Self>::getDampingReturnType getDampingReturnType;
+    typedef typename traits<Self>::getComplianceReturnType getComplianceReturnType;
 
     typedef typename traits<Self>::Model Model;
     typedef StorageHolder<const Model> ModelHolder;
@@ -141,7 +149,6 @@ namespace pinocchio
     typedef StorageHolder<Data> DataHolder;
 
     typedef typename Data::Force Force;
-    typedef typename Data::VectorXs VectorXs;
     typedef std::vector<Force> ForceVector;
 
     typedef typename traits<Self>::ConstraintModel ConstraintModel;
@@ -154,12 +161,7 @@ namespace pinocchio
     typedef typename traits<Self>::ConstraintDataVector ConstraintDataVector;
     typedef StorageHolder<const ConstraintDataVector> ConstraintDataVectorHolder;
 
-    /// \brief Cast this class to its unsafe version.
-    Unsafe<Self> unsafe()
-    {
-      return Unsafe<Self>(*this);
-    }
-    friend struct Unsafe<Self>;
+    using Base::size;
 
     /// \brief Default constructor from model, data, constraint_models and constraint_datas.
     DelassusOperatorRigidBodySystemsTpl(
@@ -193,6 +195,33 @@ namespace pinocchio
       rebuild(model_ref, data_ref, constraint_models_ref, constraint_datas_ref);
     }
 
+    DelassusOperatorRigidBodySystemsTpl(const DelassusOperatorRigidBodySystemsTpl & other)
+    : DelassusOperatorRigidBodySystemsTpl(
+        other.m_model_ref,
+        other.m_data_ref,
+        other.m_constraint_models_ref,
+        other.m_constraint_datas_ref,
+        other.m_min_damping_value)
+    {
+      m_internal_data = other.m_internal_data;
+      m_solve_in_place_dirty = other.m_solve_in_place_dirty;
+      m_damping = other.m_damping;
+      m_compliance_storage = other.m_compliance_storage;
+      m_sum_compliance_damping = other.m_sum_compliance_damping;
+      m_sum_compliance_damping_inverse = other.m_sum_compliance_damping_inverse;
+    }
+
+    DelassusOperatorRigidBodySystemsTpl &
+    operator=(const DelassusOperatorRigidBodySystemsTpl & other)
+    {
+      if (this != &other)
+      {
+        this->~DelassusOperatorRigidBodySystemsTpl();
+        new (this) DelassusOperatorRigidBodySystemsTpl(other);
+      }
+      return *this;
+    }
+
     /// \brief Update the constraint model and data vectors, and resize the internal quantities.
     ///
     /// \param[in] constraint_models_ref Vector of constraint models
@@ -204,7 +233,6 @@ namespace pinocchio
       const ConstraintModelVectorHolder & constraint_models_ref,
       const ConstraintDataVectorHolder & constraint_datas_ref);
 
-    ///
     /// \brief Update the intermediate computations before calling solveInPlace or operator*
     ///
     /// \param[in] apply_on_the_right If true, this will update the quantities involved in the
@@ -222,145 +250,6 @@ namespace pinocchio
       compute_or_update_decomposition(apply_on_the_right, solve_in_place);
     }
 
-    /// \brief Stores the product delassus * x in res.
-    template<typename MatrixIn, typename MatrixOut>
-    void applyOnTheRight(
-      const Eigen::MatrixBase<MatrixIn> & x,
-      const Eigen::MatrixBase<MatrixOut> & res,
-      bool with_damping = true) const;
-
-    /// \brief Update the numerical damping of the delassus from a vector.
-    template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & damping_vector)
-    {
-      m_damping = damping_vector.asDiagonal();
-      updateSumComplianceDamping();
-    }
-
-    /// \brief Update the numerical damping of the delassus from a scalar.
-    void updateDamping(const Scalar & mu)
-    {
-      updateDamping(Vector::Constant(size(), mu));
-    }
-
-    /// \brief Update numerical damping by copying an input block diagonal matrix.
-    template<int OtherOptions, std::size_t OtherAlignment>
-    void updateDamping(
-      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
-        block_diagonal_damping_matrix)
-    {
-      if (&block_diagonal_damping_matrix == &m_damping)
-        return;
-
-      m_damping = block_diagonal_damping_matrix;
-      updateSumComplianceDamping();
-    }
-
-    /// \brief Update numerical damping by moving an input block diagonal matrix.
-    template<int OtherOptions, std::size_t OtherAlignment>
-    void updateDamping(
-      BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_diagonal_damping_matrix)
-    {
-      if (&block_diagonal_damping_matrix == &m_damping)
-        return;
-
-      m_damping = std::move(block_diagonal_damping_matrix);
-      updateSumComplianceDamping();
-    }
-
-    /// \brief Update the physical compliance of the delassus from a vector.
-    template<typename VectorLike>
-    void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliance_vector)
-    {
-      m_compliance = compliance_vector;
-      updateSumComplianceDamping();
-    }
-
-    /// \brief Update the physical compliance of the delassus from a scalar.
-    void updateCompliance(const Scalar & compliance_value)
-    {
-      updateCompliance(Vector::Constant(size(), compliance_value));
-    }
-
-    ///
-    /// \brief Update the decomposition after a call to updateDamping or updateCompliance.
-    ///
-    /// \remarks isDirty() allows to retrieve the current status of the decomposition.
-    ///
-    void updateDecomposition()
-    {
-      compute(false, true);
-    }
-
-    /// \brief Returns true if updateDecomposition() needs to be called in order to call
-    /// solveInPlace.
-    bool isDirty() const
-    {
-      return m_solve_in_place_dirty;
-    }
-
-    /// \brief Fills input matrix with the dense representation of the Delassus.
-    template<typename MatrixType>
-    void matrix(
-      const Eigen::MatrixBase<MatrixType> & res,
-      bool enforce_symmetry = false,
-      bool with_damping = true) const
-    {
-      MatrixType & res_ = res.const_cast_derived();
-      typedef Eigen::Map<VectorXs> MapVectorXs;
-      MapVectorXs x = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, this->size(), 1));
-
-      for (Eigen::Index i = 0; i < this->size(); ++i)
-      {
-        x = VectorXs::Unit(this->size(), i);
-        this->applyOnTheRight(x, res_.col(i), with_damping);
-      }
-      if (enforce_symmetry)
-      {
-        res_ = 0.5 * (res_ + res_.transpose());
-      }
-    }
-
-    /// \brief Returns the dense representation of the Delassus.
-    DenseMatrix matrix(bool enforce_symmetry = false, bool with_damping = true) const
-    {
-      DenseMatrix res(this->size(), this->size());
-      matrix(res, enforce_symmetry, with_damping);
-      return res;
-    }
-
-    /// \brief Fills input matrix with the dense representation of the Delassus.
-    /// The numerical damping is NOT taken into account here.
-    template<typename MatrixType>
-    void
-    undampedMatrix(const Eigen::MatrixBase<MatrixType> & res, bool enforce_symmetry = false) const
-    {
-      matrix(res, enforce_symmetry, false /*no damping*/);
-    }
-
-    /// \brief Returns the dense representation of the Delassus.
-    /// The numerical damping is NOT taken into account here.
-    DenseMatrix undampedMatrix(bool enforce_symmetry = false) const
-    {
-      DenseMatrix res(this->size(), this->size());
-      matrix(res, enforce_symmetry, false /*no damping*/);
-      return res;
-    }
-
-    /// \brief solveInPlace operation returning the results of the inverse of the Delassus operator
-    /// times the input matrix mat
-    ///
-    /// \param[in,out] mat Input/output argument containing the right hand side and the result of
-    /// the operation
-    ///
-    /// \warning The parameter is only marked 'const' to make the C++ compiler accept a temporary
-    /// expression here. This function will const_cast it, so constness isn't honored here.
-    ///
-    /// \remarks Even if the method is marked 'const', it will update the internal decomposition if
-    /// the Delassus operator is dirty after an update of the damping or compliance values.
-    template<typename MatrixLike>
-    void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const;
-
     /// \brief Returns the current memory footprint of this object in bytes.
     /// \details Sums up the sizes of all internal data members.
     std::size_t sizeInBytes() const
@@ -368,25 +257,6 @@ namespace pinocchio
       return m_damping.sizeInBytes() + m_compliance_storage.sizeInBytes()
              + m_sum_compliance_damping.sizeInBytes()
              + m_sum_compliance_damping_inverse.sizeInBytes() + m_internal_data.sizeInBytes();
-    }
-
-    /// \brief Returns the number of rows/cols of the Delassus.
-    /// The delassus represents a size() x size() linear operator.
-    Eigen::Index size() const
-    {
-      return m_size;
-    }
-
-    /// \brief Returns the number of rows of the Delassus.
-    Eigen::Index rows() const
-    {
-      return m_size;
-    }
-
-    /// \brief Returns the number of cols of the Delassus.
-    Eigen::Index cols() const
-    {
-      return m_size;
     }
 
     /// \brief Const getter for model.
@@ -419,18 +289,121 @@ namespace pinocchio
       return helper::get_ref(m_constraint_datas_ref);
     }
 
-    /// \brief Const getter for the numerical damping.
-    const BlockDiagonalMatrix & getDamping() const
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    Unsafe<Self> unsafeImpl()
+    {
+      return Unsafe<Self>(*this);
+    }
+    friend struct Unsafe<Self>;
+
+    template<typename MatrixIn, typename MatrixOut>
+    void applyOnTheRightImpl(
+      const Eigen::MatrixBase<MatrixIn> & x,
+      const Eigen::MatrixBase<MatrixOut> & res,
+      bool with_damping = true) const;
+
+    template<typename VectorLike>
+    void updateDampingImpl(const Eigen::MatrixBase<VectorLike> & damping_vector)
+    {
+      m_damping = damping_vector.asDiagonal();
+      updateSumComplianceDamping();
+    }
+
+    template<int OtherOptions, std::size_t OtherAlignment>
+    void updateDampingImpl(
+      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
+        block_diagonal_damping_matrix)
+    {
+      if (&block_diagonal_damping_matrix == &m_damping)
+        return;
+
+      m_damping = block_diagonal_damping_matrix;
+      updateSumComplianceDamping();
+    }
+
+    template<int OtherOptions, std::size_t OtherAlignment>
+    void updateDampingImpl(
+      BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_diagonal_damping_matrix)
+    {
+      if (&block_diagonal_damping_matrix == &m_damping)
+        return;
+
+      m_damping = std::move(block_diagonal_damping_matrix);
+      updateSumComplianceDamping();
+    }
+
+    template<typename VectorLike>
+    void updateComplianceImpl(const Eigen::MatrixBase<VectorLike> & compliance_vector)
+    {
+      m_compliance = compliance_vector;
+      updateSumComplianceDamping();
+    }
+
+    void updateDecompositionImpl()
+    {
+      compute_or_update_decomposition(false, true);
+    }
+
+    bool isDirtyImpl() const
+    {
+      return m_solve_in_place_dirty;
+    }
+
+    template<typename MatrixType>
+    void matrixImpl(
+      const Eigen::MatrixBase<MatrixType> & res,
+      bool enforce_symmetry = false,
+      bool with_damping = true) const
+    {
+      MatrixType & res_ = res.const_cast_derived();
+      typedef Eigen::Map<VectorXs> MapVectorXs;
+      MapVectorXs x = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, this->size(), 1));
+
+      for (Eigen::Index i = 0; i < this->size(); ++i)
+      {
+        x = VectorXs::Unit(this->size(), i);
+        this->applyOnTheRight(x, res_.col(i), with_damping);
+      }
+      if (enforce_symmetry)
+      {
+        res_ = 0.5 * (res_ + res_.transpose());
+      }
+    }
+
+    template<typename MatrixLike>
+    void solveInPlaceImpl(const Eigen::MatrixBase<MatrixLike> & mat) const;
+
+    Eigen::Index sizeImpl() const
+    {
+      return m_size;
+    }
+
+    /// \brief Returns the number of rows of the Delassus.
+    Eigen::Index rowsImpl() const
+    {
+      return m_size;
+    }
+
+    /// \brief Returns the number of cols of the Delassus.
+    Eigen::Index colsImpl() const
+    {
+      return m_size;
+    }
+
+    getDampingReturnType getDampingImpl() const
     {
       return m_damping;
     }
 
-    /// \brief Const getter for the physical compliance.
-    typename EigenStorageVector::ConstRefConstMapType getCompliance() const
+    getComplianceReturnType getComplianceImpl() const
     {
       return m_compliance_storage.const_map();
     }
 
+  public:
     /// \brief Internal data needed for the various passes of the delassus operator.
     struct InternalData
     {
@@ -450,6 +423,32 @@ namespace pinocchio
       , f(std::size_t(model.njoints))
       , of_augmented(std::size_t(model.njoints))
       {
+      }
+
+      InternalData(const InternalData & other)
+      : a(other.a)
+      , oa_augmented(other.oa_augmented)
+      , u_storage(other.u_storage)
+      , u(u_storage.map())
+      , ddq_storage(other.ddq_storage)
+      , ddq(ddq_storage.map())
+      , f(other.f)
+      , of_augmented(other.of_augmented)
+      {
+      }
+
+      InternalData & operator=(const InternalData & other)
+      {
+        if (this != &other)
+        {
+          a = other.a;
+          oa_augmented = other.oa_augmented;
+          u_storage = other.u_storage;
+          ddq_storage = other.ddq_storage;
+          f = other.f;
+          of_augmented = other.of_augmented;
+        }
+        return *this;
       }
 
       /// \brief Rebuild from a given model.
@@ -765,7 +764,7 @@ namespace pinocchio
     JointCollectionTpl,
     ConstraintModel,
     StorageHolder>::
-    applyOnTheRight(
+    applyOnTheRightImpl(
       const Eigen::MatrixBase<MatrixIn> & rhs,
       const Eigen::MatrixBase<MatrixOut> & res_,
       bool with_damping) const
@@ -893,7 +892,7 @@ namespace pinocchio
     Options,
     JointCollectionTpl,
     ConstraintModel,
-    StorageHolder>::solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat_) const
+    StorageHolder>::solveInPlaceImpl(const Eigen::MatrixBase<MatrixLike> & mat_) const
   {
     MatrixLike & mat = mat_.const_cast_derived();
     PINOCCHIO_CHECK_ARGUMENT_SIZE(

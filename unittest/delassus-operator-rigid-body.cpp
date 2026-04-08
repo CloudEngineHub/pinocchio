@@ -1570,4 +1570,64 @@ BOOST_AUTO_TEST_CASE(general_test_no_constraints)
   }
 }
 
+BOOST_AUTO_TEST_CASE(test_copy)
+{
+  typedef JointFrictionConstraintModelTpl<double> ConstraintModel;
+  typedef DelassusOperatorRigidBodySystemsTpl<
+    double, 0, JointCollectionDefaultTpl, ConstraintModel, std::reference_wrapper>
+    DelassusOperator;
+  typedef typename DelassusOperator::ConstraintModelVector ConstraintModelVector;
+  typedef typename DelassusOperator::ConstraintDataVector ConstraintDataVector;
+
+  Model model;
+  buildModels::manipulator(model);
+  model.lowerDryFrictionLimit.setConstant(-1.0);
+  model.upperDryFrictionLimit.setConstant(1.0);
+  Data data(model);
+
+  ConstraintModelVector constraint_models;
+  ConstraintDataVector constraint_datas;
+  JointFrictionConstraintModel::JointIndexVector active_joints;
+  for (size_t i = 1; i < model.joints.size(); ++i)
+    active_joints.push_back(model.joints[i].id());
+  JointFrictionConstraintModel joints_friction(model, active_joints);
+  constraint_models.push_back(joints_friction);
+  constraint_datas.push_back(joints_friction.createData());
+
+  const Eigen::VectorXd q = neutral(model);
+  computeJointJacobians(model, data, q);
+  data.q_in = q;
+  calc(model, data, constraint_models, constraint_datas);
+
+  const double compliance_value = 1e-2;
+  DelassusOperator delassus(
+    helper::make_ref(model), helper::make_ref(data), helper::make_ref(constraint_models),
+    helper::make_ref(constraint_datas));
+  delassus.updateCompliance(compliance_value);
+  delassus.compute();
+
+  // copy constructor: maps must point to the copy's own storage
+  DelassusOperator delassus_copy(delassus);
+  BOOST_CHECK(access(delassus_copy).m_compliance.data() != access(delassus).m_compliance.data());
+  BOOST_CHECK(access(delassus_copy).m_compliance.isApprox(access(delassus).m_compliance));
+
+  // copy constructor: independence — modify original, copy unchanged
+  const double new_compliance_value = 5e-3;
+  delassus.updateCompliance(new_compliance_value);
+  BOOST_CHECK(access(delassus_copy).m_compliance.isConstant(compliance_value, 0));
+
+  // copy assignment: maps must point to the assigned object's own storage
+  DelassusOperator delassus_assigned(
+    helper::make_ref(model), helper::make_ref(data), helper::make_ref(constraint_models),
+    helper::make_ref(constraint_datas));
+  delassus_assigned = delassus;
+  BOOST_CHECK(
+    access(delassus_assigned).m_compliance.data() != access(delassus).m_compliance.data());
+  BOOST_CHECK(access(delassus_assigned).m_compliance.isApprox(access(delassus).m_compliance));
+
+  // copy assignment: independence — modify original, assigned copy unchanged
+  delassus.updateCompliance(compliance_value);
+  BOOST_CHECK(access(delassus_assigned).m_compliance.isConstant(new_compliance_value, 0));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

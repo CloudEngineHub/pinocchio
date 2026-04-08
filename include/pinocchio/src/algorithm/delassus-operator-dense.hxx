@@ -24,48 +24,52 @@ namespace pinocchio
     static constexpr int Options = _Options;
     static constexpr int RowsAtCompileTime = Eigen::Dynamic;
 
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> Matrix;
-    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> Vector;
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
+    typedef MatrixXs Matrix; // for eigen lazy evaluation
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
 
     typedef BlockDiagonalMatrixTpl<Scalar, Options> BlockDiagonalMatrix;
+    typedef BlockDiagonalMatrix DampingType;
+    typedef const DampingType & getDampingReturnType;
 
-    typedef const BlockDiagonalMatrix & getDampingReturnType;
+    typedef EigenStorageTpl<VectorXs> VectorStorage;
+    typedef const typename VectorStorage::ConstMapType getComplianceReturnType;
   };
 
-  /// \brief Unsafe version of DelassusOperatorDenseTpl.
-  /// Allows to access protected members.
-  /// Meant to be used by expert users.
+  /// \brief \copydoc Unsafe<DelassusOperatorBase>>
   template<
     typename _Scalar,
     int _Options,
     template<typename, auto...> class CholeskyDecompositionTpl>
   struct Unsafe<DelassusOperatorDenseTpl<_Scalar, _Options, CholeskyDecompositionTpl>>
+  : Unsafe<
+      DelassusOperatorBase<DelassusOperatorDenseTpl<_Scalar, _Options, CholeskyDecompositionTpl>>>
   {
     typedef DelassusOperatorDenseTpl<_Scalar, _Options, CholeskyDecompositionTpl> SafeSelf;
-    typedef typename SafeSelf::BlockDiagonalMatrix BlockDiagonalMatrix;
+    typedef Unsafe<DelassusOperatorBase<SafeSelf>> Base;
+    typedef typename traits<SafeSelf>::DampingType DampingType;
+
+    using Base::self;
 
     explicit Unsafe(SafeSelf & self)
-    : self(self)
+    : Base(self)
     {
     }
 
-    /// \brief Signal the delassus that updateDecomposition() should be called.
-    void makeDirty()
+    void makeDirtyImpl()
     {
       self.m_cholesky_decomposition_dirty = true;
     }
 
     /// \brief Getter to the block diagonal damping.
-    BlockDiagonalMatrix & damping()
+    DampingType & dampingImpl()
     {
       return self.m_damping;
     }
-
-  protected:
-    SafeSelf & self;
   };
 
   /// \brief Operator for a delassus' dense representation.
+  /// \copydoc DelassusOperatorBase.
   template<
     typename _Scalar,
     int _Options,
@@ -79,22 +83,21 @@ namespace pinocchio
     static constexpr int Options = _Options;
     static constexpr int RowsAtCompileTime = traits<DelassusOperatorDenseTpl>::RowsAtCompileTime;
 
-    typedef typename traits<Self>::Matrix Matrix;
-    typedef typename traits<Self>::Vector Vector;
-    typedef EigenStorageTpl<Matrix> MatrixStorage;
-    typedef EigenStorageTpl<Vector> VectorStorage;
+    typedef typename traits<Self>::MatrixXs MatrixXs;
+    typedef typename traits<Self>::VectorXs VectorXs;
+    typedef typename traits<Self>::getDampingReturnType getDampingReturnType;
+    typedef typename traits<Self>::getComplianceReturnType getComplianceReturnType;
+    typedef EigenStorageTpl<MatrixXs> MatrixStorage;
+    typedef EigenStorageTpl<VectorXs> VectorStorage;
     typedef typename MatrixStorage::RefMapType MatrixStorageRefMapType;
     typedef typename VectorStorage::RefMapType VectorStorageRefMapType;
-    typedef typename traits<Self>::BlockDiagonalMatrix BlockDiagonalMatrix;
-    typedef CholeskyDecompositionTpl<Eigen::Ref<Matrix>> CholeskyDecomposition;
+    typedef typename traits<Self>::DampingType DampingType;
+    typedef CholeskyDecompositionTpl<Eigen::Ref<MatrixXs>> CholeskyDecomposition;
     typedef DelassusOperatorBase<Self> Base;
 
-    /// \brief Cast this class to its unsafe version.
-    Unsafe<Self> unsafe()
-    {
-      return Unsafe<Self>(*this);
-    }
-    friend struct Unsafe<Self>;
+    using Base::isDirty;
+    using Base::size;
+    using Base::solveInPlace;
 
     /// \brief Default constructor.
     DelassusOperatorDenseTpl()
@@ -102,6 +105,30 @@ namespace pinocchio
     , m_cholesky_decomposition(m_cholesky_decomposition_data)
     , m_cholesky_decomposition_dirty(true)
     {
+    }
+
+    /// \brief Copy constructor.
+    DelassusOperatorDenseTpl(const DelassusOperatorDenseTpl & other)
+    : DelassusOperatorDenseTpl()
+    {
+      *this = other;
+    }
+
+    /// \brief Copy assignment operator.
+    DelassusOperatorDenseTpl & operator=(const DelassusOperatorDenseTpl & other)
+    {
+      if (this != &other)
+      {
+        Base::operator=(other);
+        m_delassus_matrix_storage = other.m_delassus_matrix_storage;
+        m_cholesky_decomposition_data_storage = other.m_cholesky_decomposition_data_storage;
+        m_cholesky_decomposition.~CholeskyDecomposition();
+        new (&m_cholesky_decomposition) CholeskyDecomposition(m_cholesky_decomposition_data);
+        m_cholesky_decomposition_dirty = other.m_cholesky_decomposition_dirty;
+        m_damping = other.m_damping;
+        m_compliance_storage = other.m_compliance_storage;
+      }
+      return *this;
     }
 
     /// \brief Constructor from a given matrix.
@@ -160,7 +187,7 @@ namespace pinocchio
       m_cholesky_decomposition_data.setZero();
 
       // resize/reset damping and compliance
-      m_damping = BlockDiagonalMatrix::Zero(mat.rows());
+      m_damping = DampingType::Zero(mat.rows());
       m_compliance_storage.resize(mat.rows());
       m_compliance.setZero();
 
@@ -252,9 +279,26 @@ namespace pinocchio
       return !(*this == other);
     }
 
-    /// \brief Evaluates the product delassus * x and stores it in res.
+    /// \brief Returns the inverse of the damped delassus matrix.
+    MatrixXs inverse() const
+    {
+      MatrixXs res = MatrixXs::Identity(size(), size());
+      solveInPlace(res);
+      return res;
+    }
+
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    Unsafe<Self> unsafeImpl()
+    {
+      return Unsafe<Self>(*this);
+    }
+    friend struct Unsafe<Self>;
+
     template<typename MatrixIn, typename MatrixOut>
-    void applyOnTheRight(
+    void applyOnTheRightImpl(
       const Eigen::MatrixBase<MatrixIn> & x,
       const Eigen::MatrixBase<MatrixOut> & res_,
       bool with_damping = true) const
@@ -269,38 +313,22 @@ namespace pinocchio
       }
     }
 
-    /// \brief Update physical compliance from a vector.
     template<typename VectorLike>
-    void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliance_vector)
+    void updateComplianceImpl(const Eigen::MatrixBase<VectorLike> & compliance_vector)
     {
       m_compliance = compliance_vector;
       m_cholesky_decomposition_dirty = true;
     }
 
-    /// \brief Update physical compliance from a scalar.
-    void updateCompliance(const Scalar & compliance)
-    {
-      updateCompliance(Vector::Constant(size(), compliance));
-    }
-
-    /// \brief Update numerical damping from a vector.
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & damping_vector)
+    void updateDampingImpl(const Eigen::MatrixBase<VectorLike> & damping_vector)
     {
       m_damping = damping_vector.asDiagonal();
       m_cholesky_decomposition_dirty = true;
     }
 
-    /// \brief Update numerical damping from a scalar.
-    void updateDamping(const Scalar & mu)
-    {
-      m_damping = std::move(BlockDiagonalMatrix::ScalarIdentity(size(), mu));
-      m_cholesky_decomposition_dirty = true;
-    }
-
-    /// \brief Update numerical damping by copying an input block diagonal matrix.
     template<int OtherOptions, std::size_t OtherAlignment>
-    void updateDamping(
+    void updateDampingImpl(
       const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> &
         block_diagonal_damping_matrix)
     {
@@ -311,9 +339,8 @@ namespace pinocchio
       m_cholesky_decomposition_dirty = true;
     }
 
-    /// \brief Update numerical damping by moving an input block diagonal matrix.
     template<int OtherOptions, std::size_t OtherAlignment>
-    void updateDamping(
+    void updateDampingImpl(
       BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_diagonal_damping_matrix)
     {
       if (&block_diagonal_damping_matrix == &m_damping)
@@ -323,8 +350,7 @@ namespace pinocchio
       m_cholesky_decomposition_dirty = true;
     }
 
-    /// \brief Updates the cholesky decomposition of the delassus.
-    void updateDecomposition()
+    void updateDecompositionImpl()
     {
       if (m_cholesky_decomposition_dirty)
       {
@@ -336,16 +362,13 @@ namespace pinocchio
       }
     }
 
-    /// \brief Returns true if updateDecomposition() needs to be called in order to call
-    /// solveInPlace.
-    bool isDirty() const
+    bool isDirtyImpl() const
     {
       return m_cholesky_decomposition_dirty;
     }
 
-    /// \brief Fills input matrix with the dense representation of the Delassus.
     template<typename MatrixType>
-    void matrix(
+    void matrixImpl(
       const Eigen::MatrixBase<MatrixType> & mat,
       bool enforce_symmetry = false,
       bool with_damping = true) const
@@ -363,36 +386,8 @@ namespace pinocchio
       }
     }
 
-    /// \brief Returns the dense representation of the Delassus.
-    Matrix matrix(bool enforce_symmetry = false, bool with_damping = true) const
-    {
-      Matrix res(rows(), cols());
-      matrix(res, enforce_symmetry, with_damping);
-      return res;
-    }
-
-    /// \brief Fills input matrix with the dense representation of the Delassus.
-    /// The numerical damping is NOT taken into account here.
-    template<typename MatrixType>
-    void
-    undampedMatrix(const Eigen::MatrixBase<MatrixType> & mat, bool enforce_symmetry = false) const
-    {
-      matrix(mat, enforce_symmetry, false /*no damping*/);
-    }
-
-    /// \brief Returns the dense representation of the Delassus.
-    /// The numerical damping is NOT taken into account here.
-    Matrix undampedMatrix(bool enforce_symmetry = false) const
-    {
-      Matrix res(rows(), cols());
-      undampedMatrix(res, enforce_symmetry);
-      return res;
-    }
-
-    /// \brief solveInPlace operation returning the results of the inverse of the Delassus operator
-    /// times the input matrix mat.
     template<typename MatrixLike>
-    void solveInPlace(const Eigen::MatrixBase<MatrixLike> & mat) const
+    void solveInPlaceImpl(const Eigen::MatrixBase<MatrixLike> & mat) const
     {
       PINOCCHIO_THROW_IF(
         isDirty(), std::logic_error,
@@ -400,66 +395,31 @@ namespace pinocchio
       m_cholesky_decomposition.solveInPlace(mat.const_cast_derived());
     }
 
-    /// \brief Same as \ref solveInPlace but returns the result.
-    template<typename MatrixLike>
-    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike)
-      solve(const Eigen::MatrixBase<MatrixLike> & mat) const
-    {
-      typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixLike) res(mat);
-      solveInPlace(res);
-      return res;
-    }
-
-    /// \brief Same as \ref solveInPlace but stores the result in res.
-    template<typename MatrixDerivedIn, typename MatrixDerivedOut>
-    void solve(
-      const Eigen::MatrixBase<MatrixDerivedIn> & x,
-      const Eigen::MatrixBase<MatrixDerivedOut> & res) const
-    {
-      res.const_cast_derived() = x;
-      solveInPlace(res.const_cast_derived());
-    }
-
-    /// \brief Returns the inverse of the damped delassus matrix.
-    Matrix inverse() const
-    {
-      Matrix res = Matrix::Identity(size(), size());
-      solveInPlace(res);
-      return res;
-    }
-
-    /// \brief Returns the number of rows/cols of the Delassus.
-    /// The delassus represents a size() x size() linear operator.
-    Eigen::Index size() const
+    Eigen::Index sizeImpl() const
     {
       return m_delassus_matrix.rows();
     }
 
-    /// \brief Returns the number of rows of the Delassus.
-    Eigen::Index rows() const
+    Eigen::Index rowsImpl() const
     {
       return m_delassus_matrix.rows();
     }
 
-    /// \brief Returns the number of cols of the Delassus.
-    Eigen::Index cols() const
+    Eigen::Index colsImpl() const
     {
       return m_delassus_matrix.cols();
     }
 
-    /// \brief Const getter for physical compliance.
-    typename VectorStorage::ConstRefConstMapType & getCompliance() const
+    getComplianceReturnType getComplianceImpl() const
     {
       return m_compliance_storage.const_map();
     }
 
-    /// \brief Const getter for numerical damping.
-    const BlockDiagonalMatrix & getDamping() const
+    getDampingReturnType getDampingImpl() const
     {
       return m_damping;
     }
 
-  protected:
     /// \brief Compute the cholesky decomposition of the matrix contained
     /// in m_cholesky_decomposition_data and stores it in place.
     void computeCholeskyDecomposition()
@@ -480,6 +440,7 @@ namespace pinocchio
       }
     }
 
+  protected:
     /// \brief Storage for the delassus matrix.
     MatrixStorage m_delassus_matrix_storage;
     MatrixStorageRefMapType m_delassus_matrix = m_delassus_matrix_storage.map();
@@ -496,7 +457,7 @@ namespace pinocchio
     bool m_cholesky_decomposition_dirty;
 
     /// \brief Block diagonal numerical damping.
-    BlockDiagonalMatrix m_damping;
+    DampingType m_damping;
 
     /// \brief Physical compliance.
     VectorStorage m_compliance_storage;

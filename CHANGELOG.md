@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `pinochio/container/eigen-storage.hpp`: Introduce `EigenStorageTpl`
 
 ### Changed
+- Clean delassus API: DelassusOperatorBase define the main delassus API and each method calls `derived().[name-of-method]Impl`
 - Fix potential bug in joint limit due to uninitialized field
 - Add missing constructor for joint friction
 - Solvers can be safely copied (result and workspace copy constructor/operator are now safely handled)

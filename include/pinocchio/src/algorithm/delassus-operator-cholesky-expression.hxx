@@ -22,45 +22,49 @@ namespace pinocchio
   {
     static constexpr int RowsAtCompileTime = Eigen::Dynamic;
     typedef typename ConstraintCholeskyDecomposition::Scalar Scalar;
-    typedef typename ConstraintCholeskyDecomposition::Matrix Matrix;
-    typedef typename ConstraintCholeskyDecomposition::Vector Vector;
+    typedef typename ConstraintCholeskyDecomposition::Matrix MatrixXs;
+    typedef MatrixXs Matrix;
+    typedef typename ConstraintCholeskyDecomposition::Vector VectorXs;
+
+    typedef typename ConstraintCholeskyDecomposition::DampingType DampingType;
+    typedef const DampingType & getDampingReturnType;
 
     typedef typename ConstraintCholeskyDecomposition::EigenStorageVector EigenStorageVector;
-    typedef typename ConstraintCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;
-    typedef const BlockDiagonalMatrix & getDampingReturnType;
+    typedef const typename EigenStorageVector::ConstMapType getComplianceReturnType;
   };
 
   /// \brief Unsafe version of DelassusOperatorCholeskyExpressionTpl.
   /// Allows direct access to protected members for expert users.
   template<typename _ConstraintCholeskyDecomposition>
   struct Unsafe<DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>
+  : Unsafe<
+      DelassusOperatorBase<DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>>
   {
     typedef DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> SafeSelf;
-    typedef typename SafeSelf::BlockDiagonalMatrix BlockDiagonalMatrix;
+    typedef Unsafe<DelassusOperatorBase<SafeSelf>> Base;
+    typedef typename traits<SafeSelf>::DampingType DampingType;
+
+    using Base::self;
 
     explicit Unsafe(SafeSelf & self)
-    : self(self)
+    : Base(self)
     {
     }
 
-    /// \brief Signal the delassus that updateDecomposition() should be called.
-    /// This is typically called after damping has been directly modified via damping().
-    void makeDirty()
+    void makeDirtyImpl()
     {
       self.self.updateSumComplianceDamping();
     }
 
-    /// \brief Direct access to the block diagonal damping.
-    BlockDiagonalMatrix & damping()
+    DampingType & dampingImpl()
     {
       return self.self.m_damping;
     }
-
-  protected:
-    SafeSelf & self;
   };
 
   // TODO(jcarpent): change const_cast usage.
+  /// \brief Operator for a delassus' cholesky expression representation.
+  /// \copydoc DelassusOperatorBase.
   template<typename _ConstraintCholeskyDecomposition>
   struct DelassusOperatorCholeskyExpressionTpl
   : DelassusOperatorBase<DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>
@@ -73,9 +77,11 @@ namespace pinocchio
     typedef DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> Self;
     typedef DelassusOperatorBase<Self> Base;
     typedef typename ConstraintCholeskyDecomposition::EigenStorageVector EigenStorageVector;
-    typedef typename ConstraintCholeskyDecomposition::BlockDiagonalMatrix BlockDiagonalMatrix;
+    typedef typename ConstraintCholeskyDecomposition::DampingType DampingType;
     static constexpr int Options = ConstraintCholeskyDecomposition::Options;
     typedef DelassusOperatorDenseTpl<Scalar, Options> DelassusOperatorDense;
+    typedef typename traits<Self>::getDampingReturnType getDampingReturnType;
+    typedef typename traits<Self>::getComplianceReturnType getComplianceReturnType;
 
     typedef
       typename SizeDepType<Eigen::Dynamic>::template BlockReturn<RowMatrix>::Type RowMatrixBlockXpr;
@@ -85,12 +91,8 @@ namespace pinocchio
     static constexpr int RowsAtCompileTime =
       traits<DelassusOperatorCholeskyExpressionTpl>::RowsAtCompileTime;
 
-    /// \brief Cast this class to its unsafe version.
-    Unsafe<Self> unsafe()
-    {
-      return Unsafe<Self>(*this);
-    }
-    friend struct Unsafe<Self>;
+    using Base::getDamping;
+    using Base::size;
 
     /// \brief Default constructor from a cholesky decomposition.
     explicit DelassusOperatorCholeskyExpressionTpl(ConstraintCholeskyDecomposition & self)
@@ -99,9 +101,53 @@ namespace pinocchio
     {
     }
 
-    /// \brief Evaluates the product Delassus * x and stores it in res.
+    /// \brief Returns the Constraint Cholesky decomposition associated to this
+    /// DelassusOperatorCholeskyExpression.
+    const ConstraintCholeskyDecomposition & cholesky() const
+    {
+      return self;
+    }
+
+    /// \brief Returns the Constraint Cholesky decomposition associated to this
+    /// DelassusOperatorCholeskyExpression.
+    ConstraintCholeskyDecomposition & cholesky()
+    {
+      return self;
+    }
+
+    /// \brief Returns the inverse of the damped delassus matrix.
+    Matrix inverse() const
+    {
+      return self.getOperationalSpaceInertiaMatrix();
+    }
+
+    ///
+    /// \brief Returns the corresponding dense delassus operator.
+    ///
+    DelassusOperatorDense dense(bool enforce_symmetry = false) const
+    {
+      return DelassusOperatorDense(*this, enforce_symmetry);
+    }
+
+    /// \brief Returns the current memory footprint of this object in bytes.
+    /// \details Sums up the sizes of all internal data members.
+    std::size_t sizeInBytes() const
+    {
+      return self.sizeInBytes();
+    }
+
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
+
+    Unsafe<Self> unsafeImpl()
+    {
+      return Unsafe<Self>(*this);
+    }
+    friend struct Unsafe<Self>;
+
     template<typename MatrixIn, typename MatrixOut>
-    void applyOnTheRight(
+    void applyOnTheRightImpl(
       const Eigen::MatrixBase<MatrixIn> & x,
       const Eigen::MatrixBase<MatrixOut> & res,
       bool with_damping = true) const
@@ -141,27 +187,18 @@ namespace pinocchio
       // }
     }
 
-    ///
-    /// \brief Update the decomposition after a call to updateDamping or updateCompliance.
-    ///
-    /// \remarks isDirty() allows to retrieve the current status of the decomposition.
-    ///
-    void updateDecomposition()
+    void updateDecompositionImpl()
     {
       self.computeDelassusCholeskyDecomposition();
     }
 
-    /// \brief Returns true if updateDecomposition() needs to be called in order to call
-    /// solveInPlace.
-    bool isDirty() const
+    bool isDirtyImpl() const
     {
       return self.isDirty();
     }
 
-    /// \brief solveInPlace operation returning the resultsof the inverse of the Delassus operator
-    /// times the input x.
     template<typename MatrixDerived>
-    void solveInPlace(const Eigen::MatrixBase<MatrixDerived> & x) const
+    void solveInPlaceImpl(const Eigen::MatrixBase<MatrixDerived> & x) const
     {
       PINOCCHIO_CHECK_ARGUMENT_SIZE(x.rows(), self.constraintDim());
 
@@ -184,54 +221,8 @@ namespace pinocchio
       U1.adjoint().solveInPlace(x);
     }
 
-    /// \brief Same as solveInPlace but stores the result in res.
-    template<typename MatrixDerivedIn, typename MatrixDerivedOut>
-    void solve(
-      const Eigen::MatrixBase<MatrixDerivedIn> & x,
-      const Eigen::MatrixBase<MatrixDerivedOut> & res) const
-    {
-      res.const_cast_derived() = x;
-      solveInPlace(res.const_cast_derived());
-    }
-
-    template<typename MatrixDerived>
-    typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixDerived)
-      solve(const Eigen::MatrixBase<MatrixDerived> & x) const
-    {
-      typedef typename PINOCCHIO_EIGEN_PLAIN_TYPE(MatrixDerived) ReturnType;
-      ReturnType res(self.constraintDim(), x.cols());
-      solve(x.derived(), res);
-      return res;
-    }
-
-    /// \brief Returns the Constraint Cholesky decomposition associated to this
-    /// DelassusOperatorCholeskyExpression.
-    const ConstraintCholeskyDecomposition & cholesky() const
-    {
-      return self;
-    }
-
-    /// \brief Returns the Constraint Cholesky decomposition associated to this
-    /// DelassusOperatorCholeskyExpression.
-    ConstraintCholeskyDecomposition & cholesky()
-    {
-      return self;
-    }
-
-    /// \brief Returns the matrix resulting from the decomposition.
-    Matrix matrix(bool enforce_symmetry = false, bool with_damping = true) const
-    {
-      Matrix res = self.getInverseOperationalSpaceInertiaMatrix(enforce_symmetry);
-      if (!with_damping)
-      {
-        getDamping().subTo(res);
-      }
-      return res;
-    }
-
-    /// \brief Fill the input matrix with the matrix resulting from the decomposition.
     template<typename MatrixType>
-    void matrix(
+    void matrixImpl(
       const Eigen::MatrixBase<MatrixType> & mat,
       bool enforce_symmetry = false,
       bool with_damping = true) const
@@ -243,144 +234,55 @@ namespace pinocchio
       }
     }
 
-    /// \brief Returns the matrix resulting from the decomposition.
-    /// The numerical damping is NOT taken into account here.
-    Matrix undampedMatrix(bool enforce_symmetry = false) const
-    {
-      Matrix res = matrix(enforce_symmetry, false /*no damping*/);
-      return res;
-    }
-
-    /// \brief Fill the input matrix with the matrix resulting from the decomposition
-    /// The numerical damping is NOT taken into account here.
-    template<typename MatrixType>
-    void
-    undampedMatrix(const Eigen::MatrixBase<MatrixType> & mat, bool enforce_symmetry = false) const
-    {
-      matrix(mat, enforce_symmetry, false /*no damping*/);
-    }
-
-    ///
-    /// \brief Returns the current compliance vector.
-    ///
-    const typename EigenStorageVector::ConstMapType getCompliance() const
+    getComplianceReturnType getComplianceImpl() const
     {
       return self.getCompliance();
     }
 
-    ///
-    /// \brief Returns the current damping as a block diagonal matrix.
-    ///
-    const BlockDiagonalMatrix & getDamping() const
+    getDampingReturnType getDampingImpl() const
     {
       return self.getDamping();
     }
 
-    Matrix inverse() const
-    {
-      return self.getOperationalSpaceInertiaMatrix();
-    }
-
-    ///
-    /// \brief Returns the corresponding dense delassus operator.
-    ///
-    DelassusOperatorDense dense(bool enforce_symmetry = false) const
-    {
-      return DelassusOperatorDense(*this, enforce_symmetry);
-    }
-
-    ///
-    /// \brief Add a compliance term to the diagonal of the Delassus matrix. The compliance terms
-    /// should be all positives.
-    ///
-    /// \param[in] compliances Vector of compliances related to the constraints.
-    ///
     template<typename VectorLike>
-    void updateCompliance(const Eigen::MatrixBase<VectorLike> & compliances)
+    void updateComplianceImpl(const Eigen::MatrixBase<VectorLike> & compliances)
     {
       const_cast<ConstraintCholeskyDecomposition &>(self).updateCompliance(compliances);
     }
 
-    ///
-    /// \brief Add a compliance term to the diagonal of the Delassus matrix. The compliance term
-    /// should be positive.
-    ///
-    /// \param[in] compliance Compliance of the constraints.
-    ///
-    void updateCompliance(const Scalar & compliance)
-    {
-      const_cast<ConstraintCholeskyDecomposition &>(self).updateCompliance(compliance);
-    }
-
-    ///
-    /// \brief Add a damping term to the diagonal of the Delassus matrix. The damping terms should
-    /// be all positives.
-    ///
-    /// \param[in] mus Vector of positive regularization factor allowing to enforce the definite
-    /// positiveness of the matrix.
-    ///
     template<typename VectorLike>
-    void updateDamping(const Eigen::MatrixBase<VectorLike> & mus)
+    void updateDampingImpl(const Eigen::MatrixBase<VectorLike> & mus)
     {
       const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(mus);
     }
 
-    ///
-    /// \brief Add a damping term to the diagonal of the Delassus matrix. The damping term should be
-    /// positive.
-    ///
-    /// \param[in] mu Regularization factor allowing to enforce the definite positiveness of the
-    /// matrix.
-    ///
-    void updateDamping(const Scalar & mu)
-    {
-      const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(mu);
-    }
-
-    ///
-    /// \brief Update the damping from a block diagonal matrix (copy overload).
-    ///
     template<int OtherOptions, std::size_t OtherAlignment>
-    void updateDamping(
+    void updateDampingImpl(
       const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
     {
       const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(block_damping);
     }
 
-    ///
-    /// \brief Update the damping from a block diagonal matrix (move overload).
-    ///
     template<int OtherOptions, std::size_t OtherAlignment>
     void
-    updateDamping(BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
+    updateDampingImpl(BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
     {
       const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(std::move(block_damping));
     }
 
-    /// \brief Returns the number of rows/cols of the Delassus.
-    /// The delassus represents a size() x size() linear operator.
-    Eigen::Index size() const
+    Eigen::Index sizeImpl() const
     {
       return self.constraintDim();
     }
 
-    /// \brief Returns the number of rows of the Delassus.
-    Eigen::Index rows() const
+    Eigen::Index rowsImpl() const
     {
       return size();
     }
 
-    /// \brief Returns the number of cols of the Delassus.
-    Eigen::Index cols() const
+    Eigen::Index colsImpl() const
     {
       return size();
-    }
-
-    /// \brief Returns the current memory footprint of this object in bytes.
-    /// \details Sums up the sizes of all internal data members.
-    std::size_t sizeInBytes() const
-    {
-      return self.sizeInBytes();
     }
 
   protected:
