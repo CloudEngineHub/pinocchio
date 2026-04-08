@@ -204,24 +204,45 @@ namespace pinocchio
     JointFrictionConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
     {
-      size_t n_joints = model.joints.size();
-      m_active_joints.reserve(n_joints);
-      for (size_t i = 0; i < n_joints; ++i)
+      std::size_t njoints = static_cast<std::size_t>(model.njoints);
+      JointIndexVector active_joints;
+      active_joints.reserve(njoints);
+      for (JointIndex i = 0; i < njoints; ++i)
       {
-        m_active_joints.push_back(static_cast<JointIndex>(i));
+        active_joints.push_back(i);
       }
-      init(model);
+      init(model, active_joints, model.lowerDryFrictionLimit, model.upperDryFrictionLimit);
     }
 
-    /// \brief Constructor from model and active_joints.
+    /// \brief Full constructor from model, active_joints, upper and lower bound friction limits.
+    /// \note Joints which have 0 lower & upper bound friction are discarded from the constraint.
+    /// Active joint
+    ///
+    /// \param[in] model
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename VectorLBLike,
+      typename VectorUBLike>
+    JointFrictionConstraintModelTpl(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndexVector & active_joints,
+      const Eigen::MatrixBase<VectorLBLike> & lb,
+      const Eigen::MatrixBase<VectorUBLike> & ub)
+    : Base(model)
+    {
+      init(model, active_joints, lb, ub);
+    }
+
+    /// \brief Constructor from model and active_joints. Lower and upper friction bounds are taken
+    /// from model.
     template<int OtherOptions, template<typename, int> class JointCollectionTpl>
     JointFrictionConstraintModelTpl(
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       const JointIndexVector & active_joints)
-    : Base(model)
-    , m_active_joints(active_joints)
+    : JointFrictionConstraintModelTpl(
+        model, active_joints, model.lowerDryFrictionLimit, model.upperDryFrictionLimit)
     {
-      init(model);
     }
 
     // Operators ---------------------
@@ -287,16 +308,15 @@ namespace pinocchio
     /// If an algo works with forces, limits should be expressed in Newtons.
     /// If an algo works with impulses, limits should be expressed in Newtons * Time.
     /// Typically, constraint solvers work on impulses.
+    /// \note If you want to model joint friction in forces but use impulses in constraint
+    /// solvers, you can use `setTimeStep` which allows to convert between forces/impulses.
     const VectorXs & getFrictionLowerLimit() const
     {
       return m_friction_lower_limit;
     }
 
     /// \brief Set the lower friction limit.
-    /// \note The upper/lower friction limits units should be coherent with the algos.
-    /// If an algo works with forces, limits should be expressed in Newtons.
-    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
-    /// Typically, constraint solvers work on impulses.
+    /// \note see \copydoc getFrictionLowerLimit.
     template<typename VectorLike>
     void setFrictionLowerLimit(const Eigen::MatrixBase<VectorLike> & lb)
     {
@@ -306,26 +326,68 @@ namespace pinocchio
     }
 
     /// \brief Returns a const reference to `upper_friction_limit`
-    /// \note The upper/lower friction limits units should be coherent with the algos.
-    /// If an algo works with forces, limits should be expressed in Newtons.
-    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
-    /// Typically, constraint solvers work on impulses.
+    /// \note see \copydoc getFrictionLowerLimit.
     const VectorXs & getFrictionUpperLimit() const
     {
       return m_friction_upper_limit;
     }
 
     /// \brief Set the upper friction limit.
-    /// \note The upper/lower friction limits units should be coherent with the algos.
-    /// If an algo works with forces, limits should be expressed in Newtons.
-    /// If an algo works with impulses, limits should be expressed in Newtons * Time.
-    /// Typically, constraint solvers work on impulses.
+    /// \note see \copydoc getFrictionLowerLimit.
     template<typename VectorLike>
     void setFrictionUpperLimit(const Eigen::MatrixBase<VectorLike> & ub)
     {
       PINOCCHIO_THROW_IF(
         ub.size() != residualSize(), std::runtime_error, "ub should be the same as size()");
       m_friction_upper_limit = ub;
+    }
+
+    /// \brief Returns a const reference to the friction impulse lower limit (from cdata).
+    /// \note This value is populated by calling calc and equals getFrictionLowerLimit() * dt.
+    const VectorXs & getFrictionImpulseLowerLimit(const ConstraintData & cdata) const
+    {
+      return cdata.friction_impulse_lower_limit;
+    }
+
+    /// \brief Returns a const reference to the friction impulse upper limit (from cdata).
+    /// \note This value is populated by calling calc and equals getFrictionUpperLimit() * dt.
+    const VectorXs & getFrictionImpulseUpperLimit(const ConstraintData & cdata) const
+    {
+      return cdata.friction_impulse_upper_limit;
+    }
+
+    /// \brief Store dt so that the constraint can be scaled to impulses in the solvers.
+    /// \note Keep this value to default 1 to work with Newtons, otherwise use the simulation's
+    /// timestep to convert this constraint to impulses.
+    /// TODO(louis): For now, each constraint models stuff in its own unit but the constraint
+    /// solvers all work in velocity/impulse.
+    /// The problem that is solved is min_x 1/2 x^T G x + g^T x, s.t. x \in K, where x are
+    /// constraint impulses, Gx + g are constraint velocities, K is a product of cones.
+    /// There are two kind of constraints for the solver: impulse or velocity constraints, nothing
+    /// else, because it has no notion of dt nor does it know how to translate a constraint to a
+    /// different unit. The fact that the solver has no knowledge of all of that and it simply
+    /// solves an optimization problem is good and we want to keep that. That being said, for now,
+    /// before calling the solver, the user has to externally express everything in
+    /// impulse/velocity, although Pinocchio's constraint models are clearly designed to reflect
+    /// physical meaning. This is also something nice and it should be kept that way: joint limits
+    /// express stuff in position, so do point contact and anchors. Fortunately, all dual cones
+    /// (primal cones for the solver, which primal variable is impulse x) of these constraints are
+    /// either the positive orthant or the friction cone. These cones **happen** to be
+    /// scale-invariant. The Joint friction express stuff in Newton. This force cone, however, is
+    /// **not** scale-invariant. In fact, we have to manually scale it by dt and unscale it by dt in
+    /// Simple, so that the solvers work on the correct cone.
+    /// **What is missing is a layer between the constraints and the solver.**
+    void setTimeStep(const Scalar dt)
+    {
+      PINOCCHIO_CHECK_INPUT_ARGUMENT(
+        check_expression_if_real<Scalar>(dt >= 0), "dt must be positive.");
+      m_dt = dt;
+    }
+
+    /// \brief Get dt that allows this constraint to be converted to impulse.
+    Scalar getTimeStep() const
+    {
+      return m_dt;
     }
 
     // -------------------------------
@@ -383,8 +445,7 @@ namespace pinocchio
     /// \copydoc RootBase::set
     ConstraintSet setImpl(const ConstraintData & cdata) const
     {
-      PINOCCHIO_UNUSED_VARIABLE(cdata);
-      return ConstraintSet(m_friction_lower_limit, m_friction_upper_limit);
+      return ConstraintSet(cdata.friction_impulse_lower_limit, cdata.friction_impulse_upper_limit);
     }
 
     /// \copydoc RootBase::calc
@@ -397,6 +458,8 @@ namespace pinocchio
       PINOCCHIO_UNUSED_VARIABLE(model);
       PINOCCHIO_UNUSED_VARIABLE(data);
       PINOCCHIO_UNUSED_VARIABLE(cdata);
+      cdata.friction_impulse_lower_limit = m_friction_lower_limit * m_dt;
+      cdata.friction_impulse_upper_limit = m_friction_upper_limit * m_dt;
     }
 
     /// \copydoc RootBase::getRowSparsityPattern
@@ -570,8 +633,16 @@ namespace pinocchio
     // ------------------------------
 
     /// \brief Initialization of the model.
-    template<int OtherOptions, template<typename, int> class JointCollectionTpl>
-    void init(const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model);
+    template<
+      int OtherOptions,
+      template<typename, int> class JointCollectionTpl,
+      typename VectorLBLike,
+      typename VectorUBLike>
+    void init(
+      const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+      const JointIndexVector & active_joints,
+      const Eigen::MatrixBase<VectorLBLike> & lb,
+      const Eigen::MatrixBase<VectorUBLike> & ub);
 
     // ------------------------------
     // MEMBERS
@@ -581,8 +652,10 @@ namespace pinocchio
     EigenIndexVector m_active_dofs;
     JointIndexVector m_active_joint_ids;
 
-    VectorXs m_friction_lower_limit;
-    VectorXs m_friction_upper_limit;
+    VectorXs m_friction_lower_limit; // Newtons
+    VectorXs m_friction_upper_limit; // Newtons
+
+    Scalar m_dt = Scalar(1);
 
     using BaseCommonParameters::m_compliance;
   }; // struct JointFrictionConstraintModelTpl
@@ -604,6 +677,8 @@ namespace pinocchio
 
     typedef typename traits<Self>::Scalar Scalar;
     static constexpr int Options = traits<Self>::Options;
+
+    typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
 
     // Base usage ---------------------------------------------------
     using Base::classname;
@@ -637,8 +712,13 @@ namespace pinocchio
     }
 
     /// \brief Constructor from a constraint model
-    explicit JointFrictionConstraintDataTpl(const ConstraintModel & /*cmodel*/)
+    explicit JointFrictionConstraintDataTpl(const ConstraintModel & cmodel)
     {
+      friction_impulse_lower_limit.resize(cmodel.residualSize());
+      friction_impulse_upper_limit.resize(cmodel.residualSize());
+      // init to constraint model's lower/upper bound * dt
+      friction_impulse_upper_limit = cmodel.getFrictionUpperLimit() * cmodel.getTimeStep();
+      friction_impulse_lower_limit = cmodel.getFrictionLowerLimit() * cmodel.getTimeStep();
     }
 
     // Operators ---------------------
@@ -672,14 +752,33 @@ namespace pinocchio
     {
       return classname();
     }
+
+    // ------------------------------
+    // MEMBERS
+    // ------------------------------
+
+    VectorXs friction_impulse_lower_limit; // Impulses
+    VectorXs friction_impulse_upper_limit; // Impulses
   }; // struct JointFrictionConstraintDataTpl
 
   template<typename Scalar, int Options>
-  template<int OtherOptions, template<typename, int> class JointCollectionTpl>
+  template<
+    int OtherOptions,
+    template<typename, int> class JointCollectionTpl,
+    typename VectorLBLike,
+    typename VectorUBLike>
   void JointFrictionConstraintModelTpl<Scalar, Options>::init(
-    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model)
+    const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
+    const JointIndexVector & active_joints,
+    const Eigen::MatrixBase<VectorLBLike> & lb,
+    const Eigen::MatrixBase<VectorUBLike> & ub)
   {
-    m_active_dofs.reserve(size_t(model.nv));
+    PINOCCHIO_CHECK_INPUT_ARGUMENT(active_joints.size() <= static_cast<std::size_t>(model.njoints));
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(lb.size(), model.nv);
+    PINOCCHIO_CHECK_ARGUMENT_SIZE(ub.size(), model.nv);
+
+    m_active_joints = active_joints;
+    m_active_dofs.reserve(static_cast<std::size_t>(model.nv));
     for (const JointIndex joint_id : m_active_joints)
     {
       PINOCCHIO_CHECK_INPUT_ARGUMENT(
@@ -705,8 +804,8 @@ namespace pinocchio
       Eigen::Index idx = 0;
       for (const auto dof : m_active_dofs)
       {
-        m_friction_lower_limit.coeffRef(idx) = model.lowerDryFrictionLimit.coeff(dof);
-        m_friction_upper_limit.coeffRef(idx) = model.upperDryFrictionLimit.coeff(dof);
+        m_friction_lower_limit.coeffRef(idx) = lb.coeff(dof);
+        m_friction_upper_limit.coeffRef(idx) = ub.coeff(dof);
         ++idx;
       }
     }

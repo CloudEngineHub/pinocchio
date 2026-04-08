@@ -71,7 +71,14 @@ namespace pinocchio
           "setFrictionUpperLimit", bp::make_function(+[](Self & self, const VectorXs & ub) {
             self.setFrictionUpperLimit(ub);
           }),
-          "Set friction upper limit.");
+          "Set friction upper limit.")
+        .def(
+          "getTimeStep", &Self::getTimeStep,
+          "Get dt used to convert friction force limits to impulse limits.")
+        .def(
+          "setTimeStep", +[](Self & self, const context::Scalar dt) { self.setTimeStep(dt); },
+          bp::args("self", "dt"),
+          "Set dt used to convert friction force limits to impulse limits.");
       return cl;
     }
 

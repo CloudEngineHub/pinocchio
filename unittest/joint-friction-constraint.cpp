@@ -30,6 +30,8 @@ BOOST_AUTO_TEST_CASE(constraint_empty_constructor)
   const Model::IndexVector empty_active_joint_ids;
 
   JointFrictionConstraintModel constraint(model, empty_active_joint_ids);
+
+  BOOST_CHECK(constraint.residualSize() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(constraint_constructor)

@@ -26,6 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `pinochio/container/eigen-storage.hpp`: Introduce `EigenStorageTpl`
 
 ### Changed
+- fix potential bug in joint limit due to uninitialized field
+- add missing constructor for joint friction
 - bindings/python : Add missing arg names in `visualizer-visitor.hpp`
 - use deprecation, warning macros already provided by jrl-cmakemodules
 - renamed `PINOCCHIO_PRAGMA_DEPRECATED_HEADER` to `PINOCCHIO_MOVED_HEADER`

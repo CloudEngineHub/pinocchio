@@ -27,9 +27,14 @@ namespace pinocchio
     bp::class_<context::JointFrictionConstraintData> &
     expose_constraint_data(bp::class_<context::JointFrictionConstraintData> & cl)
     {
-      return cl.def(
-        bp::init<const typename context::JointFrictionConstraintData::ConstraintModel &>(
-          bp::args("self", "constraint_model"), "From model constructor."));
+      typedef context::JointFrictionConstraintData Self;
+
+      return cl
+        .def(
+          bp::init<const typename context::JointFrictionConstraintData::ConstraintModel &>(
+            bp::args("self", "constraint_model"), "From model constructor."))
+        .def_readwrite("friction_impulse_lower_limit", &Self::friction_impulse_lower_limit)
+        .def_readwrite("friction_impulse_upper_limit", &Self::friction_impulse_upper_limit);
     }
 
     template<>
