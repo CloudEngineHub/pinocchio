@@ -6,8 +6,11 @@ import numpy as np
 import pinocchio as pin
 from pinocchio.visualize import MeshcatVisualizer
 
-# Perform the simulation of a four-bar linkages mechanism
+# Simulate a four-bar linkage using the Loop-Constrained Articulated Body Algorithm
+# (LCABA). This example mirrors simulation-closed-kinematic-chains.py but uses
+# pin.lcaba instead of pin.constraintDynamics for the forward dynamics.
 
+# ── Geometry parameters ──────────────────────────────────────────────────────
 height = 0.1
 width = 0.01
 radius = 0.05
@@ -36,6 +39,7 @@ placement_shape_B.rotation = pin.Quaternion.FromTwoVectors(
     pin.ZAxis, pin.XAxis
 ).matrix()
 
+# ── Build model ──────────────────────────────────────────────────────────────
 model = pin.Model()
 collision_model = pin.GeometryModel()
 
@@ -84,7 +88,9 @@ q0 = pin.neutral(model)
 data = model.createData()
 pin.forwardKinematics(model, data, q0)
 
-# Set the contact constraints
+# ── Set the closed-loop constraint ───────────────────────────────────────────
+# The tip of the last link (link_B2) is connected back to the base, forming a
+# closed kinematic loop.
 constraint1_joint1_placement = pin.SE3.Identity()
 constraint1_joint1_placement.translation = pin.XAxis * length_link_B
 
@@ -102,16 +108,18 @@ constraint_model = pin.RigidConstraintModel(
 constraint_data = constraint_model.createData()
 constraint_size = constraint_model.residualSize()
 
-# First, do an inverse geometry
+constraint_models = [constraint_model]
+constraint_datas = [constraint_data]
+
+# ── Inverse geometry: satisfy constraints at the initial configuration ───────
 rho = 1e-10
 mu = 1e-4
 
 q = q0.copy()
-
 y = np.ones(constraint_size)
 data.M = np.eye(model.nv) * rho
-kkt_constraint = pin.ConstraintCholeskyDecomposition(
-    model, data, [constraint_model], [constraint_data]
+kkt_constraint = pin.ContactCholeskyDecomposition(
+    model, data, constraint_models, constraint_datas
 )
 eps = 1e-10
 N = 100
@@ -119,7 +127,7 @@ for k in range(N):
     pin.computeJointJacobians(model, data, q)
     data.q_in = q
     constraint_model.calc(model, data, constraint_data)
-    kkt_constraint.compute(model, data, [constraint_model], [constraint_data], mu)
+    kkt_constraint.compute(model, data, constraint_models, constraint_datas, mu)
     constraint_value = constraint_data.c1Mc2.translation
 
     J = pin.getFrameJacobian(
@@ -132,9 +140,8 @@ for k in range(N):
     primal_feas = np.linalg.norm(constraint_value, np.inf)
     dual_feas = np.linalg.norm(J.T.dot(constraint_value + y), np.inf)
     if primal_feas < eps and dual_feas < eps:
-        print("Convergence achieved")
+        print("Inverse geometry converged at iteration", k)
         break
-    print("constraint_value:", np.linalg.norm(constraint_value))
     rhs = np.concatenate([-constraint_value - y * mu, np.zeros(model.nv)])
 
     dz = kkt_constraint.solve(rhs)
@@ -146,8 +153,9 @@ for k in range(N):
     y -= alpha * (-dy + y)
 
 q_sol = (q[:] + np.pi) % np.pi - np.pi
+print("Initial configuration:", q_sol.T)
 
-# Perform the simulation
+# ── Simulation with LCABA ────────────────────────────────────────────────────
 q = q_sol.copy()
 v = np.zeros(model.nv)
 tau = np.zeros(model.nv)
@@ -155,14 +163,22 @@ dt = 5e-3
 
 T_sim = 10
 t = 0.0
-mu_sim = 1e-10
+
+# Proximal settings for LCABA – mu must be positive
+mu_sim = 1e-6
+prox_settings = pin.ProximalSettings(1e-12, mu_sim, 100)
+
+# Baumgarte stabilisation
 constraint_model.m_baumgarte_parameters.Kp = 10
 constraint_model.m_baumgarte_parameters.Kd = 2.0 * np.sqrt(
     constraint_model.m_baumgarte_parameters.Kp
 )
-pin.initConstraintDynamics(model, data, [constraint_model], [constraint_data])
-prox_settings = pin.ProximalSettings(1e-8, mu_sim, 10)
 
+# Pre-compute the joint elimination ordering (required once before lcaba)
+data_sim = model.createData()
+pin.computeJointMinimalOrdering(model, data_sim, constraint_models)
+
+# ── Visualisation ────────────────────────────────────────────────────────────
 try:
     viz = MeshcatVisualizer(model, collision_model, visual_model)
     viz.initViewer(open=True)
@@ -172,12 +188,31 @@ except ImportError as error:
 viz.loadViewerModel()
 viz.display(q_sol)
 
+# ── Time-stepping loop ──────────────────────────────────────────────────────
+print("Starting LCABA simulation …")
 while t <= T_sim:
-    a = pin.constraintDynamics(
-        model, data, q, v, tau, [constraint_model], [constraint_data], prox_settings
+    prox_settings_iter = pin.ProximalSettings(
+        prox_settings.absolute_accuracy, prox_settings.mu, prox_settings.max_iter
     )
+
+    # Compute constrained forward dynamics with LCABA
+    a = pin.lcaba(
+        model,
+        data_sim,
+        q,
+        v,
+        tau,
+        constraint_models,
+        constraint_datas,
+        prox_settings_iter,
+    )
+
+    # Semi-implicit Euler integration
     v += a * dt
     q = pin.integrate(model, q, v * dt)
+
     viz.display(q)
     time.sleep(dt)
     t += dt
+
+print("Four-bar linkage simulation finished.")

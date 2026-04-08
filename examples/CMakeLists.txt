@@ -143,6 +143,7 @@ if(BUILD_PYTHON_INTERFACE)
             display-shapes
             simulation-pendulum
             simulation-closed-kinematic-chains
+            simulation-lcaba
             model-graph-geometry
         )
         if(BUILD_WITH_URDF_SUPPORT)

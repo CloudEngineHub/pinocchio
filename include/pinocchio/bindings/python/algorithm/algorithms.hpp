@@ -35,6 +35,7 @@ namespace pinocchio
     void exposeCholesky();
     void exposeModelAlgo();
     void exposeImpulseDynamics();
+    void exposeLcaba();
 
     void exposeRNEADerivatives();
     void exposeABADerivatives();
