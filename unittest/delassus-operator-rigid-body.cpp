@@ -1603,8 +1603,9 @@ BOOST_AUTO_TEST_CASE(test_copy)
 
   const double compliance_value = 1e-2;
   DelassusOperator delassus(
-    helper::make_ref(model), helper::make_ref(data), helper::make_ref(constraint_models),
-    helper::make_ref(constraint_datas));
+    pinocchio::internal::helper::make_ref(model), pinocchio::internal::helper::make_ref(data),
+    pinocchio::internal::helper::make_ref(constraint_models),
+    pinocchio::internal::helper::make_ref(constraint_datas));
   delassus.updateCompliance(compliance_value);
   delassus.compute();
 
@@ -1620,8 +1621,9 @@ BOOST_AUTO_TEST_CASE(test_copy)
 
   // copy assignment: maps must point to the assigned object's own storage
   DelassusOperator delassus_assigned(
-    helper::make_ref(model), helper::make_ref(data), helper::make_ref(constraint_models),
-    helper::make_ref(constraint_datas));
+    pinocchio::internal::helper::make_ref(model), pinocchio::internal::helper::make_ref(data),
+    pinocchio::internal::helper::make_ref(constraint_models),
+    pinocchio::internal::helper::make_ref(constraint_datas));
   delassus_assigned = delassus;
   BOOST_CHECK(
     access(delassus_assigned).m_compliance.data() != access(delassus).m_compliance.data());
