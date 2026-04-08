@@ -504,7 +504,7 @@ namespace pinocchio
         spectral_rho_power = other.spectral_rho_power;
         mu_prox = other.mu_prox;
 
-        // Since we some members are maps on EigenStorage, we cannot simply copy them.
+        // Since some members are maps reference on EigenStorage, we cannot simply copy them.
         // Thus we need to explicitly say we copy the storage, and the maps will automatically point
         // to the new storage.
         x_storage = other.x_storage;

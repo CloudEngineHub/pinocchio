@@ -265,7 +265,7 @@ namespace pinocchio
       {
         Base::operator=(other);
         problem_size = other.problem_size;
-        // Since we some members are maps on EigenStorage, we cannot simply copy them.
+        // Since some members are maps reference on EigenStorage, we cannot simply copy them.
         // Thus we need to explicitly say we copy the storage, and the maps will automatically point
         // to the new storage.
         x_storage = other.x_storage;
@@ -503,7 +503,7 @@ namespace pinocchio
         {
           problem_size = other.problem_size;
 
-          // Since we some members are maps on EigenStorage, we cannot simply copy them.
+          // Since some members are maps reference on EigenStorage, we cannot simply copy them.
           // Thus we need to explicitly say we copy the storage, and the maps will automatically
           // point to the new storage.
           delassus_matrix_storage = other.delassus_matrix_storage;
