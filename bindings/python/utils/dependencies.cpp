@@ -12,7 +12,7 @@
   #define WITH_COLLISION false
 #endif
 
-#ifdef PINOCCHIO_WITH_URDF
+#ifdef PINOCCHIO_WITH_URDFDOM
   #define WITH_URDF true
 #else
   #define WITH_URDF false
