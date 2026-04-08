@@ -717,8 +717,8 @@ namespace pinocchio
       friction_impulse_lower_limit.resize(cmodel.residualSize());
       friction_impulse_upper_limit.resize(cmodel.residualSize());
       // init to constraint model's lower/upper bound * dt
-      friction_impulse_upper_limit = cmodel.getFrictionLowerLimit() * cmodel.getTimeStep();
-      friction_impulse_lower_limit = cmodel.getFrictionUpperLimit() * cmodel.getTimeStep();
+      friction_impulse_upper_limit = cmodel.getFrictionUpperLimit() * cmodel.getTimeStep();
+      friction_impulse_lower_limit = cmodel.getFrictionLowerLimit() * cmodel.getTimeStep();
     }
 
     // Operators ---------------------
