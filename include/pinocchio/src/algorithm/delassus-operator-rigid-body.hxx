@@ -92,7 +92,6 @@ namespace pinocchio
       _StorageHolder>
       SafeSelf;
     typedef Unsafe<DelassusOperatorBase<SafeSelf>> Base;
-    friend Base; // to allow Base to call protected stuff
     typedef typename traits<SafeSelf>::DampingType DampingType;
 
     using Base::self;
@@ -102,7 +101,6 @@ namespace pinocchio
     {
     }
 
-  protected:
     void makeDirtyImpl()
     {
       self.updateSumComplianceDamping();
@@ -134,7 +132,6 @@ namespace pinocchio
 
     typedef DelassusOperatorRigidBodySystemsTpl Self;
     typedef DelassusOperatorBase<Self> Base;
-    friend Base; // to allow Base to call protected stuff
 
     typedef typename traits<Self>::Scalar Scalar;
     static constexpr int Options = traits<Self>::Options;
@@ -292,7 +289,6 @@ namespace pinocchio
       return helper::get_ref(m_constraint_datas_ref);
     }
 
-  protected:
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------

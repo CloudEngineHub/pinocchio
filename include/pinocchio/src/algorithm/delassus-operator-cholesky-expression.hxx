@@ -37,11 +37,11 @@ namespace pinocchio
   /// Allows direct access to protected members for expert users.
   template<typename _ConstraintCholeskyDecomposition>
   struct Unsafe<DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>
-  : Unsafe<DelassusOperatorBase<DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>>
+  : Unsafe<
+      DelassusOperatorBase<DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition>>>
   {
     typedef DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> SafeSelf;
     typedef Unsafe<DelassusOperatorBase<SafeSelf>> Base;
-    friend Base; // to allow Base to call protected stuff
     typedef typename traits<SafeSelf>::DampingType DampingType;
 
     using Base::self;
@@ -51,7 +51,6 @@ namespace pinocchio
     {
     }
 
-  protected:
     void makeDirtyImpl()
     {
       self.self.updateSumComplianceDamping();
@@ -77,7 +76,6 @@ namespace pinocchio
     typedef typename ConstraintCholeskyDecomposition::RowMatrix RowMatrix;
     typedef DelassusOperatorCholeskyExpressionTpl<_ConstraintCholeskyDecomposition> Self;
     typedef DelassusOperatorBase<Self> Base;
-    friend Base; // to allow Base to call protected stuff
     typedef typename ConstraintCholeskyDecomposition::EigenStorageVector EigenStorageVector;
     typedef typename ConstraintCholeskyDecomposition::DampingType DampingType;
     static constexpr int Options = ConstraintCholeskyDecomposition::Options;
@@ -138,7 +136,6 @@ namespace pinocchio
       return self.sizeInBytes();
     }
 
-  protected:
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------

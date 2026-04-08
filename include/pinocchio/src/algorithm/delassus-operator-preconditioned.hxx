@@ -26,7 +26,6 @@ namespace pinocchio
 
     typedef DelassusOperatorPreconditionedTpl Self;
     typedef DelassusOperatorBase<Self> Base;
-    friend Base;
 
     typedef typename traits<Self>::MatrixXs MatrixXs;
     typedef typename traits<Self>::VectorXs VectorXs;
@@ -51,8 +50,9 @@ namespace pinocchio
       return m_delassus;
     }
 
-  protected:
-    // implementation of the DelassusOperator concept
+    // -------------------------------
+    // IMPLEMENTATIONS OF BASE METHODS
+    // -------------------------------
 
     template<typename VectorLike>
     void updateDampingImpl(const Eigen::MatrixBase<VectorLike> & vec)

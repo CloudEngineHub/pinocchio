@@ -143,7 +143,6 @@ namespace pinocchio
     typedef typename traits<Self>::MatrixXs MatrixXs;
     typedef SparseCholeskyDecomposition CholeskyDecomposition;
     typedef DelassusOperatorBase<Self> Base;
-    friend Base; // to allow Base to call protected stuff
 
     typedef typename traits<Self>::getDampingReturnType getDampingReturnType;
     typedef typename traits<Self>::getComplianceReturnType getComplianceReturnType;
@@ -187,7 +186,6 @@ namespace pinocchio
       return res;
     }
 
-  protected:
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
@@ -289,6 +287,7 @@ namespace pinocchio
       return m_damping;
     }
 
+  protected:
     SparseMatrix m_delassus_matrix;
     mutable SparseMatrix m_damped_delassus_matrix;
     CholeskyDecomposition m_cholsky_decomposition;

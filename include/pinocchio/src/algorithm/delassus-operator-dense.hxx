@@ -47,7 +47,6 @@ namespace pinocchio
   {
     typedef DelassusOperatorDenseTpl<_Scalar, _Options, CholeskyDecompositionTpl> SafeSelf;
     typedef Unsafe<DelassusOperatorBase<SafeSelf>> Base;
-    friend Base; // to allow Base to call protected stuff
     typedef typename traits<SafeSelf>::DampingType DampingType;
 
     using Base::self;
@@ -57,7 +56,6 @@ namespace pinocchio
     {
     }
 
-  protected:
     void makeDirtyImpl()
     {
       self.m_cholesky_decomposition_dirty = true;
@@ -96,7 +94,6 @@ namespace pinocchio
     typedef typename traits<Self>::DampingType DampingType;
     typedef CholeskyDecompositionTpl<Eigen::Ref<MatrixXs>> CholeskyDecomposition;
     typedef DelassusOperatorBase<Self> Base;
-    friend Base; // to allow Base to call protected stuff
 
     using Base::isDirty;
     using Base::size;
@@ -290,7 +287,6 @@ namespace pinocchio
       return res;
     }
 
-  protected:
     // -------------------------------
     // IMPLEMENTATIONS OF BASE METHODS
     // -------------------------------
@@ -444,6 +440,7 @@ namespace pinocchio
       }
     }
 
+  protected:
     /// \brief Storage for the delassus matrix.
     MatrixStorage m_delassus_matrix_storage;
     MatrixStorageRefMapType m_delassus_matrix = m_delassus_matrix_storage.map();
