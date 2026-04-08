@@ -624,7 +624,7 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintData & cdata,
-      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const internal::MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame) const;
 
   protected:
@@ -1022,32 +1022,32 @@ namespace pinocchio
     const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
     DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
     const ConstraintData & cdata,
-    const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+    const internal::MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
     const ReferenceFrameTag<rf> reference_frame) const
   {
     assert(constraint_inertia.size() == residualSize());
     switch (constraint_inertia.type())
     {
-    case MatrixBlockType::Zero: {
+    case internal::MatrixBlockType::Zero: {
       break;
     }
-    case MatrixBlockType::Identity: {
+    case internal::MatrixBlockType::Identity: {
       appendCouplingConstraintInertiasImpl(
         model, data, cdata, VectorXs::Ones(residualSize()), reference_frame);
       break;
     }
-    case MatrixBlockType::ScalarIdentity: {
+    case internal::MatrixBlockType::ScalarIdentity: {
       const Scalar val = constraint_inertia.container()(0, 0);
       appendCouplingConstraintInertiasImpl(
         model, data, cdata, VectorXs::Constant(residualSize(), val), reference_frame);
       break;
     }
-    case MatrixBlockType::Diagonal: {
+    case internal::MatrixBlockType::Diagonal: {
       appendCouplingConstraintInertiasImpl(
         model, data, cdata, constraint_inertia.container().col(0), reference_frame);
       break;
     }
-    case MatrixBlockType::Plain: {
+    case internal::MatrixBlockType::Plain: {
       PINOCCHIO_THROW_PRETTY(
         std::invalid_argument,
         "JointFrictionConstraintModel does not support Plain inertia blocks.");

@@ -13,22 +13,25 @@
 
 namespace pinocchio
 {
-
-  template<typename Derived>
-  struct MatrixBlockElementPlain;
-
-  template<typename Derived>
-  struct MatrixBlockElementOperation : MatrixBlockElementBase<Derived>
+  namespace internal
   {
 
-    typedef MatrixBlockElementBase<Derived> Base;
-    using Base::derived;
+    template<typename Derived>
+    struct MatrixBlockElementPlain;
 
-    template<typename OtherDerived>
-    void evalTo(MatrixBlockElementPlain<OtherDerived> & res) const
+    template<typename Derived>
+    struct MatrixBlockElementOperation : MatrixBlockElementBase<Derived>
     {
-      derived().evalTo(res.derived());
-    }
-  };
+
+      typedef MatrixBlockElementBase<Derived> Base;
+      using Base::derived;
+
+      template<typename OtherDerived>
+      void evalTo(MatrixBlockElementPlain<OtherDerived> & res) const
+      {
+        derived().evalTo(res.derived());
+      }
+    };
+  } // namespace internal
 
 } // namespace pinocchio

@@ -23,7 +23,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `PINOCCHIO_DISABLE_UNSUPPORTED_WARNINGS` C++ definition to disable unsupported algorithm warnings
 - Add `PINOCCHIO_BUILD_MPFR_TESTING` CMake option to build MPFR tests
 - Add `pinocchio/utils/alloca.hpp`: Helpers for mapping stack allocation for Eigen::Map
-- Add `pinochio/container/eigen-storage.hpp`: Introduce `EigenStorageTpl`
+- Add `pinochio/container/eigen-storage.hpp`: Introduce `internal::EigenStorageTpl`
+- Add `pinochio/container/matrix-stack.hpp`: Introduce `internal::MatrixStackTpl`
+- Add `pinochio/container/double-entry-container.hpp`: Introduce `internal::DoubleEntryContainer`
+- Add `internal::MatrixBlockElementTpl` in `math.hpp`
+- Add `internal::BlockDiagonalMatrixTpl` in `math.hpp`
+- Add `internal::matrix_product` in `math.hpp`
+- Add `internal::matrix_inversion` in `math.hpp`
+- Add `internal::matrix_inversion_code_generated` in `math.hpp`
 
 ### Changed
 - Clean delassus API: DelassusOperatorBase define the main delassus API and each method calls `derived().[name-of-method]Impl`

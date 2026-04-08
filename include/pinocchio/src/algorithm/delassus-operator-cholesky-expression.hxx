@@ -172,7 +172,7 @@ namespace pinocchio
       // const auto U1 = self.U.topLeftCorner(self.constraintDim(), self.constraintDim());
       // {
       //   typedef Eigen::Map<RowMatrix> MapType;
-      //   MapType tmp_mat = MapType(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, x.rows(), x.cols()));
+      //   MapType tmp_mat = MapType(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, x.rows(), x.cols()));
       //   //            tmp_mat.noalias() = U1.adjoint() * x;
       //   triangularMatrixMatrixProduct<Eigen::UnitLower>(U1.adjoint(), x.derived(), tmp_mat);
 
@@ -258,14 +258,14 @@ namespace pinocchio
 
     template<int OtherOptions, std::size_t OtherAlignment>
     void updateDampingImpl(
-      const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
+      const internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
     {
       const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(block_damping);
     }
 
     template<int OtherOptions, std::size_t OtherAlignment>
-    void
-    updateDampingImpl(BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
+    void updateDampingImpl(
+      internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
     {
       const_cast<ConstraintCholeskyDecomposition &>(self).updateDamping(std::move(block_damping));
     }

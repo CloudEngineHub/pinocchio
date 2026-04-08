@@ -113,7 +113,7 @@ namespace pinocchio
       // Account for the rotor inertia contribution
       jdata.StU().diagonal() += jmodel.jointVelocitySelector(model.armature);
 
-      ::pinocchio::matrix_inversion(jdata.StU(), jdata.Dinv());
+      ::pinocchio::internal::matrix_inversion(jdata.StU(), jdata.Dinv());
 
       jdata.UDinv().noalias() =
         jdata.U() * jdata.Dinv(); // TODO:check where its used when parent == 0
@@ -137,8 +137,8 @@ namespace pinocchio
 
       using Matrix6xNV = std::remove_reference_t<typename JointData::UDTypeRef>;
       using MapMatrix6xNV = Eigen::Map<Matrix6xNV>;
-      MapMatrix6xNV mat1_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
-      MapMatrix6xNV mat2_tmp = MapMatrix6xNV(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
+      MapMatrix6xNV mat1_tmp = MapMatrix6xNV(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
+      MapMatrix6xNV mat2_tmp = MapMatrix6xNV(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, 6, jmodel.nv()));
 
       auto & JDinv = mat1_tmp;
       JDinv.noalias() = Jcols * jdata.Dinv();

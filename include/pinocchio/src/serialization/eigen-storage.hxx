@@ -19,9 +19,9 @@ namespace boost
     namespace internal
     {
       template<typename MatrixLike>
-      struct EigenStorageAccessor : public ::pinocchio::EigenStorageTpl<MatrixLike>
+      struct EigenStorageAccessor : public ::pinocchio::internal::EigenStorageTpl<MatrixLike>
       {
-        typedef ::pinocchio::EigenStorageTpl<MatrixLike> Base;
+        typedef ::pinocchio::internal::EigenStorageTpl<MatrixLike> Base;
         using Base::m_map;
         using Base::m_storage;
       };
@@ -30,7 +30,7 @@ namespace boost
     template<typename Archive, typename MatrixLike>
     void serialize(
       Archive & ar,
-      ::pinocchio::EigenStorageTpl<MatrixLike> & storage,
+      ::pinocchio::internal::EigenStorageTpl<MatrixLike> & storage,
       const unsigned int /*version*/)
     {
       Eigen::Index rows = storage.rows();

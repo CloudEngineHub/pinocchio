@@ -33,25 +33,18 @@ namespace pinocchio
       const Eigen::MatrixBase<RhsType> & rhs,
       const Eigen::MatrixBase<ResType> & res);
 
-  } // namespace internal
-
-  template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, typename Res>
-  void matrix_product(
-    const Eigen::MatrixBase<Lhs> & lhs,
-    const Eigen::MatrixBase<Rhs> & rhs,
-    const Eigen::MatrixBase<Res> & res)
-  {
-    const auto max_size = std::max(lhs.rows(), std::max(lhs.cols(), rhs.cols()));
-    if (max_size <= 0)
-      internal::matrix_product_small_size<EigenOp>(
-        lhs.derived(), rhs.derived(), res.const_cast_derived());
-    else
-      internal::matrix_product_generic<EigenOp>(
-        lhs.derived(), rhs.derived(), res.const_cast_derived());
-  };
-
-  namespace internal
-  {
+    template<template<typename, typename> class EigenOp, typename Lhs, typename Rhs, typename Res>
+    void matrix_product(
+      const Eigen::MatrixBase<Lhs> & lhs,
+      const Eigen::MatrixBase<Rhs> & rhs,
+      const Eigen::MatrixBase<Res> & res)
+    {
+      const auto max_size = std::max(lhs.rows(), std::max(lhs.cols(), rhs.cols()));
+      if (max_size <= 0)
+        matrix_product_small_size<EigenOp>(lhs.derived(), rhs.derived(), res.const_cast_derived());
+      else
+        matrix_product_generic<EigenOp>(lhs.derived(), rhs.derived(), res.const_cast_derived());
+    };
 
     template<
       template<typename, typename> class EigenOp,
@@ -81,15 +74,15 @@ namespace pinocchio
 
       const auto matrix_product = lhs_static * rhs_static;
 
-      if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::assign_op>)
+      if constexpr (is_specialization_of_v<Op, Eigen::internal::assign_op>)
       {
         res_static.noalias() = matrix_product;
       }
-      else if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::add_assign_op>)
+      else if constexpr (is_specialization_of_v<Op, Eigen::internal::add_assign_op>)
       {
         res_static.noalias() += matrix_product;
       }
-      else if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::sub_assign_op>)
+      else if constexpr (is_specialization_of_v<Op, Eigen::internal::sub_assign_op>)
       {
         res_static.noalias() -= matrix_product;
       }
@@ -145,15 +138,15 @@ namespace pinocchio
             sum += lhs_data[lhs_index(i, k)] * rhs_data[rhs_index(k, j)];
           }
           typedef EigenOp<typename Res::Scalar, typename Lhs::Scalar> Op;
-          if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::assign_op>)
+          if constexpr (is_specialization_of_v<Op, Eigen::internal::assign_op>)
           {
             res_data[res_index(i, j)] = sum;
           }
-          else if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::add_assign_op>)
+          else if constexpr (is_specialization_of_v<Op, Eigen::internal::add_assign_op>)
           {
             res_data[res_index(i, j)] += sum;
           }
-          else if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::sub_assign_op>)
+          else if constexpr (is_specialization_of_v<Op, Eigen::internal::sub_assign_op>)
           {
             res_data[res_index(i, j)] -= sum;
           }

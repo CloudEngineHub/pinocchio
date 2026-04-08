@@ -110,9 +110,9 @@ void matrix_mult_matrix_call(
   const MatrixBase<M1> & m, const MatrixBase<M2> & rhs, const MatrixBase<Mout> & lhs)
 {
   if constexpr (evaluation_mode == EvaluationMode::STATIC_OP)
-    pinocchio::promote_static_eval<10>(lhs.const_cast_derived().noalias()) = m * rhs;
+    pinocchio::internal::promote_static_eval<10>(lhs.const_cast_derived().noalias()) = m * rhs;
   else if constexpr (evaluation_mode == EvaluationMode::MANUAL)
-    pinocchio::matrix_product<Eigen::internal::assign_op>(
+    pinocchio::internal::matrix_product<Eigen::internal::assign_op>(
       m.derived(), rhs.derived(), lhs.const_cast_derived());
   else
     lhs.const_cast_derived().noalias() = m * rhs;

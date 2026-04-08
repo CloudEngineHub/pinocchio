@@ -11,14 +11,14 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 using namespace pinocchio;
 typedef Eigen::Matrix<double, 1, 1> M11;
-typedef BlockDiagonalMatrix::Matrix Matrix;
-typedef BlockDiagonalMatrix::MatrixMap MatrixMap;
-typedef BlockDiagonalMatrix::ConstMatrixMap ConstMatrixMap;
-typedef BlockDiagonalMatrix::Vector Vector;
-typedef BlockDiagonalMatrix::MatrixBlockElement MatrixBlockElement;
-typedef BlockDiagonalMatrix::ConstMatrixBlockElement ConstMatrixBlockElement;
+typedef internal::BlockDiagonalMatrix::Matrix Matrix;
+typedef internal::BlockDiagonalMatrix::MatrixMap MatrixMap;
+typedef internal::BlockDiagonalMatrix::ConstMatrixMap ConstMatrixMap;
+typedef internal::BlockDiagonalMatrix::Vector Vector;
+typedef internal::BlockDiagonalMatrix::MatrixBlockElement MatrixBlockElement;
+typedef internal::BlockDiagonalMatrix::ConstMatrixBlockElement ConstMatrixBlockElement;
 
-void test_assignment(const BlockDiagonalMatrix & block_diagonal_matrix)
+void test_assignment(const internal::BlockDiagonalMatrix & block_diagonal_matrix)
 {
   const auto size = block_diagonal_matrix.rows();
   const Matrix square_matrix = Matrix::Random(size, size);
@@ -52,7 +52,7 @@ void test_assignment(const BlockDiagonalMatrix & block_diagonal_matrix)
   }
 }
 
-void test_applyOnTheRight(const BlockDiagonalMatrix & block_diagonal_matrix)
+void test_applyOnTheRight(const internal::BlockDiagonalMatrix & block_diagonal_matrix)
 {
   const auto rows = block_diagonal_matrix.rows();
   const auto cols = 20;
@@ -99,7 +99,7 @@ void test_applyOnTheRight(const BlockDiagonalMatrix & block_diagonal_matrix)
   }
 }
 
-void test_applyOnTheLeft(const BlockDiagonalMatrix & block_diagonal_matrix)
+void test_applyOnTheLeft(const internal::BlockDiagonalMatrix & block_diagonal_matrix)
 {
   const auto cols = block_diagonal_matrix.cols();
   const auto rows = 20;
@@ -150,7 +150,7 @@ void test_applyOnTheLeft(const BlockDiagonalMatrix & block_diagonal_matrix)
 
 BOOST_AUTO_TEST_CASE(test_default_constructor)
 {
-  BlockDiagonalMatrix matrix;
+  internal::BlockDiagonalMatrix matrix;
   BOOST_CHECK(matrix.data() == nullptr);
   BOOST_CHECK(matrix.rows() == -1);
   BOOST_CHECK(matrix.cols() == -1);
@@ -162,10 +162,10 @@ BOOST_AUTO_TEST_CASE(test_single_block)
 
   // Zero block
   {
-    MatrixBlockElement single_block_info = {pinocchio::MatrixBlockType::Zero, size};
+    MatrixBlockElement single_block_info = {pinocchio::internal::MatrixBlockType::Zero, size};
     BOOST_CHECK(single_block_info.isValid());
 
-    BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
+    internal::BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
 
     BOOST_CHECK(block_diagonal_matrix.rows() == size);
     BOOST_CHECK(block_diagonal_matrix.cols() == size);
@@ -182,10 +182,10 @@ BOOST_AUTO_TEST_CASE(test_single_block)
 
   // Identity block
   {
-    MatrixBlockElement single_block_info = {pinocchio::MatrixBlockType::Identity, size};
+    MatrixBlockElement single_block_info = {pinocchio::internal::MatrixBlockType::Identity, size};
     BOOST_CHECK(single_block_info.isValid());
 
-    BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
+    internal::BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
 
     BOOST_CHECK(block_diagonal_matrix.rows() == size);
     BOOST_CHECK(block_diagonal_matrix.cols() == size);
@@ -206,10 +206,10 @@ BOOST_AUTO_TEST_CASE(test_single_block)
     M11 scale_mat = M11(scale);
     const auto matrix_map = make_map<MatrixMap>(scale_mat);
     MatrixBlockElement single_block_info = {
-      pinocchio::MatrixBlockType::ScalarIdentity, size, matrix_map};
+      pinocchio::internal::MatrixBlockType::ScalarIdentity, size, matrix_map};
     BOOST_CHECK(single_block_info.isValid());
 
-    BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
+    internal::BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
 
     BOOST_CHECK(block_diagonal_matrix.rows() == size);
     BOOST_CHECK(block_diagonal_matrix.cols() == size);
@@ -237,10 +237,11 @@ BOOST_AUTO_TEST_CASE(test_single_block)
     Matrix diagonal_vector = Matrix::Ones(size, 1);
 
     const auto matrix_map = make_map<MatrixMap>(diagonal_vector);
-    MatrixBlockElement single_block_info = {pinocchio::MatrixBlockType::Diagonal, size, matrix_map};
+    MatrixBlockElement single_block_info = {
+      pinocchio::internal::MatrixBlockType::Diagonal, size, matrix_map};
     BOOST_CHECK(single_block_info.isValid());
 
-    BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
+    internal::BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
 
     BOOST_CHECK(block_diagonal_matrix.rows() == size);
     BOOST_CHECK(block_diagonal_matrix.cols() == size);
@@ -260,10 +261,11 @@ BOOST_AUTO_TEST_CASE(test_single_block)
     Matrix diagonal_plain = Matrix::Identity(size, size);
 
     const auto matrix_map = make_map<MatrixMap>(diagonal_plain);
-    MatrixBlockElement single_block_info = {pinocchio::MatrixBlockType::Plain, size, matrix_map};
+    MatrixBlockElement single_block_info = {
+      pinocchio::internal::MatrixBlockType::Plain, size, matrix_map};
     BOOST_CHECK(single_block_info.isValid());
 
-    BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
+    internal::BlockDiagonalMatrix block_diagonal_matrix({single_block_info});
 
     BOOST_CHECK(block_diagonal_matrix.rows() == size);
     BOOST_CHECK(block_diagonal_matrix.cols() == size);
@@ -282,7 +284,7 @@ BOOST_AUTO_TEST_CASE(test_single_block)
 BOOST_AUTO_TEST_CASE(test_Zero_constructor)
 {
   const Eigen::Index size = 20;
-  const auto block_diagonal_matrix = BlockDiagonalMatrix::Zero(size);
+  const auto block_diagonal_matrix = internal::BlockDiagonalMatrix::Zero(size);
 
   const auto bdm_plain = block_diagonal_matrix.matrix();
   BOOST_CHECK(bdm_plain == Matrix::Zero(size, size));
@@ -292,7 +294,7 @@ BOOST_AUTO_TEST_CASE(test_ScalarIdentity_constructor)
 {
   const Eigen::Index size = 20;
   const double scale = 2;
-  const auto block_diagonal_matrix = BlockDiagonalMatrix::ScalarIdentity(size, scale);
+  const auto block_diagonal_matrix = internal::BlockDiagonalMatrix::ScalarIdentity(size, scale);
 
   const auto bdm_plain = block_diagonal_matrix.matrix();
   BOOST_CHECK(bdm_plain == Matrix(Vector::Constant(size, scale).asDiagonal()));
@@ -305,7 +307,7 @@ BOOST_AUTO_TEST_CASE(test_construct_from_diagonal_matrix)
   {
     const Vector diagonal_terms = Vector::Random(size);
 
-    const BlockDiagonalMatrix block_diagonal_matrix(diagonal_terms.asDiagonal());
+    const internal::BlockDiagonalMatrix block_diagonal_matrix(diagonal_terms.asDiagonal());
     BOOST_CHECK(block_diagonal_matrix.getMatrixBlockElements().size() == 1);
     BOOST_CHECK(
       block_diagonal_matrix.getMatrixBlockElements().back().container() == diagonal_terms);
@@ -318,7 +320,7 @@ BOOST_AUTO_TEST_CASE(test_construct_from_diagonal_matrix)
   {
     const auto diagonal_terms = Vector::Constant(size, 2.);
 
-    const BlockDiagonalMatrix block_diagonal_matrix(diagonal_terms.asDiagonal());
+    const internal::BlockDiagonalMatrix block_diagonal_matrix(diagonal_terms.asDiagonal());
     BOOST_CHECK(block_diagonal_matrix.getMatrixBlockElements().size() == 1);
     BOOST_CHECK(
       block_diagonal_matrix.getMatrixBlockElements().back().container() == diagonal_terms);
@@ -332,7 +334,7 @@ BOOST_AUTO_TEST_CASE(test_construct_from_diagonal_matrix)
 BOOST_AUTO_TEST_CASE(test_size_in_bytes)
 {
   const Eigen::Index size = 20;
-  const auto block_diagonal_matrix = BlockDiagonalMatrix::Zero(size);
+  const auto block_diagonal_matrix = internal::BlockDiagonalMatrix::Zero(size);
 
   BOOST_CHECK(block_diagonal_matrix.sizeInBytes() >= 2 * sizeof(Eigen::Index));
 }
@@ -342,25 +344,26 @@ BOOST_AUTO_TEST_CASE(test_copy_diagonal_matrix)
   const Eigen::Index size = 20;
   const Vector diagonal_terms = Vector::Random(size);
 
-  BlockDiagonalMatrix block_diagonal_matrix;
+  internal::BlockDiagonalMatrix block_diagonal_matrix;
   block_diagonal_matrix = diagonal_terms.asDiagonal();
   const auto bdm_plain = block_diagonal_matrix.matrix();
 
   BOOST_CHECK(bdm_plain == Matrix(diagonal_terms.asDiagonal()));
 }
 
-BlockDiagonalMatrix create_multiple_block_info(const Eigen::Index block_size)
+internal::BlockDiagonalMatrix create_multiple_block_info(const Eigen::Index block_size)
 {
   std::vector<MatrixBlockElement> matrix_block_elements_vector;
 
   {
-    MatrixBlockElement single_block_info = {pinocchio::MatrixBlockType::Zero, block_size};
+    MatrixBlockElement single_block_info = {pinocchio::internal::MatrixBlockType::Zero, block_size};
     matrix_block_elements_vector.push_back(single_block_info);
     BOOST_CHECK(matrix_block_elements_vector.back().isValid());
   }
 
   {
-    MatrixBlockElement single_block_info = {pinocchio::MatrixBlockType::Identity, block_size};
+    MatrixBlockElement single_block_info = {
+      pinocchio::internal::MatrixBlockType::Identity, block_size};
     matrix_block_elements_vector.push_back(single_block_info);
     BOOST_CHECK(matrix_block_elements_vector.back().isValid());
   }
@@ -370,7 +373,7 @@ BlockDiagonalMatrix create_multiple_block_info(const Eigen::Index block_size)
   {
     const auto matrix_map = make_map<MatrixMap>(scale_mat);
     matrix_block_elements_vector.push_back(
-      {pinocchio::MatrixBlockType::ScalarIdentity, block_size, matrix_map});
+      {pinocchio::internal::MatrixBlockType::ScalarIdentity, block_size, matrix_map});
     BOOST_CHECK(matrix_block_elements_vector.back().isValid());
   }
 
@@ -378,7 +381,7 @@ BlockDiagonalMatrix create_multiple_block_info(const Eigen::Index block_size)
   {
     const auto matrix_map = make_map<MatrixMap>(diagonal_vector);
     matrix_block_elements_vector.push_back(
-      {pinocchio::MatrixBlockType::Diagonal, block_size, matrix_map});
+      {pinocchio::internal::MatrixBlockType::Diagonal, block_size, matrix_map});
     BOOST_CHECK(matrix_block_elements_vector.back().isValid());
   }
 
@@ -386,11 +389,11 @@ BlockDiagonalMatrix create_multiple_block_info(const Eigen::Index block_size)
   {
     const auto matrix_map = make_map<MatrixMap>(identity_plain);
     matrix_block_elements_vector.push_back(
-      {pinocchio::MatrixBlockType::Plain, block_size, matrix_map});
+      {pinocchio::internal::MatrixBlockType::Plain, block_size, matrix_map});
     BOOST_CHECK(matrix_block_elements_vector.back().isValid());
   }
 
-  BlockDiagonalMatrix res(matrix_block_elements_vector);
+  internal::BlockDiagonalMatrix res(matrix_block_elements_vector);
   BOOST_CHECK(res.getMatrixStack()[0].data() != matrix_block_elements_vector[2].map.data());
   BOOST_CHECK(res.getMatrixStack()[1].data() != matrix_block_elements_vector[3].map.data());
   BOOST_CHECK(res.getMatrixStack()[2].data() != matrix_block_elements_vector[4].map.data());
@@ -462,7 +465,7 @@ BOOST_AUTO_TEST_CASE(test_add_bdm_diag_operator_plus)
   const Matrix bdm_plain = bdm.matrix();
   const Matrix res_ref = bdm_plain + Matrix(diag_mat);
 
-  const BlockDiagonalMatrix bdm_res = bdm + diag_mat;
+  const internal::BlockDiagonalMatrix bdm_res = bdm + diag_mat;
 
   BOOST_CHECK(bdm_res.matrix().isApprox(res_ref));
 }
@@ -474,9 +477,10 @@ BOOST_AUTO_TEST_CASE(test_inverse)
 
   const auto block_diagonal_matrix_inverse_expression = block_diagonal_matrix.inverse();
 
-  pinocchio::BlockDiagonalMatrix block_diagonal_matrix_inverse_value;
+  pinocchio::internal::BlockDiagonalMatrix block_diagonal_matrix_inverse_value;
   {
-    std::vector<BlockDiagonalMatrix::MatrixBlockElement::PlainBlockElement> inverse_pattern;
+    std::vector<internal::BlockDiagonalMatrix::MatrixBlockElement::PlainBlockElement>
+      inverse_pattern;
     for (const auto & block : block_diagonal_matrix.getMatrixBlockElements())
     {
       inverse_pattern.push_back(block.inverse());
@@ -524,12 +528,13 @@ BOOST_AUTO_TEST_CASE(test_inverse_rebuild)
   const Eigen::Index block_size = 10;
   const auto bdm = create_multiple_block_info(block_size);
 
-  BlockDiagonalMatrix res; // Empty
+  internal::BlockDiagonalMatrix res; // Empty
   res = bdm.inverse();
 
   // Check structure
   BOOST_CHECK(res.blocks().size() == bdm.blocks().size());
-  BOOST_CHECK(res.blocks()[0].type() == pinocchio::MatrixBlockType::Plain); // Zero -> Plain
+  BOOST_CHECK(
+    res.blocks()[0].type() == pinocchio::internal::MatrixBlockType::Plain); // Zero -> Plain
 
   // Check values (excluding Zero block)
   const auto bdm_plain = bdm.matrix();
@@ -574,32 +579,33 @@ BOOST_AUTO_TEST_CASE(test_rebuild)
 
 BOOST_AUTO_TEST_CASE(test_operator_equal)
 {
-  BlockDiagonalMatrix bdm;
+  internal::BlockDiagonalMatrix bdm;
   bdm = Eigen::VectorXd::Constant(0, 3.14).asDiagonal();
 
-  BlockDiagonalMatrix bdm2 = bdm;
+  internal::BlockDiagonalMatrix bdm2 = bdm;
 
   BOOST_CHECK(bdm2 == bdm);
 }
 
 /// Helper: build a 2-outer-block BDM where one block is NestedBlockDiagonal.
 /// Layout: [Diagonal(3×3)] [NestedBlockDiagonal: (Diagonal(2×2), Plain(3×3))]
-static BlockDiagonalMatrix create_nested_block_diagonal_matrix()
+static internal::BlockDiagonalMatrix create_nested_block_diagonal_matrix()
 {
   const Eigen::Index flat_diag_size = 3;
   const Eigen::Index sub_diag_size = 2;
   const Eigen::Index sub_plain_size = 3;
 
   // Outer block 0: plain Diagonal
-  MatrixBlockElement flat_block(pinocchio::MatrixBlockType::Diagonal, flat_diag_size);
+  MatrixBlockElement flat_block(pinocchio::internal::MatrixBlockType::Diagonal, flat_diag_size);
 
   // Outer block 1: NestedBlockDiagonal containing Diagonal + Plain sub-blocks
   std::vector<MatrixBlockElement> subs;
-  subs.emplace_back(pinocchio::MatrixBlockType::Diagonal, sub_diag_size);
-  subs.emplace_back(pinocchio::MatrixBlockType::Plain, sub_plain_size);
-  MatrixBlockElement nested_block(pinocchio::MatrixBlockType::NestedBlockDiagonal, std::move(subs));
+  subs.emplace_back(pinocchio::internal::MatrixBlockType::Diagonal, sub_diag_size);
+  subs.emplace_back(pinocchio::internal::MatrixBlockType::Plain, sub_plain_size);
+  MatrixBlockElement nested_block(
+    pinocchio::internal::MatrixBlockType::NestedBlockDiagonal, std::move(subs));
 
-  BlockDiagonalMatrix bdm({flat_block, nested_block});
+  internal::BlockDiagonalMatrix bdm({flat_block, nested_block});
   for (auto & block : bdm.blocks())
     block.setRandomPD(); // make it invertible for inverse tests
   return bdm;
@@ -613,11 +619,13 @@ BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_construction)
   BOOST_CHECK(bdm.rows() == expected_rows);
   BOOST_CHECK(bdm.cols() == expected_rows);
   BOOST_CHECK(bdm.blocks().size() == 2); // ONE outer block per constraint
-  BOOST_CHECK(bdm.blocks()[0].type() == pinocchio::MatrixBlockType::Diagonal);
-  BOOST_CHECK(bdm.blocks()[1].type() == pinocchio::MatrixBlockType::NestedBlockDiagonal);
+  BOOST_CHECK(bdm.blocks()[0].type() == pinocchio::internal::MatrixBlockType::Diagonal);
+  BOOST_CHECK(bdm.blocks()[1].type() == pinocchio::internal::MatrixBlockType::NestedBlockDiagonal);
   BOOST_CHECK(bdm.blocks()[1].nested_blocks().size() == 2);
-  BOOST_CHECK(bdm.blocks()[1].nested_blocks()[0].type() == pinocchio::MatrixBlockType::Diagonal);
-  BOOST_CHECK(bdm.blocks()[1].nested_blocks()[1].type() == pinocchio::MatrixBlockType::Plain);
+  BOOST_CHECK(
+    bdm.blocks()[1].nested_blocks()[0].type() == pinocchio::internal::MatrixBlockType::Diagonal);
+  BOOST_CHECK(
+    bdm.blocks()[1].nested_blocks()[1].type() == pinocchio::internal::MatrixBlockType::Plain);
 
   // Plain matrix should have zeros off the diagonal sub-blocks
   const Matrix plain = bdm.matrix();
@@ -655,10 +663,10 @@ BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_diagonal)
 BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_inverse)
 {
   const auto bdm = create_nested_block_diagonal_matrix();
-  const BlockDiagonalMatrix inv = bdm.inverse();
+  const internal::BlockDiagonalMatrix inv = bdm.inverse();
 
   BOOST_CHECK(inv.blocks().size() == bdm.blocks().size());
-  BOOST_CHECK(inv.blocks()[1].type() == pinocchio::MatrixBlockType::NestedBlockDiagonal);
+  BOOST_CHECK(inv.blocks()[1].type() == pinocchio::internal::MatrixBlockType::NestedBlockDiagonal);
 
   const Matrix plain = bdm.matrix();
   const Matrix inv_plain = inv.matrix();
@@ -674,20 +682,20 @@ BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_sum_with_diagonal)
   const Vector delta = Vector::Random(n).cwiseAbs(); // positive entries
   const auto diag_mat = delta.asDiagonal();
 
-  const BlockDiagonalMatrix res = bdm + diag_mat;
+  const internal::BlockDiagonalMatrix res = bdm + diag_mat;
 
   const Matrix plain_bdm = bdm.matrix();
   const Matrix expected = plain_bdm + Matrix(diag_mat);
   BOOST_CHECK(res.matrix().isApprox(expected));
 
   // The result's blocks()[1] should still be NestedBlockDiagonal (types upgraded)
-  BOOST_CHECK(res.blocks()[1].type() == pinocchio::MatrixBlockType::NestedBlockDiagonal);
+  BOOST_CHECK(res.blocks()[1].type() == pinocchio::internal::MatrixBlockType::NestedBlockDiagonal);
 }
 
 BOOST_AUTO_TEST_CASE(test_nested_block_diagonal_copy)
 {
   const auto bdm = create_nested_block_diagonal_matrix();
-  const BlockDiagonalMatrix bdm_copy = bdm;
+  const internal::BlockDiagonalMatrix bdm_copy = bdm;
 
   BOOST_CHECK(bdm_copy == bdm);
   // Copies must be independent (no aliasing in NestedBlockDiagonal sub-blocks)

@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_SUITE(BOOST_TEST_MODULE)
 
 BOOST_AUTO_TEST_CASE(test_get_ref)
 {
-  using namespace ::pinocchio::helper;
+  using namespace ::pinocchio::internal::helper;
 
   {
     double v = 10;

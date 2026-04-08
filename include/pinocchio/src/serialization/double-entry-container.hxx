@@ -20,9 +20,9 @@ namespace boost
     {
       template<typename StdVectorLike>
       struct DoubleEntryContainerAccessor
-      : public ::pinocchio::container::DoubleEntryContainer<StdVectorLike>
+      : public ::pinocchio::internal::DoubleEntryContainer<StdVectorLike>
       {
-        typedef ::pinocchio::container::DoubleEntryContainer<StdVectorLike> Base;
+        typedef ::pinocchio::internal::DoubleEntryContainer<StdVectorLike> Base;
         using Base::m_keys;
         using Base::m_values;
       };
@@ -31,7 +31,7 @@ namespace boost
     template<typename Archive, typename StdVectorLike>
     void serialize(
       Archive & ar,
-      ::pinocchio::container::DoubleEntryContainer<StdVectorLike> & container,
+      ::pinocchio::internal::DoubleEntryContainer<StdVectorLike> & container,
       const unsigned int /*version*/)
     {
       typedef internal::DoubleEntryContainerAccessor<StdVectorLike> Accessor;

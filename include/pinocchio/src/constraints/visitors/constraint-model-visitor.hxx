@@ -1417,7 +1417,7 @@ namespace pinocchio
       typedef boost::fusion::vector<
         const Model &,
         Data &,
-        const MatrixBlockElementTpl<MatrixOrMap, MapEnable> &,
+        const pinocchio::internal::MatrixBlockElementTpl<MatrixOrMap, MapEnable> &,
         ReferenceFrameTag<rf>>
         ArgsType;
 
@@ -1427,7 +1427,8 @@ namespace pinocchio
         const typename ConstraintModel::ConstraintData & cdata,
         const Model & model,
         Data & data,
-        const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+        const pinocchio::internal::MatrixBlockElementTpl<MatrixOrMap, MapEnable> &
+          constraint_inertia,
         const ReferenceFrameTag<rf> reference_frame)
       {
         cmodel.appendCouplingConstraintInertias(
@@ -1449,7 +1450,7 @@ namespace pinocchio
       const ModelTpl<Scalar, OtherOptions, JointCollectionTpl> & model,
       DataTpl<Scalar, OtherOptions, JointCollectionTpl> & data,
       const ConstraintDataTpl<Scalar, Options, ConstraintCollectionTpl> & cdata,
-      const MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
+      const pinocchio::internal::MatrixBlockElementTpl<MatrixOrMap, MapEnable> & constraint_inertia,
       const ReferenceFrameTag<rf> reference_frame)
     {
       typedef ConstraintModelAppendCouplingConstraintBlockInertiasVisitor<

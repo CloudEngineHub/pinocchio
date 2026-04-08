@@ -681,8 +681,8 @@ namespace pinocchio
       Eigen::Index row_id = 0;
       for (size_t constraint_id = 0; constraint_id < num_constraints; ++constraint_id)
       {
-        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+        const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
         const Eigen::Index constraint_size = cmodel.residualSize();
 
         auto G_block = G.block(row_id, row_id, constraint_size, constraint_size);

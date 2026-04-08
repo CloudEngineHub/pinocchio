@@ -84,7 +84,7 @@ struct MatrixInversePinocchio
   PINOCCHIO_DONT_INLINE static void
   run(const Eigen::MatrixBase<M1> & mat, const Eigen::MatrixBase<M2> & mat_inv)
   {
-    ::pinocchio::matrix_inversion(mat, mat_inv.const_cast_derived());
+    ::pinocchio::internal::matrix_inversion(mat, mat_inv.const_cast_derived());
   }
 };
 
@@ -94,7 +94,7 @@ struct MatrixInverseCodeGenerated
   PINOCCHIO_DONT_INLINE static void
   run(const Eigen::MatrixBase<M1> & mat, const Eigen::MatrixBase<M2> & mat_inv)
   {
-    ::pinocchio::matrix_inversion_code_generated(mat, mat_inv.const_cast_derived());
+    ::pinocchio::internal::matrix_inversion_code_generated(mat, mat_inv.const_cast_derived());
   }
 };
 

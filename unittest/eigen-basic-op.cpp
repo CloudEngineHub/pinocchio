@@ -67,19 +67,19 @@ BOOST_AUTO_TEST_CASE(test_eigen_helpers_on_std_vector)
 
   std::vector<Eigen::MatrixXd> vec(10, MatrixXd::Ones(m, n));
 
-  apply_for_each(vec, setZero<Eigen::MatrixXd>);
+  pinocchio::internal::apply_for_each(vec, setZero<Eigen::MatrixXd>);
   for (const auto & val : vec)
   {
     BOOST_CHECK(val.isZero(0));
   }
 
-  apply_for_each(vec, setOnes<Eigen::MatrixXd>);
+  pinocchio::internal::apply_for_each(vec, setOnes<Eigen::MatrixXd>);
   for (const auto & val : vec)
   {
     BOOST_CHECK(val.isOnes(0));
   }
 
-  apply_for_each(vec, setIdentity<Eigen::MatrixXd>);
+  pinocchio::internal::apply_for_each(vec, setIdentity<Eigen::MatrixXd>);
   for (const auto & val : vec)
   {
     BOOST_CHECK(val.isIdentity(0));

@@ -466,7 +466,7 @@ namespace pinocchio
     typedef ConstraintSolverResultBase<Self> Base;
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-    typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+    typedef internal::EigenStorageTpl<VectorXs> VectorXsStorage;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
 
     using Base::constraintSize;
@@ -818,7 +818,7 @@ namespace pinocchio
       static constexpr int Options = _Options;
       typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
       typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
-      typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+      typedef internal::EigenStorageTpl<VectorXs> VectorXsStorage;
       typedef LanczosDecompositionTpl<MatrixXs> LanczosDecomposition;
       typedef AndersonAccelerationTpl<Scalar> AndersonAcceleration;
 

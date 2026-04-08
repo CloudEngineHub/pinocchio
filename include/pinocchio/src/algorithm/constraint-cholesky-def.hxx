@@ -116,8 +116,8 @@ namespace pinocchio
     Eigen::Index row_id = 0;
     for (std::size_t i = 0; i < constraint_models.size(); i++)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
-      const auto & cdata = helper::get_ref(constraint_datas[i]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[i]);
+      const auto & cdata = internal::helper::get_ref(constraint_datas[i]);
       for (Eigen::Index k = 0; k < cmodel.residualSize(); ++k, row_id++)
       {
         cmodel.getRowIndexes(model, data, cdata, k, m_scratch_row_indexes);
@@ -237,8 +237,8 @@ namespace pinocchio
     U.topRightCorner(total_constraint_size, model.nv).setZero();
     for (size_t constraint_id = 0; constraint_id < num_constraints; ++constraint_id)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-      const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+      const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
 
       const Eigen::Index constraint_size = cmodel.residualSize();
       auto U_block = U.block(current_row, total_constraint_size, constraint_size, model.nv);
@@ -277,8 +277,8 @@ namespace pinocchio
       for (size_t index = 0; index < num_constraints; ++index)
       {
         const size_t constraint_id = num_constraints - 1 - index;
-        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+        const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
         const Eigen::Index constraint_size = cmodel.residualSize();
 
         for (Eigen::Index constraint_row_id = constraint_size - 1; constraint_row_id >= 0;
@@ -338,7 +338,7 @@ namespace pinocchio
     //   {
     //     const Eigen::Index slice_dim = nv;
     //     typedef Eigen::Map<Vector,EIGEN_DEFAULT_ALIGN_BYTES> MapVector;
-    //     MapVector DUt_partial = MapVector(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar,slice_dim,1));
+    //     MapVector DUt_partial = MapVector(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar,slice_dim,1));
 
     //     DUt_partial.noalias() =
     //       UtopRight.row(j).transpose().cwiseProduct(Dtail);
@@ -349,8 +349,9 @@ namespace pinocchio
     //   }
 
     // typedef Eigen::Map<RowMatrix> MapRowMatrix;
-    // MapRowMatrix OSIMinv = MapRowMatrix(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, total_constraint_size,
-    // nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal(); delassus_block.noalias() = OSIMinv
+    // MapRowMatrix OSIMinv = MapRowMatrix(_PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar,
+    // total_constraint_size, nv)); OSIMinv.noalias() = UtopRight * Dtail.asDiagonal();
+    // delassus_block.noalias() = OSIMinv
     // * UtopRight.transpose();
 
     delassus_block.noalias() = (UtopRight * Dtail.asDiagonal()) * UtopRight.transpose();
@@ -425,7 +426,7 @@ namespace pinocchio
   template<typename Scalar, int Options>
   template<int OtherOptions, std::size_t OtherAlignment>
   void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
-    const BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
+    const internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> & block_damping)
   {
     if (&block_damping == &m_damping)
       return;
@@ -436,7 +437,7 @@ namespace pinocchio
   template<typename Scalar, int Options>
   template<int OtherOptions, std::size_t OtherAlignment>
   void ConstraintCholeskyDecompositionTpl<Scalar, Options>::updateDamping(
-    BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
+    internal::BlockDiagonalMatrixTpl<Scalar, OtherOptions, OtherAlignment> && block_damping)
   {
     if (&block_damping == &m_damping)
       return;
@@ -1015,7 +1016,8 @@ namespace pinocchio
     return U_storage.sizeInBytes() + D_storage.sizeInBytes() + Dinv_storage.sizeInBytes()
            + compliance_storage.sizeInBytes() + m_damping.sizeInBytes()
            + m_sum_compliance_damping.sizeInBytes() + delassus_block_storage.sizeInBytes()
-           + pinocchio::sizeInBytes(parents_fromRow) + pinocchio::sizeInBytes(nv_subtree_fromRow)
+           + pinocchio::internal::sizeInBytes(parents_fromRow)
+           + pinocchio::internal::sizeInBytes(nv_subtree_fromRow)
       // + pinocchio::sizeInBytes(rowise_sparsity_pattern)
       ;
   }

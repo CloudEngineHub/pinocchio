@@ -19,9 +19,10 @@ namespace boost
     namespace internal
     {
       template<typename MatrixLike, std::size_t Alignment>
-      struct MatrixStackAccessor : public ::pinocchio::MatrixStackTpl<MatrixLike, Alignment>
+      struct MatrixStackAccessor
+      : public ::pinocchio::internal::MatrixStackTpl<MatrixLike, Alignment>
       {
-        typedef ::pinocchio::MatrixStackTpl<MatrixLike, Alignment> Base;
+        typedef ::pinocchio::internal::MatrixStackTpl<MatrixLike, Alignment> Base;
         using Base::m_data_ptr;
         using Base::m_matrix_maps;
         using Base::m_memory_capacity;
@@ -37,10 +38,10 @@ namespace boost
     template<typename Archive, typename MatrixLike, std::size_t Alignment>
     void serialize(
       Archive & ar,
-      ::pinocchio::MatrixStackTpl<MatrixLike, Alignment> & matrix_stack,
+      ::pinocchio::internal::MatrixStackTpl<MatrixLike, Alignment> & matrix_stack,
       const unsigned int /*version*/)
     {
-      typedef ::pinocchio::MatrixStackTpl<MatrixLike, Alignment> MatrixStack;
+      typedef ::pinocchio::internal::MatrixStackTpl<MatrixLike, Alignment> MatrixStack;
       typedef typename MatrixStack::MapType MapType;
       typedef typename MatrixStack::Scalar Scalar;
       typedef internal::MatrixStackAccessor<MatrixLike, Alignment> Accessor;

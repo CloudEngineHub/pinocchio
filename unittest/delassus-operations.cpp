@@ -67,9 +67,9 @@ BOOST_AUTO_TEST_CASE(delassus_dense_rebuild)
       DelassusOperatorRigidBody;
 
     DelassusOperatorRigidBody delassus_rigid_body(
-      helper::make_ref(scene.model), helper::make_ref(scene.data),
-      helper::make_ref(scene.constraint_models), helper::make_ref(scene.constraint_datas),
-      damping_val);
+      internal::helper::make_ref(scene.model), internal::helper::make_ref(scene.data),
+      internal::helper::make_ref(scene.constraint_models),
+      internal::helper::make_ref(scene.constraint_datas), damping_val);
     BOOST_CHECK(delassus_rigid_body.getCompliance().isApprox(compliance));
     delassus_rigid_body.updateDamping(damping_val);
     delassus_rigid_body.compute();
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(delassus_dense_block_operations)
   const Eigen::Index size = scene.delassus_matrix_gt.rows();
   Eigen::VectorXd compliance = scene.compliance;
   BOOST_CHECK(compliance.minCoeff() >= 0);
-  BlockDiagonalMatrix block_damping;
+  internal::BlockDiagonalMatrix block_damping;
   constructPositiveDefiniteBlockDiagonalMatrix(scene.constraint_models, block_damping);
 
   // Use the dense matrix from scene
@@ -301,21 +301,22 @@ BOOST_AUTO_TEST_CASE(delassus_rigid_body_rebuild)
     DelassusOperatorRigidBody;
 
   DelassusOperatorRigidBody delassus_rigid_body(
-    helper::make_ref(scene.model), helper::make_ref(scene.data),
-    helper::make_ref(scene.constraint_models), helper::make_ref(scene.constraint_datas),
-    damping_val);
+    internal::helper::make_ref(scene.model), internal::helper::make_ref(scene.data),
+    internal::helper::make_ref(scene.constraint_models),
+    internal::helper::make_ref(scene.constraint_datas), damping_val);
   BOOST_CHECK(delassus_rigid_body.getCompliance().isApprox(compliance));
   delassus_rigid_body.updateDamping(damping_val);
   delassus_rigid_body.compute();
 
   // Test rebuild from rigid body delassus to another rigid body delassus
   DelassusOperatorRigidBody delassus_rigid_body_rebuilt(
-    helper::make_ref(scene.model), helper::make_ref(scene.data),
-    helper::make_ref(scene.constraint_models), helper::make_ref(scene.constraint_datas),
-    damping_val);
+    internal::helper::make_ref(scene.model), internal::helper::make_ref(scene.data),
+    internal::helper::make_ref(scene.constraint_models),
+    internal::helper::make_ref(scene.constraint_datas), damping_val);
   delassus_rigid_body_rebuilt.rebuild(
-    helper::make_ref(scene.model), helper::make_ref(scene.data),
-    helper::make_ref(scene.constraint_models), helper::make_ref(scene.constraint_datas));
+    internal::helper::make_ref(scene.model), internal::helper::make_ref(scene.data),
+    internal::helper::make_ref(scene.constraint_models),
+    internal::helper::make_ref(scene.constraint_datas));
 
   // -- test compliance and damping
   BOOST_CHECK(delassus_rigid_body_rebuilt.getCompliance().isApprox(compliance));
@@ -349,10 +350,10 @@ BOOST_AUTO_TEST_CASE(delassus_rigid_body_diag_operations)
     DelassusOperatorRigidBody;
 
   DelassusOperatorRigidBody delassus(
-    helper::make_ref(scene.model),             //
-    helper::make_ref(scene.data),              //
-    helper::make_ref(scene.constraint_models), //
-    helper::make_ref(scene.constraint_datas),  //
+    internal::helper::make_ref(scene.model),             //
+    internal::helper::make_ref(scene.data),              //
+    internal::helper::make_ref(scene.constraint_models), //
+    internal::helper::make_ref(scene.constraint_datas),  //
     damping_val);
   delassus.compute();
 
@@ -458,7 +459,7 @@ BOOST_AUTO_TEST_CASE(delassus_rigid_body_block_operations)
   const Eigen::Index size = scene.delassus_matrix_gt.rows();
   Eigen::VectorXd compliance = scene.compliance;
   BOOST_CHECK(compliance.minCoeff() >= 0);
-  BlockDiagonalMatrix block_damping;
+  internal::BlockDiagonalMatrix block_damping;
   constructPositiveDefiniteBlockDiagonalMatrix(scene.constraint_models, block_damping);
 
   typedef ConstrainedHumanoidScene<double>::ConstraintModel ConstraintModel;
@@ -467,8 +468,9 @@ BOOST_AUTO_TEST_CASE(delassus_rigid_body_block_operations)
     DelassusOperatorRigidBody;
 
   DelassusOperatorRigidBody delassus(
-    helper::make_ref(scene.model), helper::make_ref(scene.data),
-    helper::make_ref(scene.constraint_models), helper::make_ref(scene.constraint_datas), 1e-8);
+    internal::helper::make_ref(scene.model), internal::helper::make_ref(scene.data),
+    internal::helper::make_ref(scene.constraint_models),
+    internal::helper::make_ref(scene.constraint_datas), 1e-8);
   delassus.compute();
 
   Eigen::VectorXd res(size);
@@ -674,7 +676,7 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_block_operations)
   const Eigen::Index size = scene.delassus_matrix_gt.rows();
   Eigen::VectorXd compliance = scene.compliance;
   BOOST_CHECK(compliance.minCoeff() >= 0);
-  BlockDiagonalMatrix block_damping;
+  internal::BlockDiagonalMatrix block_damping;
   constructPositiveDefiniteBlockDiagonalMatrix(scene.constraint_models, block_damping);
 
   // Build a ConstraintCholeskyDecomposition and compute
@@ -810,7 +812,7 @@ BOOST_AUTO_TEST_CASE(delassus_cholesky_expression_unsafe)
   delassus.updateDamping(damping_val);
 
   // Test unsafe().damping() gives direct write access to the block diagonal damping
-  BlockDiagonalMatrix block_damping;
+  internal::BlockDiagonalMatrix block_damping;
   constructPositiveDefiniteBlockDiagonalMatrix(scene.constraint_models, block_damping);
 
   delassus.unsafe().damping() = block_damping;

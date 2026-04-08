@@ -26,14 +26,16 @@ namespace pinocchio
         PINOCCHIO_UNREACHABLE();
       }
     };
-  } // namespace internal
 
-  template<typename M1, typename M2>
-  EIGEN_STRONG_INLINE void matrix_inversion_code_generated(
-    const Eigen::MatrixBase<M1> & matrix, const Eigen::MatrixBase<M2> & matrix_inverse)
-  {
-    typedef internal::MatrixInversionCodeGeneratedImpl<M1::RowsAtCompileTime, M1::ColsAtCompileTime>
-      Runner;
-    Runner::run(matrix, matrix_inverse.const_cast_derived());
-  }
+    template<typename M1, typename M2>
+    EIGEN_STRONG_INLINE void matrix_inversion_code_generated(
+      const Eigen::MatrixBase<M1> & matrix, const Eigen::MatrixBase<M2> & matrix_inverse)
+    {
+      typedef internal::MatrixInversionCodeGeneratedImpl<
+        M1::RowsAtCompileTime, M1::ColsAtCompileTime>
+        Runner;
+      Runner::run(matrix, matrix_inverse.const_cast_derived());
+    }
+
+  } // namespace internal
 } // namespace pinocchio

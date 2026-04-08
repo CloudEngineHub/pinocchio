@@ -81,10 +81,10 @@ namespace pinocchio
         data.joint_coupling_info(Eigen::Index(joint2_id), Eigen::Index(joint1_id)) = true;
 
         auto & joint1_neighbours = neighbours[joint1_id];
-        if (!helper::exists(joint1_neighbours, joint2_id))
+        if (!internal::helper::exists(joint1_neighbours, joint2_id))
           joint1_neighbours.push_back(joint2_id);
         auto & joint2_neighbours = neighbours[joint2_id];
-        if (!helper::exists(joint2_neighbours, joint1_id))
+        if (!internal::helper::exists(joint2_neighbours, joint1_id))
           joint2_neighbours.push_back(joint1_id);
       }
     }
@@ -158,7 +158,7 @@ namespace pinocchio
       CollectorStep;
     for (std::size_t i = 0; i < constraint_models.size(); ++i)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[i]);
       CollectorStep::run(cmodel, model, data);
     }
 
@@ -230,7 +230,7 @@ namespace pinocchio
           {
             REGISTER_JOINT_PAIR(jp_pair);
 
-            if (!helper::exists(parent_neighbours, neighbour_j))
+            if (!internal::helper::exists(parent_neighbours, neighbour_j))
             {
               parent_neighbours.push_back(neighbour_j);
               neighbour_j_neighbours.push_back(parent_id);
@@ -239,7 +239,7 @@ namespace pinocchio
         }
 
         // Remove joint_id from the list of neighbours for neighbour_j_neighbours
-        helper::erase(neighbour_j_neighbours, joint_id, helper::erase_first);
+        internal::helper::erase(neighbour_j_neighbours, joint_id, internal::helper::erase_first);
 
         for (size_t k = j + 1; k < joint_neighbours.size(); ++k)
         {

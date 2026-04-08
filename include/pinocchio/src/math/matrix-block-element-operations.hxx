@@ -129,112 +129,112 @@ namespace pinocchio
       }
     }; // struct sub_op_tpl
 
-  } // namespace internal
-
-  template<typename BinaryOp, typename MatrixOrMap, typename Enable, typename DiagonalVectorType>
-  struct traits<BinaryOperator<
-    BinaryOp,
-    MatrixBlockElementTpl<MatrixOrMap, Enable>,
-    Eigen::DiagonalWrapper<DiagonalVectorType>>>
-  {
-    typedef MatrixBlockElementTpl<MatrixOrMap, Enable> LhsType;
-    typedef typename traits<LhsType>::Matrix Matrix;
-  };
-
-  template<typename BinaryOp, typename MatrixOrMap, typename Enable, typename DiagonalVectorType>
-  struct BinaryOperator<
-    BinaryOp,
-    MatrixBlockElementTpl<MatrixOrMap, Enable>,
-    Eigen::DiagonalWrapper<DiagonalVectorType>>
-  : MatrixBlockElementOperation<BinaryOperator<
+    template<typename BinaryOp, typename MatrixOrMap, typename Enable, typename DiagonalVectorType>
+    struct traits<BinaryOperator<
       BinaryOp,
       MatrixBlockElementTpl<MatrixOrMap, Enable>,
       Eigen::DiagonalWrapper<DiagonalVectorType>>>
-  {
-    static_assert(
-      std::is_base_of_v<pinocchio::internal::binary_op, BinaryOp>,
-      "BinaryOp should be a binary operator.");
-
-    typedef MatrixBlockElementTpl<MatrixOrMap, Enable> LhsType;
-    typedef Eigen::DiagonalWrapper<DiagonalVectorType> RhsType;
-
-    BinaryOperator(const LhsType & lhs, const RhsType & rhs)
-    : m_lhs(lhs)
-    , m_rhs(rhs)
     {
-    }
+      typedef MatrixBlockElementTpl<MatrixOrMap, Enable> LhsType;
+      typedef typename traits<LhsType>::Matrix Matrix;
+    };
 
-    const LhsType & lhs() const
+    template<typename BinaryOp, typename MatrixOrMap, typename Enable, typename DiagonalVectorType>
+    struct BinaryOperator<
+      BinaryOp,
+      MatrixBlockElementTpl<MatrixOrMap, Enable>,
+      Eigen::DiagonalWrapper<DiagonalVectorType>>
+    : MatrixBlockElementOperation<BinaryOperator<
+        BinaryOp,
+        MatrixBlockElementTpl<MatrixOrMap, Enable>,
+        Eigen::DiagonalWrapper<DiagonalVectorType>>>
     {
-      return m_lhs;
-    }
-    const RhsType & rhs() const
-    {
-      return m_rhs;
-    }
+      static_assert(
+        std::is_base_of_v<pinocchio::internal::binary_op, BinaryOp>,
+        "BinaryOp should be a binary operator.");
 
-    template<typename ResType>
-    void evalTo(ResType & res) const
-    {
-      run(lhs(), rhs(), res);
-    }
+      typedef MatrixBlockElementTpl<MatrixOrMap, Enable> LhsType;
+      typedef Eigen::DiagonalWrapper<DiagonalVectorType> RhsType;
 
-    template<typename ResType>
-    static void
-    run(const LhsType & lhs_block_elt, const RhsType & diagonal_matrix, ResType & res_block_elt)
-    {
-
-      typedef typename BinaryOp::template op_tpl<ResType> Op;
-
-      constexpr MatrixBlockType res_valid_block_types = static_cast<MatrixBlockType>(
-        static_cast<unsigned char>(MatrixBlockType::Diagonal)
-        | static_cast<unsigned char>(MatrixBlockType::Plain));
-      assert(hasFlag(res_block_elt.type(), res_valid_block_types) && "res block type is invalid");
-      PINOCCHIO_ONLY_USED_FOR_DEBUG(res_valid_block_types);
-
-      // typedef typename LhsType::Matrix LhsMatrix;
-      typedef typename LhsType::Vector LhsVector;
-
-      const auto lhs_size = lhs_block_elt.size();
-      switch (lhs_block_elt.type())
+      BinaryOperator(const LhsType & lhs, const RhsType & rhs)
+      : m_lhs(lhs)
+      , m_rhs(rhs)
       {
-      case MatrixBlockType::Identity: {
-        const auto lhs_matrix = LhsVector::Ones(lhs_size).asDiagonal();
-        // const auto lhs_matrix = LhsMatrix::Identity(lhs_size,lhs_size);
-        Op::run(lhs_matrix, diagonal_matrix, res_block_elt);
-        break;
       }
-      case MatrixBlockType::Zero: {
-        const auto lhs_matrix = LhsVector::Zero(lhs_size).asDiagonal();
-        Op::run(lhs_matrix, diagonal_matrix, res_block_elt);
-        break;
-      }
-      case MatrixBlockType::ScalarIdentity: {
-        const auto & mat = lhs_block_elt.container();
-        const auto & scalar = mat(0, 0);
-        const auto lhs_matrix = LhsVector::Constant(lhs_size, scalar).asDiagonal();
-        Op::run(lhs_matrix, diagonal_matrix, res_block_elt);
-        break;
-      }
-      case MatrixBlockType::Diagonal: {
-        const auto & diagonal_elt = lhs_block_elt.container();
-        const auto lhs_matrix = diagonal_elt.asDiagonal();
-        Op::run(lhs_matrix, diagonal_matrix, res_block_elt);
-        break;
-      }
-      case MatrixBlockType::Plain: {
-        const auto & plain_mat = lhs_block_elt.container();
-        Op::run(plain_mat, diagonal_matrix, res_block_elt);
-        break;
-      }
-      default:
-        PINOCCHIO_UNREACHABLE();
-      }
-    }
 
-  protected:
-    const LhsType & m_lhs;
-    const RhsType m_rhs; // rhs is a DiagonalWrapper, copying it is fine.
-  };
+      const LhsType & lhs() const
+      {
+        return m_lhs;
+      }
+      const RhsType & rhs() const
+      {
+        return m_rhs;
+      }
+
+      template<typename ResType>
+      void evalTo(ResType & res) const
+      {
+        run(lhs(), rhs(), res);
+      }
+
+      template<typename ResType>
+      static void
+      run(const LhsType & lhs_block_elt, const RhsType & diagonal_matrix, ResType & res_block_elt)
+      {
+
+        typedef typename BinaryOp::template op_tpl<ResType> Op;
+
+        constexpr MatrixBlockType res_valid_block_types = static_cast<MatrixBlockType>(
+          static_cast<unsigned char>(MatrixBlockType::Diagonal)
+          | static_cast<unsigned char>(MatrixBlockType::Plain));
+        assert(hasFlag(res_block_elt.type(), res_valid_block_types) && "res block type is invalid");
+        PINOCCHIO_ONLY_USED_FOR_DEBUG(res_valid_block_types);
+
+        // typedef typename LhsType::Matrix LhsMatrix;
+        typedef typename LhsType::Vector LhsVector;
+
+        const auto lhs_size = lhs_block_elt.size();
+        switch (lhs_block_elt.type())
+        {
+        case MatrixBlockType::Identity: {
+          const auto lhs_matrix = LhsVector::Ones(lhs_size).asDiagonal();
+          // const auto lhs_matrix = LhsMatrix::Identity(lhs_size,lhs_size);
+          Op::run(lhs_matrix, diagonal_matrix, res_block_elt);
+          break;
+        }
+        case MatrixBlockType::Zero: {
+          const auto lhs_matrix = LhsVector::Zero(lhs_size).asDiagonal();
+          Op::run(lhs_matrix, diagonal_matrix, res_block_elt);
+          break;
+        }
+        case MatrixBlockType::ScalarIdentity: {
+          const auto & mat = lhs_block_elt.container();
+          const auto & scalar = mat(0, 0);
+          const auto lhs_matrix = LhsVector::Constant(lhs_size, scalar).asDiagonal();
+          Op::run(lhs_matrix, diagonal_matrix, res_block_elt);
+          break;
+        }
+        case MatrixBlockType::Diagonal: {
+          const auto & diagonal_elt = lhs_block_elt.container();
+          const auto lhs_matrix = diagonal_elt.asDiagonal();
+          Op::run(lhs_matrix, diagonal_matrix, res_block_elt);
+          break;
+        }
+        case MatrixBlockType::Plain: {
+          const auto & plain_mat = lhs_block_elt.container();
+          Op::run(plain_mat, diagonal_matrix, res_block_elt);
+          break;
+        }
+        default:
+          PINOCCHIO_UNREACHABLE();
+        }
+      }
+
+    protected:
+      const LhsType & m_lhs;
+      const RhsType m_rhs; // rhs is a DiagonalWrapper, copying it is fine.
+    };
+
+  } // namespace internal
 
 } // namespace pinocchio

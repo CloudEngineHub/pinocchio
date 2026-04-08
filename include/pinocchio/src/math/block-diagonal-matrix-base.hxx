@@ -13,38 +13,42 @@
 
 namespace pinocchio
 {
-  template<typename Derived>
-  struct BlockDiagonalMatrixBase
+  namespace internal
   {
-    /// @brief Cast to Derived.
-    Derived & derived()
-    {
-      return *static_cast<Derived *>(this);
-    }
 
-    /// @brief Const cast to Derived.
-    const Derived & derived() const
+    template<typename Derived>
+    struct BlockDiagonalMatrixBase
     {
-      return *static_cast<const Derived *>(this);
-    }
+      /// @brief Cast to Derived.
+      Derived & derived()
+      {
+        return *static_cast<Derived *>(this);
+      }
 
-    /// @brief Returns the total number of rows of the full matrix.
-    Eigen::Index rows() const
-    {
-      return derived().rows();
-    }
+      /// @brief Const cast to Derived.
+      const Derived & derived() const
+      {
+        return *static_cast<const Derived *>(this);
+      }
 
-    /// @brief Returns the total number of cols of the full matrix.
-    Eigen::Index cols() const
-    {
-      return derived().cols();
-    }
+      /// @brief Returns the total number of rows of the full matrix.
+      Eigen::Index rows() const
+      {
+        return derived().rows();
+      }
 
-    /// @brief Returns the total number of elements in the full matrix (rows * cols).
-    Eigen::Index size() const
-    {
-      return derived().size();
-    }
-  };
+      /// @brief Returns the total number of cols of the full matrix.
+      Eigen::Index cols() const
+      {
+        return derived().cols();
+      }
 
+      /// @brief Returns the total number of elements in the full matrix (rows * cols).
+      Eigen::Index size() const
+      {
+        return derived().size();
+      }
+    };
+
+  } // namespace internal
 } // namespace pinocchio

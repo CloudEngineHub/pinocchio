@@ -38,7 +38,7 @@ void test(
     else if constexpr (internal::is_specialization_of_v<Op, Eigen::internal::sub_assign_op>)
       res_gt = res - (lhs * rhs).eval();
 
-    matrix_product<EigenOp>(lhs, rhs, res);
+    internal::matrix_product<EigenOp>(lhs, rhs, res);
 
     BOOST_CHECK(res.isApprox(res_gt, 1e-14));
   }

@@ -238,7 +238,7 @@ namespace pinocchio
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
     typedef Eigen::Ref<const VectorXs> RefConstVectorXs;
-    typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+    typedef internal::EigenStorageTpl<VectorXs> VectorXsStorage;
 
     using Base::constraintSize;
     using Base::setConstraintImpulseGuess;
@@ -477,9 +477,9 @@ namespace pinocchio
       typedef _Scalar Scalar;
       static constexpr int Options = _Options;
       typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1, Options> VectorXs;
-      typedef EigenStorageTpl<VectorXs> VectorXsStorage;
+      typedef internal::EigenStorageTpl<VectorXs> VectorXsStorage;
       typedef Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Options> MatrixXs;
-      typedef EigenStorageTpl<MatrixXs> MatrixXsStorage;
+      typedef internal::EigenStorageTpl<MatrixXs> MatrixXsStorage;
 
       /// \brief Constructor given problem_size.
       PGSSolverWorkspaceTpl(std::size_t problem_size = 0)

@@ -14,11 +14,9 @@
 using namespace pinocchio;
 typedef Eigen::MatrixXf MatrixXs;
 typedef MatrixXs::Scalar Scalar;
-typedef MatrixStackTpl<MatrixXs, ALIGNMENT_VALUE> MatrixXsStack;
-typedef MatrixStackTpl<PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs), ALIGNMENT_VALUE>
+typedef internal::MatrixStackTpl<MatrixXs, ALIGNMENT_VALUE> MatrixXsStack;
+typedef internal::MatrixStackTpl<PINOCCHIO_EIGEN_PLAIN_ROW_MAJOR_TYPE(MatrixXs), ALIGNMENT_VALUE>
   RowMatrixXsStack;
-
-// typedef EigenStorageTpl<Eigen::VectorXd> EigenStorageVector;
 
 bool is_aligned(const void * ptr, const std::size_t alignment)
 {
@@ -162,7 +160,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_from_matrix_info)
 {
   // Zero block allocation
   {
-    const std::vector<MatrixInfo> matrix_infos;
+    const std::vector<internal::MatrixInfo> matrix_infos;
     const MatrixXsStack matrix_stack(matrix_infos);
 
     BOOST_CHECK(matrix_stack.empty());
@@ -171,7 +169,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_from_matrix_info)
   // Single block allocation
   {
     const Eigen::Index rows = 10, cols = 20;
-    const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
+    const std::vector<internal::MatrixInfo> matrix_infos = {{rows, cols}};
 
     const MatrixXsStack matrix_stack(matrix_infos);
 
@@ -185,7 +183,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_from_matrix_info)
   {
     const size_t num_blocks = 10;
     const Eigen::Index rows = 10, cols = 20;
-    std::vector<MatrixInfo> matrix_infos(num_blocks);
+    std::vector<internal::MatrixInfo> matrix_infos(num_blocks);
 
     for (const auto & block_info : matrix_infos)
     {
@@ -211,7 +209,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_from_matrix_info)
 BOOST_AUTO_TEST_CASE(matrix_stack_move_constructor)
 {
   const Eigen::Index rows = 10, cols = 20;
-  const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
+  const std::vector<internal::MatrixInfo> matrix_infos = {{rows, cols}};
 
   MatrixXsStack matrix_stack(matrix_infos);
   matrix_stack.back().setZero();
@@ -224,7 +222,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_move_constructor)
 BOOST_AUTO_TEST_CASE(matrix_stack_move_assignment_operator)
 {
   const Eigen::Index rows = 10, cols = 20;
-  const std::vector<MatrixInfo> matrix_infos = {{rows, cols}};
+  const std::vector<internal::MatrixInfo> matrix_infos = {{rows, cols}};
 
   MatrixXsStack matrix_stack(matrix_infos);
   matrix_stack.back().setIdentity();
@@ -243,14 +241,14 @@ BOOST_AUTO_TEST_CASE(matrix_stack_move_assignment_operator)
 BOOST_AUTO_TEST_CASE(matrix_stack_rebuild)
 {
   const Eigen::Index rows1 = 10, cols1 = 20;
-  const std::vector<MatrixInfo> matrix_infos1 = {{rows1, cols1}};
+  const std::vector<internal::MatrixInfo> matrix_infos1 = {{rows1, cols1}};
 
   MatrixXsStack matrix_stack1(matrix_infos1);
   const void * matrix_stack1_data_ptr = matrix_stack1.data();
   matrix_stack1.back().setIdentity();
 
   const Eigen::Index rows2 = 20, cols2 = 40;
-  const std::vector<MatrixInfo> matrix_infos2 = {{rows2, cols2}};
+  const std::vector<internal::MatrixInfo> matrix_infos2 = {{rows2, cols2}};
 
   MatrixXsStack matrix_stack2(matrix_infos2);
   const void * matrix_stack2_data_ptr = matrix_stack2.data();
@@ -390,7 +388,7 @@ BOOST_AUTO_TEST_CASE(matrix_stack_product)
   using VectorXd = Eigen::Matrix<double, Eigen::Dynamic, 1>;
   using Matrix3d = Eigen::Matrix<double, 3, 3>;
   using Vector3d = Eigen::Matrix<double, 3, 1>;
-  using MatrixStack = pinocchio::MatrixStackTpl<MatrixXd>;
+  using MatrixStack = pinocchio::internal::MatrixStackTpl<MatrixXd>;
 
   const std::size_t N = static_cast<std::size_t>(std::rand() % 10);
 

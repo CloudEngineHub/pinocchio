@@ -29,10 +29,10 @@ namespace pinocchio
     bool solve_ncp)
   {
     static_assert(
-      helper::is_std_vector_v<PointContactConstraintModelVector>,
+      internal::helper::is_std_vector_v<PointContactConstraintModelVector>,
       "PointContactConstraintModelVector should be a std::vector<T,Allocator>");
     static_assert(
-      helper::is_std_vector_v<PointContactConstraintDataVector>,
+      internal::helper::is_std_vector_v<PointContactConstraintDataVector>,
       "PointContactConstraintDataVector should be a std::vector<T,Allocator>");
 
     typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorXs;
@@ -44,7 +44,7 @@ namespace pinocchio
     Eigen::Index constraint_index = 0;
     for (std::size_t i = 0; i < constraint_models.size(); i++)
     {
-      const auto & cmodel = helper::get_ref(constraint_models[i]);
+      const auto & cmodel = internal::helper::get_ref(constraint_models[i]);
       const auto csize = cmodel.residualSize();
       cmodel.retrieveCompliance(R.segment(constraint_index, csize));
       constraint_index += csize;
@@ -75,8 +75,8 @@ namespace pinocchio
       Eigen::Index row_id = 0;
       for (std::size_t constraint_id = 0; constraint_id < n_constraints; ++constraint_id)
       {
-        const auto & cmodel = helper::get_ref(constraint_models[constraint_id]);
-        const auto & cdata = helper::get_ref(constraint_datas[constraint_id]);
+        const auto & cmodel = internal::helper::get_ref(constraint_models[constraint_id]);
+        const auto & cdata = internal::helper::get_ref(constraint_datas[constraint_id]);
         const auto constraint_size = cmodel.residualSize();
 
         const auto cone = cmodel.set(cdata);
@@ -166,10 +166,10 @@ namespace pinocchio
     bool solve_ncp)
   {
     static_assert(
-      helper::is_std_vector_v<PointContactConstraintModelVector>,
+      internal::helper::is_std_vector_v<PointContactConstraintModelVector>,
       "PointContactConstraintModelVector should be a std::vector<T,Allocator>");
     static_assert(
-      helper::is_std_vector_v<PointContactConstraintDataVector>,
+      internal::helper::is_std_vector_v<PointContactConstraintDataVector>,
       "PointContactConstraintDataVector should be a std::vector<T,Allocator>");
 
     typedef ModelTpl<Scalar, Options, JointCollectionTpl> Model;

@@ -173,7 +173,7 @@ namespace pinocchio
     template<typename T, template<typename...> class Template>
     inline constexpr bool is_specialization_of_v = is_specialization_of<T, Template>::value;
 
-    template<typename T>
+    template<class C, typename = void>
     struct traits
     {
     };
