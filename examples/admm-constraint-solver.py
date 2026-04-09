@@ -52,7 +52,7 @@ q_box2 = np.array([0.0, 0.0, 3.0 * box_half, 0.0, 0.0, 0.0, 1.0])
 q0 = np.concatenate([q_box1, q_box2])
 
 v0 = np.zeros(model.nv)  # zero initial velocity
-tau0 = np.zeros(model.nv)  # no external torques
+zero_torque = np.zeros(model.nv)  # no external torques
 dt = 1e-3  # time-step [s]
 
 # ─── 3. Build the 8 contact constraints ──────────────────────────────────────
@@ -60,14 +60,14 @@ dt = 1e-3  # time-step [s]
 friction_coeff = 0.8
 
 
-def make_corner_constraints(model, jid1, jid2, z1, z2):
+def make_corner_constraints(model, joint1_id, joint2_id, z1, z2):
     """
     Return 4 PointContactConstraintModel objects for the corners of a planar
     contact interface between two bodies.
 
     Parameters
     ----------
-    jid1, jid2 : joint indices of the two contacting bodies
+    joint1_id, joint2_id : joint indices of the two contacting bodies
     z1         : z-coordinate of the contact plane in jid1's local frame
                  (e.g. +box_half for the top face, 0.0 for the world floor)
     z2         : z-coordinate of the contact plane in jid2's local frame
@@ -83,9 +83,11 @@ def make_corner_constraints(model, jid1, jid2, z1, z2):
     for xy in corners_xy:
         p1 = np.array([xy[0], xy[1], z1])
         p2 = np.array([xy[0], xy[1], z2])
-        placement1 = pin.SE3(np.eye(3), p1)
-        placement2 = pin.SE3(np.eye(3), p2)
-        cm = pin.PointContactConstraintModel(model, jid1, placement1, jid2, placement2)
+        joint1_placement = pin.SE3(np.eye(3), p1)
+        joint2_placement = pin.SE3(np.eye(3), p2)
+        cm = pin.PointContactConstraintModel(
+            model, joint1_id, joint1_placement, joint2_id, joint2_placement
+        )
         cm.set = pin.CoulombFrictionCone(friction_coeff)
         cms.append(cm)
     return cms
@@ -109,45 +111,24 @@ total_residual_size = sum(cm.residualSize() for cm in constraint_models)
 print(f"Number of constraints:          {len(constraint_models)}")
 print(f"Total constraint residual size: {total_residual_size}")
 
-# ─── 4. Delassus operator and drift vector ────────────────────────────────────
+# ─── 4. Setup and run the simulation loop ────────────────────────────────────
 
 data = model.createData()
 fext = [pin.Force.Zero() for _ in range(model.njoints)]
 
-# CRBA is required before building the Cholesky decomposition of the Delassus
-# matrix G = J M⁻¹ Jᵀ.
-pin.crba(model, data, q0, pin.Convention.WORLD)
-
-# Free acceleration: velocity the system would reach in one time-step without contacts.
-v_free = v0 + dt * pin.aba(model, data, q0, v0, tau0, fext)
-
-# Initialise constraint data and evaluate constraint Jacobians at q0.
+# Initialise constraint data
 constraint_datas = pin.StdVec_ConstraintData()
 for cmodel in constraint_models:
     cdata = cmodel.createData()
-    cmodel.calc(model, data, cdata)
     constraint_datas.append(cdata)
 
-# Cholesky decomposition of the Delassus matrix.
+# Initialize constraint cholesky
 chol = pin.ConstraintCholeskyDecomposition(
     model, data, constraint_models, constraint_datas
 )
-chol.compute(model, data, constraint_models, constraint_datas, 1e-10)
 
-# DelassusCholeskyExpression wraps the Cholesky factors for efficient solves.
-delassus_expr = chol.getDelassusOperatorCholeskyExpression()
-
-# Constraint Jacobian and drift  g = J v_free.
-Jc = pin.getConstraintsJacobian(model, data, constraint_models, constraint_datas)
-g = Jc @ v_free
-
-print(f"Delassus matrix size:           {delassus_expr.matrix().shape}")
-print(f"Drift vector ‖g‖:               {np.linalg.norm(g):.4e}")
-
-# ─── 5. ADMM solver ───────────────────────────────────────────────────────────
-
+# Initialize constraint solver, its settings and result
 solver = pin.ADMMConstraintSolver()
-
 settings = pin.ADMMSolverSettings()
 settings.max_iterations = 1000
 settings.absolute_feasibility_tol = 1e-10
@@ -160,29 +141,91 @@ settings.stat_record = (
     True  # per-iteration statistics. Turn off for faster solves if not needed.
 )
 settings.solve_ncp = True
-
 result = pin.ADMMSolverResult()
-has_converged = solver.solve(
-    delassus_expr, g, constraint_models, constraint_datas, settings, result
-)
 
-# ─── 6. Results ───────────────────────────────────────────────────────────────
+# Simulate for a few time-steps, solving the constraint problem at each step.
+horizon = 10
+q = q0.copy()
+v = v0.copy()
+for t in range(horizon):
+    # CRBA is required before building the Cholesky decomposition of the Delassus
+    # matrix G = J M⁻¹ Jᵀ.
+    # Note that other delassus operators may not necessarily require CRBA.
+    pin.crba(model, data, q, pin.Convention.WORLD)
 
-print()
-print("── ADMM solver results ──────────────────────────────────────────────")
-print(f"  Converged:            {result.converged}")
-print(f"  Iterations:           {result.iterations}")
-print(f"  Primal feasibility:   {result.primal_feasibility:.4e}")
-print(f"  Dual feasibility:     {result.dual_feasibility:.4e}")
-print(f"  Complementarity:      {result.complementarity:.4e}")
-print(f"  Final rho:            {result.rho:.4e}")
-print("─────────────────────────────────────────────────────────────────────")
+    # Free acceleration: velocity the system would reach in one
+    # time-step without contacts.
+    v_free = v + dt * pin.aba(model, data, q, v, zero_torque, fext)
 
-impulses = result.retrieveConstraintImpulses()
-velocities = result.retrieveConstraintVelocities()
-print(f"\nConstraint impulses   ‖λ‖: {np.linalg.norm(impulses):.4e}")
-print(f"Constraint velocities ‖v‖: {np.linalg.norm(velocities):.4e}")
+    # The constraint models may need to be updated if the position of
+    # contact points changed.
+    # Note: we don't do it in this example to keep things simple
+    # (q does not change much since the cubes are stable),
+    # but it would look something like:
+    # for cmodel in constraint_models:
+    #     cmodel.joint1_placement = ... # relative placement of the
+    #                                     contact point in joint1's local frame.
+    #     cmodel.joint2_placement = ... # relative placement of the
+    #                                     contact point in joint2's local frame.
 
-if not has_converged:
-    print("\nWarning: solver did not converge within the iteration budget.")
-    sys.exit(1)
+    # Run calc on constraint models
+    for cmodel, cdata in zip(constraint_models, constraint_datas):
+        cmodel.calc(model, data, cdata)
+
+    # Cholesky decomposition of the Delassus matrix.
+    chol.compute(model, data, constraint_models, constraint_datas, 1e-10)
+
+    # DelassusCholeskyExpression wraps the Cholesky factors for efficient solves.
+    delassus_expr = chol.getDelassusOperatorCholeskyExpression()
+
+    # Constraint Jacobian and drift  g = J v_free.
+    Jc = pin.getConstraintsJacobian(model, data, constraint_models, constraint_datas)
+    g = Jc @ v_free
+
+    print(f"Delassus matrix size:           {delassus_expr.matrix().shape}")
+    print(f"Drift vector ‖g‖:               {np.linalg.norm(g):.4e}")
+
+    # Solve the constraint problem with the ADMM solver.
+    has_converged = solver.solve(
+        delassus_expr, g, constraint_models, constraint_datas, settings, result
+    )
+
+    print()
+    print(f"time step: {t}")
+    print("── ADMM solver results ──────────────────────────────────────────────")
+    print(f"  Converged:            {result.converged}")
+    print(f"  Iterations:           {result.iterations}")
+    print(f"  Primal feasibility:   {result.primal_feasibility:.4e}")
+    print(f"  Dual feasibility:     {result.dual_feasibility:.4e}")
+    print(f"  Complementarity:      {result.complementarity:.4e}")
+    print(f"  Final rho:            {result.rho:.4e}")
+    print("─────────────────────────────────────────────────────────────────────")
+
+    constraint_impulses = result.retrieveConstraintImpulses()
+    constraint_velocities = result.retrieveConstraintVelocities()
+    print(f"\nConstraint impulses   ‖λ‖: {np.linalg.norm(constraint_impulses):.4e}")
+    print(f"Constraint velocities ‖v‖: {np.linalg.norm(constraint_velocities):.4e}")
+
+    if not has_converged:
+        print("\nWarning: solver did not converge within the iteration budget.")
+        sys.exit(1)
+
+    # Update configuration and velocity for the next time step by
+    # applying the constraint impulses.
+    # Note: we don't do it in this example to keep things simple,
+    # but it would look something like:
+    constraint_forces = (
+        1.0 / dt
+    ) * constraint_impulses  # convert impulses to forces/torques
+    tau_constraints = Jc.T @ constraint_forces  # map to generalized torques
+    v_new = v + dt * pin.aba(model, data, q, v, zero_torque + tau_constraints, fext)
+    q_new = pin.integrate(model, q, v_new * dt)
+
+    # The cubes should be stable so the configuration should not change much,
+    # and the velocity should be close to zero:
+    assert np.linalg.norm(v_new) < 1e-8
+    assert np.linalg.norm(q_new - q) < 1e-8
+
+    # Update q and v for the next iteration.
+    q = q_new.copy()
+    v = v_new.copy()
