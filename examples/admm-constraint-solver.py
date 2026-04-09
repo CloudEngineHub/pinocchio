@@ -147,6 +147,12 @@ horizon = 10
 q = q0.copy()
 v = v0.copy()
 for t in range(horizon):
+    # Data needs to be informed of the current state of the system for
+    # downstream computations.
+    data.q_in = q
+    data.v_in = v
+    data.tau_in = zero_torque
+
     # CRBA is required before building the Cholesky decomposition of the Delassus
     # matrix G = J M⁻¹ Jᵀ.
     # Note that other delassus operators may not necessarily require CRBA.
