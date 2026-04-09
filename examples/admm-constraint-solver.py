@@ -212,8 +212,6 @@ for t in range(horizon):
 
     # Update configuration and velocity for the next time step by
     # applying the constraint impulses.
-    # Note: we don't do it in this example to keep things simple,
-    # but it would look something like:
     constraint_forces = (
         1.0 / dt
     ) * constraint_impulses  # convert impulses to forces/torques
