@@ -88,7 +88,7 @@ def make_corner_constraints(model, joint1_id, joint2_id, z1, z2):
         cm = pin.PointContactConstraintModel(
             model, joint1_id, joint1_placement, joint2_id, joint2_placement
         )
-        cm.set = pin.CoulombFrictionCone(friction_coeff)
+        cm.setFriction(friction_coeff)
         cms.append(cm)
     return cms
 
@@ -157,11 +157,11 @@ for t in range(horizon):
     # time-step without contacts.
     v_free = v + dt * pin.aba(model, data, q, v, zero_torque, fext)
 
-    # The constraint models may need to be updated if the position of
-    # contact points changed.
-    # Note: we don't do it in this example to keep things simple
-    # (q does not change much since the cubes are stable),
-    # but it would look something like:
+    # In theory, the constraint models' placements need to be updated at each time step
+    # of the simulation to reflect the current configuration q.
+    # We don't do it in this specific example since the cubes are stable and the contact
+    # positions don't change.
+    # In a more general case, you would need to do something like:
     # for cmodel in constraint_models:
     #     cmodel.joint1_placement = ... # relative placement of the
     #                                     contact point in joint1's local frame.
