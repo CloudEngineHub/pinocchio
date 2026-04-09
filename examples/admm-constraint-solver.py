@@ -3,7 +3,6 @@ Stack of two cubes solved with the ADMM constraint solver.
 
 This example demonstrates how to:
   - Build a kinematic model with two free-floating cubes
-  - Build a geometry model with the cube shapes and a ground plane
   - Manually define 8 PointContactConstraintModel constraints:
       4 for the floor-cube 1 interaction (bottom corners of cube 1)
       4 for the cube 1-cube 2 interaction (corners at the shared face)
