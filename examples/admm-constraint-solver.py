@@ -93,7 +93,7 @@ def make_corner_constraints(model, joint1_id, joint2_id, z1, z2):
     return cms
 
 
-constraint_models = pin.StdVec_ConstraintModel()
+constraint_models = []
 
 # 4 constraints: floor (universe, jid=0) ↔ cube 1 bottom face
 # - in universe frame: contact points are on the floor plane  z = 0
@@ -117,7 +117,7 @@ data = model.createData()
 fext = [pin.Force.Zero() for _ in range(model.njoints)]
 
 # Initialise constraint data
-constraint_datas = pin.StdVec_ConstraintData()
+constraint_datas = []
 for cmodel in constraint_models:
     cdata = cmodel.createData()
     constraint_datas.append(cdata)
