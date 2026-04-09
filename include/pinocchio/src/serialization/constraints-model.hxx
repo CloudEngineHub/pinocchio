@@ -214,6 +214,7 @@ namespace boost
         using Base::m_active_dofs;
         using Base::m_active_joint_ids;
         using Base::m_active_joints;
+        using Base::m_dt;
         using Base::m_friction_lower_limit;
         using Base::m_friction_upper_limit;
       };
@@ -239,6 +240,7 @@ namespace boost
       ar & make_nvp("m_active_joint_ids", cmodel_.m_active_joint_ids);
       ar & make_nvp("friction_lower_limit", cmodel_.m_friction_lower_limit);
       ar & make_nvp("friction_upper_limit", cmodel_.m_friction_upper_limit);
+      ar & make_nvp("dt", cmodel_.m_dt);
     }
 
     template<typename Archive, typename Scalar, int Options>
