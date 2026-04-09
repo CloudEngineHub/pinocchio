@@ -122,6 +122,7 @@ if(BUILD_PYTHON_INTERFACE)
         model-graph
         model-configuration-converter
         ellipsoid-joint-kinematics
+        admm-constraint-solver
     )
 
     if(BUILD_WITH_URDF_SUPPORT)
