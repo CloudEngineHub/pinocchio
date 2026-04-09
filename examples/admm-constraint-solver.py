@@ -42,35 +42,7 @@ joint2_id = model.addJoint(
 )
 model.appendBodyToJoint(joint2_id, box_inertia, pin.SE3.Identity())
 
-# ─── 2. Geometry model ────────────────────────────────────────────────────────
-
-geom_model = pin.GeometryModel()
-
-try:
-    import coal
-
-    cube_shape = coal.Box(box_size, box_size, box_size)
-
-    # Cube 1 - geometry in joint1's local frame (centred at the joint origin)
-    geom_box1 = pin.GeometryObject("box1", joint1_id, 0, pin.SE3.Identity(), cube_shape)
-    geom_box1.meshColor = np.array([0.2, 0.6, 0.2, 1.0])
-    geom_model.addGeometryObject(geom_box1)
-
-    # Cube 2 - geometry in joint2's local frame
-    geom_box2 = pin.GeometryObject("box2", joint2_id, 0, pin.SE3.Identity(), cube_shape)
-    geom_box2.meshColor = np.array([0.2, 0.2, 0.8, 1.0])
-    geom_model.addGeometryObject(geom_box2)
-
-    # Floor - half-space  { p : p_z >= 0 } attached to the universe joint (id 0)
-    floor_shape = coal.Halfspace(np.array([0.0, 0.0, 1.0]), 0.0)
-    geom_floor = pin.GeometryObject("floor", 0, 0, pin.SE3.Identity(), floor_shape)
-    geom_floor.meshColor = np.array([0.5, 0.5, 0.5, 0.5])
-    geom_model.addGeometryObject(geom_floor)
-
-except ImportError:
-    print("coal not found - geometry model will be empty (solver still runs).")
-
-# ─── 3. Initial configuration ─────────────────────────────────────────────────
+# ─── 2. Initial configuration ─────────────────────────────────────────────────
 
 # Free-flyer q = [tx, ty, tz,  qx, qy, qz, qw]
 # Cube 1 centre at z = box_half  (bottom face touching z = 0)
@@ -83,7 +55,7 @@ v0 = np.zeros(model.nv)  # zero initial velocity
 tau0 = np.zeros(model.nv)  # no external torques
 dt = 1e-3  # time-step [s]
 
-# ─── 4. Build the 8 contact constraints ──────────────────────────────────────
+# ─── 3. Build the 8 contact constraints ──────────────────────────────────────
 
 friction_coeff = 0.8
 
@@ -137,7 +109,7 @@ total_residual_size = sum(cm.residualSize() for cm in constraint_models)
 print(f"Number of constraints:          {len(constraint_models)}")
 print(f"Total constraint residual size: {total_residual_size}")
 
-# ─── 5. Delassus operator and drift vector ────────────────────────────────────
+# ─── 4. Delassus operator and drift vector ────────────────────────────────────
 
 data = model.createData()
 fext = [pin.Force.Zero() for _ in range(model.njoints)]
@@ -172,7 +144,7 @@ g = Jc @ v_free
 print(f"Delassus matrix size:           {delassus_expr.matrix().shape}")
 print(f"Drift vector ‖g‖:               {np.linalg.norm(g):.4e}")
 
-# ─── 6. ADMM solver ───────────────────────────────────────────────────────────
+# ─── 5. ADMM solver ───────────────────────────────────────────────────────────
 
 solver = pin.ADMMConstraintSolver()
 
@@ -194,7 +166,7 @@ has_converged = solver.solve(
     delassus_expr, g, constraint_models, constraint_datas, settings, result
 )
 
-# ─── 7. Results ───────────────────────────────────────────────────────────────
+# ─── 6. Results ───────────────────────────────────────────────────────────────
 
 print()
 print("── ADMM solver results ──────────────────────────────────────────────")
