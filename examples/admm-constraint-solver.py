@@ -163,7 +163,7 @@ chol = pin.ConstraintCholeskyDecomposition(
 chol.compute(model, data, constraint_models, constraint_datas, 1e-10)
 
 # DelassusCholeskyExpression wraps the Cholesky factors for efficient solves.
-delassus_expr = chol.getDelassusCholeskyExpression()
+delassus_expr = chol.getDelassusOperatorCholeskyExpression()
 
 # Constraint Jacobian and drift  g = J v_free.
 Jc = pin.getConstraintsJacobian(model, data, constraint_models, constraint_datas)
