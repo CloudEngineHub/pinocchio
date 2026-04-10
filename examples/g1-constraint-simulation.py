@@ -14,23 +14,29 @@ This example demonstrates how to:
   - Visualize the system's trajectory in Meshcat (optional)
 """
 
+import os
 import time
+from pathlib import Path
 
 import numpy as np
 import pinocchio as pin
-from example_robot_data import load
 
 # ─── 1. Kinematic / dynamic model ────────────────────────────────────────────
 
-robot = load("g1")
-model = robot.model
+model_path = Path(os.environ.get("EXAMPLE_ROBOT_DATA_MODEL_DIR"))
+mesh_dir = model_path.parent.parent
+urdf_filename = "g1_29dof_rev_1_0.urdf"
+urdf_model_path = model_path / "g1_description/urdf" / urdf_filename
+model, collision_model, visual_model = pin.buildModelsFromUrdf(
+    urdf_model_path, mesh_dir, pin.JointModelFreeFlyer()
+)
 
 # ─── 1. (Optional) Visualize the robot in Meshcat ────────────────────────────
 
 try:
     from pinocchio.visualize import MeshcatVisualizer
 
-    viz = MeshcatVisualizer(model, robot.collision_model, robot.visual_model)
+    viz = MeshcatVisualizer(model, collision_model, visual_model)
     viz.initViewer(open=True)
     viz.loadViewerModel()
     has_viz = True
@@ -115,17 +121,16 @@ constraint_models.append(pin.ConstraintModel(jlcm))
 joint_friction_coeff = 1.0
 lower_friction = np.zeros(model.nv)
 upper_friction = np.zeros(model.nv)
-for j, joint in enumerate(model.joints):
-    if j < 2:  # skip universe and free-flyer
-        continue
+# skip universe and free-flyer
+for joint in model.joints[2:]:
     lower_friction[joint.idx_v : joint.idx_v + joint.nv] = -joint_friction_coeff
     upper_friction[joint.idx_v : joint.idx_v + joint.nv] = joint_friction_coeff
 fjcm = pin.JointFrictionConstraintModel(
     model, actuated_joint_ids, lower_friction, upper_friction
 )
-fjcm.setTimeStep(dt)  # joint friction is velocity-dependent,
-# so we must inform the time-step for
+# Joint friction is velocity-dependent, so we must inform the time-step for
 # proper scaling of the upper/lower limits
+fjcm.setTimeStep(dt)
 constraint_models.append(pin.ConstraintModel(fjcm))
 
 total_residual_size = sum(cm.residualSize() for cm in constraint_models)
@@ -235,10 +240,10 @@ for t in range(horizon):
     # Update configuration and velocity for the next time step by applying
     # the constraint impulses.
     constraint_impulses = result.retrieveConstraintImpulses()
-    constraint_forces = (
-        1.0 / dt
-    ) * constraint_impulses  # convert impulses to forces/torques
-    tau_constraints = Jc.T @ constraint_forces  # map to generalised torques
+    # convert impulses to forces/torques
+    constraint_forces = (1.0 / dt) * constraint_impulses
+    # map to generalised torques
+    tau_constraints = Jc.T @ constraint_forces
     v_new = v + dt * pin.aba(model, data, q, v, zero_torque + tau_constraints, fext)
     q_new = pin.integrate(model, q, v_new * dt)
 
@@ -275,4 +280,5 @@ if has_viz:
     for _ in range(3):
         for q_vis in qs:
             viz.display(q_vis)
+            time.sleep(dt_vis)
         time.sleep(1.0)
