@@ -20,7 +20,7 @@
 ===========
 -->
 
-**Pinocchio** is open-source software actively developed by the [Willow](https://www.di.ens.fr/willow/) team at [Inria](https://www.inria.fr/en) in the beautiful city of Paris.
+**Pinocchio** is open-source software actively developed by the [Willow](https://www.di.ens.fr/willow/) team at [Inria](https://www.inria.fr/en) in the lovely city of Paris.
 **Pinocchio** instantiates state-of-the-art Rigid Body Algorithms for poly-articulated systems, building upon and revisiting the foundational algorithms introduced by Roy Featherstone.
 
 Beyond traditional rigid-body dynamics formulations, **Pinocchio** delivers cutting-edge algorithmic solutions for modern robotics and physics-based simulation challenges. It efficiently handles closed-loop kinematic mechanisms, solves frictional contact problems, and differentiates physics computations — making it a powerful and versatile library for both research and industrial applications.
@@ -31,7 +31,7 @@ Beyond traditional rigid-body dynamics formulations, **Pinocchio** delivers cutt
 It is built upon Eigen for linear algebra and **coal** for collision detection. **Pinocchio** includes a Python interface for fast code prototyping, [directly accessible](https://github.com/conda-forge/pinocchio-feedstock#installing-pinocchio) through [Conda](https://docs.conda.io/en/latest/).
 
 **Pinocchio** is now at the heart of various robotics software as [Aligator](https://github.com/Simple-Robotics/Aligator), [Crocoddyl](https://github.com/loco-3d/crocoddyl), an open-source and efficient Differential Dynamic Programming solver for robotics, the [Stack-of-Tasks](http://stack-of-tasks.github.io), an open-source and versatile hierarchical controller framework, or the [Humanoid Path Planner](https://humanoid-path-planner.github.io/hpp-doc), open-source software for Motion and Manipulation Planning.
-**Pinocchio** is also a primary source of inspiration for the [Kamino](https://disneyresearch.github.io/kamino/) simulator developed by Disney Research and that populates the Newton physics engine.
+**Pinocchio** is also a primary source of inspiration for the [Kamino](https://disneyresearch.github.io/kamino/) simulator developed by Disney Research, which populates the Newton physics engine.
 
 If you want to learn more about **Pinocchio** internal behaviors and main features, we invite you to read the related [paper](https://hal-laas.archives-ouvertes.fr/hal-01866228) and the online [documentation](https://gepettoweb.laas.fr/doc/stack-of-tasks/pinocchio/devel/doxygen-html/) or [DeepWiki](https://deepwiki.com/stack-of-tasks/pinocchio).
 
