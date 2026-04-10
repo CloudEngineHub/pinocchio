@@ -290,6 +290,9 @@ if has_viz:
     qs = subSample(qs, dt * horizon, fps)
     for _ in range(3):
         for q_vis in qs:
+            step_start = time.time()
             viz.display(q_vis)
-            time.sleep(dt_vis)
+            time_until_next_step = dt_vis - (time.time() - step_start)
+            if time_until_next_step > 0:
+                time.sleep(time_until_next_step)
         time.sleep(1.0)
