@@ -33,17 +33,18 @@ model, collision_model, visual_model = pin.buildModelsFromUrdf(
 
 # ─── 1. (Optional) Visualize the robot in Meshcat ────────────────────────────
 
-try:
-    from pinocchio.visualize import MeshcatVisualizer
+has_viz = False
+if pin.WITH_COLLISION:
+    try:
+        from pinocchio.visualize import MeshcatVisualizer
 
-    viz = MeshcatVisualizer(model, collision_model, visual_model)
-    viz.initViewer(open=True)
-    viz.loadViewerModel()
-    has_viz = True
-    print("Meshcat viewer ready.")
-except Exception:
-    has_viz = False
-    print("Meshcat not available - running without visualization.")
+        viz = MeshcatVisualizer(model, collision_model, visual_model)
+        viz.initViewer(open=True)
+        viz.loadViewerModel()
+        has_viz = True
+        print("Meshcat viewer ready.")
+    except Exception:
+        print("Meshcat not available - running without visualization.")
 
 # ─── 2. Initial configuration ─────────────────────────────────────────────────
 
