@@ -94,6 +94,17 @@ pacm = pin.PointAnchorConstraintModel(
 )
 constraint_models.append(pin.ConstraintModel(pacm))
 
+# Display a red ball at the anchor position in Meshcat.
+if has_viz:
+    import meshcat.geometry as mg
+    import meshcat.transformations as mt
+
+    viz.viewer["point_anchor"].set_object(
+        mg.Sphere(0.05),
+        mg.MeshLambertMaterial(color=0xFF0000),
+    )
+    viz.viewer["point_anchor"].set_transform(mt.translation_matrix(anchor_world_pos))
+
 # ── 3b. Joint limit constraints ───────────────────────────────────────────────
 # Apply joint limits to all actuated joints (skip joint 0 = universe and
 # joint 1 = root free-flyer which has no meaningful position limits here).
