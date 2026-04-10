@@ -73,6 +73,8 @@ namespace boost
       typedef ::pinocchio::JointFrictionConstraintDataTpl<Scalar, Options> Self;
       typedef typename Self::Base Base;
       ar & make_nvp("base", boost::serialization::base_object<Base>(cdata));
+      ar & make_nvp("friction_impulse_lower_limit", cdata.friction_impulse_lower_limit);
+      ar & make_nvp("friction_impulse_upper_limit", cdata.friction_impulse_upper_limit);
     }
 
     template<typename Archive, typename Derived>

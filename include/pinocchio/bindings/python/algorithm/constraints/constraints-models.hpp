@@ -48,6 +48,13 @@ namespace pinocchio
             "Constructor from given joint index vector "
             "implied in the constraint."))
         .def(
+          bp::init<
+            const context::Model &, const JointIndexVector &, const context::VectorXs &,
+            const context::VectorXs &>(
+            (bp::arg("self"), bp::arg("model"), bp::arg("m_active_joints"), bp::arg("lb"),
+             bp::arg("ub")),
+            "Full constructor from model, active joints, lower and upper friction bounds."))
+        .def(
           bp::init<const context::Model &>(
             (bp::arg("self"), bp::arg("model")), "Constructor from the model only."))
         .def(

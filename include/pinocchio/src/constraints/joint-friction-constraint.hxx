@@ -261,6 +261,7 @@ namespace pinocchio
       res.m_active_joint_ids = m_active_joint_ids;
       res.m_friction_lower_limit = m_friction_lower_limit.template cast<NewScalar>();
       res.m_friction_upper_limit = m_friction_upper_limit.template cast<NewScalar>();
+      res.m_dt = static_cast<NewScalar>(m_dt);
       return res;
     }
 
@@ -280,7 +281,7 @@ namespace pinocchio
              && m_active_joints == other.m_active_joints && m_active_dofs == other.m_active_dofs
              && m_active_joint_ids == other.m_active_joint_ids
              && m_friction_lower_limit == other.m_friction_lower_limit
-             && m_friction_upper_limit == other.m_friction_upper_limit;
+             && m_friction_upper_limit == other.m_friction_upper_limit && m_dt == other.m_dt;
     }
 
     /// \brief Comparison operator
@@ -726,7 +727,8 @@ namespace pinocchio
     /// \brief Comparison operator
     bool operator==(const JointFrictionConstraintDataTpl & /*other*/) const
     {
-      return true;
+      return friction_impulse_lower_limit == friction_impulse_lower_limit
+             && friction_impulse_upper_limit == friction_impulse_upper_limit;
     }
 
     /// \brief Comparison operator
