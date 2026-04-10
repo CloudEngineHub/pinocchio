@@ -135,6 +135,15 @@ if(BUILD_PYTHON_INTERFACE)
             geometry-models
             constraint-cholesky
         )
+        if(BUILD_ADVANCED_TESTING)
+            # Set as advanced testing because it need a new
+            # example_robot_data release (> 4.4)
+            # and because computation is long in Debug
+            list(
+                APPEND ${PROJECT_NAME}_PYTHON_EXAMPLES
+                g1-constraint-simulation
+            )
+        endif()
     endif()
 
     if(BUILD_WITH_COLLISION_SUPPORT)
