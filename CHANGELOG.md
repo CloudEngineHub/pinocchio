@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-04-13
+
 ### Highlights
 
 - `lcaba` algorithm:
@@ -1358,7 +1360,8 @@ The model can either be parsed from a URDF format or be created by appendending 
         • Fixed (concatenation of two consecutive bodies)
 
 
-[Unreleased]: https://github.com/stack-of-tasks/pinocchio/compare/v3.9.0...HEAD
+[Unreleased]: https://github.com/stack-of-tasks/pinocchio/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/stack-of-tasks/pinocchio/compare/v3.9.0...v4.0.0
 [3.9.0]: https://github.com/stack-of-tasks/pinocchio/compare/v3.8.0...v3.9.0
 [3.8.0]: https://github.com/stack-of-tasks/pinocchio/compare/v3.7.0...v3.8.0
 [3.7.0]: https://github.com/stack-of-tasks/pinocchio/compare/v3.6.0...v3.7.0
