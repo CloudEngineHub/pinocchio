@@ -164,7 +164,7 @@ dt = 5e-3
 T_sim = 10
 t = 0.0
 
-# Proximal settings for LCABA – mu must be positive
+# Proximal settings for LCABA - mu must be positive
 mu_sim = 1e-6
 prox_settings = pin.ProximalSettings(1e-12, mu_sim, 100)
 

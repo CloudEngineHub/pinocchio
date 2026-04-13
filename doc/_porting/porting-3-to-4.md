@@ -84,5 +84,3 @@ Constraints API changes:
 
 - Deprecate `ContactCholeskyDecomposition`, replaced by  `ConstraintCholeskyDecomposition`
 - Deprecate `DelassusCholeskyExpressionTpl`, replaced by  `DelassusOperatorCholeskyExpressionTpl`
-
-

@@ -119,7 +119,7 @@ Additional examples introducing **Pinocchio** are also available in the [documen
 
 ## Tutorials
 
-**Pinocchio** comes with a large set of tutorials that introduce the basic tools for robot control. 
+**Pinocchio** comes with a large set of tutorials that introduce the basic tools for robot control.
 Tutorial and training documents are listed [here](https://gepettoweb.laas.fr/doc/stack-of-tasks/pinocchio/devel/doxygen-html/index.html#OverviewConclu).
 You can also consider the interactive Jupyter notebook [set of tutorials](https://github.com/ymontmarin/_tps_robotique) developed by [Nicolas Mansard](https://gepettoweb.laas.fr/index.php/Members/NicolasMansard) and [Yann de Mont-Marin](https://github.com/ymontmarin).
 
