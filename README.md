@@ -110,7 +110,7 @@ or via pip (currently only available on Linux):
 
 ## Documentation
 
-The online documentation for the latest release of ** Pinocchio ** is available [here](https://gepettoweb.laas.fr/doc/stack-of-tasks/pinocchio/devel/doxygen-html/). A cheat sheet pdf with the main functions and algorithms can be found [here](https://github.com/stack-of-tasks/pinocchio/blob/devel/doc/pinocchio_cheat_sheet.pdf).
+The online documentation for the latest release of **Pinocchio** is available [here](https://gepettoweb.laas.fr/doc/stack-of-tasks/pinocchio/devel/doxygen-html/). A cheat sheet pdf with the main functions and algorithms can be found [here](https://github.com/stack-of-tasks/pinocchio/blob/devel/doc/pinocchio_cheat_sheet.pdf).
 
 ## Examples
 
