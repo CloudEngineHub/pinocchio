@@ -79,6 +79,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add `internal::matrix_product` in `math.hpp`
 - Add `internal::matrix_inversion` in `math.hpp`
 - Add `internal::matrix_inversion_code_generated` in `math.hpp`
+- Add support to `libsdformat` > 14
 
 ### Changed
 - C++17 is now the minimal supported version of the C++ standard. Check [cppreference](https://en.cppreference.com/w/cpp/compiler_support/17) to see if your compiler supports it.
