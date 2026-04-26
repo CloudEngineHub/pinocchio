@@ -147,6 +147,7 @@ if(urdfdom_FOUND)
         bindings_urdf
         bindings_geometry_model_urdf
         bindings_contact_inverse_dynamics
+        bindings_viser_visualizer
     )
 endif(urdfdom_FOUND)
 
