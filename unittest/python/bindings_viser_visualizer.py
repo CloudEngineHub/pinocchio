@@ -1,4 +1,5 @@
-"""Tests for pinocchio.visualize.ViserVisualizer.
+"""
+Tests for pinocchio.visualize.ViserVisualizer.
 
 Focused on the meshScale handling: URDF ``<mesh scale="..."/>`` must be
 baked into the mesh vertices at load time, and must NOT be multiplied
@@ -75,7 +76,9 @@ class TestViserVisualizerMeshScale(unittest.TestCase):
         return server, viz
 
     def test_scale_is_forwarded_to_mesh_loader(self):
-        """``_add_mesh_from_path`` must receive the geometry meshScale."""
+        """
+        Check that ``_add_mesh_from_path`` receives the geometry meshScale.
+        """
         captured = {}
         orig = ViserVisualizer._add_mesh_from_path
 
@@ -97,8 +100,11 @@ class TestViserVisualizerMeshScale(unittest.TestCase):
         np.testing.assert_allclose(captured["scale"], self.expected_scale)
 
     def test_translation_is_not_multiplied_by_mesh_scale(self):
-        """After ``display(q)``, frame.position must equal the link
-        translation, *not* translation * meshScale.
+        """
+        Check that frame.position equals the link translation.
+
+        After ``display(q)``, the viser frame translation must match the
+        URDF link origin, *not* origin * meshScale (the previous bug).
         """
         server, viz = self._make_visualizer()
         try:
