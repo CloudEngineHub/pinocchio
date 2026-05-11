@@ -14,25 +14,36 @@
           "meshcat"
           "viser"
         ];
-        overrideAttrs.pinocchio = {
-          src = lib.fileset.toSource {
-            root = ./.;
-            fileset = lib.fileset.unions [
-              ./benchmark
-              ./bindings
-              ./CMakeLists.txt
-              ./doc
-              ./examples
-              ./include
-              ./models
-              ./package.xml
-              ./sources.cmake
-              ./src
-              ./unittest
-              ./utils
+        overrideAttrs.pinocchio =
+          { pkgs-final, drv-prev, ... }:
+          {
+            disabledTests = lib.optionals (pkgs-final.stdenv.hostPlatform.isDarwin) [
+              # ref. https://github.com/stack-of-tasks/pinocchio/issues/2885
+              "pinocchio-test-cpp-serialization-multibody"
+              # sigtrap on GHA runners
+              "pinocchio-example-py-casadi-quadrotor-ocp"
             ];
+            nativeCheckInputs = (drv-prev.nativeCheckInputs or [ ]) ++ [
+              pkgs-final.ctestCheckHook
+            ];
+            src = lib.fileset.toSource {
+              root = ./.;
+              fileset = lib.fileset.unions [
+                ./benchmark
+                ./bindings
+                ./CMakeLists.txt
+                ./doc
+                ./examples
+                ./include
+                ./models
+                ./package.xml
+                ./sources.cmake
+                ./src
+                ./unittest
+                ./utils
+              ];
+            };
           };
-        };
         extends = {
           full = _final: prev: {
             pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
