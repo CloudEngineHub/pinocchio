@@ -10,7 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-- nix: switch to flakoboros
+### Fixed
+
+- Fix build issue with g++ 12 ([#2890](https://github.com/stack-of-tasks/pinocchio/pull/2890))
+
+### Changed
+
+- nix: switch to flakoboros ([#2882](https://github.com/stack-of-tasks/pinocchio/pull/2882))
 
 ## [4.0.0] - 2026-04-13
 
