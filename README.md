@@ -203,7 +203,8 @@ Please note that we always advise including the `pinocchio/fwd.hpp` header as th
 | **Humble**    | [![](https://build.ros2.org/job/Hbin_uJ64__pinocchio__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Hbin_uJ64__pinocchio__ubuntu_jammy_amd64__binary) |
 | **Jazzy**     | [![](https://build.ros2.org/job/Jbin_uN64__pinocchio__ubuntu_noble_amd64__binary/badge/icon)](https://build.ros2.org/job/Jbin_uN64__pinocchio__ubuntu_noble_amd64__binary) |
 | **Kilted**    | [![](https://build.ros2.org/job/Kbin_uN64__pinocchio__ubuntu_noble_amd64__binary/badge/icon)](https://build.ros2.org/job/Kbin_uN64__pinocchio__ubuntu_noble_amd64__binary) |
-| **Rolling**   | [![](https://build.ros2.org/job/Rbin_uN64__pinocchio__ubuntu_noble_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uN64__pinocchio__ubuntu_noble_amd64__binary) |
+| **Lyrical**   | [![](https://build.ros2.org/job/Lbin_uR64__pinocchio__ubuntu_resolute_amd64__binary/badge/icon)](https://build.ros2.org/job/Lbin_uR64__pinocchio__ubuntu_resolute_amd64__binary) |
+| **Rolling**   | [![](https://build.ros2.org/job/Rbin_uR64__pinocchio__ubuntu_resolute_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uR64__pinocchio__ubuntu_resolute_amd64__binary) |
 
 ## Visualization
 
