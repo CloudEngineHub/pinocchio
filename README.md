@@ -203,7 +203,8 @@ Please note that we always advise including the `pinocchio/fwd.hpp` header as th
 | **Humble**    | [![](https://build.ros2.org/job/Hbin_uJ64__pinocchio__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Hbin_uJ64__pinocchio__ubuntu_jammy_amd64__binary) |
 | **Jazzy**     | [![](https://build.ros2.org/job/Jbin_uN64__pinocchio__ubuntu_noble_amd64__binary/badge/icon)](https://build.ros2.org/job/Jbin_uN64__pinocchio__ubuntu_noble_amd64__binary) |
 | **Kilted**    | [![](https://build.ros2.org/job/Kbin_uN64__pinocchio__ubuntu_noble_amd64__binary/badge/icon)](https://build.ros2.org/job/Kbin_uN64__pinocchio__ubuntu_noble_amd64__binary) |
-| **Rolling**   | [![](https://build.ros2.org/job/Rbin_uN64__pinocchio__ubuntu_noble_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uN64__pinocchio__ubuntu_noble_amd64__binary) |
+| **Lyrical**   | [![](https://build.ros2.org/job/Lbin_uR64__pinocchio__ubuntu_resolute_amd64__binary/badge/icon)](https://build.ros2.org/job/Lbin_uR64__pinocchio__ubuntu_resolute_amd64__binary) |
+| **Rolling**   | [![](https://build.ros2.org/job/Rbin_uR64__pinocchio__ubuntu_resolute_amd64__binary/badge/icon)](https://build.ros2.org/job/Rbin_uR64__pinocchio__ubuntu_resolute_amd64__binary) |
 
 ## Visualization
 
@@ -296,7 +297,7 @@ In addition to the core dev team, the following people have also been involved i
 -   [Sarah El Kazdadi](https://github.com/sarah-ek) (Inria): multi-precision arithmetic support
 -   [Nicolas Torres Alberto](https://scholar.google.com/citations?user=gYNLhEIAAAAJ&hl=en) (Inria): features extension
 -   [Shubham Singh](https://github.com/shubhamsingh91) (UT Austin): second-order inverse dynamics derivatives
--   [Sebastian Castro](https://roboticseabass.com) (RAI Institute): Viser visualizer and MeshCat visualizer feature extension
+-   [Sebastian Castro](https://roboticseabass.com): Viser visualizer and MeshCat visualizer feature extension
 -   [Lev Kozlov](https://github.com/lvjonok): Kinetic and potential energy regressors
 -   [Simeon Nedelchev](https://github.com/simeon-ned): Pseudo inertia and Log-Cholesky parametrization
 -   [Alexy Legrand](https://www.linkedin.com/in/alexy-legrand-125889232/): Viser color bug fixes
