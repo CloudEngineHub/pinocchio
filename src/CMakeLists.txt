@@ -124,7 +124,11 @@ function(PINOCCHIO_TARGET target_name)
     set(LIB_NAME "${target_name}")
 
     # Manage different scope type if building an interface or shared library
-    set(LIBRARY_TYPE SHARED)
+    if(BUILD_SHARED_LIBS)
+        set(LIBRARY_TYPE SHARED)
+    else()
+        set(LIBRARY_TYPE STATIC)
+    endif()
     set(LIBRARY_PUBLIC_SCOPE PUBLIC)
     if(ARGS_INTERFACE)
         set(LIBRARY_TYPE INTERFACE)
@@ -372,6 +376,8 @@ if(BUILD_WITH_COLLISION_SUPPORT)
 endif()
 
 # Define the visualizers target
+option(BUILD_VISUALIZERS "Build the pinocchio visualizers library" ON)
+if(BUILD_VISUALIZERS)
 set(VISUALIZERS_LIB_NAME "${PROJECT_NAME}_visualizers")
 pinocchio_target(
   ${VISUALIZERS_LIB_NAME}
@@ -387,6 +393,7 @@ if(BUILD_WITH_COLLISION_SUPPORT)
     )
     target_link_libraries(${VISUALIZERS_LIB_NAME} PUBLIC coal::coal)
 endif()
+endif() # BUILD_VISUALIZERS
 
 # Define the parsers target.
 #
