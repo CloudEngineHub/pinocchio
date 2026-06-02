@@ -4,7 +4,7 @@
 #pragma once
 
 // IWYU pragma: begin_keep
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32)
   #include <malloc.h>
 #else
   #include <alloca.h>
