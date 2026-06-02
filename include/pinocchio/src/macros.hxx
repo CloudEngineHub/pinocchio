@@ -109,7 +109,7 @@
 
 #define PINOCCHIO_MAYBE_UNUSED [[maybe_unused]]
 
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32)
   #define PINOCCHIO_FUNCTION_NAME __FUNCTION__
 #else
   #define PINOCCHIO_FUNCTION_NAME __func__
