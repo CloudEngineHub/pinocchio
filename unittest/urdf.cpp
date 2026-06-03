@@ -2,6 +2,7 @@
 // Copyright (c) 2015-2022 CNRS INRIA
 //
 
+#include <cstddef>
 #include <fstream>
 
 #include "pinocchio/multibody.hpp"
@@ -452,5 +453,258 @@ BOOST_AUTO_TEST_CASE(test_mimic_parsing)
     boost::get<pinocchio::JointModelRevoluteUnaligned>(j4.jmodel())
       .axis.isApprox(-1 * Eigen::Vector3d::UnitZ()));
 }
+
+#if URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0) && defined(PINOCCHIO_WITH_COLLISION)
+
+BOOST_AUTO_TEST_CASE(test_urdf_v12_capsule)
+{
+  const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
+  <robot name="capsule_robot" version="1.2">
+    <link name="base_link"/>
+    <link name="arm_link">
+      <collision>
+        <geometry>
+          <capsule radius="0.05" length="0.3"/>
+        </geometry>
+      </collision>
+    </link>
+    <joint name="arm_joint" type="revolute">
+      <parent link="base_link"/>
+      <child link="arm_link"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="-1.57" upper="1.57" effort="100.0" velocity="1.0"/>
+    </joint>
+  </robot>)");
+
+  // create temporary file
+  const boost::filesystem::path tmp =
+    boost::filesystem::temp_directory_path() / "urdf_v12_capsule_test.urdf";
+  {
+    std::ofstream f(tmp.string());
+    f << filestr;
+  }
+
+  pinocchio::Model model;
+  pinocchio::urdf::buildModel(tmp.string(), model);
+
+  pinocchio::GeometryModel geomModel;
+  pinocchio::urdf::buildGeom(
+    model, tmp.string(), pinocchio::COLLISION, geomModel, PINOCCHIO_MODEL_DIR);
+
+  BOOST_CHECK_EQUAL(geomModel.ngeoms, 1);
+  BOOST_CHECK_EQUAL(geomModel.geometryObjects[0].geometry->getNodeType(), coal::GEOM_CAPSULE);
+
+  // check cpasule  half length length and radius
+  const auto * capsule =
+    dynamic_cast<const coal::Capsule *>(geomModel.geometryObjects[0].geometry.get());
+
+  BOOST_REQUIRE(capsule != nullptr);
+  BOOST_CHECK_EQUAL(capsule->radius, 0.05);
+  BOOST_CHECK_SMALL(capsule->halfLength - 0.15, 1e-6);
+}
+#endif // URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0) && defined(PINOCCHIO_WITH_COLLISION)
+
+#if URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 1)
+
+BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_revolute)
+{
+  const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
+    <robot name="test" version="1.2">
+      <link name="base_link"/>
+      <link name="link_1"/>
+      <joint name="joint_1" type="revolute">
+        <origin xyz="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <parent link="base_link"/>
+        <child link="link_1"/>
+        <limit lower="-1.57" upper="1.57" effort="100.0" velocity="1.0"
+               acceleration="5.0" deceleration="3.0" jerk="10.0"/>
+      </joint>
+    </robot>)");
+
+  pinocchio::Model model;
+  pinocchio::urdf::buildModelFromXML(filestr, model);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit.size(), model.nv);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit[0], 5.0);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit[0], -3.0);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit[0], 10.0);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit[0], -10.0);
+}
+
+BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_prismatic)
+{
+  const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
+    <robot name="test" version="1.2">
+      <link name="base_link"/>
+      <link name="link_1"/>
+      <joint name="joint_1" type="prismatic">
+        <origin xyz="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <parent link="base_link"/>
+        <child link="link_1"/>
+        <limit lower="-0.785" upper="0.785"
+               acceleration="1.0" jerk="5.0"/>
+      </joint>
+    </robot>)");
+
+  pinocchio::Model model;
+  pinocchio::urdf::buildModelFromXML(filestr, model);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit.size(), model.nv);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit[0], 1.0);
+  // no deceleration is given, deceleration = -acceleration
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit[0], -1.0);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit[0], 5.0);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit[0], -5.0);
+}
+
+BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_continuous)
+{
+  const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
+    <robot name="test" version="1.2">
+      <link name="base_link"/>
+      <link name="link_1"/>
+      <joint name="joint_1" type="continuous">
+        <origin xyz="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <parent link="base_link"/>
+        <child link="link_1"/>
+      </joint>
+    </robot>)");
+
+  pinocchio::Model model;
+  pinocchio::urdf::buildModelFromXML(filestr, model);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit.size(), model.nv);
+
+  // no limits are given, limits are initialized to infinity
+  const double infty = std::numeric_limits<double>::infinity();
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit[0], infty);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit[0], -infty);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit[0], infty);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit[0], -infty);
+}
+
+BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_revolute)
+{
+  const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
+    <robot name="test" version="1.0">
+      <link name="base_link"/>
+      <link name="link_1"/>
+      <joint name="joint_1" type="revolute">
+        <origin xyz="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <parent link="base_link"/>
+        <child link="link_1"/>
+        <limit lower="-0.785" upper="0.785" effort="100.0" velocity="2.0"
+          acceleration="1.0" deceleration="2.0" jerk="5.0"/>
+      </joint>
+    </robot>)");
+
+  pinocchio::Model model;
+  pinocchio::urdf::buildModelFromXML(filestr, model);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit.size(), model.nv);
+
+  // accel and jerk limits are ignored for version inferior to 1.2
+  // limits are initialized to infinity
+  const double infty = std::numeric_limits<double>::infinity();
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit[0], infty);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit[0], -infty);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit[0], infty);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit[0], -infty);
+}
+
+BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_planar)
+{
+  const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
+    <robot name="test" version="1.0">
+      <link name="base_link"/>
+      <link name="link_1"/>
+      <joint name="joint_1" type="planar">
+        <origin xyz="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <parent link="base_link"/>
+        <child link="link_1"/>
+        <limit lower="-0.785" upper="0.785" effort="100.0" velocity="2.0"
+          acceleration="1.0" deceleration="2.0" jerk="5.0"/>
+      </joint>
+    </robot>)");
+
+  pinocchio::Model model;
+  pinocchio::urdf::buildModelFromXML(filestr, model);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit.size(), model.nv);
+
+  // joint limits are not read for planar joint no matter the version
+  // limits are initialized to infinity
+  const double infty = std::numeric_limits<double>::infinity();
+
+  for (int i = 0; i < model.nv; ++i)
+  {
+    BOOST_CHECK_EQUAL(model.upperAccelerationLimit[i], infty);
+    BOOST_CHECK_EQUAL(model.lowerAccelerationLimit[i], -infty);
+    BOOST_CHECK_EQUAL(model.upperJerkLimit[i], infty);
+    BOOST_CHECK_EQUAL(model.lowerJerkLimit[i], -infty);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_floating)
+{
+  const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
+    <robot name="test" version="1.0">
+      <link name="base_link"/>
+      <link name="link_1"/>
+      <joint name="joint_1" type="floating">
+        <origin xyz="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <parent link="base_link"/>
+        <child link="link_1"/>
+        <limit lower="-0.785" upper="0.785" effort="100.0" velocity="2.0"
+          acceleration="1.0" deceleration="2.0" jerk="5.0"/>
+      </joint>
+    </robot>)");
+
+  pinocchio::Model model;
+  pinocchio::urdf::buildModelFromXML(filestr, model);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit.size(), model.nv);
+
+  // joint limits are not read for floating joint no matter the version
+  // limits are initialized to infinity
+  const double infty = std::numeric_limits<double>::infinity();
+
+  for (int i = 0; i < model.nv; ++i)
+  {
+    BOOST_CHECK_EQUAL(model.upperAccelerationLimit[i], infty);
+    BOOST_CHECK_EQUAL(model.lowerAccelerationLimit[i], -infty);
+    BOOST_CHECK_EQUAL(model.upperJerkLimit[i], infty);
+    BOOST_CHECK_EQUAL(model.lowerJerkLimit[i], -infty);
+  }
+}
+#endif // URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 1)
 
 BOOST_AUTO_TEST_SUITE_END()
