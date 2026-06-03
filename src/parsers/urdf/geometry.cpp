@@ -239,6 +239,22 @@ namespace pinocchio
 
           geometry = std::shared_ptr<coal::CollisionGeometry>(new coal::Sphere(radius));
         }
+
+  #if URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0)
+        // handle capsule
+        else if (urdf_geometry->type == ::urdf::Geometry::CAPSULE)
+        {
+          meshPath = "CAPSULE";
+          meshScale << 1, 1, 1;
+
+          const auto & capsule = static_cast<const ::urdf::Capsule &>(*urdf_geometry);
+
+          double radius = capsule.radius;
+          double length = capsule.length;
+
+          geometry = std::shared_ptr<coal::CollisionGeometry>(new coal::Capsule(radius, length));
+        }
+  #endif
         else
           throw std::invalid_argument("Unknown geometry type :");
 

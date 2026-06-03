@@ -431,6 +431,17 @@ if(BUILD_WITH_PARSERS_SUPPORT)
           LIBRARIES ${urdfdom_LIBRARIES}
           INCLUDE_DIRS ${urdfdom_INCLUDE_DIRS}
         )
+
+        # Expose urdfdom_headers version
+        string(REPLACE "." ";" _URDFDOM_H_VER "${urdfdom_headers_VERSION}")
+        list(GET _URDFDOM_H_VER 0 _URDFDOM_H_MAJOR)
+        list(GET _URDFDOM_H_VER 1 _URDFDOM_H_MINOR)
+        list(GET _URDFDOM_H_VER 2 _URDFDOM_H_PATCH)
+        target_compile_definitions(${PARSERS_LIB_NAME} PUBLIC
+            URDFDOM_HEADERS_MAJOR_VERSION=${_URDFDOM_H_MAJOR}
+            URDFDOM_HEADERS_MINOR_VERSION=${_URDFDOM_H_MINOR}
+            URDFDOM_HEADERS_PATCH_VERSION=${_URDFDOM_H_PATCH}
+        )
     endif()
 
     if(BUILD_WITH_SDF_SUPPORT)
