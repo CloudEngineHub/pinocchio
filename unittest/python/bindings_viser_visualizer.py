@@ -6,6 +6,7 @@ baked into the mesh at load time, and must NOT be multiplied into the frame
 translation in updatePlacements.
 """
 
+import importlib.util
 import unittest
 from pathlib import Path
 
@@ -21,12 +22,7 @@ try:
 except ImportError:
     WITH_VISER = False
 
-try:
-    import collada  # pycollada, required by trimesh to load DAE files
-
-    WITH_PYCOLLADA = True
-except ImportError:
-    WITH_PYCOLLADA = False
+WITH_PYCOLLADA = importlib.util.find_spec("collada") is not None
 
 
 # Resolve the pinocchio repo's shipped test meshes.
