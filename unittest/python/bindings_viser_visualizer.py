@@ -7,6 +7,7 @@ translation in updatePlacements.
 """
 
 import importlib.util
+import io
 import unittest
 from pathlib import Path
 
@@ -86,14 +87,28 @@ class TestViserVisualizerMeshScale(unittest.TestCase):
     @unittest.skipUnless(WITH_PYCOLLADA, "Needs pycollada")
     def test_dae_path_with_scale(self):
         """DAE branch: _add_mesh_from_path must accept a DAE file with scale."""
+        scale = np.array([2.0, 3.0, 4.0])
+        # access original mesh
+        original_mesh = trimesh.load_scene(str(BOX_DAE)).to_mesh()
+
         viz = self._make_visualizer()
         frame = viz._add_mesh_from_path(
             "test_dae",
             str(BOX_DAE),
             color=None,
-            scale=np.array([2.0, 3.0, 4.0]),
+            scale=scale,
         )
-        self.assertIsNotNone(frame)
+
+        # mesh is not accessible from frame, we load glb data to access mesh
+        result_mesh = trimesh.load(
+            io.BytesIO(frame.glb_data), file_type="glb"
+        ).to_mesh()
+
+        np.testing.assert_allclose(
+            result_mesh.vertices,
+            original_mesh.vertices * scale,
+            atol=1e-5,
+        )
 
     def test_translation_is_not_multiplied_by_mesh_scale(self):
         """
