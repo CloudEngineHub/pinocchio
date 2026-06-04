@@ -221,31 +221,21 @@ class ViserVisualizer(BaseVisualizer):
 
         self.frames[name] = frame
 
-    def _add_mesh_from_path(self, name, mesh_path, color, scale=None):
+    def _add_mesh_from_path(self, name, mesh_path, color, scale):
         """
         Load a mesh from a file.
-
-        The URDF <mesh scale="x y z"/> attribute is stored on the geometry
-        object as ``meshScale``. Since viser scene nodes do not support a
-        per-node non-uniform scale, we bake the scale into the mesh vertices
-        at load time.
         """
         extension = Path(mesh_path).suffix.lower()
-        apply_scale = scale is not None and not np.allclose(scale, 1.0)
         if extension == ".dae" or color is None:
             mesh = trimesh.load_scene(mesh_path)
-            if apply_scale:
-                for g in mesh.geometry.values():
-                    g.vertices = g.vertices * np.asarray(scale)
+            mesh.apply_scale(scale)
             return self.viewer.scene.add_mesh_trimesh(name, mesh)
         else:
             mesh = trimesh.load_mesh(mesh_path)
-            vertices = mesh.vertices
-            if apply_scale:
-                vertices = vertices * np.asarray(scale)
+            mesh.apply_scale(scale)
             return self.viewer.scene.add_mesh_simple(
                 name,
-                vertices,
+                mesh.vertices,
                 mesh.faces,
                 color=color[:3],
                 opacity=color[3],
