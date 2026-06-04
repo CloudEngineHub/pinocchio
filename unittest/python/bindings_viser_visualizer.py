@@ -2,8 +2,8 @@
 Tests for pinocchio.visualize.ViserVisualizer.
 
 Focused on the meshScale handling: URDF ``<mesh scale="..."/>`` must be
-baked into the mesh vertices at load time, and must NOT be multiplied
-into the frame translation in updatePlacements.
+baked into the mesh at load time, and must NOT be multiplied into the frame
+translation in updatePlacements.
 """
 
 import unittest
@@ -13,6 +13,7 @@ import numpy as np
 import pinocchio as pin
 
 try:
+    import trimesh
     import viser
     from pinocchio.visualize import ViserVisualizer
 
@@ -20,12 +21,20 @@ try:
 except ImportError:
     WITH_VISER = False
 
+try:
+    import collada  # pycollada, required by trimesh to load DAE files
 
-# Resolve the pinocchio repo's shipped test mesh.
+    WITH_PYCOLLADA = True
+except ImportError:
+    WITH_PYCOLLADA = False
+
+
+# Resolve the pinocchio repo's shipped test meshes.
 MODELS_DIR = (
     Path(__file__).resolve().parent.parent.parent / "models"
 )  # unittest/python/../../models -> models
 BOX_STL = MODELS_DIR / "simple_humanoid_description" / "box.stl"
+BOX_DAE = MODELS_DIR / "simple_humanoid_description" / "box.dae"
 
 
 URDF_WITH_SCALE = """<?xml version="1.0"?>
@@ -46,81 +55,85 @@ URDF_WITH_SCALE = """<?xml version="1.0"?>
 @unittest.skipUnless(pin.WITH_URDFDOM, "Needs URDFDOM")
 class TestViserVisualizerMeshScale(unittest.TestCase):
     def setUp(self):
-        if not BOX_STL.is_file():
-            self.skipTest(f"box.stl not found at {BOX_STL}")
+        self.server = viser.ViserServer(host="localhost", server_port=0)
 
-        self.model = pin.buildModelFromXML(URDF_WITH_SCALE)
-        self.visual_model = pin.buildGeomFromUrdfString(
-            self.model,
-            URDF_WITH_SCALE,
-            pin.GeometryType.VISUAL,
-            package_dirs=[str(BOX_STL.parent)],
-        )
-        # Reuse visual as collision; the ViserVisualizer updates both on load.
-        self.collision_model = self.visual_model
-        self.expected_scale = np.array([2.0, 3.0, 4.0])
-        self.expected_translation = np.array([1.0, 2.0, 3.0])
+    def tearDown(self):
+        self.server.stop()
 
-        geom = self.visual_model.geometryObjects[0]
-        np.testing.assert_allclose(geom.meshScale, self.expected_scale)
-
-    def _make_visualizer(self):
-        # A headless viser server on an ephemeral port.
-        server = viser.ViserServer(host="localhost", server_port=0)
+    def _make_visualizer(self, model=None, visual_model=None, collision_model=None):
+        if model is None:
+            model = pin.Model()
         viz = ViserVisualizer(
-            self.model,
-            collision_model=self.collision_model,
-            visual_model=self.visual_model,
+            model,
+            collision_model=collision_model,
+            visual_model=visual_model,
         )
-        viz.initViewer(viewer=server)
-        return server, viz
+        viz.initViewer(viewer=self.server)
+        return viz
 
-    def test_scale_is_forwarded_to_mesh_loader(self):
-        """
-        Check that ``_add_mesh_from_path`` receives the geometry meshScale.
-        """
-        captured = {}
-        orig = ViserVisualizer._add_mesh_from_path
+    def test_stl_path_with_scale(self):
+        """STL branch: scale must be baked into the mesh vertices."""
+        scale = np.array([2.0, 3.0, 4.0])
+        expected_vertices = trimesh.load_mesh(str(BOX_STL)).vertices * scale
 
-        def spy(self, name, mesh_path, color, scale=None):
-            captured["scale"] = None if scale is None else np.array(scale)
-            return orig(self, name, mesh_path, color, scale=scale)
+        viz = self._make_visualizer()
+        frame = viz._add_mesh_from_path(
+            "test_stl",
+            str(BOX_STL),
+            color=[1.0, 0.0, 0.0, 1.0],
+            scale=scale,
+        )
+        np.testing.assert_allclose(
+            np.array(frame.vertices), expected_vertices, atol=1e-5
+        )
 
-        ViserVisualizer._add_mesh_from_path = spy
-        try:
-            server, viz = self._make_visualizer()
-            try:
-                viz.loadViewerModel()
-            finally:
-                server.stop()
-        finally:
-            ViserVisualizer._add_mesh_from_path = orig
-
-        self.assertIsNotNone(captured.get("scale"))
-        np.testing.assert_allclose(captured["scale"], self.expected_scale)
+    @unittest.skipUnless(WITH_PYCOLLADA, "Needs pycollada")
+    def test_dae_path_with_scale(self):
+        """DAE branch: _add_mesh_from_path must accept a DAE file with scale."""
+        viz = self._make_visualizer()
+        frame = viz._add_mesh_from_path(
+            "test_dae",
+            str(BOX_DAE),
+            color=None,
+            scale=np.array([2.0, 3.0, 4.0]),
+        )
+        self.assertIsNotNone(frame)
 
     def test_translation_is_not_multiplied_by_mesh_scale(self):
         """
         Check that frame.position equals the link translation.
 
         After ``display(q)``, the viser frame translation must match the
-        URDF link origin, *not* origin * meshScale (the previous bug).
+        URDF link origin.
         """
-        server, viz = self._make_visualizer()
-        try:
-            viz.loadViewerModel()
-            viz.display(pin.neutral(self.model))
+        expected_scale = np.array([2.0, 3.0, 4.0])
+        expected_translation = np.array([1.0, 2.0, 3.0])
 
-            geom_name = self.visual_model.geometryObjects[0].name
-            frame = viz.frames[viz.viewerRootNodeName + "/visual/" + geom_name]
+        model = pin.buildModelFromXML(URDF_WITH_SCALE)
+        visual_model = pin.buildGeomFromUrdfString(
+            model,
+            URDF_WITH_SCALE,
+            pin.GeometryType.VISUAL,
+            package_dirs=[str(BOX_STL.parent)],
+        )
+        np.testing.assert_allclose(
+            visual_model.geometryObjects[0].meshScale, expected_scale
+        )
 
-            np.testing.assert_allclose(
-                np.asarray(frame.position), self.expected_translation, atol=1e-9
-            )
-            buggy = self.expected_translation * self.expected_scale
-            self.assertFalse(np.allclose(np.asarray(frame.position), buggy))
-        finally:
-            server.stop()
+        viz = self._make_visualizer(
+            model=model,
+            collision_model=visual_model,
+            visual_model=visual_model,
+        )
+        viz.loadViewerModel()
+        viz.display(pin.neutral(model))
+
+        geom_name = visual_model.geometryObjects[0].name
+        frame = viz.frames[viz.viewerRootNodeName + "/visual/" + geom_name]
+
+        np.testing.assert_allclose(
+            np.asarray(frame.position), expected_translation, atol=1e-9
+        )
 
 
 if __name__ == "__main__":
