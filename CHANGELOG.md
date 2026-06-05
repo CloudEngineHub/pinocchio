@@ -12,12 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Fix Viser visualizer: apply URDF `<mesh scale>` to mesh vertices instead of scaling the link translation ([#2878](https://github.com/stack-of-tasks/pinocchio/pull/2878))
+
 - Fix build issue with g++ 12 ([#2890](https://github.com/stack-of-tasks/pinocchio/pull/2890))
 - Fix useless memory allocation in Python checkers ([#2897](https://github.com/stack-of-tasks/pinocchio/pull/2897))
 
 ### Changed
 
 - nix: switch to flakoboros ([#2882](https://github.com/stack-of-tasks/pinocchio/pull/2882))
+
 
 ## [4.0.0] - 2026-04-13
 
