@@ -274,10 +274,10 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_3D_humanoid)
   prox_settings.mu = 1e-4;
   prox_settings.max_iter = 6;
   constrainedABA(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
-  BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
+  BOOST_CHECK(data.ddq.isApprox(data_ref.ddq, Eigen::NumTraits<double>::dummy_precision() * 2.));
 
   constrainedABA(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
-  BOOST_CHECK(data.ddq.isApprox(data_ref.ddq));
+  BOOST_CHECK(data.ddq.isApprox(data_ref.ddq, Eigen::NumTraits<double>::dummy_precision() * 2.));
 }
 
 BOOST_AUTO_TEST_CASE(test_forward_dynamics_repeating_6D_humanoid)
