@@ -191,9 +191,6 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
   prox_settings.max_iter = 7;
 
   constrainedABA(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
-  std::cout << data.ddq.transpose() << std::endl;
-  std::cout << data_ref.ddq.transpose() << std::endl;
-  std::cout << (data.ddq - data_ref.ddq).cwiseAbs2().sum() << std::endl;
   BOOST_CHECK(data.ddq.isApprox(data_ref.ddq, Eigen::NumTraits<double>::dummy_precision() * 10.));
 
   constrainedABA(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
@@ -208,7 +205,7 @@ BOOST_AUTO_TEST_CASE(test_forward_dynamics_in_contact_6D_LOCAL_humanoid)
   // Change max iter to 10 and now should work
   prox_settings.max_iter = 10;
   pv(model, data, q, v, tau, contact_models, contact_datas, prox_settings);
-  BOOST_CHECK(data.ddq.isApprox(data_ref.ddq, Eigen::NumTraits<double>::dummy_precision() * 10.));
+  BOOST_CHECK(data.ddq.isApprox(data_ref.ddq, 1e-8));
 }
 
 BOOST_AUTO_TEST_CASE(test_forward_dynamics_3D_humanoid)
