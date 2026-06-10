@@ -66,11 +66,11 @@ jobs:
             BUILD_ADVANCED_TESTING: OFF
           - os: macos-15-intel
             BUILD_ADVANCED_TESTING: OFF
-          - os: windows-latest
+          - os: windows-2022
             environment: all
             build_type: Release
             BUILD_ADVANCED_TESTING: OFF
-          - os: windows-latest
+          - os: windows-2022
             environment: all-clang-cl
             build_type: Release
             BUILD_ADVANCED_TESTING: OFF
@@ -163,7 +163,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, macos-15-intel, windows-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, macos-15-intel, windows-2022]
         environment: [all]
 
     steps:
@@ -251,7 +251,7 @@ jobs:
   #   strategy:
   #     fail-fast: false
   #     matrix:
-  #       os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
+  #       os: [ubuntu-latest, macos-latest, macos-15-intel, windows-2022]
 
   #   steps:
   #     - uses: actions/checkout@v6
