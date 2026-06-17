@@ -109,7 +109,8 @@ namespace pinocchio
 
           Vector max_effort(1), max_velocity(1), min_config(1), max_config(1);
           Vector friction(Vector::Constant(1, 0.)), damping(Vector::Constant(1, 0.));
-          Vector min_acceleration(-1), max_acceleration(1), min_jerk(-1), max_jerk(1);
+          Vector min_acceleration(1), max_acceleration(1), min_jerk(1), max_jerk(1);
+
           Vector3 axis(joint->axis.x, joint->axis.y, joint->axis.z);
 
           const Scalar infty = std::numeric_limits<Scalar>::infinity();
