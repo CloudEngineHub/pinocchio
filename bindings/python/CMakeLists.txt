@@ -215,7 +215,8 @@ if(BUILD_PYTHON_INTERFACE)
     if(PINOCCHIO_BUILD_BINDING_WITH_PCH)
         target_precompile_headers(
             ${PYWRAP}_default
-            PRIVATE ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/pch.hpp
+            PRIVATE
+                ${PROJECT_SOURCE_DIR}/include/pinocchio/bindings/python/pch.hpp
         )
     endif()
     set(PYTHON_LIB_NAME "${PYWRAP}_default")
