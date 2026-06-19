@@ -338,10 +338,10 @@ namespace pinocchio
             friction = Vector::Constant(3, 0.);
             damping = Vector::Constant(3, 0.);
 
-            min_acceleration = Vector::Constant(6, -infty);
-            max_acceleration = Vector::Constant(6, infty);
-            min_jerk = Vector::Constant(6, -infty);
-            max_jerk = Vector::Constant(6, infty);
+            min_acceleration = Vector::Constant(3, -infty);
+            max_acceleration = Vector::Constant(3, infty);
+            min_jerk = Vector::Constant(3, -infty);
+            max_jerk = Vector::Constant(3, infty);
 
             model.addJointAndBody(
               JointType::PLANAR, axis, parentFrameId, jointPlacement, joint->name, Y, link->name,
