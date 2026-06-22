@@ -12,9 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - URDF v1.2 support:
-  - Capsule geometry parsed directly as `CAPSULE` collision/visual shape 
+  - Capsule geometry parsed directly as `CAPSULE` collision/visual shape
   - Extended joint limits: `acceleration`, `jerk` read from URDF v1.2 `<limit>` element
-    - New model fields: `lowerAccelerationLimit`, `upperAccelerationLimit`, `lowerJerkLimit`, `upperJerkLimit` 
+    - New model fields: `lowerAccelerationLimit`, `upperAccelerationLimit`, `lowerJerkLimit`, `upperJerkLimit`
     (tangent-space vectors, default +inf/-inf)
     - Extended `Model::addJoint` overload to accept `min_acceleration`, `max_acceleration`, `min_jerk`, `max_jerk` parameters 
 
