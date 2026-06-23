@@ -87,7 +87,7 @@ jobs:
             echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
           fi
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.BRANCH_NAME }}
           submodules: recursive
@@ -178,7 +178,7 @@ jobs:
             echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
           fi
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.BRANCH_NAME }}
           submodules: recursive
@@ -254,7 +254,7 @@ jobs:
   #       os: [ubuntu-latest, macos-latest, macos-15-intel, windows-2022]
 
   #   steps:
-  #     - uses: actions/checkout@v6
+  #     - uses: actions/checkout@v7
   #       with:
   #         submodules: recursive
 
@@ -283,7 +283,7 @@ jobs:
             name: MacOS (ARM64)
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
