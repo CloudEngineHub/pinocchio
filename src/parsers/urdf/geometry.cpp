@@ -247,10 +247,11 @@ namespace pinocchio
           meshPath = "CAPSULE";
           meshScale << 1, 1, 1;
 
-          const auto & capsule = static_cast<const ::urdf::Capsule &>(*urdf_geometry);
+          const auto collisionGeometry =
+            ::urdf::static_pointer_cast<::urdf::Capsule>(urdf_geometry);
 
-          double radius = capsule.radius;
-          double length = capsule.length;
+          double radius = collisionGeometry->radius;
+          double length = collisionGeometry->length;
 
           geometry = std::shared_ptr<coal::CollisionGeometry>(new coal::Capsule(radius, length));
         }
