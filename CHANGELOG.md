@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Fix `loadFromStringStream` unable to parse `+inf/-inf` values (broke Python pickle of models with acceleration/jerk limits)
+- Fix `loadFromStringStream` unable to parse `-inf/+inf` values (broke Python pickle of models with acceleration/jerk limits)
 
 - Fix Viser visualizer: apply URDF `<mesh scale>` to mesh vertices instead of scaling the link translation ([#2878](https://github.com/stack-of-tasks/pinocchio/pull/2878))
 - Fix build issue with g++ 12 ([#2890](https://github.com/stack-of-tasks/pinocchio/pull/2890))

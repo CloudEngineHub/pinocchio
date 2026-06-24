@@ -454,8 +454,12 @@ BOOST_AUTO_TEST_CASE(test_mimic_parsing)
       .axis.isApprox(-1 * Eigen::Vector3d::UnitZ()));
 }
 
-#if URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0) && defined(PINOCCHIO_WITH_COLLISION)
+#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0) && defined(PINOCCHIO_WITH_COLLISION)
 
+/*
+ * This test creates a robot with a capsule joint
+ * Tests are performed to check if capusle is well parsed
+ */
 BOOST_AUTO_TEST_CASE(test_urdf_v12_capsule)
 {
   const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
@@ -476,25 +480,19 @@ BOOST_AUTO_TEST_CASE(test_urdf_v12_capsule)
     </joint>
   </robot>)");
 
-  // create temporary file
-  const boost::filesystem::path tmp =
-    boost::filesystem::temp_directory_path() / "urdf_v12_capsule_test.urdf";
-  {
-    std::ofstream f(tmp.string());
-    f << filestr;
-  }
-
   pinocchio::Model model;
-  pinocchio::urdf::buildModel(tmp.string(), model);
+  pinocchio::urdf::buildModelFromXML(filestr, model);
+
+  const std::stringstream filestr_stream(filestr);
 
   pinocchio::GeometryModel geomModel;
   pinocchio::urdf::buildGeom(
-    model, tmp.string(), pinocchio::COLLISION, geomModel, PINOCCHIO_MODEL_DIR);
+    model, filestr_stream, pinocchio::COLLISION, geomModel, PINOCCHIO_MODEL_DIR);
 
   BOOST_CHECK_EQUAL(geomModel.ngeoms, 1);
   BOOST_CHECK_EQUAL(geomModel.geometryObjects[0].geometry->getNodeType(), coal::GEOM_CAPSULE);
 
-  // check cpasule  half length length and radius
+  // check capsule  half length and radius
   const auto * capsule =
     dynamic_cast<const coal::Capsule *>(geomModel.geometryObjects[0].geometry.get());
 
@@ -502,10 +500,15 @@ BOOST_AUTO_TEST_CASE(test_urdf_v12_capsule)
   BOOST_CHECK_EQUAL(capsule->radius, 0.05);
   BOOST_CHECK_SMALL(capsule->halfLength - 0.15, 1e-6);
 }
-#endif // URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0) && defined(PINOCCHIO_WITH_COLLISION)
+#endif // PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0) && defined(PINOCCHIO_WITH_COLLISION)
 
-#if URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 1)
+#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 1)
 
+/*
+ * This test creates a robot with a revolute joint that has acceleration, deceleration and jerk
+ * limits
+ * Tests are performed to check Accel and Jerk limits size and values
+ */
 BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_revolute)
 {
   const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
@@ -536,6 +539,12 @@ BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_revolute)
   BOOST_CHECK_EQUAL(model.lowerJerkLimit[0], -10.0);
 }
 
+/*
+ * This test creates a robot with a primsatic joint that has acceleration and jerk
+ * limits
+ * Test are performed to check Accel and Jerk limits size and value
+ * Since deceleration is not given, lowerAccelerationLimit = upperAccelerationLimit
+ */
 BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_prismatic)
 {
   const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
@@ -567,6 +576,11 @@ BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_prismatic)
   BOOST_CHECK_EQUAL(model.lowerJerkLimit[0], -5.0);
 }
 
+/*
+ * This test creates a robot with a continuous joint with no accel and jerk limits
+ * Tests are performed to check Accel and Jerk limits size and value
+ * Since limits are not given, they are initialized equal to infinity
+ */
 BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_continuous)
 {
   const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
@@ -598,6 +612,12 @@ BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_continuous)
   BOOST_CHECK_EQUAL(model.lowerJerkLimit[0], -infty);
 }
 
+/*
+ * This test creates a robot with a revolute joint that has acceleration, deceleration and jerk
+ * limits
+ * Test are performed to check Accel and Jerk limits size and value
+ * Since urdf file version is 1.0, limits are not read from file and are initialized to infinity
+ */
 BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_revolute)
 {
   const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
@@ -632,10 +652,16 @@ BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_revolute)
   BOOST_CHECK_EQUAL(model.lowerJerkLimit[0], -infty);
 }
 
-BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_planar)
+/*
+ * This test creates a robot with a planar joint that has acceleration, deceleration and jerk
+ * limits
+ * Test are performed to check Accel and Jerk limits size and value
+ * Since the joint type is planar, limits are not read, no matter the version
+ */
+BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_planar)
 {
   const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
-    <robot name="test" version="1.0">
+    <robot name="test" version="1.2">
       <link name="base_link"/>
       <link name="link_1"/>
       <joint name="joint_1" type="planar">
@@ -669,6 +695,12 @@ BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_planar)
   }
 }
 
+/*
+ * This test creates a robot with a floating joint that has acceleration, deceleration and jerk
+ * limits
+ * Test are performed to check Accel and Jerk limits size and value
+ * Since the joint type is floating, limits are not read, no matter the version
+ */
 BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_floating)
 {
   const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
@@ -705,6 +737,6 @@ BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_floating)
     BOOST_CHECK_EQUAL(model.lowerJerkLimit[i], -infty);
   }
 }
-#endif // URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 1)
+#endif // PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 1)
 
 BOOST_AUTO_TEST_SUITE_END()

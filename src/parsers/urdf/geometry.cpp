@@ -240,7 +240,7 @@ namespace pinocchio
           geometry = std::shared_ptr<coal::CollisionGeometry>(new coal::Sphere(radius));
         }
 
-  #if URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0)
+  #if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0)
         // handle capsule
         else if (urdf_geometry->type == ::urdf::Geometry::CAPSULE)
         {

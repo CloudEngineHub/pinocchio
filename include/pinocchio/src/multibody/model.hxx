@@ -851,12 +851,10 @@ namespace pinocchio
   {
     const Scalar inf = std::numeric_limits<Scalar>::infinity();
 
-    const VectorXs min_acceleration =
-      VectorXs::Constant(joint_model.nv(), static_cast<Scalar>(-inf));
-    const VectorXs max_acceleration =
-      VectorXs::Constant(joint_model.nv(), static_cast<Scalar>(inf));
-    const VectorXs min_jerk = VectorXs::Constant(joint_model.nv(), static_cast<Scalar>(-inf));
-    const VectorXs max_jerk = VectorXs::Constant(joint_model.nv(), static_cast<Scalar>(inf));
+    const VectorXs min_acceleration = VectorXs::Constant(joint_model.nv(), -inf);
+    const VectorXs max_acceleration = VectorXs::Constant(joint_model.nv(), inf);
+    const VectorXs min_jerk = VectorXs::Constant(joint_model.nv(), -inf);
+    const VectorXs max_jerk = VectorXs::Constant(joint_model.nv(), inf);
 
     return addJoint(
       parent, joint_model, joint_placement, joint_name, min_effort, max_effort, min_velocity,

@@ -229,15 +229,13 @@ namespace pinocchio
         {
           const Scalar inf = std::numeric_limits<Scalar>::infinity();
 
-          const Vector min_acceleration =
-            Vector::Constant(min_velocity.size(), static_cast<Scalar>(-inf));
+          const Vector min_acceleration = Vector::Constant(min_velocity.size(), -inf);
 
-          const Vector max_acceleration =
-            Vector::Constant(min_velocity.size(), static_cast<Scalar>(inf));
+          const Vector max_acceleration = Vector::Constant(min_velocity.size(), inf);
 
-          const Vector min_jerk = Vector::Constant(min_velocity.size(), static_cast<Scalar>(-inf));
+          const Vector min_jerk = Vector::Constant(min_velocity.size(), -inf);
 
-          const Vector max_jerk = Vector::Constant(min_velocity.size(), static_cast<Scalar>(inf));
+          const Vector max_jerk = Vector::Constant(min_velocity.size(), inf);
 
           addJointAndBody(
             type, axis, parentFrameId, placement, joint_name, Y, frame_placement, body_name,
@@ -567,15 +565,13 @@ namespace pinocchio
 
           const Scalar inf = std::numeric_limits<Scalar>::infinity();
 
-          const Vector min_acceleration =
-            Vector::Constant(min_velocity.size(), static_cast<Scalar>(-inf));
+          const Vector min_acceleration = Vector::Constant(min_velocity.size(), -inf);
 
-          const Vector max_acceleration =
-            Vector::Constant(min_velocity.size(), static_cast<Scalar>(inf));
+          const Vector max_acceleration = Vector::Constant(min_velocity.size(), inf);
 
-          const Vector min_jerk = Vector::Constant(min_velocity.size(), static_cast<Scalar>(-inf));
+          const Vector min_jerk = Vector::Constant(min_velocity.size(), -inf);
 
-          const Vector max_jerk = Vector::Constant(min_velocity.size(), static_cast<Scalar>(inf));
+          const Vector max_jerk = Vector::Constant(min_velocity.size(), inf);
 
           return addJoint<TypeX, TypeY, TypeZ, TypeUnaligned>(
             axis, frame, placement, joint_name, min_effort, max_effort, min_velocity, max_velocity,
@@ -664,18 +660,15 @@ namespace pinocchio
 
           const Scalar inf = std::numeric_limits<Scalar>::infinity();
 
-          const Vector min_acceleration =
-            Vector::Constant(min_velocity.size(), static_cast<Scalar>(-inf));
-          const Vector max_acceleration =
-            Vector::Constant(min_velocity.size(), static_cast<Scalar>(inf));
-          const Vector min_jerk = Vector::Constant(min_velocity.size(), static_cast<Scalar>(-inf));
-          const Vector max_jerk = Vector::Constant(min_velocity.size(), static_cast<Scalar>(inf));
+          const Vector min_acceleration = Vector::Constant(min_velocity.size(), -inf);
+          const Vector max_acceleration = Vector::Constant(min_velocity.size(), inf);
+          const Vector min_jerk = Vector::Constant(min_velocity.size(), -inf);
+          const Vector max_jerk = Vector::Constant(min_velocity.size(), inf);
 
           return addMimicJoint<TypeX, TypeY, TypeZ, TypeUnaligned>(
             frame, placement, joint_name, min_effort, max_effort, min_velocity, max_velocity,
             min_config, max_config, config_limit_margin, min_dry_friction, max_dry_friction,
-            damping, VectorConstRef(min_acceleration), VectorConstRef(max_acceleration),
-            VectorConstRef(min_jerk), VectorConstRef(max_jerk), mimic_info);
+            damping, min_acceleration, max_acceleration, min_jerk, max_jerk, mimic_info);
         }
 
         template<typename TypeX, typename TypeY, typename TypeZ, typename TypeUnaligned>
