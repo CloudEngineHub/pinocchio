@@ -577,11 +577,46 @@ BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_prismatic)
 }
 
 /*
+ * This test creates a robot with a continuous joint that has acceleration, deceleration and jerk
+ * limits
+ * Tests are performed to check Accel and Jerk limits size and values
+ */
+BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_continuous)
+{
+  const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
+    <robot name="test" version="1.2">
+      <link name="base_link"/>
+      <link name="link_1"/>
+      <joint name="joint_1" type="continuous">
+        <origin xyz="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <parent link="base_link"/>
+        <child link="link_1"/>
+        <limit lower="-1.57" upper="1.57" effort="100.0" velocity="1.0"
+               acceleration="5.0" deceleration="3.0" jerk="10.0"/>
+      </joint>
+    </robot>)");
+
+  pinocchio::Model model;
+  pinocchio::urdf::buildModelFromXML(filestr, model);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit.size(), model.nv);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit.size(), model.nv);
+
+  BOOST_CHECK_EQUAL(model.upperAccelerationLimit[0], 5.0);
+  BOOST_CHECK_EQUAL(model.lowerAccelerationLimit[0], -3.0);
+  BOOST_CHECK_EQUAL(model.upperJerkLimit[0], 10.0);
+  BOOST_CHECK_EQUAL(model.lowerJerkLimit[0], -10.0);
+}
+
+/*
  * This test creates a robot with a continuous joint with no accel and jerk limits
  * Tests are performed to check Accel and Jerk limits size and value
  * Since limits are not given, they are initialized equal to infinity
  */
-BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_continuous)
+BOOST_AUTO_TEST_CASE(test_urdf_v12_accel_jerk_continuous_no_init)
 {
   const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
     <robot name="test" version="1.2">
