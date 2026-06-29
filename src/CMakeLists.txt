@@ -6,6 +6,16 @@
 # --- INCLUDE ----------------------------------------
 # ----------------------------------------------------
 
+# Deactivate inline function expansion on Windows because
+# of a compilation issue on Windows. This can create performance issue.
+# TODO Remove this when cl is patched
+if(WIN32 AND (Eigen3_VERSION VERSION_GREATER_EQUAL 5.0.0))
+    set_source_files_properties(
+        algorithm/joint-configuration.cpp
+        PROPERTIES COMPILE_OPTIONS "/Ob0"
+    )
+endif()
+
 # Create header-only target All other target will depend on it.
 add_library(${PROJECT_NAME}_headers INTERFACE)
 # On CMake 3.16, we can't target_sources(${PROJECT_NAME}_headers INTERFACE
