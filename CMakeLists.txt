@@ -232,6 +232,14 @@ option(
     ON
 )
 
+# PCH and ccache doesn't play well together so we deactivate
+# PCH use by default
+option(
+    PINOCCHIO_BUILD_BINDING_WITH_PCH
+    "Use PCH to accelerate binding build"
+    OFF
+)
+
 set(PINOCCHIO_MODEL_DIR "${PROJECT_SOURCE_DIR}/models")
 if(BUILD_BENCHMARK OR BUILD_EXAMPLES OR BUILD_TESTING)
     # example-robot-data is required

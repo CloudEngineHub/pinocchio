@@ -10,12 +10,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Add `PINOCCHIO_BUILD_BINDING_WITH_PCH` CMake option to use PCH to build Python bindings (default OFF) ([#2886](https://github.com/stack-of-tasks/pinocchio/pull/2886))
+
 ### Fixed
 
 - Fix Viser visualizer: apply URDF `<mesh scale>` to mesh vertices instead of scaling the link translation ([#2878](https://github.com/stack-of-tasks/pinocchio/pull/2878))
-
 - Fix build issue with g++ 12 ([#2890](https://github.com/stack-of-tasks/pinocchio/pull/2890))
 - Fix useless memory allocation in Python checkers ([#2897](https://github.com/stack-of-tasks/pinocchio/pull/2897) and [#2907](https://github.com/stack-of-tasks/pinocchio/pull/2907))
+- Fix Eigen 5 support ([#2886](https://github.com/stack-of-tasks/pinocchio/pull/2886))
 
 ### Changed
 
