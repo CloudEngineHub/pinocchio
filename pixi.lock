@@ -19845,6 +19845,10 @@ packages:
   - tinyxml2 >=11.0.0,<11.1.0a0
   license: BSD-3-Clause
   license_family: BSD
+  run_exports:
+    weak:
+    - urdfdom_headers >=3.0.0,<4.0a0
+    - urdfdom >=6.0.0,<7.0a0
   size: 107311
   timestamp: 1780583079633
 - conda: https://conda.anaconda.org/conda-forge/linux-64/urdfdom_headers-3.0.0-hb700be7_0.conda
@@ -22878,6 +22882,10 @@ packages:
   - console_bridge >=1.0.2,<1.1.0a0
   license: BSD-3-Clause
   license_family: BSD
+  run_exports:
+    weak:
+    - urdfdom_headers >=3.0.0,<4.0a0
+    - urdfdom >=6.0.0,<7.0a0
   size: 120041
   timestamp: 1780583092353
 - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/urdfdom_headers-3.0.0-hfefdfc9_0.conda
@@ -26553,6 +26561,10 @@ packages:
   - tinyxml2 >=11.0.0,<11.1.0a0
   license: BSD-3-Clause
   license_family: BSD
+  run_exports:
+    weak:
+    - urdfdom_headers >=3.0.0,<4.0a0
+    - urdfdom >=6.0.0,<7.0a0
   size: 104913
   timestamp: 1780583235919
 - conda: https://conda.anaconda.org/conda-forge/osx-64/urdfdom_headers-3.0.0-hc1436ee_0.conda
@@ -29095,6 +29107,10 @@ packages:
   - tinyxml2 >=11.0.0,<11.1.0a0
   license: BSD-3-Clause
   license_family: BSD
+  run_exports:
+    weak:
+    - urdfdom_headers >=3.0.0,<4.0a0
+    - urdfdom >=6.0.0,<7.0a0
   size: 102608
   timestamp: 1780583184254
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/urdfdom_headers-3.0.0-h4ddebb9_0.conda
@@ -31313,6 +31329,10 @@ packages:
   - tinyxml2 >=11.0.0,<11.1.0a0
   license: BSD-3-Clause
   license_family: BSD
+  run_exports:
+    weak:
+    - urdfdom_headers >=3.0.0,<4.0a0
+    - urdfdom >=6.0.0,<7.0a0
   size: 100362
   timestamp: 1780583118972
 - conda: https://conda.anaconda.org/conda-forge/win-64/urdfdom_headers-3.0.0-h49e36cd_0.conda

@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Extended joint limits: `acceleration`, `jerk` read from URDF v1.2 `<limit>` element
     - New model fields: `lowerAccelerationLimit`, `upperAccelerationLimit`, `lowerJerkLimit`, `upperJerkLimit`
     (tangent-space vectors, default +inf/-inf)
-    - Extended `Model::addJoint` overload to accept `min_acceleration`, `max_acceleration`, `min_jerk`, `max_jerk` parameters 
+    - Extended `Model::addJoint` overload to accept `min_acceleration`, `max_acceleration`, `min_jerk`, `max_jerk` parameters
 
 - Add `PINOCCHIO_BUILD_BINDING_WITH_PCH` CMake option to use PCH to build Python bindings (default OFF) ([#2886](https://github.com/stack-of-tasks/pinocchio/pull/2886))
 
