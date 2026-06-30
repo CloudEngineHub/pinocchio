@@ -152,7 +152,7 @@ namespace pinocchio
               min_config << joint->limits->lower;
               max_config << joint->limits->upper;
 
-#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0)
+#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(3, 0, 0)
               min_acceleration << -(joint->limits->deceleration);
               max_acceleration << joint->limits->acceleration;
               min_jerk << -(joint->limits->jerk);
@@ -210,7 +210,7 @@ namespace pinocchio
             {
               max_effort << joint->limits->effort;
               max_velocity << joint->limits->velocity;
-#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0)
+#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(3, 0, 0)
               min_acceleration << -(joint->limits->deceleration);
               max_acceleration << joint->limits->acceleration;
               min_jerk << -(joint->limits->jerk);
@@ -279,7 +279,7 @@ namespace pinocchio
               min_config << joint->limits->lower;
               max_config << joint->limits->upper;
 
-#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0)
+#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(3, 0, 0)
               min_acceleration << -(joint->limits->deceleration);
               max_acceleration << joint->limits->acceleration;
               min_jerk << -(joint->limits->jerk);

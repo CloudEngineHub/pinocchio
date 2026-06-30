@@ -502,7 +502,7 @@ BOOST_AUTO_TEST_CASE(test_urdf_v12_capsule)
 }
 #endif // PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 0) && defined(PINOCCHIO_WITH_COLLISION)
 
-#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 1)
+#if PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(3, 0, 0)
 
 /*
  * This test creates a robot with a revolute joint that has acceleration, deceleration and jerk
@@ -772,6 +772,6 @@ BOOST_AUTO_TEST_CASE(test_urdf_v10_accel_jerk_floating)
     BOOST_CHECK_EQUAL(model.lowerJerkLimit[i], -infty);
   }
 }
-#endif // PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(2, 1, 1)
+#endif // PINOCCHIO_URDFDOM_HEADERS_VERSION_AT_LEAST(3, 0, 0)
 
 BOOST_AUTO_TEST_SUITE_END()
