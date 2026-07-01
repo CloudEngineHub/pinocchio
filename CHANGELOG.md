@@ -11,10 +11,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- URDF v1.2 support:
+  - Capsule geometry parsed directly as `CAPSULE` collision/visual shape
+  - Extended joint limits: `acceleration`, `jerk` read from URDF v1.2 `<limit>` element
+    - New model fields: `lowerAccelerationLimit`, `upperAccelerationLimit`, `lowerJerkLimit`, `upperJerkLimit`
+    (tangent-space vectors, default +inf/-inf)
+    - Extended `Model::addJoint` overload to accept `min_acceleration`, `max_acceleration`, `min_jerk`, `max_jerk` parameters
 
 - Add `PINOCCHIO_BUILD_BINDING_WITH_PCH` CMake option to use PCH to build Python bindings (default OFF) ([#2886](https://github.com/stack-of-tasks/pinocchio/pull/2886))
 
 ### Fixed
+
+- Fix `loadFromStringStream` unable to parse `-inf/+inf` values (broke Python pickle of models with acceleration/jerk limits)
 
 - Fix Viser visualizer: apply URDF `<mesh scale>` to mesh vertices instead of scaling the link translation ([#2878](https://github.com/stack-of-tasks/pinocchio/pull/2878))
 - Fix build issue with g++ 12 ([#2890](https://github.com/stack-of-tasks/pinocchio/pull/2890))
