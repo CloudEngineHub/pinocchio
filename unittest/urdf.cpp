@@ -460,10 +460,10 @@ BOOST_AUTO_TEST_CASE(test_mimic_parsing)
  * This test creates a robot with a capsule joint
  * Tests are performed to check if capusle is well parsed
  */
-BOOST_AUTO_TEST_CASE(test_urdf_v12_capsule)
+BOOST_AUTO_TEST_CASE(test_urdf_v11_capsule)
 {
   const std::string filestr(R"(<?xml version="1.0" encoding="utf-8"?>
-  <robot name="capsule_robot" version="1.2">
+  <robot name="capsule_robot" version="1.1">
     <link name="base_link"/>
     <link name="arm_link">
       <collision>
