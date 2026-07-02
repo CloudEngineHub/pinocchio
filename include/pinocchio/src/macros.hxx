@@ -151,7 +151,7 @@
       _Pragma("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
     #define PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_SELF_ASSIGN_OVERLOADED
   #endif
-#elif defined(WIN_32)
+#elif defined(_WIN32)
   #define PINOCCHIO_COMPILER_DIAGNOSTIC_PUSH _Pragma("warning(push)")
   #define PINOCCHIO_COMPILER_DIAGNOSTIC_POP _Pragma("warning(pop)")
   #define PINOCCHIO_COMPILER_DIAGNOSTIC_IGNORED_DEPRECECATED_DECLARATIONS                          \
