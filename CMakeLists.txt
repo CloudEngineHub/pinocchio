@@ -30,7 +30,7 @@ set(CMAKE_VERBOSE_MAKEFILE True)
 # Need to be set before including base.cmake
 # ----------------------------------------------------
 option(INSTALL_DOCUMENTATION "Generate and install the documentation" OFF)
-option(PINOCCHIO_DOXYGEN_USE_MATHJAX "Avoid latex at build time" ON)
+option(PINOCCHIO_DOXYGEN_USE_MATHJAX "Avoid latex at build time" OFF)
 
 # Check if the submodule cmake have been initialized
 set(JRL_CMAKE_MODULES "${CMAKE_CURRENT_LIST_DIR}/cmake")
