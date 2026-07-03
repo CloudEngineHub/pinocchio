@@ -364,7 +364,9 @@ if(BUILD_WITH_EXTRA_SUPPORT)
     )
 endif()
 
-add_pinocchio_unit_test(visualizer VISUALIZERS)
+if(PINOCCHIO_BUILD_VISUALIZERS)
+    add_pinocchio_unit_test(visualizer VISUALIZERS)
+endif()
 
 if(BUILD_WITH_PYTHON_PARSER_SUPPORT)
     add_pinocchio_unit_test(python_parser PYTHON_PARSER)

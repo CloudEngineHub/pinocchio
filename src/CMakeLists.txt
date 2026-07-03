@@ -124,11 +124,8 @@ function(PINOCCHIO_TARGET target_name)
     set(LIB_NAME "${target_name}")
 
     # Manage different scope type if building an interface or shared library
-    if(BUILD_SHARED_LIBS)
-        set(LIBRARY_TYPE SHARED)
-    else()
-        set(LIBRARY_TYPE STATIC)
-    endif()
+    set(LIBRARY_TYPE SHARED)
+
     set(LIBRARY_PUBLIC_SCOPE PUBLIC)
     if(ARGS_INTERFACE)
         set(LIBRARY_TYPE INTERFACE)
@@ -376,7 +373,6 @@ if(BUILD_WITH_COLLISION_SUPPORT)
 endif()
 
 # Define the visualizers target
-option(PINOCCHIO_BUILD_VISUALIZERS "Build the pinocchio visualizers library" ON)
 if(PINOCCHIO_BUILD_VISUALIZERS)
     set(VISUALIZERS_LIB_NAME "${PROJECT_NAME}_visualizers")
     pinocchio_target(

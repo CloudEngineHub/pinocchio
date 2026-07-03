@@ -239,6 +239,7 @@ option(
     "Use PCH to accelerate binding build"
     OFF
 )
+option(PINOCCHIO_BUILD_VISUALIZERS "Build the pinocchio visualizers library" ON)
 
 set(PINOCCHIO_MODEL_DIR "${PROJECT_SOURCE_DIR}/models")
 if(BUILD_BENCHMARK OR BUILD_EXAMPLES OR BUILD_TESTING)
