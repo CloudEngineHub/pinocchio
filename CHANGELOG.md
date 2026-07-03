@@ -22,8 +22,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Use _WIN32 option instead of WIN32 ([#2900](https://github.com/stack-of-tasks/pinocchio/pull/2900))
+- Add PINOCCHIO_BUILD_VISUALIZERS option ([#2900](https://github.com/stack-of-tasks/pinocchio/pull/2900))
+- Remove extra `}` in modernize_target_link_libraries function ([#2900](https://github.com/stack-of-tasks/pinocchio/pull/2900))
 - Fix `loadFromStringStream` unable to parse `-inf/+inf` values (broke Python pickle of models with acceleration/jerk limits)
-
 - Fix Viser visualizer: apply URDF `<mesh scale>` to mesh vertices instead of scaling the link translation ([#2878](https://github.com/stack-of-tasks/pinocchio/pull/2878))
 - Fix build issue with g++ 12 ([#2890](https://github.com/stack-of-tasks/pinocchio/pull/2890))
 - Fix useless memory allocation in Python checkers ([#2897](https://github.com/stack-of-tasks/pinocchio/pull/2897) and [#2907](https://github.com/stack-of-tasks/pinocchio/pull/2907))
