@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - nix: switch to flakoboros ([#2882](https://github.com/stack-of-tasks/pinocchio/pull/2882))
+- CMake: optionalize `DOXYGEN_USE_MATHJAX` ([#2915](https://github.com/stack-of-tasks/pinocchio/pull/2915))
 
 
 ## [4.0.0] - 2026-04-13
