@@ -64,7 +64,7 @@ else()
 endif()
 
 if(PINOCCHIO_DOXYGEN_USE_MATHJAX)
-  set(DOXYGEN_USE_MATHJAX YES)
+    set(DOXYGEN_USE_MATHJAX YES)
 endif()
 
 # ----------------------------------------------------
