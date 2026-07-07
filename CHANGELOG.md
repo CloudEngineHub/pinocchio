@@ -11,21 +11,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- URDF v1.2 support:
+
+- URDF v1.2 support ([#2909](https://github.com/stack-of-tasks/pinocchio/pull/2909)):
   - Capsule geometry parsed directly as `CAPSULE` collision/visual shape
   - Extended joint limits: `acceleration`, `jerk` read from URDF v1.2 `<limit>` element
-    - New model fields: `lowerAccelerationLimit`, `upperAccelerationLimit`, `lowerJerkLimit`, `upperJerkLimit`
-    (tangent-space vectors, default +inf/-inf)
-    - Extended `Model::addJoint` overload to accept `min_acceleration`, `max_acceleration`, `min_jerk`, `max_jerk` parameters
-
+    - New `ModelTpl` fields: `lowerAccelerationLimit`, `upperAccelerationLimit`, `lowerJerkLimit`, `upperJerkLimit`
+    (tangent-space vectors, default -inf/+inf)
+    - Extended `ModelTpl::addJoint` overload to accept `min_acceleration`, `max_acceleration`, `min_jerk`, `max_jerk` parameters
 - Add `PINOCCHIO_BUILD_BINDING_WITH_PCH` CMake option to use PCH to build Python bindings (default OFF) ([#2886](https://github.com/stack-of-tasks/pinocchio/pull/2886))
+- Add PINOCCHIO_BUILD_VISUALIZERS option ([#2900](https://github.com/stack-of-tasks/pinocchio/pull/2900))
 
 ### Fixed
 
-- Use _WIN32 option instead of WIN32 ([#2900](https://github.com/stack-of-tasks/pinocchio/pull/2900))
-- Add PINOCCHIO_BUILD_VISUALIZERS option ([#2900](https://github.com/stack-of-tasks/pinocchio/pull/2900))
+- Use _WIN32 definition instead of WIN32 ([#2900](https://github.com/stack-of-tasks/pinocchio/pull/2900))
 - Remove extra `}` in modernize_target_link_libraries function ([#2900](https://github.com/stack-of-tasks/pinocchio/pull/2900))
-- Fix `loadFromStringStream` unable to parse `-inf/+inf` values (broke Python pickle of models with acceleration/jerk limits)
+- Fix `loadFromStringStream` unable to parse `-inf/+inf` values (broke Python pickle of models with acceleration/jerk limits) ([#2909](https://github.com/stack-of-tasks/pinocchio/pull/2909))
 - Fix Viser visualizer: apply URDF `<mesh scale>` to mesh vertices instead of scaling the link translation ([#2878](https://github.com/stack-of-tasks/pinocchio/pull/2878))
 - Fix build issue with g++ 12 ([#2890](https://github.com/stack-of-tasks/pinocchio/pull/2890))
 - Fix useless memory allocation in Python checkers ([#2897](https://github.com/stack-of-tasks/pinocchio/pull/2897) and [#2907](https://github.com/stack-of-tasks/pinocchio/pull/2907))
@@ -34,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - nix: switch to flakoboros ([#2882](https://github.com/stack-of-tasks/pinocchio/pull/2882))
-- CMake: optionalize `DOXYGEN_USE_MATHJAX` ([#2915](https://github.com/stack-of-tasks/pinocchio/pull/2915))
+- CMake: optionalize `DOXYGEN_USE_MATHJAX` (default to OFF) ([#2915](https://github.com/stack-of-tasks/pinocchio/pull/2915))
 
 
 ## [4.0.0] - 2026-04-13
