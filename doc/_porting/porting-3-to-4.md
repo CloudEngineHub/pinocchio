@@ -54,9 +54,12 @@ ConstraintCholeskyDecompositionTpl changes :
 - Deprecate `ConstraintCholeskyDecompositionTpl::allocate` replaced by `ConstraintCholeskyDecompositionTpl::rebuild`
   - Add `std::vector<ConstraintModel, ConstraintModelAllocator>`
   - Add `std::vector<ConstraintData, ConstraintDataAllocator>`
+  - `constraint_datas` should be computed by the associated model
 - ConstraintCholeskyDecompositionTpl constructor :
   - Add `DataTpl<S1, O1, JointCollectionTpl>`
   - Add `std::vector<ConstraintData, ConstraintDataAllocator>`
+- `ConstraintCholeskyDecompositionTpl::compute`:
+  - `constraint_datas` should be computed by the associated model
 
 Utility API changes:
 - Remove `gettimeofday` definition on Windows
