@@ -63,6 +63,9 @@ Utility API changes:
 - Remove `deprecated-macros.hpp` and `deprecated-namespaces.hpp`
 - Remove `pinocchio/deprecation.hpp` replaced by `pinocchio/deprecated.hpp`
 
+DataTpl API changes:
+- Deprecate `DataTpl::lastChild` replaced by `ModelTpl::children` last value
+
 Python bindings API changes:
 - Deprecate `pinocchio/bindings/python/multibody/joint/joint.hpp` replaced by `pinocchio/bindings/python/multibody/joint/joint-model.hpp`
 - Deprecate Python bindings headers already implemented in eigenpy:
