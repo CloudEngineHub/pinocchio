@@ -308,6 +308,7 @@ namespace pinocchio
     std::vector<Matrix6x> Fcrb;
 
     /// \brief Index of the last child (for CRBA)
+    /// \deprecated Use ModelTpl::children last value instead.
     PINOCCHIO_DEPRECATED std::vector<int> lastChild;
 
     /// \brief Dimension of the subtree motion space (for CRBA)
