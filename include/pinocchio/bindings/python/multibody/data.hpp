@@ -152,7 +152,6 @@ namespace pinocchio
                "C(q,v)v")
           .ADD_DATA_PROPERTY(g, "Vector of generalized gravity (dim model.nv).")
           .ADD_DATA_PROPERTY(Fcrb, "Spatial forces set, used in CRBA")
-          .ADD_DATA_PROPERTY(lastChild, "Index of the last child (for CRBA)")
           .add_property(
             "lastChild",
             bp::make_function(
