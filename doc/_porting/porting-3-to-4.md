@@ -39,6 +39,7 @@ HPP-FCL has been replaced by coal:
 Constraints API changes:
   - Add `std::vector<ConstraintData, ConstraintDataAllocator> contact_datas` in `initConstraintDynamics` method
   - Change `BaumgarteCorrectorParametersTpl` constructor: scalars are used for the gains instead of vectors
+  - `constraint_data` should be computed by `constaint_model.calc` call before calling `getConstraintJacobian`
 
 `RigidConstraintModel` internal API has changed:
   - Remove `colwise_joint1_sparsity`
