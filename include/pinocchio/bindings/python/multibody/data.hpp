@@ -157,12 +157,24 @@ namespace pinocchio
             bp::make_function(
               +[](const Data & self) { return self.lastChild; },
               eigenpy::deprecated_member<>(
-                "Deprecated member. Use model.children last value instead.")),
+                "Deprecated member. Use model.children instead:\n"
+                "- If joint `index` doesn't have any child it can be checked with"
+                "len(model.children[index]) > 0`\n"
+                "- In other case `data.lastChild[index]` can be replaced by "
+                "`model.children[index][-1]`")),
             bp::make_function(
               +[](Data & self, const std::vector<int> & lastChild) { self.lastChild = lastChild; },
               eigenpy::deprecated_member<>(
-                "Deprecated member. Use model.children last value instead.")),
-            "Deprecated member. Use model.children last value instead.")
+                "Deprecated member. Use model.children instead:\n"
+                "- If joint `index` doesn't have any child it can be checked with"
+                "len(model.children[index]) > 0`\n"
+                "- In other case `data.lastChild[index]` can be replaced by "
+                "`model.children[index][-1]`")),
+            "Deprecated member. Use model.children instead:\n"
+            "- If joint `index` doesn't have any child it can be checked with"
+            "len(model.children[index]) > 0`\n"
+            "- In other case `data.lastChild[index]` can be replaced by "
+            "`model.children[index][-1]`")
           .ADD_DATA_PROPERTY(nvSubtree, "Dimension of the subtree motion space (for CRBA)")
           .ADD_DATA_PROPERTY(U, "Joint Inertia square root (upper triangle)")
           .ADD_DATA_PROPERTY(D, "Diagonal of UDUT inertia decomposition")

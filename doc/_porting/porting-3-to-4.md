@@ -68,7 +68,9 @@ Utility API changes:
 - Remove `pinocchio/deprecation.hpp` replaced by `pinocchio/deprecated.hpp`
 
 DataTpl API changes:
-- Deprecate `DataTpl::lastChild` replaced by `ModelTpl::children` last value
+- Deprecate `DataTpl::lastChild` replaced by `ModelTpl::children`:
+  - If joint `index` doesn't have any child it can be checked with `model.children[index].empty()`
+  - In other case `data.lastChild[index]` can be replaced by `model.children[index].back()`
 
 Python bindings API changes:
 - Deprecate `pinocchio/bindings/python/multibody/joint/joint.hpp` replaced by `pinocchio/bindings/python/multibody/joint/joint-model.hpp`
