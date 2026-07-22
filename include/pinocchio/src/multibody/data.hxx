@@ -307,7 +307,12 @@ namespace pinocchio
     /// \brief Spatial forces set, used in CRBA and CCRBA
     std::vector<Matrix6x> Fcrb;
 
-    /// \brief Index of the last child (for CRBA)
+    /** \brief Index of the last child (for CRBA)
+     * \deprecated Use ModelTpl::children instead:
+     *  - If joint `index` doesn't have any child it can be checked with
+     * `model.children[index].empty()`
+     *  - In other case `data.lastChild[index]` can be replaced by `model.children[index].back()`
+     */
     PINOCCHIO_DEPRECATED std::vector<int> lastChild;
 
     /// \brief Dimension of the subtree motion space (for CRBA)
